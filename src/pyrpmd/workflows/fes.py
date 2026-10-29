@@ -282,6 +282,58 @@ def steer_to_center(q, cv, target, masses, max_steps=250, tolerance=1e-7):
     return q
 
 
+def separate_reactants_to_xi(geometry, coordinate, target, masses):
+    """Construct entrance umbrellas by rigid fragment separation, not bond collapse.
+
+    A least-norm xi projection can lower xi by collapsing the breaking bond
+    instead of separating reactants. Here the internal TS geometry of each
+    reactant is preserved exactly, then ordinary PES thermalization relaxes
+    its internal degrees of freedom. This is initialization, not sampling.
+    """
+    from scipy.optimize import brentq
+
+    geometry = np.asarray(geometry, float)
+    fragments = [np.asarray(f, dtype=int) for f in coordinate.com.fragments]
+    masses = np.asarray(masses, float)
+    totals = np.array([masses[f].sum() for f in fragments])
+    com = [np.average(geometry[f], axis=0, weights=masses[f]) for f in fragments]
+    vector = com[0] - com[1]
+    distance = float(np.linalg.norm(vector))
+    if distance < 1e-12:
+        raise ValueError(
+            "cannot initialize rate entrance from coincident fragment centers"
+        )
+    axis = vector / distance
+
+    def translated(delta):
+        q = geometry.copy()
+        q[fragments[0]] += delta * totals[1] / totals.sum() * axis
+        q[fragments[1]] -= delta * totals[0] / totals.sum() * axis
+        return q
+
+    def residual(delta):
+        return coordinate.centroid_value_gradient(translated(delta))[0] - target
+
+    start = residual(0.0)
+    if abs(start) < 1e-10:
+        return geometry.copy()
+    if start < 0:
+        raise ValueError(
+            "rigid entrance initialization is only for xi below the initial TS"
+        )
+    upper = max(1.0, coordinate.rinf - distance + 1.0)
+    for _ in range(20):
+        if residual(upper) <= 0:
+            break
+        upper *= 2
+    else:
+        raise ValueError(
+            "could not bracket entrance umbrella by rigid fragment separation"
+        )
+    shift = brentq(residual, 0.0, upper, xtol=1e-12, rtol=1e-12)
+    return translated(shift)
+
+
 def _sample_window(task):
     config, system = task["config"], task["system"]
     cv = make_cvs(task["specs"], system)
@@ -363,7 +415,18 @@ def _sample_window(task):
                 energies = list(saved["energies"])
                 elapsed = int(saved["elapsed"])
         else:
-            q = np.repeat(system.geometry[None], config["beads"], axis=0)
+            geometry = system.geometry
+            if len(cv.cvs) == 1 and isinstance(cv.cvs[0], RPMDrateCoordinate):
+                coordinate = cv.cvs[0]
+                permutations = coordinate.permutations
+                permutation = permutations[replica % len(permutations)]
+                geometry = np.empty_like(system.geometry)
+                geometry[list(permutation)] = system.geometry
+                if center[0] < coordinate.centroid_value_gradient(geometry)[0] - 1e-10:
+                    geometry = separate_reactants_to_xi(
+                        geometry, coordinate, center[0], system.masses
+                    )
+            q = np.repeat(geometry[None], config["beads"], axis=0)
             q = steer_to_center(q, cv, center, system.masses)
             state = State(q, dynamics.sample_momenta())
 

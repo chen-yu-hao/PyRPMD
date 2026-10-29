@@ -223,10 +223,6 @@ def prepare_rate(config, system, potential=None, numerical=False):
     reaction["rinf"] = reaction.get(
         "rinf_au", reaction.get("rinf", reaction.get("Rinf", "12 angstrom"))
     )
-    if reaction.get("equivalent_paths"):
-        raise ValueError(
-            "multiple symmetry-related transition-state surfaces are not implemented; define a single surface and an explicit validated symmetry_factor"
-        )
     if "fragments" not in reaction and getattr(system, "fragments", None):
         reaction["fragments"] = [list(f) for f in system.fragments]
     required = ("fragments", "forming_bonds", "breaking_bonds")
@@ -234,6 +230,7 @@ def prepare_rate(config, system, potential=None, numerical=False):
     if explicit:
         _validate_reaction(reaction, system.natoms)
         reaction["rinf"] = parse_quantity(reaction.get("rinf", "12 angstrom"), "length")
+        _validate_equivalent_paths(reaction, system)
         return {
             "ready": True,
             "reaction": reaction,
@@ -355,6 +352,7 @@ def prepare_rate(config, system, potential=None, numerical=False):
         if len(candidates) == 1:
             reaction.update(candidates[0])
             _validate_reaction(reaction, system.natoms)
+            _validate_equivalent_paths(reaction, system)
         else:
             diagnostics.append(
                 "Entrance/channel is ambiguous; select reaction.entry_side or provide fragments and bond changes."
@@ -388,3 +386,26 @@ def _validate_reaction(reaction, natoms):
     for bond in forming + breaking:
         if len(bond) != 2 or bond[0] == bond[1] or min(bond) < 0 or max(bond) >= natoms:
             raise ValueError("invalid forming/breaking bond atom index")
+
+
+def _validate_equivalent_paths(reaction, system):
+    if not reaction.get("equivalent_paths"):
+        return
+    from ..cv import RPMDrateCoordinate
+
+    cv = RPMDrateCoordinate(
+        reaction["fragments"],
+        system.masses,
+        system.geometry,
+        reaction["forming_bonds"],
+        reaction["breaking_bonds"],
+        parse_quantity(reaction["rinf"], "length"),
+        equivalent_paths=reaction["equivalent_paths"],
+    )
+    for permutation in cv.permutations[1:]:
+        if any(
+            system.symbols[i] != system.symbols[j] for i, j in enumerate(permutation)
+        ):
+            raise ValueError(
+                "equivalent atom permutation must preserve element identities"
+            )

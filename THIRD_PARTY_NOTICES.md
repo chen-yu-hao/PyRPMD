@@ -21,6 +21,28 @@ The rate-workflow organization and recrossing sampling are informed by
 `src/calc_rate.f90`, `src/umbrella.f90`, `src/recross.f90` and `src/verlet.f90`.
 This package does not redistribute Caracal's bundled QMDFF, xTB or ML models.
 
+## BKMP2 physical H3 benchmark
+
+The optional `benchmarks/h3` suite fetches the original reactive H3 model from
+`chen-yu-hao/RPMDrate`, commit
+`19ba2602bad5b2145b0d0ba0716d7ba3d90a1003`,
+`examples/H+H2/h3_bkmp2.f`. The 61,792-byte source is verified against SHA256
+`6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237`.
+
+Model authors: Arnold I. Boothroyd, William J. Keogh, Peter G. Martin and
+Michael R. Peterson. Reference: *A Refined H3 Potential Energy Surface*,
+J. Chem. Phys. 104, 7139–7152 (1996), https://doi.org/10.1063/1.471430.
+Author distribution and independent numerical test:
+https://www.cita.utoronto.ca/~boothroy/bkmp2.html.
+
+No explicit redistribution license was identified in this PES source.
+The fetched Fortran file and its compiled library are **not bundled** with
+PyRPMD or its validation artifacts, and are **not relicensed under PyRPMD's
+MIT license**. The newly written fetch/build script, C-interoperable wrapper,
+adapter and benchmark drivers are PyRPMD code. Source provenance, precise
+compiler flags and the build checksum are recorded separately. Users should
+acknowledge the PES authors when using this model for scientific work.
+
 ## MIT license applying to the above MIT-licensed code
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

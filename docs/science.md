@@ -126,11 +126,18 @@ s_1=(r_{f,TS}-r_f)-(r_{b,TS}-r_b),\qquad
 \]
 
 所有几何量作用于 centroid。入口面是 xi=0，参考 TS 是 xi=1。
-同一 TS 的多个键对使用 RPMDrate 单 TS 定义的最小 `s1` 分支；分支切换点
-是分段可微的边界，使用者必须检查轨迹是否在重要区域频繁遇到分支简并。
-任意多个对称相关 TS 的 max/min 组合尚未实现；`equivalent_paths` 会明确
-拒绝。经验证的路径简并度可以由用户设置 `symmetry_factor`，电子简并
-权重由 `electronic_weight` 给定，二者不由结构猜测。
+同一 TS 的多个键对使用最小 `s1` 分支。对显式原子置换生成的多个等价 TS，
+严格沿用 RPMDrate `_surface.f90` 的顺序：每个成断键对先对 TS 取最大值，
+再对键对取最小值，即 `s1 = min_bond(max_TS(values))`。这个顺序不能一般性地
+换成 `max_TS(min_bond(values))`；多键回归测试特意区分二者。
+
+`reaction.equivalent_paths` 保存从旧原子到新原子的完整置换；程序检查元素、
+同位素质量和反应物片段划分，梯度与 Hessian 使用被选中的解析分支。
+分支交界处是分段可微的，使用者必须检查重要采样区域中的分支切换。
+当前支持一个参考 TS 的等价置换，不支持任意互不等价的多个 TS 几何。
+H + H₂ 中 `[[0,2,1]]` 加上默认原始路径给出
+`s1 = r12 - min(r01,r02)`，同时识别 H0H1 和 H0H2 两个交换出口。
+这时 `symmetry_factor=1`，避免重复计数；额外路径/电子权重仍需用户明确给出。
 
 ### 4.2 速率 PMF 的测度
 
@@ -205,7 +212,13 @@ PMF barrier 的窗口 block bootstrap 与 kappa 的 parent bootstrap 共同
 目前自动平台检查比较指定尾部的前后两段平均值，容许相对漂移阈值
 或两倍 bootstrap 漂移标准误中的较大者；还要求正平台、至少十个
 尾部时间点。`rate_cm3_s` 仅在这个检查通过、且 child 端点的缩放能量
-漂移不超过 1% 时填写。`rate_estimate_cm3_s` 保留可审查的有限时间
+变化 `|ΔH_P|/(P*kBT)` 不超过 0.1 时填写。同时保存每个 child pair 的最大
+端点能量变化 `|ΔH_P|/P`；这两个量不依赖 PES 能量零点，适合比较具有
+大负绝对能量的真实势能面。旧的 scaled drift 字段为兼容保留，其分母
+含总能量，不能作为跨 PES 的精度指标，也不再决定是否发布速率估计。
+旧 checkpoint 若没有新的能量诊断，结果会保留候选估计并明确说明限制，
+而不会把缺失值当作零误差。
+`rate_estimate_cm3_s` 保留可审查的有限时间
 估计；状态为 `plateau_estimate` 或 `pilot_requires_convergence`，不叫
 “validated rate”。端点漂移不是整条轨迹的最大能量误差，用户仍需做
 时间步和轨迹长度测试。

@@ -15,6 +15,7 @@
 | 势能适配 | Python、RPMDrate/f2py、版本化 C ABI `.so`、manifest 驱动 `.o` 链接、ASE、Torch、i-PI socket |
 | 并行 | 轨迹/窗口进程并行、持续珠子势能进程池、MPI `G × B` 分组、OpenMP、CUDA 多设备和每卡多轨迹进程 |
 | 2D FES | 二维 umbrella、完整 CV Jacobian、MBAR、窗口重叠图、相关块 bootstrap、未采样区域 mask、保存后重新分析 |
+| 等价交换通道 | 原子置换生成等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；显式区分 H + H₂ 两个交换出口 |
 | 续跑 | 保存完整 q/p、随机数状态、父链进度、已完成轨迹与科学配置指纹；常规入口检查输入/PES 文件哈希 |
 
 MPI 路径已在**同一台机器的 4 个真实 MPI 进程**中测试。跨物理节点和真实 CUDA 硬件尚未实测。Torch CPU 和多 GPU 分配逻辑分别有测试。当前 MPI 是静态分组，`pes_ranks=1`；不声称支持任意势能程序内部的 MPI communicator。
@@ -61,6 +62,29 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 ```
 
 所有示例都可以先运行 `validate`。`validate --check-pes` 还会初始化并评估势能；对 TS-only 速率输入，这也会进行数值准备。每次新运行使用新目录；续跑使用 `resume` 或原输入的 `run --resume`。
+
+## 真实体系验证：H + H₂ / BKMP2
+
+[`benchmarks/h3`](benchmarks/h3/README.md) 使用发表的 BKMP2 反应势能面，
+运行 dRPMD、二维 centroid FES、伞抽样 PMF 和 recrossing。势能源码在构建时
+从固定 commit 下载并核对 SHA256；先检查作者公布的能量/梯度参考值、
+真实 H₂ 平衡结构和一阶 saddle，再传播轨迹。统一基准温度 1500 K、16 珠子。
+
+```bash
+# 另需 GNU Fortran；图表输出需要 matplotlib。
+python -m pip install matplotlib
+python benchmarks/h3/build_pes.py
+python benchmarks/h3/pes.py --check --output runs/h3/pes-check.json
+python benchmarks/h3/numerics.py --output runs/h3/numerics.json
+python benchmarks/h3/drpmd.py --output runs/h3/drpmd --workers 2
+python benchmarks/h3/rpmd.py --stage fes2d --output runs/h3/fes2d --workers 2
+python benchmarks/h3/rpmd.py --stage rate --output runs/h3/rate --workers 2
+```
+
+GitHub Actions 的 **Real H3 BKMP2 validation** 独立工作流运行上述真实体系，
+保存输入、采样、checkpoint、PMF、κ(t)、诊断和图表。数值门槛通过表示这些
+物理工作流通过有限采样验证；仍需珠子数、步长、采样长度和入口/碰撞参数
+的收敛研究才能报告正式速率。
 
 ## 最小输入
 

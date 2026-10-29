@@ -35,6 +35,7 @@ def rate_coordinate(config, system):
         reaction["forming_bonds"],
         reaction["breaking_bonds"],
         reaction["rinf"],
+        equivalent_paths=reaction.get("equivalent_paths"),
     )
 
 
@@ -305,6 +306,16 @@ def _child_task(task):
                     "numerator": saved["numerator"],
                     "denominator": float(saved["denominator"]),
                     "energy_drift": float(saved["energy_drift"]),
+                    "endpoint_energy_error_hartree_per_bead": (
+                        float(saved["endpoint_energy_error_hartree_per_bead"])
+                        if "endpoint_energy_error_hartree_per_bead" in saved
+                        else None
+                    ),
+                    "endpoint_energy_error_kbt": (
+                        float(saved["endpoint_energy_error_kbt"])
+                        if "endpoint_energy_error_kbt" in saved
+                        else None
+                    ),
                 }
         dyn = Dynamics(
             provider,
@@ -326,6 +337,7 @@ def _child_task(task):
         numerator = np.zeros(nsteps)
         denominator = abs(velocity) / fs
         drift = 0.0
+        endpoint_error_per_bead = 0.0
         # Unconstrained Maxwell momenta are deliberately drawn AFTER constrained
         # configuration sampling. Projecting child momenta would erase flux.
         for sign in (1.0, -1.0):
@@ -338,6 +350,9 @@ def _child_task(task):
                 if value > 0:
                     numerator[step] += weight
             final = dyn.energy(state)
+            endpoint_error_per_bead = max(
+                endpoint_error_per_bead, abs(final - initial) / config["beads"]
+            )
             drift = max(
                 drift,
                 abs(final - initial)
@@ -348,6 +363,8 @@ def _child_task(task):
             numerator=numerator,
             denominator=denominator,
             energy_drift=drift,
+            endpoint_energy_error_hartree_per_bead=endpoint_error_per_bead,
+            endpoint_energy_error_kbt=endpoint_error_per_bead * config["beta"],
             fingerprint=identity,
         )
         return {
@@ -357,6 +374,8 @@ def _child_task(task):
             "numerator": numerator,
             "denominator": denominator,
             "energy_drift": drift,
+            "endpoint_energy_error_hartree_per_bead": endpoint_error_per_bead,
+            "endpoint_energy_error_kbt": endpoint_error_per_bead * config["beta"],
         }
     finally:
         if hasattr(provider, "close"):
@@ -386,6 +405,8 @@ def _prepare(config, system, output):
             "rinf": reaction["rinf"],
         }
     ]
+    if reaction.get("equivalent_paths"):
+        result["cvs"][0]["equivalent_paths"] = reaction["equivalent_paths"]
     umbrella = result.setdefault("umbrella", {})
     if not any(k in umbrella for k in ("centers", "centers_au", "grid", "start")):
         umbrella.update(start=-0.05, stop=1.05, count=23)
@@ -492,20 +513,27 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         diagnostics["warnings"].append(
             "QTST value is diagnostic only: disconnected windows do not identify the PMF barrier."
         )
+        write_json(Path(output) / "rate_pmf.json", diagnostics)
         return diagnostics, []
+    write_json(Path(output) / "rate_pmf.json", diagnostics)
     nearest = np.argsort(abs(centers - xi))
-    tasks = [
-        {
-            "config": config,
-            "system": system,
-            "options": options,
-            "chain": chain,
-            "xi_star": xi,
-            "initial_q": streams[nearest[chain % len(nearest)]]["last_q"],
-            "output": str(output),
-        }
-        for chain in range(options["parent_replicas"])
-    ]
+    permutations = rate_coordinate(config, system).permutations
+    tasks = []
+    for chain in range(options["parent_replicas"]):
+        source = streams[nearest[(chain // len(permutations)) % len(nearest)]]["last_q"]
+        initial_q = np.empty_like(source)
+        initial_q[:, list(permutations[chain % len(permutations)]), :] = source
+        tasks.append(
+            {
+                "config": config,
+                "system": system,
+                "options": options,
+                "chain": chain,
+                "xi_star": xi,
+                "initial_q": initial_q,
+                "output": str(output),
+            }
+        )
     return diagnostics, tasks
 
 
@@ -651,9 +679,24 @@ def _aggregate(children, pmf, config, output, options):
             "No stable positive recrossing plateau detected in the selected tail; extend child propagation/sampling."
         )
     max_drift = max(c["energy_drift"] for c in children)
+    endpoint_errors = [
+        c["endpoint_energy_error_hartree_per_bead"]
+        for c in children
+        if c.get("endpoint_energy_error_hartree_per_bead") is not None
+    ]
+    endpoint_error = max(endpoint_errors) if endpoint_errors else None
+    energy_diagnostics_complete = len(endpoint_errors) == len(children)
     if max_drift > 0.01:
         warnings.append(
-            "Some child trajectories have >1% scaled endpoint energy drift; decrease timestep."
+            "Some child trajectories have >1% legacy scaled endpoint drift; this energy-zero-dependent field is informational."
+        )
+    if not energy_diagnostics_complete:
+        warnings.append(
+            "Some older child checkpoints lack energy-zero-independent errors; rate publication is withheld until those children are recomputed."
+        )
+    elif endpoint_error * config["beta"] > 0.1:
+        warnings.append(
+            "Child endpoint energy error exceeds 0.1 kBT per bead; reduce timestep before publishing a rate estimate."
         )
     if len(grouped) < 20:
         warnings.append(
@@ -663,7 +706,11 @@ def _aggregate(children, pmf, config, output, options):
         warnings.append(
             "Estimated transmission exceeds one beyond sampling noise; inspect PMF/surface and equilibration."
         )
-    valid = plateau and max_drift <= 0.01
+    valid = (
+        plateau
+        and energy_diagnostics_complete
+        and endpoint_error * config["beta"] <= 0.1
+    )
     public_pmf = {k: v for k, v in pmf.items() if k != "pmf_bootstrap_barriers"}
     result = {
         "task": "rate",
@@ -682,6 +729,11 @@ def _aggregate(children, pmf, config, output, options):
         "child_pairs": len(children),
         "child_trajectories": 2 * len(children),
         "maximum_scaled_energy_drift": max_drift,
+        "maximum_endpoint_energy_error_hartree_per_bead": endpoint_error,
+        "maximum_endpoint_energy_error_kbt": (
+            endpoint_error * config["beta"] if endpoint_error is not None else None
+        ),
+        "energy_diagnostic_child_pairs": len(endpoint_errors),
         "pmf": public_pmf,
         "warnings": warnings,
         "converged": False,

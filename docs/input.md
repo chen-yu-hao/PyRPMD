@@ -84,7 +84,28 @@ electronic_weight = 1.0
 symmetry_factor = 1.0
 ```
 
-本版本采用单个 TS 几何和等长、成对的成键/断键列表。不同 TS 或复杂等价路径求和尚未实现；`equivalent_paths` 会明确拒绝。`electronic_weight` 和 `symmetry_factor` 由用户根据所选势能/通道定义给出，不自动猜测。可用 `reaction.entry_side` 选择下坡两端之一。
+本版本采用一个 TS 参考几何和等长、成对的成键/断键列表。通过
+`equivalent_paths` 可声明由原子置换生成的等价过渡态。例如 H + H₂ 的
+两个交换出口可写为：
+
+```toml
+[reaction]
+fragments = [[0], [1, 2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+equivalent_paths = [[0, 2, 1]]
+rinf = "10 bohr"
+symmetry_factor = 1.0
+electronic_weight = 1.0
+```
+
+置换列表使用 0-based 的 `旧原子索引 → 新原子索引` 映射；原始 TS 已包含，
+不要再列恒等置换。程序检查完整双射、元素、同位素质量和入口片段划分，
+同时置换参考几何与成断键。它不是任意多个不同 TS 结构的输入接口。
+组合方式严格沿用 RPMDrate 的 `min_bond(max_TS(s1))`，其分支交界处是
+分段可微的。等价出口已经显式包含时，不应再用 `symmetry_factor` 重复
+乘一次路径数。`electronic_weight` 和额外的 `symmetry_factor` 仍由用户
+根据势能和通道定义给出；`reaction.entry_side` 可选择数值下坡两端之一。
 
 `[recrossing]` 的主要字段是 `parent_replicas`、`parent_samples`、`equilibration`、`parent_interval`、`child_pairs`、`child_time`、`dividing_surface`、`plateau_fraction`、`plateau_tolerance`、`bootstrap`。时间也可用相应 `_steps` 字段。每个 child pair 以相反动量传播，禁止以未计算的 κ=1 替代回穿。完整可运行语法见 `examples/rate/pilot.inp`。
 

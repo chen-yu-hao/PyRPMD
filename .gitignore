@@ -11,4 +11,6 @@ runs/
 .venv/
 *.h5
 *.npz
+*.mod
+validation/
 

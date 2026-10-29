@@ -208,11 +208,12 @@ class COMDistance(CollectiveVariable):
 
 
 class RPMDrateCoordinate(CollectiveVariable):
-    """xi=s0/(s0-s1), s0=Rinf-R, using one TS and paired bond changes.
+    """xi=s0/(s0-s1), including atom-permuted equivalent transition states.
 
-    For several paired bond changes, the minimum s1 is selected as in the
-    single-TS RPMDrate surface. Derivatives are piecewise analytic; branch ties
-    are nondifferentiable and must be avoided for Hessian/metric calculations.
+    Match RPMDrate _surface.f90 exactly: s1=min_m max_n values[n,m], where n
+    labels equivalent TSs and m labels paired bond changes. Gradient/Hessian
+    use the selected branch. Branch ties are piecewise nondifferentiable;
+    finite-difference derivative tests must avoid these seams.
     """
 
     units = ("dimensionless",)
@@ -225,6 +226,7 @@ class RPMDrateCoordinate(CollectiveVariable):
         forming_bonds,
         breaking_bonds,
         rinf,
+        equivalent_paths=None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -246,17 +248,63 @@ class RPMDrateCoordinate(CollectiveVariable):
             _distance(self.reference, *f)[0] - _distance(self.reference, *b)[0]
             for f, b in zip(self.forming, self.breaking)
         ]
+        identity = tuple(range(len(self.masses)))
+        self.permutations = [identity]
+        partition = {frozenset(f) for f in self.com.fragments}
+        for entry in equivalent_paths or ():
+            if isinstance(entry, dict):
+                if set(entry) != {"permutation"}:
+                    raise ValueError(
+                        "equivalent path tables accept only an atom permutation"
+                    )
+                entry = entry["permutation"]
+            permutation = _indices(entry)
+            if sorted(permutation) != list(identity):
+                raise ValueError(
+                    "equivalent path must be a complete 0-based atom permutation"
+                )
+            if permutation in self.permutations:
+                raise ValueError(
+                    "duplicate equivalent atom permutation (identity is already included)"
+                )
+            if not np.allclose(
+                self.masses, self.masses[list(permutation)], rtol=1e-10, atol=1e-8
+            ):
+                raise ValueError(
+                    "equivalent atom permutation must preserve isotope masses"
+                )
+            moved = {frozenset(permutation[i] for i in f) for f in self.com.fragments}
+            if moved != partition:
+                raise ValueError(
+                    "equivalent atom permutation must preserve the reactant partition"
+                )
+            self.permutations.append(permutation)
+        self.paths = [
+            (
+                tuple(tuple(p[i] for i in b) for b in self.forming),
+                tuple(tuple(p[i] for i in b) for b in self.breaking),
+            )
+            for p in self.permutations
+        ]
+        # The entire reference geometry is permuted together with its bond
+        # labels; every mapped reference bond length therefore stays the same.
+        # Evaluating mapped bonds at the unpermuted TS would be incorrect.
 
     def surfaces(self, q):
         r, gr, hr = self.com.centroid_value_gradient_hessian(q)
         s0, g0, h0 = self.rinf - r, -gr, -hr
         candidates = []
-        for ref, f, b in zip(self.reference_difference, self.forming, self.breaking):
-            rf, gf, hf = _distance(q, *f, hessian=True)
-            rb, gb, hb = _distance(q, *b, hessian=True)
-            candidates.append((ref - rf + rb, -gf + gb, -hf + hb))
-        active = int(np.argmin([c[0] for c in candidates]))
-        s1, g1, h1 = candidates[active]
+        for forming, breaking in self.paths:
+            row = []
+            for ref, f, b in zip(self.reference_difference, forming, breaking):
+                rf, gf, hf = _distance(q, *f, hessian=True)
+                rb, gb, hb = _distance(q, *b, hessian=True)
+                row.append((ref - rf + rb, -gf + gb, -hf + hb))
+            candidates.append(row)
+        values = np.array([[c[0] for c in row] for row in candidates])
+        bond = int(np.argmin(np.max(values, axis=0)))
+        transition_state = int(np.argmax(values[:, bond]))
+        s1, g1, h1 = candidates[transition_state][bond]
         return s0, g0, h0, s1, g1, h1
 
     def centroid_value_gradient_hessian(self, q):
@@ -429,6 +477,7 @@ def make_cv(spec, system):
             spec["forming_bonds"],
             spec["breaking_bonds"],
             parse_quantity(spec["rinf"], "length"),
+            equivalent_paths=spec.get("equivalent_paths"),
             **kwargs,
         )
     if kind == "python":

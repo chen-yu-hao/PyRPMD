@@ -1,0 +1,57 @@
+# Real BKMP2 H3 centroid free energy; short physical-system regression.
+task = "fes"
+preset = "pilot"
+temperature = "1500 K"
+beads = 16
+seed = 721061
+
+[system]
+symbols = ["H", "H", "H"]
+masses_amu = [1.00782503223, 1.00782503223, 1.00782503223]
+geometry = [[-1.7570000251, 0.0, 0.0], [0.0, 0.0, 0.0], [1.7570000251, 0.0, 0.0]]
+multiplicity = 2
+
+[potential]
+provider = "python"
+factory = "pes.py:build"
+
+[dynamics]
+timestep = "0.1 fs"
+native = "required"
+
+[sampling]
+equilibration = "100 fs"
+production = "300 fs"
+interval = "0.5 fs"
+andersen_interval = 50
+replicas = 2
+
+[[cvs]]
+name = "r01"
+kind = "distance"
+atoms = [0, 1]
+estimator = "centroid"
+unit = "bohr"
+
+[[cvs]]
+name = "r12"
+kind = "distance"
+atoms = [1, 2]
+estimator = "centroid"
+unit = "bohr"
+
+[umbrella]
+cvs = ["r01", "r12"]
+grid = [{start = 1.35, stop = 2.35, count = 5}, {start = 1.35, stop = 2.35, count = 5}]
+stiffness = ["0.05 hartree/bohr^2", "0.05 hartree/bohr^2"]
+
+[analysis]
+method = "mbar"
+bins = [25, 25]
+ranges = [[1.1, 2.8], [1.1, 2.8]]
+bootstrap = 10
+min_count = 5
+
+[output]
+directory = "runs/fes2d"
+checkpoint_interval = "50 fs"
