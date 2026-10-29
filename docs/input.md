@@ -109,6 +109,43 @@ electronic_weight = 1.0
 
 `[recrossing]` 的主要字段是 `parent_replicas`、`parent_samples`、`equilibration`、`parent_interval`、`child_pairs`、`child_time`、`dividing_surface`、`plateau_fraction`、`plateau_tolerance`、`bootstrap`。时间也可用相应 `_steps` 字段。每个 child pair 以相反动量传播，禁止以未计算的 κ=1 替代回穿。完整可运行语法见 `examples/rate/pilot.inp`。
 
+### 速率 PMF 后端与分割面
+
+默认 `rate.pmf_method = "ui"` 保留 Gaussian umbrella integration。
+选择 histogram MBAR 并固定分割面可写：
+
+```toml
+[rate]
+pmf_method = "mbar"
+dividing_surface = 1.00925
+compare_ui = true
+
+[analysis]
+bins = 170
+ranges = [[-0.30, 1.40]]
+min_count = 5
+bootstrap = 40
+seed = 12345
+```
+
+这里的分割面、bin 范围是 H₃ 示例参数，需根据其他反应的坐标和采样支撑设置。
+MBAR 下 `compare_ui` 默认开启，UI 使用相同样本与相同 block-bootstrap draw，
+可以计算配对差值，且不重复运行 MBAR 重采样。
+`bootstrap = 0` 可用于单纯曲线诊断；不能据此报告完整速率误差。
+`bootstrap = 1` 不足以估计方差，会在输入阶段报错。
+
+省略 `dividing_surface` 或写 `"auto"` 时自动选峰，
+可用 `rate.pmf_search_range = [0.8, 1.1]` 限定搜索区间。
+MBAR 使用未平滑的支撑 bin 中心；参考点到分割面的全部区间须有连续支撑。
+Bootstrap 保持选定分割面固定，不包含自动选峰的不确定度。
+旧的 `recrossing.dividing_surface` 仍可用；两处同时指定不一致会报错。
+改变 PMF 方法或分割面不能复用另一设置的母/子轨迹 checkpoint。
+
+结果保存在 `rate_pmf.npz` 和 `rate_pmf.json`，包含密度、mask、误差、
+端点支撑、求解残差和逐次重采样状态。断连、缺失端点/中间 bin 或求解失败
+会给出独立失败状态，并停止启动 recrossing；不会跨越 mask 补出势垒。
+进一步说明见 [MBAR 速率 PMF](mbar-rate-pmf.md)。
+
 ## 一维与二维 FES
 
 ```toml

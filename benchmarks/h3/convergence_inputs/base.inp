@@ -1,0 +1,70 @@
+# Prespecified H3 PMF convergence campaign. convergence.py selects one of four
+# immutable cases and records all resolved settings before starting dynamics.
+# Both equivalent H exchange arrangements are already in the coordinate.
+task = "rate"
+preset = "pilot"
+temperature = "1500 K"
+beads = 16
+seed = 821071
+
+[system]
+symbols = ["H", "H", "H"]
+masses_amu = [1.00782503223, 1.00782503223, 1.00782503223]
+geometry = [[-1.7570000251, 0.0, 0.0], [0.0, 0.0, 0.0], [1.7570000251, 0.0, 0.0]]
+multiplicity = 2
+
+[potential]
+provider = "python"
+factory = "../pes.py:build"
+
+[dynamics]
+timestep = "0.1 fs"
+native = "required"
+
+[sampling]
+equilibration = "300 fs"
+production = "1000 fs"
+interval = "0.5 fs"
+andersen_interval = 50
+replicas = 2
+
+[reaction]
+fragments = [[0], [1, 2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+equivalent_paths = [[0, 2, 1]]
+rinf = "10 bohr"
+electronic_weight = 1.0
+symmetry_factor = 1.0
+
+[umbrella]
+start = -0.05
+stop = 1.10
+count = 47
+# beta*K=400 at 1500 K. The driver computes this from the package constant.
+kappa = "1.900086938 hartree"
+
+[analysis]
+bins = 170
+ranges = [[-0.30, 1.40]]
+bootstrap = 40
+min_count = 5
+
+[rate]
+pmf_method = "mbar"
+dividing_surface = 1.00925
+
+[recrossing]
+parent_replicas = 2
+parent_samples = 32
+equilibration = "200 fs"
+parent_interval = "10 fs"
+child_pairs = 2
+child_time = "80 fs"
+plateau_fraction = 0.25
+plateau_tolerance = 0.1
+bootstrap = 100
+
+[output]
+directory = "runs/pmf-convergence"
+checkpoint_interval = "50 fs"

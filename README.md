@@ -15,6 +15,7 @@
 | 势能适配 | Python、RPMDrate/f2py、版本化 C ABI `.so`、manifest 驱动 `.o` 链接、ASE、Torch、i-PI socket |
 | 并行 | 轨迹/窗口进程并行、持续珠子势能进程池、MPI `G × B` 分组、OpenMP、CUDA 多设备和每卡多轨迹进程 |
 | 2D FES | 二维 umbrella、完整 CV Jacobian、MBAR、窗口重叠图、相关块 bootstrap、未采样区域 mask、保存后重新分析 |
+| 速率 PMF | Gaussian UI 或 histogram MBAR；可固定分割面，同 draw UI/MBAR 配对对照，逐次保存 bootstrap 失败原因 |
 | 等价交换通道 | 原子置换生成等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；显式区分 H + H₂ 两个交换出口 |
 | 续跑 | 保存完整 q/p、随机数状态、父链进度、已完成轨迹与科学配置指纹；常规入口检查输入/PES 文件哈希 |
 
@@ -90,6 +91,23 @@ GitHub Actions 的 **Real H3 BKMP2 validation** 独立工作流运行上述真�
 保存实际 GitHub 运行的数值、图表和提交信息；
 [UI / MBAR 方法审查](docs/h3-pmf-estimator-audit.md) 解释同一分割面上观察到的
 PMF 估计差异及有限样本限制。
+
+进一步的独立随机种子研究使用 MBAR 作为速率 PMF，比较更强、更密的伞窗口，
+每个 case 都重新计算受约束母轨迹和 recrossing：
+
+```bash
+python -m pip install -e '.[analysis]' matplotlib
+python benchmarks/h3/convergence.py plan
+python benchmarks/h3/convergence.py run --case k400-a --output runs/h3-pmf/k400-a
+python benchmarks/h3/solver_check.py --run runs/h3-pmf/k400-a/run \
+  --stride 10 --reference-pymbar --output runs/h3-pmf/k400-a/solver-check.json
+```
+
+四个预定 case 为 `k400-a`、`k400-b`、`k800-a`、`k800-b`。
+GitHub Actions 的 **H3 PMF independent-seed study** 并行执行完整研究，
+保存所有样本、逐 draw 诊断、独立 PyMBAR 数值对照和跨 seed 汇总。
+`--smoke` 只检查短流程，明确排除在正式比较之外。
+方法和计划见 [MBAR 速率 PMF](docs/mbar-rate-pmf.md)。
 
 ## 最小输入
 

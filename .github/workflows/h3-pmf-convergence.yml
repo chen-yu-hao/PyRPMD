@@ -1,0 +1,133 @@
+name: H3 PMF independent-seed study
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'benchmarks/h3/**'
+      - 'src/pyrpmd/**'
+      - 'native/**'
+      - 'tests/test_mbar_rate_analysis.py'
+      - 'tests/test_rate_mbar_backend.py'
+      - 'tests/test_h3_convergence*.py'
+      - 'setup.py'
+      - 'pyproject.toml'
+      - '.github/workflows/h3-pmf-convergence.yml'
+  pull_request:
+    paths:
+      - 'benchmarks/h3/**'
+      - 'src/pyrpmd/**'
+      - 'native/**'
+      - 'tests/test_mbar_rate_analysis.py'
+      - 'tests/test_rate_mbar_backend.py'
+      - 'tests/test_h3_convergence*.py'
+      - 'setup.py'
+      - 'pyproject.toml'
+      - '.github/workflows/h3-pmf-convergence.yml'
+
+permissions:
+  contents: read
+
+env:
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  NUMEXPR_NUM_THREADS: '1'
+  MPLBACKEND: Agg
+  PYTHONUNBUFFERED: '1'
+
+jobs:
+  preflight:
+    name: PMF equations, failure semantics and study plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test,analysis]' matplotlib
+      - run: python -m pytest -q tests/test_mbar_rate_analysis.py tests/test_rate_mbar_backend.py tests/test_h3_convergence.py tests/test_h3_convergence_report.py
+      - run: python benchmarks/h3/convergence.py plan --output study-plan.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pmf-study-plan
+          path: study-plan.json
+          if-no-files-found: error
+          retention-days: 30
+
+  sampling:
+    name: H3 ${{ matrix.case }} (MBAR, new parents and children)
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [k400-a, k400-b, k800-a, k800-b]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y gfortran
+      - run: python -m pip install -e '.[test,analysis]' matplotlib
+      - run: python benchmarks/h3/build_pes.py
+      - run: python benchmarks/h3/pes.py --check --output validation/${{ matrix.case }}/pes-check.json
+      - name: Record execution identity
+        run: |
+          python - <<'PY'
+          import json, os, platform, sys
+          from pathlib import Path
+          Path('validation/execution.json').write_text(json.dumps({
+              'commit': os.environ['GITHUB_SHA'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'case': '${{ matrix.case }}',
+              'python': sys.version,
+              'platform': platform.platform(),
+          }, indent=2) + '\n')
+          PY
+      - name: Independent umbrella sampling, paired PMF bootstrap and recrossing
+        run: python benchmarks/h3/convergence.py run --case ${{ matrix.case }} --output validation/${{ matrix.case }}/study
+      - name: Independent numerical reference on the saved samples
+        if: ${{ !cancelled() }}
+        run: python benchmarks/h3/solver_check.py --run validation/${{ matrix.case }}/study/run --stride 10 --reference-pymbar --output validation/${{ matrix.case }}/study/solver-check.json
+      - name: Preserve all data, including failed diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: h3-pmf-${{ matrix.case }}
+          path: validation/
+          if-no-files-found: error
+          retention-days: 30
+
+  report:
+    name: Compare independent seeds and PMF estimators
+    needs: [preflight, sampling]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e . matplotlib
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: h3-pmf-k*
+          path: collected
+      - name: Validate complete campaign and compare measured results
+        run: python benchmarks/h3/convergence_report.py collected --output collected/PMF-CONVERGENCE.md
+      - name: Publish readable job summary
+        if: always()
+        run: test ! -f collected/PMF-CONVERGENCE.md || cat collected/PMF-CONVERGENCE.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve aggregate evidence even when a case fails
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: h3-pmf-complete-study
+          path: collected/
+          if-no-files-found: error
+          retention-days: 30

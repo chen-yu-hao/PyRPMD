@@ -5,6 +5,7 @@ from .fes import (
     reconstruct_fes,
     statistical_inefficiency,
     umbrella_integration,
+    mbar_rate_pmf,
 )
 
 __all__ = [
@@ -12,4 +13,5 @@ __all__ = [
     "reconstruct_fes",
     "statistical_inefficiency",
     "umbrella_integration",
+    "mbar_rate_pmf",
 ]

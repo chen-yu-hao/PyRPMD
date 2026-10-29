@@ -79,7 +79,11 @@ f_k=-\log\sum_n\frac{e^{-u_k(s_n)}}{
   \sum_l N_l e^{f_l-u_l(s_n)}}.
 \]
 
-先用固定点迭代初始化，再求解凸目标，并独立检查自洽方程残差。
+先用少量固定点迭代初始化，再在 `f[0]=0` 的 gauge 下用解析梯度/Hessian
+和阻尼 Newton 求解凸目标，并独立检查原始自洽方程残差。
+完全相同的 umbrella Hamiltonian 可以精确合并；这不改变统计模型。
+求解器保留原 L-BFGS/固定点迭代作为 fallback，`method="legacy"` 可做对照。
+加速不放松残差门槛，warm start 也必须经过相同验收。
 返回目标态权重、每个窗口的无量纲自由能、overlap 矩阵和连接分量。
 同一 umbrella 的不同 replica 是独立时间序列，各自保留随机数身份。
 当前输入不支持混合不同温度或不同珠子数后直接套用上述消去关系。
@@ -155,11 +159,26 @@ f_\xi=\sqrt{Z_\xi/(2\pi\beta)}.
 程序使用解析 centroid Hessian 计算这个 metric 的力，并用有限差分
 测试了其与能量的符号、梯度和 P 因子。
 
-目前速率 PMF 的最终曲线使用 RPMDrate 的 Gaussian umbrella integration：
+默认速率 PMF 的最终曲线使用 RPMDrate 的 Gaussian umbrella integration：
 由每个窗口的均值、方差和已知 umbrella 力估计局部自由能导数，再按
 窗口的局部高斯密度加权积分。同时独立计算 MBAR overlap；如果 overlap
 断连，PMF 外推只能作为诊断，程序不会继续给出一个可靠速率。
 Gaussian 窗口近似是否充分，需要用窗口分布、窗口间距和采样长度检验。
+
+`rate.pmf_method="mbar"` 直接以相同 flux 测度的采样构建 histogram PMF。
+重加权仅去掉 `beta * W_umbrella`，不会再次去掉 metric、乘 P 或加入径向
+Jacobian。固定分割面和参考点采用相邻有支撑 bin 中心的 log-density
+线性插值，任何中间 masked 区间都判为不支持。自动分割面取未平滑的
+支撑 bin 最大值；该选择仍有 bin 宽偏差和峰选择偏差。
+
+MBAR 势垒误差在每个原始时间流内独立作连续块重采样，并在同一 draw 中
+同时计算参考点和分割面自由能，从而保留二者协方差。重复 Hamiltonian
+只在数值方程中合并，时间流不拼成一条序列。每个成功或失败的 draw
+及其原因都保存；不足两个有效 draw 的标准误差为缺失值，不是零。
+可选 UI 对照复用同一 draw，提供配对的 MBAR−UI 差值。
+速率误差只有在 PMF 与 κ 两项都可用时才报告为完整误差；仅 κ 的误差
+标为 conditional。所有区间都条件于固定分割面与当前采样，不能代表
+珠子数、远区距离或未访问慢模的系统误差。
 
 令 xi* 为指定的分割面，或已采样 PMF 上的最大值，则
 

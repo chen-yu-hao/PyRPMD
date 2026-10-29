@@ -57,7 +57,9 @@ _SECTIONS = {
     "umbrella": set(
         "cvs grid centers centers_au kappa stiffness stiffness_au start stop count".split()
     ),
-    "rate": set("recrossing pmf_points dividing_surface".split()),
+    "rate": set(
+        "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui".split()
+    ),
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance".split()
     ),
@@ -74,6 +76,125 @@ def _positive(v, name):
     if not math.isfinite(v) or v <= 0:
         raise InputError(f"{name} must be positive and finite")
     return float(v)
+
+
+def rate_pmf_options(config):
+    """Validate PMF selection for both frontends and direct workflow calls.
+
+    Defaults are returned without changing the caller's configuration, so an
+    existing implicit-UI input retains its checkpoint identity. The explicit
+    rate table and requested surface are part of the normal science digest.
+    """
+    rate = config.get("rate", {})
+    if not isinstance(rate, Mapping):
+        raise InputError("rate must be a table")
+    method = rate.get("pmf_method", "ui")
+    if method not in ("ui", "mbar"):
+        raise InputError("rate.pmf_method must be 'ui' or 'mbar'")
+    if "recrossing" in config and "recrossing" in rate:
+        raise InputError("Use either [recrossing] or [rate.recrossing], not both")
+    recrossing = config.get("recrossing", rate.get("recrossing", {}))
+    if not isinstance(recrossing, Mapping):
+        raise InputError("recrossing must be a table")
+
+    def coordinate(value, name):
+        if isinstance(value, str) and value == "auto":
+            return None
+        try:
+            return parse_quantity(value, "dimensionless")
+        except ValueError as error:
+            raise InputError(
+                f"{name} must be a finite dimensionless value or 'auto'"
+            ) from error
+
+    requested = []
+    for table, name in ((rate, "rate"), (recrossing, "recrossing")):
+        if "dividing_surface" in table:
+            requested.append(
+                (
+                    name,
+                    coordinate(table["dividing_surface"], name + ".dividing_surface"),
+                )
+            )
+    if len(requested) == 2 and requested[0][1] != requested[1][1]:
+        raise InputError(
+            "Conflicting rate.dividing_surface and recrossing.dividing_surface"
+        )
+    xi_star = requested[0][1] if requested else None
+    search_range = rate.get("pmf_search_range")
+    if search_range is not None:
+        if (
+            not isinstance(search_range, (list, tuple, np.ndarray))
+            or len(search_range) != 2
+        ):
+            raise InputError("rate.pmf_search_range must contain two coordinates")
+        search_range = [
+            coordinate(value, "rate.pmf_search_range") for value in search_range
+        ]
+        if (
+            any(value is None for value in search_range)
+            or not 0 <= search_range[0] < search_range[1]
+        ):
+            raise InputError("rate.pmf_search_range must satisfy 0 <= lower < upper")
+    compare_ui = rate.get("compare_ui", method == "mbar")
+    if not isinstance(compare_ui, bool):
+        raise InputError("rate.compare_ui must be boolean")
+    if method == "ui" and compare_ui:
+        raise InputError("rate.compare_ui requires rate.pmf_method='mbar'")
+    analysis = config.get("analysis", {})
+    if not isinstance(analysis, Mapping):
+        raise InputError("analysis must be a table")
+    nboot = _integer(
+        analysis.get(
+            "bootstrap",
+            analysis.get("bootstrap_replicates", analysis.get("bootstrap_samples", 20)),
+        ),
+        "analysis.bootstrap",
+        0,
+    )
+    if nboot == 1:
+        raise InputError("analysis.bootstrap must be zero or at least 2")
+    bins = analysis.get("bins", 100)
+    if isinstance(bins, (list, tuple, np.ndarray)):
+        if len(bins) != 1:
+            raise InputError("Rate PMF analysis.bins must describe one dimension")
+        bins = bins[0]
+    bins = _integer(bins, "analysis.bins", 3 if method == "mbar" else 2)
+    ranges = analysis.get("ranges")
+    if ranges is not None:
+        if not isinstance(ranges, (list, tuple, np.ndarray)) or len(ranges) != 1:
+            raise InputError(
+                "Rate PMF analysis.ranges must contain one [lower, upper] pair"
+            )
+        pair = ranges[0]
+        if not isinstance(pair, (list, tuple, np.ndarray)) or len(pair) != 2:
+            raise InputError(
+                "Rate PMF analysis.ranges must contain one [lower, upper] pair"
+            )
+        pair = [coordinate(value, "analysis.ranges") for value in pair]
+        if any(value is None for value in pair) or not pair[0] < pair[1]:
+            raise InputError("Rate PMF analysis.ranges requires finite lower < upper")
+        ranges = pair
+    threshold = float(analysis.get("overlap_threshold", 1e-6))
+    if not math.isfinite(threshold) or not 0 < threshold < 1:
+        raise InputError(
+            "analysis.overlap_threshold must lie strictly between zero and one"
+        )
+    return {
+        "method": method,
+        "xi_star": xi_star,
+        "search_range": search_range,
+        "compare_ui": compare_ui,
+        "points": _integer(rate.get("pmf_points", 401), "rate.pmf_points", 20),
+        "bins": bins,
+        "ranges": ranges,
+        "bootstrap": nboot,
+        "min_count": _integer(analysis.get("min_count", 1), "analysis.min_count"),
+        "overlap_threshold": threshold,
+        "analysis_seed": _integer(
+            analysis.get("seed", config.get("seed", 0)), "analysis.seed", 0
+        ),
+    }
 
 
 def _path(base, value):
@@ -234,6 +355,8 @@ class JobSpec:
                 raise InputError(
                     "Use either [recrossing] or [rate.recrossing], not both"
                 )
+        if task == "rate":
+            rate_pmf_options(d)
         preset = d.get("preset", "pilot")
         if preset not in ("pilot", "production"):
             raise InputError("preset must be pilot or production")
