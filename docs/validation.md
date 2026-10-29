@@ -71,3 +71,10 @@ wheel 包含 C ABI header、C 示例、MIT 与第三方通知。
 
 源代码发行包与 GitHub Actions 定义随源码提供。Actions 的远程运行状态应以
 GitHub 页面为准；此文档记录本地实际执行结果，不把尚未运行的远程 CI 当成通过。
+
+## 后续真实 H₃ 体系与远程验证
+
+上文保留初始实现的历史验证范围。后续已增加 BKMP2 H + H₂ 的真实 dRPMD、
+二维 FES、伞抽样 PMF 和 recrossing；实际运行参数、数值、图表、GitHub 作业
+与测试提交见 [2026-10-29 真实体系记录](validation/h3-bkmp2-2026-10-29/README.md)。
+该记录明确区分数值门槛通过、PMF 估计器差异与尚未建立的物理收敛。

@@ -12,5 +12,5 @@ runs/
 *.h5
 *.npz
 *.mod
-validation/
+/validation/
 

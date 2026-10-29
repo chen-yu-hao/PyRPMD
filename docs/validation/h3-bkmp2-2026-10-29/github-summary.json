@@ -1,0 +1,1252 @@
+{
+  "schema": "pyrpmd.h3.validation-summary.v1",
+  "commit": "c0bc35529ba595d01e84b931dccdde33f16bd697",
+  "github_run_id": "40911869436",
+  "physical_convergence_demonstrated": false,
+  "stages": {
+    "drpmd": {
+      "beads": 16,
+      "benchmark": "physical H + H2 exchange on BKMP2",
+      "benchmark_runner_sha256": "0f66ed3797bc9e763a1b561897cddd9145a01ecaab6d0a0415a379412a35d39c",
+      "bmax_bohr": 3.0,
+      "channels": {
+        "H2[0,1]+H": {
+          "candidate_only": false,
+          "count": 7,
+          "cross_section_bohr2": null,
+          "event_fraction": 0.0068359375,
+          "iid_wilson95_cm3_molecule_s": [
+            1.8046435540473155e-12,
+            7.644331814917915e-12
+          ],
+          "observed_lower_cm3_molecule_s": 3.7211619342592495e-12,
+          "parent_cluster_bootstrap95": [
+            1.0631891240740712e-12,
+            6.379134744444427e-12
+          ],
+          "possible_upper_cm3_molecule_s": 3.7211619342592495e-12,
+          "rate_cm3_molecule_s": 3.7211619342592495e-12
+        },
+        "H2[0,2]+H": {
+          "candidate_only": false,
+          "count": 9,
+          "cross_section_bohr2": null,
+          "event_fraction": 0.0087890625,
+          "iid_wilson95_cm3_molecule_s": [
+            2.5207663175435882e-12,
+            9.046640164914552e-12
+          ],
+          "observed_lower_cm3_molecule_s": 4.784351058333321e-12,
+          "parent_cluster_bootstrap95": [
+            1.5947836861111067e-12,
+            7.973918430555534e-12
+          ],
+          "possible_upper_cm3_molecule_s": 4.784351058333321e-12,
+          "rate_cm3_molecule_s": 4.784351058333321e-12
+        }
+      },
+      "classifier_contract_checks": {
+        "entries": 3,
+        "see": "benchmark.json"
+      },
+      "completed_restart_seconds": 0.30708250199995746,
+      "converged": false,
+      "counts": {
+        "failed": 0,
+        "nonreactive": 1008,
+        "product": 16,
+        "unresolved": 0
+      },
+      "diagnostics": {
+        "endpoint_abs_energy_change_hartree_per_bead": {
+          "maximum": 0.0002941118845110058,
+          "median": 2.6241033030838246e-05,
+          "p95": 9.644667813507307e-05
+        },
+        "energy_drift_hartree_per_bead": {
+          "definition": "max_t |H_P(t)/P-H_P(0)/P| along each unthermostatted child",
+          "maximum": 0.0004220839814377264,
+          "median": 0.00010174044237329372,
+          "p95": 0.0001948331049845538
+        },
+        "energy_drift_max_kcal_mol_per_bead": 0.26486169720244696,
+        "energy_drift_max_over_kBT": 0.08885571980524246,
+        "final_classifier_mismatches": [],
+        "final_states": {
+          "entries": 1024,
+          "see": "benchmark.json"
+        },
+        "launch_mean_b2_over_bmax2": 0.5080838978212238,
+        "launch_mean_energy_over_kBT": 2.033669219958064,
+        "launch_orientation_mean_squared_components": [
+          0.3530721105720761,
+          0.32025590625834915,
+          0.32667198316957563
+        ],
+        "maximum_reactive_impact_bohr": 1.884852971951977,
+        "outer_impact_shell": {
+          "lower_bohr": 2.4000000000000004,
+          "products": 0,
+          "reaction_fraction_iid_wilson95": [
+            8.673617379884035e-19,
+            0.009904714241677031
+          ],
+          "trajectories": 384,
+          "unknown": 0,
+          "upper_bohr": 3.0
+        },
+        "parent_momentum_temperature_K": {
+          "degrees_of_freedom": 138,
+          "mean": 1506.1054814168692,
+          "std": 180.23206039054364
+        },
+        "parent_thermal_steps_expected": {
+          "0": 69000,
+          "1": 69000,
+          "2": 69000,
+          "3": 69000,
+          "4": 69000,
+          "5": 69000,
+          "6": 69000,
+          "7": 69000
+        },
+        "parent_thermal_steps_observed": {
+          "0": 69000,
+          "1": 69000,
+          "2": 69000,
+          "3": 69000,
+          "4": 69000,
+          "5": 69000,
+          "6": 69000,
+          "7": 69000
+        },
+        "per_parent": {
+          "0": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 128,
+              "product": 0,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.0003009682897687771,
+            "production_steps": 148250,
+            "reaction_fraction": 0.0,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          },
+          "1": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 126,
+              "product": 2,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.0002451477970928373,
+            "production_steps": 156390,
+            "reaction_fraction": 0.015625,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          },
+          "2": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 128,
+              "product": 0,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.0002309723388785323,
+            "production_steps": 147390,
+            "reaction_fraction": 0.0,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          },
+          "3": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 123,
+              "product": 5,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.000313964975890646,
+            "production_steps": 159540,
+            "reaction_fraction": 0.0390625,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          },
+          "4": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 125,
+              "product": 3,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.0002941118845110058,
+            "production_steps": 153140,
+            "reaction_fraction": 0.0234375,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          },
+          "5": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 126,
+              "product": 2,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.0004220839814377264,
+            "production_steps": 159285,
+            "reaction_fraction": 0.015625,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          },
+          "6": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 126,
+              "product": 2,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.0002560079672278559,
+            "production_steps": 149665,
+            "reaction_fraction": 0.015625,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          },
+          "7": {
+            "counts": {
+              "failed": 0,
+              "nonreactive": 126,
+              "product": 2,
+              "unresolved": 0
+            },
+            "max_energy_drift_hartree_per_bead": 0.00025515576010548546,
+            "production_steps": 146160,
+            "reaction_fraction": 0.015625,
+            "thermal_steps": 69000,
+            "trajectories": 128
+          }
+        },
+        "reaction_fraction_iid_wilson95": [
+          0.00964032654076094,
+          0.025230283623006194
+        ],
+        "thermal_h2_centroid_bond_bohr": {
+          "maximum": 2.121916445814877,
+          "mean": 1.4583123868895451,
+          "minimum": 1.1665990180494585,
+          "std": 0.12923592234775982
+        },
+        "worst_child_timestep_refinement": {
+          "changes_statistical_sample": false,
+          "coarse_replay_matches_saved": true,
+          "half_step_to_original_drift_ratio": 0.1595705947398933,
+          "initial_npz_sha256": "0bd381aa8c5906abc89cfec3c006ce1e754a20c0f74790ec750926f126381b9b",
+          "results": [
+            {
+              "dt_fs": 0.10000000000000002,
+              "duration_fs": 205.00000000000418,
+              "elapsed_seconds": 0.5963687930000106,
+              "endpoint_abs_energy_drift_hartree_per_bead": 9.246876783974844e-05,
+              "max_abs_energy_drift_hartree_per_bead": 0.0004220839814377264,
+              "max_drift_over_kBT": 0.08885571980524246,
+              "steps": 2050
+            },
+            {
+              "dt_fs": 0.05000000000000001,
+              "duration_fs": 204.9999999999835,
+              "elapsed_seconds": 1.1890564020000056,
+              "endpoint_abs_energy_drift_hartree_per_bead": 5.092563097108815e-06,
+              "max_abs_energy_drift_hartree_per_bead": 6.735219194820008e-05,
+              "max_drift_over_kBT": 0.014178760055363854,
+              "steps": 4100
+            }
+          ],
+          "smaller_timestep_reduces_energy_error": true,
+          "trajectory_id": 666
+        }
+      },
+      "elapsed_seconds": 322.346036153,
+      "gates": {
+        "completed_restart_identical": true,
+        "continuous_parent_clocks": true,
+        "correct_total": true,
+        "final_identity_classifier_agrees": true,
+        "max_energy_drift_below_5e_4_hartree_per_bead": true,
+        "no_failed_trajectories": true,
+        "reaction_requirement_met": true,
+        "resolved_at_least_98_percent": true,
+        "worst_child_coarse_replay_matches": true,
+        "worst_child_timestep_refinement": true
+      },
+      "limits": [
+        "This is a finite-sample physical workflow benchmark; T, bead count, timestep, impact cutoff, radial separation and parent decorrelation are not jointly converged.",
+        "The two H2 exchange memberships are counted explicitly; no extra factor of two is applied.",
+        "IID Wilson intervals neglect dependence within a thermal parent; the workflow also reports parent-cluster resampling with only a small number of clusters.",
+        "The rate estimate is truncated at the stated impact cutoff. No observed outer-shell reactions is not proof of impact-cutoff convergence."
+      ],
+      "parent_equilibration_fs": 500.0000000000001,
+      "parent_sample_interval_fs": 50.00000000000001,
+      "parents": 8,
+      "passed": true,
+      "production_max_time_fs": 1200.0000000000002,
+      "rate_estimate": {
+        "candidate_only": false,
+        "count": 16,
+        "cross_section_bohr2": null,
+        "event_fraction": 0.015625,
+        "iid_wilson95_cm3_molecule_s": [
+          5.247739049297738e-12,
+          1.3734176330385583e-11
+        ],
+        "observed_lower_cm3_molecule_s": 8.505512992592571e-12,
+        "parent_cluster_bootstrap95": [
+          4.252756496296285e-12,
+          1.2758269488888855e-11
+        ],
+        "possible_upper_cm3_molecule_s": 8.505512992592571e-12,
+        "rate_cm3_molecule_s": 8.505512992592571e-12
+      },
+      "reactive_exchange_observed": true,
+      "reactive_exchange_required": true,
+      "resolved_fraction": 1.0,
+      "seed": 81073,
+      "separation_bohr": 10.0,
+      "task": "drpmd",
+      "temperature_K": 1500.0,
+      "timestep_fs": 0.10000000000000002,
+      "trajectories": 1024,
+      "workers": 2
+    },
+    "fes2d": {
+      "schema": "pyrpmd.h3.rpmd-regression.v1",
+      "task": "fes2d",
+      "profile": "ci",
+      "passed": true,
+      "converged": false,
+      "scope": "Short real BKMP2 physical-system regression; not bead/timestep/Rinf/statistical convergence or a literature rate validation",
+      "pes": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "682f54c60e000fc4df53259da4d5484ceaf169f610b6414a513e7a0d13356b34"
+      },
+      "settings": {
+        "temperature_K": 1500.0,
+        "beads": 16,
+        "timestep_au": 4.134137333517016,
+        "timestep_fs": 0.10000000000000002,
+        "workers": 2,
+        "sampling": {
+          "equilibration": "100 fs",
+          "production": "300 fs",
+          "interval": "0.5 fs",
+          "andersen_interval": 50,
+          "replicas": 2,
+          "dt_au": 4.134137333517016,
+          "integrator": "cayley-bcb-andersen",
+          "thermostat": "andersen",
+          "equilibration_steps": 1000,
+          "production_steps": 3000,
+          "interval_steps": 5,
+          "sample_interval": 5
+        },
+        "reaction": {
+          "electronic_weight": 1.0
+        },
+        "native": {
+          "available": true,
+          "openmp": true
+        },
+        "seed": 721061
+      },
+      "temperature_K": 1500.0,
+      "beads": 16,
+      "timestep_fs": 0.10000000000000002,
+      "diagnostics": {
+        "connected": true,
+        "streams": 50,
+        "samples": 30000,
+        "effective_samples_minimum": 7.6732753706998,
+        "effective_samples_median": 27.49504779829288,
+        "effective_samples_sum": 1429.783546876878,
+        "statistical_inefficiency_maximum": 78.19346641606063,
+        "weight_effective_samples": 245.95851690842997,
+        "supported_bins": 373,
+        "masked_fraction": 0.4032,
+        "ring_radius_of_gyration_minimum_bohr": 0.12146173935759691,
+        "ring_radius_of_gyration_median_bohr": 0.16561420985402037,
+        "bootstrap_replicates": 10,
+        "checkpoint_integrity": {
+          "passed": true,
+          "streams_checked": 50,
+          "exact_sample_count_and_values": true,
+          "mismatches": [],
+          "authoritative_samples": "final fes.h5 streams; checkpoint prefixes are never substituted"
+        },
+        "permutation_mirror": {
+          "identity": "F(r01,r12)=F(r12,r01), atom 0/2 exchange",
+          "common_supported_bins": 357,
+          "rms_hartree": 0.0014066971591477156,
+          "rms_kbt": 0.2961332202143787,
+          "median_absolute_diagonal_error_z": 0.4251699720575755,
+          "z_note": "Descriptive standardized differences; bin-to-bin bootstrap covariance is not retained. No symmetry averaging was applied."
+        },
+        "sample_count_near_ts": 2212
+      },
+      "gates": {
+        "real_ring_polymer": true,
+        "overlap_connected": true,
+        "minimum_stream_effective_samples_ge_5": true,
+        "two_dimensional_supported_surface": true,
+        "supported_bins_finite": true,
+        "mirror_domain_observed": true,
+        "ts_region_sampled": true,
+        "bootstrap_available": true,
+        "final_samples_match_checkpoints": true,
+        "native_kernel_used": true
+      },
+      "cv_names": [
+        "centroid_r01",
+        "centroid_r12"
+      ],
+      "cv_units": [
+        "bohr",
+        "bohr"
+      ],
+      "window_ranges_bohr": [
+        [
+          1.35,
+          2.35
+        ],
+        [
+          1.35,
+          2.35
+        ]
+      ],
+      "histogram_ranges_bohr": [
+        [
+          1.1,
+          2.8
+        ],
+        [
+          1.1,
+          2.8
+        ]
+      ],
+      "measure": "centroid distance probability density ds1 ds2; no radial-Jacobian subtraction",
+      "workflow_status": "sampled",
+      "warnings": [
+        "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+        "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+      ],
+      "wall_seconds": 47.42245077499999
+    },
+    "rate": {
+      "schema": "pyrpmd.h3.rpmd-regression.v1",
+      "task": "rate",
+      "profile": "ci",
+      "passed": true,
+      "converged": false,
+      "scope": "Short real BKMP2 physical-system regression; not bead/timestep/Rinf/statistical convergence or a literature rate validation",
+      "pes": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "682f54c60e000fc4df53259da4d5484ceaf169f610b6414a513e7a0d13356b34"
+      },
+      "settings": {
+        "temperature_K": 1500.0,
+        "beads": 16,
+        "timestep_au": 4.134137333517016,
+        "timestep_fs": 0.10000000000000002,
+        "workers": 2,
+        "sampling": {
+          "equilibration": "100 fs",
+          "production": "1000 fs",
+          "interval": "0.5 fs",
+          "andersen_interval": 50,
+          "replicas": 2,
+          "dt_au": 4.134137333517016,
+          "integrator": "cayley-bcb-andersen",
+          "thermostat": "andersen",
+          "equilibration_steps": 1000,
+          "production_steps": 10000,
+          "interval_steps": 5,
+          "sample_interval": 5
+        },
+        "reaction": {
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "forming_bonds": [
+            [
+              0,
+              1
+            ]
+          ],
+          "breaking_bonds": [
+            [
+              1,
+              2
+            ]
+          ],
+          "equivalent_paths": [
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "rinf": "10 bohr",
+          "electronic_weight": 1.0,
+          "symmetry_factor": 1.0,
+          "rinf_au": 10.0
+        },
+        "native": {
+          "available": true,
+          "openmp": true
+        },
+        "seed": 721062
+      },
+      "temperature_K": 1500.0,
+      "beads": 16,
+      "timestep_fs": 0.10000000000000002,
+      "diagnostics": {
+        "connected": true,
+        "streams": 46,
+        "samples": 92000,
+        "effective_samples_minimum": 5.166123538850366,
+        "effective_samples_median": 20.181311195595043,
+        "effective_samples_sum": 921.9301947829739,
+        "statistical_inefficiency_maximum": 387.13747067013935,
+        "weight_effective_samples": 189.2215133572386,
+        "supported_bins": 99,
+        "masked_fraction": 0.01,
+        "ring_radius_of_gyration_minimum_bohr": 0.13049187417426364,
+        "ring_radius_of_gyration_median_bohr": 0.1625881770262156,
+        "bootstrap_replicates": 7,
+        "checkpoint_integrity": {
+          "passed": true,
+          "streams_checked": 46,
+          "exact_sample_count_and_values": true,
+          "mismatches": [],
+          "authoritative_samples": "final fes.h5 streams; checkpoint prefixes are never substituted"
+        },
+        "maximum_parent_constraint_residual_bohr": 1.4367604328491268e-11,
+        "parent_surface_branch_counts": [
+          32,
+          32
+        ],
+        "reactant_reference_sample_count": 5478,
+        "dividing_surface_sample_count": 486,
+        "kappa_first": 1.0000000000000002,
+        "kappa_last": 0.9163598330163881,
+        "kappa_range": 0.09530723710408606,
+        "maximum_endpoint_energy_error_hartree_per_bead": 0.00014159842426059166,
+        "maximum_endpoint_energy_error_kbt": 0.02980883062206255
+      },
+      "gates": {
+        "overlap_connected": true,
+        "minimum_stream_effective_samples_ge_5": true,
+        "positive_pmf_barrier": true,
+        "reactant_reference_sampled": true,
+        "dividing_surface_sampled": true,
+        "parent_constraint_satisfied": true,
+        "both_equivalent_ts_components_initialized": true,
+        "positive_initial_flux": true,
+        "actual_child_ensemble": true,
+        "nontrivial_positive_recrossing": true,
+        "tail_platform_observed": true,
+        "offset_independent_endpoint_energy_error_below_0p1_kbt": true,
+        "final_samples_match_checkpoints": true,
+        "native_kernel_used": true
+      },
+      "pmf": {
+        "xi_star": 1.0092500000000002,
+        "free_energy_barrier_hartree": 0.024387156038128372,
+        "barrier_standard_error_hartree": 0.0016666728213415958,
+        "k_qtst_au": 0.005818671606820798,
+        "k_qtst_cm3_s": 3.564611014987907e-11,
+        "reactant_prefactor_au": 0.9873012308830208,
+        "electronic_weight": 1.0,
+        "symmetry_factor": 1.0,
+        "rinf_bohr": 10.0,
+        "reduced_mass_au": 1224.7684316264126,
+        "pmf_method": "Gaussian umbrella integration; MBAR overlap checked",
+        "measure": "delta(xi-x) * sqrt(grad(xi) M^-1 grad(xi)/(2*pi*beta))",
+        "overlap_connected": true,
+        "warnings": [
+          "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+          "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+        ]
+      },
+      "pmf_estimator_comparison": {
+        "fixed_xi_star": 1.0092500000000002,
+        "reference_xi": 0.0,
+        "measure": "rate_flux; identical stored sampling measure for both estimators",
+        "common_histogram_range": [
+          -0.3590900166018256,
+          1.47460587689785
+        ],
+        "maximum_absolute_skewness": 1.2313906560446637,
+        "maximum_absolute_excess_kurtosis": 3.4733145181166183,
+        "extreme_windows": [
+          {
+            "stream": 36,
+            "window": 18,
+            "replica": 0,
+            "center": 0.9,
+            "stiffness_hartree": 0.4750217345,
+            "samples": 2000,
+            "mean": 0.7745915630307129,
+            "standard_deviation": 0.07924477535155133,
+            "checkpoint_samples": 2000,
+            "skewness": 0.8755063987803023,
+            "excess_kurtosis": 3.4733145181166183,
+            "statistical_inefficiency": 86.05613959776738,
+            "block_length": 87,
+            "estimated_effective_samples": 23.24064278676855
+          },
+          {
+            "stream": 44,
+            "window": 22,
+            "replica": 0,
+            "center": 1.1,
+            "stiffness_hartree": 0.4750217345,
+            "samples": 2000,
+            "mean": 1.2098344505914185,
+            "standard_deviation": 0.12204534498969091,
+            "checkpoint_samples": 2000,
+            "skewness": -1.2313906560446637,
+            "excess_kurtosis": 2.356950219064972,
+            "statistical_inefficiency": 85.62914060025871,
+            "block_length": 86,
+            "estimated_effective_samples": 23.356534772859295
+          },
+          {
+            "stream": 38,
+            "window": 19,
+            "replica": 0,
+            "center": 0.9500000000000001,
+            "stiffness_hartree": 0.4750217345,
+            "samples": 2000,
+            "mean": 0.7943567855046026,
+            "standard_deviation": 0.12417095633269261,
+            "checkpoint_samples": 2000,
+            "skewness": 1.2264985265422448,
+            "excess_kurtosis": 1.754854508812298,
+            "statistical_inefficiency": 223.14086727808186,
+            "block_length": 224,
+            "estimated_effective_samples": 8.962948044418805
+          },
+          {
+            "stream": 34,
+            "window": 17,
+            "replica": 0,
+            "center": 0.8500000000000001,
+            "stiffness_hartree": 0.4750217345,
+            "samples": 2000,
+            "mean": 0.7725782752338908,
+            "standard_deviation": 0.08682483502763594,
+            "checkpoint_samples": 2000,
+            "skewness": 0.7380370170472168,
+            "excess_kurtosis": 1.499060838172566,
+            "statistical_inefficiency": 67.54107325167995,
+            "block_length": 68,
+            "estimated_effective_samples": 29.611611182833165
+          },
+          {
+            "stream": 39,
+            "window": 19,
+            "replica": 1,
+            "center": 0.9500000000000001,
+            "stiffness_hartree": 0.4750217345,
+            "samples": 2000,
+            "mean": 0.843622640690585,
+            "standard_deviation": 0.14523373566953385,
+            "checkpoint_samples": 2000,
+            "skewness": 1.2247742691779824,
+            "excess_kurtosis": 0.8433891968627432,
+            "statistical_inefficiency": 236.2551598692488,
+            "block_length": 237,
+            "estimated_effective_samples": 8.46542357469299
+          }
+        ],
+        "mbar": {
+          "connected": true,
+          "residual": 9.94683446720046e-10,
+          "streams": 46,
+          "samples": 92000,
+          "unique_umbrella_hamiltonians": 23,
+          "stream_to_hamiltonian": {
+            "entries": 46,
+            "first_entries": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "see": "benchmark.json"
+          },
+          "aggregation_target_weight_maximum_absolute_difference": 2.8708146970757298e-12
+        },
+        "bootstrap": {
+          "requested": 40,
+          "seed": 73019,
+          "failures": {
+            "mbar": 0,
+            "ui": 0
+          },
+          "method": "Independent circular blocks within each original stream; refit MBAR once per draw; paired endpoint covariance retained"
+        },
+        "independent_validation": false,
+        "converged": false,
+        "caveats": [
+          "The estimators reuse the same finite correlated samples; their comparison is not independent physical validation.",
+          "Gaussian UI may be biased for non-Gaussian windows; more samples alone do not remove that approximation.",
+          "Histogram MBAR retains bin-width bias and finite-sampling uncertainty; connected overlap is not proof of mixing.",
+          "The dividing surface and original recrossing coefficient are held fixed; moving xi_star would require new constrained parent and child trajectories.",
+          "Rate confidence intervals condition on the recorded kappa and do not include its uncertainty or bead, timestep, Rinf, or equilibration errors.",
+          "Unsupported endpoints yield null estimates; this report does not alter the original workflow publication gates.",
+          "Complete HDF5 samples are used; checkpoint prefixes are checked exactly and any shorter checkpoint length is reported per stream."
+        ],
+        "ui": {
+          "barrier_hartree": 0.024387156038128372,
+          "barrier_kcal_mol": 15.303171459380689,
+          "kappa": 0.9163598330163881,
+          "rate_estimate_cm3_s": 3.2664663544626963e-11,
+          "rate_cm3_s": 3.2664663544626963e-11,
+          "paired_bootstrap_hartree": {
+            "replicates": 40,
+            "standard_error": 0.0016074746859541125,
+            "percentile_95_ci": [
+              0.022066516770279068,
+              0.027504181189749764
+            ]
+          }
+        },
+        "per_bins": [
+          {
+            "bins": 50,
+            "bin_width": 0.03667391786999352,
+            "endpoints_supported": true,
+            "barrier_hartree": 0.029387362309387433,
+            "barrier_kcal_mol": 18.440848266865476,
+            "mbar_minus_ui_hartree": 0.0050002062712590604,
+            "barrier_bootstrap_hartree": {
+              "replicates": 40,
+              "standard_error": 0.0016920244107973645,
+              "percentile_95_ci": [
+                0.026120766766347964,
+                0.032449663674207936
+              ]
+            },
+            "paired_mbar_minus_ui_bootstrap_hartree": {
+              "replicates": 40,
+              "standard_error": 0.0005745972334999577,
+              "percentile_95_ci": [
+                0.0034840565072077638,
+                0.005509929765071714
+              ]
+            },
+            "bootstrap_valid_fraction": 1.0,
+            "same_kappa_rate_ratio_to_ui": 0.3490197250689654,
+            "same_kappa_qtst_cm3_s": 1.244119556428885e-11,
+            "same_kappa_rate_estimate_cm3_s": 1.140061188981596e-11,
+            "same_kappa_rate_cm3_s": 1.140061188981596e-11,
+            "conditional_rate_percentile_95_ci_cm3_s": [
+              5.983919903879598e-12,
+              2.2680239269863298e-11
+            ],
+            "endpoint_support": {
+              "reference": [
+                {
+                  "bin": 9,
+                  "center": -0.010687796836887198,
+                  "raw_count": 2054,
+                  "density": 0.9050577742279288,
+                  "weighted_effective_samples_without_time_correction": 2037.8596164673284,
+                  "contributing_streams": 11
+                },
+                {
+                  "bin": 10,
+                  "center": 0.025986121033106324,
+                  "raw_count": 2010,
+                  "density": 0.67713353676601,
+                  "weighted_effective_samples_without_time_correction": 2001.033183873652,
+                  "contributing_streams": 13
+                }
+              ],
+              "surface": [
+                {
+                  "bin": 36,
+                  "center": 0.9795079856529377,
+                  "raw_count": 330,
+                  "density": 0.0016214808278067674,
+                  "weighted_effective_samples_without_time_correction": 329.86252073348584,
+                  "contributing_streams": 11
+                },
+                {
+                  "bin": 37,
+                  "center": 1.0161819035229311,
+                  "raw_count": 363,
+                  "density": 0.0017322199192258646,
+                  "weighted_effective_samples_without_time_correction": 362.98998679886125,
+                  "contributing_streams": 10
+                }
+              ]
+            }
+          },
+          {
+            "bins": 100,
+            "bin_width": 0.01833695893499676,
+            "endpoints_supported": true,
+            "barrier_hartree": 0.029176465834187166,
+            "barrier_kcal_mol": 18.308508730630795,
+            "mbar_minus_ui_hartree": 0.004789309796058794,
+            "barrier_bootstrap_hartree": {
+              "replicates": 40,
+              "standard_error": 0.0018127714556821987,
+              "percentile_95_ci": [
+                0.025689544613272507,
+                0.032679868924583765
+              ]
+            },
+            "paired_mbar_minus_ui_bootstrap_hartree": {
+              "replicates": 40,
+              "standard_error": 0.0007264191361966146,
+              "percentile_95_ci": [
+                0.003063194698617988,
+                0.005420067818515987
+              ]
+            },
+            "bootstrap_valid_fraction": 1.0,
+            "same_kappa_rate_ratio_to_ui": 0.36486435920029237,
+            "same_kappa_qtst_cm3_s": 1.3005995137818664e-11,
+            "same_kappa_rate_estimate_cm3_s": 1.1918171532703468e-11,
+            "same_kappa_rate_cm3_s": 1.1918171532703468e-11,
+            "conditional_rate_percentile_95_ci_cm3_s": [
+              5.700939679019982e-12,
+              2.4832478172986267e-11
+            ],
+            "endpoint_support": {
+              "reference": [
+                {
+                  "bin": 19,
+                  "center": -0.0015193173693888173,
+                  "raw_count": 1021,
+                  "density": 0.829939047883164,
+                  "weighted_effective_samples_without_time_correction": 1019.3103880465798,
+                  "contributing_streams": 11
+                },
+                {
+                  "bin": 20,
+                  "center": 0.016817641565607944,
+                  "raw_count": 983,
+                  "density": 0.7011643834896725,
+                  "weighted_effective_samples_without_time_correction": 981.7178285614859,
+                  "contributing_streams": 13
+                }
+              ],
+              "surface": [
+                {
+                  "bin": 74,
+                  "center": 1.0070134240554327,
+                  "raw_count": 186,
+                  "density": 0.001769035708180737,
+                  "weighted_effective_samples_without_time_correction": 185.99967463735203,
+                  "contributing_streams": 10
+                },
+                {
+                  "bin": 75,
+                  "center": 1.0253503829904296,
+                  "raw_count": 177,
+                  "density": 0.0016954041302709904,
+                  "weighted_effective_samples_without_time_correction": 176.99489829758775,
+                  "contributing_streams": 10
+                }
+              ]
+            }
+          },
+          {
+            "bins": 150,
+            "bin_width": 0.01222463928999784,
+            "endpoints_supported": true,
+            "barrier_hartree": 0.02961232714306669,
+            "barrier_kcal_mol": 18.582015831330242,
+            "mbar_minus_ui_hartree": 0.005225171104938319,
+            "barrier_bootstrap_hartree": {
+              "replicates": 40,
+              "standard_error": 0.0018185478977177996,
+              "percentile_95_ci": [
+                0.026108313998825475,
+                0.03319475966837216
+              ]
+            },
+            "paired_mbar_minus_ui_bootstrap_hartree": {
+              "replicates": 40,
+              "standard_error": 0.0007210553230889922,
+              "percentile_95_ci": [
+                0.003481795172750377,
+                0.005785077474609598
+              ]
+            },
+            "bootstrap_valid_fraction": 1.0,
+            "same_kappa_rate_ratio_to_ui": 0.33287584705812323,
+            "same_kappa_qtst_cm3_s": 1.186572911046816e-11,
+            "same_kappa_rate_estimate_cm3_s": 1.0873277546286299e-11,
+            "same_kappa_rate_cm3_s": 1.0873277546286299e-11,
+            "conditional_rate_percentile_95_ci_cm3_s": [
+              5.115427827867498e-12,
+              2.273654004127203e-11
+            ],
+            "endpoint_support": {
+              "reference": [
+                {
+                  "bin": 28,
+                  "center": -0.010687796836887253,
+                  "raw_count": 643,
+                  "density": 0.8458843770908551,
+                  "weighted_effective_samples_without_time_correction": 642.4553304131849,
+                  "contributing_streams": 10
+                },
+                {
+                  "bin": 29,
+                  "center": 0.0015368424531105873,
+                  "raw_count": 714,
+                  "density": 0.8516366702642061,
+                  "weighted_effective_samples_without_time_correction": 713.4774892119477,
+                  "contributing_streams": 11
+                }
+              ],
+              "surface": [
+                {
+                  "bin": 111,
+                  "center": 1.003957264232933,
+                  "raw_count": 114,
+                  "density": 0.001627246082384404,
+                  "weighted_effective_samples_without_time_correction": 113.99976701105518,
+                  "contributing_streams": 10
+                },
+                {
+                  "bin": 112,
+                  "center": 1.0161819035229311,
+                  "raw_count": 121,
+                  "density": 0.0017260848856066593,
+                  "weighted_effective_samples_without_time_correction": 120.99984159557914,
+                  "contributing_streams": 10
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "secondary_fixed_surface_mbar_rate_estimate_cm3_molecule_s": 1.1918171532703468e-11,
+      "secondary_mbar_conditional_rate_95_ci_cm3_molecule_s": [
+        5.700939679019982e-12,
+        2.4832478172986267e-11
+      ],
+      "recrossing": {
+        "kappa": 0.9163598330163881,
+        "kappa_standard_error": 0.026461964087320742,
+        "plateau_detected": true,
+        "plateau_start_au": 2484.6165374437264,
+        "plateau_drift": 0.0,
+        "plateau_drift_standard_error": 0.0,
+        "parent_configurations": 64,
+        "child_pairs": 128,
+        "child_trajectories": 256,
+        "child_time_fs": 80.0
+      },
+      "finite_time_rate_estimate_cm3_molecule_s": 3.2664663544626963e-11,
+      "rate_standard_error_cm3_molecule_s": 9.567792423018083e-12,
+      "surface_definition": "s1 = max(r12-r01, r12-r02); both equivalent exits included, no extra factor two",
+      "symmetry_factor": 1.0,
+      "electronic_weight": 1.0,
+      "workflow_status": "plateau_estimate",
+      "warnings": [
+        "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+        "Unsampled/insufficient-count bins are masked; no extrapolation is reported.",
+        "The default rate PMF uses Gaussian umbrella integration; inspect the same-surface MBAR comparison and non-Gaussian window moments before interpreting its numerical rate.",
+        "The secondary histogram-MBAR estimate reuses these same trajectories and the unchanged dividing surface/kappa; it is not independent validation or a converged rate. Its reported interval conditions on kappa."
+      ],
+      "wall_seconds": 1021.9715933589999
+    }
+  },
+  "pes_check": {
+    "schema": "pyrpmd.h3.bkmp2-verification.v1",
+    "passed": true,
+    "source": {
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "paper": "A. I. Boothroyd, W. J. Keogh, P. G. Martin, M. R. Peterson, A refined H3 potential energy surface, J. Chem. Phys. 104, 7139-7152 (1996)",
+      "doi": "10.1063/1.471430",
+      "authors_page": "https://www.cita.utoronto.ca/~boothroy/bkmp2.html",
+      "authors_test": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.f",
+      "authors_test_output": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.out",
+      "repository": "https://github.com/chen-yu-hao/RPMDrate",
+      "commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "path": "examples/H+H2/h3_bkmp2.f",
+      "url": "https://raw.githubusercontent.com/chen-yu-hao/RPMDrate/19ba2602bad5b2145b0d0ba0716d7ba3d90a1003/examples/H%2BH2/h3_bkmp2.f",
+      "sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "bytes": 61792,
+      "upstream_license": "No explicit redistribution license identified in this PES source; fetched at build time, not relicensed as PyRPMD MIT.",
+      "energy_zero": "three separated H atoms",
+      "distance_unit": "bohr",
+      "energy_unit": "hartree",
+      "minimum_pair_distance_bohr": 0.2,
+      "precision_note": "GNU -fdefault-real-8 -fdefault-double-8 promotes unsuffixed literals in the RPMDrate legacy source to binary64 without promoting DOUBLE PRECISION to binary128. Author test-point energies and derivatives independently verify the resulting PES."
+    },
+    "build": {
+      "schema": "pyrpmd.h3.bkmp2-build.v1",
+      "created_utc": "2026-10-29T16:29:22.259861+00:00",
+      "source": {
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "paper": "A. I. Boothroyd, W. J. Keogh, P. G. Martin, M. R. Peterson, A refined H3 potential energy surface, J. Chem. Phys. 104, 7139-7152 (1996)",
+        "doi": "10.1063/1.471430",
+        "authors_page": "https://www.cita.utoronto.ca/~boothroy/bkmp2.html",
+        "authors_test": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.f",
+        "authors_test_output": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.out",
+        "repository": "https://github.com/chen-yu-hao/RPMDrate",
+        "commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "path": "examples/H+H2/h3_bkmp2.f",
+        "url": "https://raw.githubusercontent.com/chen-yu-hao/RPMDrate/19ba2602bad5b2145b0d0ba0716d7ba3d90a1003/examples/H%2BH2/h3_bkmp2.f",
+        "sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "bytes": 61792,
+        "upstream_license": "No explicit redistribution license identified in this PES source; fetched at build time, not relicensed as PyRPMD MIT.",
+        "energy_zero": "three separated H atoms",
+        "distance_unit": "bohr",
+        "energy_unit": "hartree",
+        "minimum_pair_distance_bohr": 0.2,
+        "precision_note": "GNU -fdefault-real-8 -fdefault-double-8 promotes unsuffixed literals in the RPMDrate legacy source to binary64 without promoting DOUBLE PRECISION to binary128. Author test-point energies and derivatives independently verify the resulting PES."
+      },
+      "source_file": "/home/runner/work/Next-RPMD/Next-RPMD/benchmarks/h3/build/h3_bkmp2.f",
+      "wrapper_sha256": "57ce0ff2acdcc657f51693d9c7fbca5e7bed26e60ee2b446cd2c51eb4250d3a9",
+      "library": "/home/runner/work/Next-RPMD/Next-RPMD/benchmarks/h3/build/libbkmp2.so",
+      "library_sha256": "682f54c60e000fc4df53259da4d5484ceaf169f610b6414a513e7a0d13356b34",
+      "compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "command": [
+        "gfortran",
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8",
+        "/home/runner/work/Next-RPMD/Next-RPMD/benchmarks/h3/build/h3_bkmp2.f",
+        "/home/runner/work/Next-RPMD/Next-RPMD/benchmarks/h3/wrapper.f90",
+        "-o",
+        "/home/runner/work/Next-RPMD/Next-RPMD/benchmarks/h3/build/libbkmp2.so.2538.tmp"
+      ],
+      "flags": [
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+      "compiler_stdout": "",
+      "compiler_stderr": "",
+      "author_saddle_energy_hartree": -0.1591760001210627
+    },
+    "author_energy_oracles": [
+      {
+        "r_bohr": [
+          1.757,
+          1.757,
+          3.514
+        ],
+        "reference_hartree": -0.159176,
+        "actual_hartree": -0.1591760001210627,
+        "absolute_error_hartree": 1.210626876524401e-10
+      },
+      {
+        "r_bohr": [
+          1.401,
+          99.0,
+          99.0
+        ],
+        "reference_hartree": -0.17449573,
+        "actual_hartree": -0.17449572968793017,
+        "absolute_error_hartree": 3.120698144343237e-10
+      }
+    ],
+    "author_compact_derivative": {
+      "r_bohr": [
+        0.9,
+        1.1,
+        1.5
+      ],
+      "energy_hartree": 0.11460693624842877,
+      "reference_hartree_per_bohr": [
+        -0.524470263,
+        -0.271446,
+        -0.108650526
+      ],
+      "actual_hartree_per_bohr": [
+        -0.5244702631924194,
+        -0.2714459999245992,
+        -0.10865052563211863
+      ],
+      "maximum_absolute_error": 3.6788136426046947e-10
+    },
+    "h2_equilibrium_bohr": 1.4014719755049045,
+    "h2_minimum_hartree": -0.17449577089730772,
+    "ts_neighbor_distance_bohr": 1.757000025078958,
+    "ts_energy_hartree": -0.15917600012106237,
+    "barrier_hartree": 0.015319770776245356,
+    "barrier_kcal_mol": 9.613301302568972,
+    "ts_hessian_eigenvalues_au": [
+      -0.08670426195632495,
+      -5.680995329864033e-18,
+      7.264569029467942e-19,
+      4.39960797461128e-12,
+      2.4256738434860597e-09,
+      2.4256738470681555e-09,
+      0.03140018345078536,
+      0.03140018345078537,
+      0.16098729816291582
+    ],
+    "ts_negative_hessian_modes": 1,
+    "ts_max_force_au": 4.120140516955528e-09,
+    "force_check": {
+      "max_absolute_force_error": 1.783932142632172e-10,
+      "rms_force_error": 5.137153979701378e-11,
+      "force_unit": "hartree/bohr",
+      "finite_difference_step_bohr": 1e-05
+    },
+    "translation_rotation_permutation_invariance": true,
+    "batch_scalar_exact": true,
+    "invalid_geometry_guard": true,
+    "benchmark_frames": 10000,
+    "benchmark_seconds": 0.007667860999987397,
+    "microseconds_per_frame": 0.7667860999987397,
+    "scope": "Electronic PES and adapter verification, not a converged quantum rate calculation"
+  },
+  "numerics": {
+    "system": "H + H2 / BKMP2",
+    "status": "passed",
+    "temperature_K": 1500.0,
+    "native": {
+      "available": true,
+      "openmp": true
+    },
+    "native_vs_numpy": [
+      {
+        "beads": 1,
+        "maximum_position_difference_bohr": 0.0,
+        "maximum_momentum_difference_au": 0.0,
+        "dt_fs": 0.05,
+        "duration_fs": 10.0,
+        "steps": 200,
+        "maximum_energy_error_hartree_per_bead": 3.754232083819087e-07,
+        "maximum_energy_error_kbt": 7.903284862585975e-05,
+        "endpoint_energy_error_hartree_per_bead": -3.754232083819087e-07
+      },
+      {
+        "beads": 8,
+        "maximum_position_difference_bohr": 2.1538326677728037e-14,
+        "maximum_momentum_difference_au": 1.3296030942910875e-12,
+        "dt_fs": 0.05,
+        "duration_fs": 10.0,
+        "steps": 200,
+        "maximum_energy_error_hartree_per_bead": 2.3088391506581596e-06,
+        "maximum_energy_error_kbt": 0.00048604916004499793,
+        "endpoint_energy_error_hartree_per_bead": 6.711888692265133e-07
+      },
+      {
+        "beads": 16,
+        "maximum_position_difference_bohr": 5.284661597215745e-14,
+        "maximum_momentum_difference_au": 2.191136161400209e-12,
+        "dt_fs": 0.05,
+        "duration_fs": 10.0,
+        "steps": 200,
+        "maximum_energy_error_hartree_per_bead": 6.876462979144016e-06,
+        "maximum_energy_error_kbt": 0.001447610178535267,
+        "endpoint_energy_error_hartree_per_bead": 4.697003765652408e-07
+      },
+      {
+        "beads": 32,
+        "maximum_position_difference_bohr": 1.687538997430238e-14,
+        "maximum_momentum_difference_au": 4.381384144380718e-12,
+        "dt_fs": 0.05,
+        "duration_fs": 10.0,
+        "steps": 200,
+        "maximum_energy_error_hartree_per_bead": 6.520555742239864e-06,
+        "maximum_energy_error_kbt": 0.0013726857674943825,
+        "endpoint_energy_error_hartree_per_bead": -1.197028068000705e-06
+      }
+    ],
+    "time_step_refinement": [
+      {
+        "dt_fs": 0.1,
+        "duration_fs": 10.0,
+        "steps": 100,
+        "maximum_energy_error_hartree_per_bead": 2.5398214736155333e-05,
+        "maximum_energy_error_kbt": 0.005346747925524294,
+        "endpoint_energy_error_hartree_per_bead": 1.439811693523807e-05
+      },
+      {
+        "dt_fs": 0.05,
+        "duration_fs": 10.0,
+        "steps": 200,
+        "maximum_energy_error_hartree_per_bead": 6.876462979144016e-06,
+        "maximum_energy_error_kbt": 0.001447610178535267,
+        "endpoint_energy_error_hartree_per_bead": 4.697003765652408e-07
+      },
+      {
+        "dt_fs": 0.025,
+        "duration_fs": 10.0,
+        "steps": 400,
+        "maximum_energy_error_hartree_per_bead": 1.780574544058e-06,
+        "maximum_energy_error_kbt": 0.00037484064721017535,
+        "endpoint_energy_error_hartree_per_bead": 3.628947092826351e-08
+      }
+    ],
+    "refinement_comparison": {
+      "coarse_endpoint_error_bohr": 0.3619280682489047,
+      "fine_endpoint_error_bohr": 0.08091768198901567,
+      "fine_to_coarse_error_ratio": 0.22357393384965948,
+      "reference_dt_fs": 0.025
+    },
+    "energy_error_measure": "max_t |H_P(t)-H_P(0)| / (P kBT); independent of energy zero",
+    "initial_ensemble": "seeded near-saddle numerical stress test; not an equilibrium ensemble",
+    "bead_convergence_demonstrated": false,
+    "elapsed_seconds": 0.8404338770000095
+  }
+}

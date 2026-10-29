@@ -86,6 +86,11 @@ GitHub Actions 的 **Real H3 BKMP2 validation** 独立工作流运行上述真�
 物理工作流通过有限采样验证；仍需珠子数、步长、采样长度和入口/碰撞参数
 的收敛研究才能报告正式速率。
 
+[2026-10-29 真实体系测试记录](docs/validation/h3-bkmp2-2026-10-29/README.md)
+保存实际 GitHub 运行的数值、图表和提交信息；
+[UI / MBAR 方法审查](docs/h3-pmf-estimator-audit.md) 解释同一分割面上观察到的
+PMF 估计差异及有限样本限制。
+
 ## 最小输入
 
 仅过渡态结构与势能选择：

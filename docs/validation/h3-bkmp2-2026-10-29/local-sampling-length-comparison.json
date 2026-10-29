@@ -1,0 +1,282 @@
+{
+  "scope": "Sampling-length comparison uses nested trajectories, not independent repeated experiments. Compared complete final HDF5 datasets, including immutable pre-resume refined snapshot.",
+  "all_coarse_streams_exact_prefix_of_refined": true,
+  "streams": [
+    {
+      "stream": 0,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 1,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 2,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 3,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 4,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 5,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 6,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 7,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 8,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 9,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 10,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 11,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 12,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 13,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 14,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 15,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 16,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 17,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 18,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 19,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 20,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 21,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 22,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 23,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 24,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 25,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 26,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 27,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 28,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 29,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 30,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 31,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 32,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 33,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 34,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 35,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 36,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 37,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 38,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 39,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 40,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 41,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 42,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 43,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 44,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    },
+    {
+      "stream": 45,
+      "coarse_samples": 600,
+      "refined_samples": 2000,
+      "exact_prefix": true
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "pyrpmd.exact-resume-verification.v1",
+  "passed": true,
+  "scope": "Normal public benchmark --resume, original manifest and physical inputs unchanged; compare every HDF5 dataset and every FES/PMF/recrossing NPZ array to pre-resume snapshots.",
+  "fresh_run_wall_seconds": 77.74173386899929,
+  "resume_wall_seconds": 25.466219183999783,
+  "before_integrity": {
+    "passed": false,
+    "streams_checked": 50,
+    "exact_sample_count_and_values": false,
+    "mismatches": [
+      {
+        "window": 6,
+        "replica": 1,
+        "hdf5_samples": 600,
+        "checkpoint_samples": 500,
+        "checkpoint_elapsed_steps": 3500,
+        "exact_prefix": true
+      },
+      {
+        "window": 11,
+        "replica": 1,
+        "hdf5_samples": 600,
+        "checkpoint_samples": 500,
+        "checkpoint_elapsed_steps": 3500,
+        "exact_prefix": true
+      },
+      {
+        "window": 12,
+        "replica": 1,
+        "hdf5_samples": 600,
+        "checkpoint_samples": 500,
+        "checkpoint_elapsed_steps": 3500,
+        "exact_prefix": true
+      },
+      {
+        "window": 14,
+        "replica": 0,
+        "hdf5_samples": 600,
+        "checkpoint_samples": 400,
+        "checkpoint_elapsed_steps": 3000,
+        "exact_prefix": true
+      },
+      {
+        "window": 19,
+        "replica": 0,
+        "hdf5_samples": 600,
+        "checkpoint_samples": 500,
+        "checkpoint_elapsed_steps": 3500,
+        "exact_prefix": true
+      }
+    ],
+    "authoritative_samples": "final fes.h5 streams; checkpoint prefixes are never substituted"
+  },
+  "after_integrity": {
+    "passed": true,
+    "streams_checked": 50,
+    "exact_sample_count_and_values": true,
+    "mismatches": [],
+    "authoritative_samples": "final fes.h5 streams; checkpoint prefixes are never substituted"
+  },
+  "arrays_checked": 230,
+  "all_sampled_and_analysis_arrays_bitwise_equal": true,
+  "changed_arrays": [],
+  "observed_issue": "Some checkpoint arrays were earlier exact prefixes of completed final HDF5 data; the origin of the incomplete checkpoints has not been established.",
+  "snapshot_directory": "resume-evidence"
+}
