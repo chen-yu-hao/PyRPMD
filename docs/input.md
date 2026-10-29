@@ -1,0 +1,127 @@
+# 输入规范 v1
+
+`.inp` 和 `.toml` 使用 TOML 语法；`.py` 执行模块内的 `build()`，返回 `JobSpec` 或字典。两种入口经同一个解析器产生规范配置。输入中相对路径以**输入文件所在目录**为基准；命令行 `--pes`、`--pes-manifest`、`--output` 以启动目录为基准。`module:object` 和 `file.py:object` 均可作为插件入口。
+
+## 通用字段
+
+| 字段 | 类型、单位与含义 |
+| --- | --- |
+| `schema_version` | 当前为整数 1 |
+| `task` | `rate`、`drpmd`、`fes` |
+| `preset` | `pilot`（缺省）或 `production` |
+| `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
+| `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
+| `seed` | 非负整数，任务的随机流由稳定任务 ID 派生 |
+| `dynamics.timestep` | 例如 `"0.1 fs"`；纯数值按原子时间 |
+| `dynamics.integrator` | 当前生产动力学为 `cayley-bcb` |
+| `dynamics.native` | `true` 优先编译内核并允许串行 NumPy 回退；`false` 用 NumPy；`"required"` 必须有编译内核 |
+| `output.directory` | 运行目录；新任务不覆盖已有非空目录 |
+| `output.checkpoint_interval` / `checkpoint_steps` | 时间间隔或正整数步数；步数优先 |
+| `output.trajectory_stride` | dRPMD 轨迹保存的正整数步数间隔 |
+
+`production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，科学收敛仍需用户用系列计算确认。未知顶层和常用 section 字段会报错，不会自动忽略。
+
+时间数量必须是步长的整数倍。需要非整除的时间时请先选择实际整数步数，例如 `equilibration_steps=333`。纯数值的内部单位是 bohr、hartree、原子时间、电子质量；XYZ 坐标缺省为 angstrom。力常数支持 `"10 kcal/mol/angstrom^2"` 等组合单位。所有原子索引均为 **0-based**。
+
+## 系统
+
+`[system]` 可使用 `transition_state="ts.xyz"`、`geometry="system.xyz"`，或 `reactants=["A.xyz","B.xyz"]` 加 `separation="12 angstrom"`。dRPMD 的 separation 是两个反应物 centroid COM 的初始**径向距离** R0；发射时使用 `z=sqrt(R0^2-b^2)` 保持径向距离，需 `bmax<R0`。
+
+Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（电子质量）或 `masses_amu`。`geometry_unit` 可覆盖坐标单位。同位素可用 `isotopes=[{atom=0, mass="2.01410177812 amu"}]`。质量在反应物居中和放置前解析。电荷 `charge` 为整数，`multiplicity` 为正整数，默认 0 和 1；须与所选电子势能面一致。软件不从几何自动推断自旋统计权重。
+
+## 热化与持续母轨迹
+
+```toml
+[sampling]
+integrator = "cayley-bcb-andersen"
+thermostat = "andersen"
+equilibration = "5 ps"
+interval = "0.2 ps"
+production = "20 ps"
+andersen_interval = 10
+replicas = 2
+parents = 8
+```
+
+`equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
+
+FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。当前工作流采用 BCB + Andersen；独立的 `Dynamics.sample_step` 提供 BCOCB，但并未把该采样器暴露为工作流可选项。采样和子轨迹步长当前须相同。真实碰撞和回穿子轨迹使用无温控的生产传播。
+
+## dRPMD
+
+```toml
+[collision]
+trajectories = 10000
+sampling = "thermal_flux"
+bmax = "5 angstrom"
+max_time = "2 ps"
+
+[outcomes]
+exit_distance = "12 angstrom"
+persistence = "20 fs"
+check_interval = 5
+bond_cutoffs = { "O-H" = "1.3 angstrom", "H-H" = "0.9 angstrom" }
+channels = { water = ["H2O", "O2"] }
+```
+
+示例 channel 名/组成只是语法展示，必须与实际反应原子守恒一致。`thermal_flux` 使用 E~Gamma(2,kBT) 的通量分布；`maxwell` 使用普通相对速度分布并逐轨迹按 v 加权；`fixed_energy` 另需 `energy`，只给该能量散射截面，不给热速率。冲量参数按面积均匀采样，整体空间取向各向同性。
+
+最小 pilot 输入省略分类设置时，程序按共价半径和 1.25 倍系数推断连通 cutoff，并输出暂定候选标签、推断值和假设。它不推断电荷、键级或全部化学身份；热速率、散射截面和化学结果上下界均暂不报告。正式 production 输入必须提供显式 cutoff 或自定义分类器。
+
+显式内置分类器由 centroid 连通图、分子式、远离条件与持续时间分类。它不能可靠区分所有相同组成异构体或同元素交换通道；这些情况必须给 `outcomes.factory="classify.py:build"`。插件返回 `reactants`、产品通道名或未决状态，并应自行定义必要的物理判据；实际协议见 [势能和插件说明](potentials.md)。未决和失败样本单独计数，存在它们时热速率点值留空并给出观察下界/可能上界。统计置信区间与这些截断界不是同一概念。
+
+## 标准 RPMD 速率
+
+最小 `rate` 输入从 TS 和 PES 自动准备。无法唯一选择入口时，填写：
+
+```toml
+[reaction]
+fragments = [[0], [1, 2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+rinf = "12 angstrom"
+electronic_weight = 1.0
+symmetry_factor = 1.0
+```
+
+本版本采用单个 TS 几何和等长、成对的成键/断键列表。不同 TS 或复杂等价路径求和尚未实现；`equivalent_paths` 会明确拒绝。`electronic_weight` 和 `symmetry_factor` 由用户根据所选势能/通道定义给出，不自动猜测。可用 `reaction.entry_side` 选择下坡两端之一。
+
+`[recrossing]` 的主要字段是 `parent_replicas`、`parent_samples`、`equilibration`、`parent_interval`、`child_pairs`、`child_time`、`dividing_surface`、`plateau_fraction`、`plateau_tolerance`、`bootstrap`。时间也可用相应 `_steps` 字段。每个 child pair 以相反动量传播，禁止以未计算的 κ=1 替代回穿。完整可运行语法见 `examples/rate/pilot.inp`。
+
+## 一维与二维 FES
+
+```toml
+[[cvs]]
+name = "r1"
+kind = "distance"
+atoms = [0, 1]
+estimator = "centroid"
+unit = "angstrom"
+
+[[cvs]]
+name = "r2"
+kind = "distance"
+atoms = [1, 2]
+estimator = "centroid"
+unit = "angstrom"
+
+[umbrella]
+cvs = ["r1", "r2"]
+grid = [{start=0.8, stop=2.0, count=9}, {start=0.8, stop=2.0, count=9}]
+stiffness = ["40 kcal/mol/angstrom^2", "40 kcal/mol/angstrom^2"]
+
+[analysis]
+method = "mbar"
+measure = "cv_density"
+bins = [40, 40]
+bootstrap = 100
+min_count = 5
+```
+
+内置 CV 包括 distance、bond_difference、angle、cartesian、com_distance、rpmdrate_xi 和 python。内置几何 CV 可选择 `centroid` 或 `bead_average`；自定义 CV 返回自己定义的完整 estimator 和导数。`stiffness` 可为标量、对角数组或对称正定矩阵。数值 centers 使用声明的 CV 输入单位；`centers_au` 与数值 stiffness 使用原子单位，带单位字符串按量纲验证。
+
+输出 FES 是相对于所选 CV 测度的密度：例如距离 CV 的自由能自然包含径向熵，不自动把它变成去除 Jacobian 的两体势。没有样本或连通重叠支持的区域 mask，不外推。`analyze --recompute --bins ... --bootstrap ...` 使用保存的样本重新估计而不调用 PES。
+
+## 运行与重启记录
+
+`manifest.json` 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。所有 checkpoint 使用 `allow_pickle=False` 读数组，并另存可读 JSON 随机数/进度信息。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。

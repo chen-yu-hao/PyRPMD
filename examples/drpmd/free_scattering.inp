@@ -1,0 +1,52 @@
+# Short mechanics example, not a chemical rate calculation or convergence study.
+schema_version = 1
+task = "drpmd"
+preset = "pilot"
+temperature = "1000 K"
+beads = 4
+seed = 17
+
+[system]
+reactants = ["reactant_a.xyz", "reactant_b.xyz"]
+separation = "3 angstrom"  # Initial radial COM distance R0, including impact b.
+
+[potential]
+provider = "free"          # V = 0: every completed scattering event is nonreactive.
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.5 fs"
+
+[sampling]
+integrator = "cayley-bcb-andersen"
+thermostat = "andersen"
+parents = 2
+equilibration_steps = 20   # Each parent burns in once, not once per collision.
+interval_steps = 5        # Advance the same parent before each collision launch.
+andersen_interval = 5
+
+[collision]
+trajectories = 5          # Total across both parents: 3 + 2, not 5 per worker.
+bmax = "1 angstrom"       # Illustrative explicit cutoff; not a converged cutoff.
+sampling = "thermal_flux" # Relative E ~ Gamma(2, kBT), not the Maxwell E law.
+impact_sampling = "uniform_area"
+orientation = "isotropic"
+max_time = "400 fs"
+
+[outcomes]
+bond_cutoffs = { "H-H" = "0.7 angstrom" }
+channels = {}
+exit_distance = "3 angstrom"
+check_interval = 2
+persistence_steps = 4
+
+[parallel]
+backend = "process"
+mode = "serial"           # Each PES call is serial; two trajectories run concurrently.
+trajectory_workers = 2
+threads_per_rank = 1
+
+[output]
+directory = "runs/free_scattering"
+checkpoint_steps = 40
+trajectory_stride = 10

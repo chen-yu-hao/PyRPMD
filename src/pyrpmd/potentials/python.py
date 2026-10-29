@@ -1,0 +1,162 @@
+"""Importable Python and RPMDrate/f2py potential adapters."""
+
+import importlib
+import importlib.util
+import hashlib
+from pathlib import Path
+import sys
+import numpy as np
+from .base import Potential, PESResult, PotentialError, coordinates, validate_result
+
+BOHR_ANGSTROM = 0.529177210903
+EV_HARTREE = 1 / 27.211386245988
+
+
+def import_object(name):
+    if not isinstance(name, str) or ":" not in name:
+        raise ValueError("factory must be module:object")
+    module, obj = name.rsplit(":", 1)
+    if module.endswith(".py") or module.endswith(".so"):
+        path = Path(module).resolve()
+        if not path.is_file():
+            raise ValueError(f"plugin file does not exist: {path}")
+        module_name = (
+            path.name.split(".")[0]
+            if path.suffix == ".so"
+            else "_pyrpmd_user_" + hashlib.sha256(str(path).encode()).hexdigest()[:20]
+        )
+        mod = sys.modules.get(module_name)
+        if mod is not None and Path(getattr(mod, "__file__", "")).resolve() != path:
+            raise ValueError(
+                f"plugin module name collision for {module_name}; use distinct extension module names"
+            )
+        if mod is None:
+            spec = importlib.util.spec_from_file_location(module_name, path)
+            if spec is None or spec.loader is None:
+                raise ValueError(f"cannot load plugin {path}")
+            mod = importlib.util.module_from_spec(spec)
+            sys.modules[module_name] = mod
+            try:
+                spec.loader.exec_module(mod)
+            except BaseException:
+                sys.modules.pop(module_name, None)
+                raise
+    else:
+        mod = importlib.import_module(module)
+    value = mod
+    for part in obj.split("."):
+        value = getattr(value, part)
+    return value
+
+
+def unit_factors(units):
+    units = units or {}
+    length = units.get("positions", units.get("length", "bohr"))
+    energy = units.get("energy", "hartree")
+    lf = {"bohr": 1.0, "angstrom": 1 / BOHR_ANGSTROM}.get(length)
+    ef = {
+        "hartree": 1.0,
+        "eV": EV_HARTREE,
+        "ev": EV_HARTREE,
+        "kcal/mol": 1 / 627.5094740631,
+        "kJ/mol": 1 / 2625.4996394799,
+    }.get(energy)
+    if lf is None or ef is None:
+        raise ValueError(
+            "unsupported provider units; use bohr/angstrom and hartree/eV/kcal/mol/kJ/mol"
+        )
+    return lf, ef
+
+
+class PythonPotential(Potential):
+    def __init__(self, obj, *, units=None, derivative="force"):
+        if not (callable(obj) or callable(getattr(obj, "evaluate", None))):
+            raise TypeError("Python factory must return callable or PES provider")
+        if derivative not in ("force", "gradient"):
+            raise ValueError("derivative must be force or gradient")
+        self.obj = obj
+        self.fn = obj.evaluate if hasattr(obj, "evaluate") else obj
+        self.length_factor, self.energy_factor = unit_factors(units)
+        self.sign = -1 if derivative == "gradient" else 1
+        self.metadata = dict(getattr(obj, "metadata", {}) or {})
+        self.metadata.setdefault("thread_safety", "context_serial")
+        self.metadata.setdefault("execution_device", "cpu")
+
+    def evaluate(self, x):
+        x = coordinates(x)
+        result = self.fn(x / self.length_factor)
+        result = validate_result(result, x.shape, require_success=False)
+        result = PESResult(
+            result.energy * self.energy_factor,
+            result.forces * (self.sign * self.energy_factor / self.length_factor),
+            result.status,
+            result.messages,
+        )
+        return validate_result(result, x.shape, require_success=False)
+
+    def close(self):
+        close = getattr(self.obj, "close", None)
+        if close:
+            close()
+
+
+class RPMDratePotential(Potential):
+    """Legacy f2py: q(3,N,P), energy(P), positive gradient(3,N,P), info.
+
+    The adapter is process_serial: Fortran COMMON/module state is not made
+    reentrant by instantiating multiple Python wrappers.
+    """
+
+    metadata = {
+        "provider": "rpmdrate",
+        "thread_safety": "process_serial",
+        "execution_device": "cpu",
+    }
+
+    def __init__(
+        self,
+        module,
+        function="get_potential",
+        initializer="initialize_potential",
+        with_dimensions=False,
+        kwargs=None,
+        initializer_kwargs=None,
+        units=None,
+    ):
+        self.fn = import_object(module + ":" + function)
+        if initializer:
+            init = import_object(module + ":" + initializer)
+            status = init(**(initializer_kwargs or {}))
+            if status is not None and (
+                np.ndim(status) != 0 or not np.isfinite(status) or status != 0
+            ):
+                raise PotentialError(f"PES initialization failed: {status}")
+        self.kwargs = kwargs or {}
+        self.with_dimensions = bool(with_dimensions)
+        self.length_factor, self.energy_factor = unit_factors(units)
+
+    def evaluate(self, x):
+        x = coordinates(x)
+        q = np.asfortranarray((x / self.length_factor).transpose(2, 1, 0))
+        result = (
+            self.fn(q, q.shape[1], q.shape[2], **self.kwargs)
+            if self.with_dimensions
+            else self.fn(q, **self.kwargs)
+        )
+        if not isinstance(result, (tuple, list)) or len(result) not in (2, 3):
+            raise PotentialError("legacy PES must return (V,dVdq[,info])")
+        e, g = result[:2]
+        status = 0 if len(result) == 2 else result[2]
+        if np.ndim(status) != 0 or not np.isfinite(status) or status != 0:
+            raise PotentialError(f"legacy PES failed with info={status}")
+        if np.shape(g) != q.shape:
+            raise PotentialError("legacy gradient shape mismatch")
+        return validate_result(
+            PESResult(
+                np.asarray(e) * self.energy_factor,
+                -np.asarray(g).transpose(2, 1, 0)
+                * self.energy_factor
+                / self.length_factor,
+            ),
+            x.shape,
+        )

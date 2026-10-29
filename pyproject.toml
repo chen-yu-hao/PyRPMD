@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyRPMD"
+version = "0.1.0"
+description = "Cayley ring-polymer molecular dynamics, direct collisions and free energies"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "PyRPMD contributors"}]
+dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10"]
+
+[project.optional-dependencies]
+mpi = ["mpi4py>=3.1"]
+gpu = ["torch>=2.2"]
+ase = ["ase>=3.23"]
+analysis = ["pymbar>=4"]
+test = ["pytest>=8"]
+
+[project.scripts]
+pyrpmd = "pyrpmd.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+

@@ -1,0 +1,3 @@
+compiler = "cc"
+objects = ["harmonic.o"]
+compile_flags = ["-O3", "-fPIC"]
