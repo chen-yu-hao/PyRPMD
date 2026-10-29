@@ -1,0 +1,11 @@
+{
+  "run_id": 40921070882,
+  "artifact_id": 12920282902,
+  "sha256": "ce8b54ac9dfc2049a941d41c86e37d9f6f0d1572c597cc705470a456a01ebab3",
+  "github_digest": "sha256:ce8b54ac9dfc2049a941d41c86e37d9f6f0d1572c597cc705470a456a01ebab3",
+  "digest_matches": true,
+  "bytes": 41752516,
+  "members": 1052,
+  "archive": "/workspace/scratch/ebfc1111a2db/PyRPMD/validation/github-run-40921070882/h3-pmf-complete-study.zip",
+  "extracted": "/workspace/scratch/ebfc1111a2db/PyRPMD/validation/github-run-40921070882/complete"
+}

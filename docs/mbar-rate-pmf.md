@@ -80,3 +80,12 @@ python benchmarks/h3/convergence_report.py runs --output runs/PMF-CONVERGENCE.md
 GitHub 工作流 **H3 PMF independent-seed study** 同时执行四组计算，
 每组保存原始 artifact，最终汇总另存一个完整 artifact。
 实际运行数字在完成后单独归档，历史测试记录不覆盖。
+
+## 本次实际运行
+
+[2026-10-29 四组独立研究记录](validation/h3-pmf-refinement-2026-10-29/README.md)
+保存成功的 GitHub run `40921070882`：四组与汇总共 6 个 job 全部成功，
+所有 160 次 PMF 配对重采样有效，保存样本总数 848,000。
+UI/MBAR 配对差值为 −0.0022、+0.3646、+0.1162、+0.0406 kcal/mol，
+四个条件 95% 区间均包含零。结果支持方法一致性改善；独立 seed 与窗口
+配置之间仍有波动，最终报告保留 `converged=false`。

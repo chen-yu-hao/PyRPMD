@@ -109,6 +109,11 @@ GitHub Actions 的 **H3 PMF independent-seed study** 并行执行完整研究，
 `--smoke` 只检查短流程，明确排除在正式比较之外。
 方法和计划见 [MBAR 速率 PMF](docs/mbar-rate-pmf.md)。
 
+[四组独立重复的实际结果与核验记录](docs/validation/h3-pmf-refinement-2026-10-29/README.md)
+已归档：GitHub 四组均通过，848,000 个样本与 1024 条新回穿轨迹完成；
+同面 UI/MBAR 势垒差的四个配对区间均包含零。速率的联合抽样相对标准误
+仍约 20%–23%，不标为已经物理收敛。
+
 ## 最小输入
 
 仅过渡态结构与势能选择：

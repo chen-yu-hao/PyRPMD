@@ -1,0 +1,247 @@
+{
+  "schema": "pyrpmd.h3.pmf-convergence.v1",
+  "action": "plan",
+  "converged": false,
+  "cases": [
+    {
+      "settings": {
+        "seed": 821071,
+        "beta_k": 400.0,
+        "start": -0.05,
+        "spacing": 0.025,
+        "case": "k400-a",
+        "smoke": false,
+        "temperature_K": 1500.0,
+        "beads": 16,
+        "timestep_fs": 0.1,
+        "stop": 1.1,
+        "replicas": 2,
+        "equilibration_fs": 300.0,
+        "production_fs": 1000.0,
+        "sample_interval_fs": 0.5,
+        "andersen_interval_steps": 50,
+        "xi_star": 1.00925,
+        "reference_xi": 0.0,
+        "rinf_bohr": 10.0,
+        "histogram_range": [
+          -0.3,
+          1.4
+        ],
+        "bins": 170,
+        "sensitivity_bins": [
+          85,
+          340
+        ],
+        "bootstrap": 40,
+        "min_count": 5,
+        "parent_replicas": 2,
+        "parent_samples_per_chain": 32,
+        "parent_equilibration_fs": 200.0,
+        "parent_interval_fs": 10.0,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 80.0,
+        "recrossing_bootstrap": 100,
+        "windows": 47
+      },
+      "budget": {
+        "windows": 47,
+        "streams": 94,
+        "umbrella_steps": 1222000,
+        "saved_samples": 188000,
+        "parent_configurations": 64,
+        "child_trajectories": 256,
+        "child_steps": 204800,
+        "parent_steps": 10400,
+        "unique_state_reduced_potential_bytes": 70688000,
+        "primary_bootstrap_draws": 40,
+        "planned_mbar_fits": 44,
+        "fit_count_note": "One intermediate FES, one primary PMF plus bootstrap, two bootstrap-free bin checks.",
+        "memory_note": "The matrix byte count is one array, not a peak-memory guarantee."
+      }
+    },
+    {
+      "settings": {
+        "seed": 821072,
+        "beta_k": 400.0,
+        "start": -0.05,
+        "spacing": 0.025,
+        "case": "k400-b",
+        "smoke": false,
+        "temperature_K": 1500.0,
+        "beads": 16,
+        "timestep_fs": 0.1,
+        "stop": 1.1,
+        "replicas": 2,
+        "equilibration_fs": 300.0,
+        "production_fs": 1000.0,
+        "sample_interval_fs": 0.5,
+        "andersen_interval_steps": 50,
+        "xi_star": 1.00925,
+        "reference_xi": 0.0,
+        "rinf_bohr": 10.0,
+        "histogram_range": [
+          -0.3,
+          1.4
+        ],
+        "bins": 170,
+        "sensitivity_bins": [
+          85,
+          340
+        ],
+        "bootstrap": 40,
+        "min_count": 5,
+        "parent_replicas": 2,
+        "parent_samples_per_chain": 32,
+        "parent_equilibration_fs": 200.0,
+        "parent_interval_fs": 10.0,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 80.0,
+        "recrossing_bootstrap": 100,
+        "windows": 47
+      },
+      "budget": {
+        "windows": 47,
+        "streams": 94,
+        "umbrella_steps": 1222000,
+        "saved_samples": 188000,
+        "parent_configurations": 64,
+        "child_trajectories": 256,
+        "child_steps": 204800,
+        "parent_steps": 10400,
+        "unique_state_reduced_potential_bytes": 70688000,
+        "primary_bootstrap_draws": 40,
+        "planned_mbar_fits": 44,
+        "fit_count_note": "One intermediate FES, one primary PMF plus bootstrap, two bootstrap-free bin checks.",
+        "memory_note": "The matrix byte count is one array, not a peak-memory guarantee."
+      }
+    },
+    {
+      "settings": {
+        "seed": 831071,
+        "beta_k": 800.0,
+        "start": -0.06,
+        "spacing": 0.02,
+        "case": "k800-a",
+        "smoke": false,
+        "temperature_K": 1500.0,
+        "beads": 16,
+        "timestep_fs": 0.1,
+        "stop": 1.1,
+        "replicas": 2,
+        "equilibration_fs": 300.0,
+        "production_fs": 1000.0,
+        "sample_interval_fs": 0.5,
+        "andersen_interval_steps": 50,
+        "xi_star": 1.00925,
+        "reference_xi": 0.0,
+        "rinf_bohr": 10.0,
+        "histogram_range": [
+          -0.3,
+          1.4
+        ],
+        "bins": 170,
+        "sensitivity_bins": [
+          85,
+          340
+        ],
+        "bootstrap": 40,
+        "min_count": 5,
+        "parent_replicas": 2,
+        "parent_samples_per_chain": 32,
+        "parent_equilibration_fs": 200.0,
+        "parent_interval_fs": 10.0,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 80.0,
+        "recrossing_bootstrap": 100,
+        "windows": 59
+      },
+      "budget": {
+        "windows": 59,
+        "streams": 118,
+        "umbrella_steps": 1534000,
+        "saved_samples": 236000,
+        "parent_configurations": 64,
+        "child_trajectories": 256,
+        "child_steps": 204800,
+        "parent_steps": 10400,
+        "unique_state_reduced_potential_bytes": 111392000,
+        "primary_bootstrap_draws": 40,
+        "planned_mbar_fits": 44,
+        "fit_count_note": "One intermediate FES, one primary PMF plus bootstrap, two bootstrap-free bin checks.",
+        "memory_note": "The matrix byte count is one array, not a peak-memory guarantee."
+      }
+    },
+    {
+      "settings": {
+        "seed": 831072,
+        "beta_k": 800.0,
+        "start": -0.06,
+        "spacing": 0.02,
+        "case": "k800-b",
+        "smoke": false,
+        "temperature_K": 1500.0,
+        "beads": 16,
+        "timestep_fs": 0.1,
+        "stop": 1.1,
+        "replicas": 2,
+        "equilibration_fs": 300.0,
+        "production_fs": 1000.0,
+        "sample_interval_fs": 0.5,
+        "andersen_interval_steps": 50,
+        "xi_star": 1.00925,
+        "reference_xi": 0.0,
+        "rinf_bohr": 10.0,
+        "histogram_range": [
+          -0.3,
+          1.4
+        ],
+        "bins": 170,
+        "sensitivity_bins": [
+          85,
+          340
+        ],
+        "bootstrap": 40,
+        "min_count": 5,
+        "parent_replicas": 2,
+        "parent_samples_per_chain": 32,
+        "parent_equilibration_fs": 200.0,
+        "parent_interval_fs": 10.0,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 80.0,
+        "recrossing_bootstrap": 100,
+        "windows": 59
+      },
+      "budget": {
+        "windows": 59,
+        "streams": 118,
+        "umbrella_steps": 1534000,
+        "saved_samples": 236000,
+        "parent_configurations": 64,
+        "child_trajectories": 256,
+        "child_steps": 204800,
+        "parent_steps": 10400,
+        "unique_state_reduced_potential_bytes": 111392000,
+        "primary_bootstrap_draws": 40,
+        "planned_mbar_fits": 44,
+        "fit_count_note": "One intermediate FES, one primary PMF plus bootstrap, two bootstrap-free bin checks.",
+        "memory_note": "The matrix byte count is one array, not a peak-memory guarantee."
+      }
+    }
+  ],
+  "reference_timing": {
+    "github_run_id": 40911869436,
+    "old_windows": 23,
+    "old_streams": 46,
+    "old_samples": 92000,
+    "whole_seconds": 1021.9715933589999,
+    "forty_draw_diagnostic_seconds": 553.0377933210001,
+    "note": "Measured with the previous solver. The updated solver must be timed separately; these are not new-run predictions."
+  },
+  "design": [
+    "Different global seeds are independent runs; bootstrap draws are not independent runs.",
+    "Every formal case recomputes constrained parents and children at xi=1.00925.",
+    "The primary MBAR and Gaussian-UI comparison share the same bootstrap draw.",
+    "85/340-bin sensitivities use zero additional bootstrap draws.",
+    "Two seeds per stiffness do not establish bead, timestep, Rinf, or full statistical convergence."
+  ]
+}

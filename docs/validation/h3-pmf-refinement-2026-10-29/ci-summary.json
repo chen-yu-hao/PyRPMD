@@ -1,0 +1,365 @@
+{
+  "schema": "pyrpmd.github-ci-summary.v1",
+  "observed_at_utc": "2026-10-29T17:28:25.124Z",
+  "repository": "chen-yu-hao/Next-RPMD",
+  "run": {
+    "id": 40921070724,
+    "name": "PyRPMD tests",
+    "url": "https://github.com/chen-yu-hao/Next-RPMD/actions/runs/40921070724",
+    "api_url": "https://api.github.com/repos/chen-yu-hao/Next-RPMD/actions/runs/40921070724",
+    "head_sha": "5642550dad837ebc714a66e2a50d43f0b84bf412",
+    "head_branch": "main",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "attempt": 1,
+    "started_at": "2026-10-29T17:24:45Z",
+    "updated_at": "2026-10-29T17:26:23Z"
+  },
+  "jobs": [
+    {
+      "id": 123614110577,
+      "name": "cpu (3.11)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/chen-yu-hao/Next-RPMD/actions/runs/40921070724/job/123614110577",
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 4,
+          "name": "Run sudo apt-get update && sudo apt-get install -y libopenmpi-dev openmpi-bin",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 5,
+          "name": "Run python -m pip install -e '.[test,ase,mpi]'",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 6,
+          "name": "Run pyrpmd info",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 7,
+          "name": "Run python -m pytest -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 8,
+          "name": "Run mpiexec -n 4 python tests/mpi_integration.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 9,
+          "name": "Run mpiexec -n 4 python tests/mpi_workflow_smoke.py \"$RUNNER_TEMP/pyrpmd-mpi-workflows\"",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 10,
+          "name": "Run python -m pip install build && python -m build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 19,
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 20,
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 21,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "test_summary": {
+        "passed": 103,
+        "skipped": 4,
+        "subtests_passed": 87,
+        "duration_seconds": 48.84
+      },
+      "skip_reasons": [
+        {
+          "tests": 2,
+          "reason": "optional real BKMP2 PES has not been built in this ordinary CI job"
+        },
+        {
+          "tests": 2,
+          "reason": "optional PyTorch runtime not installed; tested by the separate torch-cpu job"
+        }
+      ],
+      "evidence": [
+        "2026-10-29T17:26:09.9755659Z SKIPPED [1] tests/test_h3_pes.py:17: optional real BKMP2 PES has not been built",
+        "2026-10-29T17:26:09.9756559Z SKIPPED [1] tests/test_h3_pes.py:23: optional real BKMP2 PES has not been built",
+        "2026-10-29T17:26:09.9757815Z SKIPPED [2] ../../../../../opt/hostedtoolcache/Python/3.11.17/x64/lib/python3.11/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed",
+        "2026-10-29T17:26:09.9758952Z 103 passed, 4 skipped, 87 subtests passed in 48.84s",
+        "2026-10-29T17:26:11.0368534Z MPI G=2 B=2: ordered tasks, collective failure, continuous parents and restart passed; MPI GPU node-local routing passed with a mock provider (no CUDA test)",
+        "2026-10-29T17:26:16.6491383Z FES + rate G2 B2 MPI workflows and exact resume: PASS",
+        "2026-10-29T17:26:21.2342979Z Successfully built pyrpmd-0.1.0.tar.gz and pyrpmd-0.1.0-cp311-cp311-linux_x86_64.whl"
+      ],
+      "mpi": {
+        "ranks": 4,
+        "trajectory_groups": 2,
+        "bead_ranks_per_group": 2,
+        "integration_passed": true,
+        "fes_rate_and_exact_resume_passed": true,
+        "gpu_routing": "mock provider only; no CUDA hardware test",
+        "physical_cross_node_test": false
+      },
+      "packaging": {
+        "sdist": "pyrpmd-0.1.0.tar.gz",
+        "wheel": "pyrpmd-0.1.0-cp311-cp311-linux_x86_64.whl",
+        "native_extension_compiled": true,
+        "openmp_enabled": true
+      }
+    },
+    {
+      "id": 123614111236,
+      "name": "cpu (3.12)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/chen-yu-hao/Next-RPMD/actions/runs/40921070724/job/123614111236",
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 4,
+          "name": "Run sudo apt-get update && sudo apt-get install -y libopenmpi-dev openmpi-bin",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 5,
+          "name": "Run python -m pip install -e '.[test,ase,mpi]'",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 6,
+          "name": "Run pyrpmd info",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 7,
+          "name": "Run python -m pytest -q",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 8,
+          "name": "Run mpiexec -n 4 python tests/mpi_integration.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 9,
+          "name": "Run mpiexec -n 4 python tests/mpi_workflow_smoke.py \"$RUNNER_TEMP/pyrpmd-mpi-workflows\"",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 10,
+          "name": "Run python -m pip install build && python -m build",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 19,
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 20,
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 21,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "test_summary": {
+        "passed": 103,
+        "skipped": 4,
+        "subtests_passed": 87,
+        "duration_seconds": 40.77
+      },
+      "skip_reasons": [
+        {
+          "tests": 2,
+          "reason": "optional real BKMP2 PES has not been built in this ordinary CI job"
+        },
+        {
+          "tests": 2,
+          "reason": "optional PyTorch runtime not installed; tested by the separate torch-cpu job"
+        }
+      ],
+      "evidence": [
+        "2026-10-29T17:26:08.1122266Z SKIPPED [1] tests/test_h3_pes.py:17: optional real BKMP2 PES has not been built",
+        "2026-10-29T17:26:08.1122838Z SKIPPED [1] tests/test_h3_pes.py:23: optional real BKMP2 PES has not been built",
+        "2026-10-29T17:26:08.1123846Z SKIPPED [2] ../../../../../opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed",
+        "2026-10-29T17:26:08.1124657Z 103 passed, 4 skipped, 45 warnings, 87 subtests passed in 40.77s",
+        "2026-10-29T17:26:09.0998365Z MPI G=2 B=2: ordered tasks, collective failure, continuous parents and restart passed; MPI GPU node-local routing passed with a mock provider (no CUDA test)",
+        "2026-10-29T17:26:14.0435273Z FES + rate G2 B2 MPI workflows and exact resume: PASS",
+        "2026-10-29T17:26:18.7989280Z Successfully built pyrpmd-0.1.0.tar.gz and pyrpmd-0.1.0-cp312-cp312-linux_x86_64.whl"
+      ],
+      "mpi": {
+        "ranks": 4,
+        "trajectory_groups": 2,
+        "bead_ranks_per_group": 2,
+        "integration_passed": true,
+        "fes_rate_and_exact_resume_passed": true,
+        "gpu_routing": "mock provider only; no CUDA hardware test",
+        "physical_cross_node_test": false
+      },
+      "packaging": {
+        "sdist": "pyrpmd-0.1.0.tar.gz",
+        "wheel": "pyrpmd-0.1.0-cp312-cp312-linux_x86_64.whl",
+        "native_extension_compiled": true,
+        "openmp_enabled": true
+      }
+    },
+    {
+      "id": 123614111294,
+      "name": "torch-cpu",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/chen-yu-hao/Next-RPMD/actions/runs/40921070724/job/123614111294",
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 4,
+          "name": "Run python -m pip install -e '.[test]'",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 5,
+          "name": "Run python -m pip install torch --index-url https://download.pytorch.org/whl/cpu",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 6,
+          "name": "Run python -m pytest -q tests/test_potentials.py",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 11,
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 12,
+          "name": "Post Run actions/checkout@v6",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 13,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "test_summary": {
+        "passed": 10,
+        "skipped": 1,
+        "subtests_passed": 3,
+        "duration_seconds": 4.02
+      },
+      "skip_reasons": [
+        {
+          "tests": 1,
+          "reason": "optional ASE runtime not installed in the torch-cpu job; ASE is installed in both general CPU jobs"
+        }
+      ],
+      "evidence": [
+        "2026-10-29T17:25:38.3263155Z SKIPPED [1] ../../../../../opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/_pytest/unittest.py:521: optional ASE runtime not installed",
+        "2026-10-29T17:25:38.3264450Z 10 passed, 1 skipped, 3 warnings, 3 subtests passed in 4.02s"
+      ],
+      "mpi": null,
+      "packaging": null
+    }
+  ],
+  "all_jobs_success": true,
+  "overall_success": true,
+  "monitoring": {
+    "read_only_github": true,
+    "reruns_requested": 0,
+    "code_modified": false,
+    "logs": "Selected exact evidence lines only; full job logs were read but are not copied into this artifact."
+  },
+  "scope": "Ordinary software CI. Physical BKMP2 sampling study is a separate workflow; MPI GPU routing here uses a mock provider and does not establish CUDA or physical cross-node execution."
+}
