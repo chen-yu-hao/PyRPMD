@@ -118,10 +118,10 @@ def bias_descriptors(bias, dynamics):
 
 
 def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, record_energy, clock):
-    if not dynamics.native or not hasattr(dynamics.integrator._native, "advance"):
-        raise NotNative(dynamics.integrator.native_fallback_reason or "compiled fused kernel is not available")
     from .propagation import _check_dynamics_methods
     _check_dynamics_methods(dynamics)
+    if not dynamics.native or not hasattr(dynamics.integrator._native, "advance"):
+        raise NotNative(dynamics.integrator.native_fallback_reason or "compiled fused kernel is not available")
     factory = getattr(dynamics.potential, "native_binding", None)
     binding = factory() if callable(factory) else None
     if binding is None:
@@ -164,6 +164,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     if constraint is not None and (bias is not None or fragment_data):
         raise ValueError("constraint propagation cannot be combined with bias/fragment projections")
     dynamics._check_parameters();dynamics.integrator._check(state.q, state.p)
+    dynamics._check_fixed(state.q, state.p)
     if observe is None:
         mask = np.ones(steps, dtype=np.uint8)
     else:
@@ -218,6 +219,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                         dynamics.step(state)
                     else:
                         dynamics.step(state, bias)
+                dynamics._check_fixed(state.q, state.p)
                 if mask[i]:
                     row = records[written];row[0] = state.time
                     if record_energy:

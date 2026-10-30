@@ -1,0 +1,157 @@
+{
+  "version": "0.2.0",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "dependencies": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "h5py": "3.16.0"
+  },
+  "prefix": "/workspace/scratch/0e77c5369c77/venv-wheel-final",
+  "package": "/workspace/scratch/0e77c5369c77/venv-wheel-final/lib/python3.12/site-packages/pyrpmd/__init__.py",
+  "native_module": "/workspace/scratch/0e77c5369c77/venv-wheel-final/lib/python3.12/site-packages/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+  "native_capabilities": {
+    "available": true,
+    "openmp": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "console_version": "PyRPMD 0.2.0",
+  "cli_info": {
+    "name": "PyRPMD",
+    "version": "0.2.0",
+    "native": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    },
+    "workflows": [
+      "rate",
+      "drpmd",
+      "fes",
+      "network",
+      "metadynamics",
+      "pcet",
+      "pimd",
+      "diffusion",
+      "site_rate",
+      "surface_rate"
+    ],
+    "materials": {
+      "cell": "fixed",
+      "trajectory": "unwrapped_centroid",
+      "pressure_ensemble": false
+    },
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ],
+    "enhanced_sampling": [
+      "adaptive_umbrella",
+      "standard_metadynamics",
+      "well_tempered_metadynamics"
+    ],
+    "input_schema_version": 1,
+    "run_manifest_schema_version": 2,
+    "checkpoint_schema_version": 2,
+    "input_formats": [
+      "TOML .inp",
+      "Python build()"
+    ]
+  },
+  "imported_modules": [
+    "pyrpmd.checkpoint",
+    "pyrpmd.reactions",
+    "pyrpmd.workflows.network",
+    "pyrpmd.workflows.adaptive_umbrella",
+    "pyrpmd.workflows.metadynamics",
+    "pyrpmd.analysis.metadynamics",
+    "pyrpmd.pcet",
+    "pyrpmd.pcet_input",
+    "pyrpmd.workflows.pcet"
+  ],
+  "integrator_max_abs_errors": {
+    "cayley-bcb": 3.3306690738754696e-16,
+    "normal-mode-bab": 3.0531133177191805e-16,
+    "velocity-verlet": 2.7755575615628914e-17
+  },
+  "examples": {
+    "network": {
+      "task": "network",
+      "status": "completed",
+      "converged": false,
+      "resume_identical": true
+    },
+    "adaptive": {
+      "task": "fes",
+      "status": "sampled",
+      "converged": false,
+      "resume_identical": true
+    },
+    "meta_standard": {
+      "task": "metadynamics",
+      "status": "bias_estimate",
+      "converged": false,
+      "resume_identical": true
+    },
+    "meta_well_tempered": {
+      "task": "metadynamics",
+      "status": "bias_estimate",
+      "converged": false,
+      "resume_identical": true
+    },
+    "pcet": {
+      "task": "pcet",
+      "status": "model_rates_computed",
+      "converged": false,
+      "resume_identical": true
+    }
+  },
+  "drpmd_workflows": {
+    "normal-mode-bab": {
+      "beads": 3,
+      "trajectories": 2,
+      "parent_thermal_steps": {
+        "0": 8
+      },
+      "child_native_steps": [
+        0,
+        0
+      ],
+      "child_python_steps": [
+        72,
+        39
+      ],
+      "driver": "auto",
+      "native_substeps": "required",
+      "resume_identical": true
+    },
+    "velocity-verlet": {
+      "beads": 3,
+      "trajectories": 2,
+      "parent_thermal_steps": {
+        "0": 8
+      },
+      "child_native_steps": [
+        0,
+        0
+      ],
+      "child_python_steps": [
+        72,
+        39
+      ],
+      "driver": "auto",
+      "native_substeps": "required",
+      "resume_identical": true
+    }
+  },
+  "scope": "Installed-distribution and finite-sampling workflow validation, not physical convergence or universal wheel compatibility."
+}

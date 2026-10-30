@@ -14,6 +14,7 @@ from pyrpmd.constants import KB_AU
 from pyrpmd.input import JobSpec
 from pyrpmd.potentials import make_potential
 from pyrpmd.reactions import resolve_network_job, network_jobs, validate_network
+from pyrpmd.system import System
 from pyrpmd.workflows.network import prepare_network, run_network
 from pyrpmd.workflows.prepare import numerical_hessian
 
@@ -70,6 +71,31 @@ def network_spec():
 
 
 class NetworkIdentityTests(unittest.TestCase):
+    def test_surface_identity_cannot_be_dropped_into_gas_phase_paths(self):
+        config, system = resolve_network_job(network_spec())
+        for extra in (
+            {"cell": np.diag([10.0, 10.0, 20.0]).tolist(), "pbc": [True, True, False]},
+            {"fixed_atoms": [0]},
+        ):
+            with self.subTest(extra=extra):
+                raw = network_spec()
+                raw["system"].update(extra)
+                with self.assertRaisesRegex(ValueError, "gas-phase bimolecular"):
+                    resolve_network_job(raw)
+                slab = System.from_dict({**system.to_dict(), **extra})
+                with self.assertRaisesRegex(ValueError, "gas-phase bimolecular"):
+                    validate_network(config, slab)
+                with self.assertRaisesRegex(ValueError, "gas-phase bimolecular"):
+                    list(network_jobs(config, slab))
+                altered = copy.deepcopy(config)
+                altered["network"]["jobs"][0]["system"].update(extra)
+                with self.assertRaisesRegex(ValueError, "gas-phase bimolecular"):
+                    prepare_network(altered, system)
+        altered = copy.deepcopy(config)
+        altered["network"]["jobs"][0]["config"]["task"] = "surface_rate"
+        with self.assertRaisesRegex(ValueError, "gas-phase task='rate'"):
+            validate_network(altered, system)
+
     def test_entrance_normalizations_distinct_real_ts_and_preparation(self):
         config, system = resolve_network_job(network_spec())
         self.assertEqual(validate_network(config, system)["transition_states"], 2)

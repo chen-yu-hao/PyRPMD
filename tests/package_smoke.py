@@ -45,6 +45,7 @@ def main():
         "pyrpmd.checkpoint", "pyrpmd.reactions", "pyrpmd.workflows.network",
         "pyrpmd.workflows.adaptive_umbrella", "pyrpmd.workflows.metadynamics",
         "pyrpmd.analysis.metadynamics",
+        "pyrpmd.pcet", "pyrpmd.pcet_input", "pyrpmd.workflows.pcet",
     ]
     for module in modules:
         importlib.import_module(module)
@@ -88,6 +89,7 @@ def main():
         "adaptive": "examples/fes/adaptive_harmonic.inp",
         "meta_standard": "examples/metadynamics/standard.inp",
         "meta_well_tempered": "examples/metadynamics/well_tempered_2d.inp",
+        "pcet": "examples/pcet/harmonic_scan.inp",
     }
     examples = {}
     for name, relative in example_paths.items():
@@ -109,6 +111,15 @@ def main():
                      for path in cell["transition_states"].values()]
             if any(path["result"].get("child_trajectories") != 4 for path in paths):
                 raise AssertionError("Network example did not propagate its actual paired children")
+        if name == "pcet":
+            if summary["completed_scan_points"] != 18 or summary["normalization"] != "local_first_order":
+                raise AssertionError("PCET example did not evaluate its full local-rate scan")
+            if summary["rate_unit"] != "s^-1" or not summary["numerical_convergence"]:
+                raise AssertionError("PCET example failed its rate-unit or numerical-convergence checks")
+            if not summary["physical_applicability_unverified"]:
+                raise AssertionError("PCET teaching model must retain its applicability limitation")
+            if len(summary["kinetic_isotope_effects"]) != 9:
+                raise AssertionError("PCET example did not compare both isotopes at every condition")
         examples[name] = {"task": summary["task"], "status": summary.get("status"),
                           "converged": summary.get("converged", False), "resume_identical": True}
     # Exercise public dRPMD entry points with real P>1 parent sampling and

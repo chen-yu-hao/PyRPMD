@@ -1,0 +1,8 @@
+/* Readable CJK prose and compact numerical/reference tables. */
+html { --pst-font-family-base: system-ui, -apple-system, "Noto Sans CJK SC", sans-serif; }
+.bd-article-container { max-width: 58rem; }
+.bd-article p, .bd-article li { line-height: 1.8; }
+.bd-article table { font-size: .94rem; }
+.bd-article table td, .bd-article table th { white-space: normal; }
+.bd-article pre { line-height: 1.5; }
+

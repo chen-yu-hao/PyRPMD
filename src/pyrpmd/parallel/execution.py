@@ -157,13 +157,19 @@ def _result_error(exc):
 
 
 def _combine(results):
-    from pyrpmd.potentials import PESResult
+    from pyrpmd.potentials import PESResult, PotentialError
+
+    virials = [r.virial for r in results]
+    present = [v is not None for v in virials]
+    if any(present) and not all(present):
+        raise PotentialError("Bead PES chunks disagree on optional virial availability")
 
     return PESResult(
         np.concatenate([np.asarray(r.energy) for r in results]),
         np.concatenate([np.asarray(r.forces) for r in results]),
         np.concatenate([np.asarray(r.status, dtype=np.int32) for r in results]),
         tuple(m for r in results for m in r.messages),
+        None if not any(present) else np.concatenate(virials),
     )
 
 

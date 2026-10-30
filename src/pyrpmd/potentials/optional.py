@@ -1,6 +1,7 @@
 """Optional ASE and PyTorch adapters. Imports occur only when requested."""
 
 import numpy as np
+from ..geometry import validate_cell_pbc
 from .base import (
     Potential,
     PESResult,
@@ -23,17 +24,42 @@ class ASEPotential(Potential):
         "provider": "ase",
         "thread_safety": "context_serial",
         "execution_device": "cpu",
+        "periodic": True,
+        "supports_pbc": True,
     }
 
-    def __init__(self, symbols, calculator):
+    def __init__(self, symbols, calculator, *, cell=None, pbc=None):
         try:
             from ase import Atoms
         except ImportError as exc:
             raise BackendUnavailableError(
                 "ASE provider requires pip install 'pyrpmd[ase]'"
             ) from exc
-        self.atoms = Atoms(symbols=symbols)
+        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
+        # Isotope masses are carried by Dynamics, while ASE calculators need
+        # chemical element identities (ASE does not recognize D/T symbols).
+        symbols = ("H" if symbols in ("D", "T") else symbols) if isinstance(symbols, str) else ["H" if s in ("D", "T") else s for s in symbols]
+        self.atoms = Atoms(
+            symbols=symbols,
+            cell=None if self.cell is None else self.cell * BOHR_ANGSTROM,
+            pbc=self.pbc,
+        )
         self.atoms.calc = calculator
+
+    def bind_system(self, system):
+        """Bind canonical-AU cell and boundary flags without wrapping positions."""
+        from ..geometry import validate_cell
+
+        def get(key, default=None):
+            return system.get(key, default) if isinstance(system, dict) else getattr(system, key, default)
+
+        self.cell, self.pbc = validate_cell_pbc(get("cell"), get("pbc"))
+        cell, pbc = self.cell, self.pbc
+        symbols = get("symbols")
+        if symbols is not None and ["H" if s in ("D", "T") else s for s in symbols] != self.atoms.get_chemical_symbols():
+            raise PotentialError("ASE system atom identities differ from the provider")
+        self.atoms.set_cell(np.zeros((3, 3)) if cell is None else cell * BOHR_ANGSTROM)
+        self.atoms.set_pbc(pbc)
 
     def evaluate(self, x):
         x = coordinates(x)
@@ -41,11 +67,15 @@ class ASEPotential(Potential):
             raise PotentialError("ASE atom count mismatch")
         es = []
         fs = []
+        virials = [] if self.cell is not None and "stress" in getattr(self.atoms.calc, "implemented_properties", ()) else None
         for frame in x:
             self.atoms.set_positions(frame * BOHR_ANGSTROM)
             es.append(self.atoms.get_potential_energy() * EV_HARTREE)
             fs.append(self.atoms.get_forces() * EV_HARTREE * BOHR_ANGSTROM)
-        return validate_result(PESResult(es, fs), x.shape)
+            if virials is not None:
+                # ASE stress is tensile-positive eV/angstrom^3; W=-V*stress.
+                virials.append(-self.atoms.get_stress(voigt=False) * self.atoms.get_volume() * EV_HARTREE)
+        return validate_result(PESResult(es, fs, virial=virials), x.shape)
 
     def close(self):
         close = getattr(self.atoms.calc, "close", None)

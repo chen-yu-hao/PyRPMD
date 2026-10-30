@@ -7,7 +7,7 @@
 | 字段 | 类型、单位与含义 |
 | --- | --- |
 | `schema_version` | 当前为整数 1 |
-| `task` | `rate`、`drpmd`、`fes`、`network`、`metadynamics` |
+| `task` | `rate`、`drpmd`、`fes`、`surface_rate`、`network`、`metadynamics`、`pcet`、`pimd`、`diffusion`、`site_rate` |
 | `preset` | `pilot`（缺省）或 `production` |
 | `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
 | `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
@@ -21,6 +21,9 @@
 
 `production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，科学收敛仍需用户用系列计算确认。未知顶层和常用 section 字段会报错，不会自动忽略。
 
+`pcet` 使用下述独立模型输入，不使用分子系统、PES、珠子数、传播与采样
+预设；其 `temperature` 也接受温度列表以运行扫描。
+
 时间数量必须是步长的整数倍。需要非整除的时间时请先选择实际整数步数，例如 `equilibration_steps=333`。纯数值的内部单位是 bohr、hartree、原子时间、电子质量；XYZ 坐标缺省为 angstrom。力常数支持 `"10 kcal/mol/angstrom^2"` 等组合单位。所有原子索引均为 **0-based**。
 
 ## 系统
@@ -28,6 +31,20 @@
 `[system]` 可使用 `transition_state="ts.xyz"`、`geometry="system.xyz"`，或 `reactants=["A.xyz","B.xyz"]` 加 `separation="12 angstrom"`。dRPMD 的 separation 是两个反应物 centroid COM 的初始**径向距离** R0；发射时使用 `z=sqrt(R0^2-b^2)` 保持径向距离，需 `bmax<R0`。
 
 Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（电子质量）或 `masses_amu`。`geometry_unit` 可覆盖坐标单位。同位素可用 `isotopes=[{atom=0, mass="2.01410177812 amu"}]`。质量在反应物居中和放置前解析。电荷 `charge` 为整数，`multiplicity` 为正整数，默认 0 和 1；须与所选电子势能面一致。软件不从几何自动推断自旋统计权重。
+
+固定晶胞使用 `cell=[[...],[...],[...]]`（每行一个矢量）、`cell_unit="angstrom"`
+及 `pbc=[true,true,false]`。有 cell 时默认全周期，无 cell 时默认非周期。
+晶胞、部分 PBC、连续质心坐标及支持的势能接口见[材料计算](materials.md)。
+## 周期表面
+
+周期表面新增 `system.cell`（3×3 行向量）、`cell_unit`（缺省继承 geometry_unit；inline 默认 bohr，XYZ 默认 angstrom）、
+`pbc=[true,true,false]` 和 `fixed_atoms=[...]`。这些字段参与恢复的科学指纹。
+`task="surface_rate"` 还要求 `[surface]` 的 `reactant_basin` 和 `dividing_surface`；
+`product_side` 为 `higher`（默认）或 `lower`。速率使用位置密度 PMF 和一阶盆地
+归一化，单位 s^-1，仅支持内置线性 centroid 坐标。已有气相 `rate`／`drpmd`／
+`network` 会拒绝周期／固定原子系统。表面 FES 可使用自适应伞抽样；当前
+`surface_rate` 不接受 `[adaptive_umbrella]`，`metadynamics` 尚不接受周期／固定
+原子系统。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
 
 ## 热化与持续母轨迹
 
@@ -45,7 +62,17 @@ parents = 8
 
 `equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
 
-FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。正式工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。独立的 `Dynamics.sample_step` 提供与 Cayley 匹配的 BCOCB、与正常模匹配的 BAOAB，当前不作为工作流可选采样器。采样和子轨迹步长须相同。真实碰撞和回穿子轨迹使用无温控的生产传播。
+FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和 `diffusion` 生产段使用无温控传播。
+
+## 固定晶胞材料任务
+
+`pimd` 和 `diffusion` 使用上述 sampling 时间配置，不接受 reaction、umbrella 或
+metadynamics 偏置。`diffusion` 增加 `[diffusion]`：`atom_indices`、`axes`、
+`reference_atoms`、`fit_range`、`max_lag`、`bootstrap`、`seed`、`block_length`。
+`max_lag`/`block_length` 的单位是保存帧，`fit_range` 是两个时间数量；所有选择索引
+均从零起始。`site_rate` 使用一个线性 centroid CV、固定 umbrella 和 `[recrossing]`，
+并显式设置 `[site_rate]` 的 `cv`、`basin`、`dividing_surface`、`direction`。
+三种任务的完整配置与结果解释见[材料计算](materials.md)。
 
 ## dRPMD
 
@@ -176,7 +203,7 @@ bootstrap = 100
 min_count = 5
 ```
 
-内置 CV 包括 distance、bond_difference、angle、cartesian、com_distance、rpmdrate_xi 和 python。内置几何 CV 可选择 `centroid` 或 `bead_average`；自定义 CV 返回自己定义的完整 estimator 和导数。`stiffness` 可为标量、对角数组或对称正定矩阵。数值 centers 使用声明的 CV 输入单位；`centers_au` 与数值 stiffness 使用原子单位，带单位字符串按量纲验证。
+内置 CV 包括 distance、bond_difference、angle、cartesian、com_distance、rpmdrate_xi、surface_height、surface_lateral、periodic_distance 和 python。内置几何 CV 可选择 `centroid` 或 `bead_average`；自定义 CV 返回自己定义的完整 estimator 和导数。`stiffness` 可为标量、对角数组或对称正定矩阵。数值 centers 使用声明的 CV 输入单位；`centers_au` 与数值 stiffness 使用原子单位，带单位字符串按量纲验证。
 
 输出 FES 是相对于所选 CV 测度的密度：例如距离 CV 的自由能自然包含径向熵，不自动把它变成去除 Jacobian 的两体势。没有样本或连通重叠支持的区域 mask，不外推。`analyze --recompute --bins ... --bootstrap ...` 使用保存的样本重新估计而不调用 PES。
 
@@ -239,9 +266,67 @@ bootstrap = 0
 兼容传播仍能使用所选积分器的编译子步。有限时间 FES 估计及 HILLS/恢复
 时序见[增强采样规范](enhanced-sampling.md)。
 
+## 电化学 PCET 模型
+
+`task="pcet"` 计算固定局域复合物的一维单质子 golden-rule 速率，输出
+还原/氧化的 s⁻¹ 速率和 H/D KIE；它不执行 RPMD 轨迹。输入不需要
+`[system]` 或 `[potential]`，而使用 `[pcet]`、`[pcet.electrode]`、
+`[pcet.proton]` 及两电子态的质子势：
+
+```toml
+task = "pcet"
+temperature = ["250 K", "300 K", "350 K"]
+
+[pcet]
+method = "golden_rule"
+normalization = "local_first_order"
+isotopes = ["H", "D"]
+driving_force = "0.0 eV"
+reorganization_energy = "0.7 eV"
+electronic_coupling = "0.001 eV"
+
+[pcet.electrode]
+model = "wide_band"
+density_of_states = "1 eV^-1"
+potential_reference = "SHE"
+reference_potential_V = 0.0
+potentials_V = [-0.2, 0.0, 0.2]
+
+[pcet.proton]
+grid_min = "-1.5 angstrom"
+grid_max = "1.5 angstrom"
+grid_points = 401
+states = 12
+
+[pcet.proton.oxidized]
+kind = "harmonic"
+center = "-0.2 angstrom"
+force_constant = "4 eV/angstrom^2"
+
+[pcet.proton.reduced]
+kind = "harmonic"
+center = "0.2 angstrom"
+force_constant = "5 eV/angstrom^2"
+```
+
+这些是无真实材料归属的教学参数。`driving_force` 是参考电势下 reduced
+减 oxidized 的最低点自由能差，不含转移质子的零点能与热振动自由能；
+两个质子势分别去除自身最低值，由本征态求解器提供质子量子贡献。
+电势增加时按 `+e*(U-U_ref)` 增大还原自由能。`potential_reference` 只记录
+标尺，不自动转换 SHE/RHE 或加入 pH 依赖。
+
+`[pcet.numerics]` 可设置 `quadrature_rtol`、`quadrature_atol`、
+`convergence_check`、`relative_tolerance` 和 `absolute_tolerance_s`。
+数值收敛与弱耦合/宽带/经典环境的物理适用性分开报告。完整可运行示例、
+表格势字段、速率公式和输出解释见 [PCET 规范](pcet.md)与
+[教学示例](../examples/pcet/README.md)。
+
 ## 运行与重启记录
 
 `manifest.json` v2 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。新 NPZ checkpoint 使用 v2 容器与逐数组校验，始终以 `allow_pickle=False` 读数组；RNG/进度采用同一容器内的 JSON 字符串或明确的工作流元数据。旧 v1 文件的兼容读取与 manifest 迁移见[恢复规范](checkpoints.md)。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。
+
+PCET 用 `input/model.json` 保存一维模型，不创建分子 `system.json`；
+其扫描点 checkpoint 是带模型身份与校验的 JSON，不包含 q/p 或 RNG。
 
 ## 连续原生传播
 

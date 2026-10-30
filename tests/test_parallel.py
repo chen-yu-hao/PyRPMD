@@ -60,6 +60,43 @@ class ParallelTests(unittest.TestCase):
                         )
             self.assertEqual(devices, ["cuda:0"] * per_card + ["cuda:2"] * per_card)
 
+    def test_periodic_ase_virial_survives_bead_processes(self):
+        try:
+            from ase.calculators.lj import LennardJones
+        except ImportError:
+            self.skipTest("optional ASE runtime not installed")
+        from pyrpmd.potentials.optional import ASEPotential
+        from pyrpmd.system import System
+
+        system = System(("H", "D"), np.array([1837.0, 3671.0]),
+                        np.array([[0.0, 0.0, 0.0], [2.2, 0.3, 0.0]]),
+                        cell=np.diag([10.0, 11.0, 12.0]), pbc=[True, True, False])
+        serial = ASEPotential(system.symbols, LennardJones(rc=2.5),
+                              cell=system.cell, pbc=system.pbc)
+        parallel = ProcessBeadPotential(
+            {"provider": "ase", "factory": "ase.calculators.lj:LennardJones",
+             "params": {"rc": 2.5}}, system, 3)
+        q = np.repeat(system.geometry[None], 5, axis=0)
+        q[:, 1, 0] += np.arange(5) * 0.02
+        q[3, 0] += system.cell[0]
+        try:
+            reference, result = serial.evaluate(q), parallel.evaluate(q)
+            for field in ("energy", "forces", "virial"):
+                np.testing.assert_allclose(getattr(result, field), getattr(reference, field),
+                                           rtol=1e-13, atol=1e-13)
+        finally:
+            serial.close()
+            parallel.close()
+
+    def test_inconsistent_chunk_virials_rejected(self):
+        from pyrpmd.parallel.execution import _combine
+        from pyrpmd.potentials import PESResult, PotentialError
+
+        a = PESResult(np.zeros(1), np.zeros((1, 1, 3)), virial=np.zeros((1, 3, 3)))
+        b = PESResult(np.zeros(1), np.zeros((1, 1, 3)))
+        with self.assertRaisesRegex(PotentialError, "virial availability"):
+            _combine([a, b])
+
     def test_gpu_does_not_accept_cpu_provider(self):
         plan = execution_plan({"mode": "gpu", "devices": [0]})
         with _context(plan, 0):

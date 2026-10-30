@@ -72,12 +72,14 @@ def fingerprint(config, system):
             "_base_directory",
         )
     }
+    value = {"config": data, "system": system.to_dict()}
+    from .cv import geometry_convention_identity
+
+    convention = geometry_convention_identity(config, system)
+    if convention is not None:
+        value["cv_geometry_convention"] = convention
     return hashlib.sha256(
-        json.dumps(
-            jsonable({"config": data, "system": system.to_dict()}),
-            sort_keys=True,
-            allow_nan=False,
-        ).encode()
+        json.dumps(jsonable(value), sort_keys=True, allow_nan=False).encode()
     ).hexdigest()
 
 

@@ -124,10 +124,15 @@ the extension after updating source.
 
 ## Sampling and real-time dynamics
 
-The production workflows use Andersen sampling with the selected deterministic
+The FES, gas reaction and site-rate workflows use Andersen sampling with the selected deterministic
 integrator. Randomisation is still scheduled on the continuous parent clock;
 changing a block size cannot shift thermostat, observation or checkpoint events.
 Collision and recrossing child production remains unthermostatted.
+
+Standalone `pimd`/`diffusion` also expose the matching PILE-L sampler described
+below. Cayley/normal-mode material sampling defaults to PILE-L; Verlet uses
+Andersen. `diffusion` turns the thermostat off after equilibration and uses
+physical masses during its entire RPMD production record. See [materials.md](materials.md).
 
 The low-level `sample_step()` additionally exposes two explicit PILE-L samplers:
 

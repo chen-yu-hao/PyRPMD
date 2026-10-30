@@ -240,7 +240,8 @@ class CayleyIntegrator:
 class Dynamics:
     def __init__(
         self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1,
-        loop_backend="auto", block_steps=256, integrator="cayley-bcb"
+        loop_backend="auto", block_steps=256, integrator="cayley-bcb",
+        fixed_atoms=(), fixed_positions=None
     ):
         self.potential = potential
         self.integrator = CayleyIntegrator(
@@ -248,6 +249,32 @@ class Dynamics:
         )
         self.integrator_name = self.integrator.scheme
         self.masses = self.integrator.masses
+        # Fixed substrate atoms are external coordinates, not particles with
+        # infinite mass. Every bead shares the same reference position and has
+        # exactly zero momentum. Remaining atoms keep their physical masses.
+        raw_fixed = tuple(fixed_atoms)
+        if any(
+            isinstance(i, (bool, np.bool_))
+            or not isinstance(i, (int, np.integer))
+            or not 0 <= i < len(self.masses)
+            for i in raw_fixed
+        ) or len(set(raw_fixed)) != len(raw_fixed):
+            raise ValueError("fixed_atoms must contain distinct in-range integer atom indices")
+        self.fixed_atoms = tuple(int(i) for i in raw_fixed)
+        self._fixed_indices = np.asarray(self.fixed_atoms, dtype=int)
+        self.fixed_positions = None
+        if fixed_positions is not None:
+            positions = np.asarray(fixed_positions)
+            if (
+                positions.dtype.kind not in "fiu"
+                or positions.shape != (len(self.masses), 3)
+                or not np.isfinite(positions).all()
+            ):
+                raise ValueError("fixed_positions must be finite real [N,3] reference coordinates")
+            self.fixed_positions = np.array(positions, dtype=float, copy=True)
+            self.fixed_positions.flags.writeable = False
+        elif self.fixed_atoms:
+            raise ValueError("fixed_atoms require fixed_positions with complete [N,3] reference geometry")
         self.beta = float(beta)
         self.nbeads = int(nbeads)
         self.dt = float(dt)
@@ -287,9 +314,39 @@ class Dynamics:
         return native_supported(self, bias=bias, observe=observe)
 
     def sample_momenta(self):
-        return self.rng.normal(size=self.integrator.shape) * np.sqrt(
+        momenta = self.rng.normal(size=self.integrator.shape) * np.sqrt(
             self.masses[None, :, None] * self.nbeads / self.beta
         )
+        momenta[:, self._fixed_indices, :] = 0.0
+        return momenta
+
+    def _project_fixed(self, q, p):
+        """Pin fixed atoms in working arrays; callers commit them transactionally."""
+        if self.fixed_atoms:
+            q[:, self._fixed_indices, :] = self.fixed_positions[self._fixed_indices]
+            p[:, self._fixed_indices, :] = 0.0
+
+    def _check_fixed(self, q, p):
+        """Reject inconsistent initial/restarted states instead of changing them."""
+        if self.fixed_atoms and (
+            not np.array_equal(
+                q[:, self._fixed_indices, :],
+                np.broadcast_to(
+                    self.fixed_positions[self._fixed_indices],
+                    (self.nbeads, len(self.fixed_atoms), 3),
+                ),
+            )
+            or np.any(p[:, self._fixed_indices, :] != 0.0)
+        ):
+            raise ValueError("fixed atoms must have reference positions on every bead and zero momenta")
+
+    def _record_python_steps(self, steps):
+        """Record workflow steps, including the fixed-atom compatibility route."""
+        self.propagation_stats["python_steps"] += int(steps)
+        if self.fixed_atoms and self.loop_backend != "python":
+            reason = "fixed atoms require the Python propagation loop"
+            reasons = self.propagation_stats["fallback_reasons"]
+            reasons[reason] = reasons.get(reason, 0) + int(steps)
 
     def _force(self, q, bias=None):
         result = validate_result(self.potential.evaluate(q), q.shape)
@@ -299,6 +356,7 @@ class Dynamics:
             if np.shape(extra) != q.shape or not np.isfinite(extra).all():
                 raise ValueError("bias returned invalid forces")
             force += extra
+        force[:, self._fixed_indices, :] = 0.0
         return force
 
     def step(self, state, bias=None):
@@ -318,16 +376,20 @@ class Dynamics:
     def _propagate(self, state, bias=None, fragment_data=()):
         self._check_parameters()
         self.integrator._check(state.q, state.p)
+        self._check_fixed(state.q, state.p)
         # Commit the state only after both force calls succeed. Failed PES calls
         # cannot leave a half-stepped state masquerading as a completed step.
         q = state.q.copy()
         p = state.p.copy()
         self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
         self._project_fragments(q, p, fragment_data)
+        self._project_fixed(q, p)
         self.integrator.free_step(q, p)
         self._project_fragments(q, p, fragment_data)
+        self._project_fixed(q, p)
         self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
         self._project_fragments(q, p, fragment_data)
+        self._project_fixed(q, p)
         if not np.isfinite(q).all() or not np.isfinite(p).all():
             raise FloatingPointError("nonfinite integration state")
         state.q[:] = q
@@ -339,6 +401,7 @@ class Dynamics:
     def energy(self, state, bias=None):
         q, p = state.q, state.p
         self.integrator._check(q, p)
+        self._check_fixed(q, p)
         e = float(np.sum(validate_result(self.potential.evaluate(q), q.shape).energy))
         e += float(np.sum(p * p / (2 * self.masses[None, :, None])))
         dq = q - np.roll(q, -1, axis=0)
@@ -370,6 +433,8 @@ class Dynamics:
                 or used.intersection(ix.tolist())
             ):
                 raise ValueError("invalid/overlapping fragment indices")
+            if set(self.fixed_atoms).intersection(ix.tolist()):
+                raise ValueError("fragment COM constraints cannot include fixed atoms")
             used.update(ix.tolist())
             m = self.masses[ix]
             total = float(m.sum())
@@ -413,11 +478,14 @@ class Dynamics:
             raise ValueError("interval must be positive integer")
         if self.dt <= 0:
             raise ValueError("thermostatted sampling requires positive dt")
+        self.integrator._check(state.q, state.p)
+        self._check_fixed(state.q, state.p)
         data = self._fragment_data(state, fragments)
+        fused_loop = self.can_fuse(bias=bias)
         if resample:
             state.p[:] = self.sample_momenta()
         self._fix_fragments(state, data)
-        if self.can_fuse(bias=bias):
+        if fused_loop:
             remaining = int(steps)
             while remaining:
                 if state.step % interval == 0:
@@ -433,7 +501,7 @@ class Dynamics:
                     state.p[:] = self.sample_momenta()
                     self._fix_fragments(state, data)
                 self._propagate(state, bias, data)
-                self.propagation_stats["python_steps"] += 1
+                self._record_python_steps(1)
         return state
 
     def sample_step(self, state, bias=None, *, gamma_centroid=1.0, method=None):
@@ -462,8 +530,10 @@ class Dynamics:
         q = state.q.copy()
         p = state.p.copy()
         self.integrator._check(q, p)
+        self._check_fixed(q, p)
         self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
         self.integrator.half_step(q, p)
+        self._project_fixed(q, p)
         # Real orthogonal cyclic normal modes avoid complex-noise covariance
         # errors at the zero and Nyquist modes. Small systems/thermalization.
         P = self.nbeads
@@ -492,10 +562,14 @@ class Dynamics:
             noise = self.rng.normal(size=p.shape) * np.sqrt(
                 self.masses[None, :, None] * P / self.beta
             )
+            noise[:, self._fixed_indices, :] = 0.0
             pk = c[:, None, None] * pk + np.sqrt(1 - c * c)[:, None, None] * noise
             p[:] = np.einsum("kb,kac->bac", C, pk)
+            self._project_fixed(q, p)
             self.integrator.half_step(q, p)
+            self._project_fixed(q, p)
             self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+            self._project_fixed(q, p)
             if not np.isfinite(q).all() or not np.isfinite(p).all():
                 raise FloatingPointError("nonfinite integration state")
             if not np.isfinite(state.time + self.dt):
