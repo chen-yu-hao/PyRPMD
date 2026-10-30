@@ -153,7 +153,13 @@ static PyObject* has_openmp(PyObject*,PyObject*){
     Py_RETURN_FALSE;
     #endif
 }
+#include "fused.hpp"
+#include "propagation.h"
+
 static PyMethodDef methods[]={
+ {"bind_pes",fused::bind_pes,METH_VARARGS,"Bind a trusted native PES; retain its lifetime owner."},
+ {"run_block",fused::run_block,METH_VARARGS,"Transactional fused BCB with native PES and observations."},
+ {"advance",fused_blocks::advance,METH_VARARGS,"BCB blocks with native RATTLE, observations and valid-prefix failure results."},
  {"create",create,METH_VARARGS,"Create an immutable independent Cayley context."},
  {"free_step",free_step,METH_VARARGS,"Update q,p using the full-ring Cayley map."},
  {"kick",kick,METH_VARARGS,"p += h*physical_force."},

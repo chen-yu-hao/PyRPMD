@@ -194,6 +194,7 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 - [并行与跨节点运行](docs/parallel.md)
 - [科学约定与适用范围](docs/science.md)
 - [开发与验证](docs/development.md)、[本次验证记录](docs/validation.md)
+- [原生传播与兼容性](docs/native-propagation.md)、[分段 API 与故障处理](docs/block-propagation.md)
 
 运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据及 `results/summary.json`。FES 另有 `fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条初始状态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。
 
@@ -207,3 +208,13 @@ mpiexec -n 4 python tests/mpi_integration.py
 Cayley、反应坐标及速率算法参考并移植了 [RPMDrate](https://github.com/GreenGroup/RPMDrate) 与用户 [Cayley/thermal-dRPMD 分支](https://github.com/chen-yu-hao/RPMDrate/tree/9a44d6b378d8bf835d67e1b3b7f78b27bdc84a78) 的相关实现；速率工作流也参考 [Caracal](https://github.com/Trebonius91/Caracal/tree/7f95ce9818b7f6d81d7cb3b634f360373c090820) 的 umbrella/recrossing 组织。新增适配器、输入规范和调度独立分层。来源 commit、作者、MIT 通知与论文 DOI 记录在 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。未捆绑 Caracal 的 QMDFF/xTB/机器学习模型。
 
 许可证：[MIT](LICENSE)。
+
+## C++17 生产传播
+
+`Dynamics.propagate()` 提供整块原子提交的连续传播；
+`Dynamics.propagate_block()` 提供逐步提交、观测 mask、完整 q/p 快照及原生
+Cayley–RATTLE，数值失败时保留成功前缀。dRPMD 碰撞和受约束母轨迹使用
+分段接口，FES/PMF 与 recrossing child 保留已验证的连续传播路径。
+自定义 Python PES/CV 保留兼容路径；自定义分类器仍在原有事件边界由 Python
+调用。配置默认 `loop_backend="auto"`、`block_steps=256`；接口范围和两种
+故障契约见上面的传播文档。

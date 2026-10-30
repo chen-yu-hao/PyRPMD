@@ -7,6 +7,8 @@ change stream identities. Only the coordinator writes aggregate products.
 
 from __future__ import annotations
 
+from pyrpmd.propagation import loop_options, scientific_config
+
 import copy
 import hashlib
 import json
@@ -51,6 +53,7 @@ def write_json(path, data):
 
 
 def _fingerprint(config, system, extras):
+    config = scientific_config(config)
     # Analysis settings, output path and worker count do not change a stream.
     physics = {
         k: v
@@ -387,6 +390,7 @@ def _sample_window(task):
             seed=seed,
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            **loop_options(config),
         )
         umbrella = UmbrellaBias(cv, center, stiffness)
         bias = umbrella
@@ -414,6 +418,8 @@ def _sample_window(task):
                 values = list(saved["values"])
                 energies = list(saved["energies"])
                 elapsed = int(saved["elapsed"])
+                if "propagation" in saved:
+                    dynamics.propagation_stats = json.loads(str(saved["propagation"]))
         else:
             geometry = system.geometry
             if len(cv.cvs) == 1 and isinstance(cv.cvs[0], RPMDrateCoordinate):
@@ -442,17 +448,31 @@ def _sample_window(task):
                 energies=np.asarray(energies),
                 elapsed=elapsed,
                 fingerprint=fingerprint,
+                propagation=json.dumps(dynamics.propagation_stats),
             )
 
+        fused_loop = dynamics.can_fuse(bias=bias, observe=cv)
         while elapsed < neq + nprod:
             if state.step % andersen == 0:
                 state.p[:] = dynamics.sample_momenta()
-            dynamics.step(state, bias)
-            elapsed += 1
+            if fused_loop:
+                # Never cross an RNG, output or checkpoint boundary.
+                sample_distance = (neq - elapsed + interval) if elapsed < neq else interval - (elapsed-neq) % interval
+                count = min(dynamics.block_steps, neq+nprod-elapsed,
+                            andersen-state.step % andersen,
+                            checkpoint_steps-elapsed % checkpoint_steps,
+                            sample_distance)
+                block = dynamics.propagate(state, count, bias=bias, observe=cv,
+                                           sample_interval=count, record_centroids=False)
+            else:
+                count = 1
+                dynamics.step(state, bias)
+                dynamics.propagation_stats["python_steps"] += 1
+            elapsed += count
             production = elapsed - neq
             if production > 0 and production % interval == 0:
-                values.append(cv.value(state.q))
-                energies.append(dynamics.energy(state, bias))
+                values.append(block.values[-1].copy() if fused_loop else cv.value(state.q))
+                energies.append(float(block.energies[-1]) if fused_loop else dynamics.energy(state, bias))
             if elapsed % checkpoint_steps == 0:
                 save()
         save()
@@ -470,6 +490,7 @@ def _sample_window(task):
             "energies": np.asarray(energies),
             "checkpoint": str(checkpoint),
             "native": dynamics.native,
+            "propagation": dict(dynamics.propagation_stats),
         }
     finally:
         if hasattr(provider, "close"):
@@ -503,6 +524,7 @@ def _write_fes(output, data, streams, cv, config):
                     g.create_dataset(key, data=stream[key])
                 g.attrs["window"] = stream["window"]
                 g.attrs["replica"] = stream["replica"]
+                g.attrs["propagation"] = json.dumps(stream.get("propagation", {}))
         os.replace(tmp, path / "fes.h5")
     mid = [0.5 * (e[1:] + e[:-1]) for e in data["edges"]]
     mesh = np.meshgrid(*mid, indexing="ij")

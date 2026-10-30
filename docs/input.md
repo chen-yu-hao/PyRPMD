@@ -183,3 +183,16 @@ min_count = 5
 ## 运行与重启记录
 
 `manifest.json` 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。所有 checkpoint 使用 `allow_pickle=False` 读数组，并另存可读 JSON 随机数/进度信息。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。
+
+## 连续原生传播
+
+`[dynamics]` 新增 `loop_backend="auto"|"native"|"python"` 和
+`block_steps=256`（1..65536）。`auto` 对已支持的原生 PES/CV 使用 C++17
+连续传播，其余情况保留 Python；`native` 在请求的 block 路径不支持时明确报错。
+`python` 保留旧的逐步调度，不必关闭已经存在的 C++ Cayley 单步内核。
+受约束 recrossing 母轨迹与 dRPMD 碰撞使用 `propagate_block()`，其单次调用
+上限为 4096 步；工作流自动把较大的 `block_steps` 限制到这个上限，并继续
+遵守原有热浴、分类、采样和 checkpoint 时间轴。输入范围与默认值仍为
+1..65536 和 256，FES/PMF 与 child 的原有 `propagate()` 路径保持兼容。
+支持范围及两种 API 的故障语义见 [连续传播说明](native-propagation.md) 和
+[分段 API](block-propagation.md)。

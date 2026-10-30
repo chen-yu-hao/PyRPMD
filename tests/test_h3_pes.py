@@ -1,6 +1,7 @@
 """Optional real chemical PES checks; the H3 CI job builds the PES explicitly."""
 
 from pathlib import Path
+import importlib.util
 import unittest
 
 import numpy as np
@@ -14,6 +15,17 @@ LIBRARY = ROOT / "benchmarks/h3/build/libbkmp2.so"
 
 @unittest.skipUnless(LIBRARY.is_file(), "optional real BKMP2 PES has not been built")
 class RealBKMP2Tests(unittest.TestCase):
+    def test_module_aliases_share_native_and_python_library_lock(self):
+        from benchmarks.h3.pes import BKMP2Potential
+
+        spec = importlib.util.spec_from_file_location("pyrpmd_bkmp2_lock_alias", FACTORY)
+        alias = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(alias)
+        original = BKMP2Potential(LIBRARY)
+        separately_imported = alias.BKMP2Potential(LIBRARY)
+        self.assertIs(original._lock, separately_imported._lock)
+        self.assertIs(original.native_binding().lock, separately_imported.native_binding().lock)
+
     def test_author_oracles_geometry_and_analytic_forces(self):
         report = import_object(FACTORY + ":verify")(LIBRARY)
         self.assertTrue(report["passed"])

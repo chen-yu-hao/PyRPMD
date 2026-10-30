@@ -11,6 +11,8 @@ parallel scheduling/checkpoints are new PyRPMD code.
 from __future__ import annotations
 
 from collections import Counter
+from pyrpmd.propagation import loop_options, scientific_config
+
 import copy
 from dataclasses import asdict, is_dataclass
 import csv
@@ -566,6 +568,7 @@ def _dependency_fingerprints(config):
 
 
 def _physics_hash(config, system, parents):
+    config = scientific_config(config)
     scientific = {
         k: v
         for k, v in config.items()
@@ -667,6 +670,7 @@ def _trajectory(
     candidate, candidate_since, done = None, None, 0
     status, channel, reason = "unresolved", None, "maximum_propagation_time"
     trace_steps, trace_q, trace_energy = [], [], []
+    previous_propagation = {"native_steps": 0, "python_steps": 0}
     if resume and checkpoint.exists():
         meta, arrays = _load_npz(checkpoint)
         if (
@@ -688,6 +692,12 @@ def _trajectory(
         trace_steps = list(arrays["trace_steps"])
         trace_q = list(arrays["trace_centroid"])
         trace_energy = list(arrays["trace_energy"])
+        if "propagation" in meta:
+            previous_propagation.update(meta["propagation"])
+        elif done:
+            # Older checkpoints did not record which backend ran these steps.
+            # Preserve them without inventing a Python/native attribution.
+            previous_propagation["untracked_steps"] = done
     else:
         try:
             initial = float(dynamics.energy(state)) / config["beads"]
@@ -706,6 +716,13 @@ def _trajectory(
             status, channel = "failed", None
             reason = f"initial_energy: {type(exc).__name__}: {exc}"
     started = time.perf_counter()
+    stats_before = copy.deepcopy(dynamics.propagation_stats)
+
+    def trajectory_propagation():
+        counts = dict(previous_propagation)
+        for key in ("native_steps", "python_steps"):
+            counts[key] += dynamics.propagation_stats[key] - stats_before[key]
+        return counts
 
     def save_checkpoint():
         _atomic_npz(
@@ -727,6 +744,7 @@ def _trajectory(
                 "channel": channel,
                 "reason": reason,
                 "launch": launch,
+                "propagation": trajectory_propagation(),
             },
             q=state.q,
             p=state.p,
@@ -735,46 +753,67 @@ def _trajectory(
             trace_energy=np.asarray(trace_energy),
         )
 
-    for number in range(done + 1, max_steps + 1) if status == "unresolved" else ():
-        previous = state.copy()
-        previous_energy, previous_drift = final, drift
+    while done < max_steps and status == "unresolved":
+        count = min(dynamics.block_steps, 4096, max_steps - done,
+                    check - done % check, checkpoint_interval - done % checkpoint_interval)
+        before = state.copy()
+        start_done = done
+        stats_before_block = copy.deepcopy(dynamics.propagation_stats)
+        block = dynamics.propagate_block(state, count, record_states=True, raise_on_error=False)
+        valid = block.completed
+        failure = block.error
         previous_candidate, previous_since = candidate, candidate_since
-        try:
-            dynamics.step(state)
-            final = float(dynamics.energy(state)) / config["beads"]
-            if not math.isfinite(final):
-                raise FloatingPointError("Nonfinite total ring energy")
-            drift = max(drift, abs(final - initial))
-            if classifier is not None and number % check == 0:
+        energy = block.energies / config["beads"]
+        # The next classifier boundary is always the final step of a block.
+        # An arbitrary Python classifier still sees the exact full q/p state.
+        if not failure and classifier is not None and (done + valid) % check == 0:
+            try:
                 label = _normalize_label(classifier(state))
+                block.centroids[valid - 1] = state.q.mean(axis=0)
+                number = done + valid
                 if label != candidate:
                     candidate, candidate_since = label, number if label else None
                 if label is not None and number - candidate_since >= persistence:
                     status, channel = label
-                    reason = (
-                        "stable_separated_outgoing_products"
-                        if status == "product"
-                        else "stable_separated_outgoing_reactants"
-                    )
-        except Exception as exc:
-            state = previous
-            done = number - 1
-            final, drift = previous_energy, previous_drift
-            candidate, candidate_since = previous_candidate, previous_since
-            status, channel = "failed", None
-            reason = f"{type(exc).__name__}: {exc}"
+                    reason = ("stable_separated_outgoing_products" if status == "product"
+                              else "stable_separated_outgoing_reactants")
+            except Exception as exc:
+                # A classifier failure rolls back only its step, just like the
+                # original per-step workflow, not the whole completed prefix.
+                valid -= 1
+                if valid:
+                    state = State(block.q[valid-1], block.p[valid-1],
+                                  int(block.steps[valid-1]), float(block.times[valid-1]))
+                else:
+                    state = before
+                candidate, candidate_since = previous_candidate, previous_since
+                failure = f"{type(exc).__name__}: {exc}"
+        # Only accepted physical steps contribute to trajectory accounting.
+        # A classifier may reject the final step after the block committed it.
+        if valid != block.completed:
+            dynamics.propagation_stats = stats_before_block
+            dynamics.propagation_stats[block.backend + "_steps"] += valid
+            if block.fallback_reason:
+                reasons = dynamics.propagation_stats["fallback_reasons"]
+                reasons[block.fallback_reason] = reasons.get(block.fallback_reason, 0) + valid
+        if valid:
+            final = float(energy[valid-1])
+            drift = max(drift, float(np.max(np.abs(energy[:valid] - initial))))
+            numbers = start_done + np.arange(1, valid + 1)
+            keep = (numbers % stride == 0) | (numbers == max_steps)
+            if status != "unresolved" and not failure:
+                keep[-1] = True
+            selected = np.flatnonzero(keep)
+            trace_steps.extend(numbers[selected].tolist())
+            trace_q.extend(block.centroids[selected].copy())
+            trace_energy.extend(energy[selected].tolist())
+            done += valid
+        if failure:
+            status, channel, reason = "failed", None, failure
             break
-        done = number
-        if number % stride == 0 or number == max_steps or status != "unresolved":
-            trace_steps.append(number)
-            trace_q.append(state.q.mean(axis=0).copy())
-            trace_energy.append(final)
-        # Filesystem errors must stop the job for restart, not be mislabeled as
-        # a failed physical trajectory and roll back a completed dynamics step.
-        if number % checkpoint_interval == 0 or status != "unresolved":
+        # I/O exceptions remain job failures, never chemical trajectory failures.
+        if done % checkpoint_interval == 0 or status != "unresolved":
             save_checkpoint()
-        if status != "unresolved":
-            break
     if classifier is None and status == "unresolved":
         reason = "no_validated_product_classifier"
     save_checkpoint()
@@ -818,6 +857,7 @@ def _trajectory(
         "max_energy_drift_per_bead": drift,
         "launch": launch,
         "wall_seconds": time.perf_counter() - started,
+        "propagation": trajectory_propagation(),
     }
     _atomic_json(result_path, record)
     return record
@@ -864,6 +904,7 @@ def _parent_task(task):
         seed=parent_seed,
         native=native,
         threads=plan.threads,
+        **loop_options(config),
     )
     production = Dynamics(
         potential,
@@ -874,6 +915,7 @@ def _parent_task(task):
         seed=np.random.SeedSequence([seed, 3, parent_id]),
         native=native,
         threads=plan.threads,
+        **loop_options(config),
     )
     classifier = _make_classifier(config, system)
     parent_path = out / "checkpoints" / f"parent-{parent_id:06d}.npz"

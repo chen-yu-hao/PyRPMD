@@ -55,3 +55,19 @@ cc -std=c11 -fPIC -shared -I native/include native/examples/harmonic_pes.c -o li
 The tests also compile this example to an object file and exercise the real
 manifest-driven `.o` to `.so` linking path. Arbitrary legacy Fortran signatures
 are not inferred: supply an explicit wrapper or select the RPMDrate/f2py adapter.
+
+## Fused production blocks
+
+`fused.hpp`, included by `cayley.cpp`, adds `bind_pes` and `run_block` without
+replacing the validated Cayley class. The Python public entrypoint is
+`Dynamics.propagate`; see [native propagation](../docs/native-propagation.md).
+It supports direct C ABI/Fortran calls and native centroid CV/umbrella/flux-metric
+observations, with a GIL-free step loop and per-block private workspaces.
+
+`propagation.h` supplies the companion `advance` entrypoint used by
+`Dynamics.propagate_block`. It adds bead-average geometric observations,
+observation masks, optional full-state snapshots and centroid Cayley-RATTLE.
+It commits each accepted step and returns a valid prefix on numerical failure;
+`run_block` retains its whole-block transaction contract. Both implementations
+share the existing immutable Cayley context and the provider's lifetime lock.
+See [the segmented API contract](../docs/block-propagation.md).
