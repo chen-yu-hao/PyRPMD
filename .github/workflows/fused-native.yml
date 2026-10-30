@@ -33,7 +33,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin
-          python -m pip install -e '.[test,ase,mpi]' build
+          python -m pip install -e '.[test,ase,mpi]' build 'setuptools>=68' wheel
       - name: Build pinned real BKMP2
         run: python benchmarks/h3/build_pes.py
       - name: Unit and compatibility tests
