@@ -33,7 +33,8 @@ def _indices(atoms):
     return tuple(int(i) for i in atoms)
 
 
-def _distance(q, a, b, hessian=False, *, geometry=None):
+def _distance_vector(q, a, b, *, geometry=None):
+    """Validate the distance even when only its scalar value is requested."""
     if a == b or min(a, b) < 0 or max(a, b) >= len(q):
         raise ValueError("distance requires two distinct in-range atom indices")
     v = q[a] - q[b]
@@ -44,6 +45,11 @@ def _distance(q, a, b, hessian=False, *, geometry=None):
         if geometry is not None:
             raise ValueError("periodic distance derivative is undefined for coincident images")
         raise ValueError("CV derivative is undefined for coincident atoms")
+    return r, v
+
+
+def _distance(q, a, b, hessian=False, *, geometry=None):
+    r, v = _distance_vector(q, a, b, geometry=geometry)
     u = v / r
     g = np.zeros_like(q)
     g[a], g[b] = u, -u
@@ -54,6 +60,23 @@ def _distance(q, a, b, hessian=False, *, geometry=None):
     for i, si in ((a, 1), (b, -1)):
         for j, sj in ((a, 1), (b, -1)):
             h[i, :, j, :] = si * sj * block
+    return r, g, h
+
+
+def _com_distance(q, weights, derivatives):
+    v = np.einsum("a,ac->c", weights, q)
+    r = float(np.linalg.norm(v))
+    if r < 1e-12:
+        raise ValueError("COM distance derivative undefined at zero separation")
+    if derivatives == 0:
+        return (r,)
+    u = v / r
+    g = weights[:, None] * u
+    if derivatives == 1:
+        return r, g
+    h = np.einsum(
+        "a,b,cd->acbd", weights, weights, (np.eye(3) - np.outer(u, u)) / r
+    )
     return r, g, h
 
 
@@ -80,7 +103,7 @@ class CollectiveVariable:
         return CVResult(np.atleast_1d(value), jac)
 
     def value(self, q):
-        return self.value_and_jacobian(q).value
+        return _value_without_jacobian(self, q)
 
 
 class _AffineCoordinate(CollectiveVariable):
@@ -170,8 +193,8 @@ class PeriodicDistance(_PeriodicCellCV, Distance):
         # Preserve the historical extension point for subclasses/instances
         # overriding the Hessian method, but avoid O(N^2) work for built-ins.
         if ("centroid_value_gradient_hessian" in self.__dict__
-                or type(self).centroid_value_gradient_hessian
-                is not PeriodicDistance.centroid_value_gradient_hessian):
+                or getattr(type(self), "centroid_value_gradient_hessian", None)
+                is not _BUILTIN_CV_METHODS[PeriodicDistance]["centroid_value_gradient_hessian"]):
             value, gradient, _ = self.centroid_value_gradient_hessian(q)
             return value, gradient
         return _distance(q, *self.atoms, geometry=self._geometry)
@@ -351,20 +374,15 @@ class COMDistance(CollectiveVariable):
             self.weights[f] = sign * self.masses[f] / self.masses[f].sum()
 
     def centroid_value_gradient_hessian(self, q):
-        v = np.einsum("a,ac->c", self.weights, q)
-        r = float(np.linalg.norm(v))
-        if r < 1e-12:
-            raise ValueError("COM distance derivative undefined at zero separation")
-        u = v / r
-        g = self.weights[:, None] * u
-        h = np.einsum(
-            "a,b,cd->acbd", self.weights, self.weights, (np.eye(3) - np.outer(u, u)) / r
-        )
-        return r, g, h
+        return _com_distance(q, self.weights, 2)
 
     def centroid_value_gradient(self, q):
-        r, g, _ = self.centroid_value_gradient_hessian(q)
-        return r, g
+        if (not _builtin_methods(self, COMDistance, "centroid_value_gradient_hessian")
+                or np.shape(q) != (len(self.weights), 3)):
+            # Preserve the existing extension point and malformed-input errors.
+            r, g, _ = self.centroid_value_gradient_hessian(q)
+            return r, g
+        return _com_distance(q, self.weights, 1)
 
 
 class RPMDrateCoordinate(CollectiveVariable):
@@ -451,21 +469,7 @@ class RPMDrateCoordinate(CollectiveVariable):
         # Evaluating mapped bonds at the unpermuted TS would be incorrect.
 
     def surfaces(self, q):
-        r, gr, hr = self.com.centroid_value_gradient_hessian(q)
-        s0, g0, h0 = self.rinf - r, -gr, -hr
-        candidates = []
-        for forming, breaking in self.paths:
-            row = []
-            for ref, f, b in zip(self.reference_difference, forming, breaking):
-                rf, gf, hf = _distance(q, *f, hessian=True)
-                rb, gb, hb = _distance(q, *b, hessian=True)
-                row.append((ref - rf + rb, -gf + gb, -hf + hb))
-            candidates.append(row)
-        values = np.array([[c[0] for c in row] for row in candidates])
-        bond = int(np.argmin(np.max(values, axis=0)))
-        transition_state = int(np.argmax(values[:, bond]))
-        s1, g1, h1 = candidates[transition_state][bond]
-        return s0, g0, h0, s1, g1, h1
+        return _rate_surfaces(self, q, 2)
 
     def centroid_value_gradient_hessian(self, q):
         a, ga, ha, s1, g1, h1 = self.surfaces(q)
@@ -485,8 +489,16 @@ class RPMDrateCoordinate(CollectiveVariable):
         return a / b, ga / b - a * gb / b**2, h
 
     def centroid_value_gradient(self, q):
-        s, g, _ = self.centroid_value_gradient_hessian(q)
-        return s, g
+        if (not _builtin_methods(self, RPMDrateCoordinate, "centroid_value_gradient_hessian")
+                or not _builtin_rate_surfaces(self)
+                or np.shape(q) != (len(self.com.weights), 3)):
+            s, g, _ = self.centroid_value_gradient_hessian(q)
+            return s, g
+        a, ga, s1, g1 = _rate_surfaces(self, q, 1)
+        b, gb = a - s1, ga - g1
+        if abs(b) < 1e-10:
+            raise ValueError("RPMDrate xi is singular where s0=s1")
+        return a / b, ga / b - a * gb / b**2
 
     def dividing_surface(self, xi):
         return RateSurface(self, float(xi))
@@ -506,8 +518,14 @@ class RateSurface(CollectiveVariable):
         return (1 - a) * s0 + a * s1, (1 - a) * g0 + a * g1, (1 - a) * h0 + a * h1
 
     def centroid_value_gradient(self, q):
-        s, g, _ = self.centroid_value_gradient_hessian(q)
-        return s, g
+        if (not _builtin_methods(self, RateSurface, "centroid_value_gradient_hessian")
+                or not _builtin_rate_surfaces(self.coordinate)
+                or np.shape(q) != (len(self.coordinate.com.weights), 3)):
+            s, g, _ = self.centroid_value_gradient_hessian(q)
+            return s, g
+        s0, g0, s1, g1 = _rate_surfaces(self.coordinate, q, 1)
+        a = self.xi
+        return (1 - a) * s0 + a * s1, (1 - a) * g0 + a * g1
 
 
 class CVStack:
@@ -527,7 +545,131 @@ class CVStack:
         )
 
     def value(self, q):
-        return self.value_and_jacobian(q).value
+        if (not _builtin_methods(self, CVStack, "value_and_jacobian")
+                or not all(_can_skip_jacobian(cv) for cv in self.cvs)):
+            return self.value_and_jacobian(q).value
+        # Historically this calls each child's value_and_jacobian, not its
+        # possibly independent value override. Keep the complete stack path
+        # for plugins, including its derivative-shape errors.
+        return np.concatenate([_value_without_jacobian(cv, q) for cv in self.cvs])
+
+
+# Retain the original method identities so a class-level monkeypatch also
+# disables a shortcut. No mutable CV data or coordinate results are cached.
+_VALUE_ONLY_TYPES = (
+    Distance, PeriodicDistance, BondDifference, Cartesian,
+    COMDistance, RPMDrateCoordinate, RateSurface,
+)
+_BUILTIN_CV_METHODS = {
+    cls: {
+        name: getattr(cls, name)
+        for name in (
+            "value", "value_and_jacobian", "centroid_value_gradient",
+            "centroid_value_gradient_hessian", "surfaces",
+        )
+        if hasattr(cls, name)
+    }
+    for cls in (*_VALUE_ONLY_TYPES, CVStack)
+}
+
+
+def _builtin_methods(cv, cls, *names):
+    return type(cv) is cls and all(
+        name not in cv.__dict__
+        and getattr(cls, name, None) is _BUILTIN_CV_METHODS[cls][name]
+        for name in names
+    )
+
+
+def _builtin_rate_surfaces(coordinate):
+    return (
+        _builtin_methods(coordinate, RPMDrateCoordinate, "surfaces")
+        and _builtin_methods(coordinate.com, COMDistance, "centroid_value_gradient_hessian")
+    )
+
+
+def _can_skip_jacobian(cv):
+    cls = type(cv)
+    if (cls not in _VALUE_ONLY_TYPES
+            or not _builtin_methods(cv, cls, *_BUILTIN_CV_METHODS[cls])):
+        return False
+    if cls in (RPMDrateCoordinate, RateSurface):
+        coordinate = cv.coordinate if cls is RateSurface else cv
+        return _builtin_rate_surfaces(coordinate)
+    return True
+
+
+def _rate_surfaces(coordinate, q, derivatives):
+    if derivatives == 2:
+        # surfaces() has always called this nested extension point.
+        com = coordinate.com.centroid_value_gradient_hessian(q)
+    else:
+        com = _com_distance(q, coordinate.com.weights, derivatives)
+    entry = (coordinate.rinf - com[0],) + tuple(-x for x in com[1:])
+    values = []
+    for forming, breaking in coordinate.paths:
+        row = []
+        for ref, f, b in zip(coordinate.reference_difference, forming, breaking):
+            # Validate every branch in the same order, including unselected
+            # coincident bonds. np.argmin/argmax retain the original tie rule.
+            rf, _ = _distance_vector(q, *f)
+            rb, _ = _distance_vector(q, *b)
+            row.append(ref - rf + rb)
+        values.append(row)
+    values = np.asarray(values)
+    bond = int(np.argmin(np.max(values, axis=0)))
+    transition_state = int(np.argmax(values[:, bond]))
+    s1 = float(values[transition_state, bond])
+    if derivatives == 0:
+        return entry + (s1,)
+    forming, breaking = coordinate.paths[transition_state]
+    f = _distance(q, *forming[bond], hessian=derivatives == 2)
+    b = _distance(q, *breaking[bond], hessian=derivatives == 2)
+    return entry + (s1,) + tuple(-gf + gb for gf, gb in zip(f[1:], b[1:]))
+
+
+def _centroid_builtin_value(cv, q):
+    cls = type(cv)
+    if cls in (Distance, PeriodicDistance):
+        geometry = cv._geometry if cls is PeriodicDistance else None
+        return _distance_vector(q, *cv.atoms, geometry=geometry)[0]
+    if cls is BondDifference:
+        a = _distance_vector(q, *cv.bonds[0])[0]
+        b = _distance_vector(q, *cv.bonds[1])[0]
+        return a - b
+    if cls is Cartesian:
+        if cv.atom < 0 or cv.atom >= len(q):
+            raise ValueError("Cartesian atom index out of range")
+        return float(q[cv.atom, cv.axis])
+    if cls is COMDistance:
+        return _com_distance(q, cv.weights, 0)[0]
+    if cls is RPMDrateCoordinate:
+        a, s1 = _rate_surfaces(cv, q, 0)
+        b = a - s1
+        if abs(b) < 1e-10:
+            raise ValueError("RPMDrate xi is singular where s0=s1")
+        return a / b
+    s0, s1 = _rate_surfaces(cv.coordinate, q, 0)
+    return (1 - cv.xi) * s0 + cv.xi * s1
+
+
+def _value_without_jacobian(cv, q):
+    cls = type(cv)
+    if not _can_skip_jacobian(cv):
+        return cv.value_and_jacobian(q).value
+    coordinate = cv.coordinate if cls is RateSurface else cv
+    ring = _coordinates(q)
+    # Preserve historical errors for empty rings or a mismatched COM system.
+    if (not len(ring)
+            or cls is COMDistance and ring.shape[1] != len(cv.weights)
+            or cls in (RPMDrateCoordinate, RateSurface)
+            and ring.shape[1] != len(coordinate.com.weights)):
+        return cv.value_and_jacobian(q).value
+    if cv.estimator == "centroid":
+        value = _centroid_builtin_value(cv, ring.mean(axis=0))
+    else:
+        value = float(np.mean([_centroid_builtin_value(cv, bead) for bead in ring]))
+    return np.atleast_1d(value)
 
 
 class PythonCV:

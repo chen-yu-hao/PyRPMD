@@ -9,8 +9,8 @@ failure contracts:
 
 | API | Observations | Numerical failure | Production use |
 | --- | --- | --- | --- |
-| `Dynamics.propagate()` | Centroid CVs, sample interval, energy extrema | Entire block leaves the caller's state unchanged | FES/PMF, recrossing children, Andersen thermalization |
-| `Dynamics.propagate_block()` | CVs, boolean mask, optional full q/p, centroid RATTLE | Last accepted step and valid result prefix are retained | dRPMD collision blocks and constrained recrossing parents |
+| `Dynamics.propagate()` | Centroid CVs, sample interval, energy extrema | Entire block leaves the caller's state unchanged | Recrossing children and ordinary Andersen thermalization |
+| `Dynamics.propagate_block()` | CVs, boolean mask, optional full q/p, centroid RATTLE | Last accepted step and valid result prefix are retained | dRPMD collision blocks, constrained recrossing parents, and native-supported FES/PMF sampling |
 
 The second entrypoint also supports bead-average geometric CVs. Its full
 contract is documented in [block-propagation.md](block-propagation.md).
@@ -126,12 +126,17 @@ Trajectory checkpoints retain cumulative accepted `native_steps` and
 without backend counters retain their completed steps as `untracked_steps`,
 because their original backend cannot be recovered from positions and momenta.
 
-**Umbrella/PMF/FES:** blocks stop at Andersen randomization, saved-sample and
-checkpoint events. The NumPy RNG, draw order and continuous-chain state are
-unchanged. The flux-metric correction is evaluated inside native forces, not
-omitted to obtain a speedup. The saved stream/checkpoint includes propagation
-counters; interruption and a changed block size can be tested against an
-uninterrupted run.
+**Umbrella/PMF/FES:** native-supported sampling uses `propagate_block()` with
+multiple observations per block. Blocks stop at Andersen randomization,
+checkpoint events, the remaining trajectory length, or the smaller of the
+configured block size and 4096 steps. An observation mask retains the original
+saved-sample times without returning to Python at every sample. Energy is
+checked at the initial state and every accepted candidate step, including
+unobserved steps. The NumPy RNG, draw order and continuous-chain state are
+unchanged. The flux-metric correction is evaluated inside native forces. The
+saved stream/checkpoint includes propagation counters; interruption and a
+changed block size can be tested against an uninterrupted run. The compatible
+Python sampling path retains its original successful PES-call schedule.
 
 **Recrossing:** every child timepoint evaluates the actual dividing surface in
 C++, including equivalent arrangements. Python accumulates the returned indicator

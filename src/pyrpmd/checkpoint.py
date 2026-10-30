@@ -108,14 +108,17 @@ def _payload_format(archive, names, *, legacy=False):
 
 def _validate(archive, *, expected_kind=None, require_integrity=False):
     names = set(archive.files)
+    arrays = {}
     if ENVELOPE not in names:
         if require_integrity:
             raise CheckpointError("Legacy checkpoint has no integrity envelope")
         # Materialize every payload before admitting the checkpoint, including
         # ZIP CRC checks and allow_pickle=False validation.
         for name in names:
-            _array_description(archive[name])
-        payload_format = _payload_format(archive, names, legacy=True)
+            value = archive[name]
+            _array_description(value)
+            arrays[name] = value
+        payload_format = _payload_format(arrays, names, legacy=True)
         if expected_kind is not None and payload_format != expected_kind:
             raise CheckpointError(
                 f"Expected checkpoint kind {expected_kind!r}, got legacy payload {payload_format!r}"
@@ -125,7 +128,7 @@ def _validate(archive, *, expected_kind=None, require_integrity=False):
             "schema_version": 1,
             "kind": None,
             "integrity": "unverified_legacy",
-        }
+        }, arrays
     try:
         envelope = json.loads(str(archive[ENVELOPE].item()))
     except (ValueError, TypeError) as error:
@@ -144,27 +147,34 @@ def _validate(archive, *, expected_kind=None, require_integrity=False):
     if not isinstance(descriptions, dict) or set(descriptions) != names - {ENVELOPE}:
         raise CheckpointError("Checkpoint payload inventory does not match its envelope")
     for name, expected in descriptions.items():
-        actual = _array_description(archive[name])
+        value = archive[name]
+        actual = _array_description(value)
         if actual != expected:
             raise CheckpointError(f"Checkpoint integrity check failed for array {name!r}")
-    payload_format = _payload_format(archive, names)
+        arrays[name] = value
+    payload_format = _payload_format(arrays, names)
     if payload_format is not None and envelope.get("kind") != payload_format:
         raise CheckpointError("Checkpoint payload format does not match its envelope kind")
-    return {**envelope, "integrity": "verified"}
+    return {**envelope, "integrity": "verified"}, arrays
 
 
 class _Payload:
     """NpzFile-compatible view which hides only the reserved envelope."""
 
-    def __init__(self, archive, envelope):
+    def __init__(self, archive, envelope, arrays):
         self._archive = archive
+        self._arrays = arrays
         self.envelope = envelope
         self.files = [name for name in archive.files if name != ENVELOPE]
 
     def __getitem__(self, key):
         if key not in self.files:
             raise KeyError(key)
-        return self._archive[key]
+        # Validation already decompressed this member and checked its CRC and
+        # digest. Keep NpzFile's independent, writable reads without decoding
+        # the same ZIP member again or exposing our verified cached value.
+        value = self._archive[key] if self._arrays is None else self._arrays[key]
+        return value.copy(order="K") if isinstance(value, np.ndarray) else value
 
     def __contains__(self, key):
         return key in self.files
@@ -193,7 +203,7 @@ def load_checkpoint(path, *, expected_kind=None, require_integrity=False):
         archive = np.load(path, allow_pickle=False)
         if not hasattr(archive, "files"):
             raise CheckpointError("A checkpoint must be an NPZ archive")
-        envelope = _validate(
+        envelope, arrays = _validate(
             archive, expected_kind=expected_kind, require_integrity=require_integrity
         )
     except CheckpointError:
@@ -204,10 +214,17 @@ def load_checkpoint(path, *, expected_kind=None, require_integrity=False):
         if archive is not None and hasattr(archive, "close"):
             archive.close()
         raise CheckpointError(f"Cannot read checkpoint {path}: {error}") from error
+    payload = _Payload(archive, envelope, arrays)
+    # Only the view owns the cache; it must not retain a trajectory's entire
+    # history after the context has closed.
+    del arrays
     try:
-        yield _Payload(archive, envelope)
+        yield payload
     finally:
-        archive.close()
+        try:
+            archive.close()
+        finally:
+            payload._arrays = None
 
 
 def inspect_checkpoint(path, *, require_integrity=False):

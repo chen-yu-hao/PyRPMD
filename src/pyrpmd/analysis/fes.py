@@ -46,7 +46,7 @@ def statistical_inefficiency(series):
 class MBARResult:
     free_energies: np.ndarray
     weights: np.ndarray
-    state_weights: np.ndarray
+    state_weights: np.ndarray | None
     overlap: np.ndarray
     components: np.ndarray
     converged: bool
@@ -140,6 +140,7 @@ def solve_mbar(
     initial_free_energies=None,
     combine_identical_states=True,
     method="auto",
+    return_state_weights=True,
 ):
     """Return MBAR target weights, state overlap and identifiability diagnostics.
 
@@ -148,6 +149,10 @@ def solve_mbar(
     physical Hamiltonian from every sampling/target reduced potential. Exact
     duplicate rows are combined internally, then all state-shaped outputs are
     expanded to the original order. Time streams are never combined here.
+    ``return_state_weights=False`` omits the expanded [N,K] state-weight array
+    and returns ``state_weights=None``. Target weights, overlap, free energies
+    and diagnostics are unchanged; unique-state weights are still computed
+    internally for overlap. The default preserves the full public result.
 
     ``auto`` uses a gauge-constrained damped Newton solve, with the original
     L-BFGS/fixed-point procedure as fallback. ``legacy`` is retained for
@@ -309,7 +314,7 @@ def solve_mbar(
     return MBARResult(
         f[state_map],
         weights,
-        unique_weights[:, state_map],
+        unique_weights[:, state_map] if return_state_weights else None,
         overlap,
         components,
         residual < tolerance,
@@ -365,7 +370,9 @@ def _block_resample(x, block, rng):
     n = len(x)
     block = max(1, min(int(block), n))
     starts = rng.integers(0, n, size=int(np.ceil(n / block)))
-    ix = np.concatenate([(s + np.arange(block)) % n for s in starts])[:n]
+    # Row-major flattening preserves the original block/start order and RNG
+    # consumption while avoiding one Python loop and small array per block.
+    ix = ((starts[:, None] + np.arange(block)) % n).reshape(-1)[:n]
     return x[ix]
 
 
@@ -535,7 +542,8 @@ def reconstruct_fes(
                 a[:, j] = (a[:, j] - lo) % p + lo
         x = np.concatenate(arrays)
     u = umbrella_reduced_potentials(x, centers, k, beta, periods)
-    mbar = solve_mbar(u, counts, overlap_threshold=overlap_threshold)
+    mbar = solve_mbar(u, counts, overlap_threshold=overlap_threshold,
+                      return_state_weights=False)
     if not mbar.converged:
         raise RuntimeError(
             f"MBAR did not converge; equation residual={mbar.residual:g}"
@@ -564,18 +572,23 @@ def reconstruct_fes(
     if connected and bootstrap and np.any(~mask):
         rng = np.random.default_rng(seed)
         ref = np.unravel_index(np.nanargmin(f), f.shape)
+        offsets = np.r_[0, np.cumsum(counts)]
+        stream_indices = [np.arange(start, stop)
+                          for start, stop in zip(offsets[:-1], offsets[1:])]
         for draw in range(int(bootstrap)):
-            draws = [
-                _block_resample(a, block, rng)
-                for a, block in zip(arrays, block_plan["block_lengths"])
-            ]
-            xb = np.concatenate(draws)
-            ub = umbrella_reduced_potentials(xb, centers, k, beta, periods)
+            indices = np.concatenate([
+                _block_resample(indices, block, rng)
+                for indices, block in zip(stream_indices, block_plan["block_lengths"])
+            ])
+            xb = x[indices]
+            # Every umbrella is already evaluated at each original (wrapped)
+            # frame. Resampling columns retains the identical bias problem.
             mb = solve_mbar(
-                ub,
+                u[:, indices],
                 counts,
                 overlap_threshold=overlap_threshold,
                 initial_free_energies=mbar.free_energies,
+                return_state_weights=False,
             )
             record = {"draw": draw, "valid": False, "reason": None,
                       "solver_residual": mb.residual}
@@ -843,7 +856,8 @@ def mbar_rate_pmf(
         stiffness[representatives, None, None],
         beta,
     )
-    fit = solve_mbar(u, fit_counts, overlap_threshold=overlap_threshold, **options)
+    fit = solve_mbar(u, fit_counts, overlap_threshold=overlap_threshold,
+                     return_state_weights=False, **options)
     connected = len(np.unique(fit.components)) == 1
     mass, density, count, free, mask = _histogram(
         x[:, None], fit.weights, [edges], beta, min_count
@@ -995,6 +1009,7 @@ def mbar_rate_pmf(
                     fit_counts,
                     overlap_threshold=overlap_threshold,
                     initial_free_energies=fit.free_energies,
+                    return_state_weights=False,
                     **options,
                 )
                 record["solver_residual"] = float(mb.residual)

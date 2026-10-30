@@ -1,10 +1,12 @@
 """Do not label support-conditioned surface draws as joint uncertainty."""
 
 import copy
+import json
 
 import numpy as np
 import pytest
 
+from pyrpmd.analysis.surface import surface_rate_pmf
 from pyrpmd.workflows.rate import _aggregate
 
 
@@ -138,3 +140,109 @@ def test_block_support_gates_all_combined_errors_and_preserves_conditional_recro
     if block_status == "limited_blocks" and joint_uncertainty:
         assert any("Complete rate uncertainty has limited support" in w for w in result["warnings"])
         assert not any("Complete rate uncertainty is unavailable" in w for w in result["warnings"])
+
+
+def test_actual_unmixed_surface_pmf_withholds_qtst_and_published_joint_uncertainty(tmp_path):
+    # Every histogram bin has support, but none of the five time streams has
+    # independent variation. Previously, whole-stream circular blocks yielded
+    # identical draws and a spuriously available zero-width QTST interval.
+    centers = np.arange(0.1, 1.0, 0.2)[:, None]
+    samples = [np.full((100, 1), center) for center in centers[:, 0]]
+    options = dict(basin=(0.1, 0.5), dividing_surface=0.7, mass_metric=1.0,
+                   bins=np.linspace(0, 1, 6), seed=7, min_count=1)
+    point = surface_rate_pmf(samples, centers, 1e-12, 2.0, bootstrap=0, **options)
+    pmf = surface_rate_pmf(samples, centers, 1e-12, 2.0, bootstrap=8, **options)
+    assert pmf["ready"] and not pmf["mask"].any()
+    assert pmf["k_qtst_s_inv"] == point["k_qtst_s_inv"] > 0
+    plan = pmf["bootstrap"]["block_plan"]
+    assert plan["status"] == "unavailable"
+    np.testing.assert_array_equal(plan["block_lengths"], [50] * 5)
+    np.testing.assert_array_equal(pmf["bootstrap"]["block_lengths"], plan["block_lengths"])
+    assert pmf["qtst_standard_error_s_inv"] is None
+    assert pmf["qtst_percentile_95_ci_s_inv"] is None
+    assert pmf["bootstrap"]["valid"] == 8
+    assert pmf["bootstrap"]["failures"] == []
+    assert pmf["bootstrap"]["log_density_integral_pairs"].shape == (8, 2)
+    assert pmf["bootstrap"]["log_density_integral_covariance"].shape == (2, 2)
+    assert any("unavailable" in warning for warning in pmf["warnings"])
+    summary = aggregate(pmf, tmp_path)
+    assert summary["rate_estimate_s_inv"] == pytest.approx(pmf["k_qtst_s_inv"] * summary["kappa"])
+    assert summary["converged"] is False
+    assert summary["rate_uncertainty"]["available"] is False
+    assert summary["rate_uncertainty"]["pmf_block_status"] == "unavailable"
+    assert "pmf_bootstrap_unavailable" in summary["rate_uncertainty"]["reasons"]
+    assert summary["rate_standard_error_s_inv"] is None
+    assert summary["rate_percentile_95_ci_s_inv"] is None
+    assert summary["conditional_rate_standard_error_s_inv"] > 0
+    public = json.loads((tmp_path / "summary.json").read_text())
+    assert public["rate_uncertainty"]["available"] is False
+    assert public["pmf"]["qtst_percentile_95_ci_s_inv"] is None
+
+
+def test_actual_short_surface_streams_keep_point_estimates_but_not_resolved_errors(tmp_path):
+    samples = [np.array([0.1, 0.3, 0.5])[:, None], np.array([0.5, 0.7, 0.9])[:, None]]
+    pmf = surface_rate_pmf(samples, [[0.3], [0.7]], 1e-12, 2.0,
+                           basin=(0.1, 0.5), dividing_surface=0.7, mass_metric=1.0,
+                           bins=np.linspace(0, 1, 6), bootstrap=40, seed=55, min_count=1)
+    assert pmf["ready"] and pmf["k_qtst_s_inv"] > 0
+    assert pmf["bootstrap"]["block_plan"]["status"] == "unavailable"
+    assert pmf["qtst_standard_error_s_inv"] is None
+    assert pmf["qtst_percentile_95_ci_s_inv"] is None
+    assert pmf["bootstrap"]["valid"] >= 2
+    summary = aggregate(pmf, tmp_path)
+    assert summary["rate_uncertainty"]["available"] is False
+    assert summary["rate_standard_error_s_inv"] is None
+    assert summary["rate_percentile_95_ci_s_inv"] is None
+    if pmf["bootstrap"]["failures"]:
+        assert summary["supported_draw_rate_standard_error_s_inv"] is None
+        assert summary["supported_draw_rate_percentile_95_ci_s_inv"] is None
+
+
+@pytest.mark.parametrize("n,status", [(80, "limited_blocks"), (1000, "finite_block_estimate")])
+def test_actual_surface_block_diagnostics_propagate_without_dropping_paired_covariance(tmp_path, n, status):
+    sample = ((np.arange(n) + 0.5) / n)[:, None]
+    np.random.default_rng(81).shuffle(sample)
+    beta, metric = 2.0, 0.04
+    pmf = surface_rate_pmf([sample], [[0.5]], 1e-12, beta,
+                           basin=(0.1, 0.5), dividing_surface=0.7, mass_metric=metric,
+                           bins=np.linspace(0, 1, 6), bootstrap=20, seed=73, min_count=1)
+    assert pmf["ready"] and pmf["bootstrap"]["valid"] == 20
+    plan = pmf["bootstrap"]["block_plan"]
+    assert plan["status"] == status
+    np.testing.assert_array_equal(plan["requested_block_lengths"],
+                                   np.ceil(5 * pmf["statistical_inefficiency"]).astype(int))
+    assert pmf["qtst_standard_error_s_inv"] > 0
+    pairs = pmf["bootstrap"]["log_density_integral_pairs"]
+    log_rates = np.asarray([draw["log_k_qtst_au"] for draw in pmf["bootstrap"]["draws"]])
+    np.testing.assert_allclose(log_rates, 0.5 * np.log(metric / (2 * np.pi * beta))
+                               + pairs[:, 0] - pairs[:, 1], rtol=1e-13, atol=1e-13)
+    contrast = np.array([1.0, -1.0])
+    covariance = pmf["bootstrap"]["log_density_integral_covariance"]
+    assert contrast @ covariance @ contrast == pytest.approx(np.var(log_rates, ddof=1), rel=1e-12)
+    summary = aggregate(pmf, tmp_path)
+    assert summary["rate_uncertainty"]["available"] is True
+    assert summary["rate_uncertainty"]["pmf_block_status"] == status
+    if status == "limited_blocks":
+        assert "pmf_bootstrap_limited_blocks" in summary["rate_uncertainty"]["reasons"]
+
+
+def test_actual_surface_failed_support_draws_remain_explicit_and_conditioned(tmp_path):
+    sample = np.r_[np.full(120, 0.5), 1.5, np.full(120, 2.5)][:, None]
+    np.random.default_rng(7).shuffle(sample)
+    pmf = surface_rate_pmf([sample], [[1.5]], 1e-12, 2.0,
+                           basin=(0.5, 1.5), dividing_surface=2.5, mass_metric=1.0,
+                           bins=[0.0, 1.0, 2.0, 3.0], bootstrap=40, seed=52, min_count=1)
+    info = pmf["bootstrap"]
+    assert pmf["ready"] and info["block_plan"]["status"] != "unavailable"
+    assert 2 <= info["valid"] < info["attempted"] == 40
+    assert len(info["failures"]) + info["valid"] == 40
+    assert sum(info["failure_counts"].values()) == len(info["failures"])
+    assert all(failure["reason"] for failure in info["failures"])
+    assert info["log_density_integral_pairs"].shape == (info["valid"], 2)
+    summary = aggregate(pmf, tmp_path)
+    assert summary["rate_uncertainty"]["available"] is False
+    assert "pmf_bootstrap_contains_unsupported_draws" in summary["rate_uncertainty"]["reasons"]
+    assert summary["rate_standard_error_s_inv"] is None
+    assert summary["rate_percentile_95_ci_s_inv"] is None
+    assert summary["supported_draw_rate_standard_error_s_inv"] > 0
+    assert summary["supported_draw_rate_percentile_95_ci_s_inv"] is not None

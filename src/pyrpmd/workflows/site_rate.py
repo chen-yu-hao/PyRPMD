@@ -332,6 +332,7 @@ def _estimate_pmf(sampled, config, system, output):
             ])
             record = {"draw": draw, "valid": False, "reason": None}
             mbar = solve_mbar(reduced[:, indices], sizes, overlap_threshold=float(analysis.get("overlap_threshold", 1e-6)),
+                              return_state_weights=False,
                               initial_free_energies=data["window_free_energies"])
             if not mbar.converged:
                 record["reason"] = "mbar_not_converged"

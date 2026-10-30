@@ -234,11 +234,13 @@ def _outcome_result(spec, metadata):
 def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=None,
                     constraint_tolerance=1e-10, fragment_data=(), observe=None,
                     record_energy=True, record_states=False, backend=None, raise_on_error=True,
-                    outcome=None, record_previous=False, reuse_forces=False):
+                    outcome=None, record_previous=False, reuse_forces=False,
+                    check_energy=False):
     """Advance at most 4096 selected-integrator steps, observing in step order.
 
     ``observe`` is a length-steps boolean mask (default: all steps). A failure
-    leaves q/p/clock at the last successfully completed and observed step.
+    leaves q/p/clock at the last successfully completed step. Its requested
+    observations are part of the same step transaction.
     ``PropagationError.result`` retains the valid prefix. No force cache survives
     a block, so changing bias, constraints, q/p or PES between blocks is safe.
     ``outcome`` opts into a supported native classifier and its persistence
@@ -252,6 +254,11 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     ``reuse_forces`` opts into block-local force reuse for ordinary native
     dynamics without bias, constraint or fragment projection. Other cases keep
     the reference PES evaluation schedule. No cache survives a block.
+    ``check_energy`` validates the initial and every candidate step's total
+    ring energy, including unobserved steps. Observations reuse that energy.
+    Its default is False, preserving the original PES evaluation schedule.
+    Older native extensions without this capability fall back in auto mode
+    and are rejected in strict native mode before propagation.
     Blocks must end at thermostat/Python-classifier/checkpoint boundaries.
     Sampling RNG remains in Python at those boundaries.
     """
@@ -263,6 +270,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         raise ValueError("loop backend must be auto, native or python")
     if not isinstance(record_previous, (bool, np.bool_)) or not isinstance(reuse_forces, (bool, np.bool_)):
         raise ValueError("record_previous and reuse_forces must be boolean")
+    if not isinstance(check_energy, (bool, np.bool_)):
+        raise ValueError("check_energy must be boolean")
     outcome_spec = None if outcome is None else _outcome_options(outcome, state, steps)
     if not np.isfinite(constraint_tolerance) or constraint_tolerance <= 0:
         raise ValueError("constraint tolerance must be positive and finite")
@@ -303,6 +312,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                     dynamics.integrator._native, "DRPMD_OUTCOMES_API", 0) < 1:
                 binding = None
                 raise NotNative("installed native extension lacks outcome/rollback support; rebuild it")
+            if check_energy and getattr(dynamics.integrator._native, "BLOCK_ENERGY_CHECK_API", 0) < 1:
+                binding = None
+                raise NotNative("installed native extension lacks per-step energy checking; rebuild it")
         except (NotNative, NativeUnavailableError) as exc:
             reason = str(exc)
             if backend == "native":
@@ -317,6 +329,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         # The lease pins the owner and prevents concurrent context destruction.
         # The integrator lock protects all use of this Cayley context.
         options.update(outcome=outcome_spec, previous=previous_state, reuse_forces=bool(reuse_forces))
+        if check_energy:
+            options["check_energy"] = True
         with binding.acquire() as descriptor, dynamics.integrator._lock:
             native_result = dynamics.integrator._native.advance(
                 dynamics.integrator._context, descriptor, state.q, state.p, options, mask, records, snapshots)
@@ -329,6 +343,10 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         for i in range(steps):
             previous = state.copy()
             try:
+                if check_energy and i == 0:
+                    initial_energy = dynamics.energy(state, bias)
+                    if not np.isfinite(initial_energy):
+                        raise FloatingPointError("nonfinite total ring energy")
                 if constraint is not None:
                     from .workflows.rate import constrained_step
                     constrained_step(dynamics, state, constraint, constraint_tolerance)
@@ -340,12 +358,14 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                     else:
                         dynamics.step(state, bias)
                 dynamics._check_fixed(state.q, state.p)
+                if check_energy or (record_energy and mask[i]):
+                    energy = dynamics.energy(state, bias)
+                    if not np.isfinite(energy):
+                        raise FloatingPointError("nonfinite total ring energy")
                 if mask[i]:
                     row = records[written];row[0] = state.time
                     if record_energy:
-                        row[1] = dynamics.energy(state, bias)
-                        if not np.isfinite(row[1]):
-                            raise FloatingPointError("nonfinite total ring energy")
+                        row[1] = energy
                     row[2:2+nd] = state.q.mean(axis=0).ravel()
                     row[2+nd:2+2*nd] = state.p.mean(axis=0).ravel()
                     if cv is not None:

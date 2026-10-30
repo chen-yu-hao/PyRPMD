@@ -89,8 +89,11 @@ pyrpmd run examples/materials/pimd.inp --output runs/materials-pimd
 
 前两者默认 PILE-L，Verlet 默认 Andersen；显式名称必须匹配。
 `gamma_centroid="0.01 fs^-1"` 设定 PILE-L 质心摩擦，内部模使用正常模热化。
-PILE-L 当前通过 NumPy 采样步骤执行，所以拒绝强制 `loop_backend="native"`；
-`native=true` 仍可用于支持的确定性环子步骤。没有宣称新增融合长块传播加速。
+PILE-L 的 `auto` 路径对 `P<=8` 或二次幂珠数使用 C++ `sample_free`，融合
+自由环半步、OU 热浴与第二个半步；Python 保留两次势能力调用和原 NumPy
+随机数序列。较大非二次幂珠数保留 NumPy 路径。它仍不是完整原生长块循环，
+因此拒绝强制 `loop_backend="native"`；`native=false` 或 `loop_backend="python"`
+可选择参考采样路径。固定原子保持精确固定。
 材料任务暂要求采样和生产步长一致。
 
 采用 sum-beads Hamiltonian、逆温度 `beta/P` 约定，输出：

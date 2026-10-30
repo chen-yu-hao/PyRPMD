@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{name = "PyRPMD contributors"}]
-dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10"]
+dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10", "threadpoolctl>=3.1"]
 
 [project.optional-dependencies]
 mpi = ["mpi4py>=3.1"]

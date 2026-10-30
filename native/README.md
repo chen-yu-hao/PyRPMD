@@ -28,9 +28,20 @@ commit `19ba2602bad5b2145b0d0ba0716d7ba3d90a1003` and its thermal-dRPMD successo
 retained in `THIRD_PARTY_NOTICES.md`. The NumPy path evaluates the same Cayley
 map in Fourier space and is checked against an independent dense midpoint solve.
 
-BCOCB sampling uses the mathematically specified square-root Cayley half-step
-and an OU update in real orthonormal modes. It is currently a NumPy sampling
-path; the production full-ring Cayley map has native OpenMP acceleration.
+BCOCB sampling uses the specified square-root Cayley half-step and an OU update
+in real orthonormal modes. BAOAB uses exact normal-mode half rotations.
+`sample_free` fuses the two half maps and OU, consuming the original NumPy noise
+sequence supplied by Python. Fixed Cartesian rings are skipped exactly, and
+private workspace permits concurrent independent contexts. Auto selects this
+kernel for power-of-two or small (`P<=8`) rings; other sizes retain the NumPy
+sampler. The Python force callbacks and stochastic transaction remain outside
+this kernel. See [integrators](../docs/integrators.md) for dispatch and RNG rules.
+
+`ring_fft.h` supplies an immutable radix-2 plan, with a direct-DFT fallback for
+the small odd-ring sampler. Exact normal-mode **deterministic** propagation also
+uses it for power-of-two `P>=32`; small/non-power-of-two deterministic rings
+retain the existing circulant implementation. The default cyclic Cayley solve
+is unchanged. No third-party FFT dependency or NumPy build ABI is introduced.
 
 ## Potential plugin ABI
 
@@ -72,6 +83,10 @@ descriptors, persistence/early-stop events, a single pre-final rollback state,
 and opt-in block-local force reuse. Near-threshold outcomes yield to the original
 Python predicate without changing the cutoff. The module's `DRPMD_OUTCOMES_API`
 marker prevents older builds from silently ignoring event requests.
+The `BLOCK_ENERGY_CHECK_API` marker similarly protects `check_energy=True`,
+which checks the initial and every accepted-step total energy independently of
+the observation mask. FES uses it to keep energy validation while collecting
+multiple sampling events in one native call.
 It commits each accepted step and returns a valid prefix on numerical failure;
 `run_block` retains its whole-block transaction contract. Both implementations
 share the existing immutable Cayley context and the provider's lifetime lock.

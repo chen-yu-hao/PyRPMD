@@ -109,11 +109,13 @@ the native block. A custom Python PES/CV/bias keeps its existing compatibility
 path; choosing a different integrator does not bypass a Python callback.
 
 The NumPy exact-normal-mode reference uses FFTs. The dependency-free C++ exact
-normal-mode implementation precomputes circulant cosine/sine kernels and uses
-`O(P^2*N)` operations per free-ring step, `O(P*N)` work space and `O(P)` kernel
-storage. Cayley and explicit Verlet are `O(P*N)`. The native normal-mode option
-is a correctness and capability choice; it is not advertised as faster than
-Cayley or an FFT implementation at large P. Compare actual PES workloads before
+normal-mode implementation now uses an immutable radix-2 Fourier plan for
+power-of-two rings with `P>=32`, requiring `O(P*log(P)*N)` work per free step.
+Smaller and non-power-of-two rings retain the precomputed circulant kernels
+and `O(P^2*N)` summation. Both use `O(P*N)` per-call workspace and `O(P)` plan
+storage. Cayley and explicit Verlet remain `O(P*N)`. The FFT changes floating
+point reduction order, not the selected normal-mode map; different backends
+are compared with numerical tolerances. Compare full PES workloads before
 choosing an integration method for performance.
 
 `native="required"` requires the selected compiled integrator. An old extension
@@ -146,10 +148,28 @@ Omitting `method` selects the matching sampler for Cayley or normal modes.
 An explicit mismatch raises before changing the state. The OU step uses real
 orthogonal normal modes, internal friction `gamma_k=2*omega_k`, user-provided
 positive `gamma_centroid` in inverse atomic time, and variance `m*P/beta`.
-These sampling APIs execute in Python/NumPy and reject `loop_backend="native"`;
-their deterministic subkernels may still use C++. They are not an instruction
-to thermostat physical RPMD correlation functions or reactive child trajectories.
-On a failed stochastic step, both q/p/clock and the NumPy RNG state are restored.
+With `loop_backend="auto"`, an unchanged built-in sampler uses the native
+`sample_free` kernel for power-of-two rings and small rings (`P<=8`). It fuses
+both half maps and OU in one Fourier-space visit, with cached damping and
+private per-call workspace. Larger non-power-of-two rings keep the NumPy
+reference to avoid a slow direct DFT. The fixed-atom mask excludes those rings
+from transforms and keeps every fixed bead exactly pinned.
+
+Python still evaluates the two physical forces and draws the same real-mode
+NumPy noise, including fixed-atom entries before zeroing them. Zero and Nyquist
+modes keep their real-noise normalization; paired cosine/sine noise has the
+corresponding conjugate Fourier components. NumPy RNG consumption is identical,
+although trajectories may differ by floating point roundoff from the reference.
+Custom integrator/check/projection methods retain their original call path.
+`native=False` or `loop_backend="python"` selects the reference sampler. A stale
+extension without the new entry point also keeps the reference. Strict
+`loop_backend="native"` remains unsupported for this mixed Python/native sampler;
+it does not silently promise an entirely GIL-free force/step loop.
+
+These sampling methods do not thermostat physical RPMD correlation functions
+or reactive child trajectories. On a failed stochastic step, both q/p/clock and
+the NumPy RNG state are restored. Restarting the same implementation/backend
+preserves the trajectory exactly; changing backend permits roundoff differences.
 
 The RATTLE position correction for a centroid surface has the same response
 `dt/m` under all three deterministic maps: internal spring forces sum to zero,

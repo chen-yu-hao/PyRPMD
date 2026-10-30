@@ -285,6 +285,7 @@ class Dynamics:
         )
         self.native = self.integrator.native
         self._cached_normal_modes = None
+        self._cached_pile_coefficients = None
         if loop_backend not in ("auto", "native", "python"):
             raise ValueError("loop_backend must be auto/native/python")
         if isinstance(block_steps, bool) or not isinstance(block_steps, (int, np.integer)) or not 1 <= block_steps <= 65536:
@@ -510,6 +511,8 @@ class Dynamics:
         BCOCB uses the square root of the full Cayley map, whereas BAOAB uses
         exact half normal-mode rotations. gamma_centroid is inverse atomic time.
         State and RNG are restored together if a force or observation fails.
+        Auto uses a native free/OU/free kernel when available; Python still
+        owns the two PES calls and the exact real-mode NumPy noise sequence.
         """
         self._check_parameters()
         expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
@@ -521,7 +524,7 @@ class Dynamics:
         if selected != expected:
             raise ValueError(f"{selected} sampling requires {'cayley-bcb' if selected == 'bcocb' else 'normal-mode-bab'}; selected integrator is {self.integrator_name}")
         if self.loop_backend == "native":
-            raise RuntimeError("BCOCB/BAOAB PILE-L sampling uses Python/NumPy; choose loop_backend='auto' or 'python'")
+            raise RuntimeError("BCOCB/BAOAB PILE-L retains Python/NumPy sampling orchestration; choose loop_backend='auto' or 'python'")
         if not np.isfinite(gamma_centroid) or gamma_centroid <= 0:
             raise ValueError("gamma_centroid must be positive")
         if self.dt <= 0:
@@ -532,6 +535,61 @@ class Dynamics:
         self.integrator._check(q, p)
         self._check_fixed(q, p)
         self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+        fused_sampler = (
+            self.loop_backend == "auto"
+            and type(self) is Dynamics and type(self.integrator) is CayleyIntegrator
+            and hasattr(self.integrator._native, "sample_free")
+            # The dependency-free native DFT is useful only for small rings.
+            # Keep the FFT/NumPy route for larger non-power-of-two sizes.
+            and (self.nbeads <= 8 or self.nbeads & (self.nbeads - 1) == 0)
+            and all(name not in self.integrator.__dict__
+                    and getattr(CayleyIntegrator, name, None) is original
+                    for name, original in _PILE_INTEGRATOR_METHODS.items())
+            and all(name not in self.__dict__ and getattr(Dynamics, name, None) is original
+                    for name, original in _PILE_DYNAMICS_METHODS.items())
+        )
+        if fused_sampler:
+            P = self.nbeads
+            # Immutable dynamics parameters are checked above. Only the
+            # caller-selected centroid friction can change between steps.
+            if (self._cached_pile_coefficients is None
+                    or self._cached_pile_coefficients[0] != gamma_centroid):
+                frequencies = np.empty(P)
+                frequencies[0] = 0.
+                frequencies[1:1 + 2 * ((P - 1) // 2)] = np.repeat(
+                    self.integrator._omega[1:(P + 1) // 2], 2)
+                if P % 2 == 0:
+                    frequencies[-1] = self.integrator._omega[-1]
+                gamma = 2 * frequencies
+                gamma[0] = gamma_centroid
+                decay = np.exp(-gamma * self.dt)
+                amplitude = np.sqrt(1 - decay * decay)
+                scale = np.sqrt(self.masses[None, :, None] * P / self.beta)
+                fixed = np.zeros(len(self.masses), dtype=np.uint8)
+                fixed[self._fixed_indices] = 1
+                self._cached_pile_coefficients = (gamma_centroid, decay, amplitude, scale, fixed)
+            _, decay, amplitude, scale, fixed = self._cached_pile_coefficients
+            try:
+                noise = self.rng.normal(size=p.shape) * scale
+                noise[:, self._fixed_indices, :] = 0.0
+                with self.integrator._lock:
+                    self.integrator._native.sample_free(
+                        self.integrator._context, q, p, noise, decay, amplitude, fixed)
+                self._project_fixed(q, p)
+                self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                self._project_fixed(q, p)
+                if not np.isfinite(q).all() or not np.isfinite(p).all():
+                    raise FloatingPointError("nonfinite integration state")
+                if not np.isfinite(state.time + self.dt):
+                    raise FloatingPointError("nonfinite integration clock")
+            except BaseException:
+                self.rng.bit_generator.state = rng_state
+                raise
+            state.q[:] = q
+            state.p[:] = p
+            state.step += 1
+            state.time += self.dt
+            return state
         self.integrator.half_step(q, p)
         self._project_fixed(q, p)
         # Real orthogonal cyclic normal modes avoid complex-noise covariance
@@ -582,3 +640,13 @@ class Dynamics:
         state.step += 1
         state.time += self.dt
         return state
+
+
+# A Python extension/monkeypatch is part of the requested mathematics. Never
+# bypass custom half maps or projections just because their base type matches.
+_PILE_INTEGRATOR_METHODS = {
+    name: getattr(CayleyIntegrator, name) for name in ("_check", "half_step", "_fourier_step")
+}
+_PILE_DYNAMICS_METHODS = {
+    name: getattr(Dynamics, name) for name in ("_project_fixed", "_check_fixed")
+}

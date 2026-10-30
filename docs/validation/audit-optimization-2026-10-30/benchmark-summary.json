@@ -1,0 +1,322 @@
+{
+  "baseline_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "measured_candidate_staged_tree": "899cc0618ba92db03e891c236845dac671704c00",
+  "candidate_status": "uncommitted; see exact source and binary fingerprints in benchmark-report.json",
+  "repeats": 5,
+  "passed": true,
+  "cases": {
+    "bkmp2_drpmd": {
+      "seconds_raw": {
+        "baseline": [
+          0.3691542560009111,
+          0.34284862099957536,
+          0.35530765899966354,
+          0.3438261829978728,
+          0.36957750099827535
+        ],
+        "candidate": [
+          0.34003637800196884,
+          0.35881600699940464,
+          0.3922444270028791,
+          0.3414647799982049,
+          0.35484913700202014
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.35530765899966354,
+        "candidate": 0.35484913700202014
+      },
+      "speedup": 1.0012921603854452,
+      "paired_speedups": [
+        1.0856316555600227,
+        0.9554997946347032,
+        0.9058322681970331,
+        1.0069155097040472,
+        1.0415059879268393
+      ],
+      "candidate_batch_shorter_than_5ms": false,
+      "work": {
+        "trajectories": 8,
+        "accepted_child_steps": 10263,
+        "parent_thermal_steps": {
+          "0": 130,
+          "1": 130
+        },
+        "saved_trajectory_frames": 1037
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": true
+    },
+    "bkmp2_fes": {
+      "seconds_raw": {
+        "baseline": [
+          0.23717552400194108,
+          0.2142997019982431,
+          0.24242537900136085,
+          0.21770024000215926,
+          0.2841208860008919
+        ],
+        "candidate": [
+          0.20743322799899033,
+          0.24127845499970135,
+          0.23389066500021727,
+          0.2042295009996451,
+          0.234207952998986
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.23717552400194108,
+        "candidate": 0.23389066500021727
+      },
+      "speedup": 1.0140444211474655,
+      "paired_speedups": [
+        1.1433825057338236,
+        0.8881841604900378,
+        1.03649018656275,
+        1.0659588303187284,
+        1.2131137408562809
+      ],
+      "candidate_batch_shorter_than_5ms": false,
+      "work": {
+        "streams": 4,
+        "accepted_steps": 4160,
+        "samples": 800
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": false
+    },
+    "pimd_pile_l": {
+      "seconds_raw": {
+        "baseline": [
+          0.6756993660019361,
+          0.6695629530004226,
+          0.6351509720007016,
+          0.6133728389977477,
+          0.6942081900015182
+        ],
+        "candidate": [
+          0.3913186030003999,
+          0.49837791100071627,
+          0.4812584979990788,
+          0.39266714499899535,
+          0.5353206859981583
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.6695629530004226,
+        "candidate": 0.4812584979990788
+      },
+      "speedup": 1.3912750752127065,
+      "paired_speedups": [
+        1.726724364293117,
+        1.3434844085605155,
+        1.3197709227815388,
+        1.5620681455264536,
+        1.2968080781468374
+      ],
+      "candidate_batch_shorter_than_5ms": false,
+      "work": {
+        "accepted_steps": 1000,
+        "samples": 81,
+        "replicas": 1
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": false
+    },
+    "com_gradient_n3": {
+      "seconds_raw": {
+        "baseline": [
+          0.04564693900101702,
+          0.04836306699871784,
+          0.05334369899719604,
+          0.04893023700060439,
+          0.05840784599786275
+        ],
+        "candidate": [
+          0.024873991002095863,
+          0.022355501001584344,
+          0.022464764002506854,
+          0.022853519003547262,
+          0.023284533999685664
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.04893023700060439,
+        "candidate": 0.022853519003547262
+      },
+      "speedup": 2.1410373165292214,
+      "paired_speedups": [
+        1.8351272619327892,
+        2.163363146962814,
+        2.3745497166693315,
+        2.1410373165292214,
+        2.50843955041794
+      ],
+      "candidate_batch_shorter_than_5ms": false,
+      "work": {
+        "calls": 4000,
+        "atoms": 3
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": true
+    },
+    "com_gradient_n1000": {
+      "seconds_raw": {
+        "baseline": [
+          0.6693213109974749,
+          0.715637223001977,
+          0.7028997859997617,
+          0.7043376219990023,
+          0.6406881400034763
+        ],
+        "candidate": [
+          0.00033135600097011775,
+          0.00037371399957919493,
+          0.0003299589989183005,
+          0.00032984899735311046,
+          0.00035605499942903407
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.7028997859997617,
+        "candidate": 0.00033135600097011775
+      },
+      "speedup": 2121.2828014035285,
+      "paired_speedups": [
+        2019.9462482583363,
+        1914.9328732875686,
+        2130.264027664247,
+        2135.333524282306,
+        1799.4077910178958
+      ],
+      "candidate_batch_shorter_than_5ms": true,
+      "work": {
+        "calls": 16,
+        "atoms": 1000
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": true
+    },
+    "nrpmd_mint_s16": {
+      "seconds_raw": {
+        "baseline": [
+          0.11891569900035392,
+          0.09513833000164595,
+          0.10598724699957529,
+          0.09927728899856447,
+          0.09432513899810147
+        ],
+        "candidate": [
+          0.0369079719966976,
+          0.04833658099960303,
+          0.0349478049975005,
+          0.03825933400003123,
+          0.043272445000184234
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.09927728899856447,
+        "candidate": 0.03825933400003123
+      },
+      "speedup": 2.5948514681014423,
+      "paired_speedups": [
+        3.221951588426319,
+        1.9682469888059995,
+        3.032729723859785,
+        2.5948514681014423,
+        2.179796842949361
+      ],
+      "candidate_batch_shorter_than_5ms": false,
+      "work": {
+        "calls": 32,
+        "beads": 32,
+        "states": 16,
+        "atoms": 2
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": false
+    },
+    "fes_bootstrap": {
+      "seconds_raw": {
+        "baseline": [
+          0.06643995600097696,
+          0.06496573899858049,
+          0.053733357999590226,
+          0.05431841300014639,
+          0.060751657001674175
+        ],
+        "candidate": [
+          0.03916283199941972,
+          0.057741937998798676,
+          0.044068773997423705,
+          0.04085560400199029,
+          0.04008842799885315
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.060751657001674175,
+        "candidate": 0.04085560400199029
+      },
+      "speedup": 1.486984674090601,
+      "paired_speedups": [
+        1.6965054008852425,
+        1.1251049280668777,
+        1.2193068498509063,
+        1.3295217223443878,
+        1.5154412391379417
+      ],
+      "candidate_batch_shorter_than_5ms": false,
+      "work": {
+        "streams": 3,
+        "samples": 3900,
+        "samples_per_stream": [
+          1500,
+          1300,
+          1100
+        ],
+        "bootstrap_requested": 6,
+        "bootstrap_attempted": 6
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": true
+    },
+    "normal_mode_n32_p256": {
+      "seconds_raw": {
+        "baseline": [
+          0.4679200620012125,
+          0.5062294319977809,
+          0.4494436310014862,
+          0.4262974529992789,
+          0.4901644960009435
+        ],
+        "candidate": [
+          0.029759730001387652,
+          0.040513857999030733,
+          0.029498543997760862,
+          0.030689293998875655,
+          0.02843197299807798
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.4679200620012125,
+        "candidate": 0.029759730001387652
+      },
+      "speedup": 15.72326301278251,
+      "paired_speedups": [
+        15.72326301278251,
+        12.495216624639701,
+        15.236129316606338,
+        13.890754639546184,
+        17.239904386307586
+      ],
+      "candidate_batch_shorter_than_5ms": false,
+      "work": {
+        "free_steps": 32,
+        "atoms": 32,
+        "beads": 256
+      },
+      "science_checks_passed": true,
+      "all_arrays_bitwise_equal": false
+    }
+  }
+}

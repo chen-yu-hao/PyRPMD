@@ -1,8 +1,10 @@
 """Checkpoint integrity, atomic replacement and public resume compatibility."""
 
 import copy
+from collections import Counter
 import json
 from unittest import mock
+import weakref
 
 import numpy as np
 import pytest
@@ -59,6 +61,69 @@ def test_roundtrip_verifies_all_arrays_before_exposing_payload(tmp_path):
     with pytest.raises(CheckpointError, match="Expected checkpoint kind"):
         with load_checkpoint(path, expected_kind="other.state.v1"):
             pytest.fail("wrong payload kind was admitted")
+
+
+@pytest.mark.parametrize("legacy", [False, True])
+def test_validated_arrays_are_decoded_once_and_reads_remain_independent(tmp_path, monkeypatch, legacy):
+    path = tmp_path / "cached.npz"
+    kind = "PyRPMD.test.v1"
+    arrays = {"q": np.asfortranarray(np.arange(18.0).reshape(2, 3, 3)),
+              "step": np.asarray(7), "history": np.arange(128.0),
+              "metadata": np.asarray(json.dumps({"format": kind}))}
+    if legacy:
+        np.savez_compressed(path, **arrays)
+    else:
+        atomic_savez(path, kind=kind, **arrays)
+    with np.load(path, allow_pickle=False) as archive:
+        archive_type = type(archive)
+    original = archive_type.__getitem__
+    reads, materialized = Counter(), {}
+
+    def counted(archive, key):
+        value = original(archive, key)
+        reads[key] += 1
+        materialized[key] = weakref.ref(value)
+        return value
+
+    monkeypatch.setattr(archive_type, "__getitem__", counted)
+    with load_checkpoint(path, expected_kind=kind) as saved:
+        expected = Counter({name: 1 for name in arrays})
+        if not legacy:
+            expected[ENVELOPE] = 1
+        # Even a member that the consumer never requests was fully validated.
+        assert reads == expected
+        first = saved["q"]
+        assert first.flags.writeable and first.flags.f_contiguous
+        first[:] = -1
+        np.testing.assert_array_equal(saved["q"], arrays["q"])
+        np.testing.assert_array_equal(saved.get("q"), arrays["q"])
+        assert saved.get("absent", "default") == "default"
+        assert list(saved) == saved.keys() == saved.files
+        assert len(saved) == len(arrays)
+        for name, value in saved.items():
+            np.testing.assert_array_equal(value, arrays[name])
+        with pytest.raises(KeyError):
+            saved[ENVELOPE]
+        with pytest.raises(KeyError):
+            saved["absent"]
+        assert reads == expected
+    # Retaining the lightweight payload view must not retain the decompressed
+    # history. Arrays handed to callers remain valid and independent of it.
+    assert all(reference() is None for reference in materialized.values())
+    np.testing.assert_array_equal(first, -np.ones_like(arrays["q"]))
+
+
+def test_checkpoint_cache_is_per_open_and_still_rejects_unread_corruption(tmp_path):
+    path = tmp_path / "state.npz"
+    atomic_savez(path, q=np.ones(3), history=np.arange(20.0))
+    with load_checkpoint(path) as saved:
+        np.testing.assert_array_equal(saved["q"], np.ones(3))
+    arrays = raw_payload(path)
+    arrays["history"][7] += 1
+    np.savez_compressed(path, **arrays)
+    with pytest.raises(CheckpointError, match="integrity check failed for array 'history'"):
+        with load_checkpoint(path):
+            pytest.fail("an unread corrupt member bypassed validation")
 
 
 @pytest.mark.parametrize("damage", ["value", "shape", "dtype", "missing", "extra"])

@@ -49,6 +49,64 @@ def assert_same_stream(left, right):
     assert left["propagation"] == right["propagation"]
 
 
+@pytest.mark.parametrize("steps,expected_frames", [
+    (40, [1, 11, 21, 31, 41]), (43, [1, 11, 21, 31, 41, 44]),
+])
+def test_checkpoint_writes_only_new_prefixes_and_completed_resume_is_read_only(
+        tmp_path, monkeypatch, steps, expected_frames):
+    import pyrpmd.workflows.materials as module
+
+    cfg = config()
+    cfg["sampling"].update(equilibration_steps=0, production_steps=steps, sample_interval=1)
+    cfg["output"]["checkpoint_steps"] = 10
+    original = module.atomic_savez
+    counts = []
+
+    def counted(path, **arrays):
+        counts.append(len(arrays["sample_steps"]))
+        return original(path, **arrays)
+
+    monkeypatch.setattr(module, "atomic_savez", counted)
+    first = _sample_replica(task(cfg, tmp_path))
+    assert counts == expected_frames
+    checkpoint = tmp_path / "checkpoints/materials_0000.npz"
+    committed = checkpoint.read_bytes()
+    counts.clear()
+    resumed = _sample_replica(task(cfg, tmp_path))
+    assert counts == []
+    assert checkpoint.read_bytes() == committed
+    assert_same_stream(first, resumed)
+
+
+def test_completed_resume_regenerates_exports_without_rewriting_checkpoint(tmp_path, monkeypatch):
+    import pyrpmd.workflows.materials as module
+
+    cfg = config()
+    cfg["sampling"].update(equilibration_steps=0, production_steps=40, sample_interval=1, replicas=1)
+    cfg["output"]["checkpoint_steps"] = 10
+    first = run_materials(cfg, system(), tmp_path, return_data=True)
+    checkpoint = tmp_path / "checkpoints/materials_0000.npz"
+    committed = checkpoint.read_bytes()
+    exports = [tmp_path / "samples/materials_0000.npz", tmp_path / "summary.json",
+               tmp_path / "results/diffusion.json"]
+    for path in exports:
+        path.unlink()
+    original = module.atomic_savez
+    written = []
+
+    def counted(path, **arrays):
+        written.append(path)
+        return original(path, **arrays)
+
+    monkeypatch.setattr(module, "atomic_savez", counted)
+    resumed = run_materials(cfg, system(), tmp_path, return_data=True)
+    assert written == [exports[0]]
+    assert all(path.exists() for path in exports)
+    assert checkpoint.read_bytes() == committed
+    assert first["summary"] == resumed["summary"]
+    assert_same_stream(first["streams"][0], resumed["streams"][0])
+
+
 def test_quantum_estimators_match_action_derivative_and_force_virial():
     masses, beta = np.array([2.0, 5.0]), 3.1
     rng = np.random.default_rng(89)

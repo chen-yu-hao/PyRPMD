@@ -27,6 +27,12 @@ print(result.steps, result.times, result.energies, result.values)
 **H_P**，不是 H_P/P。观测缓存限制为 256 MiB，超过时要求缩小分段，
 不会降低用户指定的记录频率。
 
+`check_energy=True` 额外检查初态及每步完整环能量，即使该步没有请求观测。
+它与 `record_energy` 独立：可以检查能量而不把能量写入结果。默认 `False`
+保留既有 API；请求该能力时，旧扩展缺少 `BLOCK_ENERGY_CHECK_API` 会在
+严格原生模式拒绝，在 auto 模式进入相应的 Python 兼容实现。FES 使用
+此选项保留原连续传播的每步能量检查，同时让采样点位于同一传播块内部。
+
 `record_previous=True` 仅保留成功分段最后一步之前的完整 q/p 和精确时钟，
 通过 `previous_q/previous_p/previous_step/previous_time` 返回，适合 Python
 分类器拒绝最后一步时回滚。失败分段已经保留合法前缀，不提供这个额外快照。
@@ -122,9 +128,12 @@ Pilot 候选通道发现、任意自定义分类器及覆写的分类方法仍�
 终态 checkpoint 在状态未改变时不重复保存。受约束 recrossing 母轨迹也使用
 本接口，块停止于
 Andersen 或 checkpoint 边界，观测 mask 保持块内的精确构型采样时刻。
-FES/PMF、普通
-Andersen 热化和 recrossing child 继续使用已验证的 `propagate()` 路径。
-这次整合没有改变动态任务池、MPI 拓扑或添加 GPU 积分器。
+支持原生执行的 FES 及复用该采样器的 PMF 工作流使用本接口的多观测块，
+在热浴、checkpoint 和最大块长处返回；原有不支持原生绑定的 Python FES
+保持其势能调用节奏。失败时仅
+提交并持久化成功前缀，若在刚重抽动量后的第一步失败，恢复到重抽前的
+动量与 RNG，避免重启重复消费随机数。普通 Andersen 热化和
+recrossing child 继续保留 `propagate()` 路径。
 
 低层 `outcome` 参数包含 `descriptor`、`check_interval`、`persistence_steps`、
 `start_step`、`candidate` 和 `candidate_since`。描述符使用显式通道编号，
