@@ -1,11 +1,15 @@
 name: Fused native propagation
 on:
   push:
-    branches: [feat/fused-native-propagation]
+    branches: [main, feat/fused-native-propagation]
+    paths: ['src/pyrpmd/**', 'native/**', 'benchmarks/h3/**', 'tests/**', 'setup.py', 'MANIFEST.in', '.github/workflows/fused-native.yml']
   pull_request:
   workflow_dispatch:
 permissions:
   contents: read
+defaults:
+  run:
+    shell: bash
 jobs:
   fused:
     runs-on: ubuntu-latest
@@ -14,6 +18,7 @@ jobs:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
+      OMPI_MCA_rmaps_base_oversubscribe: '1'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,32 +26,31 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Source snapshot
-        run: git archive --format=tar HEAD > "$RUNNER_TEMP/pyrpmd-source.tar"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: fused-source
-          path: ${{ runner.temp }}/pyrpmd-source.tar
       - name: Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin
-          python -m pip install -e '.[test,ase,mpi]'
+          python -m pip install -e '.[test,ase,mpi]' build
       - name: Build pinned real BKMP2
         run: python benchmarks/h3/build_pes.py
-      - name: Tests
-        run: python -m pytest -q
-      - name: Fused real-system validation
+      - name: Unit and compatibility tests
         run: |
-          if test -f benchmarks/h3/fused_propagation.py; then
-            python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
-          fi
-      - name: Reproducible workspace and results
+          mkdir -p runs
+          python -m pytest -q | tee runs/fused-tests.txt
+      - name: Actual 4-rank MPI regression
+        run: |
+          mpiexec -n 4 python tests/mpi_integration.py | tee runs/fused-mpi.txt
+          mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-fused-mpi" | tee runs/fused-mpi-workflows.txt
+      - name: Fused real-system observations, restart and timing
+        run: python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
+      - name: Build packages
+        run: python -m build
+      - name: Results and build provenance
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: fused-native-results
           path: |
-            runs/fused-native.json
-            benchmarks/h3/build/h3_bkmp2.f
+            runs/fused-*
             benchmarks/h3/build/libbkmp2.build.json
+            dist/
