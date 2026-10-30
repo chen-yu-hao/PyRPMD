@@ -14,6 +14,16 @@ from .io import write_json, referenced_files, fingerprint, jsonable
 from .system import System
 
 
+def _read_identity(config, directory):
+    """Restore a molecular System or the explicit system-free PCET model."""
+    path = Path(directory) / "input"
+    if config["task"] == "pcet":
+        from .pcet_input import PCETModelIdentity
+
+        return PCETModelIdentity.from_dict(json.loads((path / "model.json").read_text()))
+    return System.from_dict(json.loads((path / "system.json").read_text()))
+
+
 def _spec(value):
     if isinstance(value, JobSpec):
         return value
@@ -45,9 +55,7 @@ def _initialize_output(config, system, output, resume=False):
             # Authenticate the saved input before migrating an old identity.
             # A v0.1 run may have included execution-only block/backend options.
             stored_config = json.loads((path / "input" / "resolved.json").read_text())
-            stored_system = System.from_dict(
-                json.loads((path / "input" / "system.json").read_text())
-            )
+            stored_system = _read_identity(stored_config, path)
             if fingerprint(stored_config, stored_system) != old_digest:
                 raise InputError("Legacy saved input does not match its run manifest")
             old_digest = fingerprint(scientific_config(stored_config), stored_system)
@@ -99,7 +107,10 @@ def _initialize_output(config, system, output, resume=False):
         "native": native_capabilities(),
         "parallel": config.get("parallel", {}),
         "preset": config.get("preset", "pilot"),
-        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "hamiltonian_convention": (
+            "one_proton_vibronic_golden_rule" if config["task"] == "pcet"
+            else "sum_beads_beta_over_P"
+        ),
         "units": {
             "length": "bohr",
             "momentum": "atomic",
@@ -107,9 +118,18 @@ def _initialize_output(config, system, output, resume=False):
             "time": "atomic",
         },
     }
+    if config["task"] == "pcet":
+        manifest["model_schema"] = "pyrpmd.pcet-model"
+        manifest["checkpoint_schema"] = "pyrpmd.pcet-case"
+        manifest["checkpoint_schema_version"] = 1
+        manifest["normalization"] = "local_first_order"
+        manifest["units"].pop("momentum")
+        manifest["units"]["rate"] = "s^-1"
+        manifest["units"]["electrode_potential"] = "V"
     write_json(manifest_path, manifest)
     write_json(path / "input" / "resolved.json", config)
-    write_json(path / "input" / "system.json", system.to_dict())
+    identity_file = "model.json" if config["task"] == "pcet" else "system.json"
+    write_json(path / "input" / identity_file, system.to_dict())
     if config.get("_input_path"):
         source = Path(config["_input_path"])
         shutil.copy2(source, path / "input" / ("original" + source.suffix))
@@ -132,7 +152,11 @@ def run_resolved(config, system, *, output=None, resume=False):
     from .parallel import root_call, is_root
 
     root_call(_initialize_output, config, system, target, resume)
-    if config["task"] == "drpmd":
+    if config["task"] == "pcet":
+        from .workflows.pcet import run_pcet
+
+        result = run_pcet(config, system, Path(target))
+    elif config["task"] == "drpmd":
         from .workflows.drpmd import run_drpmd
 
         result = run_drpmd(config, system, Path(target))
@@ -172,7 +196,9 @@ def resume_run(directory, *, parallel=None, execution=None):
     if path.name == "checkpoints":
         path = path.parent
     config = json.loads((path / "input" / "resolved.json").read_text())
-    system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
+    system = _read_identity(config, path)
+    if config["task"] == "pcet" and (parallel is not None or execution is not None):
+        raise InputError("PCET resume does not accept trajectory parallelism or propagation overrides")
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
     if parallel is not None:
@@ -247,6 +273,14 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None):
 def prepare(job, *, numerical=False):
     spec = _spec(job)
     config, system = spec.resolve()
+    if config["task"] == "pcet":
+        from .workflows.pcet import prepare_pcet
+
+        return {
+            "task": "pcet", "resolved": config, "model": system.to_dict(),
+            "diagnostics": config.get("_warnings", []),
+            "ready": True, "pcet_preparation": prepare_pcet(config, system, numerical=numerical),
+        }
     result = {
         "task": config["task"],
         "resolved": config,

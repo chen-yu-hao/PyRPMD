@@ -23,7 +23,7 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet".split()
 )
 _SECTIONS = {
     "system": set(
@@ -291,6 +291,10 @@ class JobSpec:
         for key, value in overrides.items():
             if value is None:
                 continue
+            if d.get("task") == "pcet" and key not in ("temperature", "output"):
+                raise InputError(
+                    f"PCET supports only temperature/output overrides; {key} is not applicable to this serial model"
+                )
             if key == "pes":
                 d.setdefault("potential", {})["library"] = str(Path(value).resolve())
                 if d["potential"].get("provider") not in ("rpmdrate", "f2py"):
@@ -311,6 +315,12 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        if self.data.get("task") == "pcet":
+            from .pcet_input import resolve_pcet_job
+
+            return resolve_pcet_job(
+                self.data, base_directory=self.base_directory, input_path=self.input_path
+            )
         if self.data.get("task") == "network":
             from .reactions import resolve_network_job
 
@@ -336,7 +346,9 @@ class JobSpec:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")
         if task not in ("rate", "drpmd", "fes", "metadynamics"):
-            raise InputError("task must be rate, drpmd, fes, metadynamics or network")
+            raise InputError("task must be rate, drpmd, fes, metadynamics, network or pcet")
+        if "pcet" in d:
+            raise InputError("[pcet] requires task='pcet'")
         if "network" in d:
             raise InputError("[network] requires task='network'")
         if "metadynamics" in d and task != "metadynamics":

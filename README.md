@@ -1,6 +1,6 @@
 # PyRPMD
 
-**Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维自由能面、自适应伞抽样和 metadynamics。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
+**Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维自由能面、自适应伞抽样和 metadynamics，并提供局域弱耦合电化学 PCET 速率模型。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
 
 本项目是初始科研实现。随附示例用于验证算法和程序连接；真实化学体系仍需要合适的势能面、通道定义及珠子数、步长、采样、远区距离和回穿时间等收敛检查。程序会分别报告有限采样估计、失败/未决轨迹和诊断，不把一次运行成功标成物理收敛。
 
@@ -21,11 +21,15 @@
 | 可选积分器 | `cayley-bcb`、`normal-mode-bab`、`velocity-verlet`；两套原生 block API、Andersen 母链、centroid RATTLE 均保留所选方法 |
 | 自适应伞抽样 | 1D/2D pilot 根据 MBAR overlap 与有效样本数插窗、延长采样；冻结后独立 production，支持标准速率的 PMF |
 | Metadynamics | Standard / well-tempered，1D/2D 与周期 CV、完整 Jacobian、独立 replica、HILLS 和有限时间 bias FES 估计 |
+| 电化学 PCET 模型 | 一个局域复合物、单质子、宽带金属和经典 Gaussian 环境的 golden-rule 正反向速率（s⁻¹）；电势/温度扫描、H/D KIE、振动态贡献及数值诊断 |
 | 续跑 | 完整 q/p、RNG、偏置历史、阶段与科学指纹；v2 原子 checkpoint 逐数组 SHA256 校验，兼容旧 v1 数据；可调整执行分块和后端 |
 
 多 TS 结果按入口、通道标签、TS 分别报告，当前只接受 `aggregation="separate"`。
 不同分割面的通量可能重叠，程序不会据此自动求和为总速率。
 Metadynamics 输出有限时间自由能估计，不从有偏轨迹时间推断反应速率。
+PCET 使用独立的一维质子本征态与电极能量积分模型；不把其结果解释为
+RPMD 速率、显式恒电势界面模拟或电流密度。其近似和能量约定见
+[PCET 方法说明](docs/pcet.md)。
 新接口、兼容性和已支持范围见 [0.2.0 发行说明](docs/releases/0.2.0.md)。
 
 MPI 路径已在**同一台机器的 4 个真实 MPI 进程**中测试。跨物理节点和真实 CUDA 硬件尚未实测。Torch CPU 和多 GPU 分配逻辑分别有测试。当前 MPI 是静态分组，`pes_ranks=1`；不声称支持任意势能程序内部的 MPI communicator。
@@ -75,6 +79,9 @@ pyrpmd run examples/fes/adaptive_harmonic.inp --output runs/adaptive
 pyrpmd run examples/metadynamics/well_tempered_2d.inp --output runs/meta
 pyrpmd analyze runs/meta --recompute --bins 30 30
 
+# 教学 PCET 模型：H/D 的温度、电势扫描，局域一级速率。
+pyrpmd run examples/pcet/harmonic_scan.inp --output runs/pcet-harmonic
+
 # 只改变执行分块续跑；积分器等科学参数保持运行身份。
 pyrpmd resume runs/meta --loop-backend auto --block-steps 128
 pyrpmd checkpoint runs/meta/checkpoints/metadynamics_0000.npz --require-integrity
@@ -84,6 +91,9 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 ```
 
 所有示例都可以先运行 `validate`。`validate --check-pes` 还会初始化并评估势能；对 TS-only 速率输入，这也会进行数值准备。每次新运行使用新目录；续跑使用 `resume` 或原输入的 `run --resume`。
+
+PCET 的 `validate` 检查独立模型输入；`--check-pes` 在该工作流中执行
+质子本征态数值准备，不调用分子 PES。完整的速率与离散收敛诊断由 `run` 给出。
 
 ## 真实体系验证：H + H₂ / BKMP2
 
@@ -219,6 +229,7 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 - [原生传播与兼容性](docs/native-propagation.md)、[分段 API 与故障处理](docs/block-propagation.md)
 - [积分器选择](docs/integrators.md)、[多入口与多 TS](docs/reaction-networks.md)
 - [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
+- [电化学 PCET 模型与适用范围](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
 - [公共接口约定](docs/interfaces.md)、[checkpoint 与恢复规范](docs/checkpoints.md)
 
 运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据及 `results/summary.json`。FES 另有 `fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条初始状态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。

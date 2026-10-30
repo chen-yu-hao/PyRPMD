@@ -23,7 +23,7 @@ def _input_options(p):
 def parser():
     p = argparse.ArgumentParser(
         prog="pyrpmd",
-        description="PyRPMD: ring-polymer dynamics, reaction networks and enhanced sampling",
+        description="PyRPMD: ring-polymer dynamics, reaction networks, enhanced sampling and PCET models",
     )
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     commands = p.add_subparsers(dest="command", required=True)
@@ -216,22 +216,32 @@ def main(argv=None):
                     from .workflows.fes import resolve_umbrellas
 
                     resolve_umbrellas(config, system)
-                result = {
-                    "valid": True,
-                    "task": config["task"],
-                    "natoms": system.natoms,
-                    "temperature_K": config["temperature_K"],
-                    "beads": config["beads"],
-                    "parallel": execution_plan(config["parallel"]).__dict__,
-                    "warnings": config["_warnings"],
-                }
+                if config["task"] == "pcet":
+                    from .workflows.pcet import prepare_pcet
+
+                    result = {
+                        "valid": True, "task": "pcet",
+                        "model": prepare_pcet(config, system, numerical=False),
+                        "temperature_K": config["temperature_K"],
+                        "warnings": config["_warnings"],
+                    }
+                else:
+                    result = {
+                        "valid": True,
+                        "task": config["task"],
+                        "natoms": system.natoms,
+                        "temperature_K": config["temperature_K"],
+                        "beads": config["beads"],
+                        "parallel": execution_plan(config["parallel"]).__dict__,
+                        "warnings": config["_warnings"],
+                    }
             if args.write_resolved:
                 from .parallel import root_call
 
                 root_call(
                     write_json,
                     args.write_resolved,
-                    {"config": config, "system": system.to_dict()},
+                    {"config": config, "model" if config["task"] == "pcet" else "system": system.to_dict()},
                 )
             _print(result)
         elif args.command == "prepare":
@@ -248,7 +258,7 @@ def main(argv=None):
 
             override = (
                 {"trajectory_workers": args.workers, "trajectory_groups": args.workers}
-                if args.workers
+                if args.workers is not None
                 else None
             )
             execution = {
@@ -279,7 +289,7 @@ def main(argv=None):
                     "name": "PyRPMD",
                     "version": __version__,
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics"],
+                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "pcet"],
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
                     "enhanced_sampling": ["adaptive_umbrella", "standard_metadynamics", "well_tempered_metadynamics"],
                     "input_schema_version": 1,

@@ -67,6 +67,8 @@ jobs:
               'src/pyrpmd/workflows/network.py',
               'src/pyrpmd/workflows/adaptive_umbrella.py',
               'src/pyrpmd/workflows/metadynamics.py',
+              'src/pyrpmd/pcet.py', 'src/pyrpmd/pcet_input.py',
+              'src/pyrpmd/workflows/pcet.py',
               'native/fused.hpp', 'native/propagation.h',
               'native/include/pyrpmd/pes_api_v1.h',
               'examples/network/two_entrances.py',
@@ -74,12 +76,15 @@ jobs:
               'examples/fes/adaptive_harmonic.inp',
               'examples/metadynamics/standard.inp',
               'examples/metadynamics/well_tempered_2d.inp',
+              'examples/pcet/harmonic_scan.inp',
               'tests/package_smoke.py', 'tests/test_integrators.py',
               'tests/test_integrator_workflows.py',
               'tests/test_reaction_network.py', 'tests/test_metadynamics.py',
+              'tests/test_pcet_science.py', 'tests/test_pcet_workflow.py',
               'docs/checkpoints.md', 'docs/interfaces.md',
               'docs/integrators.md', 'docs/reaction-networks.md',
               'docs/enhanced-sampling.md', 'docs/releases/0.2.0.md',
+              'docs/pcet.md',
           ]
           for name in required:
               assert (roots[0] / name).is_file(), name

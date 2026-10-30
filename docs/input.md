@@ -7,7 +7,7 @@
 | 字段 | 类型、单位与含义 |
 | --- | --- |
 | `schema_version` | 当前为整数 1 |
-| `task` | `rate`、`drpmd`、`fes`、`network`、`metadynamics` |
+| `task` | `rate`、`drpmd`、`fes`、`network`、`metadynamics`、`pcet` |
 | `preset` | `pilot`（缺省）或 `production` |
 | `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
 | `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
@@ -20,6 +20,9 @@
 | `output.trajectory_stride` | dRPMD 轨迹保存的正整数步数间隔 |
 
 `production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，科学收敛仍需用户用系列计算确认。未知顶层和常用 section 字段会报错，不会自动忽略。
+
+`pcet` 使用下述独立模型输入，不使用分子系统、PES、珠子数、传播与采样
+预设；其 `temperature` 也接受温度列表以运行扫描。
 
 时间数量必须是步长的整数倍。需要非整除的时间时请先选择实际整数步数，例如 `equilibration_steps=333`。纯数值的内部单位是 bohr、hartree、原子时间、电子质量；XYZ 坐标缺省为 angstrom。力常数支持 `"10 kcal/mol/angstrom^2"` 等组合单位。所有原子索引均为 **0-based**。
 
@@ -239,9 +242,67 @@ bootstrap = 0
 兼容传播仍能使用所选积分器的编译子步。有限时间 FES 估计及 HILLS/恢复
 时序见[增强采样规范](enhanced-sampling.md)。
 
+## 电化学 PCET 模型
+
+`task="pcet"` 计算固定局域复合物的一维单质子 golden-rule 速率，输出
+还原/氧化的 s⁻¹ 速率和 H/D KIE；它不执行 RPMD 轨迹。输入不需要
+`[system]` 或 `[potential]`，而使用 `[pcet]`、`[pcet.electrode]`、
+`[pcet.proton]` 及两电子态的质子势：
+
+```toml
+task = "pcet"
+temperature = ["250 K", "300 K", "350 K"]
+
+[pcet]
+method = "golden_rule"
+normalization = "local_first_order"
+isotopes = ["H", "D"]
+driving_force = "0.0 eV"
+reorganization_energy = "0.7 eV"
+electronic_coupling = "0.001 eV"
+
+[pcet.electrode]
+model = "wide_band"
+density_of_states = "1 eV^-1"
+potential_reference = "SHE"
+reference_potential_V = 0.0
+potentials_V = [-0.2, 0.0, 0.2]
+
+[pcet.proton]
+grid_min = "-1.5 angstrom"
+grid_max = "1.5 angstrom"
+grid_points = 401
+states = 12
+
+[pcet.proton.oxidized]
+kind = "harmonic"
+center = "-0.2 angstrom"
+force_constant = "4 eV/angstrom^2"
+
+[pcet.proton.reduced]
+kind = "harmonic"
+center = "0.2 angstrom"
+force_constant = "5 eV/angstrom^2"
+```
+
+这些是无真实材料归属的教学参数。`driving_force` 是参考电势下 reduced
+减 oxidized 的最低点自由能差，不含转移质子的零点能与热振动自由能；
+两个质子势分别去除自身最低值，由本征态求解器提供质子量子贡献。
+电势增加时按 `+e*(U-U_ref)` 增大还原自由能。`potential_reference` 只记录
+标尺，不自动转换 SHE/RHE 或加入 pH 依赖。
+
+`[pcet.numerics]` 可设置 `quadrature_rtol`、`quadrature_atol`、
+`convergence_check`、`relative_tolerance` 和 `absolute_tolerance_s`。
+数值收敛与弱耦合/宽带/经典环境的物理适用性分开报告。完整可运行示例、
+表格势字段、速率公式和输出解释见 [PCET 规范](pcet.md)与
+[教学示例](../examples/pcet/README.md)。
+
 ## 运行与重启记录
 
 `manifest.json` v2 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。新 NPZ checkpoint 使用 v2 容器与逐数组校验，始终以 `allow_pickle=False` 读数组；RNG/进度采用同一容器内的 JSON 字符串或明确的工作流元数据。旧 v1 文件的兼容读取与 manifest 迁移见[恢复规范](checkpoints.md)。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。
+
+PCET 用 `input/model.json` 保存一维模型，不创建分子 `system.json`；
+其扫描点 checkpoint 是带模型身份与校验的 JSON，不包含 q/p 或 RNG。
 
 ## 连续原生传播
 
