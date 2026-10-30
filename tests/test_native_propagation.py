@@ -275,9 +275,9 @@ def test_drpmd_native_failure_keeps_prefix_without_replaying_pes(native_library,
     reference = initial.copy()
     dynamics(pes).propagate_block(reference, 2, backend="native")
     dyn = dynamics(pes, loop_backend="native", block_steps=12)
-    # One initial-energy call precedes the two force calls per step.
-    # Fail the second force of step 3, after exactly two valid steps.
-    pes.lib.reset(7, 0)
+    # One initial-energy call and the initial force precede cached endpoint
+    # evaluations. Fail the endpoint of step 3 after exactly two valid steps.
+    pes.lib.reset(5, 0)
     result = _trajectory(dyn, initial.copy(), None, _native_collision_config(),
                          tmp_path, 0, 0, {}, "native-prefix-failure", False)
 
@@ -285,7 +285,7 @@ def test_drpmd_native_failure_keeps_prefix_without_replaying_pes(native_library,
     assert "native PES frame" in result["reason"]
     assert result["steps"] == 2
     assert result["propagation"] == {"native_steps": 2, "python_steps": 0}
-    assert pes.lib.get_calls() == 7  # no force retry, energy retry or later step
+    assert pes.lib.get_calls() == 5  # no force retry, energy retry or later step
     with np.load(tmp_path / "trajectories/trajectory-00000000.npz") as saved:
         np.testing.assert_array_equal(saved["final_q"], reference.q)
         np.testing.assert_array_equal(saved["final_p"], reference.p)
@@ -329,7 +329,7 @@ def test_drpmd_python_classifier_boundaries_keep_native_prefix_and_counts(native
     assert result["steps"] == 7
     assert result["propagation"] == {"native_steps": 7, "python_steps": 0}
     assert dyn.propagation_stats["native_steps"] == 7
-    assert pes.lib.get_calls() == 17  # initial energy + 8 attempted physical steps
+    assert pes.lib.get_calls() == 11  # initial energy + two cached four-step blocks
     with np.load(tmp_path / "trajectories/trajectory-00000000.npz") as saved:
         np.testing.assert_array_equal(saved["final_q"], expected.q[6])
         np.testing.assert_array_equal(saved["final_p"], expected.p[6])

@@ -6,6 +6,7 @@ its independent analytic large-sample prediction.
 """
 
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 from scipy.integrate import cumulative_trapezoid
@@ -69,6 +70,48 @@ class MBARSolverTests(unittest.TestCase):
                 solve_mbar(u, counts)
         with self.assertRaises(ValueError):
             solve_mbar(np.empty((0, 0)), [])
+
+
+class UIComparisonFailureTests(unittest.TestCase):
+    def test_optional_ui_numerical_failure_keeps_mbar_results_and_correct_classification(self):
+        import pyrpmd.analysis.fes as analysis
+
+        samples = np.linspace(-1, 1, 800)
+        np.random.default_rng(514).shuffle(samples)
+        options = dict(centers=[0.0], stiffness=1.0, beta=1.0,
+                       bins=np.linspace(-1.1, 1.1, 12), reference=-0.5,
+                       xi_star=0.5, min_count=5, bootstrap=3, seed=918)
+        baseline = mbar_rate_pmf([samples], compare_ui=False, **options)
+        original = analysis.umbrella_integration
+        for phase in ("point", "bootstrap"):
+            with self.subTest(phase=phase):
+                calls = 0
+
+                def fail_ui(*args, **kwargs):
+                    nonlocal calls
+                    calls += 1
+                    if phase == "bootstrap" and calls == 1:
+                        return original(*args, **kwargs)
+                    raise FloatingPointError("nonfinite Gaussian UI curve")
+
+                with patch.object(analysis, "umbrella_integration", side_effect=fail_ui):
+                    result = mbar_rate_pmf([samples], compare_ui=True, **options)
+                self.assertTrue(result["ready"])
+                self.assertEqual(result["free_energy_barrier_hartree"],
+                                 baseline["free_energy_barrier_hartree"])
+                self.assertEqual(result["bootstrap"]["valid"], 3)
+                self.assertEqual(result["bootstrap"]["failures"], [])
+                self.assertTrue(all(record["reason"] is None
+                                    for record in result["bootstrap"]["draws"]))
+                if phase == "point":
+                    self.assertFalse(result["ui_comparison"]["ready"])
+                    self.assertIn("ui_fit_failed", result["ui_comparison"]["reason"])
+                else:
+                    self.assertTrue(result["ui_comparison"]["ready"])
+                    failures = result["ui_comparison"]["failures"]
+                    self.assertEqual(len(failures), 3)
+                    self.assertTrue(all(f["reason"] == "ui_fit_failed" for f in failures))
+                    self.assertEqual(result["ui_comparison"]["paired_ui_bootstrap_barriers"], [])
 
 
 class MBARRatePMFTests(unittest.TestCase):

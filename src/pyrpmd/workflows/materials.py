@@ -20,6 +20,7 @@ from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..potentials.base import validate_result
+from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
 from .fes import _fingerprint, checked_integer, write_json
 
@@ -241,7 +242,7 @@ def _sample_replica(task):
     config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
     options = resolve_materials(config, system)
     checkpoint = _checkpoint_path(output, replica)
-    provider = make_task_potential(config["potential"], system)
+    provider = StepEvaluationCache(make_task_potential(config["potential"], system))
     try:
         rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 1301, replica]))
         kwargs = dict(seed=rng, native=config.get("native", config.get("dynamics", {}).get("native", True)),
@@ -300,21 +301,25 @@ def _sample_replica(task):
             old_rng = copy.deepcopy(rng.bit_generator.state)
             old_stats = copy.deepcopy(dynamics.propagation_stats)
             try:
-                if is_sampling and options["thermostat"] == "pile-l":
-                    dynamics.sample_step(state, gamma_centroid=options["gamma_centroid"])
-                    dynamics.propagation_stats["python_steps"] += 1
-                    reasons = dynamics.propagation_stats["fallback_reasons"]
-                    reason = "PILE-L sampling uses Python/NumPy"
-                    reasons[reason] = reasons.get(reason, 0) + 1
-                else:
-                    if is_sampling and state.step % options["andersen_interval"] == 0:
-                        state.p[:] = dynamics.sample_momenta()
-                    # A single-step transaction makes the accepted prefix and
-                    # sample boundary independent of execution block sizing.
-                    dynamics.propagate(state, 1, record_centroids=False)
-                prospective = elapsed + 1
-                record = prospective >= options["neq"] and (prospective - options["neq"]) % options["interval"] == 0
-                observation = observe() if record else None
+                # Energy, physical-force and observable consumers share the
+                # endpoint evaluation only inside this transaction. Never
+                # carry a PES cache through a failure, restart or phase change.
+                with provider.step():
+                    if is_sampling and options["thermostat"] == "pile-l":
+                        dynamics.sample_step(state, gamma_centroid=options["gamma_centroid"])
+                        dynamics.propagation_stats["python_steps"] += 1
+                        reasons = dynamics.propagation_stats["fallback_reasons"]
+                        reason = "PILE-L sampling uses Python/NumPy"
+                        reasons[reason] = reasons.get(reason, 0) + 1
+                    else:
+                        if is_sampling and state.step % options["andersen_interval"] == 0:
+                            state.p[:] = dynamics.sample_momenta()
+                        # Preserve the accepted prefix and observation boundary
+                        # independently of execution block sizing.
+                        dynamics.propagate(state, 1, record_centroids=False)
+                    prospective = elapsed + 1
+                    record = prospective >= options["neq"] and (prospective - options["neq"]) % options["interval"] == 0
+                    observation = observe() if record else None
             except BaseException:
                 state = old_state
                 rng.bit_generator.state = old_rng
@@ -328,7 +333,6 @@ def _sample_replica(task):
                 save()
         save()
         stream = _read_stream(config, system, output, replica, options)
-        _write_trajectory(stream, config, system, output)
         return stream
     finally:
         if hasattr(provider, "close"):
@@ -368,6 +372,8 @@ def _analyze(streams, config, system, output, return_data=False):
     if options["neq"] == 0:
         result["warnings"].append("No equilibration was requested; the collapsed-ring initial geometry is not an equilibrium configurational sample.")
     if config["task"] == "pimd":
+        from ..analysis.diagnostics import correlated_mean_diagnostics
+
         means = np.array([s["observables"].mean(axis=0) for s in streams])
         spread = np.std(means, axis=0, ddof=1) / np.sqrt(len(streams)) if len(streams) > 1 else None
         result["energy_unit"] = "hartree"
@@ -376,13 +382,29 @@ def _analyze(streams, config, system, output, return_data=False):
                                 for i, name in enumerate(OBSERVABLE_NAMES)}
         result["radius_of_gyration_squared_bohr2"] = np.mean(
             [s["radii_gyration_squared"].mean(axis=0) for s in streams], axis=0).tolist()
+        result["sampling_diagnostics"] = [
+            {"replica": s["replica"], "observables": {
+                name: correlated_mean_diagnostics(s["observables"][:, i])
+                for i, name in enumerate(OBSERVABLE_NAMES)
+            }} for s in streams
+        ]
         result["warnings"].append("PIMD sampling times are not physical dynamical times; H_P is reported only as an integration diagnostic.")
     else:
         from ..analysis.diffusion import analyze_diffusion
+        from ..analysis.diagnostics import nve_energy_diagnostics
 
         times = streams[0]["times"]
         if any(not np.array_equal(s["times"], times) for s in streams):
             raise ValueError("diffusion replicas need the same completed sample clock for aggregation")
+        result["nve_energy_diagnostics"] = nve_energy_diagnostics(
+            [s["observables"][:, OBSERVABLE_NAMES.index("ring_polymer_hamiltonian")] for s in streams],
+            times, beads=config["beads"], beta=config["beta"],
+        )
+        if not result["nve_energy_diagnostics"]["within_tolerance"]:
+            result["warnings"].append(
+                "Saved production frames exceed 0.1 kBT per bead in H_P error; "
+                "check the timestep independently of the MSD fit."
+            )
         positions = np.array([s["positions"] for s in streams])
         velocities = np.array([s["velocities"] for s in streams])
         table = config.get("diffusion", {})

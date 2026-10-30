@@ -67,6 +67,11 @@ observations, with a GIL-free step loop and per-block private workspaces.
 `propagation.h` supplies the companion `advance` entrypoint used by
 `Dynamics.propagate_block`. It adds bead-average geometric observations,
 observation masks, optional full-state snapshots and centroid Cayley-RATTLE.
+For ordinary dRPMD it also supports versioned native connectivity/H3 outcome
+descriptors, persistence/early-stop events, a single pre-final rollback state,
+and opt-in block-local force reuse. Near-threshold outcomes yield to the original
+Python predicate without changing the cutoff. The module's `DRPMD_OUTCOMES_API`
+marker prevents older builds from silently ignoring event requests.
 It commits each accepted step and returns a valid prefix on numerical failure;
 `run_block` retains its whole-block transaction contract. Both implementations
 share the existing immutable Cayley context and the provider's lifetime lock.

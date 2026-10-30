@@ -1,0 +1,148 @@
+{
+  "schema": "pyrpmd.h3.rpmd-regression.v1",
+  "task": "fes2d",
+  "profile": "ci",
+  "passed": true,
+  "converged": false,
+  "scope": "Short real BKMP2 physical-system regression; not bead/timestep/Rinf/statistical convergence or a literature rate validation",
+  "pes": {
+    "provider": "BKMP2",
+    "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+    "execution_device": "cpu",
+    "thread_safety": "process_serial",
+    "native_batch": true,
+    "dtype": "float64",
+    "atomic_numbers": [
+      1,
+      1,
+      1
+    ],
+    "charge": 0,
+    "multiplicity": 2,
+    "energy_zero": "three separated H atoms",
+    "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+    "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+    "library_sha256": "95f7f268163aff7453883801ffc01ef6f05a201661d71232ba95487f11960ef8"
+  },
+  "settings": {
+    "temperature_K": 1500.0,
+    "beads": 16,
+    "timestep_au": 4.134137333517016,
+    "timestep_fs": 0.10000000000000002,
+    "workers": 2,
+    "sampling": {
+      "equilibration": "100 fs",
+      "production": "300 fs",
+      "interval": "0.5 fs",
+      "andersen_interval": 50,
+      "replicas": 2,
+      "dt_au": 4.134137333517016,
+      "thermostat": "andersen",
+      "integrator": "cayley-bcb-andersen",
+      "equilibration_steps": 1000,
+      "production_steps": 3000,
+      "interval_steps": 5,
+      "sample_interval": 5
+    },
+    "reaction": {
+      "electronic_weight": 1.0
+    },
+    "native": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    },
+    "seed": 721061
+  },
+  "temperature_K": 1500.0,
+  "beads": 16,
+  "timestep_fs": 0.10000000000000002,
+  "diagnostics": {
+    "connected": true,
+    "streams": 50,
+    "samples": 30000,
+    "effective_samples_minimum": 7.673275370699829,
+    "effective_samples_median": 27.495047798292795,
+    "effective_samples_sum": 1429.7835468768783,
+    "statistical_inefficiency_maximum": 78.19346641606033,
+    "weight_effective_samples": 245.95851690842474,
+    "supported_bins": 373,
+    "masked_fraction": 0.4032,
+    "ring_radius_of_gyration_minimum_bohr": 0.12146173935759887,
+    "ring_radius_of_gyration_median_bohr": 0.16561420985402114,
+    "bootstrap_replicates": 10,
+    "checkpoint_integrity": {
+      "passed": true,
+      "streams_checked": 50,
+      "exact_sample_count_and_values": true,
+      "mismatches": [],
+      "authoritative_samples": "final fes.h5 streams; checkpoint prefixes are never substituted"
+    },
+    "permutation_mirror": {
+      "identity": "F(r01,r12)=F(r12,r01), atom 0/2 exchange",
+      "common_supported_bins": 357,
+      "rms_hartree": 0.0014066971591477381,
+      "rms_kbt": 0.2961332202143835,
+      "median_absolute_diagonal_error_z": 0.6236872143750198,
+      "z_note": "Descriptive standardized differences; bin-to-bin bootstrap covariance is not retained. No symmetry averaging was applied."
+    },
+    "sample_count_near_ts": 2212
+  },
+  "gates": {
+    "real_ring_polymer": true,
+    "overlap_connected": true,
+    "minimum_stream_effective_samples_ge_5": true,
+    "two_dimensional_supported_surface": true,
+    "supported_bins_finite": true,
+    "mirror_domain_observed": true,
+    "ts_region_sampled": true,
+    "bootstrap_available": true,
+    "final_samples_match_checkpoints": true,
+    "native_kernel_used": true
+  },
+  "cv_names": [
+    "centroid_r01",
+    "centroid_r12"
+  ],
+  "cv_units": [
+    "bohr",
+    "bohr"
+  ],
+  "window_ranges_bohr": [
+    [
+      1.35,
+      2.35
+    ],
+    [
+      1.35,
+      2.35
+    ]
+  ],
+  "histogram_ranges_bohr": [
+    [
+      1.1,
+      2.8
+    ],
+    [
+      1.1,
+      2.8
+    ]
+  ],
+  "measure": "centroid distance probability density ds1 ds2; no radial-Jacobian subtraction",
+  "files": {
+    "surface": "run/fes.npz",
+    "samples": "run/fes.h5",
+    "table": "run/fes.csv"
+  },
+  "workflow_status": "sampled",
+  "warnings": [
+    "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval.",
+    "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+    "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+  ],
+  "wall_seconds": 6.675551128999359
+}

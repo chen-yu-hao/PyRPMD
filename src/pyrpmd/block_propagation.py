@@ -33,10 +33,20 @@ class BlockResult:
     q: np.ndarray | None
     p: np.ndarray | None
     error: str | None = None
+    outcome: dict | None = None
+    previous_q: np.ndarray | None = None
+    previous_p: np.ndarray | None = None
+    previous_step: int | None = None
+    previous_time: float | None = None
 
     @property
     def success(self):
-        return self.error is None and self.completed == self.requested
+        return self.error is None and (
+            self.completed == self.requested
+            or self.outcome is not None and (
+                self.outcome["resolved"] is not None or self.outcome.get("pending_check", False)
+            )
+        )
 
 
 class PropagationError(RuntimeError):
@@ -141,17 +151,109 @@ def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, recor
                      "constraint_tolerance": tolerance, "fragments": fragments, "record_energy": record_energy}
 
 
+def native_outcome_supported(dynamics):
+    """Whether plain blocks can evaluate the versioned outcome descriptors.
+
+    The module marker also rejects an older installed extension, whose advance
+    entry point would otherwise silently ignore new descriptor fields.
+    """
+    if getattr(dynamics, "loop_backend", "auto") == "python":
+        return False
+    native = getattr(dynamics.integrator, "_native", None)
+    if getattr(native, "DRPMD_OUTCOMES_API", 0) < 1:
+        return False
+    from .propagation import NativeUnavailableError
+    try:
+        _native_plan(dynamics, None, None, None, (), 1e-10, True, 0.0)
+    except (NotNative, NativeUnavailableError):
+        return False
+    return True
+
+
+def _outcome_options(outcome, state, steps):
+    if not isinstance(outcome, dict) or not isinstance(outcome.get("descriptor"), dict):
+        raise ValueError("outcome requires a classifier descriptor")
+    descriptor = outcome["descriptor"]
+    labels = descriptor.get("channel_labels")
+    if (not isinstance(labels, (list, tuple))
+            or any(not isinstance(label, str) or not label for label in labels)
+            or len(set(labels)) != len(labels)):
+        raise ValueError("outcome channel_labels must be unique nonempty strings")
+
+    def integer(name, default, minimum):
+        value = outcome.get(name, default)
+        if (isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral)
+                or not minimum <= value <= np.iinfo(np.int64).max):
+            raise ValueError(f"outcome {name} must be an integer >= {minimum}")
+        return int(value)
+
+    start = integer("start_step", state.step, 0)
+    if start > np.iinfo(np.int64).max - steps:
+        raise ValueError("outcome step counter overflow")
+    check = integer("check_interval", 10, 1)
+    persistence = integer("persistence_steps", 3 * check, 0)
+    candidate, since = outcome.get("candidate"), outcome.get("candidate_since")
+    code = -1
+    if candidate is not None:
+        if not isinstance(candidate, (tuple, list)) or len(candidate) != 2:
+            raise ValueError("outcome candidate must be a normalized (status, channel) pair")
+        if candidate[0] == "nonreactive" and candidate[1] is None:
+            code = 0
+        elif candidate[0] == "product" and candidate[1] in labels:
+            code = labels.index(candidate[1]) + 1
+        else:
+            raise ValueError("outcome candidate is not a declared channel")
+        if (isinstance(since, (bool, np.bool_)) or not isinstance(since, numbers.Integral)
+                or not 0 <= since <= start):
+            raise ValueError("outcome candidate_since must lie in the completed prefix")
+        since = int(since)
+    elif since is not None:
+        raise ValueError("outcome without a candidate must have candidate_since=None")
+    return {"descriptor": descriptor, "start_step": start, "check_interval": check,
+            "persistence_steps": persistence, "candidate_code": code,
+            "candidate_since": -1 if since is None else since}
+
+
+def _outcome_result(spec, metadata):
+    def label(code):
+        if code < 0:
+            return None
+        if code == 0:
+            return ("nonreactive", None)
+        return ("product", spec["descriptor"]["channel_labels"][code - 1])
+    since = metadata.get("candidate_since", spec["candidate_since"])
+    return {
+        "candidate": label(metadata.get("candidate_code", spec["candidate_code"])),
+        "candidate_since": None if since < 0 else since,
+        "resolved": label(metadata.get("resolved_code", -1)),
+        "checks": int(metadata.get("checks", 0)),
+        "pending_check": bool(metadata.get("pending_check", False)),
+    }
+
+
 def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=None,
                     constraint_tolerance=1e-10, fragment_data=(), observe=None,
-                    record_energy=True, record_states=False, backend=None, raise_on_error=True):
+                    record_energy=True, record_states=False, backend=None, raise_on_error=True,
+                    outcome=None, record_previous=False, reuse_forces=False):
     """Advance at most 4096 selected-integrator steps, observing in step order.
 
     ``observe`` is a length-steps boolean mask (default: all steps). A failure
     leaves q/p/clock at the last successfully completed and observed step.
     ``PropagationError.result`` retains the valid prefix. No force cache survives
     a block, so changing bias, constraints, q/p or PES between blocks is safe.
-    Blocks must end at thermostat/classifier/checkpoint boundaries, as the
-    bundled workflows do. Sampling RNG remains in Python at those boundaries.
+    ``outcome`` opts into a supported native classifier and its persistence
+    state machine; it can stop successfully before the requested block ends.
+    A comparison within floating-point roundoff of a classification boundary
+    yields ``outcome['pending_check']`` without updating persistence. The caller
+    must run the original Python classifier at that step before continuing.
+    Unsupported backends reject this option before mutating the state.
+    ``record_previous`` retains only the state before the final accepted step
+    of a successful block, allowing a Python classifier to reject that step.
+    ``reuse_forces`` opts into block-local force reuse for ordinary native
+    dynamics without bias, constraint or fragment projection. Other cases keep
+    the reference PES evaluation schedule. No cache survives a block.
+    Blocks must end at thermostat/Python-classifier/checkpoint boundaries.
+    Sampling RNG remains in Python at those boundaries.
     """
     if isinstance(steps, (bool, np.bool_)) or not isinstance(steps, (int, np.integer)) or not 0 <= steps <= 4096:
         raise ValueError("steps must be an integer in [0, 4096]")
@@ -159,6 +261,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     backend = backend or getattr(dynamics, "loop_backend", "auto")
     if backend not in ("auto", "native", "python"):
         raise ValueError("loop backend must be auto, native or python")
+    if not isinstance(record_previous, (bool, np.bool_)) or not isinstance(reuse_forces, (bool, np.bool_)):
+        raise ValueError("record_previous and reuse_forces must be boolean")
+    outcome_spec = None if outcome is None else _outcome_options(outcome, state, steps)
     if not np.isfinite(constraint_tolerance) or constraint_tolerance <= 0:
         raise ValueError("constraint tolerance must be positive and finite")
     if constraint is not None and (bias is not None or fragment_data):
@@ -180,11 +285,13 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
             raise ValueError("observation dimension must be a positive integer")
         dimension = int(cv.dimension)
     width = 2 + 2 * nd + dimension
-    memory = count * (width + (2 * state.q.size if record_states else 0)) * 8
+    memory = (count * (width + (2 * state.q.size if record_states else 0))
+              + (2 * state.q.size if record_previous else 0)) * 8
     if memory > 256 * 1024 * 1024:
         raise ValueError("block observation buffers exceed 256 MiB; shorten the block")
     records = np.full((count, width), np.nan)
     snapshots = np.empty((count, 2, *state.q.shape)) if record_states else None
+    previous_state = np.empty((2, *state.q.shape)) if record_previous else None
     start_step, start_time = state.step, state.time
     binding = options = None;reason = None
     if backend != "python":
@@ -192,19 +299,32 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         try:
             binding, options = _native_plan(dynamics, bias, cv, constraint, fragment_data,
                                             constraint_tolerance, record_energy, state.time)
+            if (outcome_spec is not None or record_previous) and getattr(
+                    dynamics.integrator._native, "DRPMD_OUTCOMES_API", 0) < 1:
+                binding = None
+                raise NotNative("installed native extension lacks outcome/rollback support; rebuild it")
         except (NotNative, NativeUnavailableError) as exc:
             reason = str(exc)
             if backend == "native":
                 raise RuntimeError("native loop required but unsupported: " + reason) from exc
     selected = "native" if binding is not None else "python"
+    if outcome_spec is not None and selected != "native":
+        raise RuntimeError("native outcomes require a supported native loop: " + (reason or "Python backend selected"))
     completed = written = 0;error = None
+    metadata = {}
+    previous_time = None
     if steps and selected == "native":
         # The lease pins the owner and prevents concurrent context destruction.
         # The integrator lock protects all use of this Cayley context.
+        options.update(outcome=outcome_spec, previous=previous_state, reuse_forces=bool(reuse_forces))
         with binding.acquire() as descriptor, dynamics.integrator._lock:
-            completed, written, clock, message = dynamics.integrator._native.advance(
+            native_result = dynamics.integrator._native.advance(
                 dynamics.integrator._context, descriptor, state.q, state.p, options, mask, records, snapshots)
+        completed, written, clock, message = native_result[:4]
+        if len(native_result) == 5:
+            metadata = native_result[4]
         state.step += completed;state.time = clock;error = message or None
+        previous_time = metadata.get("previous_time")
     elif steps:
         for i in range(steps):
             previous = state.copy()
@@ -241,13 +361,21 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                 error = f"{type(exc).__name__}: {exc}"
                 break
             completed += 1;written += int(mask[i])
+        if previous_state is not None and completed and error is None:
+            previous_state[0] = previous.q;previous_state[1] = previous.p
+            previous_time = previous.time
     records = records[:written];snapshots = None if snapshots is None else snapshots[:written]
     indices = np.flatnonzero(mask[:completed]) + start_step + 1
     result = BlockResult(steps, completed, selected, reason, indices, records[:, 0], records[:, 1],
                          records[:, 2:2+nd].reshape(-1, natoms, 3),
                          records[:, 2+nd:2+2*nd].reshape(-1, natoms, 3), records[:, 2+2*nd:],
                          None if snapshots is None else snapshots[:, 0],
-                         None if snapshots is None else snapshots[:, 1], error)
+                         None if snapshots is None else snapshots[:, 1], error,
+                         outcome=None if outcome_spec is None else _outcome_result(outcome_spec, metadata))
+    if previous_time is not None:
+        result.previous_q, result.previous_p = previous_state
+        result.previous_step = start_step + completed - 1
+        result.previous_time = previous_time
     stats = getattr(dynamics, "loop_stats", None)
     if stats is not None:
         stats[selected + "_steps"] += completed

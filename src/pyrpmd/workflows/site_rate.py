@@ -21,9 +21,9 @@ from ..analysis.fes import (
     _block_resample,
     _histogram,
     solve_mbar,
-    statistical_inefficiency,
     umbrella_reduced_potentials,
 )
+from ..analysis.recrossing import summarize_recrossing
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import ATOMIC_TIME_S
 from ..cv import Cartesian
@@ -88,6 +88,11 @@ def _setup(config, system):
     cv = stack.cvs[0]
     if type(cv) not in (Cartesian, LinearProjection, FractionalCoordinate):
         raise ValueError("site_rate supports only Cartesian, projection or fractional constant-gradient CVs")
+    if any(name in cv.__dict__ for name in (
+        "value", "value_and_jacobian", "centroid_value_gradient",
+        "centroid_value_gradient_hessian", "_affine_gradient",
+    )):
+        raise ValueError("site_rate does not accept overridden CV methods; the mass metric must be constant")
     if cv.estimator != "centroid" or cv.periods != (None,):
         raise ValueError("site_rate requires a continuous centroid CV and nonperiodic local umbrella bias")
     declared = config.get("cvs", [])
@@ -136,8 +141,6 @@ def _setup(config, system):
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("site_rate requires positive finite beta")
     options = _recrossing_options(config)
-    if not np.isfinite(options["plateau_tolerance"]):
-        raise ValueError("recrossing.plateau_tolerance must be finite")
     bootstrap = _pmf_bootstrap_count(config)
     if bootstrap == 1:
         raise ValueError("analysis.bootstrap must be zero or at least two")
@@ -306,6 +309,7 @@ def _estimate_pmf(sampled, config, system, output):
     estimate["warnings"].append("QTST uses finite histogram bins; bin-size convergence has not been established.")
     count = _pmf_bootstrap_count(config)
     draws = []
+    draw_records = []
     arrays = [np.asarray(stream["samples"]) for stream in sampled["streams"]]
     blocks = np.maximum(1, np.ceil(data["statistical_inefficiency"]).astype(int))
     independent_blocks = [len(values) / block for values, block in zip(arrays, blocks)]
@@ -316,21 +320,41 @@ def _estimate_pmf(sampled, config, system, output):
         rng = np.random.default_rng(np.random.SeedSequence([
             int(config.get("analysis", {}).get("seed", config.get("seed", 0))), 1201]))
         analysis = config.get("analysis", {})
-        for _ in range(count):
-            values = np.concatenate([_block_resample(a, b, rng) for a, b in zip(arrays, blocks)])
-            reduced = umbrella_reduced_potentials(values, centers, stiffness, config["beta"], periods=(None,))
-            mbar = solve_mbar(reduced, sizes, overlap_threshold=float(analysis.get("overlap_threshold", 1e-6)),
+        values = np.concatenate(arrays)
+        reduced = umbrella_reduced_potentials(values, centers, stiffness, config["beta"], periods=(None,))
+        offsets = np.r_[0, np.cumsum(sizes)]
+        for draw in range(count):
+            # The circular-block draw order is unchanged. Reusing columns of
+            # the common bias matrix avoids rebuilding every umbrella energy.
+            indices = np.concatenate([
+                _block_resample(np.arange(n), block, rng) + offset
+                for n, block, offset in zip(sizes, blocks, offsets[:-1])
+            ])
+            record = {"draw": draw, "valid": False, "reason": None}
+            mbar = solve_mbar(reduced[:, indices], sizes, overlap_threshold=float(analysis.get("overlap_threshold", 1e-6)),
                               initial_free_energies=data["window_free_energies"])
-            if not mbar.converged or len(set(mbar.components)) != 1:
-                continue
-            mass, density, raw_count, _, mask = _histogram(values, mbar.weights, data["edges"], config["beta"],
-                                                          min_count=int(analysis.get("min_count", 1)))
-            trial = estimate_site_qtst(
-                {"edges": data["edges"], "density": density, "probability_mass": mass,
-                 "mask": mask, "connected": True, "measure": "cv_density"},
-                config["beta"], metadata["mass_metric"], metadata["basin"], metadata["dividing_surface"])
-            if trial["ready"]:
-                draws.append(trial["k_qtst_s"])
+            if not mbar.converged:
+                record["reason"] = "mbar_not_converged"
+            elif len(set(mbar.components)) != 1:
+                record["reason"] = "disconnected_overlap"
+            else:
+                mass, density, raw_count, _, mask = _histogram(
+                    values[indices], mbar.weights, data["edges"], config["beta"],
+                    min_count=int(analysis.get("min_count", 1)))
+                trial = estimate_site_qtst(
+                    {"edges": data["edges"], "density": density, "probability_mass": mass,
+                     "mask": mask, "connected": True, "measure": "cv_density"},
+                    config["beta"], metadata["mass_metric"], metadata["basin"], metadata["dividing_surface"])
+                if trial["ready"]:
+                    draws.append(trial["k_qtst_s"])
+                    record.update(valid=True, k_qtst_s=trial["k_qtst_s"])
+                else:
+                    record["reason"] = trial["reasons"][0]
+            draw_records.append(record)
+    failures = [record for record in draw_records if not record["valid"]]
+    failure_counts = {}
+    for record in failures:
+        failure_counts[record["reason"]] = failure_counts.get(record["reason"], 0) + 1
     reasons = []
     if count < 2:
         reasons.append("fewer_than_two_requested_pmf_bootstrap_draws")
@@ -341,6 +365,8 @@ def _estimate_pmf(sampled, config, system, output):
     complete = estimate["ready"] and len(draws) >= 2 and not reasons
     estimate["pmf_uncertainty"] = {
         "available": complete, "reasons": reasons, "requested": count, "valid": len(draws),
+        "attempted": len(draw_records), "draws": draw_records,
+        "failures": failures, "failure_counts": failure_counts,
         "block_lengths": blocks.tolist(), "blocks_per_stream": independent_blocks,
         "method": "independent circular correlated-block resampling within each umbrella stream",
         "standard_error_s": float(np.std(draws, ddof=1)) if complete else None,
@@ -584,60 +610,38 @@ def _aggregate(children, pmf, config, output):
         return result
     if not pmf["ready"]:
         raise ValueError("cannot combine site children with an unsupported QTST estimate")
-    grouped, identities = {}, set()
     for child in children:
-        identity = tuple(child[key] for key in ("chain", "parent", "pair"))
-        if identity in identities:
-            raise ValueError("duplicate site child identity")
-        identities.add(identity)
         if child["surface"] != pmf["dividing_surface"] or child["direction"] != pmf["preparation"]["direction"]:
             raise ValueError("site child belongs to another surface/direction")
-        values = np.asarray(child["numerator"])
-        if values.shape != (options["child_steps"],) or not np.isfinite(values).all() or not np.isfinite(child["denominator"]) or child["denominator"] < 0:
-            raise ValueError("invalid site child flux record")
-        key = identity[:2]
-        entry = grouped.setdefault(key, [np.zeros(options["child_steps"]), 0.0])
-        entry[0] += values
-        entry[1] += child["denominator"]
-    keys = sorted(grouped)
-    num = np.asarray([grouped[key][0] for key in keys])
-    den = np.asarray([grouped[key][1] for key in keys])
-    if den.sum() <= 0:
-        raise ValueError("zero initial site flux; transmission cannot be estimated")
-    curve = num.sum(axis=0) / den.sum()
-    tail = min(len(curve), max(2, int(np.ceil(len(curve) * options["plateau_fraction"]))))
-    start, middle = len(curve) - tail, len(curve) - tail + tail // 2
-    kappa = float(curve[start:].mean())
-    drift = float(curve[middle:].mean() - curve[start:middle].mean())
-    chain_indices = {chain: np.asarray([i for i, key in enumerate(keys) if key[0] == chain])
-                     for chain in sorted({key[0] for key in keys})}
-    blocks = {}
-    for chain, ix in chain_indices.items():
-        observable = np.divide(num[ix, start:].mean(axis=1), den[ix], out=np.zeros(len(ix)), where=den[ix] > 0)
-        blocks[chain] = max(1, int(np.ceil(statistical_inefficiency(observable))))
     rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 1503]))
-    boot_curves = []
-    for _ in range(options["bootstrap"]):
-        selected = np.concatenate([_block_resample(chain_indices[chain], blocks[chain], rng)
-                                   for chain in rng.choice(list(chain_indices), size=len(chain_indices), replace=True)])
-        if den[selected].sum() > 0:
-            boot_curves.append(num[selected].sum(axis=0) / den[selected].sum())
-    bootstrap = np.asarray(boot_curves).reshape((-1, len(curve)))
-    recrossing_complete = len(chain_indices) >= 2 and len(bootstrap) >= 2 and len(bootstrap) == options["bootstrap"]
-    kappa_draws = bootstrap[:, start:].mean(axis=1)
-    curve_error = bootstrap.std(axis=0, ddof=1) if recrossing_complete else np.full_like(curve, np.nan)
-    kappa_error = float(kappa_draws.std(ddof=1)) if recrossing_complete else None
-    drift_error = float((bootstrap[:, middle:].mean(axis=1) - bootstrap[:, start:middle].mean(axis=1)).std(ddof=1)) if recrossing_complete else None
+    statistics = summarize_recrossing(
+        children, rng=rng,
+        **{key: options[key] for key in (
+            "child_steps", "plateau_fraction", "plateau_tolerance", "bootstrap"
+        )},
+    )
+    keys = statistics["parent_ids"]
+    num, den = statistics["parent_numerator"], statistics["parent_denominator"]
+    curve, start = statistics["curve"], statistics["start"]
+    kappa, drift = statistics["kappa"], statistics["drift"]
+    blocks = statistics["parent_block_lengths"]
+    bootstrap, kappa_draws = statistics["bootstrap_curves"], statistics["bootstrap_kappa"]
+    recrossing_uncertainty = statistics["uncertainty"]
+    # Keep the site's conservative primary policy. A long single chain can
+    # still provide an explicitly conditional block error below.
+    independent_chains = recrossing_uncertainty["independent_parent_chains"]
+    recrossing_complete = recrossing_uncertainty["available"] and independent_chains >= 2
+    curve_error = statistics["curve_standard_error"] if recrossing_complete else np.full_like(curve, np.nan)
+    kappa_error = statistics["standard_error"] if recrossing_complete else None
+    drift_error = statistics["drift_standard_error"] if recrossing_complete else None
     threshold = max(options["plateau_tolerance"] * abs(kappa), 2 * (drift_error or 0))
-    plateau = bool(tail >= 10 and abs(drift) <= threshold and kappa > 0)
+    plateau = bool(len(curve) - start >= 10 and abs(drift) <= threshold and kappa > 0)
     candidate = pmf["k_qtst_s"] * kappa
     complete = recrossing_complete and pmf["pmf_uncertainty"]["available"]
     rate_draws = np.array([])
-    reasons = list(pmf["pmf_uncertainty"]["reasons"])
-    if len(chain_indices) < 2:
+    reasons = list(pmf["pmf_uncertainty"]["reasons"]) + recrossing_uncertainty["reasons"]
+    if independent_chains < 2:
         reasons.append("fewer_than_two_independent_parent_chains")
-    if len(bootstrap) < 2 or len(bootstrap) != options["bootstrap"]:
-        reasons.append("insufficient_recrossing_bootstrap_draws")
     if complete:
         rate_draws = kappa_draws * rng.choice(pmf["_bootstrap_qtst_s"], size=len(kappa_draws), replace=True)
     energy_error = max(child["endpoint_energy_error_kbt"] for child in children)
@@ -664,18 +668,24 @@ def _aggregate(children, pmf, config, output):
         "rate_estimate_s": candidate, "kappa": kappa, "kappa_standard_error": kappa_error,
         "rate_standard_error_s": float(rate_draws.std(ddof=1)) if complete else None,
         "rate_percentile_95_ci_s": np.quantile(rate_draws, [.025, .975]).tolist() if complete else None,
-        "conditional_rate_standard_error_s": pmf["k_qtst_s"] * kappa_error if kappa_error is not None else None,
+        "conditional_kappa_standard_error": statistics["standard_error"],
+        "conditional_rate_standard_error_s": (
+            pmf["k_qtst_s"] * statistics["standard_error"]
+            if statistics["standard_error"] is not None else None
+        ),
         "rate_uncertainty": {
             "available": complete, "reasons": reasons,
             "method": "independent PMF block-bootstrap and chain/parent-cluster bootstrap draws, fixed basin and surface",
             "conditional_quantity": "recrossing uncertainty holding QTST fixed",
             "pmf_bootstrap_valid": len(pmf["_bootstrap_qtst_s"]), "recrossing_bootstrap_valid": len(bootstrap),
             "parent_block_lengths": blocks,
+            "recrossing_scope": recrossing_uncertainty["scope"],
+            "recrossing_support": recrossing_uncertainty,
         },
         "plateau_detected": plateau, "plateau_start_au": float(times[start]),
         "plateau_drift": drift, "plateau_drift_standard_error": drift_error,
         "child_time_fs": float(times[-1] * ATOMIC_TIME_S / 1e-15),
-        "parent_chains": len(chain_indices), "parent_configurations": len(keys),
+        "parent_chains": statistics["parent_chains"], "parent_configurations": len(keys),
         "child_pairs": len(children), "child_trajectories": 2 * len(children),
         "maximum_endpoint_energy_error_kbt": energy_error,
     })

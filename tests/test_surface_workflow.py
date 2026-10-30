@@ -120,6 +120,15 @@ def test_nonlinear_method_override_cannot_impersonate_affine_rate_coordinate():
         surface_definition(config, system)
 
 
+def test_affine_gradient_override_cannot_change_surface_mass_metric():
+    config, system = resolve_job()
+    cv = SurfaceHeight([1], system.masses, reference_atoms=[0])
+    cv._affine_gradient = lambda: np.zeros((2, 3))
+    config["cvs"] = [cv]
+    with pytest.raises(ValueError, match="overridden"):
+        surface_definition(config, system)
+
+
 @pytest.mark.parametrize("integrator", ["cayley-bcb", "normal-mode-bab", "velocity-verlet"])
 @pytest.mark.parametrize("product_side", ["higher", "lower"])
 def test_linear_parent_constraints_keep_fixed_beads_and_do_not_constrain_child_flux(tmp_path, product_side, integrator):
@@ -310,6 +319,15 @@ def test_periodic_surface_rate_public_run_and_completed_resume(tmp_path):
     assert result["rate_unit"] == "s^-1"
     assert not any("cm3" in key for key in result)
     assert result["converged"] is False
+    public = json.loads((tmp_path / "rate" / "surface_pmf.json").read_text())
+    assert result["pmf"] == {key: value for key, value in public.items()
+                              if key != "pmf_bootstrap_qtst"}
+    assert public["format_version"] == 2
+    assert "weights" not in public
+    with np.load(public["sample_weights_file"]) as saved, np.load(
+        tmp_path / "rate" / "umbrella" / "fes.npz"
+    ) as source:
+        np.testing.assert_array_equal(saved[public["sample_weights_key"]], source["weights"])
     with patch.object(Dynamics, "step", side_effect=AssertionError("completed resume propagated")):
         resumed = resume_run(tmp_path / "rate")
     for key in ("rate_estimate_s_inv", "rate_standard_error_s_inv", "kappa", "status"):

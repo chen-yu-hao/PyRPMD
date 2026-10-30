@@ -17,6 +17,7 @@ import numpy as np
 
 from pyrpmd.analysis.fes import (
     _block_resample,
+    _bootstrap_block_plan,
     _histogram,
     solve_mbar,
     statistical_inefficiency,
@@ -81,14 +82,17 @@ def _histogram_barrier(x, weights, edges, beta, xi, min_count):
     }
 
 
-def _statistics(values):
+def _statistics(values, *, uncertainty_available=True):
     a = np.asarray(values, float)
-    if not len(a):
-        return {"replicates": 0, "standard_error": None, "percentile_95_ci": None}
+    # Keep the actual number of draws even when stream correlations prevent
+    # interpreting their spread as an uncertainty estimate.
+    usable = uncertainty_available and len(a) > 1
     return {
         "replicates": len(a),
-        "standard_error": float(a.std(ddof=1)) if len(a) > 1 else None,
-        "percentile_95_ci": np.quantile(a, [0.025, 0.975]).tolist(),
+        "standard_error": float(a.std(ddof=1)) if usable else None,
+        "percentile_95_ci": (
+            np.quantile(a, [0.025, 0.975]).tolist() if usable else None
+        ),
     }
 
 
@@ -203,7 +207,6 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
                     "skewness": float(np.mean(z**3)),
                     "excess_kurtosis": float(np.mean(z**4) - 3),
                     "statistical_inefficiency": g,
-                    "block_length": int(np.ceil(g)),
                     "estimated_effective_samples": len(x) / g,
                 }
             )
@@ -212,6 +215,21 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
             stiffness.append(matrix)
     centers, stiffness = np.asarray(centers), np.asarray(stiffness)
     counts = np.asarray([len(a) for a in arrays])
+    block_plan = _bootstrap_block_plan(
+        counts, [moment["statistical_inefficiency"] for moment in moments]
+    )
+    uncertainty_available = block_plan["status"] != "unavailable"
+    for i, moment in enumerate(moments):
+        moment.update(
+            {
+                "block_length": int(block_plan["block_lengths"][i]),
+                "requested_block_length": int(
+                    block_plan["requested_block_lengths"][i]
+                ),
+                "block_length_capped": bool(block_plan["block_length_capped"][i]),
+                "blocks_per_stream": float(block_plan["blocks_per_stream"][i]),
+            }
+        )
     offsets = np.concatenate(([0], np.cumsum(counts)))
     x = np.concatenate(arrays)
     u = umbrella_reduced_potentials(x[:, None], centers, stiffness, beta)
@@ -260,8 +278,10 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
     for _ in range(bootstrap):
         indices = np.concatenate(
             [
-                _block_resample(np.arange(count), moment["block_length"], rng) + offset
-                for count, offset, moment in zip(counts, offsets[:-1], moments)
+                _block_resample(np.arange(count), block, rng) + offset
+                for count, offset, block in zip(
+                    counts, offsets[:-1], block_plan["block_lengths"]
+                )
             ]
         )
         xb = x[indices]
@@ -280,7 +300,7 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
             )
             ui_value = float(np.interp(xi, ui_grid, ub) - np.interp(0, ui_grid, ub))
             ui_draws.append(ui_value)
-        except ValueError:
+        except (ValueError, FloatingPointError):
             failures["ui"] += 1
         for i, edge in enumerate(edges):
             barrier = _histogram_barrier(xb, mb.weights, edge, beta, xi, min_count)[
@@ -329,9 +349,9 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
                         }
                     )
             endpoints[name] = support
-        stats = _statistics(boot)
+        stats = _statistics(boot, uncertainty_available=uncertainty_available)
         corrected_ci = None
-        if estimate_rate is not None and len(boot):
+        if estimate_rate is not None and uncertainty_available and len(boot) > 1:
             corrected_ci = np.quantile(
                 float(estimate_rate) * np.exp(-beta * (np.asarray(boot) - ui_barrier)),
                 [0.025, 0.975],
@@ -350,7 +370,9 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
                 ),
                 "barrier_bootstrap_hartree": stats,
                 "bootstrap_barriers_hartree": boot,
-                "paired_mbar_minus_ui_bootstrap_hartree": _statistics(difference),
+                "paired_mbar_minus_ui_bootstrap_hartree": _statistics(
+                    difference, uncertainty_available=uncertainty_available
+                ),
                 "paired_mbar_minus_ui_draws_hartree": difference,
                 "bootstrap_valid_fraction": (
                     len(boot) / bootstrap if bootstrap else None
@@ -401,7 +423,9 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
                 "kappa": summary.get("kappa"),
                 "rate_estimate_cm3_s": estimate_rate,
                 "rate_cm3_s": recorded_rate,
-                "paired_bootstrap_hartree": _statistics(ui_draws),
+                "paired_bootstrap_hartree": _statistics(
+                    ui_draws, uncertainty_available=uncertainty_available
+                ),
                 "bootstrap_barriers_hartree": ui_draws,
                 "curve": {
                     "xi": ui_grid,
@@ -428,8 +452,10 @@ def analyze_run(run, *, bins=(50, 100, 150), bootstrap=40, seed=73019):
                 "requested": bootstrap,
                 "seed": seed,
                 "failures": failures,
+                "block_plan": block_plan,
                 "method": "Independent circular blocks within each original stream; refit MBAR once per draw; paired endpoint covariance retained",
             },
+            "warnings": block_plan["warnings"],
             "sources": {
                 "hdf5_sha256": _sha256(h5_path),
                 "summary_sha256": _sha256(run / "summary.json"),

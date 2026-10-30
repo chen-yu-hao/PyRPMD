@@ -82,6 +82,7 @@ def surface_definition(config, system):
     component = cv.cvs[0]
     if any(name in component.__dict__ for name in (
         "value", "value_and_jacobian", "centroid_value_gradient", "centroid_value_gradient_hessian",
+        "_affine_gradient",
     )):
         raise ValueError("surface_rate does not accept overridden CV methods; the mass metric must be constant")
     if component.estimator != "centroid" or component.periods != (None,):
@@ -147,6 +148,7 @@ def _pmf_and_parents(sampled, config, system, output, options):
         seed=analysis.get("seed", config.get("seed", 0)),
         min_count=analysis.get("min_count", 5),
         overlap_threshold=analysis.get("overlap_threshold", 1e-6),
+        reweighting=sampled["data"].get("_reweighting"),
     )
     pmf["surface"] = {k: v for k, v in definition.items() if k != "coordinate"}
     pmf["warnings"] = list(dict.fromkeys(sampled["summary"]["warnings"] + pmf.get("warnings", []) + [
@@ -158,6 +160,7 @@ def _pmf_and_parents(sampled, config, system, output, options):
         path / "surface_pmf.npz",
         xi=pmf["xi"], free_energy=pmf["free_energy"], mask=pmf["mask"],
         bootstrap_qtst_s_inv=np.asarray(pmf["pmf_bootstrap_qtst"]),
+        weights=pmf["weights"],
     )
     np.savetxt(
         path / "surface_pmf.csv",
@@ -165,7 +168,10 @@ def _pmf_and_parents(sampled, config, system, output, options):
         delimiter=",", comments="", header="coordinate_bohr,free_energy_hartree,masked",
     )
     # The JSON remains compact; full curve arrays live in NPZ/CSV.
-    public = {k: v for k, v in pmf.items() if k not in ("xi", "free_energy", "mask")}
+    public = {k: v for k, v in pmf.items() if k not in ("xi", "free_energy", "mask", "weights")}
+    public["format_version"] = 2
+    public["sample_weights_file"] = str(path / "surface_pmf.npz")
+    public["sample_weights_key"] = "weights"
     public = jsonable(public)
     write_json(path / "surface_pmf.json", public)
     if not pmf["ready"]:

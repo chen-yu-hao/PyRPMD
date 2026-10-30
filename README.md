@@ -136,6 +136,12 @@ Ni(100) slab 上 H/D、1/4 珠子的短计算及来源校验。它验证数值�
 
 ## 真实体系验证：H + H₂ / BKMP2
 
+一维/二维 PMF 的新增独立审查见
+[2026-10-30 PMF 准确性验证](docs/validation/pmf-accuracy-2026-10-30/README.md)：
+包含解析积分、PyMBAR、不同珠子数/积分器、周期 CV、相关误差和真实 BKMP2 工作流。
+[H + HO₂ 二维扫描入口](benchmarks/hho2/README.md) 提供多起始几何、共同有限距离墙、
+六键长通道分类与有支持网格的连接分析；尚缺适用的全维反应 PES，未生成真实 H + HO₂ PMF。
+
 [`benchmarks/h3`](benchmarks/h3/README.md) 使用发表的 BKMP2 反应势能面，
 运行 dRPMD、二维 centroid FES、伞抽样 PMF 和 recrossing。势能源码在构建时
 从固定 commit 下载并核对 SHA256；先检查作者公布的能量/梯度参考值、
@@ -308,5 +314,8 @@ Cayley、反应坐标及速率算法参考并移植了 [RPMDrate](https://github
 centroid RATTLE，数值失败时保留成功前缀。两种 API 均支持三种所选积分器。dRPMD 碰撞和受约束母轨迹使用
 分段接口，FES/PMF 与 recrossing child 保留已验证的连续传播路径。
 自定义 Python PES/CV 保留兼容路径；自定义分类器仍在原有事件边界由 Python
-调用。配置默认 `loop_backend="auto"`、`block_steps=256`；接口范围和两种
+调用。显式内置连通图通道和 H3 交换分类器支持在 C++ 块内按原频率判定、
+累计持续时间并提前停止；临界几何返回原 Python 判据。普通原生 dRPMD
+同时复用块内终点力，并以单个回滚快照代替完整逐步 q/p 历史。
+配置默认 `loop_backend="auto"`、`block_steps=256`；接口范围和两种
 故障契约见上面的传播文档。

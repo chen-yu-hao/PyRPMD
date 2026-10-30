@@ -33,12 +33,16 @@ def _indices(atoms):
     return tuple(int(i) for i in atoms)
 
 
-def _distance(q, a, b, hessian=False):
+def _distance(q, a, b, hessian=False, *, geometry=None):
     if a == b or min(a, b) < 0 or max(a, b) >= len(q):
         raise ValueError("distance requires two distinct in-range atom indices")
     v = q[a] - q[b]
+    if geometry is not None:
+        v = geometry.minimum_image(v)
     r = float(np.linalg.norm(v))
     if r < 1e-12:
+        if geometry is not None:
+            raise ValueError("periodic distance derivative is undefined for coincident images")
         raise ValueError("CV derivative is undefined for coincident atoms")
     u = v / r
     g = np.zeros_like(q)
@@ -79,6 +83,57 @@ class CollectiveVariable:
         return self.value_and_jacobian(q).value
 
 
+class _AffineCoordinate(CollectiveVariable):
+    """Shared evaluation of a constant Cartesian coefficient matrix.
+
+    Implementations return their own gradient array so callers can modify the
+    result without changing the CV. Public classes keep their exact types and
+    their existing coefficient construction and override semantics.
+    """
+
+    constant_gradient = True
+    linear = True
+    _shape_error = "Projection coordinate shape does not match System"
+
+    def centroid_value_gradient(self, q):
+        gradient = self._affine_gradient()
+        if np.shape(q) != gradient.shape:
+            raise ValueError(self._shape_error)
+        return float(np.sum(gradient * q) - self.origin), gradient
+
+    def centroid_value_gradient_hessian(self, q):
+        value, gradient = self.centroid_value_gradient(q)
+        return value, gradient, np.zeros((len(q), 3, len(q), 3))
+
+
+class _PeriodicCellCV:
+    """Share immutable fixed-cell data without silently caching stale arrays."""
+
+    _pbc_as_tuple = False
+
+    def _bind_geometry(self, cell, pbc):
+        from .geometry import FixedCellGeometry
+
+        self._geometry = FixedCellGeometry(cell, pbc)
+
+    @property
+    def cell(self):
+        return self._geometry.cell
+
+    @cell.setter
+    def cell(self, value):
+        self._bind_geometry(value, self.pbc)
+
+    @property
+    def pbc(self):
+        flags = self._geometry.pbc
+        return tuple(bool(flag) for flag in flags) if self._pbc_as_tuple else flags
+
+    @pbc.setter
+    def pbc(self, value):
+        self._bind_geometry(self.cell, value)
+
+
 class Distance(CollectiveVariable):
     units = ("bohr",)
 
@@ -95,49 +150,38 @@ class Distance(CollectiveVariable):
         return _distance(q, *self.atoms, hessian=True)
 
 
-class PeriodicDistance(Distance):
+class PeriodicDistance(_PeriodicCellCV, Distance):
     """Minimum-image distance in a fixed cell, away from image-switch seams.
 
     The ring centroid is computed from continuous, unwrapped bead positions.
     Atom-wise wrapped input must first be unwrapped by the caller.
     """
 
-    def __init__(self, atoms, cell, pbc=(True, True, True), **kwargs):
-        from .geometry import validate_cell
+    _pbc_as_tuple = True
 
+    def __init__(self, atoms, cell, pbc=(True, True, True), **kwargs):
         super().__init__(atoms, **kwargs)
-        self.cell, self.pbc = validate_cell(cell, pbc)
+        self._bind_geometry(cell, pbc)
 
     def centroid_value_gradient_hessian(self, q):
-        from .geometry import minimum_image
-
-        a, b = self.atoms
-        if a == b or min(a, b) < 0 or max(a, b) >= len(q):
-            raise ValueError("periodic distance requires distinct in-range atom indices")
-        vector = minimum_image(q[a] - q[b], self.cell, self.pbc)
-        radius = float(np.linalg.norm(vector))
-        if radius < 1e-12:
-            raise ValueError("periodic distance derivative is undefined for coincident images")
-        unit = vector / radius
-        gradient = np.zeros_like(q)
-        gradient[a], gradient[b] = unit, -unit
-        hessian = np.zeros((len(q), 3, len(q), 3))
-        block = (np.eye(3) - np.outer(unit, unit)) / radius
-        for i, si in ((a, 1), (b, -1)):
-            for j, sj in ((a, 1), (b, -1)):
-                hessian[i, :, j, :] = si * sj * block
-        return radius, gradient, hessian
+        return _distance(q, *self.atoms, hessian=True, geometry=self._geometry)
 
     def centroid_value_gradient(self, q):
-        value, gradient, _ = self.centroid_value_gradient_hessian(q)
-        return value, gradient
+        # Preserve the historical extension point for subclasses/instances
+        # overriding the Hessian method, but avoid O(N^2) work for built-ins.
+        if ("centroid_value_gradient_hessian" in self.__dict__
+                or type(self).centroid_value_gradient_hessian
+                is not PeriodicDistance.centroid_value_gradient_hessian):
+            value, gradient, _ = self.centroid_value_gradient_hessian(q)
+            return value, gradient
+        return _distance(q, *self.atoms, geometry=self._geometry)
 
 
-class _SurfaceProjection(CollectiveVariable):
+class _SurfaceProjection(_AffineCoordinate):
     """Linear COM projection in an unwrapped, fixed Cartesian frame."""
 
     units = ("bohr",)
-    linear = True
+    _shape_error = "surface CV coordinates do not match its System"
 
     def __init__(self, atoms, masses, direction, origin=0.0, reference_atoms=None, **kwargs):
         super().__init__(**kwargs)
@@ -176,14 +220,8 @@ class _SurfaceProjection(CollectiveVariable):
                 self.weights[ids] = sign * self.masses[ids] / self.masses[ids].sum()
         self.gradient = self.weights[:, None] * self.direction[None]
 
-    def centroid_value_gradient(self, q):
-        if np.shape(q) != (len(self.masses), 3):
-            raise ValueError("surface CV coordinates do not match its System")
-        return float(np.sum(self.gradient * q) - self.origin), self.gradient.copy()
-
-    def centroid_value_gradient_hessian(self, q):
-        value, gradient = self.centroid_value_gradient(q)
-        return value, gradient, np.zeros((len(q), 3, len(q), 3))
+    def _affine_gradient(self):
+        return self.gradient.copy()
 
 
 class SurfaceHeight(_SurfaceProjection):
