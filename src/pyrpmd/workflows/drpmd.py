@@ -11,6 +11,8 @@ parallel scheduling/checkpoints are new PyRPMD code.
 from __future__ import annotations
 
 from collections import Counter
+from pyrpmd.propagation import loop_options, scientific_config
+
 import copy
 from dataclasses import asdict, is_dataclass
 import csv
@@ -566,6 +568,7 @@ def _dependency_fingerprints(config):
 
 
 def _physics_hash(config, system, parents):
+    config = scientific_config(config)
     scientific = {
         k: v
         for k, v in config.items()
@@ -667,6 +670,7 @@ def _trajectory(
     candidate, candidate_since, done = None, None, 0
     status, channel, reason = "unresolved", None, "maximum_propagation_time"
     trace_steps, trace_q, trace_energy = [], [], []
+    previous_propagation = {"native_steps": 0, "python_steps": 0}
     if resume and checkpoint.exists():
         meta, arrays = _load_npz(checkpoint)
         if (
@@ -688,6 +692,12 @@ def _trajectory(
         trace_steps = list(arrays["trace_steps"])
         trace_q = list(arrays["trace_centroid"])
         trace_energy = list(arrays["trace_energy"])
+        if "propagation" in meta:
+            previous_propagation.update(meta["propagation"])
+        elif done:
+            # Older checkpoints did not record which backend ran these steps.
+            # Preserve them without inventing a Python/native attribution.
+            previous_propagation["untracked_steps"] = done
     else:
         try:
             initial = float(dynamics.energy(state)) / config["beads"]
@@ -706,6 +716,13 @@ def _trajectory(
             status, channel = "failed", None
             reason = f"initial_energy: {type(exc).__name__}: {exc}"
     started = time.perf_counter()
+    stats_before = copy.deepcopy(dynamics.propagation_stats)
+
+    def trajectory_propagation():
+        counts = dict(previous_propagation)
+        for key in ("native_steps", "python_steps"):
+            counts[key] += dynamics.propagation_stats[key] - stats_before[key]
+        return counts
 
     def save_checkpoint():
         _atomic_npz(
@@ -727,6 +744,7 @@ def _trajectory(
                 "channel": channel,
                 "reason": reason,
                 "launch": launch,
+                "propagation": trajectory_propagation(),
             },
             q=state.q,
             p=state.p,
@@ -735,13 +753,29 @@ def _trajectory(
             trace_energy=np.asarray(trace_energy),
         )
 
-    for number in range(done + 1, max_steps + 1) if status == "unresolved" else ():
+    supported_classifier = classifier is None or type(classifier) in (ConnectivityClassifier, PilotConnectivityClassifier)
+    if not supported_classifier and dynamics.loop_backend == "native":
+        from pyrpmd.propagation import NativeUnavailableError
+        raise NativeUnavailableError("custom dRPMD classifier requires loop_backend='auto' or 'python'")
+    fused_loop = supported_classifier and dynamics.can_fuse()
+    while done < max_steps and status == "unresolved":
+        count = min(dynamics.block_steps, max_steps-done, check-done % check,
+                    stride-done % stride, checkpoint_interval-done % checkpoint_interval) if fused_loop else 1
+        number = done + count
         previous = state.copy()
+        stats_before_block = copy.deepcopy(dynamics.propagation_stats)
         previous_energy, previous_drift = final, drift
         previous_candidate, previous_since = candidate, candidate_since
         try:
-            dynamics.step(state)
-            final = float(dynamics.energy(state)) / config["beads"]
+            if fused_loop:
+                block = dynamics.propagate(state, count, sample_interval=count, record_centroids=False)
+                final = float(block.energies[-1]) / config["beads"]
+                drift = max(drift, abs(block.minimum_energy/config["beads"]-initial),
+                            abs(block.maximum_energy/config["beads"]-initial))
+            else:
+                dynamics.step(state)
+                dynamics.propagation_stats["python_steps"] += 1
+                final = float(dynamics.energy(state)) / config["beads"]
             if not math.isfinite(final):
                 raise FloatingPointError("Nonfinite total ring energy")
             drift = max(drift, abs(final - initial))
@@ -758,8 +792,15 @@ def _trajectory(
                     )
         except Exception as exc:
             state = previous
-            done = number - 1
             final, drift = previous_energy, previous_drift
+            dynamics.propagation_stats = copy.deepcopy(stats_before_block)
+            # Replay only the failed stateless block to retain last-valid-step
+            # and existing failed-trajectory/checkpoint semantics.
+            if fused_loop and count > 1:
+                candidate, candidate_since = previous_candidate, previous_since
+                fused_loop = False
+                continue
+            done = number - 1
             candidate, candidate_since = previous_candidate, previous_since
             status, channel = "failed", None
             reason = f"{type(exc).__name__}: {exc}"
@@ -818,6 +859,7 @@ def _trajectory(
         "max_energy_drift_per_bead": drift,
         "launch": launch,
         "wall_seconds": time.perf_counter() - started,
+        "propagation": trajectory_propagation(),
     }
     _atomic_json(result_path, record)
     return record
@@ -864,6 +906,7 @@ def _parent_task(task):
         seed=parent_seed,
         native=native,
         threads=plan.threads,
+        **loop_options(config),
     )
     production = Dynamics(
         potential,
@@ -874,6 +917,7 @@ def _parent_task(task):
         seed=np.random.SeedSequence([seed, 3, parent_id]),
         native=native,
         threads=plan.threads,
+        **loop_options(config),
     )
     classifier = _make_classifier(config, system)
     parent_path = out / "checkpoints" / f"parent-{parent_id:06d}.npz"

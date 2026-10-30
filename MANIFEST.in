@@ -1,10 +1,11 @@
 include README.md LICENSE THIRD_PARTY_NOTICES.md
 include pyproject.toml setup.py
 include native/CMakeLists.txt native/README.md native/ABI.md
-recursive-include native *.cpp *.h *.c
+recursive-include native *.cpp *.h *.hpp *.c
 recursive-include docs *.md *.json *.png *.pdf *.py
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
 recursive-include tests *.py
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json
 recursive-include benchmarks/h3/convergence_inputs *.inp
+recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 global-exclude __pycache__ *.py[cod] *.so *.o

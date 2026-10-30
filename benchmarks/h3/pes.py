@@ -48,6 +48,13 @@ class BKMP2Potential(Potential):
             "source_sha256": SOURCE["sha256"], "library_sha256": binary_hash,
         }
 
+    def native_binding(self):
+        from pyrpmd.propagation import NativePESBinding, NativeUnavailableError
+        if type(self) is not BKMP2Potential or "evaluate" in self.__dict__:
+            raise NativeUnavailableError("overridden BKMP2 provider uses Python semantics")
+        # The same process-global lock also protects ordinary ctypes calls.
+        return NativePESBinding(self, self.batch, _LOCK, 3, kind=1)
+
     def evaluate(self, x):
         x = coordinates(x)
         if x.shape[1:] != (3, 3):

@@ -285,6 +285,15 @@ class CABIPotential(Potential):
                 self._context = C.c_void_p()
                 raise
 
+    def native_binding(self):
+        from ..propagation import NativePESBinding, NativeUnavailableError
+        if type(self) is not CABIPotential or "evaluate" in self.__dict__:
+            raise NativeUnavailableError("overridden C ABI provider uses Python semantics")
+        if self.metadata.get("capabilities", {}).get("stateful") is not False:
+            raise NativeUnavailableError("C ABI provider must explicitly declare stateful=false")
+        return NativePESBinding(self, self._evaluate, self._lock, self.natoms,
+                                context=self._context.value or 0)
+
     def evaluate(self, x):
         if self.closed:
             raise PotentialError("PES context is closed")
@@ -313,6 +322,10 @@ class CABIPotential(Potential):
             len(messages),
         )
         with self._lock:
+            # close() may have run while coordinates/output buffers were built.
+            # Test the lifetime under the same lock used for native evaluation.
+            if self.closed:
+                raise PotentialError("PES context is closed")
             rc = self._evaluate(self._context, C.byref(inp), C.byref(out), C.byref(err))
         if rc:
             raise PotentialError(
@@ -327,12 +340,15 @@ class CABIPotential(Potential):
         return validate_result(PESResult(e, f, s, text), x.shape, require_success=False)
 
     def close(self):
-        if not self.closed:
-            with self._lock:
+        with self._lock:
+            if not self.closed:
                 if self._context:
                     self._destroy(self._context)
                     self._context = C.c_void_p()
-            self.closed = True
+                # A previously exported binding retains the old context address.
+                # Publish closed before releasing the lock so its acquire()
+                # cannot admit that address after the context was destroyed.
+                self.closed = True
 
     def __del__(self):
         try:
