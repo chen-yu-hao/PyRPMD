@@ -218,6 +218,7 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 - [开发与验证](docs/development.md)、[本次验证记录](docs/validation.md)
 - [原生传播与兼容性](docs/native-propagation.md)、[分段 API 与故障处理](docs/block-propagation.md)
 - [积分器选择](docs/integrators.md)、[多入口与多 TS](docs/reaction-networks.md)
+- [实验性非绝热 NRPMD 与状态分辨碰撞](docs/nonadiabatic.md)
 - [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
 - [公共接口约定](docs/interfaces.md)、[checkpoint 与恢复规范](docs/checkpoints.md)
 

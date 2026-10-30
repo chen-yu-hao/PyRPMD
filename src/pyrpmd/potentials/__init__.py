@@ -57,6 +57,11 @@ def make_potential(config, system=None):
         if model == "double_well":
             return DoubleWellPotential(**params)
         raise ValueError(f"unknown builtin PES {model}")
+    if kind == "diabatic_python":
+        from .diabatic import DiabaticPythonPotential
+
+        obj = import_object(spec["factory"])(**params) if "factory" in spec else import_object(spec["function"])
+        return DiabaticPythonPotential(obj, units=spec.get("units"), derivative=spec.get("derivative", "gradient"))
     if kind == "python":
         if "factory" in spec:
             obj = import_object(spec["factory"])(**params)
