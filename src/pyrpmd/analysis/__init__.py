@@ -7,6 +7,12 @@ from .fes import (
     umbrella_integration,
     mbar_rate_pmf,
 )
+from .rate_postprocess import (
+    surface_integral_2d,
+    surface_rate_2d,
+    flux_slice_rate_2d,
+    channel_rates,
+)
 
 __all__ = [
     "solve_mbar",
@@ -14,4 +20,8 @@ __all__ = [
     "statistical_inefficiency",
     "umbrella_integration",
     "mbar_rate_pmf",
+    "surface_integral_2d",
+    "surface_rate_2d",
+    "flux_slice_rate_2d",
+    "channel_rates",
 ]

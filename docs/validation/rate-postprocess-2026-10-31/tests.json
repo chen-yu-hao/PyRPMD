@@ -1,0 +1,26 @@
+{
+  "base_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+  "command": "python -m pytest -q",
+  "passed": 1478,
+  "skipped": 13,
+  "failed": 0,
+  "subtests_passed": 153,
+  "duration_seconds": 82.27,
+  "new_feature_tests": {
+    "test_rate_postprocess_core": 5,
+    "test_rate_postprocess_science": 35,
+    "test_rate_postprocess_io": 24,
+    "test_h3_rate_postprocess": 14
+  },
+  "optional_skips": [
+    "external NiAlH EAM data",
+    "ASE runtime",
+    "PyTorch runtime",
+    "independent optional PMF reference solver"
+  ],
+  "notes": [
+    "Final whole suite passed with loopback sockets enabled for existing i-PI tests.",
+    "Two prior sandbox-only socket PermissionErrors were separately confirmed passing, then the final whole suite was rerun.",
+    "Physical H3 pilots remain unconverged; see h3-summary.json."
+  ]
+}

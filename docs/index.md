@@ -15,6 +15,7 @@ PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输�
 | 气相双分子 RPMD 速率 | `rate` | [气相与自由能工作流](manual/workflows.md) |
 | 独立直接碰撞与产物事件 | `drpmd` | [气相工作流](manual/workflows.md)；[实验性 NRPMD](manual/nonadiabatic.md) |
 | 一维/二维平衡自由能面 | `fes` | [快速入门](manual/quickstart.md)、[工作流](manual/workflows.md) |
+| 已有 PMF/FES 的速率与分支后处理 | `rate-postprocess` 命令 | [二维速率后处理](rate-postprocessing.md) |
 | 多入口、多 TS 的独立速率矩阵 | `network` | [气相与自由能工作流](manual/workflows.md) |
 | Standard / well-tempered metadynamics | `metadynamics` | [气相与自由能工作流](manual/workflows.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
@@ -61,6 +62,7 @@ manual/nonadiabatic
 manual/potentials
 manual/execution
 manual/results
+rate-postprocessing
 manual/examples
 ```
 

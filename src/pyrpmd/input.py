@@ -53,7 +53,7 @@ _SECTIONS = {
         "fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
     ),
     "analysis": set(
-        "method measure bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count".split()
+        "method measure flux_axis bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count".split()
     ),
     "umbrella": set(
         "cvs grid centers centers_au kappa stiffness stiffness_au start stop count".split()
@@ -442,6 +442,11 @@ class JobSpec:
         analysis = d.get("analysis", {})
         if analysis.get("measure", "cv_density") not in ("cv_density", "rate_flux"):
             raise InputError("analysis.measure must be cv_density or rate_flux")
+        if "flux_axis" in analysis:
+            if analysis.get("measure", "cv_density") != "rate_flux":
+                raise InputError("analysis.flux_axis requires measure='rate_flux'")
+            if _integer(analysis["flux_axis"], "analysis.flux_axis", 0) != 0:
+                raise InputError("analysis.flux_axis currently supports only zero")
         if task in ("fes", "surface_rate") and analysis.get("method", "mbar") != "mbar":
             raise InputError(
                 "The FES workflow uses MBAR; umbrella integration is part of the rate workflow"

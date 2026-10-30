@@ -73,6 +73,14 @@ def parser():
                    help="Diffusion Cartesian axes (0=x, 1=y, 2=z)")
     a.add_argument("--atoms", nargs="+", type=int, help="Diffusion atom indices")
     a.add_argument("--max-lag", type=int, help="Maximum diffusion lag in saved frames")
+    rate = commands.add_parser(
+        "rate-postprocess", help="Compute rates from saved PMF/FES and signed channel fluxes"
+    )
+    rate.add_argument("directory", help="Saved gas-rate or FES output directory")
+    rate.add_argument("--spec", help="JSON specification for a two-dimensional dividing surface")
+    rate.add_argument("--output", help="New result JSON (default: DIRECTORY/rate_postprocess.json)")
+    rate.add_argument("--bootstrap", type=int, default=200)
+    rate.add_argument("--seed", type=int, default=0)
     commands.add_parser("info", help="Report version and compiled native capabilities")
     checkpoint = commands.add_parser("checkpoint", help="Verify a portable NPZ checkpoint")
     checkpoint.add_argument("path")
@@ -127,6 +135,24 @@ def _print(value):
         print(
             json.dumps(jsonable(value), ensure_ascii=False, indent=2, allow_nan=False)
         )
+
+
+def _rate_postprocess_summary(result):
+    """Keep full curves/bootstrap in the output file, not thousands of stdout lines."""
+    summary = {key: value for key, value in result.items()
+               if key not in ("channels", "specification", "source_rate_uncertainty")}
+    channels = result.get("channels")
+    summary["channels"] = None if channels is None else {
+        key: channels[key] for key in (
+            "status", "channel_names", "kappa_estimates", "total_kappa",
+            "channel_rates_cm3_s", "channel_rate_estimates_cm3_s",
+            "total_rate_estimate_cm3_s", "branching_fractions",
+            "branching_fraction_estimates", "branching_fraction_standard_error",
+            "plateau_detected", "parent_configurations", "independent_parent_chains",
+            "rate_uncertainty", "reasons", "converged", "physical_scope",
+        ) if key in channels
+    }
+    return summary
 
 
 def _pes(args):
@@ -291,6 +317,16 @@ def main(argv=None):
                     }.items() if value is not None} or None,
                 )
             )
+        elif args.command == "rate-postprocess":
+            from .analysis.rate_io import postprocess_rate
+            from .parallel import root_call
+
+            result = root_call(
+                postprocess_rate, args.directory, spec=args.spec, output=args.output,
+                bootstrap=args.bootstrap, seed=args.seed,
+            )
+            if result is not None:
+                _print(_rate_postprocess_summary(result))
         elif args.command == "info":
             from .dynamics import native_capabilities
 
@@ -307,6 +343,7 @@ def main(argv=None):
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
+                    "postprocessing": ["rate-postprocess"],
                 }
             )
         elif args.command == "pes":

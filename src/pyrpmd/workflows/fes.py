@@ -79,6 +79,8 @@ def _fingerprint(config, system, extras):
         "system": system.to_dict(),
         "stream": extras,
     }
+    if "flux_axis" in config.get("analysis", {}):
+        value["sampling_flux_axis"] = config["analysis"]["flux_axis"]
     from ..cv import geometry_convention_identity
 
     convention = geometry_convention_identity(config, system)
@@ -114,6 +116,38 @@ def checked_integer(value, name, minimum=1):
     return int(value)
 
 
+def _flux_coordinate(config, cv):
+    """Validate an explicit rate-flux measure before sampling or reuse.
+
+    A two-dimensional flux surface has one distinguished coordinate: its
+    first scalar RPMDrate coordinate.  The second CV is a transverse
+    observable, not a second independent flux factor.  Ordinary density
+    surfaces must never silently acquire this weighting.
+    """
+    options = config.get("analysis", {})
+    axis = options.get("flux_axis")
+    if options.get("measure", "cv_density") != "rate_flux":
+        if axis is not None:
+            raise ValueError("analysis.flux_axis requires measure='rate_flux'")
+        return None
+    if axis is not None and (
+        isinstance(axis, (bool, np.bool_))
+        or not isinstance(axis, (int, np.integer))
+        or axis != 0
+    ):
+        raise ValueError("rate_flux currently requires flux_axis=0")
+    if cv.dimension == 2 and axis is None:
+        raise ValueError("two-dimensional rate_flux requires explicit flux_axis=0")
+    if (
+        cv.dimension not in (1, 2)
+        or len(cv.cvs) != cv.dimension
+        or not isinstance(cv.cvs[0], RPMDrateCoordinate)
+        or any(c.dimension != 1 for c in cv.cvs)
+    ):
+        raise ValueError("rate_flux requires the first scalar centroid RPMDrate coordinate")
+    return cv.cvs[0]
+
+
 def resolve_umbrellas(config, system):
     """Resolve user centers/stiffness to canonical CV units and hartree.
 
@@ -136,6 +170,7 @@ def resolve_umbrellas(config, system):
     )
     if cv.dimension not in (1, 2):
         raise ValueError("umbrella FES supports one or two CV dimensions")
+    _flux_coordinate(config, cv)
     dims = [_dimension(u) for u in cv.units]
     scales = []
     for spec, component in zip(selected, cv.cvs):
@@ -409,13 +444,10 @@ def _sample_window(task):
         )
         umbrella = UmbrellaBias(cv, center, stiffness)
         bias = umbrella
-        if config.get("analysis", {}).get("measure") == "rate_flux":
-            if len(cv.cvs) != 1 or not isinstance(cv.cvs[0], RPMDrateCoordinate):
-                raise ValueError(
-                    "rate_flux measure requires the centroid RPMDrate coordinate"
-                )
+        flux_coordinate = _flux_coordinate(config, cv)
+        if flux_coordinate is not None:
             bias = CompositeBias(
-                umbrella, FluxMetricBias(cv.cvs[0], system.masses, config["beta"])
+                umbrella, FluxMetricBias(flux_coordinate, system.masses, config["beta"])
             )
         values = []
         energies = []
@@ -439,7 +471,7 @@ def _sample_window(task):
                     dynamics.propagation_stats = json.loads(str(saved["propagation"]))
         else:
             geometry = system.geometry
-            if len(cv.cvs) == 1 and isinstance(cv.cvs[0], RPMDrateCoordinate):
+            if isinstance(cv.cvs[0], RPMDrateCoordinate):
                 coordinate = cv.cvs[0]
                 permutations = coordinate.permutations
                 permutation = permutations[replica % len(permutations)]
@@ -565,7 +597,15 @@ def _write_fes(output, data, streams, cv, config):
     path.mkdir(parents=True, exist_ok=True)
     arrays = {k: v for k, v in data.items() if isinstance(v, np.ndarray)}
     arrays.update({f"edges_{i}": edge for i, edge in enumerate(data["edges"])})
-    _atomic_npz(path / "fes.npz", **arrays)
+    metadata = {
+        "measure": np.asarray(data["measure"]),
+        "energy_unit": np.asarray("hartree"),
+        "cv_units": np.asarray(cv.units),
+        "beta": np.asarray(config["beta"]),
+    }
+    if data["measure"] == "rate_flux":
+        metadata["flux_axis"] = np.asarray(0, dtype=np.int32)
+    _atomic_npz(path / "fes.npz", **arrays, **metadata)
     try:
         import h5py
     except ImportError:
@@ -577,6 +617,9 @@ def _write_fes(output, data, streams, cv, config):
             h.attrs["energy_unit"] = "hartree"
             h.attrs["cv_units"] = json.dumps(cv.units)
             h.attrs["measure"] = data["measure"]
+            h.attrs["beta"] = config["beta"]
+            if data["measure"] == "rate_flux":
+                h.attrs["flux_axis"] = 0
             h.attrs["hamiltonian_convention"] = "sum_beads_beta_over_P"
             for name, value in arrays.items():
                 h.create_dataset(name, data=value)
@@ -653,6 +696,8 @@ def _write_fes(output, data, streams, cv, config):
         "units": cv.units,
         "energy_unit": "hartree",
         "measure": data["measure"],
+        "beta": config["beta"],
+        "flux_axis": 0 if data["measure"] == "rate_flux" else None,
         "estimator": "mbar",
         "windows": len(set(s["window"] for s in streams)),
         "streams": len(streams),

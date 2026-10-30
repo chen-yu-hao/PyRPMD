@@ -1,0 +1,247 @@
+{
+  "task": "fes",
+  "preset": "pilot",
+  "temperature": "1500 K",
+  "beads": 8,
+  "seed": 731241,
+  "system": {
+    "symbols": [
+      "H",
+      "H",
+      "H"
+    ],
+    "masses_amu": [
+      1.00782503223,
+      1.00782503223,
+      1.00782503223
+    ],
+    "geometry": [
+      [
+        -1.7570000251,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.7570000251,
+        0.0,
+        0.0
+      ]
+    ],
+    "multiplicity": 2,
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ]
+  },
+  "potential": {
+    "provider": "python",
+    "factory": "/workspace/scratch/9244344ffd23/pyrpmd-rate-postprocessing/benchmarks/h3/pes.py:build",
+    "params": {
+      "library": "/workspace/scratch/9244344ffd23/pyrpmd-rate-postprocessing/benchmarks/h3/build/libbkmp2.so"
+    }
+  },
+  "dynamics": {
+    "timestep": "0.1 fs",
+    "native": "required"
+  },
+  "sampling": {
+    "equilibration": "20 fs",
+    "production": "100 fs",
+    "interval": "0.5 fs",
+    "andersen_interval": 50,
+    "replicas": 2,
+    "dt_au": 4.134137333517016,
+    "thermostat": "andersen",
+    "integrator": "cayley-bcb-andersen",
+    "equilibration_steps": 200,
+    "production_steps": 1000,
+    "interval_steps": 5,
+    "sample_interval": 5
+  },
+  "reaction": {
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "forming_bonds": [
+      [
+        0,
+        1
+      ]
+    ],
+    "breaking_bonds": [
+      [
+        1,
+        2
+      ]
+    ],
+    "equivalent_paths": [
+      [
+        0,
+        2,
+        1
+      ]
+    ],
+    "rinf": "10 bohr",
+    "electronic_weight": 1.0,
+    "symmetry_factor": 1.0,
+    "rinf_au": 10.0
+  },
+  "umbrella": {
+    "cvs": [
+      "xi",
+      "r12"
+    ],
+    "grid": [
+      {
+        "start": -0.05,
+        "stop": 1.1,
+        "count": 24
+      },
+      [
+        1.4,
+        1.8
+      ]
+    ],
+    "stiffness": [
+      "0.4750217345 hartree",
+      "0.15 hartree/bohr^2"
+    ]
+  },
+  "analysis": {
+    "method": "mbar",
+    "measure": "rate_flux",
+    "flux_axis": 0,
+    "bins": [
+      [
+        -0.025,
+        0.024999999999999994,
+        0.07499999999999998,
+        0.125,
+        0.175,
+        0.22499999999999998,
+        0.27499999999999997,
+        0.32499999999999996,
+        0.37499999999999994,
+        0.42499999999999993,
+        0.4749999999999999,
+        0.5249999999999999,
+        0.575,
+        0.6249999999999999,
+        0.6749999999999999,
+        0.7249999999999999,
+        0.7749999999999999,
+        0.825,
+        0.8749999999999999,
+        0.9249999999999999,
+        0.9749999999999999,
+        1.025,
+        1.075,
+        1.125
+      ],
+      [
+        0.0,
+        1.55,
+        4.0
+      ]
+    ],
+    "ranges": [
+      [
+        -0.025,
+        1.125
+      ],
+      [
+        0.0,
+        4.0
+      ]
+    ],
+    "bootstrap": 0,
+    "min_count": 3
+  },
+  "output": {
+    "directory": "/workspace/scratch/9244344ffd23/pyrpmd-rate-postprocessing/runs/h3-rate-postprocess-quick/run",
+    "checkpoint_interval": "50 fs",
+    "checkpoint_steps": 500
+  },
+  "parallel": {
+    "backend": "process",
+    "trajectory_workers": 2,
+    "bead_workers": 1,
+    "threads_per_rank": 1,
+    "mode": "serial",
+    "pes_ranks": 1,
+    "coordinator_ranks": 0,
+    "scheduling": "static"
+  },
+  "cvs": [
+    {
+      "name": "xi",
+      "kind": "rpmdrate_xi",
+      "estimator": "centroid",
+      "fragments": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "forming_bonds": [
+        [
+          0,
+          1
+        ]
+      ],
+      "breaking_bonds": [
+        [
+          1,
+          2
+        ]
+      ],
+      "equivalent_paths": [
+        [
+          0,
+          2,
+          1
+        ]
+      ],
+      "rinf": "10 bohr"
+    },
+    {
+      "name": "r12",
+      "kind": "distance",
+      "estimator": "centroid",
+      "atoms": [
+        1,
+        2
+      ],
+      "unit": "bohr"
+    }
+  ],
+  "schema_version": 1,
+  "temperature_K": 1500.0,
+  "beta": 210.51668320265807,
+  "dt_au": 4.134137333517016,
+  "collision": {},
+  "outcomes": {},
+  "_input_path": null,
+  "_base_directory": "/workspace/scratch/9244344ffd23/pyrpmd-rate-postprocessing/benchmarks/h3",
+  "_warnings": [],
+  "hamiltonian_convention": "sum_beads_beta_over_P"
+}

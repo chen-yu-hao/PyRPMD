@@ -72,6 +72,10 @@ bootstrap 处理保存样本的统计不确定度，不能修复错误势能、�
 
 ## 反应速率：一起读 PMF 与回穿
 
+已保存的气相速率可用 `pyrpmd rate-postprocess RUN --bootstrap 200` 离线重算。
+二维自由能曲线积分、入口参考归一化和多通道 signed-flux 后处理见
+[二维速率后处理](../rate-postprocessing.md)。结果另存，不会用重分析替代原来的能量与收敛诊断。
+
 气相 `rate` 报告 Bennett–Chandler 流程：静态部分与动态传输系数共同形成速率。
 必须检查 PMF 测度、分割面、反应物归一化、受约束母链和回穿平台。
 `site_rate` / `surface_rate` 使用显式反应物盆地及一个有向边界，输出一阶通道率 `s^-1`，
