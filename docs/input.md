@@ -7,13 +7,13 @@
 | 字段 | 类型、单位与含义 |
 | --- | --- |
 | `schema_version` | 当前为整数 1 |
-| `task` | `rate`、`drpmd`、`fes` |
+| `task` | `rate`、`drpmd`、`fes`、`network`、`metadynamics` |
 | `preset` | `pilot`（缺省）或 `production` |
 | `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
 | `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
 | `seed` | 非负整数，任务的随机流由稳定任务 ID 派生 |
 | `dynamics.timestep` | 例如 `"0.1 fs"`；纯数值按原子时间 |
-| `dynamics.integrator` | 当前生产动力学为 `cayley-bcb` |
+| `dynamics.integrator` | `cayley-bcb`（缺省）、`normal-mode-bab`、`velocity-verlet`；参见[积分器规范](integrators.md) |
 | `dynamics.native` | `true` 优先编译内核并允许串行 NumPy 回退；`false` 用 NumPy；`"required"` 必须有编译内核 |
 | `output.directory` | 运行目录；新任务不覆盖已有非空目录 |
 | `output.checkpoint_interval` / `checkpoint_steps` | 时间间隔或正整数步数；步数优先 |
@@ -45,7 +45,7 @@ parents = 8
 
 `equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
 
-FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。当前工作流采用 BCB + Andersen；独立的 `Dynamics.sample_step` 提供 BCOCB，但并未把该采样器暴露为工作流可选项。采样和子轨迹步长当前须相同。真实碰撞和回穿子轨迹使用无温控的生产传播。
+FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。正式工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。独立的 `Dynamics.sample_step` 提供与 Cayley 匹配的 BCOCB、与正常模匹配的 BAOAB，当前不作为工作流可选采样器。采样和子轨迹步长须相同。真实碰撞和回穿子轨迹使用无温控的生产传播。
 
 ## dRPMD
 
@@ -84,7 +84,7 @@ electronic_weight = 1.0
 symmetry_factor = 1.0
 ```
 
-本版本采用一个 TS 参考几何和等长、成对的成键/断键列表。通过
+单个 `task="rate"` 使用一个 TS 参考几何和等长、成对的成键/断键列表。不同入口或非等价 TS 结构使用下述 `task="network"`。通过
 `equivalent_paths` 可声明由原子置换生成的等价过渡态。例如 H + H₂ 的
 两个交换出口可写为：
 
@@ -101,7 +101,7 @@ electronic_weight = 1.0
 
 置换列表使用 0-based 的 `旧原子索引 → 新原子索引` 映射；原始 TS 已包含，
 不要再列恒等置换。程序检查完整双射、元素、同位素质量和入口片段划分，
-同时置换参考几何与成断键。它不是任意多个不同 TS 结构的输入接口。
+同时置换参考几何与成断键。多个不同 TS 结构由 `network.transition_states` 声明。
 组合方式严格沿用 RPMDrate 的 `min_bond(max_TS(s1))`，其分支交界处是
 分段可微的。等价出口已经显式包含时，不应再用 `symmetry_factor` 重复
 乘一次路径数。`electronic_weight` 和额外的 `symmetry_factor` 仍由用户
@@ -180,16 +180,75 @@ min_count = 5
 
 输出 FES 是相对于所选 CV 测度的密度：例如距离 CV 的自由能自然包含径向熵，不自动把它变成去除 Jacobian 的两体势。没有样本或连通重叠支持的区域 mask，不外推。`analyze --recompute --bins ... --bootstrap ...` 使用保存的样本重新估计而不调用 PES。
 
+## 多入口与不同 TS
+
+`task="network"` 使用 `[network]` 中的 `entrances`、`channels`、
+`transition_states` 记录列表。每个 TS 显式引用一个入口和通道标签，提供
+自己的结构、成断键，按全局 → 入口 → TS 继承或覆盖 PES 与采样设置。
+入口指定自己的两个片段、`rinf` 和电子统计权重；所有路径共享有序原子与
+同位素身份。每条路径经过普通 `rate` 的严格验证并运行完整 PMF/recrossing。
+
+当前 `network.aggregation` 仅允许 `"separate"`。结果保留独立入口/TS
+归一化和误差；通道名称不会被当作通量不重叠的证明。完整 TOML/Python
+语法与可运行四路径例子见[多入口与多 TS](reaction-networks.md)。
+
+## 自适应伞抽样
+
+为 `fes` 或 `rate` 添加 `[adaptive_umbrella]`：
+
+```toml
+[adaptive_umbrella]
+enabled = true
+pilot_steps = 1000
+pilot_equilibration_steps = 200
+max_rounds = 4
+max_windows = 64
+target_overlap = 0.03
+min_effective_samples = 20.0
+min_spacing = 0.000001
+```
+
+初始窗口、范围与刚度仍由 `[umbrella]` 给出；适应阶段按实际 MBAR
+overlap 与有效样本数插窗、延长 pilot。窗口冻结后使用独立种子重新平衡并
+采集 production；pilot 不进入最终 FES/PMF。预算耗尽明确失败，不静默跳过
+重叠要求。参数单位、阶段恢复及适用边界见[增强采样](enhanced-sampling.md)。
+
+## Metadynamics
+
+`task="metadynamics"` 使用普通 `[[cvs]]` 和 `[sampling]`，替换 umbrella 为：
+
+```toml
+[metadynamics]
+cvs = ["x"]
+mode = "well_tempered"
+sigma = ["0.2 bohr"]
+height = "0.02 kcal/mol"
+pace = 50
+bias_factor = 8.0
+
+[analysis]
+method = "bias_estimate"
+measure = "cv_density"
+bootstrap = 0
+```
+
+`mode="standard"` 使用固定 hill 高度并省略 `bias_factor`。`sigma_au`、
+`height_au` 可指定原子单位，但不得与对应未带 `_au` 的字段重复。
+`pace` 是生产步数间隔；1D/2D、周期 CV 与独立 replicas 均支持。
+`loop_backend="native"` 会预先报错，因为偏置历史随时间改变；`auto` 的
+兼容传播仍能使用所选积分器的编译子步。有限时间 FES 估计及 HILLS/恢复
+时序见[增强采样规范](enhanced-sampling.md)。
+
 ## 运行与重启记录
 
-`manifest.json` 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。所有 checkpoint 使用 `allow_pickle=False` 读数组，并另存可读 JSON 随机数/进度信息。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。
+`manifest.json` v2 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。新 NPZ checkpoint 使用 v2 容器与逐数组校验，始终以 `allow_pickle=False` 读数组；RNG/进度采用同一容器内的 JSON 字符串或明确的工作流元数据。旧 v1 文件的兼容读取与 manifest 迁移见[恢复规范](checkpoints.md)。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。
 
 ## 连续原生传播
 
 `[dynamics]` 新增 `loop_backend="auto"|"native"|"python"` 和
 `block_steps=256`（1..65536）。`auto` 对已支持的原生 PES/CV 使用 C++17
 连续传播，其余情况保留 Python；`native` 在请求的 block 路径不支持时明确报错。
-`python` 保留旧的逐步调度，不必关闭已经存在的 C++ Cayley 单步内核。
+`python` 保留逐步调度，不必关闭所选积分器的 C++ 单步内核。
 受约束 recrossing 母轨迹与 dRPMD 碰撞使用 `propagate_block()`，其单次调用
 上限为 4096 步；工作流自动把较大的 `block_steps` 限制到这个上限，并继续
 遵守原有热浴、分类、采样和 checkpoint 时间轴。输入范围与默认值仍为

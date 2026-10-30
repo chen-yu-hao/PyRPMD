@@ -1,17 +1,38 @@
 """Real-mass RPMD: sum-beads Hamiltonian sampled at beta/P, q,p[P,N,3].
 
-The production BCB map uses the cyclic Cayley midpoint method from the user's
-RPMDrate implementation (commits 19ba2602, 9a44d6b3); reference NumPy arithmetic
-evaluates exactly the same map in Fourier modes. No thermostat is applied in
-step(). Andersen thermalization has bead momentum variance m*P/beta.
+Cayley BCB remains the default. Exact normal-mode BAB and full-Hamiltonian
+velocity Verlet use the same real masses and physical force convention.
+No thermostat is applied in step(). Andersen sampling has bead momentum
+variance m*P/beta; BCOCB/BAOAB with PILE-L are explicit sampling-only APIs.
 """
 
 from dataclasses import dataclass
+import copy
 import importlib
 import math
 import threading
 import numpy as np
 from .potentials.base import validate_result
+
+
+INTEGRATORS = ("cayley-bcb", "normal-mode-bab", "velocity-verlet")
+
+
+def normalize_integrator(value):
+    """Return a canonical, checkpoint-significant real-time integrator name."""
+    if not isinstance(value, str):
+        raise ValueError("integrator must be cayley-bcb, normal-mode-bab or velocity-verlet")
+    key = value.strip().lower().replace("_", "-")
+    aliases = {
+        "cayley": "cayley-bcb", "bcb": "cayley-bcb", "cayley-bcb": "cayley-bcb",
+        "normal-mode": "normal-mode-bab", "normal-mode-bab": "normal-mode-bab",
+        "exact-normal-mode": "normal-mode-bab", "bab": "normal-mode-bab",
+        "velocity-verlet": "velocity-verlet", "verlet": "velocity-verlet", "vv": "velocity-verlet",
+    }
+    try:
+        return aliases[key]
+    except KeyError as exc:
+        raise ValueError("integrator must be cayley-bcb, normal-mode-bab or velocity-verlet") from exc
 
 
 @dataclass
@@ -49,14 +70,21 @@ def native_capabilities():
     try:
         mod = importlib.import_module("pyrpmd._native")
     except ImportError:
-        return {"available": False, "openmp": False}
-    return {"available": True, "openmp": bool(mod.has_openmp())}
+        return {"available": False, "openmp": False, "integrators": []}
+    schemes = getattr(mod, "integrator_schemes", lambda: ("cayley-bcb",))()
+    return {"available": True, "openmp": bool(mod.has_openmp()), "integrators": list(schemes)}
 
 
 class CayleyIntegrator:
-    """Full cyclic ring map; immutable coefficients, independent working state."""
+    """Free-ring maps with real masses; legacy class name remains compatible.
 
-    def __init__(self, masses, beta, nbeads, dt, threads=1, native=True):
+    ``free_step`` is C for Cayley, exact A for normal modes, or the spring
+    kick/drift/kick for Verlet. Surrounding it by physical half-kicks gives
+    the requested complete reversible map in every case.
+    """
+
+    def __init__(self, masses, beta, nbeads, dt, threads=1, native=True, scheme="cayley-bcb"):
+        self._scheme = normalize_integrator(scheme)
         self.masses = np.array(masses, dtype=float, copy=True)
         if (
             self.masses.ndim != 1
@@ -87,9 +115,16 @@ class CayleyIntegrator:
         self.nbeads = int(nbeads)
         self.threads = int(threads)
         self.shape = (self.nbeads, len(self.masses), 3)
+        k = np.arange(self.nbeads // 2 + 1)
+        self._omega = 2 * self.nbeads / self.beta * np.sin(np.pi * k / self.nbeads)
+        if not np.isfinite(self._omega).all() or not np.isfinite(self.dt * self._omega).all():
+            raise ValueError("free-ring frequencies or phase overflow")
+        if self.scheme == "velocity-verlet" and abs(self.dt) * float(self._omega.max()) >= 2:
+            raise ValueError("velocity-Verlet ring stability requires abs(dt)*max(omega_k) < 2; reduce timestep")
         self._native = None
         self._context = None
         self._lock = threading.Lock()
+        self.native_fallback_reason = None
         if native is not False:
             try:
                 self._native = importlib.import_module("pyrpmd._native")
@@ -98,15 +133,24 @@ class CayleyIntegrator:
                     raise RuntimeError(
                         "Native kernel not installed; build/install PyRPMD or use native=False"
                     )
+        if self._native is not None and self.scheme != "cayley-bcb":
+            available = getattr(self._native, "integrator_schemes", lambda: ("cayley-bcb",))()
+            if self.scheme not in available:
+                self.native_fallback_reason = f"installed native extension does not support {self.scheme}; rebuild it"
+                if native == "required":
+                    raise RuntimeError(self.native_fallback_reason)
+                # A stale extension must never turn a requested BAB/VV into BCB.
+                self._native = None
         if self.threads > 1 and (self._native is None or not self._native.has_openmp()):
             raise RuntimeError("threads>1 requires the compiled OpenMP kernel")
         if self._native:
-            self._context = self._native.create(
-                self.masses.tolist(), self.beta, self.nbeads, self.dt, self.threads
-            )
-        k = np.arange(self.nbeads // 2 + 1)
-        self._omega = 2 * self.nbeads / self.beta * np.sin(np.pi * k / self.nbeads)
+            args = (self.masses.tolist(), self.beta, self.nbeads, self.dt, self.threads)
+            self._context = self._native.create(*args) if self.scheme == "cayley-bcb" else self._native.create(*args, self.scheme)
         self.native = self._native is not None
+
+    @property
+    def scheme(self):
+        return self._scheme
 
     def _check(self, q, p):
         for a in (q, p):
@@ -128,14 +172,31 @@ class CayleyIntegrator:
         with self._lock:
             if self._native:
                 self._native.free_step(self._context, q, p)
+            elif self.scheme == "velocity-verlet":
+                p += 0.5 * self.dt * self.spring_force(q)
+                q += self.dt * p / self.masses[None, :, None]
+                p += 0.5 * self.dt * self.spring_force(q)
             else:
                 self._fourier_step(q, p, half=False)
+
+    def spring_force(self, q):
+        """Physical spring force of H_P (no 1/P factor or fictitious masses)."""
+        return -(self.nbeads / self.beta) ** 2 * self.masses[None, :, None] * (
+            2 * q - np.roll(q, 1, axis=0) - np.roll(q, -1, axis=0)
+        )
 
     def _fourier_step(self, q, p, half=False):
         qk = np.fft.rfft(q, axis=0, norm="ortho")
         pk = np.fft.rfft(p, axis=0, norm="ortho")
         z = 0.5 * self.dt * self._omega
-        if half:
+        if self.scheme == "normal-mode-bab":
+            h = 0.5 * self.dt if half else self.dt
+            theta = h * self._omega
+            a = np.cos(theta)
+            # sinc gives the exact centroid drift without a zero-frequency divide.
+            b = h * np.sinc(theta / np.pi)
+            c = self._omega * np.sin(theta)
+        elif half:
             den = np.sqrt(1 + z * z)
             a = 1 / den
             b = (0.5 * self.dt) / den
@@ -159,7 +220,9 @@ class CayleyIntegrator:
         )
 
     def half_step(self, q, p):
-        """Square root C(dt)**(1/2), deliberately not C(dt/2)."""
+        """Cayley square root C(dt)**(1/2) or exact normal-mode A(dt/2)."""
+        if self.scheme == "velocity-verlet":
+            raise ValueError("velocity-verlet has no BCOCB/BAOAB half map; use Andersen sampling")
         self._check(q, p)
         with self._lock:
             self._fourier_step(q, p, half=True)
@@ -177,12 +240,13 @@ class CayleyIntegrator:
 class Dynamics:
     def __init__(
         self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1,
-        loop_backend="auto", block_steps=256
+        loop_backend="auto", block_steps=256, integrator="cayley-bcb"
     ):
         self.potential = potential
         self.integrator = CayleyIntegrator(
-            masses, beta, nbeads, dt, threads=threads, native=native
+            masses, beta, nbeads, dt, threads=threads, native=native, scheme=integrator
         )
+        self.integrator_name = self.integrator.scheme
         self.masses = self.integrator.masses
         self.beta = float(beta)
         self.nbeads = int(nbeads)
@@ -245,9 +309,10 @@ class Dynamics:
             self.dt != self.integrator.dt
             or self.beta != self.integrator.beta
             or self.nbeads != self.integrator.nbeads
+            or self.integrator_name != self.integrator.scheme
         ):
             raise ValueError(
-                "Dynamics parameters are immutable; create a new Dynamics to change dt, beta or P"
+                "Dynamics parameters are immutable; create a new Dynamics to change dt, beta, P or integrator"
             )
 
     def _propagate(self, state, bias=None, fragment_data=()):
@@ -371,13 +436,29 @@ class Dynamics:
                 self.propagation_stats["python_steps"] += 1
         return state
 
-    def sample_step(self, state, bias=None, *, gamma_centroid=1.0):
-        """BCOCB with PILE-L OU friction. gamma_centroid is inverse atomic time."""
+    def sample_step(self, state, bias=None, *, gamma_centroid=1.0, method=None):
+        """Explicit BCOCB/BAOAB PILE-L sampling; never real-time RPMD.
+
+        BCOCB uses the square root of the full Cayley map, whereas BAOAB uses
+        exact half normal-mode rotations. gamma_centroid is inverse atomic time.
+        State and RNG are restored together if a force or observation fails.
+        """
         self._check_parameters()
+        expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
+        if expected is None:
+            raise ValueError("velocity-verlet sampling uses Andersen; BCOCB/BAOAB require their matching integrator")
+        selected = expected if method is None else str(method).lower()
+        if selected not in ("bcocb", "baoab"):
+            raise ValueError("sampling method must be bcocb or baoab")
+        if selected != expected:
+            raise ValueError(f"{selected} sampling requires {'cayley-bcb' if selected == 'bcocb' else 'normal-mode-bab'}; selected integrator is {self.integrator_name}")
+        if self.loop_backend == "native":
+            raise RuntimeError("BCOCB/BAOAB PILE-L sampling uses Python/NumPy; choose loop_backend='auto' or 'python'")
         if not np.isfinite(gamma_centroid) or gamma_centroid <= 0:
             raise ValueError("gamma_centroid must be positive")
         if self.dt <= 0:
             raise ValueError("thermostatted sampling requires positive dt")
+        rng_state = copy.deepcopy(self.rng.bit_generator.state)
         q = state.q.copy()
         p = state.p.copy()
         self.integrator._check(q, p)
@@ -407,15 +488,21 @@ class Dynamics:
         gamma = 2 * np.asarray(freq)
         gamma[0] = gamma_centroid
         c = np.exp(-gamma * self.dt)
-        noise = self.rng.normal(size=p.shape) * np.sqrt(
-            self.masses[None, :, None] * P / self.beta
-        )
-        pk = c[:, None, None] * pk + np.sqrt(1 - c * c)[:, None, None] * noise
-        p[:] = np.einsum("kb,kac->bac", C, pk)
-        self.integrator.half_step(q, p)
-        self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
-        if not np.isfinite(q).all() or not np.isfinite(p).all():
-            raise FloatingPointError("nonfinite integration state")
+        try:
+            noise = self.rng.normal(size=p.shape) * np.sqrt(
+                self.masses[None, :, None] * P / self.beta
+            )
+            pk = c[:, None, None] * pk + np.sqrt(1 - c * c)[:, None, None] * noise
+            p[:] = np.einsum("kb,kac->bac", C, pk)
+            self.integrator.half_step(q, p)
+            self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+            if not np.isfinite(q).all() or not np.isfinite(p).all():
+                raise FloatingPointError("nonfinite integration state")
+            if not np.isfinite(state.time + self.dt):
+                raise FloatingPointError("nonfinite integration clock")
+        except BaseException:
+            self.rng.bit_generator.state = rng_state
+            raise
         state.q[:] = q
         state.p[:] = p
         state.step += 1

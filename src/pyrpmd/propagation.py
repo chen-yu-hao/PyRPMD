@@ -67,7 +67,7 @@ def _check_dynamics_methods(dynamics):
         raise NativeUnavailableError("custom Dynamics methods require the Python path")
     integrator = dynamics.integrator
     if type(integrator) is not CayleyIntegrator or any(
-        name in integrator.__dict__ for name in ("free_step", "kick", "_fourier_step")
+        name in integrator.__dict__ for name in ("free_step", "kick", "_fourier_step", "spring_force")
     ):
         raise NativeUnavailableError("custom integrator methods require the Python path")
 
@@ -183,7 +183,7 @@ def _integer(value, name, minimum=1):
 
 def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interval=1,
               record_centroids=True, backend=None, fragment_data=()):
-    """Advance a transactional block and observe without changing the BCB map.
+    """Advance a transactional block with the explicitly selected ring map.
 
     Every physical step is checked for finite energy, even when observations are
     decimated. The final step is always sampled. On failure q/p/clock are unchanged
@@ -210,7 +210,7 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
         try:
             _check_dynamics_methods(dynamics)
             if dynamics.integrator._native is None or not hasattr(dynamics.integrator._native, "run_block"):
-                raise NativeUnavailableError("fused extension unavailable or native=False")
+                raise NativeUnavailableError(dynamics.integrator.native_fallback_reason or "fused extension unavailable or native=False")
             factory = getattr(dynamics.potential, "native_binding", None)
             if factory is None:
                 raise NativeUnavailableError("PES has no explicit native binding")
@@ -273,10 +273,12 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
 
 
 def loop_options(config):
-    """Execution choices, deliberately not part of the physical Hamiltonian."""
+    """Integrator and execution choices; only block/backend are hash-exempt."""
+    from .dynamics import normalize_integrator
     options = config.get("dynamics", {})
     return {"loop_backend": options.get("loop_backend", "auto"),
-            "block_steps": options.get("block_steps", 256)}
+            "block_steps": options.get("block_steps", 256),
+            "integrator": normalize_integrator(options.get("integrator", "cayley-bcb"))}
 
 
 def native_supported(dynamics, *, bias=None, observe=None):
@@ -285,7 +287,7 @@ def native_supported(dynamics, *, bias=None, observe=None):
     try:
         _check_dynamics_methods(dynamics)
         if dynamics.integrator._native is None or not hasattr(dynamics.integrator._native, "run_block"):
-            raise NativeUnavailableError("fused extension unavailable or native=False")
+            raise NativeUnavailableError(dynamics.integrator.native_fallback_reason or "fused extension unavailable or native=False")
         factory = getattr(dynamics.potential, "native_binding", None)
         if factory is None:
             raise NativeUnavailableError("PES has no explicit stateless native binding")

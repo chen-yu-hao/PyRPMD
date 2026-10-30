@@ -219,7 +219,7 @@ static PyObject* run_block(PyObject*,PyObject* args){
         }
         // Work buffers are private to this call; no caller state is mutated until
         // all PES calls and observations succeed. Reused for every timestep.
-        std::vector<double> q(qb.data(),qb.data()+size),p(pb.data(),pb.data()+size),work(size),center(d);
+        std::vector<double> q(qb.data(),qb.data()+size),p(pb.data(),pb.data()+size),work(c->workspace_size()),center(d);
         for(double v:q)ensure(std::isfinite(v),"nonfinite q");
         for(double v:p)ensure(std::isfinite(v),"nonfinite p");
         PES pes(*binding_ptr,P,d);

@@ -23,7 +23,7 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella".split()
 )
 _SECTIONS = {
     "system": set(
@@ -62,6 +62,12 @@ _SECTIONS = {
     ),
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance".split()
+    ),
+    "metadynamics": set(
+        "cvs mode sigma sigma_au height height_au pace bias_factor".split()
+    ),
+    "adaptive_umbrella": set(
+        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
     ),
 }
 
@@ -305,6 +311,12 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        if self.data.get("task") == "network":
+            from .reactions import resolve_network_job
+
+            return resolve_network_job(
+                self.data, base_directory=self.base_directory, input_path=self.input_path
+            )
         d = deepcopy(self.data)
         unknown = set(d) - _ROOT
         if unknown:
@@ -323,8 +335,20 @@ class JobSpec:
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")
-        if task not in ("rate", "drpmd", "fes"):
-            raise InputError("task must be rate, drpmd or fes")
+        if task not in ("rate", "drpmd", "fes", "metadynamics"):
+            raise InputError("task must be rate, drpmd, fes, metadynamics or network")
+        if "network" in d:
+            raise InputError("[network] requires task='network'")
+        if "metadynamics" in d and task != "metadynamics":
+            raise InputError("[metadynamics] requires task='metadynamics'")
+        if "adaptive_umbrella" in d and task not in ("fes", "rate"):
+            raise InputError("Adaptive umbrellas require task='fes' or task='rate'")
+        if task == "metadynamics":
+            analysis = d.setdefault("analysis", {})
+            analysis.setdefault("method", "bias_estimate")
+            analysis.setdefault("measure", "cv_density")
+            if not any(key in analysis for key in ("bootstrap", "bootstrap_replicates", "bootstrap_samples")):
+                analysis["bootstrap"] = 0
         analysis = d.get("analysis", {})
         if analysis.get("measure", "cv_density") not in ("cv_density", "rate_flux"):
             raise InputError("analysis.measure must be cv_density or rate_flux")
@@ -391,8 +415,15 @@ class JobSpec:
         dt = _positive(
             parse_quantity(dyn.get("timestep", "0.1 fs"), "time"), "dynamics.timestep"
         )
-        if dyn.get("integrator", "cayley-bcb") != "cayley-bcb":
-            raise InputError("Production integrator in v0.1 is cayley-bcb")
+        from .dynamics import normalize_integrator
+
+        try:
+            integrator = normalize_integrator(dyn.get("integrator", "cayley-bcb"))
+        except ValueError as error:
+            raise InputError(str(error)) from error
+        # Preserve the identity of legacy inputs with an implicit default.
+        if "integrator" in dyn:
+            d["dynamics"]["integrator"] = integrator
         base = Path(self.base_directory).resolve()
         _plugin_paths(d, base)
         sys_spec = deepcopy(d.get("system", {}))
@@ -436,18 +467,20 @@ class JobSpec:
             parse_quantity(sampling.get("timestep", dt), "time"), "sampling.timestep"
         )
         sampling["dt_au"] = sampling_dt
-        sampling["integrator"] = sampling.get("integrator", "cayley-bcb-andersen")
+        sampling["integrator"] = sampling.get("integrator", integrator + "-andersen")
         sampling["thermostat"] = sampling.get("thermostat", "andersen")
         if (
-            sampling["integrator"] != "cayley-bcb-andersen"
+            sampling["integrator"] != integrator + "-andersen"
             or sampling["thermostat"] != "andersen"
         ):
             raise InputError(
-                "Workflow sampling v0.1 uses cayley-bcb-andersen/andersen; standalone Dynamics.sample_step exposes BCOCB"
+                "Workflow sampling requires sampling.integrator='"
+                + integrator + "-andersen' and thermostat='andersen'; "
+                "sampling and production use the same selected ring-polymer integrator"
             )
         if not math.isclose(sampling_dt, dt, rel_tol=1e-14):
             raise InputError(
-                "Workflow sampling and production time steps must match in v0.1"
+                "Workflow sampling and production time steps must match"
             )
         sampling["equilibration_steps"] = _steps(
             sampling,
@@ -665,6 +698,17 @@ class JobSpec:
         }
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
+        try:
+            if task == "metadynamics":
+                from .workflows.metadynamics import validate_metadynamics
+
+                validate_metadynamics(resolved, system)
+            if "adaptive_umbrella" in d:
+                from .workflows.adaptive_umbrella import validate_adaptive_umbrella
+
+                validate_adaptive_umbrella(resolved, system)
+        except (ValueError, TypeError, KeyError) as error:
+            raise InputError(str(error)) from error
         return resolved, system
 
 

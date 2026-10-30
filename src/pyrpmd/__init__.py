@@ -1,6 +1,6 @@
 """PyRPMD: ring-polymer dynamics with one Python and .inp task model."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 
 def __getattr__(name):
@@ -16,11 +16,14 @@ def __getattr__(name):
         from . import dynamics
 
         return getattr(dynamics, name)
-    if name == "run":
-        from .runner import run
+    if name in ("run", "prepare", "resume_run", "analyze_run"):
+        from . import runner
 
-        return run
+        return getattr(runner, name)
     raise AttributeError(name)
 
 
-__all__ = ["JobSpec", "System", "State", "Dynamics", "run", "__version__"]
+__all__ = [
+    "JobSpec", "System", "State", "Dynamics", "run", "prepare",
+    "resume_run", "analyze_run", "__version__",
+]

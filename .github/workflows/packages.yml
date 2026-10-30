@@ -1,0 +1,126 @@
+name: Installed source and platform wheel
+on:
+  push:
+    branches: [main, 'feat/**', 'integration/**']
+    paths: ['src/**', 'native/**', 'tests/**', 'examples/**', 'docs/**', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.github/workflows/packages.yml']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: packages-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+defaults:
+  run:
+    shell: bash
+jobs:
+  distribution:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            python: '3.11'
+          - os: ubuntu-24.04
+            python: '3.12'
+          - os: macos-14
+            python: '3.12'
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Build sdist and native platform wheel
+        run: |
+          python -m pip install build 'setuptools>=77' wheel
+          python -m build
+      - name: Check package contents and extract examples outside checkout
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import tarfile
+          import zipfile
+
+          sdists = list(Path('dist').glob('*.tar.gz'))
+          wheels = list(Path('dist').glob('*.whl'))
+          assert len(sdists) == len(wheels) == 1, (sdists, wheels)
+          target = Path(os.environ['RUNNER_TEMP']) / 'pyrpmd-source'
+          target.mkdir()
+          with tarfile.open(sdists[0]) as archive:
+              archive.extractall(target, filter='data')
+          roots = [p for p in target.iterdir() if p.is_dir()]
+          assert len(roots) == 1, roots
+          required = [
+              'src/pyrpmd/reactions.py', 'src/pyrpmd/checkpoint.py',
+              'src/pyrpmd/workflows/network.py',
+              'src/pyrpmd/workflows/adaptive_umbrella.py',
+              'src/pyrpmd/workflows/metadynamics.py',
+              'native/fused.hpp', 'native/propagation.h',
+              'native/include/pyrpmd/pes_api_v1.h',
+              'examples/network/two_entrances.py',
+              'examples/rate/toy_exchange.py',
+              'examples/fes/adaptive_harmonic.inp',
+              'examples/metadynamics/standard.inp',
+              'examples/metadynamics/well_tempered_2d.inp',
+              'tests/package_smoke.py', 'tests/test_integrators.py',
+              'tests/test_integrator_workflows.py',
+              'tests/test_reaction_network.py', 'tests/test_metadynamics.py',
+              'docs/checkpoints.md', 'docs/interfaces.md',
+              'docs/integrators.md', 'docs/reaction-networks.md',
+              'docs/enhanced-sampling.md', 'docs/releases/0.2.0.md',
+          ]
+          for name in required:
+              assert (roots[0] / name).is_file(), name
+          with zipfile.ZipFile(wheels[0]) as archive:
+              assert any(n.startswith('pyrpmd/_native') and n.endswith(('.so', '.pyd'))
+                         for n in archive.namelist())
+          assert not wheels[0].name.endswith('none-any.whl'), wheels[0]
+          receipt = {
+              'commit': os.environ['GITHUB_SHA'],
+              'scope': 'Runner-specific platform wheel; no universal/manylinux or PyPI publication claim',
+              'files': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sdists + wheels},
+          }
+          Path('dist/build-provenance.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write(f'PACKAGE_SOURCE={roots[0]}\n')
+              stream.write(f'PACKAGE_SDIST={sdists[0].resolve()}\n')
+              stream.write(f'PACKAGE_WHEEL={wheels[0].resolve()}\n')
+          PY
+      - name: Independently install and exercise the wheel
+        run: |
+          python -m venv "$RUNNER_TEMP/wheel-env"
+          "$RUNNER_TEMP/wheel-env/bin/python" -m pip install "$PACKAGE_WHEEL"
+          cd "$RUNNER_TEMP"
+          PYTHONPATH= "$RUNNER_TEMP/wheel-env/bin/python" "$PACKAGE_SOURCE/tests/package_smoke.py" \
+            --source-root "$PACKAGE_SOURCE" --output "$RUNNER_TEMP/pyrpmd-wheel-smoke"
+      - name: Independently rebuild, install and exercise the source distribution
+        run: |
+          python -m venv "$RUNNER_TEMP/sdist-env"
+          "$RUNNER_TEMP/sdist-env/bin/python" -m pip install "$PACKAGE_SDIST"
+          cd "$RUNNER_TEMP"
+          PYTHONPATH= "$RUNNER_TEMP/sdist-env/bin/python" "$PACKAGE_SOURCE/tests/package_smoke.py" \
+            --source-root "$PACKAGE_SOURCE" --output "$RUNNER_TEMP/pyrpmd-sdist-smoke"
+      - name: Retain distributions and installation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ matrix.os }}-py${{ matrix.python }}
+          path: |
+            dist/
+            ${{ runner.temp }}/pyrpmd-wheel-smoke/report.json
+            ${{ runner.temp }}/pyrpmd-wheel-smoke/*.log
+            ${{ runner.temp }}/pyrpmd-sdist-smoke/report.json
+            ${{ runner.temp }}/pyrpmd-sdist-smoke/*.log
+          retention-days: 14

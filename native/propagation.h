@@ -298,7 +298,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
             if(!(total>0))throw std::invalid_argument("empty native fragment");
             fragments.push_back(std::move(frag));}
         if(constraint && !fragments.empty())throw std::invalid_argument("combined centroid constraints are unsupported");
-        Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(S),center(nd),pc(nd),forces(S),free_q(S);
+        Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),forces(S),free_q(S);
         if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");
         Py_ssize_t completed=0,written=0;std::string failure;
         auto evaluate=[&](const Vec& x){pes.evaluate(x);forces=pes.force;centroid(x,center,P,nd);double eb=0;for(const auto& b:biases)eb+=b.add(x,center,forces,*c,beta);if(!std::isfinite(eb)||!finite(forces))throw std::runtime_error("nonfinite biased forces/energy");return eb;};
@@ -317,7 +317,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
                             if(std::abs(derivative)<1e-25)throw std::runtime_error("RATTLE normals became orthogonal");
                             lambda-=d.v/derivative;
                             for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_q[b*nd+i]=free_q[b*nd+i]+lambda*old_normal->g[i]/c->mass[i/3];}
-                        if(!converged)throw std::runtime_error("Cayley-RATTLE constraint failed to converge");
+                        if(!converged)throw std::runtime_error("centroid RATTLE constraint failed to converge");
                         for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_p[b*nd+i]+=lambda/c->dt*old_normal->g[i];}
                     double eb=evaluate(trial_q);kick(trial_p,forces,*c);project(trial_q,trial_p,fragments,*c);
                     if(constraint){centroid(trial_q,center,P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);centroid(trial_p,pc,P,nd);double v=0;for(Py_ssize_t i=0;i<nd;++i)v+=d.g[i]*pc[i]/c->mass[i/3];for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_p[b*nd+i]-=v/z*d.g[i];}

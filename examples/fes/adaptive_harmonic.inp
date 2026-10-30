@@ -1,0 +1,54 @@
+# Two-stage tutorial: pilots refine windows, then a new seed starts production.
+# Passing these deliberately modest pilot targets does not establish convergence.
+task = "fes"
+temperature = "300 K"
+beads = 4
+seed = 701
+
+[system]
+symbols = ["H"]
+geometry = [[0.0, 0.0, 0.0]]
+
+[potential]
+provider = "builtin"
+name = "harmonic"
+params = {k = 0.002}
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 100
+production_steps = 1000
+sample_interval = 5
+andersen_interval = 40
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+unit = "bohr"
+
+[umbrella]
+cvs = ["x"]
+centers = [-1.0, 1.0]
+stiffness = "0.01 hartree/bohr^2"
+
+[adaptive_umbrella]
+enabled = true
+pilot_steps = 600
+pilot_equilibration_steps = 100
+max_rounds = 5
+max_windows = 16
+target_overlap = 0.003
+min_effective_samples = 2.0
+
+[analysis]
+bins = 24
+ranges = [[-2.0, 2.0]]
+bootstrap = 0
+
+[output]
+directory = "runs/adaptive_harmonic"
+checkpoint_steps = 100
