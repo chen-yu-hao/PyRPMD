@@ -38,6 +38,7 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
         Extension(
             "pyrpmd._native",
             ["native/cayley.cpp"],
+            depends=["native/propagation.h", "native/include/pyrpmd/pes_api_v1.h"],
             language="c++",
             extra_compile_args=compile_args,
             extra_link_args=link_args,

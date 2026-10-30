@@ -33,6 +33,8 @@ class BKMP2Potential(Potential):
         binary_hash = hashlib.sha256(self.path.read_bytes()).hexdigest()
         if self.provenance["source"]["sha256"] != SOURCE["sha256"] or self.provenance["library_sha256"] != binary_hash:
             raise PotentialError("BKMP2 library/source provenance checksum mismatch")
+        from pyrpmd.potentials.cabi import _lock_for
+        self._lock = _lock_for(self.path)
         self.lib = ctypes.CDLL(str(self.path))
         self.batch = self.lib.pyrpmd_bkmp2_batch
         self.batch.argtypes = [ctypes.c_int32, _DOUBLE_ARRAY, _DOUBLE_ARRAY, _DOUBLE_ARRAY, _INT_ARRAY]
@@ -48,6 +50,12 @@ class BKMP2Potential(Potential):
             "source_sha256": SOURCE["sha256"], "library_sha256": binary_hash,
         }
 
+    def native_binding(self):
+        if type(self) is not BKMP2Potential or "evaluate" in self.__dict__:
+            return None
+        from pyrpmd.potentials.native import NativePESBinding
+        return NativePESBinding("fortran-batch-v1", self.batch, 3, self, self._lock)
+
     def evaluate(self, x):
         x = coordinates(x)
         if x.shape[1:] != (3, 3):
@@ -57,7 +65,7 @@ class BKMP2Potential(Potential):
         energy = np.empty(len(x), dtype=np.float64)
         force = np.empty_like(x)
         status = np.zeros(len(x), dtype=np.int32)
-        with _LOCK:
+        with self._lock:
             self.batch(len(x), x, energy, force, status)
         messages = ["" if s == 0 else ("BKMP2 geometry outside domain: every pair distance must be >= 0.2 bohr" if s == 1 else "BKMP2 returned nonfinite energy or force") for s in status]
         return validate_result(PESResult(energy, force, status, messages), x.shape, require_success=False)
@@ -67,7 +75,7 @@ class BKMP2Potential(Potential):
         if r.shape != (3,):
             raise ValueError("radial input must be three interatomic distances")
         energy = np.empty(1); gradient = np.empty(3); status = np.zeros(1, dtype=np.int32)
-        with _LOCK:
+        with self._lock:
             self._radial(r, energy, gradient, status)
         if status[0]:
             raise PotentialError(f"Invalid BKMP2 radial geometry, status={status[0]}")

@@ -7,6 +7,8 @@ Reference implementations are MIT licensed; see THIRD_PARTY_NOTICES.md.
 """
 
 from __future__ import annotations
+from ..propagation import execution_options, scientific_config
+
 import copy
 import json
 from pathlib import Path
@@ -218,6 +220,7 @@ def _parent_task(task):
             seed=np.random.SeedSequence([int(config.get("seed", 0)), 211, chain]),
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            **execution_options(config),
         )
         snapshots = []
         elapsed = 0
@@ -278,17 +281,23 @@ def _parent_task(task):
             if state.step % interval == 0:
                 state.p[:] = dyn.sample_momenta()
                 project_momenta(state.p, state.q, surface, system.masses)
-            constrained_step(dyn, state, surface, options["constraint_tolerance"])
-            elapsed += 1
-            production = elapsed - options["equilibration_steps"]
-            if production > 0 and production % options["parent_interval_steps"] == 0:
-                snapshots.append(state.q.copy())
+            count = min(dyn.block_steps, target - elapsed,
+                        interval - state.step % interval,
+                        checkpoint_steps - elapsed % checkpoint_steps)
+            production = elapsed + np.arange(1, count + 1) - options["equilibration_steps"]
+            observed = (production > 0) & (production % options["parent_interval_steps"] == 0)
+            block = dyn.propagate_block(state, count, constraint=surface,
+                                        constraint_tolerance=options["constraint_tolerance"],
+                                        observe=observed, record_energy=False, record_states=True)
+            snapshots.extend(block.q)
+            elapsed += block.completed
             if elapsed % checkpoint_steps == 0:
                 save()
         save()
         return {
             "chain": chain,
             "snapshots": np.asarray(snapshots),
+            "propagation_this_call": dyn.loop_stats,
             "checkpoint": str(checkpoint),
             "xi_star": task["xi_star"],
             "pmf_method": method,
@@ -363,6 +372,7 @@ def _child_task(task):
             ),
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            **execution_options(config),
         )
         q = np.asarray(task["q"])
         p = dyn.sample_momenta()
@@ -384,11 +394,12 @@ def _child_task(task):
             state = State(q, sign * p)
             weight = sign * velocity / fs
             initial = dyn.energy(state)
-            for step in range(nsteps):
-                dyn.step(state)
-                value, _ = surface.centroid_value_gradient(state.q.mean(axis=0))
-                if value > 0:
-                    numerator[step] += weight
+            elapsed = 0
+            while elapsed < nsteps:
+                count = min(dyn.block_steps, nsteps - elapsed)
+                block = dyn.propagate_block(state, count, cv=surface, record_energy=False)
+                numerator[elapsed:elapsed + count] += weight * (block.values[:, 0] > 0)
+                elapsed += block.completed
             final = dyn.energy(state)
             endpoint_error_per_bead = max(
                 endpoint_error_per_bead, abs(final - initial) / config["beads"]
@@ -418,6 +429,7 @@ def _child_task(task):
             "numerator": numerator,
             "denominator": denominator,
             "energy_drift": drift,
+            "propagation_this_call": dyn.loop_stats,
             "endpoint_energy_error_hartree_per_bead": endpoint_error_per_bead,
             "endpoint_energy_error_kbt": endpoint_error_per_bead * config["beta"],
         }

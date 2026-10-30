@@ -7,6 +7,8 @@ change stream identities. Only the coordinator writes aggregate products.
 
 from __future__ import annotations
 
+from ..propagation import execution_options, scientific_config
+
 import copy
 import hashlib
 import json
@@ -54,7 +56,7 @@ def _fingerprint(config, system, extras):
     # Analysis settings, output path and worker count do not change a stream.
     physics = {
         k: v
-        for k, v in config.items()
+        for k, v in scientific_config(config).items()
         if k
         not in (
             "parallel",
@@ -387,6 +389,7 @@ def _sample_window(task):
             seed=seed,
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            **execution_options(config),
         )
         umbrella = UmbrellaBias(cv, center, stiffness)
         bias = umbrella
@@ -447,12 +450,15 @@ def _sample_window(task):
         while elapsed < neq + nprod:
             if state.step % andersen == 0:
                 state.p[:] = dynamics.sample_momenta()
-            dynamics.step(state, bias)
-            elapsed += 1
-            production = elapsed - neq
-            if production > 0 and production % interval == 0:
-                values.append(cv.value(state.q))
-                energies.append(dynamics.energy(state, bias))
+            count = min(dynamics.block_steps, neq + nprod - elapsed,
+                        andersen - state.step % andersen,
+                        checkpoint_steps - elapsed % checkpoint_steps)
+            production = elapsed + np.arange(1, count + 1) - neq
+            observed = (production > 0) & (production % interval == 0)
+            block = dynamics.propagate_block(state, count, bias=bias, cv=cv, observe=observed)
+            values.extend(block.values)
+            energies.extend(block.energies)
+            elapsed += block.completed
             if elapsed % checkpoint_steps == 0:
                 save()
         save()
@@ -470,6 +476,7 @@ def _sample_window(task):
             "energies": np.asarray(energies),
             "checkpoint": str(checkpoint),
             "native": dynamics.native,
+            "propagation_this_call": dynamics.loop_stats,
         }
     finally:
         if hasattr(provider, "close"):
@@ -503,6 +510,7 @@ def _write_fes(output, data, streams, cv, config):
                     g.create_dataset(key, data=stream[key])
                 g.attrs["window"] = stream["window"]
                 g.attrs["replica"] = stream["replica"]
+                g.attrs["propagation_this_call"] = json.dumps(stream.get("propagation_this_call", {}))
         os.replace(tmp, path / "fes.h5")
     mid = [0.5 * (e[1:] + e[:-1]) for e in data["edges"]]
     mesh = np.meshgrid(*mid, indexing="ij")
@@ -560,6 +568,7 @@ def _write_fes(output, data, streams, cv, config):
         "estimator": "mbar",
         "windows": len(set(s["window"] for s in streams)),
         "streams": len(streams),
+        "propagation_this_call": [s.get("propagation_this_call", {}) for s in streams],
         "samples": sum(len(s["samples"]) for s in streams),
         "overlap_connected": data["connected"],
         "overlap_components": data["components"],

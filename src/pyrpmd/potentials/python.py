@@ -82,6 +82,15 @@ class PythonPotential(Potential):
         self.metadata.setdefault("thread_safety", "context_serial")
         self.metadata.setdefault("execution_device", "cpu")
 
+    def native_binding(self):
+        # Forward only an identity adapter. Custom units/signs keep Python semantics.
+        if type(self) is not PythonPotential or "evaluate" in self.__dict__:
+            return None
+        if (self.length_factor, self.energy_factor, self.sign) != (1.0, 1.0, 1):
+            return None
+        method = getattr(self.obj, "native_binding", None)
+        return method() if callable(method) else None
+
     def evaluate(self, x):
         x = coordinates(x)
         result = self.fn(x / self.length_factor)

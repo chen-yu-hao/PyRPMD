@@ -183,3 +183,9 @@ min_count = 5
 ## 运行与重启记录
 
 `manifest.json` 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。所有 checkpoint 使用 `allow_pickle=False` 读数组，并另存可读 JSON 随机数/进度信息。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。
+
+## 分段原生循环
+
+`dynamics.loop_backend` 可取 `auto`（默认）、`native`（严格要求）或 `python`；
+`dynamics.block_steps` 范围 1..4096，默认 128，不改变采样/分类/检查点时刻。
+详见 [融合传播说明](native-propagation.md)。

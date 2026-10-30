@@ -207,3 +207,9 @@ mpiexec -n 4 python tests/mpi_integration.py
 Cayley、反应坐标及速率算法参考并移植了 [RPMDrate](https://github.com/GreenGroup/RPMDrate) 与用户 [Cayley/thermal-dRPMD 分支](https://github.com/chen-yu-hao/RPMDrate/tree/9a44d6b378d8bf835d67e1b3b7f78b27bdc84a78) 的相关实现；速率工作流也参考 [Caracal](https://github.com/Trebonius91/Caracal/tree/7f95ce9818b7f6d81d7cb3b634f360373c090820) 的 umbrella/recrossing 组织。新增适配器、输入规范和调度独立分层。来源 commit、作者、MIT 通知与论文 DOI 记录在 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。未捆绑 Caracal 的 QMDFF/xTB/机器学习模型。
 
 许可证：[MIT](LICENSE)。
+
+## Native segmented production propagation
+
+C++17 blocks now cover eligible PES, built-in CV/bias, constrained parents and
+per-step recrossing observations. Python plugins retain their compatibility path.
+See [configuration, supported operations, failure and restart semantics](docs/native-propagation.md).

@@ -55,3 +55,10 @@ cc -std=c11 -fPIC -shared -I native/include native/examples/harmonic_pes.c -o li
 The tests also compile this example to an object file and exercise the real
 manifest-driven `.o` to `.so` linking path. Arbitrary legacy Fortran signatures
 are not inferred: supply an explicit wrapper or select the RPMDrate/f2py adapter.
+
+## Fused production loop
+
+`propagation.h` extends the existing Cayley context with bounded, GIL-free BCB
+blocks and opt-in C/Fortran PES bindings. It reuses the original cyclic map,
+records requested observations and commits successful steps only. Unsupported
+Python plugins are not bypassed. See [the full contract](../docs/native-propagation.md).

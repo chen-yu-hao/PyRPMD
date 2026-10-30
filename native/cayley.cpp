@@ -153,7 +153,10 @@ static PyObject* has_openmp(PyObject*,PyObject*){
     Py_RETURN_FALSE;
     #endif
 }
+#include "propagation.h"
+
 static PyMethodDef methods[]={
+ {"advance",fused::advance,METH_VARARGS,"Fused transactional BCB blocks, native PES and observations."},
  {"create",create,METH_VARARGS,"Create an immutable independent Cayley context."},
  {"free_step",free_step,METH_VARARGS,"Update q,p using the full-ring Cayley map."},
  {"kick",kick,METH_VARARGS,"p += h*physical_force."},

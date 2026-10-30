@@ -29,7 +29,7 @@ _SECTIONS = {
     "system": set(
         "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity".split()
     ),
-    "dynamics": set("timestep integrator native".split()),
+    "dynamics": set("timestep integrator native loop_backend block_steps".split()),
     "sampling": set(
         "integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval thermostat_params replicas parents".split()
     ),
@@ -383,6 +383,10 @@ class JobSpec:
         beads = _integer(beads, "beads")
         seed = _integer(d.get("seed", 0), "seed", 0)
         dyn = dict(d.get("dynamics", {}))
+        if dyn.get("loop_backend", "auto") not in ("auto", "native", "python"):
+            raise InputError("dynamics.loop_backend must be auto, native or python")
+        if not 1 <= _integer(dyn.get("block_steps", 128), "dynamics.block_steps") <= 4096:
+            raise InputError("dynamics.block_steps must be in [1,4096]")
         dt = _positive(
             parse_quantity(dyn.get("timestep", "0.1 fs"), "time"), "dynamics.timestep"
         )

@@ -285,6 +285,16 @@ class CABIPotential(Potential):
                 self._context = C.c_void_p()
                 raise
 
+    def native_binding(self):
+        # Never bypass subclass/instance overrides or a stateful provider.
+        if type(self) is not CABIPotential or "evaluate" in self.__dict__:
+            return None
+        if self.metadata.get("capabilities", {}).get("stateful", True):
+            return None
+        from .native import NativePESBinding
+        return NativePESBinding("cabi-v1", self._evaluate, self.natoms, self,
+                                self._lock, self._context, lambda: not self.closed)
+
     def evaluate(self, x):
         if self.closed:
             raise PotentialError("PES context is closed")

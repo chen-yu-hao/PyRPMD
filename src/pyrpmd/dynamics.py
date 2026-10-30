@@ -176,8 +176,16 @@ class CayleyIntegrator:
 
 class Dynamics:
     def __init__(
-        self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1
+        self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1,
+        loop_backend="auto", block_steps=128
     ):
+        if loop_backend not in ("auto", "native", "python"):
+            raise ValueError("loop_backend must be auto, native or python")
+        if isinstance(block_steps, bool) or not isinstance(block_steps, (int, np.integer)) or not 1 <= block_steps <= 4096:
+            raise ValueError("block_steps must be an integer in [1,4096]")
+        self.loop_backend = loop_backend
+        self.block_steps = int(block_steps)
+        self.loop_stats = {"native_steps": 0, "python_steps": 0, "fallback_reasons": {}}
         self.potential = potential
         self.integrator = CayleyIntegrator(
             masses, beta, nbeads, dt, threads=threads, native=native
@@ -211,6 +219,11 @@ class Dynamics:
 
     def step(self, state, bias=None):
         return self._propagate(state, bias)
+
+    def propagate_block(self, state, steps, **kwargs):
+        """Fused BCB block with native observations or compatible Python fallback."""
+        from .propagation import propagate_block
+        return propagate_block(self, state, steps, **kwargs)
 
     def _check_parameters(self):
         if (
@@ -324,13 +337,15 @@ class Dynamics:
         if resample:
             state.p[:] = self.sample_momenta()
         self._fix_fragments(state, data)
-        for _ in range(steps):
+        remaining = int(steps)
+        while remaining:
             if state.step % interval == 0:
                 state.p[:] = self.sample_momenta()
                 self._fix_fragments(state, data)
-            # Linear centroid COM constraints: project both kicks and the free
-            # step, so every PES call sees the constrained configuration.
-            self._propagate(state, bias, data)
+            count = min(remaining, self.block_steps, interval - state.step % interval)
+            self.propagate_block(state, count, bias=bias, fragment_data=data,
+                                 observe=np.zeros(count, dtype=np.uint8), record_energy=False)
+            remaining -= count
         return state
 
     def sample_step(self, state, bias=None, *, gamma_centroid=1.0):
