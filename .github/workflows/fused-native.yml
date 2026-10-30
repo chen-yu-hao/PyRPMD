@@ -1,0 +1,52 @@
+name: Fused native propagation
+on:
+  push:
+    branches: [feat/fused-native-propagation]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fused:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source snapshot
+        run: git archive --format=tar HEAD > "$RUNNER_TEMP/pyrpmd-source.tar"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fused-source
+          path: ${{ runner.temp }}/pyrpmd-source.tar
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin
+          python -m pip install -e '.[test,ase,mpi]'
+      - name: Build pinned real BKMP2
+        run: python benchmarks/h3/build_pes.py
+      - name: Tests
+        run: python -m pytest -q
+      - name: Fused real-system validation
+        run: |
+          if test -f benchmarks/h3/fused_propagation.py; then
+            python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
+          fi
+      - name: Reproducible workspace and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fused-native-results
+          path: |
+            runs/fused-native.json
+            benchmarks/h3/build/h3_bkmp2.f
+            benchmarks/h3/build/libbkmp2.build.json
