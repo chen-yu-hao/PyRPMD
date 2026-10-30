@@ -20,6 +20,7 @@ from ..analysis.fes import reconstruct_fes
 from ..bias import UmbrellaBias, FluxMetricBias, CompositeBias, displacement
 from ..cv import make_cvs, RPMDrateCoordinate
 from ..dynamics import Dynamics, State
+from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..parallel import run_tasks, make_task_potential, root_call
 from ..units import parse_quantity, unit_factor, DIMS
@@ -419,6 +420,7 @@ def _sample_window(task):
         values = []
         energies = []
         elapsed = 0
+        saved_elapsed = None
         if checkpoint.exists():
             with load_checkpoint(checkpoint) as saved:
                 if str(saved["fingerprint"]) != fingerprint:
@@ -432,6 +434,7 @@ def _sample_window(task):
                 values = list(saved["values"])
                 energies = list(saved["energies"])
                 elapsed = int(saved["elapsed"])
+                saved_elapsed = elapsed
                 if "propagation" in saved:
                     dynamics.propagation_stats = json.loads(str(saved["propagation"]))
         else:
@@ -454,6 +457,9 @@ def _sample_window(task):
         dynamics._check_fixed(state.q, state.p)
 
         def save():
+            nonlocal saved_elapsed
+            if saved_elapsed == elapsed:
+                return
             _atomic_npz(
                 checkpoint,
                 q=state.q,
@@ -467,29 +473,69 @@ def _sample_window(task):
                 fingerprint=fingerprint,
                 propagation=json.dumps(dynamics.propagation_stats),
             )
+            saved_elapsed = elapsed
 
         fused_loop = dynamics.can_fuse(bias=bias, observe=cv)
         while elapsed < neq + nprod:
+            initial_elapsed = elapsed
+            thermostat_p = thermostat_rng = None
             if state.step % andersen == 0:
+                thermostat_p = state.p.copy()
+                thermostat_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
                 state.p[:] = dynamics.sample_momenta()
-            if fused_loop:
-                # Never cross an RNG, output or checkpoint boundary.
-                sample_distance = (neq - elapsed + interval) if elapsed < neq else interval - (elapsed-neq) % interval
-                count = min(dynamics.block_steps, neq+nprod-elapsed,
-                            andersen-state.step % andersen,
-                            checkpoint_steps-elapsed % checkpoint_steps,
-                            sample_distance)
-                block = dynamics.propagate(state, count, bias=bias, observe=cv,
-                                           sample_interval=count, record_centroids=False)
-            else:
-                count = 1
-                dynamics.step(state, bias)
-                dynamics._record_python_steps(1)
-            elapsed += count
-            production = elapsed - neq
-            if production > 0 and production % interval == 0:
-                values.append(block.values[-1].copy() if fused_loop else cv.value(state.q))
-                energies.append(float(block.energies[-1]) if fused_loop else dynamics.energy(state, bias))
+            try:
+                if fused_loop:
+                    # Observations are selected within the block. Only Python
+                    # RNG/checkpoint boundaries require returning from native.
+                    count = min(dynamics.block_steps, 4096, neq+nprod-elapsed,
+                                andersen-state.step % andersen,
+                                checkpoint_steps-elapsed % checkpoint_steps)
+                    production = elapsed + np.arange(1, count + 1) - neq
+                    observe = (production > 0) & (production % interval == 0)
+                    block = dynamics.propagate_block(
+                        state, count, bias=bias, cv=cv, observe=observe,
+                        check_energy=True, raise_on_error=False,
+                    )
+                    # A later failure must not discard or replay valid steps
+                    # and observations that the block has already committed.
+                    elapsed += block.completed
+                    values.extend(block.values.copy())
+                    energies.extend(block.energies.tolist())
+                    if block.error is not None:
+                        raise PropagationError(block)
+                else:
+                    # Custom/stateful Python providers retain the old callback
+                    # schedule: energy is evaluated only at a sampled step.
+                    previous = state.copy()
+                    previous_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
+                    try:
+                        dynamics.step(state, bias)
+                        production = elapsed + 1 - neq
+                        if production > 0 and production % interval == 0:
+                            value = np.asarray(cv.value(state.q), dtype=float)
+                            if value.shape != (cv.dimension,) or not np.isfinite(value).all():
+                                raise ValueError("CV returned invalid observation")
+                            energy = float(dynamics.energy(state, bias))
+                            if not np.isfinite(energy):
+                                raise FloatingPointError("nonfinite total ring energy")
+                    except Exception:
+                        state.q[:] = previous.q; state.p[:] = previous.p
+                        state.step, state.time = previous.step, previous.time
+                        dynamics.rng.bit_generator.state = previous_rng
+                        raise
+                    if production > 0 and production % interval == 0:
+                        values.append(value.copy())
+                        energies.append(energy)
+                    elapsed += 1
+                    dynamics._record_python_steps(1)
+            except Exception:
+                if elapsed == initial_elapsed and thermostat_p is not None:
+                    # Resume will encounter this same Andersen boundary. Keep
+                    # its pre-draw RNG/momenta so the redraw occurs exactly once.
+                    state.p[:] = thermostat_p
+                    dynamics.rng.bit_generator.state = thermostat_rng
+                save()
+                raise
             if elapsed % checkpoint_steps == 0:
                 save()
         save()

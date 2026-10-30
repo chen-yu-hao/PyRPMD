@@ -1,0 +1,57 @@
+[
+  {
+    "case": "integration",
+    "ranks": 4,
+    "command": [
+      "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+      "-n",
+      "4",
+      "/workspace/scratch/b8c76611c785/.venv/bin/python",
+      "tests/mpi_integration.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.6660464730011881
+  },
+  {
+    "case": "workflow",
+    "ranks": 4,
+    "command": [
+      "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+      "-n",
+      "4",
+      "/workspace/scratch/b8c76611c785/.venv/bin/python",
+      "tests/mpi_workflow_smoke.py",
+      "/workspace/scratch/b8c76611c785/audit-optimization-mpi/workflow"
+    ],
+    "exit_code": 0,
+    "seconds": 3.4747430390016234
+  },
+  {
+    "case": "materials",
+    "ranks": 4,
+    "command": [
+      "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+      "-n",
+      "4",
+      "/workspace/scratch/b8c76611c785/.venv/bin/python",
+      "tests/mpi_materials_smoke.py",
+      "/workspace/scratch/b8c76611c785/audit-optimization-mpi/materials"
+    ],
+    "exit_code": 0,
+    "seconds": 5.4845894489990314
+  },
+  {
+    "case": "surface",
+    "ranks": 4,
+    "command": [
+      "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+      "-n",
+      "4",
+      "/workspace/scratch/b8c76611c785/.venv/bin/python",
+      "tests/mpi_surface_smoke.py",
+      "/workspace/scratch/b8c76611c785/audit-optimization-mpi/surface"
+    ],
+    "exit_code": 0,
+    "seconds": 11.101264404998801
+  }
+]

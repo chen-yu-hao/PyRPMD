@@ -334,9 +334,10 @@ PCET 用 `input/model.json` 保存一维模型，不创建分子 `system.json`�
 `block_steps=256`（1..65536）。`auto` 对已支持的原生 PES/CV 使用 C++17
 连续传播，其余情况保留 Python；`native` 在请求的 block 路径不支持时明确报错。
 `python` 保留逐步调度，不必关闭所选积分器的 C++ 单步内核。
-受约束 recrossing 母轨迹与 dRPMD 碰撞使用 `propagate_block()`，其单次调用
+受约束 recrossing 母轨迹、dRPMD 碰撞与支持原生执行的 FES/PMF 采样使用
+`propagate_block()`，其单次调用
 上限为 4096 步；工作流自动把较大的 `block_steps` 限制到这个上限，并继续
 遵守原有热浴、分类、采样和 checkpoint 时间轴。输入范围与默认值仍为
-1..65536 和 256，FES/PMF 与 child 的原有 `propagate()` 路径保持兼容。
+1..65536 和 256；recrossing child 与普通 Andersen 热化继续使用 `propagate()`。
 支持范围及两种 API 的故障语义见 [连续传播说明](native-propagation.md) 和
 [分段 API](block-propagation.md)。

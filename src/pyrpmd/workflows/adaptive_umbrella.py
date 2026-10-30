@@ -145,7 +145,7 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
     ess = [sum(len(s["samples"]) / inefficiency(np.asarray(s["samples"])) for s in group) for group in groups]
     joined = np.concatenate(samples)
     reduced = umbrella_reduced_potentials(joined, centers, np.broadcast_to(stiffness, (count,) + np.shape(stiffness)), beta, periods)
-    mbar = solve_mbar(reduced, [len(x) for x in samples])
+    mbar = solve_mbar(reduced, [len(x) for x in samples], return_state_weights=False)
     if not mbar.converged:
         raise RuntimeError(f"adaptive pilot MBAR failed its equation residual: {mbar.residual:g}")
     scores = np.sqrt(np.maximum(0, mbar.overlap * mbar.overlap.T))

@@ -18,6 +18,7 @@ from ..constants import ATOMIC_TIME_S
 from .fes import (
     UmbrellaReweighting,
     _block_resample,
+    _bootstrap_block_plan,
     _histogram,
     solve_mbar,
     statistical_inefficiency,
@@ -222,6 +223,9 @@ def surface_rate_pmf(
     and dividing-surface density are recomputed in the *same* circular-block
     bootstrap draw, retaining their covariance. Block resampling is separate
     for every original time stream, including duplicated umbrella centers.
+    The shared block policy reports limited support and withholds QTST error
+    bars when a stream is too short or has no resolved independent variation.
+    Point estimates and paired-draw diagnostics remain available in that case.
     An optional ``UmbrellaReweighting`` from ``reconstruct_fes`` avoids the
     initial MBAR solve after checking the exact bias problem. Histogram and
     basin choices remain independent of the original FES binning.
@@ -296,7 +300,8 @@ def surface_rate_pmf(
     grid = 0.5 * (edges[:-1] + edges[1:])
     u = umbrella_reduced_potentials(x, centers, stiffness, beta)
     if reweighting is None:
-        fit = solve_mbar(u, counts, overlap_threshold=overlap_threshold)
+        fit = solve_mbar(u, counts, overlap_threshold=overlap_threshold,
+                         return_state_weights=False)
     else:
         if not isinstance(reweighting, UmbrellaReweighting):
             raise ValueError("reweighting must be a validated UmbrellaReweighting result")
@@ -324,7 +329,8 @@ def surface_rate_pmf(
         mask[:] = True
     ready = reason is None
     gs = np.asarray([statistical_inefficiency(sample) for sample in arrays])
-    blocks = np.minimum(counts, np.ceil(gs).astype(int))
+    block_plan = _bootstrap_block_plan(counts, gs)
+    blocks = block_plan["block_lengths"]
     offsets = np.r_[0, np.cumsum(counts)]
     rates, log_pairs, records, failures = [], [], [], []
     rng = np.random.default_rng(seed)
@@ -344,6 +350,7 @@ def surface_rate_pmf(
                     counts,
                     overlap_threshold=overlap_threshold,
                     initial_free_energies=fit.free_energies,
+                    return_state_weights=False,
                 )
                 if not mb.converged:
                     record["reason"] = "mbar_not_converged"
@@ -384,6 +391,7 @@ def surface_rate_pmf(
         "Histogram bin-width and basin-boundary convergence require separate checks.",
         "QTST requires a transmission coefficient before it is a dynamical rate.",
     ]
+    warnings.extend(block_plan["warnings"])
     if reason:
         warnings.append("Surface QTST unavailable: " + reason)
     if bootstrap and len(rates) < 2:
@@ -391,6 +399,7 @@ def surface_rate_pmf(
     if failures:
         warnings.append("Inspect the failed bootstrap draws and their valid fraction.")
     point_rate = normalization["k_qtst_au"] if ready else None
+    uncertainty_available = len(rates) >= 2 and block_plan["status"] != "unavailable"
     return {
         "ready": ready,
         "status": "ready" if ready else reason,
@@ -409,8 +418,8 @@ def surface_rate_pmf(
         "log_k_qtst_au": normalization["log_k_qtst_au"] if ready else None,
         "log_k_qtst_s_inv": normalization["log_k_qtst_s_inv"] if ready else None,
         "pmf_bootstrap_qtst": rates,
-        "qtst_standard_error_s_inv": float(np.std(rates, ddof=1)) if len(rates) >= 2 else None,
-        "qtst_percentile_95_ci_s_inv": np.quantile(rates, [0.025, 0.975]).tolist() if len(rates) >= 2 else None,
+        "qtst_standard_error_s_inv": float(np.std(rates, ddof=1)) if uncertainty_available else None,
+        "qtst_percentile_95_ci_s_inv": np.quantile(rates, [0.025, 0.975]).tolist() if uncertainty_available else None,
         "normalization": normalization,
         "support": {
             "basin": limits.tolist(),
@@ -431,6 +440,7 @@ def surface_rate_pmf(
             "draws": records,
             "skipped_reason": reason if not ready else None,
             "block_lengths": blocks,
+            "block_plan": block_plan,
             "surface_held_fixed": True,
             "basin_held_fixed": True,
             "log_density_integral_pairs": np.asarray(log_pairs).reshape(-1, 2),

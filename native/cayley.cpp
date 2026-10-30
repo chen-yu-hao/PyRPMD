@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <memory>
 #include <new>
 #include <stdexcept>
 #include <string>
@@ -19,6 +20,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include "ring_fft.h"
 
 struct Cayley {
     Py_ssize_t beads, nd;
@@ -26,13 +28,48 @@ struct Cayley {
     double dt, alpha, omega2;
     std::vector<double> mass, invdiag, lower, z1, z2;
     std::vector<double> exact_a, exact_b, exact_c;
+    std::vector<double> half_a, half_b, half_c;
+    std::unique_ptr<RingFFT> fourier;
+    bool spectral_exact = false;
     double si[4];
     Cayley(std::vector<double> m, double beta, Py_ssize_t p, double h, int nt, int mode=0)
       : beads(p), nd(3 * static_cast<Py_ssize_t>(m.size())), threads(nt), scheme(mode),
         dt(h), alpha(.25*h*h*(p/beta)*(p/beta)), omega2((p/beta)*(p/beta)),
         mass(std::move(m)), invdiag(p,1.), lower(p,0.), z1(p,0.), z2(p,0.) {
         si[0]=si[3]=1.; si[1]=si[2]=0.;
+        if (scheme != 2) {
+            fourier = std::make_unique<RingFFT>(p);
+            half_a.resize(p); half_b.resize(p); half_c.resize(p);
+            const double pi=std::acos(-1.);
+            for (Py_ssize_t k=0;k<p;++k) {
+                // Mirror frequencies explicitly, including the odd-P pair.
+                const double w=2.*p/beta*std::sin(pi*std::min(k,p-k)/p);
+                const double theta=.5*h*w;
+                if (scheme == 1) {
+                    half_a[k]=std::cos(theta);
+                    half_b[k]=theta==0. ? .5*h : .5*h*std::sin(theta)/theta;
+                    half_c[k]=w*std::sin(theta);
+                } else {
+                    const double den=std::sqrt(1.+theta*theta);
+                    half_a[k]=1./den; half_b[k]=.5*h/den; half_c[k]=.5*h*w*w/den;
+                }
+            }
+        }
         if (scheme == 1) {
+            // Keep the small-ring summation path; larger power-of-two rings
+            // use O(P log P) transforms in every native propagation API.
+            spectral_exact = p >= 32 && fourier->radix2;
+            if (spectral_exact) {
+                exact_a.resize(p); exact_b.resize(p); exact_c.resize(p);
+                const double pi=std::acos(-1.);
+                for (Py_ssize_t k=0;k<p;++k) {
+                    const double w=2.*p/beta*std::sin(pi*std::min(k,p-k)/p), theta=h*w;
+                    exact_a[k]=std::cos(theta);
+                    exact_b[k]=theta==0. ? h : h*std::sin(theta)/theta;
+                    exact_c[k]=w*std::sin(theta);
+                }
+                return;
+            }
             // The free-ring matrix is circulant. Store one row of each exact
             // spectral propagator; no FFT library or per-step allocation is
             // needed. Runtime is O(P^2*N), storage is O(P), including odd P.
@@ -74,7 +111,7 @@ struct Cayley {
         x[beads-1]*=invdiag[beads-1];
         for (Py_ssize_t k=beads-1;k-->0;) x[k]=(x[k]+alpha*x[k+1])*invdiag[k];
     }
-    Py_ssize_t workspace_size() const { return (scheme==1 ? 2 : 1)*beads*nd; }
+    Py_ssize_t workspace_size() const { return (spectral_exact ? 4 : scheme==1 ? 2 : 1)*beads*nd; }
     void propagate(double* q,double* p,double* workspace) const {
         const Py_ssize_t n=beads, dims=nd;
         #pragma omp parallel for num_threads(threads) schedule(static) if(threads>1)
@@ -82,6 +119,20 @@ struct Cayley {
             const double m=mass[j/3];
             if(n==1){ q[j]+=dt*p[j]/m; continue; }
             if(scheme==1){
+                if(spectral_exact){
+                    double* qr=workspace+4*j*n; double* qi=qr+n;
+                    double* pr=qi+n; double* pi=pr+n;
+                    for(Py_ssize_t b=0;b<n;++b){qr[b]=q[b*dims+j];pr[b]=p[b*dims+j];qi[b]=pi[b]=0.;}
+                    fourier->transform(qr,qi,nullptr);fourier->transform(pr,pi,nullptr);
+                    for(Py_ssize_t k=0;k<n;++k){
+                        const double xr=qr[k],xi=qi[k],vr=pr[k],vi=pi[k];
+                        qr[k]=exact_a[k]*xr+exact_b[k]*vr/m;qi[k]=exact_a[k]*xi+exact_b[k]*vi/m;
+                        pr[k]=exact_a[k]*vr-exact_c[k]*m*xr;pi[k]=exact_a[k]*vi-exact_c[k]*m*xi;
+                    }
+                    fourier->transform(qr,qi,nullptr,true);fourier->transform(pr,pi,nullptr,true);
+                    for(Py_ssize_t b=0;b<n;++b){q[b*dims+j]=qr[b];p[b*dims+j]=pr[b];}
+                    continue;
+                }
                 double* qnew=workspace+2*j*n;
                 double* pnew=qnew+n;
                 for(Py_ssize_t b=0;b<n;++b){
@@ -129,6 +180,38 @@ struct Cayley {
             }
         }
     }
+    void sample_free(double* q,double* p,const double* noise,const double* decay,
+                     const double* amplitude,const unsigned char* fixed,double* work) const {
+        const Py_ssize_t n=beads,dims=nd;
+        const double scale0=std::sqrt(static_cast<double>(n)),scale=std::sqrt(.5*n);
+        #pragma omp parallel for num_threads(threads) schedule(static) if(threads>1)
+        for(Py_ssize_t j=0;j<dims;++j){
+            if(fixed[j/3])continue; // Fixed coordinates never enter a transform.
+            const double m=mass[j/3];
+            double* qr=work+6*j*n;double* qi=qr+n;double* pr=qi+n;double* pi=pr+n;double* temporary=pi+n;
+            for(Py_ssize_t b=0;b<n;++b){qr[b]=q[b*dims+j];pr[b]=p[b*dims+j];qi[b]=pi[b]=0.;}
+            fourier->transform(qr,qi,temporary);fourier->transform(pr,pi,temporary);
+            for(Py_ssize_t k=0;k<n;++k){
+                const double xr=qr[k],xi=qi[k],vr=pr[k],vi=pi[k];
+                double x=half_a[k]*xr+half_b[k]*vr/m,y=half_a[k]*xi+half_b[k]*vi/m;
+                double u=half_a[k]*vr-half_c[k]*m*xr,v=half_a[k]*vi-half_c[k]*m*xi;
+                Py_ssize_t mode;double nr,ni;
+                if(k==0){mode=0;nr=scale0*noise[j];ni=0.;}
+                else if(n%2==0 && k==n/2){mode=n-1;nr=scale0*noise[(n-1)*dims+j];ni=0.;}
+                else{
+                    const Py_ssize_t frequency=std::min(k,n-k);mode=2*frequency-1;
+                    nr=scale*noise[mode*dims+j];ni=(k<n-k?-scale:scale)*noise[(mode+1)*dims+j];
+                }
+                const Py_ssize_t sine_mode=(k==0 || (n%2==0 && k==n/2)) ? mode : mode+1;
+                u=decay[mode]*u+amplitude[mode]*nr;
+                v=decay[sine_mode]*v+amplitude[sine_mode]*ni;
+                qr[k]=half_a[k]*x+half_b[k]*u/m;qi[k]=half_a[k]*y+half_b[k]*v/m;
+                pr[k]=half_a[k]*u-half_c[k]*m*x;pi[k]=half_a[k]*v-half_c[k]*m*y;
+            }
+            fourier->transform(qr,qi,temporary,true);fourier->transform(pr,pi,temporary,true);
+            for(Py_ssize_t b=0;b<n;++b){q[b*dims+j]=qr[b];p[b*dims+j]=pr[b];}
+        }
+    }
 };
 
 static const char* CAPSULE="pyrpmd.Cayley.v1";
@@ -150,7 +233,7 @@ static PyObject* create(PyObject*,PyObject* args){
     if(!seq)return nullptr;
     const Py_ssize_t n=PySequence_Fast_GET_SIZE(seq);
     const Py_ssize_t width=3*static_cast<Py_ssize_t>(sizeof(double));
-    if(n<1 || n>PY_SSIZE_T_MAX/(2*width) || beads>PY_SSIZE_T_MAX/(2*width*n)){Py_DECREF(seq);PyErr_SetString(PyExc_ValueError,"invalid dimensions");return nullptr;}
+    if(n<1 || n>PY_SSIZE_T_MAX/(6*width) || beads>PY_SSIZE_T_MAX/(6*width*n)){Py_DECREF(seq);PyErr_SetString(PyExc_ValueError,"invalid dimensions");return nullptr;}
     std::vector<double> m;
     try { m.resize(n); } catch(const std::bad_alloc&){Py_DECREF(seq);return PyErr_NoMemory();}
     for(Py_ssize_t i=0;i<n;i++){
@@ -219,12 +302,54 @@ static PyObject* integrator_schemes(PyObject*,PyObject*){
 #include "fused.hpp"
 #include "propagation.h"
 
+static PyObject* sample_free(PyObject*,PyObject* args){
+    PyObject *capsule,*qo,*po,*no,*co,*ao,*fo;
+    if(!PyArg_ParseTuple(args,"OOOOOOO",&capsule,&qo,&po,&no,&co,&ao,&fo))return nullptr;
+    auto* c=static_cast<Cayley*>(PyCapsule_GetPointer(capsule,CAPSULE));if(!c)return nullptr;
+    if(c->scheme==2){PyErr_SetString(PyExc_ValueError,"PILE-L requires Cayley or exact normal modes");return nullptr;}
+    try{
+        const Py_ssize_t bytes=c->beads*c->nd*sizeof(double),modes=c->beads*sizeof(double);
+        fused_blocks::Buffer q(qo,bytes,"d",true),p(po,bytes,"d",true),noise(no,bytes,"d",false),decay(co,modes,"d",false),amplitude(ao,modes,"d",false);
+        Py_buffer fixed;
+        if(PyObject_GetBuffer(fo,&fixed,PyBUF_FORMAT|PyBUF_C_CONTIGUOUS)<0)return nullptr;
+        // Release the raw byte buffer even if a subsequent allocation fails.
+        struct FixedRelease{Py_buffer* view;~FixedRelease(){PyBuffer_Release(view);}} release_fixed{&fixed};
+        if(fixed.len!=c->nd/3 || fixed.itemsize!=1 || !fixed.format || std::string(fixed.format)!="B")
+            throw std::invalid_argument("fixed mask must be a uint8 array with one entry per atom");
+        const auto overlaps=[](const void* a,Py_ssize_t an,const void* b,Py_ssize_t bn){
+            const auto x=reinterpret_cast<std::uintptr_t>(a),y=reinterpret_cast<std::uintptr_t>(b);
+            return x<=y ? y-x<static_cast<std::uintptr_t>(an) : x-y<static_cast<std::uintptr_t>(bn);
+        };
+        for(const auto* destination:{q.doubles(),p.doubles()}){
+            if(overlaps(destination,bytes,noise.doubles(),bytes)||overlaps(destination,bytes,decay.doubles(),modes)
+                    ||overlaps(destination,bytes,amplitude.doubles(),modes)||overlaps(destination,bytes,fixed.buf,fixed.len))
+                throw std::invalid_argument("PILE-L input and output buffers must not alias");
+        }
+        if(overlaps(q.doubles(),bytes,p.doubles(),bytes))throw std::invalid_argument("q and p must not alias");
+        const auto* mask=static_cast<const unsigned char*>(fixed.buf);
+        for(Py_ssize_t j=0;j<c->nd/3;++j)if(mask[j]>1)throw std::invalid_argument("fixed mask entries must be 0 or 1");
+        for(Py_ssize_t k=0;k<c->beads;++k){
+            if(!std::isfinite(decay.doubles()[k])||decay.doubles()[k]<0.||decay.doubles()[k]>1.
+                    ||!std::isfinite(amplitude.doubles()[k])||amplitude.doubles()[k]<0.)
+                throw std::invalid_argument("invalid PILE-L damping or noise amplitude");
+        }
+        std::vector<double> work(6*c->beads*c->nd);
+        {
+            fused_blocks::ReleaseGIL release;
+            c->sample_free(q.doubles(),p.doubles(),noise.doubles(),decay.doubles(),amplitude.doubles(),mask,work.data());
+        }
+        Py_RETURN_NONE;
+    }catch(const std::bad_alloc&){return PyErr_NoMemory();}
+    catch(const std::exception& e){if(!PyErr_Occurred())PyErr_SetString(PyExc_ValueError,e.what());return nullptr;}
+}
+
 static PyMethodDef methods[]={
  {"bind_pes",fused::bind_pes,METH_VARARGS,"Bind a trusted native PES; retain its lifetime owner."},
  {"run_block",fused::run_block,METH_VARARGS,"Transactional fused RPMD with the selected native integrator."},
  {"advance",fused_blocks::advance,METH_VARARGS,"RPMD blocks with the selected integrator, native RATTLE and valid-prefix failure results."},
  {"create",create,METH_VARARGS,"Create an immutable independent ring-propagator context."},
  {"free_step",free_step,METH_VARARGS,"Update q,p using the selected full-ring free step."},
+ {"sample_free",sample_free,METH_VARARGS,"Fused half-free/PILE-L/half-free with externally supplied real-mode noise."},
  {"kick",kick,METH_VARARGS,"p += h*physical_force."},
  {"has_openmp",has_openmp,METH_NOARGS,"Whether this build supports OpenMP."},
  {"integrator_schemes",integrator_schemes,METH_NOARGS,"Canonical real-time schemes supported by all native paths."},
@@ -234,7 +359,9 @@ static PyModuleDef module={PyModuleDef_HEAD_INIT,"_native","PyRPMD C++17/OpenMP 
 PyMODINIT_FUNC PyInit__native(){
     PyObject* result=PyModule_Create(&module);
     if(!result)return nullptr;
-    if(PyModule_AddIntConstant(result,"DRPMD_OUTCOMES_API",1)<0){
+    if(PyModule_AddIntConstant(result,"DRPMD_OUTCOMES_API",1)<0
+            || PyModule_AddIntConstant(result,"BLOCK_ENERGY_CHECK_API",1)<0
+            || PyModule_AddIntConstant(result,"SAMPLING_FREE_API",1)<0){
         Py_DECREF(result);return nullptr;
     }
     return result;

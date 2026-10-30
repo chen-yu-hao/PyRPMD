@@ -136,7 +136,9 @@ def _mint(state, result, duration):
     integral = duration * np.sinc(phase/np.pi) * np.exp(1j*phase)
     density_integral = np.real(ze.conj()[:, :, None] * ze[:, None, :] * integral)
     # Contract in the original diabatic basis; no eigenvector derivatives.
-    density = np.einsum("bsi,bij,btj->bst", vectors, density_integral, vectors)
+    # Two matrix products keep this basis transform cubic in the electronic
+    # state count; a direct three-input einsum contracts four state indices.
+    density = (vectors @ density_integral) @ vectors.swapaxes(1, 2)
     impulse = 0.5*np.einsum("bij,bijac->bac", density, result.gradients)
     impulse -= 0.5*duration*np.einsum("biiac->bac", result.gradients)
     state.p -= impulse

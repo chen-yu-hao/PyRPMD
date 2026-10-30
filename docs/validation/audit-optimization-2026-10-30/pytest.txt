@@ -1,0 +1,109 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+.............................................................. [ 15%]
+........................................................................ [ 20%]
+....................................................................................................... [ 27%]
+............................................................... [ 32%]
+..............................................................s......... [ 37%]
+................................................................... [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 53%]
+........................................................................ [ 58%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+..................................................................................F............. [ 75%]
+........................................................................ [ 81%]
+..........Fss................................... [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 95%]
+.................................................................                                                                [100%]
+=================================== FAILURES ===================================
+______ PeriodicPotentialTests.test_ipi_real_cell_inverse_and_virial_wire _______
+
+self = <test_periodic_materials.PeriodicPotentialTests testMethod=test_ipi_real_cell_inverse_and_virial_wire>
+
+    def test_ipi_real_cell_inverse_and_virial_wire(self):
+        cell = np.array([[9., 0., 0.], [2., 10., 0.], [.3, .4, 12.]])
+        with self.assertRaisesRegex(ValueError, "PBC flags"):
+            IPIPotential(port=0, cell=cell, pbc=[True, True, False])
+        flags = [True, True, False]
+>       pes = IPIPotential(port=0, timeout=4, cell=cell, pbc=flags, init={"pbc": flags})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_periodic_materials.py:163:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyrpmd/potentials/socket.py:49: in __init__
+    self.server = socket.socket(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError
+________________________ SocketTests.test_ipi_protocol _________________________
+
+self = <test_potentials.SocketTests testMethod=test_ipi_protocol>
+
+    def test_ipi_protocol(self):
+>       pes = IPIPotential(port=0, timeout=5)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_potentials.py:154:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyrpmd/potentials/socket.py:49: in __init__
+    self.server = socket.socket(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError
+=============================== warnings summary ===============================
+tests/test_parallel.py: 5 warnings
+tests/test_periodic_materials.py: 19 warnings
+tests/test_potentials.py: 45 warnings
+tests/test_surface_examples.py: 33 warnings
+tests/test_surface_geometry.py: 1 warning
+  /workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_materials_eam.py:32: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [2] ../.venv/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+FAILED tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire
+FAILED tests/test_potentials.py::SocketTests::test_ipi_protocol - PermissionE...
+2 failed, 1363 passed, 3 skipped, 103 warnings, 153 subtests passed in 87.57s (0:01:27)

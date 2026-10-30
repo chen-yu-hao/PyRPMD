@@ -509,6 +509,9 @@ static PyObject* advance(PyObject*,PyObject* args) {
         double tolerance=number(field(options,"constraint_tolerance"));
         if(!(tolerance>0))throw std::invalid_argument("invalid constraint tolerance");
         int record_energy=PyObject_IsTrue(field(options,"record_energy"));if(record_energy<0)throw std::invalid_argument("invalid energy option");
+        auto* check_obj=PyDict_GetItemString(options,"check_energy");
+        int check_energy=check_obj ? PyObject_IsTrue(check_obj) : 0;
+        if(check_energy<0)throw std::invalid_argument("invalid energy checking option");
         std::vector<Fragment> fragments;PyRef fs(PySequence_Fast(field(options,"fragments"),"fragments must be a sequence"));Vec used(nd/3,0);
         for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(fs.p);++i){auto* f=PySequence_Fast_GET_ITEM(fs.p,i);Fragment frag{vector(field(f,"weights"),nd/3),vector(field(f,"reference"),3)};double total=0;
             for(Py_ssize_t a=0;a<nd/3;++a){double w=frag.weights[a];if(w<0||(w>0&&(used[a]||w!=c->mass[a])))throw std::invalid_argument("invalid fragment mass/overlap");if(w>0){used[a]=1;total+=w;}}
@@ -533,6 +536,15 @@ static PyObject* advance(PyObject*,PyObject* args) {
             if(!std::isfinite(eb)||!finite(forces))throw std::runtime_error("nonfinite biased forces/energy");
             return eb;
         };
+        auto total_energy=[&](const Vec& x,const Vec& momentum,double eb){
+            double energy=std::accumulate(pes.energies.begin(),pes.energies.end(),0.)+eb;
+            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i){
+                const auto j=b*nd+i;const double dq=x[j]-x[((b+1)%P)*nd+i];
+                energy+=momentum[j]*momentum[j]/(2*c->mass[i/3])+.5*c->omega2*c->mass[i/3]*dq*dq;
+            }
+            if(!std::isfinite(energy))throw std::runtime_error("nonfinite total ring energy");
+            return energy;
+        };
         {
             ReleaseGIL release;
             for(Py_ssize_t step=0;step<steps;++step) {
@@ -540,7 +552,10 @@ static PyObject* advance(PyObject*,PyObject* args) {
                     trial_q=current_q;trial_p=current_p;
                     std::unique_ptr<Diff> old_normal;
                     if(constraint){centroid(trial_q,center,P,nd);old_normal=std::make_unique<Diff>(constraint->eval(center.data()));metric(*old_normal,*c);if(std::abs(old_normal->v)>std::max(1e-8,10*tolerance))throw std::runtime_error("parent state is not on dividing surface");}
-                    if(!force_valid)evaluate(trial_q);
+                    if(!force_valid){
+                        const double eb=evaluate(trial_q);
+                        if(check_energy && step==0)total_energy(trial_q,trial_p,eb);
+                    }
                     kick(trial_p,forces,*c);project(trial_q,trial_p,fragments,*c);
                     c->propagate(trial_q.data(),trial_p.data(),work.data());project(trial_q,trial_p,fragments,*c);
                     if(constraint){free_q=trial_q;double lambda=0;bool converged=false;
@@ -556,14 +571,15 @@ static PyObject* advance(PyObject*,PyObject* args) {
                     if(!finite(trial_q)||!finite(trial_p))throw std::runtime_error("nonfinite integration state");
                     // Fragment projection can change last-bit coordinates after the
                     // final force. Re-evaluate only when a physical energy is requested.
+                    double energy=std::numeric_limits<double>::quiet_NaN();
+                    if(check_energy || (record_energy && observed[step])){
+                        if(!fragments.empty())eb=evaluate(trial_q);
+                        energy=total_energy(trial_q,trial_p,eb);
+                    }
                     if(observed[step]) {
-                        if(record_energy && !fragments.empty())eb=evaluate(trial_q);
                         centroid(trial_q,center,P,nd);centroid(trial_p,pc,P,nd);
                         auto* row=records.doubles()+written*width;row[0]=clock+c->dt;row[1]=std::numeric_limits<double>::quiet_NaN();
-                        if(record_energy){double energy=std::accumulate(pes.energies.begin(),pes.energies.end(),0.)+eb;
-                            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i){auto j=b*nd+i;double dq=trial_q[j]-trial_q[((b+1)%P)*nd+i];energy+=trial_p[j]*trial_p[j]/(2*c->mass[i/3])+.5*c->omega2*c->mass[i/3]*dq*dq;}
-                            if(!std::isfinite(energy))throw std::runtime_error("nonfinite total ring energy");
-                            row[1]=energy;}
+                        if(record_energy)row[1]=energy;
                         std::copy(center.begin(),center.end(),row+2);std::copy(pc.begin(),pc.end(),row+2+nd);
                         for(size_t i=0;i<observations.size();++i){auto d=observations[i].ring(trial_q,center,P);if(!std::isfinite(d.v))throw std::runtime_error("nonfinite CV observation");row[2+2*nd+i]=d.v;}
                         if(states){auto* dest=states->doubles()+written*2*S;std::copy(trial_q.begin(),trial_q.end(),dest);std::copy(trial_p.begin(),trial_p.end(),dest+S);}

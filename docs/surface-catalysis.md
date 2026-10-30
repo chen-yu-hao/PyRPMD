@@ -181,6 +181,15 @@ umbrella 中心须覆盖完整盆地到分割面，实际样本还须覆盖相�
 区间留空；`supported_draw_rate_*` 只报告条件于有效支撑 draw 的分布，不能把它
 解释为完整的 95% 联合置信区间。
 
+PMF 相关块长度采用与一般 FES、气相 PMF 相同的策略：请求 `ceil(5*g)`，
+在每条流内按可用样本数限制，并在 `bootstrap.block_plan` 中报告块长度、
+状态与警告。流过短或没有可解析的独立变化时，状态为 `unavailable`，
+QTST 和主联合速率的标准误与置信区间留空；点估计、逐 draw 记录以及
+密度–盆地积分的配对协方差诊断仍可保留，但不代表误差已经可用。
+`limited_blocks` 表示只能提供受有限块数限制的估计。与旧版表面 PMF
+采用的 `ceil(g)` 不同，本次修复会有意改变 bootstrap draw 和误差结果；
+它不改变 PMF/QTST 点估计，也不把有限数据标记为物理收敛。
+
 回穿统计与气相及 site-rate 共用母构型/相关块实现。单母构型不能通过增加
 bootstrap draw 数量获得误差支持；零通量母构型也不增加有效样本数。
 `rate_uncertainty.recrossing_scope` 区分独立母链与

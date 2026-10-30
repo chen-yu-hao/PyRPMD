@@ -8,15 +8,17 @@ No world barrier is inserted into an integration step.
 from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from dataclasses import dataclass
 import copy
 import multiprocessing as mp
+from multiprocessing.util import Finalize
 import os
 import sys
 from typing import Any
 
 import numpy as np
+from threadpoolctl import threadpool_limits
 
 
 def _int(value, name, minimum=1):
@@ -176,11 +178,47 @@ def _combine(results):
 _BEAD_PROVIDER = None
 
 
+@contextmanager
+def _blas_thread_limit():
+    """Limit loaded BLAS pools and newly imported libraries for one task scope.
+
+    These controls are process-wide. They deliberately leave OpenMP dynamics
+    threads alone, and restore both the environment and loaded pool settings
+    when an in-process batch returns or raises.
+    """
+    variables = ("OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS",
+                 "BLIS_NUM_THREADS", "VECLIB_MAXIMUM_THREADS")
+    previous = {name: os.environ.get(name) for name in variables}
+    try:
+        for name in variables:
+            os.environ[name] = "1"
+        with threadpool_limits(limits=1, user_api="blas"):
+            yield
+    finally:
+        for name, value in previous.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+
+
 def _bead_init(spec, system):
     global _BEAD_PROVIDER
     from pyrpmd.potentials import make_potential
 
-    _BEAD_PROVIDER = make_potential(spec, system)
+    # Keep one limiter for the worker's entire lifetime, rather than scanning
+    # loaded libraries on every PES request. Finalize also runs for the normal
+    # multiprocessing exit path, where ordinary atexit hooks are not assured.
+    limits = ExitStack()
+    try:
+        limits.enter_context(_blas_thread_limit())
+        _BEAD_PROVIDER = make_potential(spec, system)
+        # A provider factory may have loaded another BLAS implementation.
+        limits.enter_context(threadpool_limits(limits=1, user_api="blas"))
+    except BaseException:
+        limits.close()
+        raise
+    Finalize(None, limits.close, exitpriority=10)
 
 
 def _bead_evaluate(x):
@@ -393,10 +431,9 @@ def make_task_potential(spec, system):
 
 def _execute_batch(payload):
     function, indexed_tasks, plan, slot = payload
-    # Prevent a pool of PES workers from accidentally starting full BLAS teams.
-    os.environ["OPENBLAS_NUM_THREADS"] = "1"
-    os.environ["MKL_NUM_THREADS"] = "1"
-    with _context(plan, slot):
+    # NumPy is imported before spawn invokes this function, so environment
+    # variables alone cannot limit its already initialized BLAS thread pool.
+    with _blas_thread_limit(), _context(plan, slot):
         return [(index, function(task)) for index, task in indexed_tasks]
 
 

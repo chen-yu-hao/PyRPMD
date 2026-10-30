@@ -14,8 +14,17 @@ PyRPMD 分开配置任务传输方式 `parallel.backend` 和单条轨迹的势�
 | `mode="gpu"` | 每个轨迹进程独立加载 GPU 模型，一次批处理全部珠子 | 单卡、多卡，每卡一条或多条并发轨迹 |
 
 `threads_per_rank` 控制已编译的 OpenMP 动力学内核；要求真正可用的 OpenMP
-构建。外部势能引擎和 BLAS 的线程数仍需按该引擎配置，避免
-轨迹数 × 珠子进程数 × 引擎线程数超过分配的 CPU 资源。示例设置
+构建。本地 task batch 使用 `threadpoolctl` 将已加载的 BLAS 线程池限制为 1，
+同时在任务作用域内设置 OpenBLAS、MKL、BLIS、Accelerate 的线程环境变量，
+使通常在任务中导入的库也采用单线程。任务完成或抛出异常后恢复原先已加载
+线程池的设置和环境变量；只有一个实际 task、直接在调用进程执行时也如此。
+持续 bead 子进程在初始化时限制线程池，并保持到子进程退出，无需每次 PES
+调用重新扫描库。该限制只针对 BLAS，不修改 `OMP_NUM_THREADS` 或动力学
+内核的 `threads_per_rank`。
+
+这些 BLAS 设置是进程级状态，不能隔离同一进程中其他 Python 线程的并发
+数值计算。MPI 路径和外部势能引擎的专有线程池仍需按部署与引擎配置，避免
+轨迹数 × 珠子进程数 × 引擎线程数超过分配的 CPU 资源；MPI 启动前可设置
 `OPENBLAS_NUM_THREADS=1` 和 `MKL_NUM_THREADS=1`。对于很快的解析势，
 进程通信通常比 PES 本身更贵，优先增加独立轨迹。
 

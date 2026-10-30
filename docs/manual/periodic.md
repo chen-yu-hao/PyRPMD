@@ -81,7 +81,7 @@ pyrpmd resume runs/manual-pimd
 | `normal-mode-bab` | `baoab` | `normal-mode-bab-andersen` |
 | `velocity-verlet` | 不支持 | `velocity-verlet-andersen` |
 
-选择 `sampling.thermostat="pile-l"` 时，可用 `gamma_centroid="0.01 fs^-1"` 设置质心摩擦；内部模按正常模热化。材料任务采样和确定性生产步长必须一致。PILE-L 通过 Python/NumPy 采样步骤执行，不接受强制融合原生循环。
+选择 `sampling.thermostat="pile-l"` 时，可用 `gamma_centroid="0.01 fs^-1"` 设置质心摩擦；内部模按正常模热化。材料任务采样和确定性生产步长必须一致。PILE-L 的 `auto` 对 `P<=8` 或二次幂珠数使用 C++ 自由环半步–OU–半步核，Python 保留势能力调用与 NumPy 随机数；较大非二次幂珠数保留 NumPy 参考路径。它不接受强制 `loop_backend="native"` 的完整原生循环请求。
 
 摘要的 `estimators` 包括 `potential_energy`、`kinetic_primitive`、`kinetic_centroid_virial`、`internal_energy_centroid_virial` 和 `ring_polymer_hamiltonian`。前四项描述物理能量估计，最后一项用于环传播诊断。每项有 `mean` 和 `standard_error_between_replicas`；只有一个副本时，副本间误差是 `null`。`radius_of_gyration_squared_bohr2` 给出每个原子的平均环回转半径平方。
 

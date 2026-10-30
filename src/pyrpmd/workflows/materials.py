@@ -252,19 +252,30 @@ def _sample_replica(task):
             provider, system.masses, config["beta"], config["beads"], options["production_dt"], **kwargs)
         elapsed = 0
         positions, velocities, observable, radii, clocks = [], [], [], [], []
+        last_saved = None
         if checkpoint.exists():
             saved = _read_stream(config, system, output, replica, options)
             state, elapsed = saved["state"], saved["elapsed"]
             rng.bit_generator.state = saved["rng"]
-            positions, velocities = list(saved["positions"]), list(saved["velocities"])
-            observable, radii, clocks = list(saved["observables"]), list(saved["radii_gyration_squared"]), list(saved["sample_steps"])
             sampling.propagation_stats = copy.deepcopy(saved["propagation"]["sampling"])
             if production is not sampling:
                 production.propagation_stats = copy.deepcopy(saved["propagation"]["production"])
+            if saved["complete"]:
+                return saved
+            positions, velocities = list(saved["positions"]), list(saved["velocities"])
+            observable, radii, clocks = list(saved["observables"]), list(saved["radii_gyration_squared"]), list(saved["sample_steps"])
+            last_saved = (elapsed, len(clocks))
         else:
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), sampling.sample_momenta())
 
         def save():
+            nonlocal last_saved
+            # A failed transaction restores state, RNG and statistics together.
+            # Outside it, only accepting a step or the pending initial sample
+            # changes the payload. Do not rewrite an already committed prefix.
+            version = (elapsed, len(clocks))
+            if version == last_saved:
+                return
             atomic_savez(checkpoint, kind=CHECKPOINT_KIND,
                          fingerprint=_identity(config, system, replica), elapsed=elapsed,
                          q=state.q, p=state.p, step=state.step, time=state.time,
@@ -276,6 +287,7 @@ def _sample_replica(task):
                          sample_steps=np.asarray(clocks, dtype=np.int64),
                          propagation=json.dumps({"sampling": sampling.propagation_stats,
                                                  "production": production.propagation_stats if production is not sampling else None}))
+            last_saved = version
 
         def observe():
             values, radius = quantum_observables(state, provider, system.masses, config["beta"])
