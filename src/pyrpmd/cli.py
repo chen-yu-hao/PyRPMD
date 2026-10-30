@@ -23,7 +23,7 @@ def _input_options(p):
 def parser():
     p = argparse.ArgumentParser(
         prog="pyrpmd",
-        description="PyRPMD: Cayley dynamics, direct collisions and free energies",
+        description="PyRPMD: ring-polymer dynamics, reaction networks and enhanced sampling",
     )
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     commands = p.add_subparsers(dest="command", required=True)
@@ -48,14 +48,16 @@ def parser():
     )
     c.add_argument("directory")
     c.add_argument("--workers", type=int)
+    c.add_argument("--loop-backend", choices=("auto", "native", "python"))
+    c.add_argument("--block-steps", type=int)
     a = commands.add_parser(
-        "analyze", help="Read results or recompute a FES from saved samples"
+        "analyze", help="Read results or recompute umbrella/metadynamics free energies"
     )
     a.add_argument("directory")
     a.add_argument(
         "--recompute",
         action="store_true",
-        help="Reweight saved FES samples without new dynamics",
+        help="Reanalyze saved umbrella samples or metadynamics bias without new dynamics",
     )
     a.add_argument(
         "--bins", nargs="+", type=int, help="FES bins per CV (implies --recompute)"
@@ -66,6 +68,12 @@ def parser():
         help="FES block-bootstrap replicates (implies --recompute)",
     )
     commands.add_parser("info", help="Report version and compiled native capabilities")
+    checkpoint = commands.add_parser("checkpoint", help="Verify a portable NPZ checkpoint")
+    checkpoint.add_argument("path")
+    checkpoint.add_argument(
+        "--require-integrity", action="store_true",
+        help="Reject legacy files that predate the checksum envelope",
+    )
     pes = commands.add_parser("pes", help="Inspect, build or test a potential adapter")
     sub = pes.add_subparsers(dest="pes_command", required=True)
     b = sub.add_parser("build")
@@ -243,7 +251,13 @@ def main(argv=None):
                 if args.workers
                 else None
             )
-            result = resume_run(args.directory, parallel=override)
+            execution = {
+                key: value for key, value in {
+                    "loop_backend": args.loop_backend,
+                    "block_steps": args.block_steps,
+                }.items() if value is not None
+            }
+            result = resume_run(args.directory, parallel=override, execution=execution or None)
             if result is not None:
                 _print(result)
         elif args.command == "analyze":
@@ -265,12 +279,21 @@ def main(argv=None):
                     "name": "PyRPMD",
                     "version": __version__,
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes"],
+                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics"],
+                    "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
+                    "enhanced_sampling": ["adaptive_umbrella", "standard_metadynamics", "well_tempered_metadynamics"],
+                    "input_schema_version": 1,
+                    "run_manifest_schema_version": 2,
+                    "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
                 }
             )
         elif args.command == "pes":
             _print(_pes(args))
+        elif args.command == "checkpoint":
+            from .checkpoint import inspect_checkpoint
+
+            _print(inspect_checkpoint(args.path, require_integrity=args.require_integrity))
         return 0
     except (ValueError, RuntimeError, OSError, ImportError, KeyError) as exc:
         from .parallel import is_root

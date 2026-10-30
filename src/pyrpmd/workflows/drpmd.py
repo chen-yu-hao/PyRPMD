@@ -484,23 +484,25 @@ def _atomic_json(path, value):
 
 
 def _atomic_npz(path, metadata, **arrays):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
-    with temporary.open("wb") as stream:
-        np.savez_compressed(
-            stream,
-            metadata=np.array(json.dumps(_jsonable(metadata), allow_nan=False)),
-            **arrays,
-        )
-        stream.flush()
-        os.fsync(stream.fileno())
-    os.replace(temporary, path)
+    from ..checkpoint import atomic_savez
+
+    atomic_savez(
+        path,
+        kind=metadata.get("format", "drpmd-arrays"),
+        metadata=np.array(json.dumps(_jsonable(metadata), allow_nan=False)),
+        **arrays,
+    )
 
 
-def _load_npz(path):
-    with np.load(path, allow_pickle=False) as data:
+def _load_npz(path, *, expected_kind=None):
+    from ..checkpoint import CheckpointError, load_checkpoint
+
+    with load_checkpoint(path, expected_kind=expected_kind) as data:
         meta = json.loads(str(data["metadata"].item()))
+        if expected_kind is not None and meta.get("format") != expected_kind:
+            raise CheckpointError(
+                f"Expected checkpoint payload format {expected_kind!r}, got {meta.get('format')!r}"
+            )
         arrays = {key: data[key].copy() for key in data.files if key != "metadata"}
     return meta, arrays
 
@@ -672,7 +674,9 @@ def _trajectory(
     trace_steps, trace_q, trace_energy = [], [], []
     previous_propagation = {"native_steps": 0, "python_steps": 0}
     if resume and checkpoint.exists():
-        meta, arrays = _load_npz(checkpoint)
+        meta, arrays = _load_npz(
+            checkpoint, expected_kind="PyRPMD.drpmd.trajectory-checkpoint.v1"
+        )
         if (
             meta.get("physics_hash") != physics_hash
             or meta.get("trajectory_id") != trajectory_id
@@ -884,11 +888,14 @@ def _parent_task(task):
         "sampling.interval_steps",
     )
     andersen = _integer(s.get("andersen_interval", 10), "sampling.andersen_interval")
+    options = loop_options(config)
+    method = options["integrator"]
     if s.get("thermostat", "andersen") != "andersen" or s.get(
-        "integrator", "cayley-bcb-andersen"
-    ) not in ("cayley-bcb-andersen", "cayley-bcb"):
+        "integrator", method + "-andersen"
+    ) not in (method + "-andersen", method):
         raise ValueError(
-            "dRPMD parent sampling currently supports Cayley BCB with Andersen thermostat"
+            f"dRPMD parent sampling requires {method}-andersen with Andersen thermostat; "
+            "sampling and production must use the same selected integrator"
         )
     potential = make_task_potential(config["potential"], system)
     plan = execution_plan(config.get("parallel"))
@@ -904,7 +911,7 @@ def _parent_task(task):
         seed=parent_seed,
         native=native,
         threads=plan.threads,
-        **loop_options(config),
+        **options,
     )
     production = Dynamics(
         potential,
@@ -915,7 +922,7 @@ def _parent_task(task):
         seed=np.random.SeedSequence([seed, 3, parent_id]),
         native=native,
         threads=plan.threads,
-        **loop_options(config),
+        **options,
     )
     classifier = _make_classifier(config, system)
     parent_path = out / "checkpoints" / f"parent-{parent_id:06d}.npz"
@@ -928,7 +935,9 @@ def _parent_task(task):
             raise FileExistsError(
                 f"Parent checkpoint exists: {parent_path}; use resume explicitly"
             )
-        meta, arrays = _load_npz(parent_path)
+        meta, arrays = _load_npz(
+            parent_path, expected_kind="PyRPMD.drpmd.parent-checkpoint.v1"
+        )
         if (
             meta.get("physics_hash") != physics_hash
             or meta.get("trajectory_ids") != ids

@@ -119,7 +119,7 @@ def bias_descriptors(bias, dynamics):
 
 def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, record_energy, clock):
     if not dynamics.native or not hasattr(dynamics.integrator._native, "advance"):
-        raise NotNative("compiled fused kernel is not available")
+        raise NotNative(dynamics.integrator.native_fallback_reason or "compiled fused kernel is not available")
     from .propagation import _check_dynamics_methods
     _check_dynamics_methods(dynamics)
     factory = getattr(dynamics.potential, "native_binding", None)
@@ -144,7 +144,7 @@ def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, recor
 def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=None,
                     constraint_tolerance=1e-10, fragment_data=(), observe=None,
                     record_energy=True, record_states=False, backend=None, raise_on_error=True):
-    """Advance at most 4096 BCB steps; return observations in requested step order.
+    """Advance at most 4096 selected-integrator steps, observing in step order.
 
     ``observe`` is a length-steps boolean mask (default: all steps). A failure
     leaves q/p/clock at the last successfully completed and observed step.

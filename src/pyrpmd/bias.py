@@ -89,3 +89,143 @@ class CompositeBias:
             energy += e
             force += f
         return energy, force
+
+
+class MetadynamicsBias:
+    """History-dependent standard or well-tempered metadynamics in CV space.
+
+    Heights are physical energies: ``energy_force`` adds P*V to H_P and
+    differentiates the CV's *full* ring Jacobian.  The tempering exponent is
+    -beta*V/(gamma-1), never -beta*P*V/(gamma-1).  See Barducci, Bussi and
+    Parrinello, PRL 100, 020603 (2008), doi:10.1103/PhysRevLett.100.020603.
+
+    A periodic dimension uses a wrapped Gaussian (a sum over images), not a
+    minimum-image Gaussian with a discontinuous force at half a period.
+    Depositions are explicit events; evaluating forces never changes history.
+    This class deliberately has no frozen native-bias descriptor.
+    """
+
+    history_dependent = True
+
+    def __init__(self, cv, sigma, height, beta, *, mode="well_tempered",
+                 bias_factor=None, hills=None):
+        self.cv = cv
+        self.sigma = np.atleast_1d(np.asarray(sigma, float)).copy()
+        if self.sigma.shape != (cv.dimension,) or not np.isfinite(self.sigma).all() or np.any(self.sigma <= 0):
+            raise ValueError("metadynamics sigma must contain one positive finite width per CV")
+        self.sigma.flags.writeable = False
+        self.height, self.beta = float(height), float(beta)
+        if not np.isfinite(self.height) or self.height <= 0 or not np.isfinite(self.beta) or self.beta <= 0:
+            raise ValueError("metadynamics height and beta must be positive and finite")
+        if mode not in ("standard", "well_tempered"):
+            raise ValueError("metadynamics mode must be standard or well_tempered")
+        self.mode = mode
+        if mode == "standard":
+            if bias_factor is not None:
+                raise ValueError("standard metadynamics does not use bias_factor")
+            self.bias_factor = None
+        else:
+            self.bias_factor = float(10.0 if bias_factor is None else bias_factor)
+            if not np.isfinite(self.bias_factor) or self.bias_factor <= 1:
+                raise ValueError("well-tempered bias_factor must be finite and > 1")
+        if len(cv.periods) != cv.dimension or any(
+            p is not None and (not np.isfinite(p) or p <= 0) for p in cv.periods
+        ):
+            raise ValueError("CV periods must be positive finite numbers or None")
+        self.hills = []
+        for hill in ([] if hills is None else hills):
+            self._append(hill)
+
+    @staticmethod
+    def _kernel(delta, sigma, period):
+        """Unit-height Gaussian and its derivative, including smooth images."""
+        if period is None:
+            value = np.exp(-0.5 * (delta / sigma) ** 2)
+            return value, -delta / sigma**2 * value
+        d = (delta + 0.5 * period) % period - 0.5 * period
+        ratio = sigma / period
+        if ratio >= 0.2:
+            # Poisson summation converges quickly for broad Gaussians. The
+            # normalization makes the deposited height exactly the input w.
+            count = max(1, int(np.ceil(np.sqrt(2 * 36.0) / (2 * np.pi * ratio))))
+            modes = np.arange(1, count + 1, dtype=float)
+            coeff = np.exp(-0.5 * (2 * np.pi * ratio * modes) ** 2)
+            phase = d[..., None] * (2 * np.pi / period) * modes
+            norm = 1.0 + 2 * coeff.sum()
+            value = (1.0 + 2 * np.sum(coeff * np.cos(phase), axis=-1)) / norm
+            derivative = -2 * np.sum(coeff * modes * np.sin(phase), axis=-1) * (2 * np.pi / period) / norm
+            return value, derivative
+        count = int(np.ceil(8.5 * ratio)) + 1
+        images = np.arange(-count, count + 1, dtype=float) * period
+        shifts = d[..., None] + images
+        terms = np.exp(-0.5 * (shifts / sigma) ** 2)
+        norm = np.exp(-0.5 * (images / sigma) ** 2).sum()
+        return terms.sum(axis=-1) / norm, np.sum(-shifts / sigma**2 * terms, axis=-1) / norm
+
+    def physical_energy_gradient(self, values):
+        values = np.asarray(values, float)
+        if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
+            raise ValueError("metadynamics values must be finite [...,D]")
+        if not self.hills:
+            return np.zeros(values.shape[:-1]), np.zeros_like(values)
+        centers = np.asarray([h["center"] for h in self.hills])
+        heights = np.asarray([h["height"] for h in self.hills])
+        delta = values[..., None, :] - centers
+        factors, derivatives = [], []
+        for j, (sigma, period) in enumerate(zip(self.sigma, self.cv.periods)):
+            f, g = self._kernel(delta[..., j], sigma, period)
+            factors.append(f)
+            derivatives.append(g)
+        energy = np.sum(heights * np.prod(factors, axis=0), axis=-1)
+        gradient = np.empty_like(values)
+        for j in range(self.cv.dimension):
+            term = heights * derivatives[j]
+            for k in range(self.cv.dimension):
+                if k != j:
+                    term = term * factors[k]
+            gradient[..., j] = np.sum(term, axis=-1)
+        return energy, gradient
+
+    def physical_energy(self, values):
+        return self.physical_energy_gradient(values)[0]
+
+    def energy_force(self, q):
+        result = self.cv.value_and_jacobian(q)
+        energy, gradient = self.physical_energy_gradient(result.value)
+        p = len(q)
+        return p * float(energy), -p * np.einsum("d,dpac->pac", gradient, result.jacobian)
+
+    def _append(self, hill):
+        center = np.asarray(hill["center"], float)
+        height, time = float(hill["height"]), float(hill["time"])
+        step = hill["step"]
+        before = float(hill.get("bias_before", 0.0))
+        if center.shape != (self.cv.dimension,) or not np.isfinite(center).all():
+            raise ValueError("invalid metadynamics hill center")
+        if not np.isfinite([height, time, before]).all() or height < 0 or time < 0 or before < -1e-12:
+            raise ValueError("invalid metadynamics hill height/time/bias")
+        if isinstance(step, (bool, np.bool_)) or not isinstance(step, (int, np.integer)) or step < 1:
+            raise ValueError("metadynamics hill step must be a positive integer")
+        if self.hills and (step <= self.hills[-1]["step"] or time <= self.hills[-1]["time"]):
+            raise ValueError("metadynamics hill clocks must strictly increase")
+        self.hills.append({"center": center.tolist(), "height": height,
+                           "step": int(step), "time": time, "bias_before": before})
+
+    def deposit(self, values, *, step, time):
+        """Add one hill after a successful integration step, without RNG use."""
+        center = np.asarray(values, float)
+        if center.shape != (self.cv.dimension,):
+            raise ValueError("one metadynamics deposition needs a single [D] center")
+        before = float(self.physical_energy(center))
+        height = self.height
+        if self.mode == "well_tempered":
+            height *= np.exp(-self.beta * before / (self.bias_factor - 1.0))
+        hill = {"center": center, "height": height, "step": step,
+                "time": time, "bias_before": before}
+        self._append(hill)
+        return dict(self.hills[-1])
+
+    @property
+    def fes_factor(self):
+        """Asymptotic F=-factor*V+C; finite-time bias is only an estimate."""
+        return 1.0 if self.mode == "standard" else self.bias_factor / (self.bias_factor - 1.0)

@@ -20,6 +20,7 @@ from ..analysis.fes import reconstruct_fes
 from ..bias import UmbrellaBias, FluxMetricBias, CompositeBias, displacement
 from ..cv import make_cvs, RPMDrateCoordinate
 from ..dynamics import Dynamics, State
+from ..checkpoint import atomic_savez, load_checkpoint
 from ..parallel import run_tasks, make_task_potential, root_call
 from ..units import parse_quantity, unit_factor, DIMS
 
@@ -85,12 +86,7 @@ def _fingerprint(config, system, extras):
 
 
 def _atomic_npz(path, **arrays):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_name(path.name + ".tmp")
-    with temporary.open("wb") as stream:
-        np.savez_compressed(stream, **arrays)
-    os.replace(temporary, path)
+    atomic_savez(path, kind="arrays", **arrays)
 
 
 def _dimension(unit):
@@ -406,7 +402,7 @@ def _sample_window(task):
         energies = []
         elapsed = 0
         if checkpoint.exists():
-            with np.load(checkpoint, allow_pickle=False) as saved:
+            with load_checkpoint(checkpoint) as saved:
                 if str(saved["fingerprint"]) != fingerprint:
                     raise ValueError(
                         f"checkpoint physics differs: {checkpoint}; choose a fresh output directory"
@@ -651,6 +647,10 @@ def _analyze_streams(streams, config, system, output, return_data):
 
 
 def run_fes(config, system, output, executor=None, return_data=False):
+    if config.get("adaptive_umbrella"):
+        from .adaptive_umbrella import adaptive_options, run_adaptive_fes
+        if adaptive_options(config)["enabled"]:
+            return run_adaptive_fes(config, system, output, executor=executor, return_data=return_data)
     config = copy.deepcopy(config)
     if config.get("analysis", {}).get("measure", "cv_density") not in (
         "cv_density",
@@ -693,6 +693,11 @@ def reanalyze_fes(config, system, output, return_data=False):
     All MPI ranks may call this; only the coordinator reads/writes files.
     """
 
+    if config.get("adaptive_umbrella"):
+        from .adaptive_umbrella import adaptive_options, reanalyze_adaptive_fes
+        if adaptive_options(config)["enabled"]:
+            return reanalyze_adaptive_fes(config, system, output, return_data=return_data)
+
     def analyze():
         cv, specs, centers, stiffness = resolve_umbrellas(config, system)
         replicas = int(config.get("sampling", {}).get("replicas", 1))
@@ -714,7 +719,7 @@ def reanalyze_fes(config, system, output, return_data=False):
                         "stiffness": stiffness,
                     },
                 )
-                with np.load(checkpoint, allow_pickle=False) as saved:
+                with load_checkpoint(checkpoint) as saved:
                     if str(saved["fingerprint"]) != expected:
                         raise ValueError(f"checkpoint physics differs: {checkpoint}")
                     streams.append(

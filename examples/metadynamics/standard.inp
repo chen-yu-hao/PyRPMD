@@ -1,0 +1,50 @@
+# Standard constant-height metadynamics on an analytic quartic model.
+# This is a short workflow demonstration, not a converged FES or rate.
+task = "metadynamics"
+temperature = "300 K"
+beads = 4
+seed = 711
+
+[system]
+symbols = ["H"]
+geometry = [[-1.0, 0.0, 0.0]]
+
+[potential]
+provider = "builtin"
+name = "double_well"
+params = {height = 0.001, width = 1.0, confinement = 0.002}
+
+[dynamics]
+timestep = "0.1 fs"
+loop_backend = "auto"
+
+[sampling]
+equilibration_steps = 100
+production_steps = 1000
+sample_interval = 5
+andersen_interval = 40
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+unit = "bohr"
+
+[metadynamics]
+cvs = ["x"]
+mode = "standard"
+sigma = ["0.2 bohr"]
+height = "0.02 kcal/mol"
+pace = 20
+
+[analysis]
+method = "bias_estimate"
+bins = 40
+ranges = [[-2.0, 2.0]]
+bootstrap = 0
+
+[output]
+directory = "runs/meta_standard"
+checkpoint_steps = 100

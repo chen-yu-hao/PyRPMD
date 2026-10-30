@@ -23,19 +23,50 @@ def _spec(value):
 
 
 def _initialize_output(config, system, output, resume=False):
+    from .propagation import scientific_config
+
     path = Path(output)
     manifest_path = path / "manifest.json"
     hashes = referenced_files(config)
-    digest = fingerprint(config, system)
+    digest = fingerprint(scientific_config(config), system)
     if resume:
         if not manifest_path.is_file():
             raise InputError(f"No run manifest in {path}")
         old = json.loads(manifest_path.read_text())
-        if old["physics_fingerprint"] != digest:
+        schema = old.get("schema_version", 1)
+        if type(schema) is not int or schema not in (1, 2):
+            raise InputError(f"Unsupported run manifest schema version: {schema}")
+        # Legacy manifests omitted the schema name. An explicit foreign name
+        # must never be reinterpreted as a PyRPMD manifest during migration.
+        if (schema == 2 or "schema" in old) and old.get("schema") != "pyrpmd.run":
+            raise InputError("Unknown run manifest schema")
+        old_digest = old["physics_fingerprint"]
+        if schema == 1:
+            # Authenticate the saved input before migrating an old identity.
+            # A v0.1 run may have included execution-only block/backend options.
+            stored_config = json.loads((path / "input" / "resolved.json").read_text())
+            stored_system = System.from_dict(
+                json.loads((path / "input" / "system.json").read_text())
+            )
+            if fingerprint(stored_config, stored_system) != old_digest:
+                raise InputError("Legacy saved input does not match its run manifest")
+            old_digest = fingerprint(scientific_config(stored_config), stored_system)
+        if old_digest != digest:
             raise InputError("Cannot resume with changed scientific settings or system")
         for file, sha in old.get("files", {}).items():
             if hashes.get(file) != sha:
                 raise InputError(f"Input/model file changed or is missing: {file}")
+        if schema == 1:
+            write_json(manifest_path, {
+                **old,
+                "schema": "pyrpmd.run",
+                "schema_version": 2,
+                "checkpoint_schema_version": 2,
+                "legacy_physics_fingerprint": old["physics_fingerprint"],
+                "physics_fingerprint": digest,
+                "physics_identity": "execution-independent-v2",
+                "migrated_by_version": __version__,
+            })
         return
     if path.exists() and any(path.iterdir()):
         raise InputError(
@@ -53,6 +84,11 @@ def _initialize_output(config, system, output, resume=False):
     from .dynamics import native_capabilities
 
     manifest = {
+        "schema": "pyrpmd.run",
+        "schema_version": 2,
+        "checkpoint_schema_version": 2,
+        "input_schema_version": config.get("schema_version", 1),
+        "physics_identity": "execution-independent-v2",
         "software": "PyRPMD",
         "version": __version__,
         "python": sys.version,
@@ -108,6 +144,14 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.rate import run_rate
 
         result = run_rate(config, system, Path(target))
+    elif config["task"] == "metadynamics":
+        from .workflows.metadynamics import run_metadynamics
+
+        result = run_metadynamics(config, system, Path(target))
+    elif config["task"] == "network":
+        from .workflows.network import run_network
+
+        result = run_network(config, system, Path(target))
     else:
         raise InputError("Unknown workflow")
     if is_root() and result is not None:
@@ -123,7 +167,7 @@ def run_resolved(config, system, *, output=None, resume=False):
     return result
 
 
-def resume_run(directory, *, parallel=None):
+def resume_run(directory, *, parallel=None, execution=None):
     path = Path(directory).resolve()
     if path.name == "checkpoints":
         path = path.parent
@@ -133,6 +177,16 @@ def resume_run(directory, *, parallel=None):
         sys.path.insert(0, config["_base_directory"])
     if parallel is not None:
         config["parallel"].update(parallel)
+    if execution is not None:
+        if not isinstance(execution, dict) or set(execution) - {"loop_backend", "block_steps"}:
+            raise InputError("Resume execution overrides accept only loop_backend and block_steps")
+        if "loop_backend" in execution and execution["loop_backend"] not in ("auto", "native", "python"):
+            raise InputError("loop_backend must be auto/native/python")
+        if "block_steps" in execution:
+            value = execution["block_steps"]
+            if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 65536:
+                raise InputError("block_steps must be an integer in 1..65536")
+        config.setdefault("dynamics", {}).update(execution)
     return run_resolved(config, system, output=path, resume=True)
 
 
@@ -145,9 +199,9 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None):
             summary = path / "summary.json"
         return json.loads(summary.read_text())
     config = json.loads((path / "input" / "resolved.json").read_text())
-    if config["task"] != "fes":
+    if config["task"] not in ("fes", "metadynamics"):
         raise InputError(
-            "Recomputing analysis is supported for FES; omit --recompute to read rate/dRPMD results"
+            "Recomputing analysis supports FES and metadynamics; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
@@ -167,9 +221,14 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None):
         ):
             raise InputError("Bootstrap replicate count must be an integer >= 0")
         analysis["bootstrap"] = bootstrap
-    from .workflows.fes import reanalyze_fes
+    if config["task"] == "metadynamics":
+        from .workflows.metadynamics import reanalyze_metadynamics
 
-    result = reanalyze_fes(config, system, path)
+        result = reanalyze_metadynamics(config, system, path)
+    else:
+        from .workflows.fes import reanalyze_fes
+
+        result = reanalyze_fes(config, system, path)
     from .parallel import root_call
 
     result = {
@@ -222,6 +281,17 @@ def prepare(job, *, numerical=False):
             "centers_au": centers,
             "stiffness_au": stiffness,
         }
+    elif config["task"] == "metadynamics":
+        from .workflows.metadynamics import validate_metadynamics
+
+        validate_metadynamics(config, system)
+        result["metadynamics_preparation"] = config["metadynamics"]
+    elif config["task"] == "network":
+        from .workflows.network import prepare_network
+
+        result["network_preparation"] = prepare_network(config, system, numerical=numerical)
+        result["ready"] = result["network_preparation"].get("ready", False)
+        return result
     if numerical:
         from .potentials import make_potential
 

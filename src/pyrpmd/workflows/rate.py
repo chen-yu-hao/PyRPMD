@@ -13,6 +13,7 @@ import copy
 import json
 from pathlib import Path
 import numpy as np
+from ..checkpoint import load_checkpoint
 
 from ..analysis.fes import (
     umbrella_integration,
@@ -225,7 +226,7 @@ def _parent_task(task):
         snapshots = []
         elapsed = 0
         if checkpoint.exists():
-            with np.load(checkpoint, allow_pickle=False) as saved:
+            with load_checkpoint(checkpoint) as saved:
                 if str(saved["fingerprint"]) != identity:
                     raise ValueError(f"parent checkpoint physics differs: {checkpoint}")
                 state = State(
@@ -351,7 +352,7 @@ def _child_task(task):
     )
     try:
         if checkpoint.exists():
-            with np.load(checkpoint, allow_pickle=False) as saved:
+            with load_checkpoint(checkpoint) as saved:
                 if str(saved["fingerprint"]) != identity:
                     raise ValueError(f"child checkpoint physics differs: {checkpoint}")
                 if "xi_star" in saved and float(saved["xi_star"]) != task["xi_star"]:
