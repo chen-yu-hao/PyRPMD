@@ -1,0 +1,938 @@
+{
+  "schema": "pyrpmd.drpmd-optimization.v1",
+  "passed": true,
+  "started_utc": "2026-10-30T12:57:03.884395+00:00",
+  "command": [
+    "benchmarks/h3/drpmd_optimization.py",
+    "--baseline",
+    "/workspace/scratch/701b67400000/PyRPMD-baseline",
+    "--candidate",
+    "/workspace/scratch/701b67400000/PyRPMD-optimization",
+    "--library",
+    "/workspace/scratch/701b67400000/pyrpmd-benchmark-pes/libbkmp2.so",
+    "--output",
+    "/workspace/scratch/701b67400000/drpmd-optimization-final-v2",
+    "--build",
+    "--repeats",
+    "5"
+  ],
+  "physical_convergence": false,
+  "harness_sha256": "fedd3951c5c6e0ce3467dcc74b5538bd5df0b8f7856450a3657c911d0a4af38c",
+  "repeats": 5,
+  "warmups_per_case_per_checkout": 1,
+  "timing_order_seed": 847291,
+  "builds": {
+    "baseline": {
+      "command": [
+        "/workspace/scratch/701b67400000/pyrpmd-bench-venv/bin/python",
+        "setup.py",
+        "build_ext",
+        "--inplace",
+        "--force"
+      ],
+      "log": "baseline-build.log"
+    },
+    "candidate": {
+      "command": [
+        "/workspace/scratch/701b67400000/pyrpmd-bench-venv/bin/python",
+        "setup.py",
+        "build_ext",
+        "--inplace",
+        "--force"
+      ],
+      "log": "candidate-build.log"
+    }
+  },
+  "cases": [
+    {
+      "case": "core-16-5",
+      "seconds": {
+        "baseline": [
+          0.11810586499996134,
+          0.08773823499723221,
+          0.09868270700098947,
+          0.10362028600138729,
+          0.088805303999834
+        ],
+        "candidate": [
+          0.06117166799958795,
+          0.08054607799931546,
+          0.08704041899909498,
+          0.07127992299865582,
+          0.05708370600041235
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.09868270700098947,
+        "candidate": 0.07127992299865582
+      },
+      "speedup": 1.3844390236343325,
+      "verification": {
+        "signature_exact": true,
+        "observation_settings_identical": true,
+        "all_arrays_bitwise_equal": true,
+        "maximum_absolute_errors": {
+          "q": 0.0,
+          "p": 0.0,
+          "energy": 0.0,
+          "time": 0.0
+        }
+      },
+      "repeat_order": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ]
+      ],
+      "warmup_order": [
+        "baseline",
+        "candidate"
+      ],
+      "settings": {
+        "baseline": {
+          "beads": 16,
+          "steps": 2000,
+          "block_steps": 5,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 5,
+          "reuse_forces_requested": false
+        },
+        "candidate": {
+          "beads": 16,
+          "steps": 2000,
+          "block_steps": 5,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 5,
+          "reuse_forces_requested": true
+        }
+      },
+      "data_digests": {
+        "baseline": "7ea708add6fea5a85aaa3b6c94639e2fd2265c92ca505c754f333020083861e9",
+        "candidate": "7ea708add6fea5a85aaa3b6c94639e2fd2265c92ca505c754f333020083861e9"
+      },
+      "signature": {
+        "steps": 2000,
+        "time": 4134.137333518126
+      },
+      "timed_scope": "native propagate_block plus gathering identical observations; no initialization or file I/O"
+    },
+    {
+      "case": "core-16-256",
+      "seconds": {
+        "baseline": [
+          0.06900424099876545,
+          0.06709297699853778,
+          0.05495939699903829,
+          0.05796658100007335,
+          0.06431035900095594
+        ],
+        "candidate": [
+          0.038456482001492986,
+          0.03243521499825874,
+          0.031090623000636697,
+          0.031787771000381326,
+          0.03445102900150232
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.06431035900095594,
+        "candidate": 0.03243521499825874
+      },
+      "speedup": 1.9827326257713533,
+      "verification": {
+        "signature_exact": true,
+        "observation_settings_identical": true,
+        "all_arrays_bitwise_equal": true,
+        "maximum_absolute_errors": {
+          "q": 0.0,
+          "p": 0.0,
+          "energy": 0.0,
+          "time": 0.0
+        }
+      },
+      "repeat_order": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ]
+      ],
+      "warmup_order": [
+        "baseline",
+        "candidate"
+      ],
+      "settings": {
+        "baseline": {
+          "beads": 16,
+          "steps": 2000,
+          "block_steps": 256,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 8,
+          "reuse_forces_requested": false
+        },
+        "candidate": {
+          "beads": 16,
+          "steps": 2000,
+          "block_steps": 256,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 8,
+          "reuse_forces_requested": true
+        }
+      },
+      "data_digests": {
+        "baseline": "7ea708add6fea5a85aaa3b6c94639e2fd2265c92ca505c754f333020083861e9",
+        "candidate": "7ea708add6fea5a85aaa3b6c94639e2fd2265c92ca505c754f333020083861e9"
+      },
+      "signature": {
+        "steps": 2000,
+        "time": 4134.137333518126
+      },
+      "timed_scope": "native propagate_block plus gathering identical observations; no initialization or file I/O"
+    },
+    {
+      "case": "core-32-5",
+      "seconds": {
+        "baseline": [
+          0.1170260610015248,
+          0.12705463399834116,
+          0.14349565000156872,
+          0.15088042899878928,
+          0.13684495800043806
+        ],
+        "candidate": [
+          0.10791991899895947,
+          0.08982128200295847,
+          0.08968138500131317,
+          0.0868242159995134,
+          0.08034530900113168
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.13684495800043806,
+        "candidate": 0.08968138500131317
+      },
+      "speedup": 1.5259014788680425,
+      "verification": {
+        "signature_exact": true,
+        "observation_settings_identical": true,
+        "all_arrays_bitwise_equal": true,
+        "maximum_absolute_errors": {
+          "q": 0.0,
+          "p": 0.0,
+          "energy": 0.0,
+          "time": 0.0
+        }
+      },
+      "repeat_order": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ]
+      ],
+      "warmup_order": [
+        "candidate",
+        "baseline"
+      ],
+      "settings": {
+        "baseline": {
+          "beads": 32,
+          "steps": 2000,
+          "block_steps": 5,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 5,
+          "reuse_forces_requested": false
+        },
+        "candidate": {
+          "beads": 32,
+          "steps": 2000,
+          "block_steps": 5,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 5,
+          "reuse_forces_requested": true
+        }
+      },
+      "data_digests": {
+        "baseline": "860a05b9813b9dc400a87e45ca653f2b857aefa3c9d67430515c9a703b693d09",
+        "candidate": "860a05b9813b9dc400a87e45ca653f2b857aefa3c9d67430515c9a703b693d09"
+      },
+      "signature": {
+        "steps": 2000,
+        "time": 4134.137333518126
+      },
+      "timed_scope": "native propagate_block plus gathering identical observations; no initialization or file I/O"
+    },
+    {
+      "case": "core-32-256",
+      "seconds": {
+        "baseline": [
+          0.10015488999852096,
+          0.10921875599888153,
+          0.11120015899723512,
+          0.10996485899886466,
+          0.1119295160024194
+        ],
+        "candidate": [
+          0.05510222199882264,
+          0.06841286999770091,
+          0.06120202500096639,
+          0.057375573996978346,
+          0.06727233800120302
+        ]
+      },
+      "median_seconds": {
+        "baseline": 0.10996485899886466,
+        "candidate": 0.06120202500096639
+      },
+      "speedup": 1.79675197016975,
+      "verification": {
+        "signature_exact": true,
+        "observation_settings_identical": true,
+        "all_arrays_bitwise_equal": true,
+        "maximum_absolute_errors": {
+          "q": 0.0,
+          "p": 0.0,
+          "energy": 0.0,
+          "time": 0.0
+        }
+      },
+      "repeat_order": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ]
+      ],
+      "warmup_order": [
+        "candidate",
+        "baseline"
+      ],
+      "settings": {
+        "baseline": {
+          "beads": 32,
+          "steps": 2000,
+          "block_steps": 256,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 8,
+          "reuse_forces_requested": false
+        },
+        "candidate": {
+          "beads": 32,
+          "steps": 2000,
+          "block_steps": 256,
+          "dt_au": 2.0670686667591056,
+          "beta": 210.51668323299813,
+          "masses": [
+            1837.152645,
+            1837.152645,
+            1837.152645
+          ],
+          "per_step_energy_and_centroid": true,
+          "record_states": false,
+          "warmup_steps": 8,
+          "reuse_forces_requested": true
+        }
+      },
+      "data_digests": {
+        "baseline": "860a05b9813b9dc400a87e45ca653f2b857aefa3c9d67430515c9a703b693d09",
+        "candidate": "860a05b9813b9dc400a87e45ca653f2b857aefa3c9d67430515c9a703b693d09"
+      },
+      "signature": {
+        "steps": 2000,
+        "time": 4134.137333518126
+      },
+      "timed_scope": "native propagate_block plus gathering identical observations; no initialization or file I/O"
+    },
+    {
+      "case": "workflow-1",
+      "seconds": {
+        "baseline": [
+          3.009405422999407,
+          2.9640575570010697,
+          2.773785944998963,
+          2.1881919269981154,
+          2.5387186679981824
+        ],
+        "candidate": [
+          0.4059414770017611,
+          0.42809734500042396,
+          0.3574255860003177,
+          0.37889576900124666,
+          0.3774680329988769
+        ]
+      },
+      "median_seconds": {
+        "baseline": 2.773785944998963,
+        "candidate": 0.37889576900124666
+      },
+      "speedup": 7.320709735847793,
+      "verification": {
+        "signature_exact": true,
+        "observation_settings_identical": true,
+        "all_arrays_bitwise_equal": true,
+        "maximum_absolute_errors": {
+          "q": 0.0,
+          "p": 0.0,
+          "energy": 0.0,
+          "time": 0.0
+        }
+      },
+      "repeat_order": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ]
+      ],
+      "warmup_order": [
+        "baseline",
+        "candidate"
+      ],
+      "settings": {
+        "baseline": {
+          "beads": 16,
+          "dt_au": 4.134137333517016,
+          "beta": 210.51668320265807,
+          "seed": 81073,
+          "trajectories": 8,
+          "parents": 2,
+          "max_steps": 2000,
+          "check_interval": 1,
+          "persistence_steps": 50,
+          "checkpoint_steps": 500,
+          "trajectory_stride": 10,
+          "block_steps": 256
+        },
+        "candidate": {
+          "beads": 16,
+          "dt_au": 4.134137333517016,
+          "beta": 210.51668320265807,
+          "seed": 81073,
+          "trajectories": 8,
+          "parents": 2,
+          "max_steps": 2000,
+          "check_interval": 1,
+          "persistence_steps": 50,
+          "checkpoint_steps": 500,
+          "trajectory_stride": 10,
+          "block_steps": 256
+        }
+      },
+      "data_digests": {
+        "baseline": "4dfa7f9a0a0ca118b81518f90b66caa842870616db3e339a2967751e0388e1a2",
+        "candidate": "4dfa7f9a0a0ca118b81518f90b66caa842870616db3e339a2967751e0388e1a2"
+      },
+      "signature": {
+        "counts": {
+          "product": 0,
+          "nonreactive": 7,
+          "unresolved": 1,
+          "failed": 0
+        },
+        "parent_thermal_steps": {
+          "0": 130,
+          "1": 130
+        },
+        "records": [
+          {
+            "trajectory_id": 0,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1448,
+            "time_au": 5986.2308589326385
+          },
+          {
+            "trajectory_id": 1,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1436,
+            "time_au": 5936.621210930434
+          },
+          {
+            "trajectory_id": 2,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 858,
+            "time_au": 3547.0898321575996
+          },
+          {
+            "trajectory_id": 3,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1605,
+            "time_au": 6635.29042029481
+          },
+          {
+            "trajectory_id": 4,
+            "parent_id": 1,
+            "status": "unresolved",
+            "channel": null,
+            "reason": "maximum_propagation_time",
+            "steps": 2000,
+            "time_au": 8268.274667034031
+          },
+          {
+            "trajectory_id": 5,
+            "parent_id": 1,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 822,
+            "time_au": 3398.260888150987
+          },
+          {
+            "trajectory_id": 6,
+            "parent_id": 1,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1225,
+            "time_au": 5064.318233558344
+          },
+          {
+            "trajectory_id": 7,
+            "parent_id": 1,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 869,
+            "time_au": 3592.5653428262867
+          }
+        ]
+      },
+      "timed_scope": "full run_drpmd including potential initialization, parent sampling, classification, output, checkpoints and summary"
+    },
+    {
+      "case": "workflow-5",
+      "seconds": {
+        "baseline": [
+          1.0316140919967438,
+          1.00757696400251,
+          1.0317485699997633,
+          0.9359643370007689,
+          0.8773881039996922
+        ],
+        "candidate": [
+          0.43765355099822045,
+          0.3776045710001199,
+          0.4153107700003602,
+          0.3982436299993424,
+          0.3962329480018525
+        ]
+      },
+      "median_seconds": {
+        "baseline": 1.00757696400251,
+        "candidate": 0.3982436299993424
+      },
+      "speedup": 2.530051677171017,
+      "verification": {
+        "signature_exact": true,
+        "observation_settings_identical": true,
+        "all_arrays_bitwise_equal": true,
+        "maximum_absolute_errors": {
+          "q": 0.0,
+          "p": 0.0,
+          "energy": 0.0,
+          "time": 0.0
+        }
+      },
+      "repeat_order": [
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ]
+      ],
+      "warmup_order": [
+        "candidate",
+        "baseline"
+      ],
+      "settings": {
+        "baseline": {
+          "beads": 16,
+          "dt_au": 4.134137333517016,
+          "beta": 210.51668320265807,
+          "seed": 81073,
+          "trajectories": 8,
+          "parents": 2,
+          "max_steps": 2000,
+          "check_interval": 5,
+          "persistence_steps": 50,
+          "checkpoint_steps": 500,
+          "trajectory_stride": 10,
+          "block_steps": 256
+        },
+        "candidate": {
+          "beads": 16,
+          "dt_au": 4.134137333517016,
+          "beta": 210.51668320265807,
+          "seed": 81073,
+          "trajectories": 8,
+          "parents": 2,
+          "max_steps": 2000,
+          "check_interval": 5,
+          "persistence_steps": 50,
+          "checkpoint_steps": 500,
+          "trajectory_stride": 10,
+          "block_steps": 256
+        }
+      },
+      "data_digests": {
+        "baseline": "4ede7f68e0b0791eb54d50b0b39786a606dbd1abddaa05677ea6eb71ec9d786f",
+        "candidate": "4ede7f68e0b0791eb54d50b0b39786a606dbd1abddaa05677ea6eb71ec9d786f"
+      },
+      "signature": {
+        "counts": {
+          "product": 0,
+          "nonreactive": 7,
+          "unresolved": 1,
+          "failed": 0
+        },
+        "parent_thermal_steps": {
+          "0": 130,
+          "1": 130
+        },
+        "records": [
+          {
+            "trajectory_id": 0,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1450,
+            "time_au": 5994.499133599673
+          },
+          {
+            "trajectory_id": 1,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1440,
+            "time_au": 5953.157760264503
+          },
+          {
+            "trajectory_id": 2,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 860,
+            "time_au": 3555.3581068246335
+          },
+          {
+            "trajectory_id": 3,
+            "parent_id": 0,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1605,
+            "time_au": 6635.29042029481
+          },
+          {
+            "trajectory_id": 4,
+            "parent_id": 1,
+            "status": "unresolved",
+            "channel": null,
+            "reason": "maximum_propagation_time",
+            "steps": 2000,
+            "time_au": 8268.274667034031
+          },
+          {
+            "trajectory_id": 5,
+            "parent_id": 1,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 825,
+            "time_au": 3410.663300151538
+          },
+          {
+            "trajectory_id": 6,
+            "parent_id": 1,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 1225,
+            "time_au": 5064.318233558344
+          },
+          {
+            "trajectory_id": 7,
+            "parent_id": 1,
+            "status": "nonreactive",
+            "channel": null,
+            "reason": "stable_separated_outgoing_reactants",
+            "steps": 870,
+            "time_au": 3596.699480159804
+          }
+        ]
+      },
+      "timed_scope": "full run_drpmd including potential initialization, parent sampling, classification, output, checkpoints and summary"
+    }
+  ],
+  "scope": "same-machine same-PES implementation comparison; no chemical rate convergence claim",
+  "manifests": {
+    "baseline": {
+      "checkout": "/workspace/scratch/701b67400000/PyRPMD-baseline",
+      "commit": "af90f20d05368fc910c493977cf29856300b5864",
+      "git_status": "?? benchmarks/h3/build\n?? cc7lDORM.s\n?? ccDoSb2u.s",
+      "sources_sha256": {
+        "setup.py": "34fcfcd080ecd390c053ed81abb58e9d7786f7975230b67452e273ed01c18312",
+        "native/cayley.cpp": "8397a8f96551208ff838aaacbec8cfd98e5af6a818635bf79bd6ef4206e837e7",
+        "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+        "native/propagation.h": "9f34aedf3f3ab816e422699597c3ad5f25ee0d64de10da3d1f88c02877f47d99",
+        "src/pyrpmd/dynamics.py": "34510880844d8a4e4c955cb9bdafb5c43a038d15fddb8912a80fc6d916caf318",
+        "src/pyrpmd/propagation.py": "f55817c0916f392f02723f9dfa03288c9ff2234ea414bd7de6c8a1312ab8cb2d",
+        "src/pyrpmd/block_propagation.py": "ba85fc88c67b4d7487edf5ff945431cf88089ffdac03ad8200712171de193702",
+        "src/pyrpmd/workflows/drpmd.py": "3a82cb19a9d9cfc15ecc3111c3c9dddd3cf746af09e27beb272963c81174e825",
+        "benchmarks/h3/drpmd.py": "0f66ed3797bc9e763a1b561897cddd9145a01ecaab6d0a0415a379412a35d39c",
+        "benchmarks/h3/pes.py": "fe26d127b0efb6abca406b4810e5cefe87bc6ddff68feb4a0ca31063f70245db"
+      },
+      "native_extension": "/workspace/scratch/701b67400000/PyRPMD-baseline/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "native_extension_sha256": "bffce98d39fc7b386e4814f8f0cd0a552b45c1732aded3b247f47458fa9061ab",
+      "native_outcomes_api": 0,
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "numpy": "2.3.5",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "affinity": [
+        0
+      ],
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "pes_library": "/workspace/scratch/701b67400000/pyrpmd-benchmark-pes/libbkmp2.so",
+      "pes_library_sha256": "83a35e84b9212c4010d4d9541dc6115d8c1d7fbd6e6477d7066558b26bba9c03",
+      "pes_source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "pes_compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "pes_flags": [
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ]
+    },
+    "candidate": {
+      "checkout": "/workspace/scratch/701b67400000/PyRPMD-optimization",
+      "commit": "af90f20d05368fc910c493977cf29856300b5864",
+      "git_status": "M README.md\n M benchmarks/h3/drpmd.py\n M docs/block-propagation.md\n M docs/native-propagation.md\n M native/README.md\n M native/cayley.cpp\n M native/propagation.h\n M src/pyrpmd/block_propagation.py\n M src/pyrpmd/workflows/drpmd.py\n M tests/test_native_propagation.py\n?? benchmarks/h3/build\n?? benchmarks/h3/drpmd_optimization.py\n?? ccGQuzNW.s\n?? docs/validation/drpmd-optimization-2026-10-30/\n?? tests/test_drpmd_classifier_optimization.py\n?? tests/test_drpmd_native_workflow.py\n?? tests/test_native_outcomes.py",
+      "sources_sha256": {
+        "setup.py": "34fcfcd080ecd390c053ed81abb58e9d7786f7975230b67452e273ed01c18312",
+        "native/cayley.cpp": "89331f4e7521be194d39c86e115151dbe1e0e8c8ce8404f004449a26da19652f",
+        "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+        "native/propagation.h": "0cd062976480e8ce686e7778a3a728049b4a4901dd8f1b987bbd8cfcc10be6c4",
+        "src/pyrpmd/dynamics.py": "34510880844d8a4e4c955cb9bdafb5c43a038d15fddb8912a80fc6d916caf318",
+        "src/pyrpmd/propagation.py": "f55817c0916f392f02723f9dfa03288c9ff2234ea414bd7de6c8a1312ab8cb2d",
+        "src/pyrpmd/block_propagation.py": "0b84eb3377a36e590e4016ff5a0ed8407680d16307100517cefeb431fdc53477",
+        "src/pyrpmd/workflows/drpmd.py": "a511e4f27fcd60219a9a62e3e03defba958799182d13cd521bc5c6ee9283f903",
+        "benchmarks/h3/drpmd.py": "e6c0525e9936a4cb99a55692ad4532b6b54a0c852d25c0c197629ee679b19af4",
+        "benchmarks/h3/pes.py": "fe26d127b0efb6abca406b4810e5cefe87bc6ddff68feb4a0ca31063f70245db"
+      },
+      "native_extension": "/workspace/scratch/701b67400000/PyRPMD-optimization/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "native_extension_sha256": "69684216d2ff725725f4ed7a79d8e3a59dc33767f20e4c73b85cbaf72b9cde13",
+      "native_outcomes_api": 1,
+      "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "numpy": "2.3.5",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "affinity": [
+        0
+      ],
+      "thread_environment": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "pes_library": "/workspace/scratch/701b67400000/pyrpmd-benchmark-pes/libbkmp2.so",
+      "pes_library_sha256": "83a35e84b9212c4010d4d9541dc6115d8c1d7fbd6e6477d7066558b26bba9c03",
+      "pes_source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "pes_compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "pes_flags": [
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ]
+    }
+  },
+  "restart_checks": {
+    "baseline": {
+      "completed_records_exact": true,
+      "interrupted_arrays_exact": true,
+      "interrupted_status_and_stop_exact": true,
+      "resumed_block_steps": 7,
+      "checkpoint_steps": 37,
+      "trajectory_stride": 7
+    },
+    "candidate": {
+      "completed_records_exact": true,
+      "interrupted_arrays_exact": true,
+      "interrupted_status_and_stop_exact": true,
+      "resumed_block_steps": 7,
+      "checkpoint_steps": 37,
+      "trajectory_stride": 7
+    }
+  },
+  "completed_utc": "2026-10-30T12:58:05.046146+00:00"
+}

@@ -308,5 +308,8 @@ Cayley、反应坐标及速率算法参考并移植了 [RPMDrate](https://github
 centroid RATTLE，数值失败时保留成功前缀。两种 API 均支持三种所选积分器。dRPMD 碰撞和受约束母轨迹使用
 分段接口，FES/PMF 与 recrossing child 保留已验证的连续传播路径。
 自定义 Python PES/CV 保留兼容路径；自定义分类器仍在原有事件边界由 Python
-调用。配置默认 `loop_backend="auto"`、`block_steps=256`；接口范围和两种
+调用。显式内置连通图通道和 H3 交换分类器支持在 C++ 块内按原频率判定、
+累计持续时间并提前停止；临界几何返回原 Python 判据。普通原生 dRPMD
+同时复用块内终点力，并以单个回滚快照代替完整逐步 q/p 历史。
+配置默认 `loop_backend="auto"`、`block_steps=256`；接口范围和两种
 故障契约见上面的传播文档。

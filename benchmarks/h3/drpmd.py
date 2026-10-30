@@ -32,6 +32,19 @@ HARTREE_KCAL_MOL = 627.5094740631
 PAIRS = ((0, 1), (0, 2), (1, 2))
 
 
+def _h3_bonded_pair(centroid, bond_cutoff):
+    short = [pair for pair in PAIRS
+             if np.linalg.norm(centroid[pair[0]] - centroid[pair[1]]) < bond_cutoff]
+    return short[0] if len(short) == 1 else None
+
+
+def _original_h3_methods(classifier):
+    return type(classifier) is H3ExchangeClassifier and all(
+        getattr(getattr(classifier, name, None), "__func__", None) is function
+        for name, function in _H3_CLASSIFIER_METHODS.items()
+    )
+
+
 class H3ExchangeClassifier:
     """Identify H2 by its atom membership after atom--diatom separation.
 
@@ -61,23 +74,24 @@ class H3ExchangeClassifier:
 
     def bonded_pair(self, q):
         centroid = np.asarray(q).mean(axis=0)
-        short = [
-            pair
-            for pair in PAIRS
-            if np.linalg.norm(centroid[pair[0]] - centroid[pair[1]]) < self.bond_cutoff
-        ]
-        return short[0] if len(short) == 1 else None
+        return _h3_bonded_pair(centroid, self.bond_cutoff)
 
     def validate_reactants(self, q):
         if self.bonded_pair(q) != (1, 2):
             raise ValueError("Thermal H + H2 parent lost the original H2 bond [1,2]")
 
     def diagnostics(self, state):
-        pair = self.bonded_pair(state.q)
+        builtin = _original_h3_methods(self)
+        if builtin:
+            q = state.q.mean(axis=0)
+            pair = _h3_bonded_pair(q, self.bond_cutoff)
+        else:
+            pair = self.bonded_pair(state.q)
         if pair is None:
             return {"pair": None, "separation_bohr": None, "radial_velocity_au": None}
         atom = next(i for i in range(3) if i not in pair)
-        q = state.q.mean(axis=0)
+        if not builtin:
+            q = state.q.mean(axis=0)
         p = state.p.mean(axis=0)
         pair_mass = self.masses[list(pair)].sum()
         center = (
@@ -109,6 +123,33 @@ class H3ExchangeClassifier:
         if pair == (1, 2):
             return {"status": "nonreactive", "channel": None}
         return {"status": "product", "channel": f"H2[{pair[0]},{pair[1]}]+H"}
+
+
+    def native_outcome_descriptor(self):
+        """Enable native checks only while every benchmark classification hook is unchanged."""
+        if not _original_h3_methods(self):
+            return None
+        try:
+            masses = np.asarray(self.masses, dtype=float)
+            if (masses.shape != (3,) or not np.isfinite(masses).all()
+                    or (masses <= 0).any()
+                    or not np.isfinite([self.bond_cutoff, self.exit_distance]).all()
+                    or not 0 < self.bond_cutoff < self.exit_distance):
+                return None
+            return {
+                "kind": "h3_exchange", "masses": masses.tolist(),
+                "bond_cutoff": float(self.bond_cutoff),
+                "exit_distance": float(self.exit_distance),
+                "channel_labels": ["H2[0,1]+H", "H2[0,2]+H"],
+            }
+        except (AttributeError, TypeError, ValueError):
+            return None
+
+
+_H3_CLASSIFIER_METHODS = {
+    name: getattr(H3ExchangeClassifier, name)
+    for name in ("__call__", "bonded_pair", "diagnostics", "validate_reactants")
+}
 
 
 def build_classifier(system, **params):

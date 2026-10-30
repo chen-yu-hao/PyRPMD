@@ -9,6 +9,7 @@
 #include <cstring>
 #include <memory>
 #include <numeric>
+#include <map>
 
 namespace fused_blocks {
 using Vec = std::vector<double>;
@@ -33,9 +34,10 @@ static double number(PyObject* v) {
 }
 static std::string text(PyObject* v) {
     if (!PyUnicode_Check(v)) throw std::invalid_argument("native tag must be a string");
-    const char* s=PyUnicode_AsUTF8(v);
+    Py_ssize_t size=0;
+    const char* s=PyUnicode_AsUTF8AndSize(v,&size);
     if (!s) throw std::invalid_argument("invalid native string");
-    return s;
+    return std::string(s,static_cast<size_t>(size));
 }
 static Vec vector(PyObject* v, Py_ssize_t size=-1) {
     PyRef seq(PySequence_Fast(v,"expected a numeric sequence"));
@@ -263,6 +265,215 @@ static double metric(const Diff& d,const Cayley& c) {
     return z;
 }
 
+// Numeric labels cross the Python boundary only once per block: -1 is
+// unresolved, 0 is nonreactive, and 1..N index descriptor.channel_labels.
+// Only the exact Python classifiers which export these descriptors use this
+// path. User callbacks and pilot candidate discovery remain Python operations.
+static long long integer(PyObject* value,const char* name,long long minimum) {
+    if(PyBool_Check(value) || !PyLong_Check(value))
+        throw std::invalid_argument(std::string(name)+" must be an integer");
+    long long result=PyLong_AsLongLong(value);
+    if(PyErr_Occurred() || result<minimum)
+        throw std::invalid_argument(std::string("invalid ")+name);
+    return result;
+}
+static std::vector<std::string> strings(PyObject* value) {
+    PyRef seq(PySequence_Fast(value,"expected a string sequence"));
+    std::vector<std::string> result;
+    for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(seq.p);++i)
+        result.push_back(text(PySequence_Fast_GET_ITEM(seq.p,i)));
+    return result;
+}
+struct Outcome {
+    std::string kind;
+    Vec masses,cutoffs;
+    std::vector<std::string> symbols,reactants,labels;
+    std::vector<std::vector<std::string>> channels;
+    double exit_distance,bond_cutoff=0;
+    long long start,interval,persistence,candidate_since,checks=0;
+    int candidate,resolved=-1;
+    bool pending_check=false;
+    Py_ssize_t natoms;
+
+    Outcome(PyObject* spec,Py_ssize_t n,Py_ssize_t steps):natoms(n) {
+        auto* d=field(spec,"descriptor");
+        kind=text(field(d,"kind"));
+        if(kind!="connectivity" && kind!="h3_exchange")
+            throw std::invalid_argument("unsupported native outcome classifier");
+        masses=vector(field(d,"masses"),n);
+        for(double mass:masses)if(!(mass>0))
+            throw std::invalid_argument("outcome masses must be positive");
+        exit_distance=number(field(d,"exit_distance"));
+        if(!(exit_distance>0))throw std::invalid_argument("outcome exit distance must be positive");
+        labels=strings(field(d,"channel_labels"));
+        if(labels.size()>static_cast<size_t>(INT32_MAX))
+            throw std::invalid_argument("too many outcome channels");
+        for(size_t i=0;i<labels.size();++i){
+            if(labels[i].empty())throw std::invalid_argument("empty outcome channel label");
+            for(size_t j=0;j<i;++j)if(labels[i]==labels[j])
+                throw std::invalid_argument("duplicate outcome channel label");
+        }
+        if(kind=="connectivity") {
+            symbols=strings(field(d,"symbols"));
+            if(symbols.size()!=static_cast<size_t>(n))
+                throw std::invalid_argument("outcome symbol count mismatch");
+            cutoffs=vector(field(d,"pair_cutoffs"),product(n,n-1)/2);
+            for(double cutoff:cutoffs)if(!(cutoff>0 && cutoff<exit_distance))
+                throw std::invalid_argument("outcome cutoffs must lie below exit distance");
+            reactants=strings(field(d,"reactants"));
+            if(reactants.size()!=2 || !std::is_sorted(reactants.begin(),reactants.end()))
+                throw std::invalid_argument("outcome reactants must be two sorted formulas");
+            PyRef seq(PySequence_Fast(field(d,"channels"),"outcome channels must be sequences"));
+            for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(seq.p);++i){
+                auto signature=strings(PySequence_Fast_GET_ITEM(seq.p,i));
+                if(signature.size()<2 || !std::is_sorted(signature.begin(),signature.end()) || signature==reactants)
+                    throw std::invalid_argument("invalid outcome channel signature");
+                for(const auto& known:channels)if(signature==known)
+                    throw std::invalid_argument("duplicate outcome channel signature");
+                channels.push_back(std::move(signature));
+            }
+            if(channels.size()!=labels.size())
+                throw std::invalid_argument("outcome channel label count mismatch");
+        } else {
+            bond_cutoff=number(field(d,"bond_cutoff"));
+            if(n!=3 || !(bond_cutoff>0 && bond_cutoff<exit_distance) ||
+               labels!=std::vector<std::string>{"H2[0,1]+H","H2[0,2]+H"})
+                throw std::invalid_argument("invalid H3 outcome descriptor");
+        }
+        start=integer(field(spec,"start_step"),"outcome start_step",0);
+        if(start>std::numeric_limits<long long>::max()-steps)
+            throw std::invalid_argument("outcome step counter overflow");
+        interval=integer(field(spec,"check_interval"),"outcome check_interval",1);
+        persistence=integer(field(spec,"persistence_steps"),"outcome persistence_steps",0);
+        auto code=integer(field(spec,"candidate_code"),"outcome candidate_code",-1);
+        if(code>static_cast<long long>(labels.size()))
+            throw std::invalid_argument("unknown outcome candidate code");
+        candidate=static_cast<int>(code);
+        candidate_since=integer(field(spec,"candidate_since"),"outcome candidate_since",-1);
+        if((candidate<0)!=(candidate_since<0) || candidate_since>start)
+            throw std::invalid_argument("inconsistent outcome persistence state");
+    }
+
+    static double distance(const Vec& q,Py_ssize_t a,Py_ssize_t b) {
+        double square=0;
+        for(int k=0;k<3;++k){double delta=q[3*a+k]-q[3*b+k];square+=delta*delta;}
+        return std::sqrt(square);
+    }
+
+    int classify(const Vec& q,const Vec& p,double roundoff) const {
+        // NumPy/BLAS reductions and the scalar native reductions may differ by
+        // a few ulps. A near-boundary value is an execution-routing decision,
+        // never a tolerance on the chemical criterion: Python makes the exact
+        // original comparison at this scheduled step. Scaling by absolute
+        // coordinates/velocities also covers cancellation in fragment COMs.
+        if(!finite(q)||!finite(p))return -2;
+        double coordinate_scale=0,velocity_scale=0;
+        for(Py_ssize_t atom=0;atom<natoms;++atom)for(int k=0;k<3;++k){
+            coordinate_scale=std::max(coordinate_scale,std::abs(q[3*atom+k]));
+            velocity_scale=std::max(velocity_scale,std::abs(p[3*atom+k]/masses[atom]));
+        }
+        auto uncertain=[&](double value,double threshold,double scale){
+            if(!std::isfinite(value)||!std::isfinite(scale))return true;
+            double tolerance=roundoff*std::max({std::abs(value),std::abs(threshold),scale});
+            return std::abs(value-threshold)<=tolerance;
+        };
+        if(kind=="h3_exchange") {
+            const int pairs[3][2]={{0,1},{0,2},{1,2}};
+            int selected=-1;
+            for(int pair=0;pair<3;++pair){
+                double length=distance(q,pairs[pair][0],pairs[pair][1]);
+                if(uncertain(length,bond_cutoff,coordinate_scale))return -2;
+                if(length<bond_cutoff){
+                    if(selected>=0)return -1;
+                    selected=pair;
+                }
+            }
+            if(selected<0)return -1;
+            int a=pairs[selected][0],b=pairs[selected][1],atom=3-a-b;
+            double total=masses[a]+masses[b],square=0,outward=0;
+            for(int k=0;k<3;++k){
+                double r=q[3*atom+k]-(q[3*a+k]*masses[a]+q[3*b+k]*masses[b])/total;
+                double v=p[3*atom+k]/masses[atom]-(p[3*a+k]+p[3*b+k])/total;
+                square+=r*r;outward+=r*v;
+            }
+            double separation=std::sqrt(square);
+            if(uncertain(separation,exit_distance,coordinate_scale))return -2;
+            if(separation<exit_distance)return -1;
+            if(uncertain(outward,0.,coordinate_scale*velocity_scale))return -2;
+            if(outward/separation<=0)return -1;
+            return selected==2 ? 0 : selected+1;
+        }
+
+        // Union-find supplies connected components with increasing atom order,
+        // matching the Python classifier's sorted membership lists.
+        std::vector<Py_ssize_t> parent(natoms);
+        std::iota(parent.begin(),parent.end(),0);
+        auto root=[&](Py_ssize_t atom){
+            while(parent[atom]!=atom){parent[atom]=parent[parent[atom]];atom=parent[atom];}
+            return atom;
+        };
+        size_t pair=0;
+        for(Py_ssize_t a=0;a<natoms;++a)for(Py_ssize_t b=a+1;b<natoms;++b,++pair){
+            double length=distance(q,a,b);
+            if(uncertain(length,cutoffs[pair],coordinate_scale))return -2;
+            if(length<cutoffs[pair])parent[root(b)]=root(a);
+        }
+        std::vector<std::vector<Py_ssize_t>> groups;
+        std::vector<Py_ssize_t> roots;
+        for(Py_ssize_t atom=0;atom<natoms;++atom){
+            auto r=root(atom);auto known=std::find(roots.begin(),roots.end(),r);
+            if(known==roots.end()){roots.push_back(r);groups.push_back({atom});}
+            else groups[known-roots.begin()].push_back(atom);
+        }
+        if(groups.size()<2)return -1;
+        std::vector<std::array<double,3>> centers(groups.size()),velocities(groups.size());
+        std::vector<std::string> signature;
+        for(size_t i=0;i<groups.size();++i){
+            double total=0;std::map<std::string,Py_ssize_t> counts;
+            for(auto atom:groups[i]){
+                total+=masses[atom];++counts[symbols[atom]];
+                for(int k=0;k<3;++k){centers[i][k]+=masses[atom]*q[3*atom+k];velocities[i][k]+=p[3*atom+k];}
+            }
+            for(int k=0;k<3;++k){centers[i][k]/=total;velocities[i][k]/=total;}
+            std::string formula;
+            for(const auto& entry:counts){formula+=entry.first;if(entry.second!=1)formula+=std::to_string(entry.second);}
+            signature.push_back(std::move(formula));
+        }
+        for(size_t i=0;i<groups.size();++i)for(size_t j=i+1;j<groups.size();++j){
+            double square=0,outward=0;
+            for(int k=0;k<3;++k){double r=centers[j][k]-centers[i][k],v=velocities[j][k]-velocities[i][k];square+=r*r;outward+=r*v;}
+            double separation=std::sqrt(square);
+            if(uncertain(separation,exit_distance,coordinate_scale))return -2;
+            if(separation<exit_distance)return -1;
+            if(uncertain(outward,0.,coordinate_scale*velocity_scale))return -2;
+            if(outward<=0)return -1;
+        }
+        std::sort(signature.begin(),signature.end());
+        if(signature==reactants)return 0;
+        for(size_t i=0;i<channels.size();++i)if(signature==channels[i])return static_cast<int>(i+1);
+        return -1;
+    }
+
+    bool check(const Vec& q,const Vec& p,Vec& center,Vec& momentum,
+               Py_ssize_t beads,Py_ssize_t nd,Py_ssize_t step) {
+        const long long now=start+step+1;
+        if(now%interval)return false;
+        centroid(q,center,beads,nd);centroid(p,momentum,beads,nd);
+        int label=classify(center,momentum,64*std::numeric_limits<double>::epsilon()*(beads+natoms+1));
+        if(label==-2){pending_check=true;return true;}
+        if(label!=candidate){candidate=label;candidate_since=label<0 ? -1 : now;}
+        ++checks;
+        if(label>=0 && now-candidate_since>=persistence){resolved=label;return true;}
+        return false;
+    }
+
+    PyObject* result() const {
+        return Py_BuildValue("{s:i,s:L,s:i,s:L,s:O}","candidate_code",candidate,
+                             "candidate_since",candidate_since,"resolved_code",resolved,
+                             "checks",checks,"pending_check",pending_check ? Py_True : Py_False);
+    }
+};
+
 static PyObject* advance(PyObject*,PyObject* args) {
     PyObject *capsule,*binding,*qo,*po,*options,*mo,*ro,*so;
     if(!PyArg_ParseTuple(args,"OOOOOOOO",&capsule,&binding,&qo,&po,&options,&mo,&ro,&so))return nullptr;
@@ -279,10 +490,16 @@ static PyObject* advance(PyObject*,PyObject* args) {
         auto observations=cvs(field(options,"cvs"),nd);
         const Py_ssize_t width=2+2*nd+static_cast<Py_ssize_t>(observations.size());
         Buffer records(ro,product(product(rows,width),sizeof(double)),"d",true);
-        std::unique_ptr<Buffer> states;
+        std::unique_ptr<Buffer> states,previous;
         if(so!=Py_None)states=std::make_unique<Buffer>(so,product(product(product(rows,2),S),sizeof(double)),"d",true);
-        const Buffer* buffers[]={&q,&p,&mask,&records,states.get()};
-        for(int i=0;i<5;++i)for(int j=i+1;j<5;++j)if(buffers[i]&&buffers[j]&&overlap(*buffers[i],*buffers[j]))throw std::invalid_argument("native buffers must not overlap");
+        auto* previous_obj=PyDict_GetItemString(options,"previous");
+        if(previous_obj && previous_obj!=Py_None)
+            previous=std::make_unique<Buffer>(previous_obj,product(product(2,S),sizeof(double)),"d",true);
+        const Buffer* buffers[]={&q,&p,&mask,&records,states.get(),previous.get()};
+        for(int i=0;i<6;++i)for(int j=i+1;j<6;++j)if(buffers[i]&&buffers[j]&&overlap(*buffers[i],*buffers[j]))throw std::invalid_argument("native buffers must not overlap");
+        std::unique_ptr<Outcome> outcome;
+        auto* outcome_obj=PyDict_GetItemString(options,"outcome");
+        if(outcome_obj && outcome_obj!=Py_None)outcome=std::make_unique<Outcome>(outcome_obj,nd/3,steps);
         PES pes(binding,*c);
         PyRef bs(PySequence_Fast(field(options,"biases"),"biases must be a sequence"));std::vector<Bias> biases;
         for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(bs.p);++i)biases.emplace_back(PySequence_Fast_GET_ITEM(bs.p,i),nd);
@@ -298,10 +515,24 @@ static PyObject* advance(PyObject*,PyObject* args) {
             if(!(total>0))throw std::invalid_argument("empty native fragment");
             fragments.push_back(std::move(frag));}
         if(constraint && !fragments.empty())throw std::invalid_argument("combined centroid constraints are unsupported");
+        auto* reuse_obj=PyDict_GetItemString(options,"reuse_forces");
+        int reuse=reuse_obj ? PyObject_IsTrue(reuse_obj) : 0;
+        if(reuse<0)throw std::invalid_argument("invalid reuse_forces option");
+        // The opt-in cache is local to this call and restricted to ordinary
+        // stateless PES dynamics. Projection, constraint and bias semantics
+        // retain their reference evaluation schedule.
+        const bool reuse_forces=reuse && !constraint && fragments.empty() && biases.empty();
+        bool force_valid=false;
         Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),forces(S),free_q(S);
         if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");
         Py_ssize_t completed=0,written=0;std::string failure;
-        auto evaluate=[&](const Vec& x){pes.evaluate(x);forces=pes.force;centroid(x,center,P,nd);double eb=0;for(const auto& b:biases)eb+=b.add(x,center,forces,*c,beta);if(!std::isfinite(eb)||!finite(forces))throw std::runtime_error("nonfinite biased forces/energy");return eb;};
+        double previous_clock=clock;
+        auto evaluate=[&](const Vec& x){pes.evaluate(x);forces=pes.force;
+            if(!biases.empty())centroid(x,center,P,nd);
+            double eb=0;for(const auto& b:biases)eb+=b.add(x,center,forces,*c,beta);
+            if(!std::isfinite(eb)||!finite(forces))throw std::runtime_error("nonfinite biased forces/energy");
+            return eb;
+        };
         {
             ReleaseGIL release;
             for(Py_ssize_t step=0;step<steps;++step) {
@@ -309,7 +540,8 @@ static PyObject* advance(PyObject*,PyObject* args) {
                     trial_q=current_q;trial_p=current_p;
                     std::unique_ptr<Diff> old_normal;
                     if(constraint){centroid(trial_q,center,P,nd);old_normal=std::make_unique<Diff>(constraint->eval(center.data()));metric(*old_normal,*c);if(std::abs(old_normal->v)>std::max(1e-8,10*tolerance))throw std::runtime_error("parent state is not on dividing surface");}
-                    evaluate(trial_q);kick(trial_p,forces,*c);project(trial_q,trial_p,fragments,*c);
+                    if(!force_valid)evaluate(trial_q);
+                    kick(trial_p,forces,*c);project(trial_q,trial_p,fragments,*c);
                     c->propagate(trial_q.data(),trial_p.data(),work.data());project(trial_q,trial_p,fragments,*c);
                     if(constraint){free_q=trial_q;double lambda=0;bool converged=false;
                         for(int iteration=0;iteration<50;++iteration){centroid(trial_q,center,P,nd);auto d=constraint->eval(center.data());metric(d,*c);if(std::abs(d.v)<tolerance){converged=true;break;}
@@ -337,10 +569,30 @@ static PyObject* advance(PyObject*,PyObject* args) {
                         if(states){auto* dest=states->doubles()+written*2*S;std::copy(trial_q.begin(),trial_q.end(),dest);std::copy(trial_p.begin(),trial_p.end(),dest+S);}
                     }
                     if(!std::isfinite(clock+c->dt))throw std::runtime_error("nonfinite integration clock");
+                    bool resolved=outcome && outcome->check(trial_q,trial_p,center,pc,P,nd,step);
+                    previous_clock=clock;
                     current_q.swap(trial_q);current_p.swap(trial_p);++completed;if(observed[step])++written;clock+=c->dt;
+                    force_valid=reuse_forces;
+                    if(resolved)break;
                 } catch(const std::exception& e){failure=e.what();break;}
             }
+            // After a successful final swap, trial_q/p still hold the state
+            // immediately before that accepted step. One copy is sufficient
+            // for a Python classifier's final-step rollback.
+            if(previous && completed && failure.empty()){
+                std::copy(trial_q.begin(),trial_q.end(),previous->doubles());
+                std::copy(trial_p.begin(),trial_p.end(),previous->doubles()+S);
+            }
             std::copy(current_q.begin(),current_q.end(),q.doubles());std::copy(current_p.begin(),current_p.end(),p.doubles());
+        }
+        if(outcome || previous){
+            auto* result=outcome ? outcome->result() : PyDict_New();if(!result)return nullptr;
+            if(previous && completed && failure.empty()){
+                auto* value=PyFloat_FromDouble(previous_clock);
+                if(!value || PyDict_SetItemString(result,"previous_time",value)<0){Py_XDECREF(value);Py_DECREF(result);return nullptr;}
+                Py_DECREF(value);
+            }
+            return Py_BuildValue("nndsN",completed,written,clock,failure.c_str(),result);
         }
         return Py_BuildValue("nnds",completed,written,clock,failure.c_str());
     } catch(const std::bad_alloc&) {return PyErr_NoMemory();}
