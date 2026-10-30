@@ -19,6 +19,7 @@ from ..analysis.fes import (
     umbrella_integration,
     statistical_inefficiency,
     _block_resample,
+    _bootstrap_block_plan,
 )
 from ..constants import AU_RATE_TO_CM3_S, ATOMIC_TIME_S
 from ..cv import RPMDrateCoordinate
@@ -604,13 +605,15 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
     barrier = float(np.interp(xi, grid, curve) - curve[0])
     connected = bool(sampled["data"]["connected"])
     gs = np.asarray(sampled["data"]["statistical_inefficiency"])
+    block_plan = _bootstrap_block_plan(np.asarray([len(s) for s in samples]), gs)
     rng = np.random.default_rng(np.random.SeedSequence([options["analysis_seed"], 401]))
     barriers, curves, records, endpoints, failures = [], [], [], [], []
     if connected:
         for draw in range(options["bootstrap"]):
             record = {"draw": draw, "valid": False, "reason": None}
             draws = [
-                _block_resample(s, int(np.ceil(g)), rng) for s, g in zip(samples, gs)
+                _block_resample(s, block, rng)
+                for s, block in zip(samples, block_plan["block_lengths"])
             ]
             try:
                 fb, _ = umbrella_integration(
@@ -640,6 +643,9 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         if len(curves) >= 2
         else np.full_like(curve, np.nan)
     )
+    if block_plan["status"] == "unavailable":
+        barrier_error = None
+        standard_error[:] = np.nan
     empirical = {
         "reference": _histogram_endpoint_support(sampled["data"], 0.0),
         "dividing_surface": _histogram_endpoint_support(sampled["data"], xi),
@@ -647,6 +653,7 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
     warnings = [
         "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR."
     ]
+    warnings.extend(block_plan["warnings"])
     if not all(point["supported"] for point in empirical.values()):
         warnings.append(
             "A Gaussian UI endpoint lacks observed histogram support; the model value is not an interpolation of measured supported bins."
@@ -672,7 +679,7 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         "barrier_standard_error_hartree": barrier_error,
         "barrier_percentile_95_ci_hartree": (
             np.quantile(barriers, [0.025, 0.975]).tolist()
-            if len(barriers) >= 2
+            if len(barriers) >= 2 and block_plan["status"] != "unavailable"
             else None
         ),
         "pmf_bootstrap_barriers": barriers,
@@ -707,7 +714,8 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
             "draws": records,
             "surface_held_fixed": True,
             "skipped_reason": None if connected else "disconnected_overlap",
-            "block_lengths": np.ceil(gs).astype(int),
+            "block_lengths": block_plan["block_lengths"],
+            "block_plan": block_plan,
             "endpoint_values_hartree": np.asarray(endpoints).reshape(-1, 2),
             "endpoint_covariance_hartree_squared": (
                 np.cov(np.asarray(endpoints).T, ddof=1) if len(endpoints) >= 2 else None
@@ -884,13 +892,18 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
             diagnostics[key] = estimate[key]
     diagnostics["uncertainty"] = {
         "available": estimate["barrier_standard_error_hartree"] is not None,
+        "block_status": estimate.get("bootstrap", {}).get("block_plan", {}).get("status"),
         "reason": (
             None
             if estimate["barrier_standard_error_hartree"] is not None
             else (
                 "bootstrap_disabled"
                 if pmf_options["bootstrap"] == 0
-                else "fewer_than_two_valid_bootstrap_draws"
+                else (
+                    "insufficient_correlated_blocks"
+                    if estimate.get("bootstrap", {}).get("block_plan", {}).get("status") == "unavailable"
+                    else "fewer_than_two_valid_bootstrap_draws"
+                )
             )
         ),
         "surface_held_fixed": True,
@@ -1078,6 +1091,12 @@ def _aggregate(children, pmf, config, output, options):
     if len(boots) < 2:
         uncertainty_reasons.append("fewer_than_two_valid_recrossing_bootstrap_draws")
     pmf_bootstrap = pmf.get("bootstrap", {})
+    pmf_block_status = pmf_bootstrap.get("block_plan", {}).get("status")
+    if pmf_block_status in ("limited_blocks", "unavailable"):
+        uncertainty_reasons.append("pmf_bootstrap_" + pmf_block_status)
+    if pmf_block_status == "unavailable":
+        error = None
+        supported_draw_error = None
     rejected_pmf_draws = max(0, pmf_bootstrap.get("attempted", 0) - pmf_bootstrap.get("valid", 0))
     if is_surface and rejected_pmf_draws:
         uncertainty_reasons.append("pmf_bootstrap_contains_unsupported_draws")
@@ -1106,7 +1125,8 @@ def _aggregate(children, pmf, config, output, options):
     warnings = list(pmf["warnings"])
     if uncertainty_reasons:
         warnings.append(
-            "Complete rate uncertainty is unavailable: "
+            ("Complete rate uncertainty is unavailable: " if error is None
+             else "Complete rate uncertainty has limited support: ")
             + "; ".join(uncertainty_reasons)
             + ". Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
         )
@@ -1156,12 +1176,13 @@ def _aggregate(children, pmf, config, output, options):
         "rate_standard_error_" + unit_key: error,
         "rate_percentile_95_ci_" + unit_key: (
             np.quantile(total_boot, [0.025, 0.975]).tolist()
-            if len(total_boot) >= 2 and not (is_surface and rejected_pmf_draws)
+            if error is not None
             else None
         ),
         "conditional_rate_standard_error_" + unit_key: conditional_error,
         "rate_uncertainty": {
             "available": error is not None,
+            "pmf_block_status": pmf_block_status,
             "reasons": uncertainty_reasons,
             "pmf_bootstrap_valid": len(pmf_draws),
             "recrossing_bootstrap_valid": len(boots),
@@ -1206,7 +1227,8 @@ def _aggregate(children, pmf, config, output, options):
         if rejected_pmf_draws:
             result["supported_draw_rate_standard_error_s_inv"] = supported_draw_error
             result["supported_draw_rate_percentile_95_ci_s_inv"] = (
-                np.quantile(total_boot, [0.025, 0.975]).tolist() if len(total_boot) >= 2 else None
+                np.quantile(total_boot, [0.025, 0.975]).tolist()
+                if supported_draw_error is not None else None
             )
             result["rate_uncertainty"]["supported_draw_condition"] = "conditional on the bootstrap draw having complete basin-to-surface support"
     write_json(Path(output) / "summary.json", result)

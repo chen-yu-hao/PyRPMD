@@ -577,6 +577,8 @@ def _write_fes(output, data, streams, cv, config):
         comments="",
     )
     warnings = list(config.get("_warnings", []))
+    if data.get("bootstrap_requested", 0):
+        warnings.extend(data.get("bootstrap_block_plan", {}).get("warnings", []))
     if not data["connected"]:
         warnings.append(
             "Disconnected umbrella overlap: global FES is unidentifiable and masked."
@@ -588,6 +590,15 @@ def _write_fes(output, data, streams, cv, config):
     if np.any(data["mask"]):
         warnings.append(
             "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+        )
+    if data.get("bootstrap_attempted", 0) > data["bootstrap_replicates"]:
+        warnings.append(
+            "Some bootstrap draws failed; inspect bootstrap_diagnostics and per-bin valid counts."
+        )
+    if (data.get("bootstrap_requested", 0) and data["connected"]
+            and np.any((~data["mask"]) & (data["bootstrap_valid_per_bin"] < 2))):
+        warnings.append(
+            "Some supported bins have fewer than two valid bootstrap draws; their errors are unavailable."
         )
     summary = {
         "task": "fes",
@@ -605,6 +616,11 @@ def _write_fes(output, data, streams, cv, config):
         "weight_effective_samples": data["weight_ess"],
         "effective_samples_per_stream": data["effective_samples_per_stream"],
         "bootstrap_replicates": data["bootstrap_replicates"],
+        "bootstrap_requested": data.get("bootstrap_requested", 0),
+        "bootstrap_attempted": data.get("bootstrap_attempted", 0),
+        "bootstrap_reference_bin": data.get("bootstrap_reference_bin"),
+        "bootstrap_diagnostics": data.get("bootstrap_diagnostics", []),
+        "bootstrap_block_plan": data.get("bootstrap_block_plan", {}),
         "warnings": warnings,
         "converged": False,
         "convergence_note": "Overlap and bootstrap diagnose these samples; bead, timestep and sampling convergence require separate runs.",

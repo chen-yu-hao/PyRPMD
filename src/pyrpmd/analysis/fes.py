@@ -297,7 +297,7 @@ def _histogram(x, weights, edges, beta, min_count=1):
         shape[d] = len(e) - 1
         volumes *= np.diff(e).reshape(shape)
     density = mass / volumes
-    mask = (count < min_count) | (mass <= 0)
+    mask = (count < min_count) | (mass <= 0) | ~np.isfinite(density) | (density <= 0)
     f = np.full_like(mass, np.nan)
     f[~mask] = -np.log(density[~mask]) / beta
     if np.any(~mask):
@@ -311,6 +311,61 @@ def _block_resample(x, block, rng):
     starts = rng.integers(0, n, size=int(np.ceil(n / block)))
     ix = np.concatenate([(s + np.arange(block)) % n for s in starts])[:n]
     return x[ix]
+
+
+def _bootstrap_block_plan(counts, inefficiencies):
+    """Choose correlation blocks and expose when their errors are unreliable.
+
+    A block of just g points truncates a substantial part of the covariance
+    sum (about 40% for a long AR(1) stream). Five g is a conservative default,
+    not a proof of mixing. The n//2 cap avoids resampling a single circular
+    block that only rotates the original data and falsely gives zero error.
+    Short or capped streams remain explicitly qualified in the diagnostics.
+    """
+    raw_counts = np.asarray(counts)
+    gs = np.asarray(inefficiencies, float)
+    if (
+        raw_counts.ndim != 1
+        or not len(raw_counts)
+        or raw_counts.dtype.kind not in "iu"
+        or np.any(raw_counts < 1)
+        or gs.shape != raw_counts.shape
+        or not np.isfinite(gs).all()
+        or np.any(gs < 1)
+    ):
+        raise ValueError("bootstrap counts and inefficiencies must be finite positive vectors")
+    counts = raw_counts.astype(int)
+    requested = np.ceil(5.0 * gs).astype(int)
+    used = np.minimum(requested, np.maximum(1, counts // 2))
+    capped = used < requested
+    blocks = counts / used
+    unavailable = bool(np.any(counts < 4) or np.any(gs >= counts))
+    limited = bool(np.any(capped) or np.any(blocks < 20))
+    status = "unavailable" if unavailable else (
+        "limited_blocks" if limited else "finite_block_estimate"
+    )
+    warnings = []
+    if unavailable:
+        warnings.append(
+            "Bootstrap uncertainty is unavailable: a stream has fewer than four points "
+            "or no resolved independent variation. More sampling is required."
+        )
+    elif limited:
+        warnings.append(
+            "Bootstrap uncertainty has limited block support: some streams have fewer "
+            "than 20 blocks or the requested 5*g length was capped at half the stream. "
+            "The reported error is a finite-sample diagnostic, not a reliable interval."
+        )
+    return {
+        "policy": "ceil(5*g), capped at max(1, floor(N/2))",
+        "requested_block_lengths": requested,
+        "block_lengths": used,
+        "block_length_capped": capped,
+        "blocks_per_stream": blocks,
+        "status": status,
+        "warnings": warnings,
+        "mixing_established": False,
+    }
 
 
 def reconstruct_fes(
@@ -332,6 +387,12 @@ def reconstruct_fes(
     each window/replica. No unsupported region is filled by interpolation.
     Disconnected overlap components are reported; a single global FES is then
     masked because its relative offset is not identifiable.
+
+    Periodic samples are wrapped into the histogram's coordinate convention;
+    adding an integer number of periods cannot change the surface. A periodic
+    axis defaults to [-period/2, period/2] and may cover at most one period.
+    The error is relative to the original minimum bin, which is held fixed in
+    every bootstrap draw. Per-bin valid-draw counts expose missing support.
     """
     arrays = [np.asarray(a, float) for a in samples]
     if not arrays or any(a.ndim != 2 or not len(a) for a in arrays):
@@ -342,23 +403,36 @@ def reconstruct_fes(
     ):
         raise ValueError("FES supports finite one- or two-dimensional samples")
     centers = np.asarray(centers, float)
-    if centers.shape != (len(arrays), d):
-        raise ValueError("one center per sampling stream required")
+    if centers.shape != (len(arrays), d) or not np.isfinite(centers).all():
+        raise ValueError("one finite center per sampling stream required")
     k = np.asarray(stiffness, float)
     if k.ndim == 2:
         k = np.broadcast_to(k, (len(arrays), d, d))
-    if k.shape != (len(arrays), d, d):
-        raise ValueError("stiffness shape mismatch")
+    if k.shape != (len(arrays), d, d) or not np.isfinite(k).all():
+        raise ValueError("stiffness must be finite with one [D,D] matrix per stream")
     if any(not np.allclose(a, a.T) or np.linalg.eigvalsh(a).min() <= 0 for a in k):
         raise ValueError("all umbrella matrices must be symmetric positive definite")
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("beta must be positive")
     if (
-        isinstance(min_count, bool)
+        isinstance(min_count, (bool, np.bool_))
         or not isinstance(min_count, (int, np.integer))
         or min_count < 1
     ):
         raise ValueError("min_count must be a positive integer")
+    if (
+        isinstance(bootstrap, (bool, np.bool_))
+        or not isinstance(bootstrap, (int, np.integer))
+        or bootstrap < 0
+        or bootstrap == 1
+    ):
+        raise ValueError("bootstrap must be integer zero or >=2")
+    periods = (None,) * d if periods is None else tuple(periods)
+    if len(periods) != d or any(
+        p is not None and (not np.isscalar(p) or not np.isfinite(p) or p <= 0)
+        for p in periods
+    ):
+        raise ValueError("periods must contain one positive finite number or None per CV")
     x = np.concatenate(arrays)
     counts = np.array([len(a) for a in arrays])
     if np.isscalar(bins):
@@ -366,13 +440,20 @@ def reconstruct_fes(
     if len(bins) != d:
         raise ValueError("bins must have one entry per CV")
     if ranges is None:
-        ranges = [(float(x[:, j].min()), float(x[:, j].max())) for j in range(d)]
+        ranges = [
+            (-p / 2, p / 2) if p is not None
+            else (float(x[:, j].min()), float(x[:, j].max()))
+            for j, p in enumerate(periods)
+        ]
+    bounds = np.asarray(ranges, float)
+    if bounds.shape != (d, 2) or not np.isfinite(bounds).all():
+        raise ValueError("ranges must contain finite [lower,upper] limits per CV")
     edges = []
     for j, b in enumerate(bins):
         if np.isscalar(b):
-            lo, hi = ranges[j]
+            lo, hi = bounds[j]
             if (
-                isinstance(b, bool)
+                isinstance(b, (bool, np.bool_))
                 or not isinstance(b, (int, np.integer))
                 or b < 2
                 or not hi > lo
@@ -381,9 +462,21 @@ def reconstruct_fes(
             edges.append(np.linspace(lo, hi, int(b) + 1))
         else:
             edge = np.asarray(b, float)
-            if edge.ndim != 1 or len(edge) < 3 or np.any(np.diff(edge) <= 0):
+            if (edge.ndim != 1 or len(edge) < 3 or not np.isfinite(edge).all()
+                    or np.any(np.diff(edge) <= 0)):
                 raise ValueError("invalid bin edges")
             edges.append(edge)
+    if any(p is not None for p in periods):
+        arrays = [a.copy() for a in arrays]
+        for j, p in enumerate(periods):
+            if p is None:
+                continue
+            lo, hi = edges[j][0], edges[j][-1]
+            if hi - lo > p and not np.isclose(hi - lo, p, rtol=1e-10, atol=1e-12):
+                raise ValueError("a periodic FES axis may span at most one period")
+            for a in arrays:
+                a[:, j] = (a[:, j] - lo) % p + lo
+        x = np.concatenate(arrays)
     u = umbrella_reduced_potentials(x, centers, k, beta, periods)
     mbar = solve_mbar(u, counts, overlap_threshold=overlap_threshold)
     if not mbar.converged:
@@ -391,23 +484,33 @@ def reconstruct_fes(
             f"MBAR did not converge; equation residual={mbar.residual:g}"
         )
     mass, density, count, f, mask = _histogram(x, mbar.weights, edges, beta, min_count)
-    gs = np.array([statistical_inefficiency(a) for a in arrays])
+    def stream_inefficiency(a):
+        # Raw angles depend on the arbitrary branch cut. Circular observables
+        # preserve the correlation diagnostic under integer-period shifts.
+        observables = []
+        for j, p in enumerate(periods):
+            if p is None:
+                observables.append(a[:, j])
+            else:
+                angle = 2 * np.pi * a[:, j] / p
+                observables.extend((np.sin(angle), np.cos(angle)))
+        return statistical_inefficiency(np.column_stack(observables))
+
+    gs = np.array([stream_inefficiency(a) for a in arrays])
+    block_plan = _bootstrap_block_plan(counts, gs)
     se = np.full_like(f, np.nan)
     connected = len(set(mbar.components)) == 1
     boots = []
-    if (
-        isinstance(bootstrap, bool)
-        or not isinstance(bootstrap, (int, np.integer))
-        or bootstrap < 0
-        or bootstrap == 1
-    ):
-        raise ValueError("bootstrap must be integer zero or >=2")
+    records = []
+    valid = np.zeros(f.shape, dtype=int)
+    ref = None
     if connected and bootstrap and np.any(~mask):
         rng = np.random.default_rng(seed)
         ref = np.unravel_index(np.nanargmin(f), f.shape)
-        for _ in range(int(bootstrap)):
+        for draw in range(int(bootstrap)):
             draws = [
-                _block_resample(a, int(np.ceil(g)), rng) for a, g in zip(arrays, gs)
+                _block_resample(a, block, rng)
+                for a, block in zip(arrays, block_plan["block_lengths"])
             ]
             xb = np.concatenate(draws)
             ub = umbrella_reduced_potentials(xb, centers, k, beta, periods)
@@ -417,14 +520,25 @@ def reconstruct_fes(
                 overlap_threshold=overlap_threshold,
                 initial_free_energies=mbar.free_energies,
             )
-            if not mb.converged or len(set(mb.components)) > 1:
+            record = {"draw": draw, "valid": False, "reason": None,
+                      "solver_residual": mb.residual}
+            records.append(record)
+            if not mb.converged:
+                record["reason"] = "mbar_not_converged"
+                continue
+            if len(set(mb.components)) > 1:
+                record["reason"] = "disconnected_overlap"
                 continue
             _, _, _, fb, _ = _histogram(xb, mb.weights, edges, beta, min_count)
             if np.isfinite(fb[ref]):
                 boots.append(fb - fb[ref])
-        if len(boots) >= 2:
+                record["valid"] = True
+            else:
+                record["reason"] = "reference_bin_masked"
+        if boots:
             b = np.asarray(boots)
             valid = np.isfinite(b).sum(axis=0)
+        if len(boots) >= 2:
             means = np.divide(
                 np.nansum(b, axis=0), valid, out=np.zeros_like(f), where=valid > 0
             )
@@ -434,6 +548,12 @@ def reconstruct_fes(
                 out=se,
                 where=valid > 1,
             )
+    # Resampling can promote an originally undersampled bin past min_count.
+    # Such a conditional error is not evidence supporting the masked estimate.
+    se[mask] = np.nan
+    valid[mask] = 0
+    if block_plan["status"] == "unavailable":
+        se[:] = np.nan
     if not connected:
         # Conditional component surfaces may be reconstructed separately, but
         # displaying arbitrary offsets as one FES would be scientifically wrong.
@@ -457,6 +577,12 @@ def reconstruct_fes(
         "effective_samples_per_stream": counts / gs,
         "weight_ess": ess,
         "bootstrap_replicates": len(boots),
+        "bootstrap_requested": int(bootstrap),
+        "bootstrap_attempted": len(records),
+        "bootstrap_valid_per_bin": valid,
+        "bootstrap_reference_bin": None if ref is None else np.asarray(ref),
+        "bootstrap_diagnostics": records,
+        "bootstrap_block_plan": block_plan,
         "weights": mbar.weights,
         "measure": "cv_density",
         "energy_unit": "hartree",
@@ -718,7 +844,9 @@ def mbar_rate_pmf(
         free[:] = np.nan
         mask[:] = True
     gs = np.asarray([statistical_inefficiency(a) for a in arrays])
-    blocks = np.minimum(counts, np.ceil(gs).astype(int))
+    block_plan = _bootstrap_block_plan(counts, gs)
+    blocks = block_plan["block_lengths"]
+    warnings.extend(block_plan["warnings"])
     moments = []
     for i, a in enumerate(arrays):
         mean, std = float(a.mean()), float(a.std())
@@ -786,7 +914,7 @@ def mbar_rate_pmf(
                 xi=ui_grid,
                 free_energy=ui_curve - np.interp(reference, ui_grid, ui_curve),
             )
-        except ValueError as exc:
+        except (ValueError, FloatingPointError) as exc:
             ui["reason"] = "ui_fit_failed: " + str(exc)
     draws, endpoints, curves, records, failures = [], [], [], [], []
     ui_draws, paired_mbar, differences, ui_failures = [], [], [], []
@@ -857,7 +985,7 @@ def mbar_rate_pmf(
                                 paired_mbar.append(b)
                                 differences.append(b - uv)
                                 record["ui_barrier_hartree"] = uv
-                            except ValueError as exc:
+                            except (ValueError, FloatingPointError) as exc:
                                 ui_failures.append(
                                     {
                                         "draw": draw,
@@ -893,6 +1021,10 @@ def mbar_rate_pmf(
         )
         curve_se = np.sqrt(variance)
     stats = _rate_draw_statistics(draws)
+    if block_plan["status"] == "unavailable":
+        stats["standard_error_hartree"] = None
+        stats["percentile_95_ci_hartree"] = None
+        curve_se[:] = np.nan
     failure_counts = {}
     for failure in failures:
         failure_counts[failure["reason"]] = failure_counts.get(failure["reason"], 0) + 1
@@ -921,6 +1053,10 @@ def mbar_rate_pmf(
         ui_barrier_statistics=_rate_draw_statistics(ui_draws),
         failures=ui_failures,
     )
+    if block_plan["status"] == "unavailable":
+        for key in ("paired_difference_statistics", "ui_barrier_statistics"):
+            ui[key]["standard_error_hartree"] = None
+            ui[key]["percentile_95_ci_hartree"] = None
     return {
         "ready": ready,
         "status": "ready" if ready else reason,
@@ -979,6 +1115,7 @@ def mbar_rate_pmf(
             "curve_valid_draws": curve_valid,
             "surface_held_fixed": True,
             "block_lengths": blocks,
+            "block_plan": block_plan,
         },
         "ui_comparison": ui,
         "warnings": warnings,
@@ -996,20 +1133,46 @@ def umbrella_integration(samples, centers, kappa, beta, grid):
     Copyright (c) 2012 Allen, Green, Suleimanov, MIT. Gaussian-window
     approximation is explicit; MBAR overlap must be inspected separately.
     """
-    arrays = [np.asarray(a, float).reshape(-1) for a in samples]
-    means = np.array([x.mean() for x in arrays])
-    variances = np.array([x.var() for x in arrays])
-    if np.any(variances <= 1e-20):
-        raise ValueError("zero-variance umbrella stream")
-    centers = np.asarray(centers, float).reshape(-1)
-    kappa = np.asarray(kappa, float).reshape(-1)
+    arrays = []
+    for sample in samples:
+        a = np.asarray(sample, float)
+        if a.ndim == 2 and a.shape[1] == 1:
+            a = a[:, 0]
+        if a.ndim != 1 or len(a) < 2 or not np.isfinite(a).all():
+            raise ValueError("UI samples must be finite scalar streams with >=2 points")
+        arrays.append(a)
+    if not arrays:
+        raise ValueError("at least one umbrella stream is required")
+    if np.ndim(beta) != 0 or not np.isfinite(beta) or beta <= 0:
+        raise ValueError("UI beta must be finite and positive")
+    centers = np.asarray(centers, float)
+    if centers.shape not in ((len(arrays),), (len(arrays), 1)):
+        raise ValueError("one scalar center per umbrella stream is required")
+    centers = centers.reshape(-1)
+    kappa = np.asarray(kappa, float)
+    if kappa.size == 1 and kappa.ndim <= 2:
+        kappa = np.full(len(arrays), float(kappa.reshape(-1)[0]))
+    elif kappa.shape in ((len(arrays),), (len(arrays), 1)):
+        kappa = kappa.reshape(-1)
+    else:
+        raise ValueError("UI kappa must be scalar or one scalar per stream")
     grid = np.asarray(grid, float)
     if (
-        len(centers) != len(arrays)
-        or len(kappa) != len(arrays)
+        not np.isfinite(centers).all()
+        or not np.isfinite(kappa).all()
+        or np.any(kappa <= 0)
+        or grid.ndim != 1
+        or len(grid) < 2
+        or not np.isfinite(grid).all()
         or np.any(np.diff(grid) <= 0)
     ):
-        raise ValueError("invalid umbrella integration shapes or grid")
+        raise ValueError("invalid umbrella centers, stiffness, or increasing UI grid")
+    means = np.array([x.mean() for x in arrays])
+    variances = np.array([x.var() for x in arrays])
+    # An absolute variance cutoff depends on the chosen CV unit: the same
+    # physical distribution must remain valid after a linear coordinate change.
+    if not np.isfinite(variances).all() or np.any(variances <= 0):
+        raise ValueError("zero/nonfinite-variance umbrella stream")
     logs = (
         np.log([len(x) for x in arrays])[None]
         - 0.5 * np.log(2 * np.pi * variances)[None]
@@ -1023,4 +1186,6 @@ def umbrella_integration(samples, centers, kappa, beta, grid):
     f = np.zeros_like(grid)
     f[1:] = np.cumsum(0.5 * np.diff(grid) * (derivative[:-1] + derivative[1:]))
     f -= f.min()
+    if not np.isfinite(f).all() or not np.isfinite(derivative).all():
+        raise FloatingPointError("nonfinite Gaussian UI curve")
     return f, derivative
