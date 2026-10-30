@@ -1,0 +1,53 @@
+name: Electrode constant-potential validation
+
+on:
+  pull_request:
+    paths:
+      - 'src/pyrpmd/electrochemistry/**'
+      - 'src/pyrpmd/potentials/python.py'
+      - 'examples/electrochemistry/**'
+      - 'tests/test_electrochemistry*'
+      - '.github/workflows/electrochemistry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  electrode:
+    runs-on: ubuntu-latest
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test]'
+      - name: Independent model and integration tests
+        run: |
+          mkdir -p runs/electrode-validation
+          python -m pytest -q tests/test_electrochemistry_*.py \
+            --junitxml=runs/electrode-validation/tests.xml
+      - name: Existing FES CLI with the adiabatic electrode adapter
+        run: |
+          pyrpmd validate examples/electrochemistry/fes2d.inp --check-pes \
+            > runs/electrode-validation/prepare.json
+          pyrpmd run examples/electrochemistry/fes2d.inp \
+            --output runs/electrode-validation/fes \
+            > runs/electrode-validation/fes-summary.json
+          pyrpmd resume runs/electrode-validation/fes \
+            > runs/electrode-validation/resume-summary.json
+      - name: Shared-number sampling and HER postprocessing examples
+        run: |
+          python examples/electrochemistry/sample_grand_canonical.py \
+            > runs/electrode-validation/shared-number.json
+          python examples/electrochemistry/her_scan.py \
+            > runs/electrode-validation/her.csv
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: electrode-validation
+          path: runs/electrode-validation
+          if-no-files-found: error

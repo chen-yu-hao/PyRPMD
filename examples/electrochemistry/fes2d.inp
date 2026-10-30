@@ -1,0 +1,72 @@
+# Small software pilot on a per-frame adiabatic grand-potential model.
+# This is not a calibrated Pt/water PES or a converged reaction free-energy map.
+task = "fes"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 412
+
+[system]
+symbols = ["H", "Pt", "Pt", "Pt", "Pt"]
+# The slab is fixed; its nominal masses do not affect the mobile H dynamics.
+masses_amu = [1.00782503223, 195.0, 195.0, 195.0, 195.0]
+geometry = [[0.0, 0.0, 3.0], [-1.5, -1.5, 0.0], [1.5, -1.5, 0.0], [-1.5, 1.5, 0.0], [1.5, 1.5, 0.0]]
+geometry_unit = "bohr"
+cell = [[6.0, 0.0, 0.0], [0.0, 6.0, 0.0], [0.0, 0.0, 20.0]]
+cell_unit = "bohr"
+pbc = [true, true, false]
+fixed_atoms = [1, 2, 3, 4]
+
+[potential]
+provider = "python"
+factory = "pyrpmd.electrochemistry:build_adiabatic_electrode"
+
+[potential.params]
+electron_bounds = [-4.0, 4.0]
+
+[potential.params.model]
+factory = "toy_electrode.py:build"
+
+[potential.params.reservoir]
+potential_V = -0.2
+reference_potential_V = 0.0
+chemical_potential_at_reference_au = 0.0
+potential_reference = "model-U0 (not calibrated to SHE)"
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 100
+production_steps = 400
+interval_steps = 5
+andersen_interval = 10
+replicas = 1
+
+[[cvs]]
+name = "migration"
+kind = "surface_lateral"
+atoms = [0]
+reference_atoms = [1, 2, 3, 4]
+direction = [1.0, 0.0, 0.0]
+
+[[cvs]]
+name = "height"
+kind = "surface_height"
+atoms = [0]
+reference_atoms = [1, 2, 3, 4]
+normal = [0.0, 0.0, 1.0]
+
+[umbrella]
+cvs = ["migration", "height"]
+grid = [{start = "-0.6 bohr", stop = "0.6 bohr", count = 3}, {start = "2.7 bohr", stop = "3.3 bohr", count = 3}]
+stiffness = ["0.01 hartree/bohr^2", "0.01 hartree/bohr^2"]
+
+[analysis]
+bins = [8, 8]
+bootstrap = 0
+min_count = 1
+
+[output]
+directory = "runs/electrode-fes"
+checkpoint_steps = 200

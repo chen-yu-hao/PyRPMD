@@ -1,0 +1,55 @@
+{
+  "model": "analytic slab, shared electron number; no material fit",
+  "ensemble": "shared_number_grand_canonical_ring_polymer",
+  "physical_time_available": false,
+  "physical_converged": false,
+  "seed": 7021,
+  "beads": 4,
+  "temperature_K": 300.0,
+  "burn_in_sweeps": 500,
+  "saved_sweeps": 2000,
+  "observables": [
+    "centroid_height_offset_bohr",
+    "electron_number"
+  ],
+  "sample_mean": [
+    0.10791637039301567,
+    0.17220531094724992
+  ],
+  "sample_covariance": [
+    [
+      0.040839335641198425,
+      0.007515729241483113
+    ],
+    [
+      0.007515729241483113,
+      0.019790261612979514
+    ]
+  ],
+  "unbounded_gaussian_mean": [
+    0.08166516039036492,
+    0.16333032078072984
+  ],
+  "unbounded_gaussian_covariance": [
+    [
+      0.05278019272427344,
+      0.010556038544854686
+    ],
+    [
+      0.010556038544854686,
+      0.021112077089709372
+    ]
+  ],
+  "reference_note": "number bounds \u00b14 are many thermal widths away; finite sampling is correlated",
+  "native_free_ring_kernel": true,
+  "sampling": {
+    "sweeps": 2500,
+    "nuclear_attempted": 2500,
+    "nuclear_accepted": 2500,
+    "electron_attempted": 5000,
+    "electron_accepted": 3011,
+    "electron_out_of_bounds": 0,
+    "nuclear_acceptance": 1.0,
+    "electron_acceptance": 0.6022
+  }
+}

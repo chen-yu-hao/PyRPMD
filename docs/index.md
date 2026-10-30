@@ -22,6 +22,7 @@ PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输�
 | 材料中一个有向位点跃迁率 | `site_rate` | [材料与表面](manual/periodic.md) |
 | 固定基底上的一个有向逃逸率 | `surface_rate` | [材料与表面](manual/periodic.md) |
 | 弱振电耦合极限的局域电化学 PCET | `pcet` | [PCET](manual/pcet.md) |
+| 恒电位有效势、电子数平衡采样与 HER 电流 | `fes` / Python API | [电极模型](manual/electrochemistry.md) |
 
 解析势示例用于学习输入、检验算法和复现程序行为。成功执行、数值检查通过与物理模型适用、
 统计及离散化收敛是不同的问题。每一章都解释结果的单位、归一化和使用边界；
@@ -57,6 +58,7 @@ manual/science
 manual/workflows
 manual/periodic
 manual/pcet
+manual/electrochemistry
 manual/nonadiabatic
 manual/potentials
 manual/execution

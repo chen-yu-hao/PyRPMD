@@ -78,6 +78,10 @@ class PythonPotential(Potential):
         self.length_factor, self.energy_factor = unit_factors(units)
         self.sign = -1 if derivative == "gradient" else 1
         self.metadata = dict(getattr(obj, "metadata", {}) or {})
+        if self.metadata.get("requires_atomic_units") is True and (
+            self.length_factor != 1 or self.energy_factor != 1 or self.sign != 1
+        ):
+            raise PotentialError("This Python provider requires atomic units and derivative='force'")
         self.metadata.setdefault("thread_safety", "context_serial")
         self.metadata.setdefault("execution_device", "cpu")
         self.cell, self.pbc = validate_cell_pbc(cell, pbc)

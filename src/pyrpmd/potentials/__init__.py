@@ -138,10 +138,18 @@ def _make_potential(config, system=None):
             obj = import_object(spec["function"])
         else:
             raise ValueError("Python PES requires factory or function")
-        return PythonPotential(
-            obj, units=spec.get("units"), derivative=spec.get("derivative", "force"),
-            cell=cell, pbc=pbc,
-        )
+        try:
+            return PythonPotential(
+                obj, units=spec.get("units"), derivative=spec.get("derivative", "force"),
+                cell=cell, pbc=pbc,
+            )
+        except BaseException:
+            # A constructed model may own a socket, accelerator or calculator.
+            # Constructor-level contract errors happen before make_potential's
+            # binding cleanup, so release factory-owned providers here too.
+            if "factory" in spec and callable(getattr(obj, "close", None)):
+                obj.close()
+            raise
     if kind in ("rpmdrate", "f2py"):
         return RPMDratePotential(
             spec.get("module", spec.get("library")),
