@@ -1,0 +1,35 @@
+name: Fused native propagation
+on:
+  workflow_dispatch:
+  push:
+    branches: ['feat/fused-native-propagation-20261030']
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile pinned real PES
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gfortran
+          python benchmarks/h3/build_pes.py
+      - name: Archive exact source and PES provenance
+        run: |
+          git archive --format=tar.gz HEAD -o pyrpmd-source.tar.gz
+          git rev-parse HEAD > source-commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fused-native-workspace
+          path: |
+            pyrpmd-source.tar.gz
+            source-commit.txt
+            benchmarks/h3/build/h3_bkmp2.f
+            benchmarks/h3/build/libbkmp2.so
+            benchmarks/h3/build/libbkmp2.build.json
+          if-no-files-found: error
