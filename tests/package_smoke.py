@@ -128,7 +128,7 @@ def main():
             },
             "potential": {"provider": "free"},
             "dynamics": {"timestep": 0.05, "integrator": scheme,
-                         "loop_backend": "native", "block_steps": 3},
+                         "loop_backend": "auto", "block_steps": 3},
             "sampling": {
                 "equilibration_steps": 4, "production_steps": 4,
                 "interval_steps": 2, "andersen_interval": 2, "parents": 1,
@@ -139,7 +139,7 @@ def main():
         }
         pyrpmd.run(job, output=directory)
         summary = json.loads((directory / "results" / "summary.json").read_text())
-        pyrpmd.resume_run(directory, execution={"loop_backend": "native", "block_steps": 7})
+        pyrpmd.resume_run(directory, execution={"loop_backend": "auto", "block_steps": 7})
         resumed = json.loads((directory / "results" / "summary.json").read_text())
         if summary != resumed:
             raise AssertionError(f"dRPMD {scheme} changed its completed result on resume")
@@ -149,13 +149,18 @@ def main():
         records = summary["records"]
         if len(records) != 2 or summary["parent_thermal_steps"] != {"0": 8}:
             raise AssertionError(f"dRPMD {scheme} did not execute the actual parent/child workflow")
-        if any(r["status"] == "failed" or r["propagation"]["native_steps"] <= 0
-               or r["propagation"]["python_steps"] != 0 for r in records):
-            raise AssertionError(f"dRPMD {scheme} did not propagate its children through the installed native kernel")
+        if any(r["status"] == "failed" or
+               r["propagation"]["native_steps"] + r["propagation"]["python_steps"] <= 0
+               for r in records):
+            raise AssertionError(f"dRPMD {scheme} did not propagate its actual children")
         drpmd_workflows[scheme] = {
             "beads": 3, "trajectories": len(records),
             "parent_thermal_steps": summary["parent_thermal_steps"],
             "child_native_steps": [r["propagation"]["native_steps"] for r in records],
+            "child_python_steps": [r["propagation"]["python_steps"] for r in records],
+            # FreePotential supplies Python forces. Auto uses the Python loop
+            # with required native substeps, not an invented fused PES binding.
+            "driver": "auto", "native_substeps": "required",
             "resume_identical": True,
         }
     report = {
