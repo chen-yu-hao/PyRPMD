@@ -1,7 +1,10 @@
 name: Native propagation validation
 on:
   push:
-    branches: [feat/native-propagation]
+    branches: [main, feat/native-propagation]
+    paths: ['native/**', 'src/**', 'tests/**', 'benchmarks/**', 'setup.py', '.github/workflows/native-fusion.yml']
+  pull_request:
+    paths: ['native/**', 'src/**', 'tests/**', 'benchmarks/**', 'setup.py', '.github/workflows/native-fusion.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,9 +13,6 @@ concurrency:
   cancel-in-progress: true
 jobs:
   fused-bkmp2:
-    if: github.ref == 'refs/heads/feat/native-propagation'
-    permissions:
-      contents: write
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
@@ -21,37 +21,22 @@ jobs:
       MKL_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Expand the hash-verified implementation patch once
+      - name: Record environment
         run: |
-          if test -f .native-patch/0.b64; then
-            python - <<'PY'
-          from pathlib import Path
-          import base64, hashlib, lzma, subprocess
-          payload = ''.join(Path(f'.native-patch/{i}.b64').read_text() for i in range(5))
-          patch = lzma.decompress(base64.b64decode(payload, validate=True))
-          assert hashlib.sha256(patch).hexdigest() == '7be462452aebda59a1e90cec9e60228a7d8575f3dcb20b16f8478ffa239c05ec'
-          expected = {'README.md', 'benchmarks/h3/fused_propagation.py', 'benchmarks/h3/pes.py', 'docs/input.md', 'docs/native-propagation.md', 'native/README.md', 'native/cayley.cpp', 'native/propagation.h', 'setup.py', 'src/pyrpmd/dynamics.py', 'src/pyrpmd/input.py', 'src/pyrpmd/potentials/cabi.py', 'src/pyrpmd/potentials/native.py', 'src/pyrpmd/potentials/python.py', 'src/pyrpmd/propagation.py', 'src/pyrpmd/workflows/drpmd.py', 'src/pyrpmd/workflows/fes.py', 'src/pyrpmd/workflows/rate.py', 'tests/test_native_propagation.py'}
-          paths = {line.split('\t', 2)[2] for line in subprocess.check_output(['git', 'apply', '--numstat', '-'], input=patch).decode().splitlines()}
-          assert paths == expected, paths
-          subprocess.run(['git', 'apply', '--check', '-'], input=patch, check=True)
-          subprocess.run(['git', 'apply', '--index', '-'], input=patch, check=True)
-          PY
-            git rm -r .native-patch
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git commit -m 'Implement fused C++17 production propagation with native PES, observations and Python fallback'
-            git push origin HEAD:feat/native-propagation
-          fi
+          mkdir -p runs/native-fusion
+          { uname -a; lscpu; gcc --version; g++ --version; gfortran --version; } > runs/native-fusion/environment.txt
       - name: Install and build
         run: |
           python -m pip install -e '.[test]'
           python benchmarks/h3/build_pes.py
       - name: Numerical and workflow regression
-        run: python -m pytest -q
-      - name: Fused propagation benchmark
+        run: python -m pytest -q --junitxml=runs/native-fusion/tests.xml
+      - name: Fused propagation benchmark and real workflow checks
         run: python benchmarks/h3/fused_propagation.py --output runs/native-fusion/report.json
       - name: Reproducible source snapshot
         if: always()
