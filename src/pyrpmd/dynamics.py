@@ -351,13 +351,16 @@ class Dynamics:
 
     def _force(self, q, bias=None):
         result = validate_result(self.potential.evaluate(q), q.shape)
+        if bias is None and not self.fixed_atoms:
+            return result.forces
         force = result.forces.copy()
         if bias is not None:
             _, extra = bias.energy_force(q)
             if np.shape(extra) != q.shape or not np.isfinite(extra).all():
                 raise ValueError("bias returned invalid forces")
             force += extra
-        force[:, self._fixed_indices, :] = 0.0
+        if self.fixed_atoms:
+            force[:, self._fixed_indices, :] = 0.0
         return force
 
     def step(self, state, bias=None):
@@ -649,4 +652,16 @@ _PILE_INTEGRATOR_METHODS = {
 }
 _PILE_DYNAMICS_METHODS = {
     name: getattr(Dynamics, name) for name in ("_project_fixed", "_check_fixed")
+}
+
+# Capture these in the defining module, before a caller can patch a class and
+# lazily import either propagation API. Native blocks bypass these methods.
+_BLOCK_DYNAMICS_METHODS = {
+    name: getattr(Dynamics, name)
+    for name in ("step", "_propagate", "_force", "energy", "_project_fragments",
+                 "_fragment_data", "_project_fixed", "_check_fixed")
+}
+_BLOCK_INTEGRATOR_METHODS = {
+    name: getattr(CayleyIntegrator, name)
+    for name in ("free_step", "kick", "_fourier_step", "spring_force", "_check")
 }

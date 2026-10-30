@@ -103,8 +103,8 @@ def cv_descriptors(cv, natoms):
     if cv is None:
         return []
     if type(cv) is cv_module.CVStack:
-        if any(k in cv.__dict__ for k in ("value", "value_and_jacobian")):
-            raise NotNative("CVStack evaluation is overridden")
+        from .propagation import _check_cv_methods
+        _check_cv_methods(cv)
         return [cv_descriptor(c, natoms) for c in cv.cvs]
     return [cv_descriptor(cv, natoms)]
 
@@ -112,8 +112,8 @@ def cv_descriptors(cv, natoms):
 def bias_descriptors(bias, dynamics):
     if bias is None:
         return []
-    if "energy_force" in getattr(bias, "__dict__", {}):
-        raise NotNative("bias evaluation is overridden")
+    from .propagation import _check_bias_methods
+    _check_bias_methods(bias)
     if type(bias) is CompositeBias:
         return [d for part in bias.biases for d in bias_descriptors(part, dynamics)]
     if type(bias) is UmbrellaBias:

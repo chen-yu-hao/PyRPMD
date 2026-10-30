@@ -105,7 +105,6 @@ def _make_potential(config, system=None):
     spec = dict(config)
     kind = spec.get("provider", spec.get("type", "builtin"))
     params = dict(spec.get("params", {}))
-    validate_periodic_spec(spec, system)
 
     if kind in ("builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"):
         model = spec.get(

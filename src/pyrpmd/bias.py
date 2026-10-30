@@ -91,6 +91,11 @@ class CompositeBias:
         return energy, force
 
 
+_BUILTIN_BIAS_METHODS = {
+    cls: cls.energy_force for cls in (UmbrellaBias, FluxMetricBias, CompositeBias)
+}
+
+
 class MetadynamicsBias:
     """History-dependent standard or well-tempered metadynamics in CV space.
 

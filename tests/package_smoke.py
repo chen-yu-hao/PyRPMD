@@ -16,8 +16,78 @@ from pathlib import Path
 import platform
 import subprocess
 import sys
+from unittest.mock import patch
 
 import numpy as np
+
+
+def native_release_checks(source, output):
+    """Exercise new native APIs in the installed wheel, including large rings."""
+    from pyrpmd import _native
+    from pyrpmd.dynamics import CayleyIntegrator, Dynamics, State
+    from pyrpmd.potentials import CABIPotential, HarmonicPotential
+
+    for marker in ("DRPMD_OUTCOMES_API", "BLOCK_ENERGY_CHECK_API", "SAMPLING_FREE_API"):
+        if getattr(_native, marker, 0) < 1:
+            raise AssertionError(f"Installed native module is missing {marker}")
+    rng = np.random.default_rng(981)
+    errors = {}
+    for beads in (5, 32, 256):
+        initial = State(rng.normal(scale=0.1, size=(beads, 1, 3)),
+                        rng.normal(scale=0.1, size=(beads, 1, 3)))
+        for scheme in ("cayley-bcb", "normal-mode-bab"):
+            states, generators = [], []
+            with patch.object(_native, "sample_free", wraps=_native.sample_free) as sampler:
+                for native in (False, "required"):
+                    dynamics = Dynamics(HarmonicPotential(k=0.2), [1.7], 3., beads,
+                                        0.003, native=native, integrator=scheme, seed=712)
+                    trial = initial.copy()
+                    for _ in range(4):
+                        dynamics.sample_step(trial)
+                    states.append(trial)
+                    generators.append(dynamics.rng.bit_generator.state)
+                assert sampler.call_count == 4, (beads, scheme, sampler.call_count)
+            np.testing.assert_allclose(states[0].q, states[1].q, rtol=2e-11, atol=2e-11)
+            np.testing.assert_allclose(states[0].p, states[1].p, rtol=3e-11, atol=2e-9)
+            assert generators[0] == generators[1]
+            assert states[0].step == states[1].step == 4
+            assert states[0].time == states[1].time
+            errors[f"pile-{scheme}-{beads}"] = float(np.max(np.abs(states[0].p - states[1].p)))
+        if beads >= 32:
+            states = []
+            for native in (False, "required"):
+                integrator = CayleyIntegrator([1.7], 3., beads, 0.003,
+                                              scheme="normal-mode-bab", native=native)
+                trial = initial.copy()
+                for _ in range(20):
+                    integrator.free_step(trial.q, trial.p)
+                states.append(trial)
+            np.testing.assert_allclose(states[0].q, states[1].q, rtol=2e-11, atol=2e-11)
+            np.testing.assert_allclose(states[0].p, states[1].p, rtol=3e-11, atol=2e-9)
+            errors[f"fft-{beads}"] = float(np.max(np.abs(states[0].p - states[1].p)))
+
+    library = output / "harmonic.so"
+    subprocess.run(["cc", "-shared", "-fPIC", "-std=c11", "-I", str(source / "native/include"),
+                    str(source / "native/examples/harmonic_pes.c"), "-o", str(library)], check=True)
+    potential = CABIPotential(library)
+    try:
+        dynamics = Dynamics(potential, [1.7], 3., 32, 0.003, native="required")
+        states, results = [], []
+        for backend in ("python", "native"):
+            trial = State(np.full((32, 1, 3), 0.1), np.full((32, 1, 3), 0.2))
+            result = dynamics.propagate_block(trial, 4, backend=backend,
+                                             observe=[0, 1, 0, 1], check_energy=True)
+            assert result.completed == 4 and result.backend == backend
+            np.testing.assert_array_equal(result.steps, [2, 4])
+            assert np.isfinite(result.energies).all()
+            states.append(trial)
+            results.append(result)
+        np.testing.assert_allclose(states[0].q, states[1].q, rtol=2e-11, atol=2e-11)
+        np.testing.assert_allclose(states[0].p, states[1].p, rtol=2e-11, atol=2e-11)
+        np.testing.assert_allclose(results[0].energies, results[1].energies, rtol=2e-11)
+    finally:
+        potential.close()
+    return errors
 
 
 def main():
@@ -41,6 +111,7 @@ def main():
     version = importlib.metadata.version("PyRPMD")
     if pyrpmd.__version__ != version:
         raise RuntimeError("Installed metadata and Python package versions disagree")
+    native_release = native_release_checks(source, output)
     modules = [
         "pyrpmd.checkpoint", "pyrpmd.reactions", "pyrpmd.workflows.network",
         "pyrpmd.workflows.adaptive_umbrella", "pyrpmd.workflows.metadynamics",
@@ -181,6 +252,7 @@ def main():
         "prefix": sys.prefix, "package": str(installed), "native_module": _native.__file__,
         "native_capabilities": native_capabilities(), "console_version": console_version,
         "cli_info": info, "imported_modules": modules, "integrator_max_abs_errors": errors,
+        "native_release_max_abs_errors": native_release,
         "examples": examples, "drpmd_workflows": drpmd_workflows,
         "scope": "Installed-distribution and finite-sampling workflow validation, not physical convergence or universal wheel compatibility.",
     }

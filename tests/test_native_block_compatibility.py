@@ -8,8 +8,9 @@ import threading
 import numpy as np
 import pytest
 
-from pyrpmd.dynamics import Dynamics, State, native_capabilities
-from pyrpmd.cv import RPMDrateCoordinate
+from pyrpmd.dynamics import Dynamics, CayleyIntegrator, State, native_capabilities
+from pyrpmd.cv import RPMDrateCoordinate, Cartesian, CVStack
+from pyrpmd.bias import UmbrellaBias, CompositeBias
 from pyrpmd.potentials import CABIPotential, HarmonicPotential, PythonPotential
 from pyrpmd.potentials.native import NativePESBinding as DescriptorBinding, descriptor_binding
 from pyrpmd.propagation import (
@@ -43,8 +44,8 @@ def _advance(dynamics, state, api, **kwargs):
 
 
 @pytest.mark.parametrize("api", ["propagate", "propagate_block"])
-@pytest.mark.parametrize("override", ["subclass", "instance"])
-def test_both_apis_preserve_custom_dynamics(cabi_pes, api, override):
+@pytest.mark.parametrize("override", ["subclass", "instance", "class"])
+def test_both_apis_preserve_custom_dynamics(cabi_pes, api, override, monkeypatch):
     calls = []
 
     class ChangedDynamics(Dynamics):
@@ -62,12 +63,86 @@ def test_both_apis_preserve_custom_dynamics(cabi_pes, api, override):
             return 0.25 * original(q, bias)
 
         dyn._force = altered
+    elif override == "class":
+        original = Dynamics._force
+
+        def altered(self, q, bias=None):
+            calls.append(True)
+            return 0.25 * original(self, q, bias)
+
+        monkeypatch.setattr(Dynamics, "_force", altered)
     actual, reference = _state(), _state()
     result = _advance(dyn, actual, api)
     assert result.backend == "python" and calls
     _advance(dyn, reference, api, backend="python")
     np.testing.assert_array_equal(actual.q, reference.q)
     np.testing.assert_array_equal(actual.p, reference.p)
+
+
+@pytest.mark.parametrize("api", ["propagate", "propagate_block"])
+@pytest.mark.parametrize("hook", ["integrator", "cv", "stack", "bias", "composite"])
+def test_both_apis_preserve_class_mathematics(cabi_pes, api, hook, monkeypatch):
+    dyn = Dynamics(cabi_pes, [1.0], 1.0, 1, 0.01)
+    cv = Cartesian(0, 0)
+    calls = []
+    kwargs = {}
+    if hook == "integrator":
+        original = CayleyIntegrator.kick
+
+        def changed(self, p, force, dt):
+            calls.append(True)
+            return original(self, p, force * 0.25, dt)
+
+        monkeypatch.setattr(CayleyIntegrator, "kick", changed)
+    elif hook == "cv":
+        original = Cartesian.centroid_value_gradient
+
+        def changed(self, q):
+            calls.append(True)
+            value, gradient = original(self, q)
+            return value * 3 + 7, gradient * 3
+
+        monkeypatch.setattr(Cartesian, "centroid_value_gradient", changed)
+        kwargs["observe" if api == "propagate" else "cv"] = cv
+    elif hook == "stack":
+        cv = CVStack([cv])
+        original = CVStack.value
+
+        def changed(self, q):
+            calls.append(True)
+            return original(self, q) + 7
+
+        monkeypatch.setattr(CVStack, "value", changed)
+        kwargs["observe" if api == "propagate" else "cv"] = cv
+    else:
+        bias = UmbrellaBias(cv, [0.0], 0.2)
+        cls = UmbrellaBias
+        if hook == "composite":
+            bias = CompositeBias(bias)
+            cls = CompositeBias
+        original = cls.energy_force
+
+        def changed(self, q):
+            calls.append(True)
+            energy, force = original(self, q)
+            return energy * 2, force * 2
+
+        monkeypatch.setattr(cls, "energy_force", changed)
+        kwargs["bias"] = bias
+    actual, reference = _state(), _state()
+    result = _advance(dyn, actual, api, **kwargs)
+    assert result.backend == "python" and calls
+    expected = _advance(dyn, reference, api, backend="python", **kwargs)
+    np.testing.assert_array_equal(actual.q, reference.q)
+    np.testing.assert_array_equal(actual.p, reference.p)
+    if hook in ("cv", "stack"):
+        np.testing.assert_array_equal(result.values, expected.values)
+        assert np.all(result.values > 7)
+    untouched = _state()
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+        _advance(dyn, untouched, api, backend="native", **kwargs)
+    np.testing.assert_array_equal(untouched.q, _state().q)
+    np.testing.assert_array_equal(untouched.p, _state().p)
 
 
 @pytest.mark.parametrize("api", ["propagate", "propagate_block"])
@@ -94,16 +169,16 @@ def test_both_apis_preserve_changed_python_callable(cabi_pes, api):
 
 @pytest.mark.parametrize("descriptor", [cv_descriptor, block_cv_descriptor])
 @pytest.mark.parametrize("override", ["surfaces", "nested_com"])
-def test_both_descriptors_reject_nested_rate_overrides(descriptor, override):
+@pytest.mark.parametrize("mode", ["instance", "class"])
+def test_both_descriptors_reject_nested_rate_overrides(descriptor, override, mode, monkeypatch):
     coordinate = RPMDrateCoordinate(
         [[0], [1, 2]], [1.0, 1.0, 1.0],
         [[-1.0, 0, 0], [0, 0, 0], [1.0, 0, 0]],
         [[0, 1]], [[1, 2]], 10.0,
     )
-    if override == "surfaces":
-        coordinate.surfaces = lambda q: None
-    else:
-        coordinate.com.centroid_value_gradient_hessian = lambda q: None
+    target = coordinate if override == "surfaces" else coordinate.com
+    method = "surfaces" if override == "surfaces" else "centroid_value_gradient_hessian"
+    monkeypatch.setattr(type(target) if mode == "class" else target, method, lambda *args: None)
     with pytest.raises(NativeUnavailableError, match="overridden"):
         descriptor(coordinate.dividing_surface(1.0), 3)
 
