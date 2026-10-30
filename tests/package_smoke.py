@@ -32,7 +32,7 @@ def main():
         raise RuntimeError("Run package smoke from outside the extracted source tree")
     import pyrpmd
     from pyrpmd import _native
-    from pyrpmd.dynamics import Dynamics, State, INTEGRATORS, native_capabilities
+    from pyrpmd.dynamics import CayleyIntegrator, Dynamics, State, INTEGRATORS, native_capabilities
     from pyrpmd.potentials import HarmonicPotential
 
     installed = Path(pyrpmd.__file__).resolve()
@@ -66,6 +66,52 @@ def main():
         if difference > 2e-11:
             raise AssertionError(f"Installed native/Python {scheme} parity failed: {difference}")
         errors[scheme] = difference
+
+    # A fresh distribution must contain the new native APIs. Source tests allow
+    # an older installed extension to fall back; a release artifact must not
+    # silently pass this check by exercising only that fallback.
+    native_api = {name: getattr(_native, name, 0)
+                  for name in ("SAMPLING_FREE_API", "BLOCK_ENERGY_CHECK_API")}
+    if any(value < 1 for value in native_api.values()) or not callable(getattr(_native, "sample_free", None)):
+        raise AssertionError(f"Installed extension is missing the optimized native APIs: {native_api}")
+    sampling_errors = {}
+    for scheme in ("cayley-bcb", "normal-mode-bab"):
+        initial = State(rng.normal(scale=0.1, size=(32, 2, 3)),
+                        rng.normal(scale=0.1, size=(32, 2, 3)))
+        states, generators = [], []
+        for native in (False, "required"):
+            dynamics = Dynamics(HarmonicPotential(k=0.2), [1.7, 0.9], 3., 32, 0.003,
+                                integrator=scheme, native=native, seed=381)
+            trial = initial.copy()
+            for _ in range(4):
+                dynamics.sample_step(trial)
+            states.append(trial)
+            generators.append(dynamics.rng.bit_generator.state)
+            if native == "required" and dynamics._cached_pile_coefficients is None:
+                raise AssertionError("Installed PILE-L unexpectedly used the reference fallback")
+        np.testing.assert_allclose(states[0].q, states[1].q, rtol=2e-11, atol=2e-11)
+        np.testing.assert_allclose(states[0].p, states[1].p, rtol=2e-11, atol=2e-10)
+        if generators[0] != generators[1] or (states[0].step, states[0].time) != (states[1].step, states[1].time):
+            raise AssertionError(f"Installed {scheme} sampling changed RNG or the state clock")
+        sampling_errors[scheme] = {
+            "q": float(np.max(np.abs(states[0].q - states[1].q))),
+            "p": float(np.max(np.abs(states[0].p - states[1].p))),
+            "rng_equal": True, "clock_equal": True,
+        }
+    initial = State(rng.normal(scale=0.1, size=(64, 2, 3)),
+                    rng.normal(scale=0.1, size=(64, 2, 3)))
+    free_states = []
+    for native in (False, "required"):
+        integrator = CayleyIntegrator([1.7, 0.9], 3., 64, 0.003,
+                                     scheme="normal-mode-bab", native=native)
+        trial = initial.copy()
+        for _ in range(8):
+            integrator.free_step(trial.q, trial.p)
+        free_states.append(trial)
+    np.testing.assert_allclose(free_states[0].q, free_states[1].q, rtol=2e-11, atol=2e-11)
+    np.testing.assert_allclose(free_states[0].p, free_states[1].p, rtol=3e-11, atol=2e-9)
+    large_ring_errors = {name: float(np.max(np.abs(getattr(free_states[0], name) - getattr(free_states[1], name))))
+                         for name in ("q", "p")}
 
     environment = dict(os.environ)
     environment.pop("PYTHONPATH", None)
@@ -177,10 +223,12 @@ def main():
     report = {
         "version": version, "python": sys.version, "platform": platform.platform(),
         "dependencies": {name: importlib.metadata.version(name)
-                         for name in ("numpy", "scipy", "h5py")},
+                         for name in ("numpy", "scipy", "h5py", "threadpoolctl")},
         "prefix": sys.prefix, "package": str(installed), "native_module": _native.__file__,
         "native_capabilities": native_capabilities(), "console_version": console_version,
         "cli_info": info, "imported_modules": modules, "integrator_max_abs_errors": errors,
+        "native_api": native_api, "sampling_max_abs_errors": sampling_errors,
+        "large_ring_max_abs_errors": large_ring_errors,
         "examples": examples, "drpmd_workflows": drpmd_workflows,
         "scope": "Installed-distribution and finite-sampling workflow validation, not physical convergence or universal wheel compatibility.",
     }

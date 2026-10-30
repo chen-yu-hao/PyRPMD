@@ -1,0 +1,434 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF......FFFFFF         [100%]
+=================================== FAILURES ===================================
+_ test_class_overrides_preserve_python_semantics[auto-dynamics_force-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-dynamics_force-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-dynamics_energy-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-dynamics_energy-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-integrator_free_step-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-integrator_free_step-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-cabi_evaluate-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-cabi_evaluate-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-python_evaluate-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-python_evaluate-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+__ test_class_overrides_preserve_python_semantics[auto-cv_gradient-propagate] __
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-cv_gradient-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-cvstack_value-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-cvstack_value-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-umbrella_energy_force-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-umbrella_energy_force-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-composite_energy_force-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-composite_energy_force-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-fortran_evaluate-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-fortran_evaluate-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-rate_surfaces-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-rate_surfaces-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-nested_com_hessian-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-nested_com_hessian-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-flux_energy_force-propagate] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[auto-flux_energy_force-propagate_block] _
+tests/test_native_override_compatibility.py:192: in test_class_overrides_preserve_python_semantics
+    assert result.backend == "python" and calls
+E   AssertionError: assert ('native' == 'python'
+E
+E     - python
+E     + native)
+_ test_class_overrides_preserve_python_semantics[native-dynamics_force-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-dynamics_force-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-dynamics_energy-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-dynamics_energy-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-integrator_free_step-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-integrator_free_step-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-cabi_evaluate-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-cabi_evaluate-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-python_evaluate-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-python_evaluate-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-cv_gradient-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-cv_gradient-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-cvstack_value-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-cvstack_value-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-umbrella_energy_force-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-umbrella_energy_force-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-composite_energy_force-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-composite_energy_force-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-fortran_evaluate-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-fortran_evaluate-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-rate_surfaces-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-rate_surfaces-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-nested_com_hessian-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-nested_com_hessian-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-flux_energy_force-propagate] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_class_overrides_preserve_python_semantics[native-flux_energy_force-propagate_block] _
+tests/test_native_override_compatibility.py:184: in test_class_overrides_preserve_python_semantics
+    with pytest.raises(RuntimeError, match="custom|overridden"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE RuntimeError
+_ test_original_identities_are_captured_before_lazy_propagation_import[dynamics] _
+tests/test_native_override_compatibility.py:259: in test_original_identities_are_captured_before_lazy_propagation_import
+    subprocess.run([sys.executable, "-c", script, str(libraries[0]), target], check=True)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/workspace/scratch/b8c76611c785/PyRPMD/../.venv/bin/python', '-c', '\nimport sys\nimport numpy as np\nfrom pyrpmd.bias import UmbrellaBias\nfrom pyrpmd.cv import Cartesian\nfrom pyrpmd.dynamics import CayleyIntegrator, Dynamics, State\nfrom pyrpmd.potentials import CABIPotential, PythonPotential\nassert "pyrpmd.propagation" not in sys.modules\npes = CABIPotential(sys.argv[1])\nif sys.argv[2] == "python":\n    pes = PythonPotential(pes)\ncv = Cartesian(0, "x")\nbias = UmbrellaBias(cv, [0.], 2.)\ncls, name = {\n    "dynamics": (Dynamics, "_force"),\n    "integrator": (CayleyIntegrator, "free_step"),\n    "cabi": (CABIPotential, "evaluate"),\n    "python": (PythonPotential, "evaluate"),\n    "cv": (Cartesian, "centroid_value_gradient"),\n    "bias": (UmbrellaBias, "energy_force"),\n}[sys.argv[2]]\noriginal = getattr(cls, name)\ncalls = []\ndef changed(self, *args, **kwargs):\n    calls.append(True)\n    return original(self, *args, **kwargs)\nsetattr(cls, name, changed)\ndyn = Dynamics(pes, [1.], 2., 1, .01)\nstate = State([[[.2, 0., 0.]]], [[[.1, 0., 0.]]])\nassert "pyrpmd.propagation" not in sys.modules\nresult = dyn.propagate(state, 2, observe=cv, bias=bias)\nassert result.backend == "python" and calls\npes.close()\n', '/tmp/pytest-of-root/pytest-40/native-class-overrides0/harmonic.so', 'dynamics']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "<string>", line 32, in <module>
+AssertionError
+_ test_original_identities_are_captured_before_lazy_propagation_import[integrator] _
+tests/test_native_override_compatibility.py:259: in test_original_identities_are_captured_before_lazy_propagation_import
+    subprocess.run([sys.executable, "-c", script, str(libraries[0]), target], check=True)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/workspace/scratch/b8c76611c785/PyRPMD/../.venv/bin/python', '-c', '\nimport sys\nimport numpy as np\nfrom pyrpmd.bias import UmbrellaBias\nfrom pyrpmd.cv import Cartesian\nfrom pyrpmd.dynamics import CayleyIntegrator, Dynamics, State\nfrom pyrpmd.potentials import CABIPotential, PythonPotential\nassert "pyrpmd.propagation" not in sys.modules\npes = CABIPotential(sys.argv[1])\nif sys.argv[2] == "python":\n    pes = PythonPotential(pes)\ncv = Cartesian(0, "x")\nbias = UmbrellaBias(cv, [0.], 2.)\ncls, name = {\n    "dynamics": (Dynamics, "_force"),\n    "integrator": (CayleyIntegrator, "free_step"),\n    "cabi": (CABIPotential, "evaluate"),\n    "python": (PythonPotential, "evaluate"),\n    "cv": (Cartesian, "centroid_value_gradient"),\n    "bias": (UmbrellaBias, "energy_force"),\n}[sys.argv[2]]\noriginal = getattr(cls, name)\ncalls = []\ndef changed(self, *args, **kwargs):\n    calls.append(True)\n    return original(self, *args, **kwargs)\nsetattr(cls, name, changed)\ndyn = Dynamics(pes, [1.], 2., 1, .01)\nstate = State([[[.2, 0., 0.]]], [[[.1, 0., 0.]]])\nassert "pyrpmd.propagation" not in sys.modules\nresult = dyn.propagate(state, 2, observe=cv, bias=bias)\nassert result.backend == "python" and calls\npes.close()\n', '/tmp/pytest-of-root/pytest-40/native-class-overrides0/harmonic.so', 'integrator']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "<string>", line 32, in <module>
+AssertionError
+__ test_original_identities_are_captured_before_lazy_propagation_import[cabi] __
+tests/test_native_override_compatibility.py:259: in test_original_identities_are_captured_before_lazy_propagation_import
+    subprocess.run([sys.executable, "-c", script, str(libraries[0]), target], check=True)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/workspace/scratch/b8c76611c785/PyRPMD/../.venv/bin/python', '-c', '\nimport sys\nimport numpy as np\nfrom pyrpmd.bias import UmbrellaBias\nfrom pyrpmd.cv import Cartesian\nfrom pyrpmd.dynamics import CayleyIntegrator, Dynamics, State\nfrom pyrpmd.potentials import CABIPotential, PythonPotential\nassert "pyrpmd.propagation" not in sys.modules\npes = CABIPotential(sys.argv[1])\nif sys.argv[2] == "python":\n    pes = PythonPotential(pes)\ncv = Cartesian(0, "x")\nbias = UmbrellaBias(cv, [0.], 2.)\ncls, name = {\n    "dynamics": (Dynamics, "_force"),\n    "integrator": (CayleyIntegrator, "free_step"),\n    "cabi": (CABIPotential, "evaluate"),\n    "python": (PythonPotential, "evaluate"),\n    "cv": (Cartesian, "centroid_value_gradient"),\n    "bias": (UmbrellaBias, "energy_force"),\n}[sys.argv[2]]\noriginal = getattr(cls, name)\ncalls = []\ndef changed(self, *args, **kwargs):\n    calls.append(True)\n    return original(self, *args, **kwargs)\nsetattr(cls, name, changed)\ndyn = Dynamics(pes, [1.], 2., 1, .01)\nstate = State([[[.2, 0., 0.]]], [[[.1, 0., 0.]]])\nassert "pyrpmd.propagation" not in sys.modules\nresult = dyn.propagate(state, 2, observe=cv, bias=bias)\nassert result.backend == "python" and calls\npes.close()\n', '/tmp/pytest-of-root/pytest-40/native-class-overrides0/harmonic.so', 'cabi']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "<string>", line 32, in <module>
+AssertionError
+_ test_original_identities_are_captured_before_lazy_propagation_import[python] _
+tests/test_native_override_compatibility.py:259: in test_original_identities_are_captured_before_lazy_propagation_import
+    subprocess.run([sys.executable, "-c", script, str(libraries[0]), target], check=True)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/workspace/scratch/b8c76611c785/PyRPMD/../.venv/bin/python', '-c', '\nimport sys\nimport numpy as np\nfrom pyrpmd.bias import UmbrellaBias\nfrom pyrpmd.cv import Cartesian\nfrom pyrpmd.dynamics import CayleyIntegrator, Dynamics, State\nfrom pyrpmd.potentials import CABIPotential, PythonPotential\nassert "pyrpmd.propagation" not in sys.modules\npes = CABIPotential(sys.argv[1])\nif sys.argv[2] == "python":\n    pes = PythonPotential(pes)\ncv = Cartesian(0, "x")\nbias = UmbrellaBias(cv, [0.], 2.)\ncls, name = {\n    "dynamics": (Dynamics, "_force"),\n    "integrator": (CayleyIntegrator, "free_step"),\n    "cabi": (CABIPotential, "evaluate"),\n    "python": (PythonPotential, "evaluate"),\n    "cv": (Cartesian, "centroid_value_gradient"),\n    "bias": (UmbrellaBias, "energy_force"),\n}[sys.argv[2]]\noriginal = getattr(cls, name)\ncalls = []\ndef changed(self, *args, **kwargs):\n    calls.append(True)\n    return original(self, *args, **kwargs)\nsetattr(cls, name, changed)\ndyn = Dynamics(pes, [1.], 2., 1, .01)\nstate = State([[[.2, 0., 0.]]], [[[.1, 0., 0.]]])\nassert "pyrpmd.propagation" not in sys.modules\nresult = dyn.propagate(state, 2, observe=cv, bias=bias)\nassert result.backend == "python" and calls\npes.close()\n', '/tmp/pytest-of-root/pytest-40/native-class-overrides0/harmonic.so', 'python']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "<string>", line 32, in <module>
+AssertionError
+___ test_original_identities_are_captured_before_lazy_propagation_import[cv] ___
+tests/test_native_override_compatibility.py:259: in test_original_identities_are_captured_before_lazy_propagation_import
+    subprocess.run([sys.executable, "-c", script, str(libraries[0]), target], check=True)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/workspace/scratch/b8c76611c785/PyRPMD/../.venv/bin/python', '-c', '\nimport sys\nimport numpy as np\nfrom pyrpmd.bias import UmbrellaBias\nfrom pyrpmd.cv import Cartesian\nfrom pyrpmd.dynamics import CayleyIntegrator, Dynamics, State\nfrom pyrpmd.potentials import CABIPotential, PythonPotential\nassert "pyrpmd.propagation" not in sys.modules\npes = CABIPotential(sys.argv[1])\nif sys.argv[2] == "python":\n    pes = PythonPotential(pes)\ncv = Cartesian(0, "x")\nbias = UmbrellaBias(cv, [0.], 2.)\ncls, name = {\n    "dynamics": (Dynamics, "_force"),\n    "integrator": (CayleyIntegrator, "free_step"),\n    "cabi": (CABIPotential, "evaluate"),\n    "python": (PythonPotential, "evaluate"),\n    "cv": (Cartesian, "centroid_value_gradient"),\n    "bias": (UmbrellaBias, "energy_force"),\n}[sys.argv[2]]\noriginal = getattr(cls, name)\ncalls = []\ndef changed(self, *args, **kwargs):\n    calls.append(True)\n    return original(self, *args, **kwargs)\nsetattr(cls, name, changed)\ndyn = Dynamics(pes, [1.], 2., 1, .01)\nstate = State([[[.2, 0., 0.]]], [[[.1, 0., 0.]]])\nassert "pyrpmd.propagation" not in sys.modules\nresult = dyn.propagate(state, 2, observe=cv, bias=bias)\nassert result.backend == "python" and calls\npes.close()\n', '/tmp/pytest-of-root/pytest-40/native-class-overrides0/harmonic.so', 'cv']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "<string>", line 32, in <module>
+AssertionError
+__ test_original_identities_are_captured_before_lazy_propagation_import[bias] __
+tests/test_native_override_compatibility.py:259: in test_original_identities_are_captured_before_lazy_propagation_import
+    subprocess.run([sys.executable, "-c", script, str(libraries[0]), target], check=True)
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py:571: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['/workspace/scratch/b8c76611c785/PyRPMD/../.venv/bin/python', '-c', '\nimport sys\nimport numpy as np\nfrom pyrpmd.bias import UmbrellaBias\nfrom pyrpmd.cv import Cartesian\nfrom pyrpmd.dynamics import CayleyIntegrator, Dynamics, State\nfrom pyrpmd.potentials import CABIPotential, PythonPotential\nassert "pyrpmd.propagation" not in sys.modules\npes = CABIPotential(sys.argv[1])\nif sys.argv[2] == "python":\n    pes = PythonPotential(pes)\ncv = Cartesian(0, "x")\nbias = UmbrellaBias(cv, [0.], 2.)\ncls, name = {\n    "dynamics": (Dynamics, "_force"),\n    "integrator": (CayleyIntegrator, "free_step"),\n    "cabi": (CABIPotential, "evaluate"),\n    "python": (PythonPotential, "evaluate"),\n    "cv": (Cartesian, "centroid_value_gradient"),\n    "bias": (UmbrellaBias, "energy_force"),\n}[sys.argv[2]]\noriginal = getattr(cls, name)\ncalls = []\ndef changed(self, *args, **kwargs):\n    calls.append(True)\n    return original(self, *args, **kwargs)\nsetattr(cls, name, changed)\ndyn = Dynamics(pes, [1.], 2., 1, .01)\nstate = State([[[.2, 0., 0.]]], [[[.1, 0., 0.]]])\nassert "pyrpmd.propagation" not in sys.modules\nresult = dyn.propagate(state, 2, observe=cv, bias=bias)\nassert result.backend == "python" and calls\npes.close()\n', '/tmp/pytest-of-root/pytest-40/native-class-overrides0/harmonic.so', 'bias']' returned non-zero exit status 1.
+----------------------------- Captured stderr call -----------------------------
+Traceback (most recent call last):
+  File "<string>", line 32, in <module>
+AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-dynamics_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-dynamics_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-dynamics_energy-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-dynamics_energy-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-integrator_free_step-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-integrator_free_step-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-cabi_evaluate-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-cabi_evaluate-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-python_evaluate-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-python_evaluate-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-cv_gradient-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-cv_gradient-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-cvstack_value-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-cvstack_value-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-umbrella_energy_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-umbrella_energy_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-composite_energy_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-composite_energy_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-fortran_evaluate-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-fortran_evaluate-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-rate_surfaces-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-rate_surfaces-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-nested_com_hessian-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-nested_com_hessian-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-flux_energy_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[auto-flux_energy_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-dynamics_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-dynamics_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-dynamics_energy-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-dynamics_energy-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-integrator_free_step-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-integrator_free_step-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-cabi_evaluate-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-cabi_evaluate-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-python_evaluate-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-python_evaluate-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-cv_gradient-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-cv_gradient-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-cvstack_value-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-cvstack_value-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-umbrella_energy_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-umbrella_energy_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-composite_energy_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-composite_energy_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-fortran_evaluate-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-fortran_evaluate-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-rate_surfaces-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-rate_surfaces-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-nested_com_hessian-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-nested_com_hessian-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-flux_energy_force-propagate]
+FAILED tests/test_native_override_compatibility.py::test_class_overrides_preserve_python_semantics[native-flux_energy_force-propagate_block]
+FAILED tests/test_native_override_compatibility.py::test_original_identities_are_captured_before_lazy_propagation_import[dynamics]
+FAILED tests/test_native_override_compatibility.py::test_original_identities_are_captured_before_lazy_propagation_import[integrator]
+FAILED tests/test_native_override_compatibility.py::test_original_identities_are_captured_before_lazy_propagation_import[cabi]
+FAILED tests/test_native_override_compatibility.py::test_original_identities_are_captured_before_lazy_propagation_import[python]
+FAILED tests/test_native_override_compatibility.py::test_original_identities_are_captured_before_lazy_propagation_import[cv]
+FAILED tests/test_native_override_compatibility.py::test_original_identities_are_captured_before_lazy_propagation_import[bias]
+58 failed, 6 passed in 2.14s

@@ -91,6 +91,14 @@ class CompositeBias:
         return energy, force
 
 
+# Native descriptors encode the built-in formula rather than calling Python.
+# Retain the defining identities even if propagation is first imported later.
+_BUILTIN_BIAS_METHODS = {
+    cls: {"energy_force": cls.energy_force}
+    for cls in (UmbrellaBias, FluxMetricBias, CompositeBias)
+}
+
+
 class MetadynamicsBias:
     """History-dependent standard or well-tempered metadynamics in CV space.
 

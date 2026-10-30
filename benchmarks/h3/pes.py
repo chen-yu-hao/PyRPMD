@@ -50,7 +50,8 @@ class BKMP2Potential(Potential):
 
     def native_binding(self):
         from pyrpmd.propagation import NativePESBinding, NativeUnavailableError
-        if type(self) is not BKMP2Potential or "evaluate" in self.__dict__:
+        if (type(self) is not BKMP2Potential or "evaluate" in self.__dict__
+                or BKMP2Potential.evaluate is not _BKMP2_EVALUATE):
             raise NativeUnavailableError("overridden BKMP2 provider uses Python semantics")
         # Canonical-path locking also covers aliases importing this module.
         return NativePESBinding(self, self.batch, self._lock, 3, kind=1)
@@ -79,6 +80,10 @@ class BKMP2Potential(Potential):
         if status[0]:
             raise PotentialError(f"Invalid BKMP2 radial geometry, status={status[0]}")
         return float(energy[0]), gradient
+
+
+# The exported native batch must not bypass a later evaluate() replacement.
+_BKMP2_EVALUATE = BKMP2Potential.evaluate
 
 
 def build(library=None):

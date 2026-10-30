@@ -650,3 +650,17 @@ _PILE_INTEGRATOR_METHODS = {
 _PILE_DYNAMICS_METHODS = {
     name: getattr(Dynamics, name) for name in ("_project_fixed", "_check_fixed")
 }
+
+# Capture these here, before the propagation module can be imported lazily
+# after a user has replaced a class method. Native loops bypass these methods.
+_NATIVE_INTEGRATOR_METHODS = {
+    name: getattr(CayleyIntegrator, name)
+    for name in ("free_step", "kick", "_fourier_step", "spring_force")
+}
+_NATIVE_DYNAMICS_METHODS = {
+    name: getattr(Dynamics, name)
+    for name in (
+        "step", "_propagate", "_force", "energy", "_project_fragments",
+        "_fragment_data", "_project_fixed", "_check_fixed",
+    )
+}

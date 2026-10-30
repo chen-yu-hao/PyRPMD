@@ -60,17 +60,25 @@ def _atomic_binding(binding):
     raise NativeUnavailableError("PES has no usable stateless native binding")
 
 
+def _overridden_methods(obj, originals):
+    """Recognize overrides against identities saved by the defining module."""
+    return any(
+        name in getattr(obj, "__dict__", {})
+        or getattr(type(obj), name, None) is not original
+        for name, original in originals.items()
+    )
+
+
 def _check_dynamics_methods(dynamics):
-    from .dynamics import Dynamics, CayleyIntegrator
+    from .dynamics import (
+        Dynamics, CayleyIntegrator, _NATIVE_DYNAMICS_METHODS, _NATIVE_INTEGRATOR_METHODS,
+    )
     if getattr(dynamics, "fixed_atoms", ()):
         raise NativeUnavailableError("fixed atoms require the Python propagation loop")
-    methods = ("step", "_propagate", "_force", "energy", "_project_fragments", "_fragment_data", "_project_fixed", "_check_fixed")
-    if type(dynamics) is not Dynamics or any(name in dynamics.__dict__ for name in methods):
+    if type(dynamics) is not Dynamics or _overridden_methods(dynamics, _NATIVE_DYNAMICS_METHODS):
         raise NativeUnavailableError("custom Dynamics methods require the Python path")
     integrator = dynamics.integrator
-    if type(integrator) is not CayleyIntegrator or any(
-        name in integrator.__dict__ for name in ("free_step", "kick", "_fourier_step", "spring_force")
-    ):
+    if type(integrator) is not CayleyIntegrator or _overridden_methods(integrator, _NATIVE_INTEGRATOR_METHODS):
         raise NativeUnavailableError("custom integrator methods require the Python path")
 
 
@@ -102,10 +110,19 @@ def _bond(n, atoms):
 
 
 def _check_cv_methods(cv):
+    from .cv import _BUILTIN_CV_METHODS
     methods = ("value", "value_and_jacobian", "centroid_value_gradient",
                "centroid_value_gradient_hessian", "surfaces")
-    if any(k in getattr(cv, "__dict__", {}) for k in methods):
+    if (any(k in getattr(cv, "__dict__", {}) for k in methods)
+            or _overridden_methods(cv, _BUILTIN_CV_METHODS.get(type(cv), {}))):
         raise NativeUnavailableError("overridden CV methods require Python")
+
+
+def _check_bias_methods(bias):
+    from .bias import _BUILTIN_BIAS_METHODS
+    if ("energy_force" in getattr(bias, "__dict__", {})
+            or _overridden_methods(bias, _BUILTIN_BIAS_METHODS.get(type(bias), {}))):
+        raise NativeUnavailableError("overridden bias requires Python")
 
 
 def cv_descriptor(cv, n):
@@ -160,8 +177,7 @@ def _biases(bias, n, masses):
     from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
     if bias is None:
         return []
-    if "energy_force" in getattr(bias, "__dict__", {}):
-        raise NativeUnavailableError("overridden bias requires Python")
+    _check_bias_methods(bias)
     if type(bias) is CompositeBias:
         return [item for b in bias.biases for item in _biases(b, n, masses)]
     if type(bias) is UmbrellaBias:
