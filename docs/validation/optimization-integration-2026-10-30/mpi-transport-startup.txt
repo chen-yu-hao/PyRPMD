@@ -1,0 +1,68 @@
+Abort(746210703) on node 0: Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffeb2e9aa30) failed
+MPII_Init_thread(333)......................:
+MPIR_init_comm_world(37)...................:
+MPIR_Comm_commit(821)......................:
+MPID_Comm_commit_pre_hook(163).............:
+MPIDI_UCX_mpi_comm_commit_pre_hook(19).....:
+MPIDI_UCX_comm_addr_exchange(188)..........:
+MPIR_Allgather_impl(2268)..................:
+MPIR_Allgather_allcomm_auto(2182)..........:
+MPIR_Allgather_intra_recursive_doubling(84):
+MPIC_Sendrecv(280).........................:
+MPIC_Wait(99)..............................:
+MPIR_Wait(745).............................:
+MPIDI_IPC_rndv_cb(176).....................:
+MPIDI_CMA_copy_data(68)....................:
+copy_iovs(224).............................: process_vm_readv failed (errno 38)
+Abort(611992975) on node 1: Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7fff9fce4720) failed
+MPII_Init_thread(333)......................:
+MPIR_init_comm_world(37)...................:
+MPIR_Comm_commit(821)......................:
+MPID_Comm_commit_pre_hook(163).............:
+MPIDI_UCX_mpi_comm_commit_pre_hook(19).....:
+MPIDI_UCX_comm_addr_exchange(188)..........:
+MPIR_Allgather_impl(2268)..................:
+MPIR_Allgather_allcomm_auto(2182)..........:
+MPIR_Allgather_intra_recursive_doubling(84):
+MPIC_Sendrecv(280).........................:
+MPIC_Wait(99)..............................:
+MPIR_Wait(745).............................:
+MPIDI_IPC_rndv_cb(176).....................:
+MPIDI_CMA_copy_data(68)....................:
+copy_iovs(224).............................: process_vm_readv failed (errno 38)
+Abort(477775247) on node 2: Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7fffc18ba210) failed
+MPII_Init_thread(333)......................:
+MPIR_init_comm_world(37)...................:
+MPIR_Comm_commit(821)......................:
+MPID_Comm_commit_pre_hook(163).............:
+MPIDI_UCX_mpi_comm_commit_pre_hook(19).....:
+MPIDI_UCX_comm_addr_exchange(188)..........:
+MPIR_Allgather_impl(2268)..................:
+MPIR_Allgather_allcomm_auto(2182)..........:
+MPIR_Allgather_intra_recursive_doubling(84):
+MPIC_Sendrecv(280).........................:
+MPIC_Wait(99)..............................:
+MPIR_Wait(745).............................:
+MPIDI_IPC_rndv_cb(176).....................:
+MPIDI_CMA_copy_data(68)....................:
+copy_iovs(224).............................: process_vm_readv failed (errno 38)
+Abort(1014646159) on node 3: Fatal error in internal_Init_thread: Other MPI error, error stack:
+internal_Init_thread(71)...................: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffe1b8fd3c0) failed
+MPII_Init_thread(333)......................:
+MPIR_init_comm_world(37)...................:
+MPIR_Comm_commit(821)......................:
+MPID_Comm_commit_pre_hook(163).............:
+MPIDI_UCX_mpi_comm_commit_pre_hook(19).....:
+MPIDI_UCX_comm_addr_exchange(188)..........:
+MPIR_Allgather_impl(2268)..................:
+MPIR_Allgather_allcomm_auto(2182)..........:
+MPIR_Allgather_intra_recursive_doubling(84):
+MPIC_Sendrecv(280).........................:
+MPIC_Wait(99)..............................:
+MPIR_Wait(745).............................:
+MPIDI_IPC_rndv_cb(176).....................:
+MPIDI_CMA_copy_data(68)....................:
+copy_iovs(224).............................: process_vm_readv failed (errno 38)

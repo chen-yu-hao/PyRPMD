@@ -1,0 +1,15 @@
+{
+  "equal_to_original_eight_case_run": true,
+  "digest_by_variant": {
+    "baseline": {
+      "bkmp2_drpmd": "fc58fdb701323523bbbcca7d7c8f838a84456b22c755fd490c0dd5227f5d1ac9",
+      "bkmp2_fes": "c26209819604e0c7ebf36f40c9b30623bcdea40e4a9e2b817b84ac93f93cd411",
+      "pimd_pile_l": "352a5b14a0847d174855b9c7bdbd09c947889070cac1cedf2f71d241377f1579"
+    },
+    "candidate": {
+      "bkmp2_drpmd": "fc58fdb701323523bbbcca7d7c8f838a84456b22c755fd490c0dd5227f5d1ac9",
+      "bkmp2_fes": "b2ed1aee77119ef93d65e44075f156d0f221f195ef2cf1c2be3b76b3a67e7f18",
+      "pimd_pile_l": "858a8babbdff036fe3a64e64d9ddcfca74d8a9b9fc5c59d9f12e238e1778c5ab"
+    }
+  }
+}

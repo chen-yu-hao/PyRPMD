@@ -1,0 +1,5 @@
+MPI import rank 2/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+MPI import rank 3/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+MPI import rank 1/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+MPI import rank 0/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+MPI G=2 B=2: ordered tasks, collective failure, continuous parents and restart passed; MPI GPU node-local routing passed with a mock provider (no CUDA test)

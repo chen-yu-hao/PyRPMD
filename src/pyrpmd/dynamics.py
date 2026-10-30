@@ -350,9 +350,8 @@ class Dynamics:
             reasons[reason] = reasons.get(reason, 0) + int(steps)
 
     def _force(self, q, bias=None):
+        """Return an independent, writable force for Python extension hooks."""
         result = validate_result(self.potential.evaluate(q), q.shape)
-        if bias is None and not self.fixed_atoms:
-            return result.forces
         force = result.forces.copy()
         if bias is not None:
             _, extra = bias.energy_force(q)
@@ -362,6 +361,23 @@ class Dynamics:
         if self.fixed_atoms:
             force[:, self._fixed_indices, :] = 0.0
         return force
+
+    def _kick(self, q, p, bias=None):
+        """Apply a physical half-kick, borrowing only for built-in consumers."""
+        if (
+            bias is None and not self.fixed_atoms
+            and type(self) is Dynamics and type(self.integrator) is CayleyIntegrator
+            and "_force" not in self.__dict__
+            and Dynamics._force is _BLOCK_DYNAMICS_METHODS["_force"]
+            and "kick" not in self.integrator.__dict__
+            and CayleyIntegrator.kick is _BLOCK_INTEGRATOR_METHODS["kick"]
+        ):
+            # Both built-in kick implementations read force synchronously and
+            # never retain or mutate it. No other PES call precedes consumption.
+            force = validate_result(self.potential.evaluate(q), q.shape).forces
+        else:
+            force = self._force(q, bias)
+        self.integrator.kick(p, force, 0.5 * self.dt)
 
     def step(self, state, bias=None):
         return self._propagate(state, bias)
@@ -385,13 +401,13 @@ class Dynamics:
         # cannot leave a half-stepped state masquerading as a completed step.
         q = state.q.copy()
         p = state.p.copy()
-        self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+        self._kick(q, p, bias)
         self._project_fragments(q, p, fragment_data)
         self._project_fixed(q, p)
         self.integrator.free_step(q, p)
         self._project_fragments(q, p, fragment_data)
         self._project_fixed(q, p)
-        self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+        self._kick(q, p, bias)
         self._project_fragments(q, p, fragment_data)
         self._project_fixed(q, p)
         if not np.isfinite(q).all() or not np.isfinite(p).all():
@@ -537,7 +553,7 @@ class Dynamics:
         p = state.p.copy()
         self.integrator._check(q, p)
         self._check_fixed(q, p)
-        self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+        self._kick(q, p, bias)
         fused_sampler = (
             self.loop_backend == "auto"
             and type(self) is Dynamics and type(self.integrator) is CayleyIntegrator
@@ -579,7 +595,7 @@ class Dynamics:
                     self.integrator._native.sample_free(
                         self.integrator._context, q, p, noise, decay, amplitude, fixed)
                 self._project_fixed(q, p)
-                self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                self._kick(q, p, bias)
                 self._project_fixed(q, p)
                 if not np.isfinite(q).all() or not np.isfinite(p).all():
                     raise FloatingPointError("nonfinite integration state")
@@ -629,7 +645,7 @@ class Dynamics:
             self._project_fixed(q, p)
             self.integrator.half_step(q, p)
             self._project_fixed(q, p)
-            self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+            self._kick(q, p, bias)
             self._project_fixed(q, p)
             if not np.isfinite(q).all() or not np.isfinite(p).all():
                 raise FloatingPointError("nonfinite integration state")
@@ -658,7 +674,7 @@ _PILE_DYNAMICS_METHODS = {
 # lazily import either propagation API. Native blocks bypass these methods.
 _BLOCK_DYNAMICS_METHODS = {
     name: getattr(Dynamics, name)
-    for name in ("step", "_propagate", "_force", "energy", "_project_fragments",
+    for name in ("step", "_propagate", "_force", "_kick", "energy", "_project_fragments",
                  "_fragment_data", "_project_fixed", "_check_fixed")
 }
 _BLOCK_INTEGRATOR_METHODS = {

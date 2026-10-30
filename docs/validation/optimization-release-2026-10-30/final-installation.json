@@ -1,0 +1,12 @@
+{
+  "source_tree": "ae5ac945d23413cf05ddfa9499b718555ff22898",
+  "wheel": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+  "wheel_sha256": "45a30d9f7e13c907306fed9e1f8c8bbe7d26e1ba35181781fe79a15961062f8e",
+  "sdist": "pyrpmd-0.2.0.tar.gz",
+  "sdist_sha256": "7258eff6d8e8b62190a963bf54d3e9e905788a9253174c08106c8bb342632988",
+  "all_python_sources_match": true,
+  "smoke_script_distributed_unchanged": true,
+  "runtime_dependency_metadata_verified": true,
+  "source": "/workspace/scratch/b8c76611c785/local-release-check-2026-10-30/final-extracted/pyrpmd-0.2.0",
+  "dependency_installation": "Reused explicitly linked preinstalled third-party packages in the isolated prefix; no editable project."
+}

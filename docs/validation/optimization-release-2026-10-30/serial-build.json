@@ -1,0 +1,139 @@
+{
+  "source_tree": "b790fbc0fb651ebd95f12050ff8ff344a50a3d66",
+  "created_utc": "2026-10-30T15:57:33.887742+00:00",
+  "repository": "/workspace/scratch/b8c76611c785/PyRPMD",
+  "root": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030",
+  "source": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source",
+  "archive": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source.tar",
+  "archive_sha256": "54582036eb516b85a693aec442e8ca4737429971dc77cf67830acbec3b47c3ee",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+  "original_extension": "/workspace/scratch/b8c76611c785/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+  "original_extension_sha256_before": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output=/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source.tar",
+        "b790fbc0fb651ebd95f12050ff8ff344a50a3d66"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/PyRPMD",
+      "returncode": 0,
+      "log": "logs/00-export.txt"
+    },
+    {
+      "argv": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source",
+      "log": "logs/01-compiler.txt",
+      "started_utc": "2026-10-30T15:58:52.136110+00:00",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-c",
+        "import sys,sysconfig,numpy,scipy,setuptools; print(sys.version); print(sys.executable); print('include',sysconfig.get_path('include')); print('numpy',numpy.__version__); print('scipy',scipy.__version__); print('setuptools',setuptools.__version__)"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source",
+      "log": "logs/02-python-build-environment.txt",
+      "started_utc": "2026-10-30T15:58:52.138751+00:00",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "setup.py",
+        "build_py",
+        "--build-lib",
+        "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/runtime",
+        "build_ext",
+        "--build-lib",
+        "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/runtime",
+        "--build-temp",
+        "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/objects",
+        "--force"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source",
+      "log": "logs/03-serial-build.txt",
+      "started_utc": "2026-10-30T15:58:52.328703+00:00",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/smoke_serial.py"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source",
+      "log": "logs/04-serial-smoke.txt",
+      "started_utc": "2026-10-30T15:58:58.296168+00:00",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "ldd",
+        "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/runtime/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source",
+      "log": "logs/05-shared-library-dependencies.txt",
+      "started_utc": "2026-10-30T15:58:58.533556+00:00",
+      "returncode": 0
+    },
+    {
+      "argv": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_native_sampling.py",
+        "tests/test_fes_block_sampling.py::test_missing_native_energy_marker_falls_back_or_rejects_before_propagation",
+        "tests/test_fes_block_sampling.py::test_native_checks_unobserved_total_energy_without_replaying",
+        "--junitxml=/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/serial-numerics.xml"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/source",
+      "log": "logs/06-serial-numerics.txt",
+      "started_utc": "2026-10-30T15:58:58.541929+00:00",
+      "returncode": 0
+    }
+  ],
+  "cmake": {
+    "status": "not_run",
+    "executable_on_path": null,
+    "python_package_installed": false,
+    "reason": "No CMake executable/package found on the local PATH, venv or runtime search. Parent requested no additional dependency download."
+  },
+  "native_sources_sha256": {
+    "native/cayley.cpp": "57d7113203ad84511dffea9e717eb22a850aee91799eebea86e895b12fda547c",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/propagation.h": "9938cdbf67c24a0e57fffcd5f10919f56ae7cd6e296b3beb5b33fe79327019b4",
+    "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/CMakeLists.txt": "34ded4663aa2119e0afb9937f7df229f11556a84b74b7633e3fcfcc917daf402",
+    "setup.py": "73179614c3e6be451d66737c03db7f993384fd54765d9a6e5e58a18afd109e1e",
+    "MANIFEST.in": "15037b96ea7b66f29d2296b93b9f1d4eb4b4f93bf52b62071a1b5ab7fa07e77e"
+  },
+  "status": "passed",
+  "build_environment": {
+    "PYRPMD_NO_OPENMP": "1",
+    "PYRPMD_NO_NATIVE": "0",
+    "CC": "/usr/bin/gcc",
+    "CXX": "/usr/bin/g++",
+    "CFLAGS": "",
+    "CXXFLAGS": "",
+    "LDFLAGS": "",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "PYTHONPATH": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/runtime"
+  },
+  "build_route": "setuptools build_py + build_ext, PYRPMD_NO_OPENMP=1",
+  "original_extension_sha256_after": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+  "built_extension_sha256": "04cdfac19b8ab5425553ed16247f49733284a70978b0519c3b7671e2302f3eeb",
+  "exported_native_sources_unchanged": true,
+  "completed_utc": "2026-10-30T15:58:59.847947+00:00"
+}

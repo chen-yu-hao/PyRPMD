@@ -1,0 +1,42 @@
+[
+  {
+    "case": "integration",
+    "original": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/integration.log",
+    "original_sha256": "22a8805a3ebf46c157cd898495f053a849961646767a54a86bae8d9d2e941c87",
+    "repository_copy": "mpi-integration.txt",
+    "copy_sha256": "22a8805a3ebf46c157cd898495f053a849961646767a54a86bae8d9d2e941c87",
+    "normalization": "Only trailing whitespace is removed."
+  },
+  {
+    "case": "workflow",
+    "original": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/workflow.log",
+    "original_sha256": "3da20d3c88be77fa4ff39f0ed60a0ae898cc4791e9bc171d49558c31846d101b",
+    "repository_copy": "mpi-workflow.txt",
+    "copy_sha256": "3da20d3c88be77fa4ff39f0ed60a0ae898cc4791e9bc171d49558c31846d101b",
+    "normalization": "Only trailing whitespace is removed."
+  },
+  {
+    "case": "materials",
+    "original": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/materials.log",
+    "original_sha256": "5d35be103e90c73e27ce4e1bb1a83dbdbfc738bf125fcd22be14e47b50d7f8c7",
+    "repository_copy": "mpi-materials.txt",
+    "copy_sha256": "5d35be103e90c73e27ce4e1bb1a83dbdbfc738bf125fcd22be14e47b50d7f8c7",
+    "normalization": "Only trailing whitespace is removed."
+  },
+  {
+    "case": "surface",
+    "original": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/surface.log",
+    "original_sha256": "1e66e674ddcd7554bf749deb642fec06d1ee7b49d2e57a691fde8b812f99e1e2",
+    "repository_copy": "mpi-surface.txt",
+    "copy_sha256": "1e66e674ddcd7554bf749deb642fec06d1ee7b49d2e57a691fde8b812f99e1e2",
+    "normalization": "Only trailing whitespace is removed."
+  },
+  {
+    "case": "initial_default_CMA_startup_failure",
+    "original": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/attempt-default-transport/integration.log",
+    "original_sha256": "c98219a7dd5af46e14898071d7372e96ba4a4f57df773de4919a19093eb64572",
+    "repository_copy": "mpi-transport-startup.txt",
+    "copy_sha256": "fba1217470ff2da5a3e549afa02dcc844212e02c087ec196ef0286de3239c98a",
+    "normalization": "Only trailing whitespace is removed."
+  }
+]

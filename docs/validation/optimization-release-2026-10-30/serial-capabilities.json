@@ -1,0 +1,25 @@
+{
+  "package_path": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/runtime/pyrpmd/__init__.py",
+  "extension_path": "/workspace/scratch/b8c76611c785/native-serial-build-b790fbc-20261030/runtime/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+  "capabilities": {
+    "available": true,
+    "openmp": false,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "markers": {
+    "SAMPLING_FREE_API": 1,
+    "BLOCK_ENERGY_CHECK_API": 1,
+    "DRPMD_OUTCOMES_API": 1
+  },
+  "threads_greater_than_one_rejected": {
+    "cayley-bcb": "threads>1 requires the compiled OpenMP kernel",
+    "normal-mode-bab": "threads>1 requires the compiled OpenMP kernel",
+    "velocity-verlet": "threads>1 requires the compiled OpenMP kernel",
+    "raw_create": "native kernel has no OpenMP support"
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+}

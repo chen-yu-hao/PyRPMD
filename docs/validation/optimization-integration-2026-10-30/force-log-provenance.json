@@ -1,0 +1,23 @@
+[
+  {
+    "source": "/workspace/scratch/b8c76611c785/audit-force-ownership/before.txt",
+    "raw_sha256": "f5c6414426c1451d5475401a8f1b54cf8dcb00dbbe7e869dbc51d3a4e42e223c",
+    "repository_copy": "force-before.txt",
+    "copy_sha256": "d795e07e0cb39eda308418d50bb47b647478964ebb8597a505cd95a88a7bc41a",
+    "normalization": "Only trailing whitespace is removed; the original log is retained."
+  },
+  {
+    "source": "/workspace/scratch/b8c76611c785/audit-force-ownership/after.txt",
+    "raw_sha256": "6faed1211c5528a00fe11801aa756794ccf1079f486580e7cf6923a3c2dd7c47",
+    "repository_copy": "force-after.txt",
+    "copy_sha256": "6faed1211c5528a00fe11801aa756794ccf1079f486580e7cf6923a3c2dd7c47",
+    "normalization": "Only trailing whitespace is removed; the original log is retained."
+  },
+  {
+    "source": "/workspace/scratch/b8c76611c785/audit-force-ownership/targeted.txt",
+    "raw_sha256": "fa489e6c3e0bb3297702c91aebddbcabe55ba221421c59839c716bdfb43f1a35",
+    "repository_copy": "force-targeted.txt",
+    "copy_sha256": "fa489e6c3e0bb3297702c91aebddbcabe55ba221421c59839c716bdfb43f1a35",
+    "normalization": "Only trailing whitespace is removed; the original log is retained."
+  }
+]

@@ -293,7 +293,8 @@ class CABIPotential(Potential):
 
     def native_binding(self):
         from ..propagation import NativePESBinding, NativeUnavailableError
-        if type(self) is not CABIPotential or "evaluate" in self.__dict__:
+        if (type(self) is not CABIPotential or "evaluate" in self.__dict__
+                or CABIPotential.evaluate is not _CABI_EVALUATE):
             raise NativeUnavailableError("overridden C ABI provider uses Python semantics")
         if self.metadata.get("capabilities", {}).get("stateful") is not False:
             raise NativeUnavailableError("C ABI provider must explicitly declare stateful=false")
@@ -361,3 +362,7 @@ class CABIPotential(Potential):
             self.close()
         except Exception:
             pass
+
+
+# Binding export skips evaluate(), so only its original formula is eligible.
+_CABI_EVALUATE = CABIPotential.evaluate

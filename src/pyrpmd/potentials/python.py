@@ -117,7 +117,8 @@ class PythonPotential(Potential):
             raise NativeUnavailableError("periodic Python PES requires the cell-aware Python route")
         if type(self) is not PythonPotential or self.sign != 1 or self.length_factor != 1 or self.energy_factor != 1:
             raise NativeUnavailableError("custom or unit-converting Python PES requires Python")
-        if "evaluate" in self.__dict__ or self.fn != (self.obj.evaluate if hasattr(self.obj, "evaluate") else self.obj):
+        if ("evaluate" in self.__dict__ or PythonPotential.evaluate is not _PYTHON_EVALUATE
+                or self.fn != (self.obj.evaluate if hasattr(self.obj, "evaluate") else self.obj)):
             raise NativeUnavailableError("overridden Python PES function requires Python")
         factory = getattr(self.obj, "native_binding", None)
         if factory is None:
@@ -148,6 +149,10 @@ class PythonPotential(Potential):
         close = getattr(self.obj, "close", None)
         if close:
             close()
+
+
+# Capture before any later lazy import of the native propagation dispatcher.
+_PYTHON_EVALUATE = PythonPotential.evaluate
 
 
 class RPMDratePotential(Potential):

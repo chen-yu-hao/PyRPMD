@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "timings_collected": false,
+  "cases": [
+    "bkmp2_drpmd",
+    "bkmp2_fes",
+    "pimd_pile_l",
+    "com_gradient_n3",
+    "com_gradient_n1000",
+    "nrpmd_mint_s16",
+    "fes_bootstrap",
+    "normal_mode_n32_p256"
+  ],
+  "baseline_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "candidate_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "native_extension_sha256": {
+    "baseline": "01b24ab0941a41267955cc979e7c027930a00aa6a73e43b2c851051d6dc4f4bd",
+    "candidate": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1"
+  },
+  "original_evidence_sha256": "00daad7cf6e48ecbc17625500dcbf0a2a18eb30d732f22f58d5be123a7493cae",
+  "supplement_sha256": "bc0b48925ce9ce868a514750bfc112f6ea368122408c94563742a68fa27b74b8",
+  "mode": "smoke_functional_only"
+}

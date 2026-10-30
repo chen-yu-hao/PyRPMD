@@ -1,0 +1,17 @@
+{
+  "override-before.txt": {
+    "original_sha256": "f444d7514bdea13f5391f809937c2533b621615d38aa16cc723407f26318a502",
+    "original_bytes": 37819,
+    "copy_transform": "Trailing whitespace removed; raw log preserved in audit-compatibility."
+  },
+  "override-targeted.txt": {
+    "original_sha256": "7d36893ceb301d54bf26d919cd1b46c600b81cf38114590eb4ae9c1fbe68f9e7",
+    "original_bytes": 1915,
+    "copy_transform": "Trailing whitespace removed; raw log preserved in audit-compatibility."
+  },
+  "override-after.txt": {
+    "original_sha256": "97953432f7273fcd56715aba07dbad4b87017d90a18616ee876a008f133c5a0a",
+    "original_bytes": 99,
+    "copy_transform": "Trailing whitespace removed; raw log preserved in audit-compatibility."
+  }
+}

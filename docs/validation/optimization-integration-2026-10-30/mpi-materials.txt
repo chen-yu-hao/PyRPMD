@@ -1,0 +1,5 @@
+MPI import rank 1/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+MPI import rank 0/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+MPI import rank 2/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+MPI import rank 3/4: /workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py; native=/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+Materials PIMD + RPMD diffusion + site rate, PBC, G2 B2, exact resume and offline analysis: PASS
