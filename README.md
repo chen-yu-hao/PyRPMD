@@ -142,6 +142,13 @@ Ni(100) slab 上 H/D、1/4 珠子的短计算及来源校验。它验证数值�
 [H + HO₂ 二维扫描入口](benchmarks/hho2/README.md) 提供多起始几何、共同有限距离墙、
 六键长通道分类与有支持网格的连接分析；尚缺适用的全维反应 PES，未生成真实 H + HO₂ PMF。
 
+[H + BrCl 双产物通道示例](benchmarks/brhcl/README.md) 已接入固定版本的历史
+BrHCl_LEPS1 势能面，扫描 HCl + Br 与 HBr + Cl 的二维质心 PMF。
+它提供 P=1 独立构型积分、两种起始构型、保留平衡分布的取向 Metropolis、
+第三键长/夹角的 bootstrap 相关性诊断，以及珠子数和时间步对照。
+[计算与验证记录](docs/validation/brhcl-multichannel-2026-10-30/README.md)
+明确区分模型的投影通道连接与尚未计算的散射速率或分支比。
+
 [`benchmarks/h3`](benchmarks/h3/README.md) 使用发表的 BKMP2 反应势能面，
 运行 dRPMD、二维 centroid FES、伞抽样 PMF 和 recrossing。势能源码在构建时
 从固定 commit 下载并核对 SHA256；先检查作者公布的能量/梯度参考值、

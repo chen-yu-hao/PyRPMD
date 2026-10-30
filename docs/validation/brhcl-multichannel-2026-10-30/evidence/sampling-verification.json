@@ -1,0 +1,63 @@
+{
+  "schema": "pyrpmd.brhcl.orientational-mh-verification.v1",
+  "tests_passed": 20,
+  "tests_failed": 0,
+  "synthetic_analytic_angular_oracle": [
+    {
+      "beads": 1,
+      "attempted": 24000,
+      "accepted": 11377,
+      "invalid_domain": 0,
+      "discarded_trials": 1000,
+      "measured_mean_cos_theta": 0.5296640973076404,
+      "reference_mean_cos_theta": 0.5373147207275482,
+      "absolute_error": 0.007650623419907743
+    },
+    {
+      "beads": 8,
+      "attempted": 24000,
+      "accepted": 11377,
+      "invalid_domain": 0,
+      "discarded_trials": 1000,
+      "measured_mean_cos_theta": 0.5296640973076404,
+      "reference_mean_cos_theta": 0.5373147207275482,
+      "absolute_error": 0.007650623419907743
+    }
+  ],
+  "real_pinned_brhcl_kernel_invariants": [
+    {
+      "beads": 1,
+      "attempted": 64,
+      "accepted": 42,
+      "invalid_domain": 0,
+      "initial_action": 12.166236947410544,
+      "final_action": 5.195757279392989,
+      "max_centroid_cv_change_bohr": 1.7763568394002505e-15,
+      "max_spring_norm_squared_change_bohr2": 0.0,
+      "final_action_independent": 5.195757279392989
+    },
+    {
+      "beads": 8,
+      "attempted": 64,
+      "accepted": 42,
+      "invalid_domain": 0,
+      "initial_action": 12.217394589060538,
+      "final_action": 5.219790461239635,
+      "max_centroid_cv_change_bohr": 0.0,
+      "max_spring_norm_squared_change_bohr2": 1.7076184216646695e-17,
+      "final_action_independent": 5.219790461239635
+    },
+    {
+      "beads": 16,
+      "attempted": 64,
+      "accepted": 42,
+      "invalid_domain": 0,
+      "initial_action": 12.271582831110814,
+      "final_action": 5.2335945893370805,
+      "max_centroid_cv_change_bohr": 5.329070518200751e-15,
+      "max_spring_norm_squared_change_bohr2": 9.324138683375338e-17,
+      "final_action_independent": 5.2335945893370805
+    }
+  ],
+  "scope": "Equilibrium configuration kernel; no interpretation as physical-time trajectories or channel kinetics."
+}

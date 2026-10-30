@@ -1,0 +1,74 @@
+{
+  "schema": "pyrpmd.brhcl.classical-reference.v1",
+  "beads": 1,
+  "beta": 157.88751240199355,
+  "log_partition_in_rectangle": 7.027016293007624,
+  "converged": true,
+  "status": "converged_by_order_doubling",
+  "tolerance_kbt": 1e-05,
+  "history": [
+    {
+      "xy_order": 8,
+      "z_order": 64,
+      "evaluated_bins": 64,
+      "converged_bins": 0,
+      "total_bins": 64,
+      "maximum_estimated_error_kbt": null,
+      "cumulative_pes_evaluations": 262144
+    },
+    {
+      "xy_order": 16,
+      "z_order": 128,
+      "evaluated_bins": 64,
+      "converged_bins": 38,
+      "total_bins": 64,
+      "maximum_estimated_error_kbt": 0.001295015079822548,
+      "cumulative_pes_evaluations": 2359296
+    },
+    {
+      "xy_order": 32,
+      "z_order": 256,
+      "evaluated_bins": 26,
+      "converged_bins": 64,
+      "total_bins": 64,
+      "maximum_estimated_error_kbt": 7.918990532651549e-06,
+      "cumulative_pes_evaluations": 9175040
+    }
+  ],
+  "pes_evaluations": 9175040,
+  "max_batch": 2048,
+  "potential_entry": "bare_evaluate",
+  "domain": {
+    "minimum_pair_distance_bohr": 0.2,
+    "source": "explicit_argument",
+    "restriction": "all three pair distances must be >= the minimum",
+    "excluded_core_probability": "zero by declared model domain, not evaluated or estimated",
+    "finite_bin_normalization": "original full x/y bin area"
+  },
+  "wall": {
+    "radius_angstrom": 6.0,
+    "stiffness_kcal_mol_angstrom2": 20.0,
+    "pairs": [
+      "Br-H",
+      "H-Cl",
+      "Br-Cl"
+    ],
+    "retained_in_target": true
+  },
+  "measure": "classical density with respect to d(r_BrH) d(r_HCl)",
+  "normalization": "conditional on the finite x/y analysis rectangle",
+  "energy_unit": "hartree",
+  "coordinate_unit": "bohr",
+  "limitations": [
+    "Classical P=1 reference; not a P>1 centroid-PMF oracle.",
+    "Successive quadrature agreement is an estimated numerical error, not a rigorous bound.",
+    "The hidden distance is integrated over the triangle interval intersected with the declared PES domain; no minimum-energy path is substituted.",
+    "Excluded-core probability is not bounded; the result is conditional on the declared valid model domain."
+  ],
+  "seconds": 252.02347961100168,
+  "converged_bins": 64,
+  "maximum_order_error_kbt": 7.918990532651549e-06,
+  "default_vs_tighter_max_raw_log_density_delta_kbt": 0.0008721352230738333,
+  "default_vs_tighter_gauge_aligned_rms_kbt": 0.00022956541690914288,
+  "default_vs_tighter_gauge_aligned_max_abs_kbt": 0.0008048684757694664
+}

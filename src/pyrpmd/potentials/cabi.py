@@ -337,8 +337,9 @@ class CABIPotential(Potential):
             raise PotentialError(
                 f"PES batch failed ({rc}): {eb.value.decode(errors='replace')}"
             )
+        raw_messages = messages.raw
         text = tuple(
-            messages.raw[i * 512 : (i + 1) * 512]
+            raw_messages[i * 512 : (i + 1) * 512]
             .split(b"\0", 1)[0]
             .decode(errors="replace")
             for i in range(n)

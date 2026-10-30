@@ -102,3 +102,49 @@ def test_evaluation_rechecks_lifetime_after_input_preparation(monkeypatch):
         pes.evaluate(np.zeros((1, 1, 3)))
     assert destroyed == [0x1234]
     assert not calls
+
+
+def test_batched_messages_copy_buffer_once_preserving_order_and_failed_frames(monkeypatch):
+    """Fixed-width decoding must be linear in the batch's message storage."""
+    pes, _ = _fake_potential()
+    payloads = [b"", b"frame one", "核距离".encode(), b"bad \xff byte",
+                b"x"*511, b"", b"last frame"]
+    n = len(payloads)
+    copies = []
+    original = ctypes.create_string_buffer
+
+    def tracked_buffer(init, size=None):
+        buffer = original(init) if size is None else original(init, size)
+        if init == n*512 and size is None:
+            class Tracked(type(buffer)):
+                pass
+            def read_raw(self):
+                copies.append(len(self))
+                return bytes(self)
+            # ctypes installs its raw descriptor while constructing the type.
+            Tracked.raw = property(read_raw)
+            return Tracked()
+        return buffer
+
+    def evaluate(context, input_pointer, output_pointer, error_pointer):
+        out = ctypes.cast(output_pointer, ctypes.POINTER(cabi.Output)).contents
+        for i, message in enumerate(payloads):
+            failed = i in (2, 3)
+            out.energies[i] = np.nan if failed else i+.25
+            for j in range(3):
+                out.forces[3*i+j] = np.nan if failed else -float(i)
+            out.structure_status[i] = 2 if failed else 0
+            ctypes.memmove(out.structure_messages+i*out.structure_message_stride, message+b"\0", len(message)+1)
+        return 0
+
+    pes._evaluate = evaluate
+    monkeypatch.setattr(ctypes, "create_string_buffer", tracked_buffer)
+    try:
+        result = pes.evaluate(np.zeros((n, 1, 3)))
+    finally:
+        pes.close()
+    assert copies == [n*512]
+    assert result.messages == tuple(message.decode(errors="replace") for message in payloads)
+    np.testing.assert_array_equal(result.status, [0, 0, 2, 2, 0, 0, 0])
+    assert np.isnan(result.energy[[2, 3]]).all()
+    np.testing.assert_array_equal(result.energy[[0, 1, 4, 5, 6]], [.25, 1.25, 4.25, 5.25, 6.25])

@@ -444,6 +444,7 @@ def reconstruct_fes(
     min_count=1,
     overlap_threshold=1e-6,
     return_reweighting=False,
+    correlation_observables=None,
 ):
     """Reconstruct 1D/2D density w.r.t. ds1...dsD, not bin probability mass.
 
@@ -457,6 +458,14 @@ def reconstruct_fes(
     axis defaults to [-period/2, period/2] and may cover at most one period.
     The error is relative to the original minimum bin, which is held fixed in
     every bootstrap draw. Per-bin valid-draw counts expose missing support.
+
+    ``correlation_observables`` optionally supplies one finite real [Ns,M]
+    array per stream, with the same M >= 1 across streams. Its observations
+    must be aligned to the CV samples. The largest statistical inefficiency
+    among CVs and these additional observables controls diagnostics and block
+    lengths only; MBAR samples, raw counts and point weights are unchanged.
+    This allows a hidden coordinate to enlarge correlation blocks without
+    treating it as an additional biased CV or changing the target measure.
     """
     arrays = [np.asarray(a, float) for a in samples]
     if not arrays or any(a.ndim != 2 or not len(a) for a in arrays):
@@ -466,6 +475,28 @@ def reconstruct_fes(
         a.shape[1] != d or not np.isfinite(a).all() for a in arrays
     ):
         raise ValueError("FES supports finite one- or two-dimensional samples")
+    extra = None
+    if correlation_observables is not None:
+        try:
+            supplied = list(correlation_observables)
+        except TypeError as exc:
+            raise ValueError("correlation_observables requires one [Ns,M] array per stream") from exc
+        if len(supplied) != len(arrays):
+            raise ValueError("correlation_observables stream count must match samples")
+        extra = []
+        for index, (value, sample) in enumerate(zip(supplied, arrays)):
+            value = np.asarray(value)
+            if (value.dtype.kind not in "fiu" or value.ndim != 2
+                    or value.shape[0] != len(sample) or value.shape[1] < 1
+                    or not np.isfinite(value).all()):
+                raise ValueError(f"correlation_observables stream {index} must be finite real [Ns,M] aligned with samples")
+            if extra and value.shape[1] != extra[0].shape[1]:
+                raise ValueError("correlation_observables must have the same M in every stream")
+            with np.errstate(over="ignore", invalid="ignore"):
+                value = np.asarray(value, dtype=float)
+            if not np.isfinite(value).all():
+                raise ValueError(f"correlation_observables stream {index} must be finite float64 observations")
+            extra.append(value)
     centers = np.asarray(centers, float)
     if centers.shape != (len(arrays), d) or not np.isfinite(centers).all():
         raise ValueError("one finite center per sampling stream required")
@@ -561,7 +592,11 @@ def reconstruct_fes(
                 observables.extend((np.sin(angle), np.cos(angle)))
         return statistical_inefficiency(np.column_stack(observables))
 
-    gs = np.array([stream_inefficiency(a) for a in arrays])
+    cv_gs = np.array([stream_inefficiency(a) for a in arrays])
+    gs = cv_gs
+    if extra is not None:
+        extra_gs = np.array([statistical_inefficiency(a) for a in extra])
+        gs = np.maximum(cv_gs, extra_gs)
     block_plan = _bootstrap_block_plan(counts, gs)
     se = np.full_like(f, np.nan)
     connected = len(set(mbar.components)) == 1
@@ -659,6 +694,9 @@ def reconstruct_fes(
     }
     if return_reweighting:
         result["_reweighting"] = UmbrellaReweighting.from_result(mbar, u, counts, overlap_threshold)
+    if extra is not None:
+        result["cv_statistical_inefficiency"] = cv_gs
+        result["additional_statistical_inefficiency"] = extra_gs
     return result
 
 
