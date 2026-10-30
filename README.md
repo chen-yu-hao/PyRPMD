@@ -1,12 +1,12 @@
 # PyRPMD
 
-**Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维自由能面、自适应伞抽样和 metadynamics。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
+**Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维自由能面、自适应伞抽样和 metadynamics；当前开发版还加入固定晶胞表面的自由能与一阶 RPMD 速率工作流。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
 
 本项目是初始科研实现。随附示例用于验证算法和程序连接；真实化学体系仍需要合适的势能面、通道定义及珠子数、步长、采样、远区距离和回穿时间等收敛检查。程序会分别报告有限采样估计、失败/未决轨迹和诊断，不把一次运行成功标成物理收敛。
 
 ## 已实现
 
-| 需求 | 0.2.0 行为 |
+| 需求 | 当前行为 |
 | --- | --- |
 | 自由 Python 输入 | `.py` 中 `build()` 返回 `JobSpec` 或字典；自定义 PES、CV、产物分类器通过可导入 factory 构造 |
 | 简单 `.inp` | TOML，严格检查字段、单位、原子索引、输入相对路径；命令行可覆盖 PES、温度、珠子数、轨迹进程数 |
@@ -16,6 +16,7 @@
 | 并行 | 轨迹/窗口进程并行、持续珠子势能进程池、MPI `G × B` 分组、OpenMP、CUDA 多设备和每卡多轨迹进程 |
 | 2D FES | 二维 umbrella、完整 CV Jacobian、MBAR、窗口重叠图、相关块 bootstrap、未采样区域 mask、保存后重新分析 |
 | 速率 PMF | Gaussian UI 或 histogram MBAR；可固定分割面，同 draw UI/MBAR 配对对照，逐次保存 bootstrap 失败原因 |
+| 表面催化 | 倾斜晶胞／部分 PBC、固定底层、ASE 周期 PES、表面高度／迁移 CV、FES 和 `surface_rate` 一阶盆地归一化＋回穿；[范围与示例](docs/surface-catalysis.md) |
 | 等价交换通道 | 原子置换生成等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；显式区分 H + H₂ 两个交换出口 |
 | 多入口 / 多 TS | 同一原子与同位素系统的不同入口分区、独立 TS 参考结构与 PES；每条路径执行完整 PMF + recrossing，输出独立速率矩阵 |
 | 可选积分器 | `cayley-bcb`、`normal-mode-bab`、`velocity-verlet`；两套原生 block API、Andersen 母链、centroid RATTLE 均保留所选方法 |
@@ -35,7 +36,7 @@ MPI 路径已在**同一台机器的 4 个真实 MPI 进程**中测试。跨物�
 从源码安装，而非假定已有同名 PyPI 发布：
 
 ```bash
-git clone https://github.com/chen-yu-hao/PyRPMD.git
+git clone https://github.com/chen-yu-hao/PyRPMD.git PyRPMD
 cd PyRPMD
 python -m venv .venv
 source .venv/bin/activate
@@ -81,6 +82,9 @@ pyrpmd checkpoint runs/meta/checkpoints/metadynamics_0000.npz --require-integrit
 
 # 实际 2 组轨迹 × 每组 2 路珠子势能。
 mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
+
+# 固定周期表面上的一阶迁移速率，输出 s^-1；解析教学模型。
+pyrpmd run examples/surface/diffusion.inp --output runs/surface-diffusion
 ```
 
 所有示例都可以先运行 `validate`。`validate --check-pes` 还会初始化并评估势能；对 TS-only 速率输入，这也会进行数值准备。每次新运行使用新目录；续跑使用 `resume` 或原输入的 `run --resume`。
@@ -205,7 +209,7 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 | `src/pyrpmd/dynamics.py`, `native/` | 三种完整环积分器、动量采样、热化、C++/OpenMP |
 | `src/pyrpmd/potentials/` | 统一势能接口及各类适配器 |
 | `src/pyrpmd/cv.py`, `bias.py` | CV、完整 Jacobian、umbrella、速率 flux metric、历史 Gaussian bias |
-| `src/pyrpmd/workflows/`, `reactions.py` | rate、dRPMD、FES、自适应窗口、metadynamics、多 TS 组织与准备 |
+| `src/pyrpmd/workflows/`, `reactions.py` | rate、dRPMD、表面速率、FES、自适应窗口、metadynamics、多 TS 组织与准备 |
 | `src/pyrpmd/analysis/` | MBAR、umbrella integration、metadynamics bias FES、统计诊断 |
 | `src/pyrpmd/checkpoint.py`, `runner.py` | 原子状态容器、完整性验证、科学运行身份与公共入口 |
 | `src/pyrpmd/parallel/` | 轨迹进程池、珠子池、MPI、GPU 放置 |
@@ -219,6 +223,7 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 - [原生传播与兼容性](docs/native-propagation.md)、[分段 API 与故障处理](docs/block-propagation.md)
 - [积分器选择](docs/integrators.md)、[多入口与多 TS](docs/reaction-networks.md)
 - [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
+- [表面催化与周期 slab](docs/surface-catalysis.md)
 - [公共接口约定](docs/interfaces.md)、[checkpoint 与恢复规范](docs/checkpoints.md)
 
 运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据及 `results/summary.json`。FES 另有 `fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条初始状态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。

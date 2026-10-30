@@ -41,6 +41,10 @@ FLUX_MEASURE = "delta(xi-x) * sqrt(grad(xi) M^-1 grad(xi)/(2*pi*beta))"
 
 
 def rate_coordinate(config, system):
+    if config.get("task") == "surface_rate":
+        from .surface import surface_definition
+
+        return surface_definition(config, system)["coordinate"]
     reaction = config["reaction"]
     return RPMDrateCoordinate(
         reaction["fragments"],
@@ -51,6 +55,12 @@ def rate_coordinate(config, system):
         reaction["rinf"],
         equivalent_paths=reaction.get("equivalent_paths"),
     )
+
+
+def _pmf_method(config):
+    if config.get("task") == "surface_rate":
+        return "mbar_surface_density"
+    return rate_pmf_options(config)["method"]
 
 
 def _normal(surface, q, masses):
@@ -93,20 +103,28 @@ def constrained_step(dynamics, state, surface, tolerance=1e-10, max_iterations=5
     commute with all internal modes. A new-normal tangent projection follows
     the force at the constrained final position, as required by RATTLE.
     """
+    dynamics._check_parameters()
+    dynamics.integrator._check(state.q, state.p)
+    dynamics._check_fixed(state.q, state.p)
     q = state.q.copy()
     p = state.p.copy()
     m = dynamics.masses[:, None]
     dt = dynamics.dt
     initial, g0, _ = _normal(surface, q, dynamics.masses)
+    if dynamics.fixed_atoms and np.any(g0[list(dynamics.fixed_atoms)] != 0):
+        raise ValueError("constrained surface gradients must exclude fixed atoms")
     if abs(initial) > max(1e-8, 10 * tolerance):
         raise ValueError("parent state is not on the dividing surface")
     dynamics.integrator.kick(p, dynamics._force(q), 0.5 * dt)
     dynamics.integrator.free_step(q, p)
+    dynamics._project_fixed(q, p)
     free = q.copy()
     direction = g0 / m
     lam = 0.0
     for _ in range(max_iterations):
         value, g, _ = _normal(surface, q, dynamics.masses)
+        if dynamics.fixed_atoms and np.any(g[list(dynamics.fixed_atoms)] != 0):
+            raise ValueError("constrained surface gradients must exclude fixed atoms")
         if abs(value) < tolerance:
             break
         derivative = float(np.sum(g * direction))
@@ -121,6 +139,7 @@ def constrained_step(dynamics, state, surface, tolerance=1e-10, max_iterations=5
     p += lam / dt * g0[None]
     dynamics.integrator.kick(p, dynamics._force(q), 0.5 * dt)
     project_momenta(p, q, surface, dynamics.masses)
+    dynamics._project_fixed(q, p)
     if not np.isfinite(q).all() or not np.isfinite(p).all():
         raise FloatingPointError("nonfinite parent state")
     state.q[:] = q
@@ -203,7 +222,7 @@ def _parent_task(task):
     options = task["options"]
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
     chain = int(task["chain"])
-    method = rate_pmf_options(config)["method"]
+    method = _pmf_method(config)
     provider = make_task_potential(config["potential"], system)
     checkpoint = Path(task["output"]) / "checkpoints" / f"parent_{chain:04d}.npz"
     identity = _fingerprint(
@@ -221,6 +240,8 @@ def _parent_task(task):
             seed=np.random.SeedSequence([int(config.get("seed", 0)), 211, chain]),
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            fixed_atoms=system.fixed_atoms,
+            fixed_positions=system.geometry,
             **loop_options(config),
         )
         snapshots = []
@@ -232,8 +253,11 @@ def _parent_task(task):
                 state = State(
                     saved["q"], saved["p"], int(saved["step"]), float(saved["time"])
                 )
+                dyn._check_fixed(state.q, state.p)
                 dyn.rng.bit_generator.state = json.loads(str(saved["rng"]))
                 snapshots = list(saved["snapshots"])
+                for snapshot in snapshots:
+                    dyn._check_fixed(snapshot, np.zeros_like(snapshot))
                 elapsed = int(saved["elapsed"])
                 if "propagation" in saved:
                     dyn.propagation_stats = json.loads(str(saved["propagation"]))
@@ -330,7 +354,7 @@ def _child_task(task):
     nsteps = task["child_steps"]
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
     chain, parent, pair = task["chain"], task["parent"], task["pair"]
-    method = rate_pmf_options(config)["method"]
+    method = _pmf_method(config)
     provider = make_task_potential(config["potential"], system)
     checkpoint = (
         Path(task["output"])
@@ -391,10 +415,13 @@ def _child_task(task):
             ),
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            fixed_atoms=system.fixed_atoms,
+            fixed_positions=system.geometry,
             **loop_options(config),
         )
         q = np.asarray(task["q"])
         p = dyn.sample_momenta()
+        dyn._check_fixed(q, p)
         constraint, g, z = _normal(surface, q, system.masses)
         tolerance = float(_recrossing_spec(config).get("constraint_tolerance", 1e-10))
         if abs(constraint) > max(1e-8, 10 * tolerance):
@@ -424,7 +451,7 @@ def _child_task(task):
             else:
                 for step in range(nsteps):
                     dyn.step(state)
-                    dyn.propagation_stats["python_steps"] += 1
+                    dyn._record_python_steps(1)
                     value, _ = surface.centroid_value_gradient(state.q.mean(axis=0))
                     if value > 0:
                         numerator[step] += weight
@@ -920,19 +947,24 @@ def _child_tasks(parents, config, system, output, options, pmf):
 
 
 def _aggregate(children, pmf, config, output, options):
+    is_surface = config.get("task") == "surface_rate"
+    task_name = "surface_rate" if is_surface else "rate"
+    unit_key = "s_inv" if is_surface else "cm3_s"
+    qtst_key = "k_qtst_" + unit_key
+    private_pmf = ("pmf_bootstrap_barriers", "pmf_bootstrap_qtst")
     if not children:
         pmf_status = pmf.get("status", "insufficient_overlap")
         result = {
-            "task": "rate",
+            "task": task_name,
             "status": (
                 pmf_status if pmf_status != "ready" else "insufficient_recrossing"
             ),
             "converged": False,
-            "rate_cm3_s": None,
-            "rate_estimate_cm3_s": None,
-            "rate_standard_error_cm3_s": None,
+            "rate_" + unit_key: None,
+            "rate_estimate_" + unit_key: None,
+            "rate_standard_error_" + unit_key: None,
             "kappa": None,
-            "pmf": {k: v for k, v in pmf.items() if k != "pmf_bootstrap_barriers"},
+            "pmf": {k: v for k, v in pmf.items() if k not in private_pmf},
             "warnings": pmf["warnings"],
         }
         write_json(Path(output) / "summary.json", result)
@@ -942,7 +974,7 @@ def _aggregate(children, pmf, config, output, options):
             raise ValueError("recrossing child belongs to another dividing surface")
         if "pmf_method" in child and child["pmf_method"] != pmf.get("method", "ui"):
             raise ValueError("recrossing child belongs to another PMF method")
-    if not pmf.get("ready", True) or pmf.get("k_qtst_cm3_s") is None:
+    if not pmf.get("ready", True) or pmf.get(qtst_key) is None:
         raise ValueError(
             "cannot combine recrossing trajectories with an unsupported PMF"
         )
@@ -1018,28 +1050,41 @@ def _aggregate(children, pmf, config, output, options):
         options["plateau_tolerance"] * abs(estimate), 2 * (drift_error or 0.0)
     )
     plateau = bool(tail >= 10 and abs(drift) <= threshold and estimate > 0)
-    candidate = pmf["k_qtst_cm3_s"] * estimate
+    candidate = pmf[qtst_key] * estimate
     total_boot = []
     barriers = pmf.get("pmf_bootstrap_barriers", [])
-    if len(barriers) >= 2 and len(boots) >= 2:
+    qtst_draws = pmf.get("pmf_bootstrap_qtst", [])
+    pmf_draws = qtst_draws if is_surface else barriers
+    if is_surface and len(qtst_draws) >= 2 and len(boots) >= 2:
+        total_boot = [float(rng.choice(qtst_draws)) * kval for kval in boots]
+    elif not is_surface and len(barriers) >= 2 and len(boots) >= 2:
         for kval in boots:
             barrier = rng.choice(barriers)
             total_boot.append(
-                pmf["k_qtst_cm3_s"]
+                pmf[qtst_key]
                 * np.exp(
                     -config["beta"] * (barrier - pmf["free_energy_barrier_hartree"])
                 )
                 * kval
             )
     error = float(np.std(total_boot, ddof=1)) if len(total_boot) > 1 else None
+    supported_draw_error = error
     conditional_error = (
-        abs(pmf["k_qtst_cm3_s"]) * stderr if stderr is not None else None
+        abs(pmf[qtst_key]) * stderr if stderr is not None else None
     )
     uncertainty_reasons = []
-    if len(barriers) < 2:
+    if len(pmf_draws) < 2:
         uncertainty_reasons.append("fewer_than_two_valid_pmf_bootstrap_draws")
     if len(boots) < 2:
         uncertainty_reasons.append("fewer_than_two_valid_recrossing_bootstrap_draws")
+    pmf_bootstrap = pmf.get("bootstrap", {})
+    rejected_pmf_draws = max(0, pmf_bootstrap.get("attempted", 0) - pmf_bootstrap.get("valid", 0))
+    if is_surface and rejected_pmf_draws:
+        uncertainty_reasons.append("pmf_bootstrap_contains_unsupported_draws")
+        # A confidence interval conditional on complete histogram support is
+        # not an unconditional joint interval. Preserve it under an explicit
+        # conditional label, and withhold the primary uncertainty fields.
+        error = None
     times = np.arange(1, len(transmission) + 1) * config["dt_au"]
     _atomic_npz(
         Path(output) / "recrossing.npz",
@@ -1063,7 +1108,7 @@ def _aggregate(children, pmf, config, output, options):
         warnings.append(
             "Complete rate uncertainty is unavailable: "
             + "; ".join(uncertainty_reasons)
-            + ". Any conditional uncertainty holds the PMF barrier fixed."
+            + ". Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
         )
     if not plateau:
         warnings.append(
@@ -1102,25 +1147,25 @@ def _aggregate(children, pmf, config, output, options):
         and energy_diagnostics_complete
         and endpoint_error * config["beta"] <= 0.1
     )
-    public_pmf = {k: v for k, v in pmf.items() if k != "pmf_bootstrap_barriers"}
+    public_pmf = {k: v for k, v in pmf.items() if k not in private_pmf}
     result = {
-        "task": "rate",
+        "task": task_name,
         "status": "plateau_estimate" if valid else "pilot_requires_convergence",
-        "rate_cm3_s": candidate if valid else None,
-        "rate_estimate_cm3_s": candidate,
-        "rate_standard_error_cm3_s": error,
-        "rate_percentile_95_ci_cm3_s": (
+        "rate_" + unit_key: candidate if valid else None,
+        "rate_estimate_" + unit_key: candidate,
+        "rate_standard_error_" + unit_key: error,
+        "rate_percentile_95_ci_" + unit_key: (
             np.quantile(total_boot, [0.025, 0.975]).tolist()
-            if len(total_boot) >= 2
+            if len(total_boot) >= 2 and not (is_surface and rejected_pmf_draws)
             else None
         ),
-        "conditional_rate_standard_error_cm3_s": conditional_error,
+        "conditional_rate_standard_error_" + unit_key: conditional_error,
         "rate_uncertainty": {
             "available": error is not None,
             "reasons": uncertainty_reasons,
-            "pmf_bootstrap_valid": len(barriers),
+            "pmf_bootstrap_valid": len(pmf_draws),
             "recrossing_bootstrap_valid": len(boots),
-            "conditional_quantity": "recrossing uncertainty with the PMF barrier held fixed",
+            "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
             "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
         },
         "kappa": estimate,
@@ -1142,17 +1187,35 @@ def _aggregate(children, pmf, config, output, options):
         "pmf": public_pmf,
         "warnings": warnings,
         "converged": False,
-        "convergence_note": "A detected time plateau is not bead, timestep, Rinf or statistical convergence.",
+        "convergence_note": (
+            "A finite-time plateau does not establish bead, timestep, slab size, basin truncation or sampling convergence."
+            if is_surface else "A detected time plateau is not bead, timestep, Rinf or statistical convergence."
+        ),
         "files": {
-            "pmf": str(Path(output) / "rate_pmf.csv"),
+            "pmf": str(Path(output) / ("surface_pmf.csv" if is_surface else "rate_pmf.csv")),
             "recrossing": str(Path(output) / "recrossing.csv"),
         },
     }
+    if is_surface:
+        result["rate_uncertainty"].update(
+            pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
+            pmf_bootstrap_attempted=pmf_bootstrap.get("attempted", 0),
+            pmf_bootstrap_rejected=rejected_pmf_draws,
+            independence_assumption="Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically.",
+        )
+        if rejected_pmf_draws:
+            result["supported_draw_rate_standard_error_s_inv"] = supported_draw_error
+            result["supported_draw_rate_percentile_95_ci_s_inv"] = (
+                np.quantile(total_boot, [0.025, 0.975]).tolist() if len(total_boot) >= 2 else None
+            )
+            result["rate_uncertainty"]["supported_draw_condition"] = "conditional on the bootstrap draw having complete basin-to-surface support"
     write_json(Path(output) / "summary.json", result)
     return result
 
 
 def run_rate(config, system, output, executor=None):
+    if any(system.pbc) or system.fixed_atoms:
+        raise ValueError("Gas-phase run_rate does not support periodic/fixed-atom systems; use surface_rate")
     config = root_call(_prepare, config, system, str(output))
     options = _recrossing_options(config)
     sampling_config = config

@@ -3,6 +3,7 @@ include pyproject.toml setup.py
 include native/CMakeLists.txt native/README.md native/ABI.md
 recursive-include native *.cpp *.h *.hpp *.c
 recursive-include docs *.md *.json *.png *.pdf *.py
+recursive-include docs/validation/surface-catalysis-2026-10-30 *.txt
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
 recursive-include tests *.py
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json

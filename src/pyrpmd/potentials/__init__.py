@@ -19,6 +19,48 @@ from .cabi import CABIPotential, build_object
 
 
 def make_potential(config, system=None):
+    """Create a provider and explicitly bind fixed-cell boundary conditions.
+
+    Periodic custom providers must declare ``metadata['supports_pbc']=True``
+    and implement ``bind_system(system)``. That callback always receives the
+    System in canonical atomic units, including when its coordinate adapter
+    uses other units. Unsupported providers fail before acquiring resources.
+    """
+    periodic = any(
+        system.get("pbc", (False, False, False))
+        if isinstance(system, dict)
+        else getattr(system, "pbc", (False, False, False))
+    )
+    if periodic and isinstance(config, dict):
+        kind = config.get("provider", config.get("type", "builtin"))
+        if kind not in ("ase", "python"):
+            raise PotentialError(
+                f"PES provider {kind!r} does not support System cell/PBC; "
+                "use ASE or an explicitly periodic Python provider"
+            )
+    provider = _make_potential(config, system)
+    try:
+        bind = getattr(provider, "bind_system", None)
+        metadata = getattr(provider, "metadata", {})
+        if periodic and (
+            not isinstance(metadata, dict)
+            or metadata.get("supports_pbc") is not True
+            or not callable(bind)
+        ):
+            raise PotentialError(
+                "Periodic PES must declare metadata['supports_pbc']=True "
+                "and implement bind_system(system); cell/PBC cannot be ignored"
+            )
+        if callable(bind) and system is not None:
+            bind(system)
+    except BaseException:
+        if provider is not config and callable(getattr(provider, "close", None)):
+            provider.close()
+        raise
+    return provider
+
+
+def _make_potential(config, system=None):
     """Create one process-local provider from a serializable specification.
 
     An already constructed provider/callable is accepted for serial Python jobs.
@@ -84,7 +126,10 @@ def make_potential(config, system=None):
     if kind == "ase":
         from .optional import ASEPotential
 
-        return ASEPotential(get("symbols"), import_object(spec["factory"])(**params))
+        return ASEPotential(
+            get("symbols"), import_object(spec["factory"])(**params),
+            cell=get("cell"), pbc=get("pbc", (False, False, False)),
+        )
     if kind == "torch":
         from .optional import TorchPotential
 

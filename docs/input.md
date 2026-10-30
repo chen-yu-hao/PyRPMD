@@ -7,7 +7,7 @@
 | 字段 | 类型、单位与含义 |
 | --- | --- |
 | `schema_version` | 当前为整数 1 |
-| `task` | `rate`、`drpmd`、`fes`、`network`、`metadynamics` |
+| `task` | `rate`、`drpmd`、`fes`、`surface_rate`、`network`、`metadynamics` |
 | `preset` | `pilot`（缺省）或 `production` |
 | `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
 | `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
@@ -28,6 +28,17 @@
 `[system]` 可使用 `transition_state="ts.xyz"`、`geometry="system.xyz"`，或 `reactants=["A.xyz","B.xyz"]` 加 `separation="12 angstrom"`。dRPMD 的 separation 是两个反应物 centroid COM 的初始**径向距离** R0；发射时使用 `z=sqrt(R0^2-b^2)` 保持径向距离，需 `bmax<R0`。
 
 Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（电子质量）或 `masses_amu`。`geometry_unit` 可覆盖坐标单位。同位素可用 `isotopes=[{atom=0, mass="2.01410177812 amu"}]`。质量在反应物居中和放置前解析。电荷 `charge` 为整数，`multiplicity` 为正整数，默认 0 和 1；须与所选电子势能面一致。软件不从几何自动推断自旋统计权重。
+
+## 周期表面
+
+周期表面新增 `system.cell`（3×3 行向量）、独立的 `cell_unit`（数值默认 bohr）、
+`pbc=[true,true,false]` 和 `fixed_atoms=[...]`。这些字段参与恢复的科学指纹。
+`task="surface_rate"` 还要求 `[surface]` 的 `reactant_basin` 和 `dividing_surface`；
+`product_side` 为 `higher`（默认）或 `lower`。速率使用位置密度 PMF 和一阶盆地
+归一化，单位 s^-1，仅支持内置线性 centroid 坐标。已有气相 `rate`／`drpmd`／
+`network` 会拒绝周期／固定原子系统。表面 FES 可使用自适应伞抽样；当前
+`surface_rate` 不接受 `[adaptive_umbrella]`，`metadynamics` 尚不接受周期／固定
+原子系统。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
 
 ## 热化与持续母轨迹
 
@@ -176,7 +187,7 @@ bootstrap = 100
 min_count = 5
 ```
 
-内置 CV 包括 distance、bond_difference、angle、cartesian、com_distance、rpmdrate_xi 和 python。内置几何 CV 可选择 `centroid` 或 `bead_average`；自定义 CV 返回自己定义的完整 estimator 和导数。`stiffness` 可为标量、对角数组或对称正定矩阵。数值 centers 使用声明的 CV 输入单位；`centers_au` 与数值 stiffness 使用原子单位，带单位字符串按量纲验证。
+内置 CV 包括 distance、bond_difference、angle、cartesian、com_distance、rpmdrate_xi、surface_height、surface_lateral、periodic_distance 和 python。内置几何 CV 可选择 `centroid` 或 `bead_average`；自定义 CV 返回自己定义的完整 estimator 和导数。`stiffness` 可为标量、对角数组或对称正定矩阵。数值 centers 使用声明的 CV 输入单位；`centers_au` 与数值 stiffness 使用原子单位，带单位字符串按量纲验证。
 
 输出 FES 是相对于所选 CV 测度的密度：例如距离 CV 的自由能自然包含径向熵，不自动把它变成去除 Jacobian 的两体势。没有样本或连通重叠支持的区域 mask，不外推。`analyze --recompute --bins ... --bootstrap ...` 使用保存的样本重新估计而不调用 PES。
 

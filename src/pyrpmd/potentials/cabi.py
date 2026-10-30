@@ -153,6 +153,16 @@ def build_object(library, manifest, cache_directory=None):
 
 class CABIPotential(Potential):
     def __init__(self, library, config=None, system=None, manifest=None):
+        periodic = (
+            system.get("pbc", (False, False, False))
+            if isinstance(system, dict)
+            else getattr(system, "pbc", (False, False, False))
+        )
+        if any(periodic):
+            raise PotentialError(
+                "C ABI v1 supports nonperiodic systems only; System cell/PBC "
+                "requires a periodic ASE or Python provider"
+            )
         path = Path(library).resolve()
         if path.suffix == ".o":
             path = build_object(path, manifest)

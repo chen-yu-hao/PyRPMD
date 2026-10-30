@@ -76,7 +76,7 @@ def _initialize_output(config, system, output, resume=False):
     for child in ("input", "results", "checkpoints", "samples", "logs"):
         (path / child).mkdir(exist_ok=True)
     versions = {}
-    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch"):
+    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch", "ase"):
         try:
             versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
@@ -144,6 +144,10 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.rate import run_rate
 
         result = run_rate(config, system, Path(target))
+    elif config["task"] == "surface_rate":
+        from .workflows.surface import run_surface_rate
+
+        result = run_surface_rate(config, system, Path(target))
     elif config["task"] == "metadynamics":
         from .workflows.metadynamics import run_metadynamics
 
@@ -270,7 +274,7 @@ def prepare(job, *, numerical=False):
             result["diagnostics"].append(
                 "Pilot simulations are available; production estimation requires a converged bmax and an explicit validated outcome classifier"
             )
-    elif config["task"] == "fes":
+    elif config["task"] in ("fes", "surface_rate"):
         from .workflows.fes import resolve_umbrellas
 
         cv, specs, centers, stiffness = resolve_umbrellas(config, system)
@@ -281,6 +285,13 @@ def prepare(job, *, numerical=False):
             "centers_au": centers,
             "stiffness_au": stiffness,
         }
+        if config["task"] == "surface_rate":
+            from .workflows.surface import surface_definition
+
+            definition = surface_definition(config, system)
+            result["surface_preparation"] = {
+                key: value for key, value in definition.items() if key != "coordinate"
+            }
     elif config["task"] == "metadynamics":
         from .workflows.metadynamics import validate_metadynamics
 

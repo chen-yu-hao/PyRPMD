@@ -81,9 +81,25 @@ class PythonPotential(Potential):
         self.metadata = dict(getattr(obj, "metadata", {}) or {})
         self.metadata.setdefault("thread_safety", "context_serial")
         self.metadata.setdefault("execution_device", "cpu")
+        self._periodic = False
+
+    def bind_system(self, system):
+        """Forward canonical-AU geometry and cell to an explicit PES callback."""
+        self._periodic = any(
+            system.get("pbc", (False, False, False))
+            if isinstance(system, dict)
+            else getattr(system, "pbc", (False, False, False))
+        )
+        bind = getattr(self.obj, "bind_system", None)
+        if self._periodic and not callable(bind):
+            raise PotentialError("Periodic Python PES must implement bind_system(system)")
+        if callable(bind):
+            bind(system)
 
     def native_binding(self):
         from ..propagation import NativeUnavailableError
+        if self._periodic:
+            raise NativeUnavailableError("periodic Python PES requires the cell-aware Python route")
         if type(self) is not PythonPotential or self.sign != 1 or self.length_factor != 1 or self.energy_factor != 1:
             raise NativeUnavailableError("custom or unit-converting Python PES requires Python")
         if "evaluate" in self.__dict__ or self.fn != (self.obj.evaluate if hasattr(self.obj, "evaluate") else self.obj):

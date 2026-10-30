@@ -23,17 +23,44 @@ class ASEPotential(Potential):
         "provider": "ase",
         "thread_safety": "context_serial",
         "execution_device": "cpu",
+        "supports_pbc": True,
     }
 
-    def __init__(self, symbols, calculator):
+    def __init__(self, symbols, calculator, *, cell=None, pbc=(False, False, False)):
         try:
             from ase import Atoms
         except ImportError as exc:
             raise BackendUnavailableError(
                 "ASE provider requires pip install 'pyrpmd[ase]'"
             ) from exc
-        self.atoms = Atoms(symbols=symbols)
+        from ..geometry import validate_cell
+
+        cell, pbc = validate_cell(cell, pbc)
+        ase_symbols = (
+            ("H" if symbols in ("D", "T") else symbols)
+            if isinstance(symbols, str)
+            else ["H" if s in ("D", "T") else s for s in symbols]
+        )
+        self.atoms = Atoms(
+            symbols=ase_symbols,
+            cell=None if cell is None else cell * BOHR_ANGSTROM,
+            pbc=pbc,
+        )
         self.atoms.calc = calculator
+
+    def bind_system(self, system):
+        """Bind canonical-AU cell and boundary flags without wrapping positions."""
+        from ..geometry import validate_cell
+
+        def get(key, default=None):
+            return system.get(key, default) if isinstance(system, dict) else getattr(system, key, default)
+
+        cell, pbc = validate_cell(get("cell"), get("pbc", (False, False, False)))
+        symbols = get("symbols")
+        if symbols is not None and ["H" if s in ("D", "T") else s for s in symbols] != self.atoms.get_chemical_symbols():
+            raise PotentialError("ASE system atom identities differ from the provider")
+        self.atoms.set_cell(np.zeros((3, 3)) if cell is None else cell * BOHR_ANGSTROM)
+        self.atoms.set_pbc(pbc)
 
     def evaluate(self, x):
         x = coordinates(x)

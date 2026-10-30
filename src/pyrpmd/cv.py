@@ -95,6 +95,123 @@ class Distance(CollectiveVariable):
         return _distance(q, *self.atoms, hessian=True)
 
 
+class PeriodicDistance(Distance):
+    """Minimum-image distance in a fixed cell, away from image-switch seams.
+
+    The ring centroid is computed from continuous, unwrapped bead positions.
+    Atom-wise wrapped input must first be unwrapped by the caller.
+    """
+
+    def __init__(self, atoms, cell, pbc=(True, True, True), **kwargs):
+        from .geometry import validate_cell
+
+        super().__init__(atoms, **kwargs)
+        self.cell, self.pbc = validate_cell(cell, pbc)
+
+    def centroid_value_gradient_hessian(self, q):
+        from .geometry import minimum_image
+
+        a, b = self.atoms
+        if a == b or min(a, b) < 0 or max(a, b) >= len(q):
+            raise ValueError("periodic distance requires distinct in-range atom indices")
+        vector = minimum_image(q[a] - q[b], self.cell, self.pbc)
+        radius = float(np.linalg.norm(vector))
+        if radius < 1e-12:
+            raise ValueError("periodic distance derivative is undefined for coincident images")
+        unit = vector / radius
+        gradient = np.zeros_like(q)
+        gradient[a], gradient[b] = unit, -unit
+        hessian = np.zeros((len(q), 3, len(q), 3))
+        block = (np.eye(3) - np.outer(unit, unit)) / radius
+        for i, si in ((a, 1), (b, -1)):
+            for j, sj in ((a, 1), (b, -1)):
+                hessian[i, :, j, :] = si * sj * block
+        return radius, gradient, hessian
+
+    def centroid_value_gradient(self, q):
+        value, gradient, _ = self.centroid_value_gradient_hessian(q)
+        return value, gradient
+
+
+class _SurfaceProjection(CollectiveVariable):
+    """Linear COM projection in an unwrapped, fixed Cartesian frame."""
+
+    units = ("bohr",)
+    linear = True
+
+    def __init__(self, atoms, masses, direction, origin=0.0, reference_atoms=None, **kwargs):
+        super().__init__(**kwargs)
+        self.atoms = _indices(atoms)
+        self.reference_atoms = () if reference_atoms is None else _indices(reference_atoms)
+        raw_masses = np.asarray(masses)
+        if raw_masses.dtype.kind not in "iuf":
+            raise ValueError("surface CV masses must be real numerical values")
+        self.masses = np.asarray(raw_masses, dtype=float)
+        if self.masses.ndim != 1 or not np.isfinite(self.masses).all() or np.any(self.masses <= 0):
+            raise ValueError("surface CV masses must be finite and positive")
+        for indices in (self.atoms, self.reference_atoms):
+            if len(set(indices)) != len(indices) or any(i < 0 or i >= len(self.masses) for i in indices):
+                raise ValueError("surface CV atom groups need distinct in-range indices")
+        if not self.atoms or (reference_atoms is not None and not self.reference_atoms):
+            raise ValueError("surface CV atom groups must be nonempty")
+        if set(self.atoms).intersection(self.reference_atoms):
+            raise ValueError("surface CV adsorbate and reference groups must be disjoint")
+        raw_direction = np.asarray(direction)
+        if raw_direction.shape != (3,) or raw_direction.dtype.kind not in "iuf":
+            raise ValueError("surface CV direction must be a real three-vector")
+        direction = np.asarray(raw_direction, dtype=float)
+        norm = float(np.linalg.norm(direction))
+        if not np.isfinite(direction).all() or not np.isfinite(norm) or norm < 1e-12:
+            raise ValueError("surface CV direction must be finite and nonzero")
+        self.direction = direction / norm
+        if isinstance(origin, (bool, np.bool_)) or not np.isscalar(origin) or np.iscomplexobj(origin):
+            raise ValueError("surface CV origin must be a finite plane offset in bohr")
+        self.origin = float(origin)
+        if not np.isfinite(self.origin):
+            raise ValueError("surface CV origin must be finite")
+        self.weights = np.zeros(len(self.masses))
+        for sign, indices in ((1, self.atoms), (-1, self.reference_atoms)):
+            if indices:
+                ids = list(indices)
+                self.weights[ids] = sign * self.masses[ids] / self.masses[ids].sum()
+        self.gradient = self.weights[:, None] * self.direction[None]
+
+    def centroid_value_gradient(self, q):
+        if np.shape(q) != (len(self.masses), 3):
+            raise ValueError("surface CV coordinates do not match its System")
+        return float(np.sum(self.gradient * q) - self.origin), self.gradient.copy()
+
+    def centroid_value_gradient_hessian(self, q):
+        value, gradient = self.centroid_value_gradient(q)
+        return value, gradient, np.zeros((len(q), 3, len(q), 3))
+
+
+class SurfaceHeight(_SurfaceProjection):
+    """Signed adsorbate COM height above a fixed-normal surface plane.
+
+    With ``reference_atoms``, subtract their mass-weighted COM projection;
+    otherwise the plane is ``normal . r = origin``. The normal is normalized
+    once and does not rotate with surface motion. Group and ring coordinates
+    must be unwrapped before averaging; no minimum image is applied.
+    """
+
+    def __init__(self, atoms, masses, normal=(0, 0, 1), origin=0.0, reference_atoms=None, **kwargs):
+        super().__init__(atoms, masses, normal, origin, reference_atoms, **kwargs)
+        self.normal = self.direction
+
+
+class SurfaceLateral(_SurfaceProjection):
+    """Continuous COM displacement along a chosen surface migration direction.
+
+    The coordinate is deliberately not reduced modulo the cell. It describes
+    a local migration path, including one crossing a cell boundary; users
+    must provide a connected unwrapped geometry and specify the basin limits.
+    """
+
+    def __init__(self, atoms, masses, direction=(1, 0, 0), origin=0.0, reference_atoms=None, **kwargs):
+        super().__init__(atoms, masses, direction, origin, reference_atoms, **kwargs)
+
+
 class BondDifference(CollectiveVariable):
     units = ("bohr",)
 
@@ -425,9 +542,15 @@ class PythonCV:
         view.flags.writeable = False
         masses = self.system.masses.view()
         masses.flags.writeable = False
+        cell = None if self.system.cell is None else self.system.cell.view()
+        if cell is not None:
+            cell.flags.writeable = False
         state = SimpleNamespace(
             q=view,
             masses=masses,
+            cell=cell,
+            pbc=self.system.pbc,
+            fixed_atoms=self.system.fixed_atoms,
             atom_ids=self.system.atom_ids,
             step_index=0,
             time_au=0.0,
@@ -457,6 +580,26 @@ def make_cv(spec, system):
     kwargs = {"estimator": spec.get("estimator", "centroid"), "name": spec.get("name")}
     if kind == "distance":
         return Distance(spec["atoms"], **kwargs)
+    if kind == "periodic_distance":
+        if not any(system.pbc):
+            raise ValueError("periodic_distance requires periodic System boundaries")
+        return PeriodicDistance(spec["atoms"], system.cell, system.pbc, **kwargs)
+    if kind in ("surface_height", "surface_lateral"):
+        periodic_axes = np.flatnonzero(system.pbc)
+        normal = (0, 0, 1)
+        direction = (1, 0, 0)
+        if len(periodic_axes) == 2:
+            a, b = system.cell[periodic_axes]
+            normal = np.cross(a, b)
+            direction = a
+        common = {
+            "origin": parse_quantity(spec.get("origin", 0.0), "length"),
+            "reference_atoms": spec.get("reference_atoms"),
+            **kwargs,
+        }
+        if kind == "surface_height":
+            return SurfaceHeight(spec["atoms"], system.masses, normal=spec.get("normal", normal), **common)
+        return SurfaceLateral(spec["atoms"], system.masses, direction=spec.get("direction", direction), **common)
     if kind in ("difference", "bond_difference"):
         return BondDifference(
             atoms=spec.get("atoms"), bonds=spec.get("bonds"), **kwargs

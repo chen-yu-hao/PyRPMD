@@ -238,10 +238,19 @@ def resolve_umbrellas(config, system):
     return cv, selected, centers, stiffness
 
 
-def steer_to_center(q, cv, target, masses, max_steps=250, tolerance=1e-7):
+def steer_to_center(q, cv, target, masses, max_steps=250, tolerance=1e-7, *, fixed_atoms=()):
     """Mass-weighted geometric continuation; no dynamics samples are taken here."""
     q = np.asarray(q, float).copy()
     invmass = 1 / np.asarray(masses)[None, :, None]
+    raw_fixed = tuple(fixed_atoms)
+    if any(
+        isinstance(i, (bool, np.bool_))
+        or not isinstance(i, (int, np.integer))
+        or not 0 <= i < q.shape[1]
+        for i in raw_fixed
+    ) or len(set(raw_fixed)) != len(raw_fixed):
+        raise ValueError("fixed_atoms must contain distinct in-range integer atom indices")
+    invmass[:, list(raw_fixed), :] = 0.0
     target = np.asarray(target, float)
     for _ in range(max_steps):
         result = cv.value_and_jacobian(q)
@@ -255,6 +264,8 @@ def steer_to_center(q, cv, target, masses, max_steps=250, tolerance=1e-7):
         )
         multiplier = np.linalg.lstsq(metric, error, rcond=1e-12)[0]
         direction = -np.einsum("i,ipac->pac", multiplier, jac) * invmass
+        if not np.any(direction):
+            raise ValueError("umbrella center cannot be reached with the fixed atoms held in place")
         maxmove = np.max(np.linalg.norm(direction, axis=-1))
         if maxmove > 0.25:
             direction *= 0.25 / maxmove
@@ -386,6 +397,8 @@ def _sample_window(task):
             seed=seed,
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            fixed_atoms=getattr(system, "fixed_atoms", ()),
+            fixed_positions=system.geometry,
             **loop_options(config),
         )
         umbrella = UmbrellaBias(cv, center, stiffness)
@@ -429,8 +442,11 @@ def _sample_window(task):
                         geometry, coordinate, center[0], system.masses
                     )
             q = np.repeat(geometry[None], config["beads"], axis=0)
-            q = steer_to_center(q, cv, center, system.masses)
+            q = steer_to_center(q, cv, center, system.masses, fixed_atoms=dynamics.fixed_atoms)
             state = State(q, dynamics.sample_momenta())
+
+        # Validate even a completed checkpoint before accepting its samples.
+        dynamics._check_fixed(state.q, state.p)
 
         def save():
             _atomic_npz(
@@ -463,7 +479,7 @@ def _sample_window(task):
             else:
                 count = 1
                 dynamics.step(state, bias)
-                dynamics.propagation_stats["python_steps"] += 1
+                dynamics._record_python_steps(1)
             elapsed += count
             production = elapsed - neq
             if production > 0 and production % interval == 0:

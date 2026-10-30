@@ -218,6 +218,14 @@ def _surface_key(config, system):
     return json.dumps(jsonable(value), sort_keys=True, allow_nan=False)
 
 
+def _require_gas_phase_network(system):
+    if any(system.pbc) or system.fixed_atoms:
+        raise ValueError(
+            "Reaction networks use gas-phase bimolecular normalization and do not "
+            "support periodic systems or fixed atoms; use surface_rate for a surface exit"
+        )
+
+
 def resolve_network_job(mapping, *, base_directory=None, input_path=None):
     """Resolve a user network through the ordinary single-rate JobSpec rules.
 
@@ -240,6 +248,7 @@ def resolve_network_job(mapping, *, base_directory=None, input_path=None):
     channels = _records(specification.get("channels"), "network.channels", _CHANNEL_FIELDS)
     transitions = _records(specification.get("transition_states"), "network.transition_states", _TS_FIELDS)
     system = _system(raw.get("system", {}), transitions[min(transitions)], base)
+    _require_gas_phase_network(system)
     if isinstance(raw.get("seed", 0), (bool, np.bool_)) or not isinstance(raw.get("seed", 0), (int, np.integer)) or raw.get("seed", 0) < 0:
         raise ValueError("seed must be a nonnegative integer")
     seed = int(raw.get("seed", 0))
@@ -364,6 +373,7 @@ def resolve_network_job(mapping, *, base_directory=None, input_path=None):
 
 def validate_network(config, system):
     """Validate a resolved network, including identities saved for restart."""
+    _require_gas_phase_network(system)
     network = config.get("network", {})
     if config.get("task") != "network" or network.get("schema_version") != 1 or network.get("aggregation") != "separate":
         raise ValueError("Expected a resolved schema-v1 separate reaction network")
@@ -383,7 +393,10 @@ def validate_network(config, system):
         if ident in ids or job["entrance"] not in entrances or job["channel"] not in channels:
             raise ValueError("Invalid or duplicate resolved transition-state references")
         ids.add(ident)
+        if job["config"].get("task") != "rate":
+            raise ValueError("Network paths require gas-phase task='rate'")
         path_system = System.from_dict(job["system"])
+        _require_gas_phase_network(path_system)
         _check_identity(path_system.to_dict(), system, f"TS {ident}")
         _fragments(job["config"]["reaction"]["fragments"], system.natoms, f"TS {ident}.fragments")
         entrance = entrances[job["entrance"]]

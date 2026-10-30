@@ -23,11 +23,11 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing surface network metadynamics adaptive_umbrella".split()
 )
 _SECTIONS = {
     "system": set(
-        "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity".split()
+        "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
     ),
     "dynamics": set("timestep integrator native loop_backend block_steps".split()),
     "sampling": set(
@@ -63,6 +63,7 @@ _SECTIONS = {
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance".split()
     ),
+    "surface": set("reactant_basin dividing_surface product_side".split()),
     "metadynamics": set(
         "cvs mode sigma sigma_au height height_au pace bias_factor".split()
     ),
@@ -314,9 +315,18 @@ class JobSpec:
         if self.data.get("task") == "network":
             from .reactions import resolve_network_job
 
-            return resolve_network_job(
-                self.data, base_directory=self.base_directory, input_path=self.input_path
-            )
+            try:
+                resolved, system = resolve_network_job(
+                    self.data, base_directory=self.base_directory, input_path=self.input_path
+                )
+            except (ValueError, TypeError, KeyError) as error:
+                raise InputError(str(error)) from error
+            if any(system.pbc) or system.fixed_atoms:
+                raise InputError(
+                    "Gas-phase network normalization does not apply to periodic or fixed-atom systems; "
+                    "use fes or surface_rate for a slab"
+                )
+            return resolved, system
         d = deepcopy(self.data)
         unknown = set(d) - _ROOT
         if unknown:
@@ -335,8 +345,8 @@ class JobSpec:
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")
-        if task not in ("rate", "drpmd", "fes", "metadynamics"):
-            raise InputError("task must be rate, drpmd, fes, metadynamics or network")
+        if task not in ("rate", "drpmd", "fes", "surface_rate", "metadynamics"):
+            raise InputError("task must be rate, drpmd, fes, surface_rate, metadynamics or network")
         if "network" in d:
             raise InputError("[network] requires task='network'")
         if "metadynamics" in d and task != "metadynamics":
@@ -352,12 +362,18 @@ class JobSpec:
         analysis = d.get("analysis", {})
         if analysis.get("measure", "cv_density") not in ("cv_density", "rate_flux"):
             raise InputError("analysis.measure must be cv_density or rate_flux")
-        if task == "fes" and analysis.get("method", "mbar") != "mbar":
+        if task in ("fes", "surface_rate") and analysis.get("method", "mbar") != "mbar":
             raise InputError(
                 "The FES workflow uses MBAR; umbrella integration is part of the rate workflow"
             )
         if task == "rate" and analysis.get("measure", "rate_flux") != "rate_flux":
             raise InputError("Standard RPMD rates require analysis.measure='rate_flux'")
+        if task == "surface_rate" and analysis.get("measure", "cv_density") != "cv_density":
+            raise InputError("surface_rate requires analysis.measure='cv_density'")
+        if "surface" in d and task != "surface_rate":
+            raise InputError("[surface] is the basin/rate definition for task='surface_rate'")
+        if task == "surface_rate" and (d.get("rate") or d.get("reaction") or d.get("collision") or d.get("outcomes")):
+            raise InputError("surface_rate uses [surface] and [recrossing]; gas-phase reaction/rate/collision options do not apply")
         for name in (
             "bootstrap",
             "bootstrap_samples",
@@ -448,6 +464,23 @@ class JobSpec:
                 raise InputError(str(e)) from e
         if task == "drpmd" and len(system.fragments) != 2:
             raise InputError("dRPMD requires two disjoint reactant fragments")
+        if task in ("rate", "drpmd") and (any(system.pbc) or system.fixed_atoms):
+            raise InputError(
+                "Gas-phase rate/drpmd normalization does not apply to periodic or fixed-atom systems; "
+                "use fes or surface_rate for a slab"
+            )
+        if task == "metadynamics" and (any(system.pbc) or system.fixed_atoms):
+            raise InputError(
+                "Metadynamics does not yet support periodic or fixed-atom systems; "
+                "use the surface FES workflow"
+            )
+        if task == "surface_rate":
+            from .workflows.surface import surface_definition
+
+            try:
+                surface_definition(d, system)
+            except (ValueError, KeyError, TypeError) as e:
+                raise InputError(str(e)) from e
         potential = deepcopy(d.get("potential", {}))
         if not potential:
             raise InputError("Specify [potential] or --pes; no PES is guessed")

@@ -1281,6 +1281,9 @@ def run_drpmd(config, system, output, executor=None):
     never overwritten by the departing collision trajectory. All ranks call this
     function in MPI mode; its final summary is broadcast to all ranks.
     """
+    boundary = system if isinstance(system, dict) else system.to_dict()
+    if any(boundary.get("pbc", ())) or boundary.get("fixed_atoms"):
+        raise ValueError("Gas-phase dRPMD does not support periodic/fixed-atom systems; use a surface workflow")
     config = copy.deepcopy(config)
     config["outcomes"] = resolve_pilot_outcomes(
         system,

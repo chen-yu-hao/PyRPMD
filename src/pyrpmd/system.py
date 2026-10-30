@@ -61,6 +61,9 @@ class System:
     fragments: tuple[tuple[int, ...], ...] = ()
     charge: int = 0
     multiplicity: int = 1
+    cell: np.ndarray | None = None
+    pbc: tuple[bool, bool, bool] = (False, False, False)
+    fixed_atoms: tuple[int, ...] = ()
 
     def __post_init__(self):
         self.symbols = tuple(self.symbols)
@@ -74,6 +77,10 @@ class System:
         )
         self.charge = _integer(self.charge, "Charge")
         self.multiplicity = _integer(self.multiplicity, "Multiplicity", 1)
+        from .geometry import validate_cell
+
+        self.cell, self.pbc = validate_cell(self.cell, self.pbc)
+        self.fixed_atoms = tuple(_integer(i, "Fixed atom index", 0) for i in self.fixed_atoms)
         n = len(self.symbols)
         if n < 1 or self.masses.shape != (n,) or self.geometry.shape != (n, 3):
             raise ValueError("System needs N symbols, masses[N], geometry[N,3]")
@@ -85,6 +92,10 @@ class System:
             raise ValueError("System coordinates must be finite and masses positive")
         if any(s not in _Z and s not in ("D", "T") for s in self.symbols):
             raise ValueError("Unknown element symbol")
+        if len(set(self.fixed_atoms)) != len(self.fixed_atoms) or any(
+            i >= n for i in self.fixed_atoms
+        ):
+            raise ValueError("fixed_atoms must contain distinct in-range 0-based indices")
         if self.fragments:
             all_ids = [i for f in self.fragments for i in f]
             if any(not f for f in self.fragments) or sorted(all_ids) != list(range(n)):
@@ -106,8 +117,14 @@ class System:
     def atom_ids(self):
         return tuple(f"{s}{i}" for i, s in enumerate(self.symbols))
 
+    @property
+    def mobile_mask(self):
+        mask = np.ones(self.natoms, dtype=bool)
+        mask[list(self.fixed_atoms)] = False
+        return mask
+
     def to_dict(self):
-        return {
+        result = {
             "symbols": list(self.symbols),
             "masses": self.masses.tolist(),
             "geometry": self.geometry.tolist(),
@@ -115,6 +132,14 @@ class System:
             "charge": self.charge,
             "multiplicity": self.multiplicity,
         }
+        # Preserve fingerprints of existing nonperiodic/unconstrained runs.
+        if self.cell is not None:
+            result["cell"] = self.cell.tolist()
+        if any(self.pbc):
+            result["pbc"] = list(self.pbc)
+        if self.fixed_atoms:
+            result["fixed_atoms"] = list(self.fixed_atoms)
+        return result
 
     @classmethod
     def from_dict(cls, d):
@@ -125,6 +150,9 @@ class System:
             tuple(tuple(f) for f in d.get("fragments", [])),
             d.get("charge", 0),
             d.get("multiplicity", 1),
+            d.get("cell"),
+            d.get("pbc", (False, False, False)),
+            d.get("fixed_atoms", ()),
         )
 
 
@@ -199,6 +227,19 @@ def system_from_config(spec):
     isotopes = spec.get("isotopes", ())
     charge = spec.get("charge", 0)
     multiplicity = spec.get("multiplicity", 1)
+    cell = spec.get("cell")
+    if cell is not None:
+        raw_cell = np.asarray(cell)
+        if raw_cell.dtype.kind not in "iuf":
+            raise ValueError("cell must be a real numerical 3x3 matrix")
+        cell = raw_cell * parse_quantity(f"1 {spec.get('cell_unit', 'bohr')}", "length")
+    elif "cell_unit" in spec:
+        raise ValueError("cell_unit requires cell")
+    boundaries = {
+        "cell": cell,
+        "pbc": spec.get("pbc", (False, False, False)),
+        "fixed_atoms": spec.get("fixed_atoms", ()),
+    }
     if (
         "symbols" in spec
         and "geometry" in spec
@@ -217,6 +258,7 @@ def system_from_config(spec):
             spec.get("fragments", ()),
             charge,
             multiplicity,
+            **boundaries,
         )
     factor = parse_quantity(f"1 {spec.get('geometry_unit','angstrom')}", "length")
     if "reactants" in spec:
@@ -251,7 +293,8 @@ def system_from_config(spec):
                 "Reactant files define their atom partition; explicit fragments disagree"
             )
         return System(
-            symbols, mass, np.vstack([qa, qb]), fragments, charge, multiplicity
+            symbols, mass, np.vstack([qa, qb]), fragments, charge, multiplicity,
+            **boundaries,
         )
     else:
         p = spec.get("transition_state", spec.get("geometry"))
@@ -267,4 +310,5 @@ def system_from_config(spec):
             spec.get("fragments", ()),
             charge,
             multiplicity,
+            **boundaries,
         )

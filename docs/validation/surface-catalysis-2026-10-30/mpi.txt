@@ -1,0 +1,1 @@
+Surface rate serial versus G2 B2 MPI: PASS; 27 array/checkpoint files match exactly, fixed substrate remains exact, and both completed resumes pass.

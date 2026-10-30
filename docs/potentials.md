@@ -46,6 +46,15 @@ params = {k = 0.002}
 
 factory 在每个实际势能进程中创建自己的对象。带有全局 Fortran COMMON、GPU context 或 socket 的对象不跨进程传输。普通 Python 输入中的配置仍使用可导入 factory，避免让 lambda/本地闭包承担重启和 MPI 序列化职责。低层 `Dynamics` 可直接接受实现 `evaluate` 的对象。
 
+## 周期表面 PES
+
+周期 System 的 cell/PBC 会传入 ASE `Atoms`。自定义 Python provider 须声明
+`metadata["supports_pbc"]=True` 并实现 `bind_system(system)`，接收原子单位的
+完整系统；所有串行／进程／珠子 worker 均执行该绑定。当前 C ABI v1、原 f2py、
+Torch 和 i-PI socket 工厂不能承载该固定晶胞契约，周期请求会明确拒绝。
+参见 [表面 PES 契约](surface-catalysis.md#周期-pes-契约和性能) 与
+`examples/surface/toy_surface.py`、`examples/surface/ase_emt.py`。
+
 ## 既有 RPMDrate/f2py 势能
 
 ```toml
