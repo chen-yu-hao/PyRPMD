@@ -14,6 +14,7 @@
 | `examples/fes/custom_input.py` | 自定义完整二维 CV Jacobian | [势能与插件](potentials.md) |
 | `examples/fes/adaptive_harmonic.inp` | pilot 插窗后冻结独立 production | [气相与自由能](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | 两条持续母链分配共 5 次直接碰撞 | [气相与自由能](workflows.md) |
+| `examples/nonadiabatic/exchange.inp` | 实验性指定入射电子态、带耦合的人工矩阵势散射 | [非绝热 NRPMD](nonadiabatic.md) |
 | `examples/rate/pilot.inp` | 教学反应势的 TS 准备、PMF 与回穿 | [气相与自由能](workflows.md) |
 | `examples/network/two_entrances.py` | 两入口、四个独立 TS/PES 路径 | [气相与自由能](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 二维 well-tempered 历史偏置 | [气相与自由能](workflows.md) |

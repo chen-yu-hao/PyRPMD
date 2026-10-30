@@ -16,6 +16,9 @@ def __getattr__(name):
         from . import dynamics
 
         return getattr(dynamics, name)
+    if name in ("NRPMDState", "NRPMDDynamics", "DiabaticResult"):
+        from . import nonadiabatic
+        return getattr(nonadiabatic, name)
     if name in ("run", "prepare", "resume_run", "analyze_run"):
         from . import runner
 
@@ -28,6 +31,7 @@ def __getattr__(name):
 
 
 __all__ = [
+    "NRPMDState", "NRPMDDynamics", "DiabaticResult",
     "JobSpec", "System", "State", "Dynamics", "run", "prepare",
     "resume_run", "analyze_run", "analyze_diffusion", "__version__",
 ]

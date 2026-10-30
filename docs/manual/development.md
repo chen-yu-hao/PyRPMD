@@ -12,6 +12,7 @@
 | `src/pyrpmd/workflows/` | rate、FES、材料、表面、PCET 等工作流 |
 | `src/pyrpmd/analysis/` | 自由能、扩散和统计分析 |
 | `src/pyrpmd/pcet.py`, `pcet_input.py` | 局域 PCET 数值核与模型输入 |
+| `src/pyrpmd/nonadiabatic.py`, `potentials/diabatic.py` | 实验 NRPMD 映射变量、矩阵势与 MInt 传播 |
 | `src/pyrpmd/checkpoint.py`, `io.py` | 原子提交、校验与科学身份 |
 | `src/pyrpmd/parallel/` | 任务进程、珠子池、MPI 与 GPU 放置 |
 | `examples/`, `tests/`, `benchmarks/` | 可运行使用例、回归、来源固定的体系验证 |

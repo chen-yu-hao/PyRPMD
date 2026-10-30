@@ -59,6 +59,10 @@ pyrpmd resume runs/manual-rate
 
 `drpmd` 从两个反应物结构开始，持续采样母链，并发射独立的相对碰撞运动。它适合显式检查碰撞、散射和产物分类。初始分布决定输出究竟是热速率还是固定能量截面。
 
+如需指定入射 diabatic 电子态并使用完整耦合矩阵势，可选择实验性的
+[NRPMD 扩展](nonadiabatic.md)。该扩展仍属于 `task="drpmd"`，电子态贡献有符号，
+并不把下文的标量势流程推广为电子热平衡 PMF 或非绝热 Bennett–Chandler 速率。
+
 ```bash
 pyrpmd validate examples/drpmd/free_scattering.inp --check-pes
 pyrpmd run examples/drpmd/free_scattering.inp --output runs/manual-scattering

@@ -281,6 +281,7 @@ python -m sphinx -W --keep-going -b html docs docs/_build/html
 - [开发与验证](docs/development.md)、[本次验证记录](docs/validation.md)
 - [原生传播与兼容性](docs/native-propagation.md)、[分段 API 与故障处理](docs/block-propagation.md)
 - [积分器选择](docs/integrators.md)、[多入口与多 TS](docs/reaction-networks.md)
+- [实验性非绝热 NRPMD 与状态分辨碰撞](docs/nonadiabatic.md)
 - [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
 - [电化学 PCET 模型与适用范围](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
 - [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)

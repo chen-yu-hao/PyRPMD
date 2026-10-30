@@ -136,6 +136,26 @@ PCET 是独立的局域量子模型，主要用户入口仍是 `JobSpec` 和 `ru
 ```{autofunction} pyrpmd.pcet.golden_rule_rates
 ```
 
+## 实验性 NRPMD 对象
+
+以下对象也可从 `pyrpmd` 导入。它们服务于指定入射 diabatic 电子态的直接碰撞，
+不构造电子热平衡 PMF；实验性接口与物理范围见[非绝热指南](nonadiabatic.md)。
+
+`NRPMDState` 在核 `q/p[P,N,3]` 之外保存 `mapping_q/mapping_p[P,K]`。
+`DiabaticResult` 接收能量矩阵 `[B,K,K]` 及正梯度 `[B,K,K,N,3]`。
+所有矩阵元及其导数必须为实数、有限，并在电子指标上对称。
+
+```{autoclass} pyrpmd.nonadiabatic.DiabaticResult
+```
+
+```{autoclass} pyrpmd.nonadiabatic.NRPMDState
+:members: copy, populations
+```
+
+```{autoclass} pyrpmd.nonadiabatic.NRPMDDynamics
+:members: step, energy, populations, asymptotic_coupling
+```
+
 ## 接口稳定性
 
 包版本、输入 schema、run manifest、checkpoint 容器和 PES ABI 各自版本化。

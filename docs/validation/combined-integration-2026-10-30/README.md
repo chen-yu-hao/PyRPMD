@@ -98,3 +98,30 @@ sdist 包含 `docs/conf.py`、手册首页、14 篇章节、CSS 和两个入门�
 两种积分器下 dRPMD 实际母/子传播及全部完成后恢复均通过。
 额外确认材料、site-rate 和 surface 模块可从已安装 wheel 导入。
 具体数据见[已安装包验证](installed-wheel-smoke.json)。
+
+## 新增 PR #8 后的最终验收
+
+整合进行期间新增 NRPMD PR #8，原始 head 为
+`b5d1af24a6f97845c3559336803e8a78e846bb9e`。该 PR 也以保留父历史的 merge 纳入。
+NRPMD 是 `task="drpmd"` 的实验性指定入射电子态散射扩展，不是新增平衡速率任务。
+对矩阵 PES 与既有功能的交互另补了周期/固定原子拒绝、非 dRPMD 任务拒绝、
+provider/type 别名和直接/resume 入口在创建输出前的检查。
+
+**包含四个功能 PR 的最终完整结果为 686 passed、13 skipped、146 subtests passed**
+（89.23 秒），见[原始输出](pytest-with-nrpmd.txt)。跳过项目类别与前述记录相同。
+这是后续最终测试结论；前面的 575/584 项是不同阶段，不能累加。
+
+综合手册现为 **16 页：1 个首页、15 个章节**，仍对应 10 类 task，加上 dRPMD 的
+实验 NRPMD 分支。新增章节说明矩阵正梯度、mapping 变量、有符号估计与适用边界；
+API、导航、示例、并行和结果章节同步更新。HTML、singlehtml 均再次严格构建通过，
+仓库文件引用和生成页面的本地链接均无缺失。
+[最终手册验收数据](final-manual-validation.json)固定了本次 src/tests 目录 tree 哈希。
+
+新增两模块后的 wheel 共 **49 个 Python 模块**与整合源码逐字一致，包含原生扩展，见
+[wheel 内容核对](nrpmd-package-inspection.json)。在独立环境、源码树外运行公开 NRPMD 输入：
+`validate --check-pes`、两进程 `run`、`resume --block-steps 32` 和 `analyze` 均通过。
+8 条教学轨迹为非反应，0 failed/unresolved；三次完整结果 JSON 相同，26 个 NPZ 文件字节保持。
+矩阵梯度有限差分最大差为 `1.4854624644331394e-11 hartree/bohr`，
+布居和误差为 `3.397282455352979e-13`。仍保留 `physically_validated=false`，
+不将该人工势散射结果当成真实化学验证。
+原始核验见[已安装 NRPMD 示例报告](nrpmd-installed-smoke.json)。

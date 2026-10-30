@@ -6,6 +6,9 @@
 通常是该进程负责的若干珠子。**只返回物理势能和力**：不要把环弹簧、umbrella、
 约束、温度或 `1/P` 缩放混入模型。
 
+下面是标量势能接口。实验性 NRPMD 使用独立的矩阵 PES 契约，返回完整 diabatic 矩阵
+及其**正梯度**，不能直接套用标量负梯度/力接口，见[非绝热教程](nonadiabatic.md)。
+
 | 数据 | 形状 | 规范单位/含义 |
 | --- | --- | --- |
 | 坐标 `q` | `float64[B,N,3]` | bohr，C-contiguous |
@@ -103,6 +106,7 @@ finally:
 | `ase` | factory 返回 ASE Calculator，适配 eV/Å、cell/PBC 与可用 stress |
 | `torch` | factory/model 提供批次能量或能量与力；当前周期体系不支持 |
 | `ipi` | 同步 i-PI 力协议；需要外部 driver 与对应连接 |
+| `diabatic_python` | 实验 NRPMD 的实对称矩阵势及全部矩阵元梯度；仅适用指定入射态 dRPMD |
 
 ASE 接口能连接 calculator，并不保证某个具体模型的元素、周期边界、自旋、下载许可
 和设备支持。周期 D/T 核在电子计算中按 H 元素处理，核质量仍保留。

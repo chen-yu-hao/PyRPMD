@@ -86,6 +86,11 @@ dRPMD 需要同时阅读 completed、failed、unresolved 事件及分类规则�
 全部按非反应处理。没有经验证分类器或碰撞参数时，几何事件计数不等于正式化学截面。
 `network` 当前保留各入口/通道/TS 的独立结果，不隐式相加为总速率。
 
+启用实验性 NRPMD 时，另外阅读 `summary["nonadiabatic"]` 和
+`results/electronic_channels.csv`。电子 population 是有符号 MMST 估计量，允许为负或大于一；
+不能裁剪到 [0,1] 或用 argmax 给轨迹分配一个电子面。存在失败/未决轨迹时，最终电子态分辨
+速率/截面会保留为空；已观察到的贡献仍可用于诊断。详见[非绝热 NRPMD](nonadiabatic.md)。
+
 ## PIMD 与扩散
 
 PIMD 的 primitive 和 centroid-virial 估计量用于物理热力学能量；环 Hamiltonian

@@ -146,6 +146,10 @@ def run(job, *, output=None, resume=False):
 
 def run_resolved(config, system, *, output=None, resume=False):
     config = copy.deepcopy(config)
+    if ("nonadiabatic" in config
+            or config.get("potential", {}).get("provider", config.get("potential", {}).get("type")) == "diabatic_python"):
+        from .input import validate_nonadiabatic
+        validate_nonadiabatic(config, system=system)
     target = str(Path(output or config["output"]["directory"]).resolve())
     config["output"]["directory"] = target
     config["resume"] = bool(resume)
@@ -405,11 +409,20 @@ def prepare(job, *, numerical=False):
             evaluated = provider.evaluate(x)
             from .potentials import validate_result
 
-            validate_result(evaluated, x.shape)
-            result["pes_check"] = {
-                "energy_hartree": evaluated.energy.tolist(),
-                "status": evaluated.status.tolist(),
-            }
+            if "nonadiabatic" in config:
+                from .nonadiabatic import validate_diabatic_result
+                from .potentials.diabatic import check_diabatic_potential
+                checked = validate_diabatic_result(evaluated, x.shape, config["nonadiabatic"]["nstates"])
+                result["pes_check"] = {
+                    "matrix_hartree": checked.matrix.tolist(),
+                    **check_diabatic_potential(provider, x, config["nonadiabatic"]["nstates"]),
+                }
+            else:
+                validate_result(evaluated, x.shape)
+                result["pes_check"] = {
+                    "energy_hartree": evaluated.energy.tolist(),
+                    "status": evaluated.status.tolist(),
+                }
         finally:
             provider.close()
     return result

@@ -23,9 +23,10 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
 )
 _SECTIONS = {
+    "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
         "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
     ),
@@ -87,6 +88,58 @@ def _positive(v, name):
     if not math.isfinite(v) or v <= 0:
         raise InputError(f"{name} must be positive and finite")
     return float(v)
+
+
+def validate_nonadiabatic(config, *, potential=None, parallel=None, system=None):
+    """Normalize the experimental state-selected NRPMD contract, also on resume."""
+    potential = config.get("potential", {}) if potential is None else potential
+    na = config.get("nonadiabatic")
+    if na is None:
+        raise InputError("diabatic_python requires [nonadiabatic]")
+    if not isinstance(na, dict) or not na:
+        raise InputError("nonadiabatic must be a nonempty mapping")
+    if set(na) - _SECTIONS["nonadiabatic"]:
+        raise InputError("Unknown nonadiabatic fields")
+    if config.get("task") != "drpmd":
+        raise InputError("NRPMD currently supports state-selected drpmd scattering only; electronic equilibrium PMF/recrossing rate is not implemented")
+    if system is not None:
+        get = system.get if isinstance(system, dict) else lambda key, default=None: getattr(system, key, default)
+        from .geometry import validate_cell_pbc
+        _, pbc = validate_cell_pbc(get("cell"), get("pbc"))
+        if pbc.any() or get("fixed_atoms", ()):
+            raise InputError("NRPMD scattering requires a nonperiodic system with all atoms mobile")
+    if na.get("method", "nrpmd") != "nrpmd" or na.get("initialization", "focused") != "focused":
+        raise InputError("nonadiabatic requires method='nrpmd', initialization='focused'")
+    nstates = _integer(na.get("nstates"), "nonadiabatic.nstates")
+    initial = _integer(na.get("initial_state", 0), "nonadiabatic.initial_state", 0)
+    if initial >= nstates:
+        raise InputError("initial_state must be smaller than nstates")
+    labels = na.get("state_labels", [str(i) for i in range(nstates)])
+    if (not isinstance(labels, list) or len(labels) != nstates
+            or any(not isinstance(x, str) or not x.strip() for x in labels)
+            or len(set(labels)) != nstates):
+        raise InputError("state_labels must be nstates distinct nonempty strings")
+    tolerance = parse_quantity(na.get("asymptotic_coupling_tolerance", "1e-8 hartree"), "energy")
+    if not math.isfinite(tolerance) or tolerance < 0:
+        raise InputError("asymptotic_coupling_tolerance must be finite and nonnegative")
+    if potential.get("provider", potential.get("type")) != "diabatic_python":
+        raise InputError("NRPMD requires potential.provider='diabatic_python'")
+    if potential.get("derivative", "gradient") != "gradient":
+        raise InputError("diabatic_python requires positive matrix gradients")
+    if str(potential.get("device", "cpu")) != "cpu":
+        raise InputError("NRPMD supports CPU matrix potentials only")
+    from .parallel import execution_plan
+    plan = execution_plan(config.get("parallel", {}) if parallel is None else parallel)
+    if plan.backend == "mpi" or plan.mode != "serial" or plan.bead_workers != 1:
+        raise InputError("NRPMD supports serial or trajectory-process execution only; MPI, GPU and bead workers are not implemented")
+    if config.get("dynamics", {}).get("loop_backend", "auto") == "native":
+        raise InputError("NRPMD matrix propagation requires loop_backend='auto' or 'python'; the free ring can still use native kernels")
+    config["nonadiabatic"] = {
+        "method": "nrpmd", "nstates": nstates, "initial_state": initial,
+        "state_labels": list(labels), "initialization": "focused",
+        "asymptotic_coupling_tolerance": float(tolerance),
+    }
+    return config["nonadiabatic"]
 
 
 def rate_pmf_options(config):
@@ -639,6 +692,9 @@ class JobSpec:
             execution_plan(parallel)
         except ValueError as e:
             raise InputError(str(e)) from e
+        if "nonadiabatic" in d or potential.get("provider", potential.get("type")) == "diabatic_python":
+            validate_nonadiabatic(d, potential=potential, parallel=parallel, system=system)
+            notes.append("Experimental NRPMD: state-selected scattering, not electronic thermal-equilibrium RPMD rate; real-chemistry validation is pending")
         reaction = deepcopy(d.get("reaction", {}))
         ew = float(reaction.get("electronic_weight", 1.0))
         if not math.isfinite(ew) or ew < 0:

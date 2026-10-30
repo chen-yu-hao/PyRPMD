@@ -625,6 +625,172 @@ def _rng_state(dynamics):
     return _jsonable(dynamics.rng.bit_generator.state)
 
 
+def _mapping_arrays(state, prefix=""):
+    if not hasattr(state, "mapping_q"):
+        return {}
+    return {prefix + "mapping_q": state.mapping_q, prefix + "mapping_p": state.mapping_p}
+
+
+def _nrpmd_trajectory(dynamics, state, classifier, config, out, trajectory_id,
+                      parent_id, launch, physics_hash, resume):
+    """Signed mapping-state scattering with complete electronic restart state.
+
+    The Python step boundary is intentional: scalar-PES fused loops cannot
+    propagate mapping variables. Failed physical/classifier steps roll back
+    together, while checkpoint I/O failures abort the job without relabeling it.
+    """
+    from pyrpmd.nonadiabatic import NRPMDState
+
+    c, outcomes = config["collision"], config.get("outcomes", {})
+    na = config["nonadiabatic"]
+    max_steps = _integer(c["max_steps"], "collision.max_steps")
+    check = _integer(outcomes.get("check_interval", 10), "outcomes.check_interval")
+    persistence = _integer(outcomes.get("persistence_steps", check * 3),
+                           "outcomes.persistence_steps", 0)
+    output = config.get("output", {})
+    stride = _integer(output.get("trajectory_stride", max(1, max_steps // 1000)), "trajectory_stride")
+    checkpoint_interval = _integer(output.get("checkpoint_steps", max(1, max_steps // 10)), "checkpoint_steps")
+    tolerance = float(na["asymptotic_coupling_tolerance"])
+    base = Path(out) / "trajectories" / f"trajectory-{trajectory_id:08d}"
+    result_path, checkpoint = base.with_suffix(".json"), base.with_suffix(".checkpoint.npz")
+    if result_path.exists():
+        if not resume:
+            raise FileExistsError(f"Trajectory already exists: {result_path}; use resume explicitly")
+        result = json.loads(result_path.read_text())
+        if result.get("physics_hash") != physics_hash or result.get("trajectory_id") != trajectory_id:
+            raise ValueError("Completed trajectory does not match this restart")
+        population = np.asarray(result.get("electronic_populations"), dtype=float)
+        if population.shape != (na["nstates"],) or not np.isfinite(population).all():
+            raise ValueError("Completed NRPMD trajectory lacks valid electronic populations")
+        return result
+    initial = final = drift = None
+    done, candidate, candidate_since = 0, None, None
+    status, channel, reason = "unresolved", None, "maximum_propagation_time"
+    trace_steps, trace_q, trace_energy, trace_population = [], [], [], []
+    if resume and checkpoint.exists():
+        meta, arrays = _load_npz(checkpoint, expected_kind="PyRPMD.drpmd.trajectory-checkpoint.v1")
+        if meta.get("physics_hash") != physics_hash or meta.get("trajectory_id") != trajectory_id:
+            raise ValueError("Trajectory checkpoint has incompatible physical parameters")
+        if "mapping_q" not in arrays or "mapping_p" not in arrays:
+            raise ValueError("NRPMD checkpoint lacks electronic mapping state")
+        state = NRPMDState(arrays["q"], arrays["p"], meta["step"], meta["time"],
+                           arrays["mapping_q"], arrays["mapping_p"])
+        if state.mapping_q.shape != (config["beads"], na["nstates"]):
+            raise ValueError("NRPMD checkpoint mapping shape does not match configuration")
+        done = meta["done"]
+        initial, final, drift = meta["initial"], meta["final"], meta["drift"]
+        candidate = tuple(meta["candidate"]) if meta["candidate"] is not None else None
+        candidate_since = meta["candidate_since"]
+        status, channel, reason = meta["status"], meta["channel"], meta["reason"]
+        trace_steps = arrays["trace_steps"].tolist()
+        trace_q = list(arrays["trace_centroid"])
+        trace_energy = arrays["trace_energy"].tolist()
+        trace_population = list(arrays["trace_populations"])
+        _integer(done, "checkpoint.done", 0)
+        if done > max_steps or state.step != done or not math.isclose(
+                state.time, done * config["dt_au"], rel_tol=1e-11, abs_tol=1e-12):
+            raise ValueError("NRPMD checkpoint has inconsistent trajectory clock")
+        length = len(trace_steps)
+        if (arrays["trace_centroid"].shape != (length, *state.q.shape[1:])
+                or arrays["trace_energy"].shape != (length,)
+                or arrays["trace_populations"].shape != (length, na["nstates"])
+                or arrays["trace_steps"].dtype.kind not in "iu"
+                or (length and (trace_steps[0] != 0 or trace_steps[-1] > done))
+                or np.any(np.diff(trace_steps) <= 0)
+                or any(not np.isfinite(arrays[key]).all() for key in
+                       ("trace_centroid", "trace_energy", "trace_populations"))):
+            raise ValueError("NRPMD checkpoint has invalid trajectory traces")
+    else:
+        try:
+            if dynamics.asymptotic_coupling(state) > tolerance:
+                raise ValueError("Incoming electronic channels are not asymptotically decoupled")
+            initial = float(dynamics.energy(state)) / config["beads"]
+            if not math.isfinite(initial):
+                raise FloatingPointError("Nonfinite initial NRPMD energy")
+            final, drift = initial, 0.0
+            trace_steps, trace_q, trace_energy, trace_population = (
+                [0], [state.q.mean(axis=0).copy()], [initial], [state.populations().copy()])
+        except Exception as exc:
+            status, reason = "failed", f"initial_energy: {type(exc).__name__}: {exc}"
+    started = time.perf_counter()
+
+    def save_checkpoint():
+        _atomic_npz(checkpoint, {
+            "format": "PyRPMD.drpmd.trajectory-checkpoint.v1", "physics_hash": physics_hash,
+            "trajectory_id": trajectory_id, "parent_id": parent_id,
+            "step": state.step, "time": state.time, "done": done,
+            "initial": initial, "final": final, "drift": drift,
+            "candidate": candidate, "candidate_since": candidate_since,
+            "status": status, "channel": channel, "reason": reason, "launch": launch,
+            "propagation": {"native_steps": 0, "python_steps": done},
+        }, q=state.q, p=state.p, **_mapping_arrays(state),
+            trace_steps=np.asarray(trace_steps, dtype=np.int64),
+            trace_centroid=np.asarray(trace_q).reshape((-1, *state.q.shape[1:])),
+            trace_energy=np.asarray(trace_energy),
+            trace_populations=np.asarray(trace_population).reshape((-1, na["nstates"])))
+
+    while done < max_steps and status == "unresolved":
+        before = state.copy()
+        previous_candidate, previous_since = candidate, candidate_since
+        try:
+            dynamics.step(state)
+            energy = float(dynamics.energy(state)) / config["beads"]
+            populations = state.populations()
+            if not math.isfinite(energy) or not np.isfinite(populations).all():
+                raise FloatingPointError("Nonfinite NRPMD diagnostics")
+            number = done + 1
+            if classifier is not None and number % check == 0:
+                label = _normalize_label(classifier(state))
+                if label is not None and dynamics.asymptotic_coupling(state) > tolerance:
+                    label = None
+                if label != candidate:
+                    candidate, candidate_since = label, number if label else None
+                if label is not None and number - candidate_since >= persistence:
+                    status, channel = label
+                    reason = "stable_separated_outgoing_decoupled_channels"
+        except Exception as exc:
+            state = before
+            candidate, candidate_since = previous_candidate, previous_since
+            status, channel, reason = "failed", None, f"{type(exc).__name__}: {exc}"
+            break
+        done += 1
+        final, drift = energy, max(drift, abs(energy - initial))
+        if done % stride == 0 or done == max_steps or status != "unresolved":
+            trace_steps.append(done)
+            trace_q.append(state.q.mean(axis=0).copy())
+            trace_energy.append(energy)
+            trace_population.append(populations.copy())
+        if done % checkpoint_interval == 0 or status != "unresolved":
+            save_checkpoint()
+    if classifier is None and status == "unresolved":
+        reason = "no_validated_product_classifier"
+    save_checkpoint()
+    _atomic_npz(base.with_suffix(".npz"), {
+        "format": "PyRPMD.drpmd.trajectory.v1", "physics_hash": physics_hash,
+        "trajectory_id": trajectory_id, "parent_id": parent_id, "launch": launch,
+        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "units": {"q": "bohr", "p": "atomic", "time": "atomic", "energy": "hartree"},
+        "electronic_estimator": "bead_mean_MMST_signed",
+    }, final_q=state.q, final_p=state.p, **_mapping_arrays(state, "final_"),
+        steps=np.asarray(trace_steps, dtype=np.int64),
+        time_au=np.asarray(trace_steps) * config["dt_au"],
+        centroid=np.asarray(trace_q).reshape((-1, *state.q.shape[1:])),
+        energy_per_bead=np.asarray(trace_energy),
+        electronic_populations=np.asarray(trace_population).reshape((-1, na["nstates"])))
+    record = {
+        "trajectory_id": trajectory_id, "parent_id": parent_id, "physics_hash": physics_hash,
+        "status": status, "channel": channel, "reason": reason, "steps": done,
+        "classification_unvalidated": bool(outcomes.get("classifier_unvalidated", False)),
+        "time_au": done * config["dt_au"], "initial_energy_per_bead": initial,
+        "final_energy_per_bead": final, "max_energy_drift_per_bead": drift,
+        "launch": launch, "wall_seconds": time.perf_counter() - started,
+        "propagation": {"native_steps": 0, "python_steps": done},
+        "electronic_populations": state.populations().tolist(),
+    }
+    _atomic_json(result_path, record)
+    return record
+
+
 def _trajectory(
     dynamics,
     state,
@@ -637,6 +803,9 @@ def _trajectory(
     physics_hash,
     resume,
 ):
+    if config.get("nonadiabatic"):
+        return _nrpmd_trajectory(dynamics, state, classifier, config, out,
+                                 trajectory_id, parent_id, launch, physics_hash, resume)
     c, outcomes = config["collision"], config.get("outcomes", {})
     max_steps = _integer(c["max_steps"], "collision.max_steps")
     check = _integer(outcomes.get("check_interval", 10), "outcomes.check_interval")
@@ -902,8 +1071,14 @@ def _parent_task(task):
     seed = int(config.get("seed", 0))
     native = config.get("native", config.get("dynamics", {}).get("native", True))
     parent_seed = np.random.SeedSequence([seed, 1, parent_id])
+    na = config.get("nonadiabatic")
+    if na:
+        from pyrpmd.nonadiabatic import DiagonalPotential, NRPMDDynamics, NRPMDState
+        thermal_potential = DiagonalPotential(potential, na["initial_state"], na["nstates"])
+    else:
+        thermal_potential = potential
     dynamics = Dynamics(
-        potential,
+        thermal_potential,
         masses,
         beta,
         beads,
@@ -913,17 +1088,21 @@ def _parent_task(task):
         threads=plan.threads,
         **options,
     )
-    production = Dynamics(
-        potential,
-        masses,
-        beta,
-        beads,
-        dt,
-        seed=np.random.SeedSequence([seed, 3, parent_id]),
-        native=native,
-        threads=plan.threads,
-        **options,
-    )
+    if na:
+        production = NRPMDDynamics(potential, masses, beta, beads, dt, na["nstates"],
+                                   native=native, threads=plan.threads, integrator=method)
+    else:
+        production = Dynamics(
+            potential,
+            masses,
+            beta,
+            beads,
+            dt,
+            seed=np.random.SeedSequence([seed, 3, parent_id]),
+            native=native,
+            threads=plan.threads,
+            **options,
+        )
     classifier = _make_classifier(config, system)
     parent_path = out / "checkpoints" / f"parent-{parent_id:06d}.npz"
     resume = bool(config.get("resume", config.get("_resume", False)))
@@ -1021,6 +1200,9 @@ def _parent_task(task):
                 energy=config["collision"].get("energy_au"),
                 orientation=config["collision"].get("orientation", "isotropic"),
             )
+            if na:
+                mapping_rng = np.random.default_rng(np.random.SeedSequence([seed, 4, trajectory_id]))
+                child = NRPMDState.from_nuclear(child, na["nstates"], na["initial_state"], mapping_rng)
             _atomic_npz(
                 out / "states" / f"initial-{trajectory_id:08d}.npz",
                 {
@@ -1040,6 +1222,7 @@ def _parent_task(task):
                 thermal_p=parent.p,
                 q=child.q,
                 p=child.p,
+                **_mapping_arrays(child),
                 masses=masses,
             )
             record = _trajectory(
@@ -1075,6 +1258,67 @@ def _wilson(successes, n, z=1.959963984540054):
     middle = (p + z * z / (2 * n)) / denominator
     half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denominator
     return [max(0.0, middle - half), min(1.0, middle + half)]
+
+
+def _electronic_summary(records, config, weights, channels, allowed):
+    """Joint signed estimates; one parent draw is shared by every output column."""
+    na = config["nonadiabatic"]
+    if set(channels) & {"total_reaction", "nonreactive"}:
+        raise ValueError("NRPMD product channel names total_reaction and nonreactive are reserved")
+    labels = na.get("state_labels", [str(i) for i in range(na["nstates"])])
+    population = np.asarray([r["electronic_populations"] for r in records], dtype=float)
+    if population.shape != (len(records), na["nstates"]) or not np.isfinite(population).all():
+        raise ValueError("NRPMD results have missing or invalid electronic populations")
+    norm_error = float(np.max(np.abs(population.sum(axis=1) - 1.0)))
+    if norm_error > 1e-8:
+        raise ValueError("NRPMD electronic populations do not sum to one")
+    indicators = {
+        "total_reaction": np.array([r["status"] == "product" for r in records]),
+        "nonreactive": np.array([r["status"] == "nonreactive" for r in records]),
+    }
+    indicators.update({name: np.array([r["status"] == "product" and r["channel"] == name
+                                      for r in records]) for name in channels})
+    columns, values, entries = [], [], {}
+    fixed = config["collision"].get("sampling", "thermal_flux") == "fixed_energy"
+    for channel, indicator in indicators.items():
+        joint = weights[:, None] * indicator[:, None] * population
+        chemical = float(np.mean(weights * indicator))
+        means = joint.mean(axis=0)
+        entries[channel] = {
+            "signed_observed_contributions": means.tolist(),
+            "rate_cm3_molecule_s": means.tolist() if allowed and not fixed else None,
+            "cross_section_bohr2": means.tolist() if allowed and fixed else None,
+            "parent_cluster_bootstrap95": None,
+            "chemical_observed_contribution": chemical,
+            "electronic_sum_error": float(means.sum() - chemical),
+        }
+        columns.extend([[channel, label] for label in labels])
+        values.append(joint)
+    matrix = np.concatenate(values, axis=1)
+    covariance = None
+    parents = sorted({r["parent_id"] for r in records})
+    if allowed and len(parents) >= 2:
+        groups = [np.array([i for i, r in enumerate(records) if r["parent_id"] == parent])
+                  for parent in parents]
+        rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 7]))
+        draws = np.empty((400, matrix.shape[1]))
+        for i in range(len(draws)):
+            idx = np.concatenate([groups[j] for j in rng.integers(0, len(groups), len(groups))])
+            draws[i] = matrix[idx].mean(axis=0)
+        covariance = np.atleast_2d(np.cov(draws, rowvar=False, ddof=1)).tolist()
+        bounds = np.quantile(draws, [0.025, 0.975], axis=0).T
+        for i, entry in enumerate(entries.values()):
+            entry["parent_cluster_bootstrap95"] = bounds[i * len(labels):(i+1) * len(labels)].tolist()
+    return {
+        "method": "nrpmd", "experimental": True, "physically_validated": False,
+        "initial_state": na["initial_state"], "state_labels": labels,
+        "estimator": "bead_mean_MMST_signed", "population_sum_max_error": norm_error,
+        "final_estimates_available": bool(allowed),
+        "channels": entries, "covariance_columns": columns,
+        "parent_cluster_bootstrap_covariance": covariance,
+        "units": "bohr^2" if fixed else "cm^3 molecule^-1 s^-1",
+        "note": "Signed mapping populations are not probabilities and are never clipped. Observed contributions use all launched trajectories in the denominator and are diagnostics only when unresolved/failed trajectories or unvalidated cutoffs/classification withhold final estimates. No binomial interval or probability bound applies. This is specified-incident-state scattering, not an electronic thermal-equilibrium rate.",
+    }
 
 
 def summarize(records, config, system):
@@ -1182,7 +1426,7 @@ def summarize(records, config, system):
             ]
         return entry
 
-    return {
+    summary = {
         "format": "PyRPMD.drpmd.summary.v1",
         "task": "drpmd",
         "trajectories": n,
@@ -1223,6 +1467,12 @@ def summarize(records, config, system):
         "uncertainty_note": "Outcome bounds are not confidence limits. IID Wilson intervals ignore parent-chain dependence; parent-cluster bootstrap requires enough independent chains and does not establish numerical or cutoff convergence.",
         "convergence_note": "Check timestep, bead count, thermalization, sample autocorrelation, R0, bmax, maximum time and classification. Fixed-energy data are not a thermal rate.",
     }
+
+    if config.get("nonadiabatic"):
+        summary["nonadiabatic"] = _electronic_summary(
+            records, config, weights, channels,
+            not unknown.any() and not cutoff_unvalidated and not classifier_unvalidated)
+    return summary
 
 
 def _prepare_output(output):
@@ -1270,6 +1520,17 @@ def _write_summary(results, config, system, output, expected):
                     entry["possible_upper_cm3_molecule_s"],
                 ]
             )
+    if "nonadiabatic" in summary:
+        with (out / "results" / "electronic_channels.csv").open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.writer(stream)
+            writer.writerow(["chemical_channel", "electronic_state", "signed_observed_contribution",
+                             "rate_cm3_molecule_s", "cross_section_bohr2"])
+            na = summary["nonadiabatic"]
+            for channel, entry in na["channels"].items():
+                for i, label in enumerate(na["state_labels"]):
+                    writer.writerow([channel, label, entry["signed_observed_contributions"][i],
+                                     entry["rate_cm3_molecule_s"][i] if entry["rate_cm3_molecule_s"] is not None else None,
+                                     entry["cross_section_bohr2"][i] if entry["cross_section_bohr2"] is not None else None])
     return summary
 
 
@@ -1282,9 +1543,18 @@ def run_drpmd(config, system, output, executor=None):
     function in MPI mode; its final summary is broadcast to all ranks.
     """
     boundary = system if isinstance(system, dict) else system.to_dict()
-    if any(boundary.get("pbc", ())) or boundary.get("fixed_atoms"):
+    from ..geometry import validate_cell_pbc
+    _, pbc = validate_cell_pbc(boundary.get("cell"), getattr(system, "pbc", boundary.get("pbc")))
+    if pbc.any() or boundary.get("fixed_atoms"):
         raise ValueError("Gas-phase dRPMD does not support periodic/fixed-atom systems; use a surface workflow")
     config = copy.deepcopy(config)
+    if ("nonadiabatic" in config
+            or config.get("potential", {}).get("provider", config.get("potential", {}).get("type")) == "diabatic_python"):
+        from pyrpmd.input import validate_nonadiabatic
+        config.setdefault("task", "drpmd")
+        validate_nonadiabatic(config, system=system)
+        if set(config.get("outcomes", {}).get("channels", {})) & {"total_reaction", "nonreactive"}:
+            raise ValueError("NRPMD product channel names total_reaction and nonreactive are reserved")
     config["outcomes"] = resolve_pilot_outcomes(
         system,
         config.get("outcomes"),

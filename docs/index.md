@@ -4,7 +4,8 @@
 
 PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输入，连接势能面、
 环聚合物积分器和可恢复的计算工作流。本手册对应仓库中的 **0.2.0 整合版本**，
-覆盖气相反应、自由能、周期材料、固定基底表面和局域 PCET 模型。
+覆盖气相反应、自由能、周期材料、固定基底表面和局域 PCET 模型，并介绍指定入射电子态
+散射的实验性 NRPMD 扩展。
 
 第一次使用，依次阅读[安装](manual/installation.md)、[快速入门](manual/quickstart.md)
 和[输入与计算对象](manual/input.md)。已有体系和势能面时，可直接选择下表中的任务。
@@ -12,7 +13,7 @@ PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输�
 | 想计算什么 | `task` | 阅读入口 |
 | --- | --- | --- |
 | 气相双分子 RPMD 速率 | `rate` | [气相与自由能工作流](manual/workflows.md) |
-| 独立直接碰撞与产物事件 | `drpmd` | [气相与自由能工作流](manual/workflows.md) |
+| 独立直接碰撞与产物事件 | `drpmd` | [气相工作流](manual/workflows.md)；[实验性 NRPMD](manual/nonadiabatic.md) |
 | 一维/二维平衡自由能面 | `fes` | [快速入门](manual/quickstart.md)、[工作流](manual/workflows.md) |
 | 多入口、多 TS 的独立速率矩阵 | `network` | [气相与自由能工作流](manual/workflows.md) |
 | Standard / well-tempered metadynamics | `metadynamics` | [气相与自由能工作流](manual/workflows.md) |
@@ -33,7 +34,7 @@ PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输�
 | 路线 | 章节 |
 | --- | --- |
 | 开始使用 | [安装](manual/installation.md) · [快速入门](manual/quickstart.md) · [输入与命令行](manual/input.md) · [科学约定](manual/science.md) |
-| 选择计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [完整示例索引](manual/examples.md) |
+| 选择计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [完整示例索引](manual/examples.md) |
 | 连接和运行模型 | [势能与插件](manual/potentials.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) |
 | 查阅与开发 | [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
 
@@ -56,6 +57,7 @@ manual/science
 manual/workflows
 manual/periodic
 manual/pcet
+manual/nonadiabatic
 manual/potentials
 manual/execution
 manual/results
