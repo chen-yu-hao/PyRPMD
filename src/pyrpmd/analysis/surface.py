@@ -16,6 +16,7 @@ from scipy.special import logsumexp
 
 from ..constants import ATOMIC_TIME_S
 from .fes import (
+    UmbrellaReweighting,
     _block_resample,
     _histogram,
     solve_mbar,
@@ -207,6 +208,7 @@ def surface_rate_pmf(
     seed=0,
     min_count=5,
     overlap_threshold=1e-6,
+    reweighting=None,
 ):
     """Remove harmonic umbrellas from 1D position-density sampling streams.
 
@@ -220,6 +222,9 @@ def surface_rate_pmf(
     and dividing-surface density are recomputed in the *same* circular-block
     bootstrap draw, retaining their covariance. Block resampling is separate
     for every original time stream, including duplicated umbrella centers.
+    An optional ``UmbrellaReweighting`` from ``reconstruct_fes`` avoids the
+    initial MBAR solve after checking the exact bias problem. Histogram and
+    basin choices remain independent of the original FES binning.
     """
     limits = _parameters(beta, mass_metric, basin, dividing_surface)
     arrays = [np.asarray(sample, float) for sample in samples]
@@ -290,7 +295,13 @@ def surface_rate_pmf(
             raise ValueError("bins must contain >=3 increasing finite edges")
     grid = 0.5 * (edges[:-1] + edges[1:])
     u = umbrella_reduced_potentials(x, centers, stiffness, beta)
-    fit = solve_mbar(u, counts, overlap_threshold=overlap_threshold)
+    if reweighting is None:
+        fit = solve_mbar(u, counts, overlap_threshold=overlap_threshold)
+    else:
+        if not isinstance(reweighting, UmbrellaReweighting):
+            raise ValueError("reweighting must be a validated UmbrellaReweighting result")
+        reweighting.validate_problem(u, counts, overlap_threshold)
+        fit = reweighting
     connected = len(np.unique(fit.components)) == 1
     mass, density, count, free, mask = _histogram(
         x, fit.weights, [edges], beta, min_count

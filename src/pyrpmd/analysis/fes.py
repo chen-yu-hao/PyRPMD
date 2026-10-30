@@ -7,7 +7,9 @@ only for equal T, bead count, PES, and Hamiltonian across all windows.
 """
 
 from __future__ import annotations
+import copy
 from dataclasses import dataclass
+import hashlib
 import numpy as np
 from scipy.special import logsumexp
 from scipy.optimize import minimize
@@ -50,6 +52,60 @@ class MBARResult:
     converged: bool
     residual: float
     diagnostics: dict | None = None
+
+
+def _reweighting_signature(reduced_potentials, counts, overlap_threshold):
+    """Bind reusable target weights to the exact ordered bias problem."""
+    digest = hashlib.sha256()
+    for value, dtype in ((reduced_potentials, np.float64), (counts, np.int64)):
+        array = np.ascontiguousarray(value, dtype=dtype)
+        digest.update(str(array.shape).encode("ascii"))
+        digest.update(memoryview(array).cast("B"))
+    digest.update(float(overlap_threshold).hex().encode("ascii"))
+    return digest.hexdigest()
+
+
+@dataclass(frozen=True)
+class UmbrellaReweighting:
+    """Compact MBAR result reusable across histogram/binning choices.
+
+    This holds no per-state/per-sample matrix. The fingerprint verifies the
+    full ordered reduced potentials and stream counts before target weights
+    are reused; bins, support masks and basin estimates are always recomputed.
+    """
+
+    signature: str
+    free_energies: np.ndarray
+    weights: np.ndarray
+    overlap: np.ndarray
+    components: np.ndarray
+    converged: bool
+    residual: float
+    diagnostics: dict | None
+
+    def __post_init__(self):
+        for name in ("free_energies", "weights", "overlap", "components"):
+            value = np.ascontiguousarray(getattr(self, name))
+            # Immutable backing survives attempts to re-enable writes. The
+            # constructor also runs on process/MPI deserialization below.
+            snapshot = np.frombuffer(value.tobytes(), dtype=value.dtype).reshape(value.shape)
+            object.__setattr__(self, name, snapshot)
+        object.__setattr__(self, "diagnostics", copy.deepcopy(self.diagnostics))
+
+    def __reduce__(self):
+        return (type(self), (self.signature, self.free_energies, self.weights,
+                            self.overlap, self.components, self.converged,
+                            self.residual, self.diagnostics))
+
+    @classmethod
+    def from_result(cls, result, reduced_potentials, counts, overlap_threshold):
+        return cls(_reweighting_signature(reduced_potentials, counts, overlap_threshold),
+                   result.free_energies, result.weights, result.overlap, result.components,
+                   result.converged, result.residual, result.diagnostics)
+
+    def validate_problem(self, reduced_potentials, counts, overlap_threshold):
+        if self.signature != _reweighting_signature(reduced_potentials, counts, overlap_threshold):
+            raise ValueError("MBAR reweighting belongs to different samples, umbrellas or overlap settings")
 
 
 def _identical_rows(rows):
@@ -325,6 +381,7 @@ def reconstruct_fes(
     seed=0,
     min_count=1,
     overlap_threshold=1e-6,
+    return_reweighting=False,
 ):
     """Reconstruct 1D/2D density w.r.t. ds1...dsD, not bin probability mass.
 
@@ -441,7 +498,7 @@ def reconstruct_fes(
         mask[:] = True
         se[:] = np.nan
     ess = 1 / float(np.sum(mbar.weights**2))
-    return {
+    result = {
         "free_energy": f,
         "probability_mass": mass,
         "density": density,
@@ -461,6 +518,9 @@ def reconstruct_fes(
         "measure": "cv_density",
         "energy_unit": "hartree",
     }
+    if return_reweighting:
+        result["_reweighting"] = UmbrellaReweighting.from_result(mbar, u, counts, overlap_threshold)
+    return result
 
 
 def _rate_bracket(grid, mask, point, name):

@@ -17,9 +17,9 @@ from ..checkpoint import load_checkpoint
 
 from ..analysis.fes import (
     umbrella_integration,
-    statistical_inefficiency,
     _block_resample,
 )
+from ..analysis.recrossing import summarize_recrossing
 from ..constants import AU_RATE_TO_CM3_S, ATOMIC_TIME_S
 from ..cv import RPMDrateCoordinate
 from ..dynamics import Dynamics, State
@@ -211,6 +211,7 @@ def _recrossing_options(config):
     if (
         values["equilibration_steps"] < 0
         or not 0 < values["plateau_fraction"] <= 1
+        or not np.isfinite(values["plateau_tolerance"])
         or values["plateau_tolerance"] <= 0
     ):
         raise ValueError("invalid recrossing burn-in/plateau options")
@@ -978,86 +979,31 @@ def _aggregate(children, pmf, config, output, options):
         raise ValueError(
             "cannot combine recrossing trajectories with an unsupported PMF"
         )
-    # A child pair is correlated and all pairs from one parent share its
-    # configuration; aggregate by parent before any uncertainty estimate.
-    grouped = {}
-    for child in children:
-        key = (child["chain"], child["parent"])
-        if key not in grouped:
-            grouped[key] = [np.zeros(options["child_steps"]), 0.0]
-        grouped[key][0] += child["numerator"]
-        grouped[key][1] += child["denominator"]
-    keys = sorted(grouped)
-    num = np.array([grouped[k][0] for k in keys])
-    den = np.array([grouped[k][1] for k in keys])
-    if den.sum() <= 0:
-        raise RuntimeError(
-            "zero initial reactive flux; no transmission coefficient can be estimated"
-        )
-    transmission = num.sum(axis=0) / den.sum()
-    tail = max(2, int(np.ceil(len(transmission) * options["plateau_fraction"])))
-    tail = min(tail, len(transmission))
-    start = len(transmission) - tail
-    middle = start + tail // 2
-    estimate = float(np.mean(transmission[start:]))
-    drift = (
-        float(np.mean(transmission[middle:]) - np.mean(transmission[start:middle]))
-        if middle > start
-        else float("inf")
-    )
     rng = np.random.default_rng(
         np.random.SeedSequence([int(config.get("seed", 0)), 503])
     )
-    boots = []
-    boot_curves = []
-    chain_indices = {
-        c: np.array([i for i, k in enumerate(keys) if k[0] == c]) for c, _ in keys
-    }
-    blocks = {}
-    for chain, ix in chain_indices.items():
-        observable = np.divide(
-            num[ix, start:].mean(axis=1),
-            den[ix],
-            out=np.zeros(len(ix)),
-            where=den[ix] > 0,
-        )
-        blocks[chain] = max(1, int(np.ceil(statistical_inefficiency(observable))))
-    for _ in range(options["bootstrap"]):
-        selected = []
-        # Resample chains and contiguous parent blocks to preserve parent-chain
-        # correlation. Multiple children from a parent remain one cluster.
-        chains = list(chain_indices)
-        for chain in rng.choice(chains, size=len(chains), replace=True):
-            ix = chain_indices[chain]
-            selected.extend(_block_resample(ix, blocks[chain], rng).tolist())
-        ix = np.asarray(selected, int)
-        if den[ix].sum() <= 0:
-            continue
-        curve = num[ix].sum(axis=0) / den[ix].sum()
-        boot_curves.append(curve)
-        boots.append(curve[start:].mean())
-    stderr = float(np.std(boots, ddof=1)) if len(boots) > 1 else None
-    drift_error = None
-    if len(boot_curves) > 1:
-        b = np.asarray(boot_curves)
-        drift_error = float(
-            np.std(b[:, middle:].mean(axis=1) - b[:, start:middle].mean(axis=1), ddof=1)
-        )
-        curve_error = np.std(b, axis=0, ddof=1)
-    else:
-        curve_error = np.full_like(transmission, np.nan)
-    threshold = max(
-        options["plateau_tolerance"] * abs(estimate), 2 * (drift_error or 0.0)
+    statistics = summarize_recrossing(
+        children, rng=rng,
+        **{key: options[key] for key in (
+            "child_steps", "plateau_fraction", "plateau_tolerance", "bootstrap"
+        )},
     )
-    plateau = bool(tail >= 10 and abs(drift) <= threshold and estimate > 0)
+    keys = statistics["parent_ids"]
+    num, den = statistics["parent_numerator"], statistics["parent_denominator"]
+    transmission, start = statistics["curve"], statistics["start"]
+    estimate, drift = statistics["kappa"], statistics["drift"]
+    boots = statistics["bootstrap_kappa"]
+    stderr, drift_error = statistics["standard_error"], statistics["drift_standard_error"]
+    curve_error, plateau = statistics["curve_standard_error"], statistics["plateau_detected"]
+    recrossing_uncertainty = statistics["uncertainty"]
     candidate = pmf[qtst_key] * estimate
     total_boot = []
     barriers = pmf.get("pmf_bootstrap_barriers", [])
     qtst_draws = pmf.get("pmf_bootstrap_qtst", [])
     pmf_draws = qtst_draws if is_surface else barriers
-    if is_surface and len(qtst_draws) >= 2 and len(boots) >= 2:
+    if is_surface and len(qtst_draws) >= 2 and recrossing_uncertainty["available"]:
         total_boot = [float(rng.choice(qtst_draws)) * kval for kval in boots]
-    elif not is_surface and len(barriers) >= 2 and len(boots) >= 2:
+    elif not is_surface and len(barriers) >= 2 and recrossing_uncertainty["available"]:
         for kval in boots:
             barrier = rng.choice(barriers)
             total_boot.append(
@@ -1072,11 +1018,9 @@ def _aggregate(children, pmf, config, output, options):
     conditional_error = (
         abs(pmf[qtst_key]) * stderr if stderr is not None else None
     )
-    uncertainty_reasons = []
+    uncertainty_reasons = list(recrossing_uncertainty["reasons"])
     if len(pmf_draws) < 2:
         uncertainty_reasons.append("fewer_than_two_valid_pmf_bootstrap_draws")
-    if len(boots) < 2:
-        uncertainty_reasons.append("fewer_than_two_valid_recrossing_bootstrap_draws")
     pmf_bootstrap = pmf.get("bootstrap", {})
     rejected_pmf_draws = max(0, pmf_bootstrap.get("attempted", 0) - pmf_bootstrap.get("valid", 0))
     if is_surface and rejected_pmf_draws:
@@ -1134,7 +1078,7 @@ def _aggregate(children, pmf, config, output, options):
         warnings.append(
             "Child endpoint energy error exceeds 0.1 kBT per bead; reduce timestep before publishing a rate estimate."
         )
-    if len(grouped) < 20:
+    if len(keys) < 20:
         warnings.append(
             "Fewer than 20 parent configurations; uncertainty and plateau checks are preliminary."
         )
@@ -1167,6 +1111,9 @@ def _aggregate(children, pmf, config, output, options):
             "recrossing_bootstrap_valid": len(boots),
             "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
             "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+            "recrossing_scope": recrossing_uncertainty["scope"],
+            "recrossing_support": recrossing_uncertainty,
+            "parent_block_lengths": statistics["parent_block_lengths"],
         },
         "kappa": estimate,
         "kappa_standard_error": stderr,
@@ -1175,7 +1122,7 @@ def _aggregate(children, pmf, config, output, options):
         "plateau_drift": drift,
         "plateau_drift_standard_error": drift_error,
         "child_time_fs": float(times[-1] * ATOMIC_TIME_S / 1e-15),
-        "parent_configurations": len(grouped),
+        "parent_configurations": len(keys),
         "child_pairs": len(children),
         "child_trajectories": 2 * len(children),
         "maximum_scaled_energy_drift": max_drift,

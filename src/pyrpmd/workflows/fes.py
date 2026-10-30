@@ -659,6 +659,7 @@ def _analyze_streams(streams, config, system, output, return_data):
         ),
         min_count=checked_integer(options.get("min_count", 1), "analysis.min_count"),
         overlap_threshold=float(options.get("overlap_threshold", 1e-6)),
+        return_reweighting=return_data and config.get("task") == "surface_rate",
     )
     data["measure"] = options.get("measure", "cv_density")
     summary = _write_fes(output, data, streams, cv, config)

@@ -8,6 +8,7 @@ forming a centroid is not a valid trajectory-unwrapping procedure.
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 import numpy as np
 
 
@@ -63,6 +64,63 @@ def wrap_positions(positions, cell, pbc=None):
     return q - images @ cell
 
 
+def _readonly(value):
+    """Own a small immutable array whose write flag cannot be re-enabled."""
+    value = np.ascontiguousarray(value)
+    return np.frombuffer(value.tobytes(), dtype=value.dtype).reshape(value.shape)
+
+
+@dataclass(frozen=True, eq=False, init=False)
+class FixedCellGeometry:
+    """Validated, immutable nearest-image geometry for a fixed cell.
+
+    Prepare this once for repeated CV/PES geometry calls. The lattice basis,
+    orthogonality decision and QR decomposition do not depend on positions.
+    Arrays own immutable snapshots, so mutating a caller's cell or flags
+    cannot invalidate the cached decomposition. The free ``minimum_image``
+    function retains its one-shot array API.
+    """
+
+    cell: np.ndarray | None
+    pbc: np.ndarray
+    basis: np.ndarray
+    squared_lengths: np.ndarray
+    orthogonal: np.ndarray | None
+    triangular: np.ndarray | None
+
+    def __init__(self, cell=None, pbc=None):
+        cell, flags = validate_cell_pbc(cell, pbc)
+        basis = np.empty((0, 3)) if cell is None else cell[flags]
+        gram = basis @ basis.T
+        diagonal = np.diag(gram)
+        orthogonal = triangular = None
+        if len(basis):
+            normalized_gram = gram / np.sqrt(np.outer(diagonal, diagonal))
+            if not np.allclose(normalized_gram, np.eye(len(basis)), rtol=0, atol=1e-14):
+                orthogonal, triangular = np.linalg.qr(basis.T, mode="reduced")
+        for name, value in (
+            ("cell", cell), ("pbc", flags), ("basis", basis),
+            ("squared_lengths", diagonal), ("orthogonal", orthogonal),
+            ("triangular", triangular),
+        ):
+            object.__setattr__(self, name, None if value is None else _readonly(value))
+
+    def minimum_image(self, displacements):
+        """Return exact shortest images without rebuilding fixed-cell data."""
+        return _minimum_image(_vectors(displacements), self)
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
+
+    def __reduce__(self):
+        # NumPy's ordinary pickle roundtrip makes arrays writable. Rebuild
+        # through the constructor when a CV is sent to another process.
+        return type(self), (self.cell, self.pbc)
+
+
 def minimum_image(displacements, cell, pbc=None):
     """Return shortest Euclidean images for general triclinic/partial PBC.
 
@@ -70,18 +128,20 @@ def minimum_image(displacements, cell, pbc=None):
     closest-lattice-vector search enumerates the bounded sphere in at most
     three dimensions. The orthogonal-cell path is vectorized. Pathological
     searches fail explicitly instead of returning an unverified image.
+    Repeated evaluations can prepare a ``FixedCellGeometry`` once instead.
     """
     d = _vectors(displacements)
-    cell, flags = validate_cell_pbc(cell, pbc)
-    if not flags.any():
+    return _minimum_image(d, FixedCellGeometry(cell, pbc))
+
+
+def _minimum_image(d, geometry):
+    basis = geometry.basis
+    if not len(basis):
         return d
-    basis = cell[flags]
-    gram = basis @ basis.T
-    normalized_gram = gram / np.sqrt(np.outer(np.diag(gram), np.diag(gram)))
-    if np.allclose(normalized_gram, np.eye(len(basis)), rtol=0, atol=1e-14):
-        coefficients = (d @ basis.T) / np.diag(gram)
+    if geometry.triangular is None:
+        coefficients = (d @ basis.T) / geometry.squared_lengths
         return d - np.rint(coefficients) @ basis
-    orthogonal, triangular = np.linalg.qr(basis.T, mode="reduced")
+    orthogonal, triangular = geometry.orthogonal, geometry.triangular
     k = len(basis)
     flat = d.reshape(-1, 3)
     out = np.empty_like(flat)

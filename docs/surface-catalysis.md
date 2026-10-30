@@ -181,6 +181,18 @@ umbrella 中心须覆盖完整盆地到分割面，实际样本还须覆盖相�
 区间留空；`supported_draw_rate_*` 只报告条件于有效支撑 draw 的分布，不能把它
 解释为完整的 95% 联合置信区间。
 
+回穿统计与气相及 site-rate 共用母构型/相关块实现。单母构型不能通过增加
+bootstrap draw 数量获得误差支持；零通量母构型也不增加有效样本数。
+`rate_uncertainty.recrossing_scope` 区分独立母链与
+`conditional_on_single_chain_mixing`。后者至少需要两个有效相关块，且条件于
+单链相关时间估计足以描述混合；surface-rate 保留允许该条件误差的既有政策，
+不会把它解释为独立母链之间已经一致。零通量 draw 被拒绝时主误差留空。
+
+surface-rate 复用前置 FES 的 MBAR 点估计权重，避免相同数据的第二次求解。
+复用前校验有序 reduced-potential 矩阵、stream counts 和 overlap threshold；
+直方图、支持 mask、盆地积分仍按 surface-rate 自己的 bins/min_count 重建，
+bootstrap 也仍逐次重新求解。不将不同 binning 的 FES 直接当作速率 PMF。
+
 在周期迁移中，应寻找微观回穿衰减后、重复跳跃／有限盒返回前的时间平台。
 `h(s>s‡)` 表示所选出口方向，不是全局化学产物分类器；它不自动追踪其他出口。
 示例中左右两个出口只统计右侧。位点简并、二维双分子面积、覆盖度、压力和
@@ -188,12 +200,19 @@ umbrella 中心须覆盖完整盆地到分割面，实际样本还须覆盖相�
 
 ## 输出与恢复
 
-- `surface_pmf.csv/.npz`：位置密度 PMF 和 mask；NPZ 包含 QTST bootstrap draws。
-- `surface_pmf.json`：盆地、质量度量、归一化、样本支持及逐 draw 失败原因。
+- `surface_pmf.csv/.npz`：位置密度 PMF 和 mask；NPZ 包含 QTST bootstrap draws
+  以及逐样本 MBAR `weights`。
+- `surface_pmf.json`：盆地、质量度量、归一化、样本支持及逐 draw 失败原因；
+  `format_version=2`，不再内嵌逐样本权重数组。
 - `recrossing.csv/.npz`：κ(t)、母构型通量、误差及 bootstrap。
 - `results/summary.json`：`rate_estimate_s_inv` 为有限时间估计；通过平台与能量
   检查时 `rate_s_inv` 才有值。`converged` 仍为 false，必须另做物理收敛研究。
 - `umbrella/` 与 `checkpoints/`：窗口样本、约束母轨迹和已完成子轨迹结果。
+
+**权重读取迁移：** 旧脚本中的 `pmf["weights"]` 应改为
+`np.load(pmf["sample_weights_file"])[pmf["sample_weights_key"]]`，当前键名为
+`"weights"`。最终 summary 中嵌套的 PMF 也使用相同版本。该变更减少随样本数
+增长的重复 JSON 序列化；低层 `surface_rate_pmf()` 数组 API 仍返回 `weights`。
 
 `pyrpmd resume` 支持同一物理设置下的续跑，已完成结果保持一致。现有 FES 可
 `analyze --recompute`；表面速率目前只能读取已存结果，不提供整条速率管线的
