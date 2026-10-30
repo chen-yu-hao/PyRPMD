@@ -3,9 +3,20 @@ name: PyRPMD real BKMP2 loop-language benchmark
 on:
   push:
     branches:
+      - main
       - bench/native-loop-bkmp2-20261030
     paths:
       - 'benchmarks/loop_native/**'
+      - 'benchmarks/h3/**'
+      - 'native/cayley.cpp'
+      - 'src/pyrpmd/dynamics.py'
+      - '.github/workflows/loop-language-benchmark.yml'
+  pull_request:
+    paths:
+      - 'benchmarks/loop_native/**'
+      - 'benchmarks/h3/**'
+      - 'native/cayley.cpp'
+      - 'src/pyrpmd/dynamics.py'
       - '.github/workflows/loop-language-benchmark.yml'
   workflow_dispatch:
 
