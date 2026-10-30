@@ -46,6 +46,27 @@ def small_collision():
 
 
 class InputTests(unittest.TestCase):
+    def test_adaptive_coverage_fields_reach_public_input_validation(self):
+        data = {
+            "task": "fes", "temperature": 300, "beads": 1, "native": False,
+            "system": {"symbols": ["H"], "geometry": [[0., 0., 0.]]},
+            "potential": {"provider": "builtin", "name": "harmonic"},
+            "dynamics": {"timestep": "0.1 fs"},
+            "sampling": {"equilibration_steps": 10, "production_steps": 100,
+                         "sample_interval": 2},
+            "cvs": [{"kind": "cartesian", "atom": 0, "axis": axis} for axis in ("x", "y")],
+            "umbrella": {"centers": [[0., 0.]], "stiffness": 1.},
+            "adaptive_umbrella": {"pilot_steps": 100, "coverage_bins": [4, 8],
+                                  "coverage_ranges": [["-1 bohr", "1 bohr"], ["-2 bohr", "2 bohr"]],
+                                  "min_bin_effective_samples": 5., "target_coverage": .95},
+            "analysis": {"bins": [8, 16], "bootstrap": 0},
+        }
+        config, _ = JobSpec.from_mapping(data).resolve()
+        self.assertEqual(config["adaptive_umbrella"]["coverage_bins"], [4, 8])
+        data["adaptive_umbrella"]["target_coverage"] = 1.1
+        with self.assertRaisesRegex(ValueError, "target_coverage"):
+            JobSpec.from_mapping(data).resolve()
+
     def test_explicit_steps_do_not_parse_unused_duration_defaults(self):
         data = small_collision()
         data["dynamics"]["timestep"] = "0.3 fs"

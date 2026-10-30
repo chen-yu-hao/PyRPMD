@@ -1,0 +1,24 @@
+{
+  "adaptive_umbrella": {
+    "coverage_bins": [
+      4,
+      8
+    ],
+    "coverage_ranges": [
+      [
+        -0.5,
+        0.5
+      ],
+      [
+        -1,
+        1
+      ]
+    ],
+    "min_bin_effective_samples": 5,
+    "target_coverage": 0.95,
+    "max_windows": 45
+  },
+  "sampling": {
+    "andersen_interval": 50
+  }
+}

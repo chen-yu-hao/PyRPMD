@@ -77,6 +77,63 @@ def test_tempering_uses_physical_bias_without_an_extra_bead_factor():
         assert standard.deposit([0.0], step=i + 1, time=0.1 * (i + 1))["height"] == 0.4
 
 
+def test_bias_history_append_restore_and_rollback_keep_exact_gaussian_sum():
+    cv = CVStack([Cartesian(0, 0), Cartesian(0, 1)])
+    sigma = np.array([0.13, 0.29])
+    bias = MetadynamicsBias(cv, sigma, 0.05, 2.0, mode="standard")
+    rng = np.random.default_rng(731)
+    points = rng.normal(size=(3, 4, 2))
+
+    def check_sum():
+        energy, gradient = bias.physical_energy_gradient(points)
+        expected_energy = np.zeros(points.shape[:-1])
+        expected_gradient = np.zeros_like(points)
+        for hill in bias.hills:
+            delta = points - hill["center"]
+            contribution = hill["height"] * np.exp(-0.5 * np.sum((delta / sigma)**2, axis=-1))
+            expected_energy += contribution
+            expected_gradient -= contribution[..., None] * delta / sigma**2
+        np.testing.assert_allclose(energy, expected_energy, atol=1e-15)
+        np.testing.assert_allclose(gradient, expected_gradient, atol=1e-15)
+        np.testing.assert_array_equal(bias.physical_energy(points), energy)
+
+    check_sum()
+    for step in range(1, 8):
+        bias.deposit(rng.normal(size=2), step=step, time=step * 0.1)
+        check_sum()
+    bias.truncate_history(3)
+    check_sum()
+    bias.deposit([0.3, -0.1], step=4, time=0.4)
+    check_sum()
+    restored = MetadynamicsBias(cv, sigma, 0.05, 2.0, mode="standard", hills=bias.hills)
+    for actual, expected in zip(restored.physical_energy_gradient(points), bias.physical_energy_gradient(points)):
+        np.testing.assert_array_equal(actual, expected)
+    bias.truncate_history(0)
+    check_sum()
+
+
+@pytest.mark.parametrize("count", [-1, 1, 0.5, True])
+def test_invalid_history_truncation_is_rejected(count):
+    bias = MetadynamicsBias(CVStack([Cartesian(0, 0)]), [0.5], 0.4, 2.0)
+    with pytest.raises(ValueError, match="history count"):
+        bias.truncate_history(count)
+
+
+def test_history_snapshot_and_deposition_record_cannot_mutate_force_cache():
+    bias = MetadynamicsBias(CVStack([Cartesian(0, 0)]), [0.5], 0.4, 2.0)
+    record = bias.deposit([0.2], step=1, time=0.1)
+    expected = bias.physical_energy_gradient([0.1])
+    snapshot = bias.hills
+    snapshot[0]["center"][0] = 7.0
+    snapshot[0]["height"] = 10.0
+    record["center"][0] = 9.0
+    snapshot.clear()
+    assert bias.hill_count == 1
+    assert bias.hills[0]["center"] == [0.2]
+    for actual, original in zip(bias.physical_energy_gradient([0.1]), expected):
+        np.testing.assert_array_equal(actual, original)
+
+
 @pytest.mark.parametrize("width", [0.2, 1.4, 5.0])
 def test_periodic_gaussians_are_smooth_and_match_finite_difference(width):
     axis = Cartesian(0, 0)
@@ -98,18 +155,21 @@ def test_periodic_gaussians_are_smooth_and_match_finite_difference(width):
 
 
 @pytest.mark.parametrize("mode", ["standard", "well_tempered"])
-def test_failure_at_a_deposition_boundary_resumes_exactly_without_duplicate_hills(tmp_path, monkeypatch, mode):
+@pytest.mark.parametrize("failure_after", ["step", "deposit"])
+def test_failure_at_a_deposition_boundary_resumes_exactly_without_duplicate_hills(tmp_path, monkeypatch, mode, failure_after):
     cfg = config(mode)
     ref = _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path / "full"), "replica": 0})
-    original = Dynamics.step
-    def fail_after_a_successful_map(self, state, bias=None):
-        result = original(self, state, bias)
-        if state.step == 12:
-            raise RuntimeError("injected interruption just before deposition")
+    target = Dynamics if failure_after == "step" else MetadynamicsBias
+    original = getattr(target, failure_after)
+    def fail_after_a_successful_map(self, *args, **kwargs):
+        result = original(self, *args, **kwargs)
+        step = args[0].step if failure_after == "step" else kwargs["step"]
+        if step == 12:
+            raise RuntimeError("injected interruption at deposition boundary")
         return result
     task = {"config": cfg, "system": system(), "output": str(tmp_path / "resumed"), "replica": 0}
     with monkeypatch.context() as patch:
-        patch.setattr(Dynamics, "step", fail_after_a_successful_map)
+        patch.setattr(target, failure_after, fail_after_a_successful_map)
         with pytest.raises(RuntimeError, match="injected interruption"):
             _sample_replica(task)
     with load_checkpoint(tmp_path / "resumed/checkpoints/metadynamics_0000.npz") as cp:

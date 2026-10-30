@@ -1,0 +1,132 @@
+{
+  "reference": "Craig and Manolopoulos 2004, DOI 10.1063/1.1777575; exact harmonic Kubo Cqq(t)=cos(t)/4",
+  "construction": "Exact linear response of equilibrium q covariance; internal modes have zero centroid. No stochastic fitting, bias or thermostat.",
+  "rows": [
+    {
+      "scheme": "cayley-bcb",
+      "beads": 1,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.0012178420026667802,
+      "max_relative_energy_drift": 0.00039999464862083833
+    },
+    {
+      "scheme": "cayley-bcb",
+      "beads": 1,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.00030435144620033494,
+      "max_relative_energy_drift": 9.99995291387501e-05
+    },
+    {
+      "scheme": "cayley-bcb",
+      "beads": 8,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.001217842002680769,
+      "max_relative_energy_drift": 0.00035314479397465784
+    },
+    {
+      "scheme": "cayley-bcb",
+      "beads": 8,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.000304351446193063,
+      "max_relative_energy_drift": 8.829922059818356e-05
+    },
+    {
+      "scheme": "cayley-bcb",
+      "beads": 32,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.001217842002628422,
+      "max_relative_energy_drift": 0.00035142101122427605
+    },
+    {
+      "scheme": "cayley-bcb",
+      "beads": 32,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.00030435144618395915,
+      "max_relative_energy_drift": 8.787224109436404e-05
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "beads": 1,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.0012178420026667802,
+      "max_relative_energy_drift": 0.00039999464862083833
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "beads": 1,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.00030435144620033494,
+      "max_relative_energy_drift": 9.99995291387501e-05
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "beads": 8,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.0012178420026910386,
+      "max_relative_energy_drift": 0.00035417489434779836
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "beads": 8,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.0003043514462345853,
+      "max_relative_energy_drift": 8.855722520546388e-05
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "beads": 32,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.0012178420028762238,
+      "max_relative_energy_drift": 0.0003522444395940018
+    },
+    {
+      "scheme": "normal-mode-bab",
+      "beads": 32,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.0003043514459685204,
+      "max_relative_energy_drift": 8.808040466366675e-05
+    },
+    {
+      "scheme": "velocity-verlet",
+      "beads": 1,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.0012178420026667802,
+      "max_relative_energy_drift": 0.00039999464862083833
+    },
+    {
+      "scheme": "velocity-verlet",
+      "beads": 1,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.00030435144620033494,
+      "max_relative_energy_drift": 9.99995291387501e-05
+    },
+    {
+      "scheme": "velocity-verlet",
+      "beads": 8,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.0012178420026675574,
+      "max_relative_energy_drift": 0.00036359750935756156
+    },
+    {
+      "scheme": "velocity-verlet",
+      "beads": 8,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.0003043514461997243,
+      "max_relative_energy_drift": 9.090933841760467e-05
+    },
+    {
+      "scheme": "velocity-verlet",
+      "beads": 32,
+      "dt": 0.04,
+      "max_error_relative_C0": 0.001217842002668279,
+      "max_relative_energy_drift": 0.00036006237413696194
+    },
+    {
+      "scheme": "velocity-verlet",
+      "beads": 32,
+      "dt": 0.02,
+      "max_error_relative_C0": 0.00030435144619933574,
+      "max_relative_energy_drift": 9.003913238925095e-05
+    }
+  ]
+}

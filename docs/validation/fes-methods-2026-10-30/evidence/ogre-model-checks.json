@@ -1,0 +1,41 @@
+{
+  "double_well": {
+    "command": [
+      "cc",
+      "-shared",
+      "-fPIC",
+      "-O2",
+      "-std=c11",
+      "-I",
+      "/workspace/PyRPMD/native/include",
+      "/workspace/PyRPMD/benchmarks/fes_methods/ogre_models.c",
+      "-o",
+      "/workspace/work/rpmd-fes-review/ogre/build/double_well.so",
+      "-lm"
+    ],
+    "source_sha256": "8944aa5e5e088a9c1fb1cf5e9608022ad73dd60b46430c821dc533ffdddd0eb3",
+    "library_sha256": "c13efa1148e2a5d506594fcbe2ce53a38b9a3398757ffa817efdc87aa7de1358",
+    "energy_error_hartree": 2.168404344971009e-19,
+    "finite_difference_force_error_au": 6.406871561059901e-13
+  },
+  "ackley": {
+    "command": [
+      "cc",
+      "-shared",
+      "-fPIC",
+      "-O2",
+      "-std=c11",
+      "-I",
+      "/workspace/PyRPMD/native/include",
+      "/workspace/PyRPMD/benchmarks/fes_methods/ogre_models.c",
+      "-o",
+      "/workspace/work/rpmd-fes-review/ogre/build/ackley.so",
+      "-lm",
+      "-DACKLEY"
+    ],
+    "source_sha256": "8944aa5e5e088a9c1fb1cf5e9608022ad73dd60b46430c821dc533ffdddd0eb3",
+    "library_sha256": "8087da119dcb745d5f888681ea04ca502558b559597a565a3b45c1654bfa0bf3",
+    "energy_error_hartree": 0.0,
+    "finite_difference_force_error_au": 9.690335556547525e-13
+  }
+}

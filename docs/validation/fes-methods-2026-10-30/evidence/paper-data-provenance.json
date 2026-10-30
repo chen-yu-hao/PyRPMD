@@ -1,0 +1,38 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/double_well/error_data/grid_data.pkl",
+    "sha256": "1f6c4fe5c072e54e9978517bd25b83b12eb5ed57aba82b483d0e79b92ff99e14",
+    "file": "/workspace/work/rpmd-fes-review/literature/ogre-numbers/double_well-grid_data.pkl",
+    "size": 146175
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/double_well/error_data/grid_error_data.pkl",
+    "sha256": "b815a256c0b637f42ffeb918bdec70748a1784e07e34083e0f290a902be2455d",
+    "file": "/workspace/work/rpmd-fes-review/literature/ogre-numbers/double_well-grid_error_data.pkl",
+    "size": 37302
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/double_well/error_data/grid_info.pkl",
+    "sha256": "5208faf62e3cb33f4aab01c495f76649b0bb6f427d9f58c9304e07c1960d2839",
+    "file": "/workspace/work/rpmd-fes-review/literature/ogre-numbers/double_well-grid_info.pkl",
+    "size": 2455
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/ackley/error_data/grid_data.pkl",
+    "sha256": "6afa5bb8bf808fb0377e79cfc829dbe035de9e83f03c2bc30b6f5a8c489b270b",
+    "file": "/workspace/work/rpmd-fes-review/literature/ogre-numbers/ackley-grid_data.pkl",
+    "size": 62671
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/ackley/error_data/grid_error_data.pkl",
+    "sha256": "6436683faa43c4c72fb99b288d8d53da636d088fae166603f316a488273e6785",
+    "file": "/workspace/work/rpmd-fes-review/literature/ogre-numbers/ackley-grid_error_data.pkl",
+    "size": 16015
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/ackley/error_data/grid_info.pkl",
+    "sha256": "e374b2184b02d43d8c0bbd5e15b3575b1579593ecbc74c16dcd096838b1ebec1",
+    "file": "/workspace/work/rpmd-fes-review/literature/ogre-numbers/ackley-grid_info.pkl",
+    "size": 1024
+  }
+]

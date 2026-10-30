@@ -136,6 +136,12 @@ Ni(100) slab 上 H/D、1/4 珠子的短计算及来源校验。它验证数值�
 
 ## 真实体系验证：H + H₂ / BKMP2
 
+二维固定伞、自适应伞、无偏对照与两类 metadynamics 的实际计算及论文模型对照，见
+[2026-10-30 二维采样方法核验](docs/validation/fes-methods-2026-10-30/README.md)。
+该记录包含量子谐振子、OGRe 双阱/Ackley、独立 PyMBAR 和未完成的自适应试采样。
+后续覆盖判据、振幅 ESS 与 MetaD 缓存修复，以及相同预算的优化对照，见
+[2026-10-30 二维 FES 优化复测](docs/validation/fes-optimization-2026-10-30/README.md)。
+
 一维/二维 PMF 的新增独立审查见
 [2026-10-30 PMF 准确性验证](docs/validation/pmf-accuracy-2026-10-30/README.md)：
 包含解析积分、PyMBAR、不同珠子数/积分器、周期 CV、相关误差和真实 BKMP2 工作流。

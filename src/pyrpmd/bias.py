@@ -108,6 +108,10 @@ class MetadynamicsBias:
     minimum-image Gaussian with a discontinuous force at half a period.
     Depositions are explicit events; evaluating forces never changes history.
     This class deliberately has no frozen native-bias descriptor.
+
+    Change history through ``deposit`` or ``truncate_history``. ``hills``
+    returns a serializable snapshot, so editing its records cannot invalidate
+    force caches. Pass a modified snapshot to a new bias to reanalyze it.
     """
 
     history_dependent = True
@@ -137,16 +141,26 @@ class MetadynamicsBias:
             p is not None and (not np.isfinite(p) or p <= 0) for p in cv.periods
         ):
             raise ValueError("CV periods must be positive finite numbers or None")
-        self.hills = []
+        self._hills = []
+        self._history_arrays_cache = None
         for hill in ([] if hills is None else hills):
             self._append(hill)
 
+    @property
+    def hills(self):
+        """A detached, JSON-serializable snapshot of the deposited history."""
+        return [{**hill, "center": hill["center"].copy()} for hill in self._hills]
+
+    @property
+    def hill_count(self):
+        return len(self._hills)
+
     @staticmethod
-    def _kernel(delta, sigma, period):
+    def _kernel(delta, sigma, period, *, gradient=True):
         """Unit-height Gaussian and its derivative, including smooth images."""
         if period is None:
             value = np.exp(-0.5 * (delta / sigma) ** 2)
-            return value, -delta / sigma**2 * value
+            return value, -delta / sigma**2 * value if gradient else None
         d = (delta + 0.5 * period) % period - 0.5 * period
         ratio = sigma / period
         if ratio >= 0.2:
@@ -158,30 +172,45 @@ class MetadynamicsBias:
             phase = d[..., None] * (2 * np.pi / period) * modes
             norm = 1.0 + 2 * coeff.sum()
             value = (1.0 + 2 * np.sum(coeff * np.cos(phase), axis=-1)) / norm
-            derivative = -2 * np.sum(coeff * modes * np.sin(phase), axis=-1) * (2 * np.pi / period) / norm
+            derivative = (-2 * np.sum(coeff * modes * np.sin(phase), axis=-1) *
+                          (2 * np.pi / period) / norm) if gradient else None
             return value, derivative
         count = int(np.ceil(8.5 * ratio)) + 1
         images = np.arange(-count, count + 1, dtype=float) * period
         shifts = d[..., None] + images
         terms = np.exp(-0.5 * (shifts / sigma) ** 2)
         norm = np.exp(-0.5 * (images / sigma) ** 2).sum()
-        return terms.sum(axis=-1) / norm, np.sum(-shifts / sigma**2 * terms, axis=-1) / norm
+        derivative = np.sum(-shifts / sigma**2 * terms, axis=-1) / norm if gradient else None
+        return terms.sum(axis=-1) / norm, derivative
 
-    def physical_energy_gradient(self, values):
+    def _history_arrays(self):
+        # Rebuild only on deposition/restoration/truncation, rather than on
+        # every force call. This removes O(hills) Python dictionary traversal
+        # from both kicks of every integration step. No Gaussian is pruned or
+        # approximated. The public history snapshot cannot mutate this cache.
+        if self._history_arrays_cache is None:
+            self._history_arrays_cache = (
+                np.asarray([h["center"] for h in self._hills], float).reshape(-1, self.cv.dimension),
+                np.asarray([h["height"] for h in self._hills], float),
+            )
+        return self._history_arrays_cache
+
+    def _evaluate(self, values, *, gradient):
         values = np.asarray(values, float)
         if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
             raise ValueError("metadynamics values must be finite [...,D]")
-        if not self.hills:
-            return np.zeros(values.shape[:-1]), np.zeros_like(values)
-        centers = np.asarray([h["center"] for h in self.hills])
-        heights = np.asarray([h["height"] for h in self.hills])
+        if not self._hills:
+            return np.zeros(values.shape[:-1]), np.zeros_like(values) if gradient else None
+        centers, heights = self._history_arrays()
         delta = values[..., None, :] - centers
         factors, derivatives = [], []
         for j, (sigma, period) in enumerate(zip(self.sigma, self.cv.periods)):
-            f, g = self._kernel(delta[..., j], sigma, period)
+            f, g = self._kernel(delta[..., j], sigma, period, gradient=gradient)
             factors.append(f)
             derivatives.append(g)
         energy = np.sum(heights * np.prod(factors, axis=0), axis=-1)
+        if not gradient:
+            return energy, None
         gradient = np.empty_like(values)
         for j in range(self.cv.dimension):
             term = heights * derivatives[j]
@@ -191,8 +220,11 @@ class MetadynamicsBias:
             gradient[..., j] = np.sum(term, axis=-1)
         return energy, gradient
 
+    def physical_energy_gradient(self, values):
+        return self._evaluate(values, gradient=True)
+
     def physical_energy(self, values):
-        return self.physical_energy_gradient(values)[0]
+        return self._evaluate(values, gradient=False)[0]
 
     def energy_force(self, q):
         result = self.cv.value_and_jacobian(q)
@@ -211,10 +243,19 @@ class MetadynamicsBias:
             raise ValueError("invalid metadynamics hill height/time/bias")
         if isinstance(step, (bool, np.bool_)) or not isinstance(step, (int, np.integer)) or step < 1:
             raise ValueError("metadynamics hill step must be a positive integer")
-        if self.hills and (step <= self.hills[-1]["step"] or time <= self.hills[-1]["time"]):
+        if self._hills and (step <= self._hills[-1]["step"] or time <= self._hills[-1]["time"]):
             raise ValueError("metadynamics hill clocks must strictly increase")
-        self.hills.append({"center": center.tolist(), "height": height,
+        self._hills.append({"center": center.tolist(), "height": height,
                            "step": int(step), "time": time, "bias_before": before})
+        self._history_arrays_cache = None
+
+    def truncate_history(self, count):
+        """Discard hills after ``count``, for transactional step rollback."""
+        if (isinstance(count, (bool, np.bool_)) or not isinstance(count, (int, np.integer))
+                or not 0 <= count <= len(self._hills)):
+            raise ValueError("history count must be an integer between zero and the current hill count")
+        del self._hills[count:]
+        self._history_arrays_cache = None
 
     def deposit(self, values, *, step, time):
         """Add one hill after a successful integration step, without RNG use."""
@@ -228,7 +269,8 @@ class MetadynamicsBias:
         hill = {"center": center, "height": height, "step": step,
                 "time": time, "bias_before": before}
         self._append(hill)
-        return dict(self.hills[-1])
+        last = self._hills[-1]
+        return {**last, "center": last["center"].copy()}
 
     @property
     def fes_factor(self):

@@ -5,6 +5,9 @@ unspecified basins. Missing overlap is repaired by midpoint insertion along
 the shortest gaps between overlap components. Pilot length doubles each round
 to address insufficient effective sample size. The initial stiffness is kept
 fixed. Every decision, seed and diagnostic is persisted before the next stage.
+An optional, explicitly bounded coverage grid also inserts windows into cells
+with insufficient local reweighting ESS: graph connectivity alone cannot
+guarantee coverage of a two-dimensional free-energy surface.
 
 Only frozen-production streams enter the final MBAR/UI analysis. Adaptive
 pilot samples cannot be passed off as samples from the frozen umbrella set.
@@ -18,15 +21,18 @@ from pathlib import Path
 from collections.abc import Mapping
 import numpy as np
 
-from ..analysis.fes import solve_mbar, umbrella_reduced_potentials, statistical_inefficiency
+from ..analysis.fes import (solve_mbar, umbrella_reduced_potentials,
+                            cv_statistical_inefficiency, CV_CORRELATION_OBSERVABLES)
 from ..bias import displacement
 from ..parallel import root_call, run_tasks
 from .fes import (resolve_umbrellas, _fingerprint, _sample_window,
-                  checked_integer, write_json, jsonable)
+                  checked_integer, write_json, jsonable, _dimension)
+from ..units import parse_quantity
 
 
 ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
-                   "max_windows", "target_overlap", "min_effective_samples", "min_spacing"}
+                   "max_windows", "target_overlap", "min_effective_samples", "min_spacing",
+                   "coverage_bins", "coverage_ranges", "min_bin_effective_samples", "target_coverage"}
 
 
 def adaptive_options(config):
@@ -47,7 +53,9 @@ def adaptive_options(config):
         ("max_windows", 64, 1),
     ):
         options[key] = checked_integer(table.get(key, default), "adaptive_umbrella." + key, minimum)
-    for key, default in (("target_overlap", 0.03), ("min_effective_samples", 20.0), ("min_spacing", 1e-6)):
+    for key, default in (("target_overlap", 0.03), ("min_effective_samples", 20.0),
+                         ("min_spacing", 1e-6), ("min_bin_effective_samples", 5.0),
+                         ("target_coverage", 0.95)):
         value = table.get(key, default)
         if isinstance(value, (bool, np.bool_)):
             raise ValueError("adaptive_umbrella." + key + " must be a positive number")
@@ -57,6 +65,23 @@ def adaptive_options(config):
         options[key] = value
     if options["target_overlap"] >= 1:
         raise ValueError("adaptive_umbrella.target_overlap must be below one")
+    if options["target_coverage"] > 1:
+        raise ValueError("adaptive_umbrella.target_coverage must not exceed one")
+    bins = table.get("coverage_bins")
+    ranges = table.get("coverage_ranges")
+    if (bins is None) != (ranges is None):
+        raise ValueError("adaptive_umbrella.coverage_bins and coverage_ranges must be supplied together")
+    if bins is not None:
+        if not isinstance(bins, (list, tuple, np.ndarray)) or len(bins) not in (1, 2):
+            raise ValueError("adaptive_umbrella.coverage_bins must list one or two positive integers")
+        bins = [checked_integer(n, "adaptive_umbrella.coverage_bins") for n in bins]
+        if bins[0] * (bins[1] if len(bins) == 2 else 1) > 1_000_000:
+            raise ValueError("adaptive_umbrella.coverage_bins must not exceed one million cells")
+        if not isinstance(ranges, (list, tuple, np.ndarray)) or len(ranges) != len(bins):
+            raise ValueError("adaptive_umbrella.coverage_ranges dimension must match coverage_bins")
+        if any(not isinstance(pair, (list, tuple, np.ndarray)) or len(pair) != 2 for pair in ranges):
+            raise ValueError("adaptive_umbrella.coverage_ranges must contain [lower, upper] pairs")
+        options.update(coverage_bins=bins, coverage_ranges=[list(pair) for pair in ranges])
     if enabled:
         if config.get("task", "fes") not in ("fes", "rate"):
             raise ValueError("adaptive_umbrella is supported only for FES and rate PMF workflows")
@@ -67,6 +92,22 @@ def adaptive_options(config):
     return options
 
 
+def _resolve_coverage_options(options, cv):
+    """Coverage bounds use canonical CV units, as do analysis.ranges."""
+    if "coverage_bins" not in options:
+        return options
+    if len(options["coverage_bins"]) != cv.dimension:
+        raise ValueError("adaptive_umbrella.coverage_bins dimension must match selected CVs")
+    ranges = [[parse_quantity(value, _dimension(unit)) for value in pair]
+              for pair, unit in zip(options["coverage_ranges"], cv.units)]
+    for (lower, upper), period in zip(ranges, cv.periods):
+        if not np.isfinite([lower, upper]).all() or lower >= upper:
+            raise ValueError("adaptive_umbrella.coverage_ranges requires finite lower < upper")
+        if period is not None and upper - lower > period * (1 + 1e-12):
+            raise ValueError("adaptive_umbrella.coverage_ranges must span at most one CV period")
+    return {**options, "coverage_ranges": ranges}
+
+
 def validate_adaptive_umbrella(config, system):
     """Early input validation; TS-only rate CVs are resolved after preparation."""
     options = adaptive_options(config)
@@ -75,6 +116,7 @@ def validate_adaptive_umbrella(config, system):
     if config.get("task") == "rate" and not config.get("cvs"):
         return
     cv, _, centers, stiffness = resolve_umbrellas(config, system)
+    _resolve_coverage_options(options, cv)
     if len(centers) > options["max_windows"]:
         raise ValueError("initial umbrella count exceeds adaptive_umbrella.max_windows")
     for i, c in enumerate(centers):
@@ -123,6 +165,36 @@ def _components(count, edges):
     return find, union
 
 
+def _coverage_diagnostic(samples, weights, frame_inefficiency, periods, options):
+    """Local Kish ESS with a conservative per-stream CV correlation factor.
+
+    This is a pilot support diagnostic, not a free-energy error estimate: it
+    does not account for uncertainty in fitted MBAR offsets or unseen basins.
+    Every declared grid cell has equal importance, including zero-count cells.
+    """
+    edges = [np.linspace(lower, upper, n + 1)
+             for n, (lower, upper) in zip(options["coverage_bins"], options["coverage_ranges"])]
+    values = np.array(samples, copy=True)
+    for axis, period in enumerate(periods):
+        if period is not None:
+            lower = edges[axis][0]
+            values[:, axis] = lower + (values[:, axis] - lower) % period
+    counts, _ = np.histogramdd(values, edges)
+    mass, _ = np.histogramdd(values, edges, weights=weights)
+    variance, _ = np.histogramdd(values, edges, weights=weights**2 * frame_inefficiency)
+    ess = np.divide(mass**2, variance, out=np.zeros_like(mass), where=variance > 0)
+    supported = ess >= options["min_bin_effective_samples"]
+    fraction = float(supported.mean())
+    return {
+        "bins": options["coverage_bins"], "ranges": options["coverage_ranges"],
+        "effective_samples": ess.tolist(), "sample_counts": counts.astype(int).tolist(),
+        "min_bin_effective_samples": options["min_bin_effective_samples"],
+        "fraction": fraction, "target": options["target_coverage"],
+        "target_met": bool(fraction >= options["target_coverage"]),
+        "note": "Local Kish ESS corrected by per-stream CV autocorrelation; not a physical convergence certificate.",
+    }, edges, ess, supported
+
+
 def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
     """Deterministic refinement from actual pilot samples, independently testable."""
     centers = np.asarray(centers, float)
@@ -131,18 +203,9 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
     if any(not group for group in groups):
         raise ValueError("pilot results must contain every umbrella window")
     samples = [np.concatenate([s["samples"] for s in group]) for group in groups]
-    def inefficiency(values):
-        # Circular CV traces must not appear artificially decorrelated merely
-        # because they cross their coordinate branch cut.
-        traces = []
-        for j, period in enumerate(periods):
-            if period is None:
-                traces.append(values[:, j])
-            else:
-                angle = 2 * np.pi * values[:, j] / period
-                traces.extend([np.sin(angle), np.cos(angle)])
-        return max(statistical_inefficiency(x) for x in traces)
-    ess = [sum(len(s["samples"]) / inefficiency(np.asarray(s["samples"])) for s in group) for group in groups]
+    stream_g = [[cv_statistical_inefficiency(s["samples"], periods) for s in group] for group in groups]
+    ess = [sum(len(s["samples"]) / g for s, g in zip(group, factors))
+           for group, factors in zip(groups, stream_g)]
     joined = np.concatenate(samples)
     reduced = umbrella_reduced_potentials(joined, centers, np.broadcast_to(stiffness, (count,) + np.shape(stiffness)), beta, periods)
     mbar = solve_mbar(reduced, [len(x) for x in samples], return_state_weights=False)
@@ -188,15 +251,49 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
         else:
             proposed.append(midpoint.tolist())
             inserted.append({"between": [i, j], "center": midpoint.tolist(), "overlap": float(scores[i, j])})
+    coverage = None
+    if "coverage_bins" in options:
+        frame_g = np.concatenate([np.full(len(s["samples"]), g)
+                                  for group, factors in zip(groups, stream_g)
+                                  for s, g in zip(group, factors)])
+        coverage, edges, bin_ess, supported = _coverage_diagnostic(
+            joined, mbar.weights, frame_g, periods, options)
+        if not coverage["target_met"]:
+            # Put at most one candidate at each deficient cell's center. If a
+            # center already exists, subsequent pilots get longer instead of
+            # piling up almost-identical windows. The user controls spatial
+            # resolution separately from the final analysis histogram.
+            candidates = [tuple(index) for index in np.argwhere(~supported)]
+            candidates.sort(key=lambda index: (bin_ess[index], index))
+            for index in candidates:
+                center = np.array([(edge[i] + edge[i + 1]) / 2 for edge, i in zip(edges, index)])
+                delta = displacement(np.asarray(proposed), center, periods)
+                distances = np.sqrt(np.maximum(0, beta * np.einsum("ni,ij,nj->n", delta, stiffness, delta)))
+                if distances.min() <= options["min_spacing"]:
+                    reason = "min_spacing"
+                elif len(proposed) >= options["max_windows"]:
+                    reason = "max_windows"
+                else:
+                    reason = None
+                detail = {"reason": "coverage", "bin": list(index), "center": center.tolist(),
+                          "effective_samples": float(bin_ess[index])}
+                if reason:
+                    rejected.append({**detail, "reason": reason, "criterion": "coverage"})
+                else:
+                    proposed.append(center.tolist())
+                    inserted.append(detail)
     enough = bool(np.all(np.asarray(ess) >= options["min_effective_samples"]))
     return {
-        "target_met": bool(connected and enough), "overlap_connected_at_target": connected,
+        "target_met": bool(connected and enough and (coverage is None or coverage["target_met"])),
+        "overlap_connected_at_target": connected,
         "overlap_components": labels, "overlap": mbar.overlap.tolist(),
         "symmetric_overlap": scores.tolist(), "spanning_overlap": min(tree_scores, default=1.0),
         "effective_samples_per_window": ess, "effective_samples_target_met": enough,
+        "effective_sample_observables": CV_CORRELATION_OBSERVABLES,
         "samples_per_window": [len(x) for x in samples], "mbar_residual": float(mbar.residual),
         "inserted": inserted, "rejected_insertions": rejected,
         "next_centers": proposed,
+        **({"coverage": coverage} if coverage is not None else {}),
     }
 
 
@@ -247,7 +344,8 @@ def _record_round(plan, streams, config, system, output, cv, options, pilot):
         plan["target_met"] = True
     elif plan["next_round"] >= options["max_rounds"]:
         plan["status"] = "incomplete"
-        plan["failure_reason"] = "max_rounds before overlap/effective-sample targets"
+        targets = "overlap/effective-sample" + ("/coverage" if "coverage" in report else "")
+        plan["failure_reason"] = "max_rounds before " + targets + " targets"
     elif not report["overlap_connected_at_target"] and not report["inserted"]:
         plan["status"] = "incomplete"
         plan["failure_reason"] = "no admissible midpoint: max_windows or min_spacing"
@@ -264,8 +362,15 @@ def _annotate(result, plan, output, return_data):
         "status": "frozen", "target_met": True, "pilot_rounds": len(plan["rounds"]),
         "frozen_windows": len(plan["centers"]), "pilot_samples_used_in_production": 0,
         "production_seed": plan["production_seed"], "plan": str(_plan_path(output)),
-        "target_note": "Pilot overlap/ESS targets only; physical and production sampling convergence remain unverified.",
+        "target_note": "Pilot overlap/ESS and optional coverage targets only; physical and production sampling convergence remain unverified.",
     }
+    if "coverage" in plan["rounds"][-1]:
+        summary["adaptive_umbrella"]["coverage"] = plan["rounds"][-1]["coverage"]
+    summary["adaptive_umbrella"]["effective_sample_observables"] = plan["rounds"][-1].get(
+        "effective_sample_observables", "Legacy saved pilot: CV only, or first circular harmonics")
+    if "effective_sample_observables" not in plan["rounds"][-1]:
+        summary["warnings"].append("This saved frozen plan used legacy coordinate-only pilot ESS; "
+                                   "use a fresh output directory to evaluate amplitude-sensitive pilot criteria.")
     summary["warnings"].append("Adaptive pilots were discarded before fixed-umbrella production; pilot overlap/ESS is not a physical convergence certificate.")
     write_json(Path(output) / "summary.json", summary)
     return result
@@ -287,6 +392,7 @@ def run_adaptive_fes(config, system, output, executor=None, return_data=False):
     validate_adaptive_umbrella(config, system)
     options = adaptive_options(config)
     cv, specs, centers, stiffness = resolve_umbrellas(config, system)
+    options = _resolve_coverage_options(options, cv)
     plan = root_call(_open_plan, config, system, str(output), centers, stiffness, options)
     while plan["status"] == "adapting":
         index = plan["next_round"]
@@ -311,7 +417,8 @@ def reanalyze_adaptive_fes(config, system, output, return_data=False):
     """Analyze only the frozen production checkpoints, never pilot histories."""
     from .fes import reanalyze_fes
     options = adaptive_options(config)
-    _, _, centers, stiffness = resolve_umbrellas(config, system)
+    cv, _, centers, stiffness = resolve_umbrellas(config, system)
+    options = _resolve_coverage_options(options, cv)
     plan = root_call(_open_plan, config, system, str(output), centers, stiffness, options, False)
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])

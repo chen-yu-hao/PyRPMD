@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 from scipy.special import ndtr
 
-from pyrpmd.analysis.fes import reconstruct_fes
+from pyrpmd.analysis.fes import reconstruct_fes, statistical_inefficiency
 from pyrpmd.checkpoint import atomic_savez, load_checkpoint
 from pyrpmd.constants import ANGSTROM_TO_AU, ATOMIC_TIME_S, KB_AU
 from pyrpmd.dynamics import Dynamics
@@ -353,6 +353,12 @@ def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
     config["analysis"]["bootstrap"] = 12
     sampled = sampled_harmonic_pmf(config, system)
     data = sampled["data"]
+    # This caching/reindexing regression compares against historical draws,
+    # so hold their original coordinate-only correlation policy fixed. The
+    # production amplitude-sensitive policy is tested in test_fes_correlation.
+    data["statistical_inefficiency"] = np.asarray([
+        statistical_inefficiency(stream["samples"]) for stream in sampled["streams"]
+    ])
     with patch.object(site, "umbrella_reduced_potentials", wraps=site.umbrella_reduced_potentials) as bias_matrix:
         pmf, tasks = site._estimate_pmf(sampled, config, system, tmp_path)
     assert bias_matrix.call_count == 1

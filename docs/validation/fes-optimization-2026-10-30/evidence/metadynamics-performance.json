@@ -1,0 +1,35 @@
+[
+  {
+    "hills": 100,
+    "calls": 1000,
+    "clock": "process_time",
+    "before_seconds": 0.07988278399999998,
+    "after_seconds": 0.022303976000000003,
+    "speedup": 3.5815490475778837,
+    "array_equal": true,
+    "source_before_sha256": "0934b65f10423d590fe2ec1b71e3abc8d31a337599ec7a598c35f90fca97ca8c",
+    "source_after_sha256": "905b7c7dba9ebdfef6d089009b5c82ccece5c06e5cf3cb763b74882d5bfd9c2b"
+  },
+  {
+    "hills": 1000,
+    "calls": 1000,
+    "clock": "process_time",
+    "before_seconds": 0.29034510000000013,
+    "after_seconds": 0.039632260999999946,
+    "speedup": 7.325978702047823,
+    "array_equal": true,
+    "source_before_sha256": "0934b65f10423d590fe2ec1b71e3abc8d31a337599ec7a598c35f90fca97ca8c",
+    "source_after_sha256": "905b7c7dba9ebdfef6d089009b5c82ccece5c06e5cf3cb763b74882d5bfd9c2b"
+  },
+  {
+    "hills": 5000,
+    "calls": 1000,
+    "clock": "process_time",
+    "before_seconds": 1.3268562379999995,
+    "after_seconds": 0.1312803469999997,
+    "speedup": 10.107043958377126,
+    "array_equal": true,
+    "source_before_sha256": "0934b65f10423d590fe2ec1b71e3abc8d31a337599ec7a598c35f90fca97ca8c",
+    "source_after_sha256": "905b7c7dba9ebdfef6d089009b5c82ccece5c06e5cf3cb763b74882d5bfd9c2b"
+  }
+]

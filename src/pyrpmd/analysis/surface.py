@@ -21,7 +21,8 @@ from .fes import (
     _bootstrap_block_plan,
     _histogram,
     solve_mbar,
-    statistical_inefficiency,
+    cv_statistical_inefficiency,
+    CV_CORRELATION_OBSERVABLES,
     umbrella_reduced_potentials,
 )
 
@@ -328,8 +329,10 @@ def surface_rate_pmf(
         free[:] = np.nan
         mask[:] = True
     ready = reason is None
-    gs = np.asarray([statistical_inefficiency(sample) for sample in arrays])
+    # This workflow permits only a linear, nonperiodic centroid coordinate.
+    gs = np.asarray([cv_statistical_inefficiency(sample) for sample in arrays])
     block_plan = _bootstrap_block_plan(counts, gs)
+    block_plan["observables"] = CV_CORRELATION_OBSERVABLES
     blocks = block_plan["block_lengths"]
     offsets = np.r_[0, np.cumsum(counts)]
     rates, log_pairs, records, failures = [], [], [], []
@@ -441,6 +444,7 @@ def surface_rate_pmf(
             "skipped_reason": reason if not ready else None,
             "block_lengths": blocks,
             "block_plan": block_plan,
+            "correlation_observables": CV_CORRELATION_OBSERVABLES,
             "surface_held_fixed": True,
             "basin_held_fixed": True,
             "log_density_integral_pairs": np.asarray(log_pairs).reshape(-1, 2),

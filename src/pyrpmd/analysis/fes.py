@@ -42,6 +42,54 @@ def statistical_inefficiency(series):
     return float(np.clip(1 + 2 * total, 1, n))
 
 
+CV_CORRELATION_OBSERVABLES = (
+    "CV and nonconstant centered CV squared; periodic CVs use nonconstant first and second circular harmonics"
+)
+
+
+def cv_statistical_inefficiency(values, periods=None):
+    """Estimate the slowest resolved linear/amplitude CV correlation.
+
+    Fast sign changes can hide a slowly relaxing oscillator amplitude from
+    the initial-positive-sequence estimate of the coordinate alone. Include
+    its centered square, or first/second circular harmonics for periodic CVs.
+    Constant derived traces contain no additional fluctuations to diagnose;
+    a truly constant CV retains the existing unresolved-variation convention
+    (g=N for N>=4). This still cannot establish equilibration or detect every
+    slow variable relevant to a histogram or rate.
+    """
+    values = np.asarray(values, float)
+    if values.ndim == 1:
+        values = values[:, None]
+    if values.ndim != 2 or min(values.shape) == 0 or not np.isfinite(values).all():
+        raise ValueError("CV correlation requires finite nonempty [N,D] values")
+    periods = (None,) * values.shape[1] if periods is None else tuple(periods)
+    if len(periods) != values.shape[1] or any(
+        p is not None and (not np.isscalar(p) or not np.isfinite(p) or p <= 0)
+        for p in periods
+    ):
+        raise ValueError("periods must contain one positive finite number or None per CV")
+    gs = []
+    for j, period in enumerate(periods):
+        if period is None:
+            coordinate = values[:, j]
+            gs.append(statistical_inefficiency(coordinate))
+            square = (coordinate - coordinate.mean())**2
+            if (np.ptp(square) > 16 * np.finfo(float).eps * np.max(square)
+                    and np.var(square) > np.finfo(float).tiny):
+                gs.append(statistical_inefficiency(square))
+        else:
+            angle = 2 * np.pi * (values[:, j] % period) / period
+            traces = (np.sin(angle), np.cos(angle), np.sin(2 * angle), np.cos(2 * angle))
+            # Discard roundoff-sized variation, e.g. sin(pi) versus sin(0).
+            # A constant circular CV may have different raw branch labels.
+            varying = [trace for trace in traces if np.ptp(trace) > 16 * np.finfo(float).eps]
+            gs.extend(statistical_inefficiency(trace) for trace in varying)
+            if not varying:
+                gs.append(statistical_inefficiency(np.zeros(len(values))))
+    return float(max(gs))
+
+
 @dataclass
 class MBARResult:
     free_energies: np.ndarray
@@ -549,20 +597,9 @@ def reconstruct_fes(
             f"MBAR did not converge; equation residual={mbar.residual:g}"
         )
     mass, density, count, f, mask = _histogram(x, mbar.weights, edges, beta, min_count)
-    def stream_inefficiency(a):
-        # Raw angles depend on the arbitrary branch cut. Circular observables
-        # preserve the correlation diagnostic under integer-period shifts.
-        observables = []
-        for j, p in enumerate(periods):
-            if p is None:
-                observables.append(a[:, j])
-            else:
-                angle = 2 * np.pi * a[:, j] / p
-                observables.extend((np.sin(angle), np.cos(angle)))
-        return statistical_inefficiency(np.column_stack(observables))
-
-    gs = np.array([stream_inefficiency(a) for a in arrays])
+    gs = np.array([cv_statistical_inefficiency(a, periods) for a in arrays])
     block_plan = _bootstrap_block_plan(counts, gs)
+    block_plan["observables"] = CV_CORRELATION_OBSERVABLES
     se = np.full_like(f, np.nan)
     connected = len(set(mbar.components)) == 1
     boots = []
@@ -917,8 +954,9 @@ def mbar_rate_pmf(
     if not fit.converged or not connected:
         free[:] = np.nan
         mask[:] = True
-    gs = np.asarray([statistical_inefficiency(a) for a in arrays])
+    gs = np.asarray([cv_statistical_inefficiency(a) for a in arrays])
     block_plan = _bootstrap_block_plan(counts, gs)
+    block_plan["observables"] = CV_CORRELATION_OBSERVABLES
     blocks = block_plan["block_lengths"]
     warnings.extend(block_plan["warnings"])
     moments = []

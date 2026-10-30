@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-30",
+  "source_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "versions": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "h5py": "3.16.0",
+    "matplotlib": "3.11.2",
+    "pymbar": "4.0.3",
+    "pytest": "9.2.0"
+  },
+  "compiler": "cc (Debian 14.2.0-19) 14.2.0",
+  "raw_data_root": "/workspace/work/rpmd-fes-review",
+  "native_core": "/workspace/PyRPMD/src/pyrpmd",
+  "harmonic_seeds": [
+    3101,
+    3102,
+    3103
+  ],
+  "ogre_seeds": [
+    4101,
+    4102,
+    4103
+  ],
+  "source_files_sha256": {
+    "benchmarks/fes_methods/ogre_benchmark.py": "f7e9c2c1f1bdf308ab456916fe11ad37ffdc104cfe31994445cebe5f69128d1f",
+    "benchmarks/fes_methods/README.md": "4b2568093f6f43f8061b14b77f667573841f45f20b74950b4ab2adfee60e42de",
+    "benchmarks/fes_methods/benchmark.py": "42c7ad699ab8bedf9bb42e2605f5f590ad50f4396364497d23d65ae69f943d64",
+    "benchmarks/fes_methods/ogre_models.c": "8944aa5e5e088a9c1fb1cf5e9608022ad73dd60b46430c821dc533ffdddd0eb3",
+    "benchmarks/fes_methods/summarize.py": "a1a676afe0d936c57a51cfd5c47b9fa11505b73fc44c9a8e62a23930bc20ff91",
+    "benchmarks/fes_methods/solver_check.py": "a1c695ff8672e4f1b62e657b0e5010d955eca3fc744ec67772fc4b77c383f542",
+    "benchmarks/fes_methods/extract_literature.py": "c06faba0881ed6b2edce9d70aa369ed9cbd9116b30be44ce0f2a94e45e9fefa7"
+  },
+  "notes": [
+    "Core scientific implementation unchanged. New benchmark and documentation files are uncommitted.",
+    "57 FES attempts: 54 completed and 3 adaptive ESS stops, plus separate dynamics and equilibrium checks.",
+    "Short and long runs with the same seed share trajectory prefixes and are not independent replicates.",
+    "Runtime calls overlapped on a 4-CPU cloud executor; wall times are not a hardware performance ranking.",
+    "Paper model source and numerical data are pinned and checksum recorded; original pickle files stay in work/ only."
+  ],
+  "record_type": "historical_run_manifest",
+  "scope_note": "Records the original 6fde29d-derived experiment workspace. Source hashes and uncommitted-state notes describe that historical run, not the later PR integrated on main 3dc82c3."
+}

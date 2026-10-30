@@ -107,7 +107,7 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     # Bound temporary [grid,hill] allocations even for long HILLS histories.
     for bias in biases:
         chunks = []
-        chunk_size = max(1, min(1024, 1_000_000 // max(1, len(bias.hills))))
+        chunk_size = max(1, min(1024, 1_000_000 // max(1, bias.hill_count)))
         for start in range(0, len(flat), chunk_size):
             chunks.append(bias.physical_energy(flat[start:start + chunk_size]))
         values.append(np.concatenate(chunks).reshape(grid.shape[:-1]))
@@ -116,7 +116,7 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     masks = count < min_count
     # A history with zero hills cannot be an estimated free-energy landscape.
     for i, bias in enumerate(biases):
-        if not bias.hills:
+        if not bias.hill_count:
             masks[i] = True
     common = ~np.any(masks, axis=0)
     raw = np.asarray([-b.fes_factor * value for b, value in zip(biases, values)])

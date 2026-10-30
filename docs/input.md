@@ -240,6 +240,20 @@ overlap 与有效样本数插窗、延长 pilot。窗口冻结后使用独立种
 采集 production；pilot 不进入最终 FES/PMF。预算耗尽明确失败，不静默跳过
 重叠要求。参数单位、阶段恢复及适用边界见[增强采样](enhanced-sampling.md)。
 
+二维面建议显式启用空间覆盖检查，在同一表中增加：
+
+```toml
+coverage_bins = [4, 8]
+coverage_ranges = [["-0.5 bohr", "0.5 bohr"], ["-1 bohr", "1 bohr"]]
+min_bin_effective_samples = 5.0
+target_coverage = 0.95
+```
+
+上述范围仅为示例，应按实际 CV 修改。两项网格参数必须一起指定，默认不启用。
+检查使用 MBAR 权重与轨迹相关性修正后的局部有效样本数，在薄弱格中心补窗；
+它与最终分析分箱相互独立。全局窗口 ESS 还检查坐标二阶矩，防止快速振荡掩盖
+振幅分布的慢收敛。所有阈值通过后仍需检查生产轨迹的覆盖率和独立重复结果。
+
 ## Metadynamics
 
 `task="metadynamics"` 使用普通 `[[cvs]]` 和 `[sampling]`，替换 umbrella 为：

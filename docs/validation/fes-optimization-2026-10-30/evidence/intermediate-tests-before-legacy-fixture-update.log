@@ -1,0 +1,77 @@
+........................................................................ [  6%]
+.............................................................. [ 12%]
+...............................................................................s....................sss [ 22%]
+............................................................... [ 28%]
+...ssssss.....................................................s......... [ 34%]
+................................................................... [ 41%]
+........................................................................ [ 47%]
+........................................................................ [ 54%]
+........................................................................ [ 61%]
+................................................................................................ [ 70%]
+........................................................................ [ 77%]
+........ss...................................... [ 81%]
+....................................................F................... [ 88%]
+........................................................................ [ 95%]
+....................................................     [100%]
+=================================== FAILURES ===================================
+_______ test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty _______
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-11/test_correlated_pmf_bootstrap_0')
+
+    def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
+        config, system = configuration(), hydrogen()
+        config["analysis"]["bootstrap"] = 12
+        sampled = sampled_harmonic_pmf(config, system)
+        data = sampled["data"]
+        # This caching/reindexing regression compares against historical draws,
+        # so hold their original coordinate-only correlation policy fixed. The
+        # production amplitude-sensitive policy is tested in test_fes_correlation.
+        data["statistical_inefficiency"] = np.asarray([
+            statistical_inefficiency(stream["samples"]) for stream in sampled["streams"]
+        ])
+        with patch.object(site, "umbrella_reduced_potentials", wraps=site.umbrella_reduced_potentials) as bias_matrix:
+            pmf, tasks = site._estimate_pmf(sampled, config, system, tmp_path)
+        assert bias_matrix.call_count == 1
+        assert pmf["ready"]
+>       assert pmf["pmf_uncertainty"]["available"]
+E       AssertionError:
+E       Not equal to tolerance rtol=3e-13, atol=0
+E
+E       Mismatched elements: 12 / 12 (100%)
+E       First 5 mismatches are at indices:
+E        [0]: 5196890305230195.0 (ACTUAL), 5318747484353080.0 (DESIRED)
+E        [1]: 5030714101825056.0 (ACTUAL), 5205230174098718.0 (DESIRED)
+E        [2]: 5751648497975685.0 (ACTUAL), 4537989576419254.0 (DESIRED)
+E        [3]: 5342131970043053.0 (ACTUAL), 5120295485005186.0 (DESIRED)
+E        [4]: 5171306792022055.0 (ACTUAL), 5178448838812025.0 (DESIRED)
+E       Max absolute difference among violations: 1.21365892e+15
+E       Max relative difference among violations: 0.26744418
+E        ACTUAL: array([5.196890e+15, 5.030714e+15, 5.751648e+15, 5.342132e+15,
+E              5.171307e+15, 5.376716e+15, 4.994066e+15, 4.966624e+15,
+E              4.826794e+15, 5.574922e+15, 5.074469e+15, 4.992464e+15])
+E        DESIRED: array([5.318747e+15, 5.205230e+15, 4.537990e+15, 5.120295e+15,
+E              5.178449e+15, 5.190898e+15, 5.177998e+15, 5.449767e+15,
+E              5.209963e+15, 4.815956e+15, 5.271839e+15, 5.222931e+15])
+
+tests/test_site_rate.py:366: AssertionError
+=============================== warnings summary ===============================
+tests/test_parallel.py: 5 warnings
+tests/test_periodic_materials.py: 19 warnings
+tests/test_potentials.py: 45 warnings
+tests/test_surface_examples.py: 33 warnings
+tests/test_surface_geometry.py: 1 warning
+  /workspace/PyRPMD/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_materials_eam.py:32: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [2] .venv/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+FAILED tests/test_site_rate.py::test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty
+1 failed, 1053 passed, 13 skipped, 103 warnings, 153 subtests passed in 89.58s (0:01:29)

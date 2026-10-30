@@ -69,7 +69,7 @@ _SECTIONS = {
         "cvs mode sigma sigma_au height height_au pace bias_factor".split()
     ),
     "adaptive_umbrella": set(
-        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
+        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing coverage_bins coverage_ranges min_bin_effective_samples target_coverage".split()
     ),
     "diffusion": set(
         "atom_indices axes reference_atoms fit_range max_lag bootstrap seed block_length".split()

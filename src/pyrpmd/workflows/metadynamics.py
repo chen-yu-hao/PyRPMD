@@ -256,7 +256,7 @@ def _sample_replica(task):
         while elapsed < total:
             previous = state.copy()
             old_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
-            nhills = len(bias.hills)
+            nhills = bias.hill_count
             try:
                 if state.step % interval == 0:
                     state.p[:] = dynamics.sample_momenta()
@@ -274,7 +274,7 @@ def _sample_replica(task):
             except BaseException:
                 state = previous
                 dynamics.rng.bit_generator.state = old_rng
-                del bias.hills[nhills:]
+                bias.truncate_history(nhills)
                 save()
                 raise
             elapsed += 1

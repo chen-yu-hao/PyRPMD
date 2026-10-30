@@ -28,8 +28,13 @@ then samples its fixed bias. The pilot-only MBAR calculation constructs an
 overlap graph with an edge when `sqrt(O_ij * O_ji) >= target_overlap`. Replicas
 at the same center are pooled for the *overlap solver*, while each trajectory
 retains its own autocorrelation diagnostic. Window effective sample counts
-sum `N/g` across independent replicas. Periodic CV diagnostics use sine and
-cosine traces, avoiding false decorrelation at the coordinate branch cut.
+sum `N/g` across independent replicas. The slowest coordinate or centered
+coordinate-square trace sets `g`, so rapid sign oscillations do not conceal
+slow amplitude relaxation. Periodic CVs use first and second sine/cosine
+harmonics, avoiding false decorrelation at the coordinate branch cut.
+The production FES/PMF effective sample counts and bootstrap correlation blocks
+use the same diagnostics; constant derived observables are ignored. This does
+not alter the MBAR weights or free-energy point estimate.
 
 If the graph is disconnected at the requested threshold, the algorithm
 inserts midpoints along the shortest links between components. Distances use
@@ -39,7 +44,29 @@ arc. The stiffness stays fixed. The next pilot doubles its sampling duration
 and uses a separate deterministic seed. This also gives a connected set with
 insufficient effective samples another chance to meet the ESS target.
 
-Once both criteria pass, the window set is frozen. **Fresh production streams
+For a declared domain, optionally add a spatial coverage target to the same
+table (the example below has two Cartesian CVs):
+
+```toml
+coverage_bins = [4, 8]
+coverage_ranges = [["-0.5 bohr", "0.5 bohr"], ["-1 bohr", "1 bohr"]]
+min_bin_effective_samples = 5.0
+target_coverage = 0.95
+```
+
+`coverage_bins` and `coverage_ranges` must be supplied together. Numeric
+bounds use canonical CV units. This pilot grid is independent of the final
+`analysis.bins`: choose enough cells to resolve the domain's sampling holes
+without requiring an impractical number of pilot samples. The default omits
+this additional target; graph connectivity alone does not test domain coverage.
+For each cell, the diagnostic is `(sum w)^2 / sum(g_stream * w^2)`, using
+unbiased MBAR weights and the per-stream correlation factor. Empty cells count
+as unsupported. Deficient cells propose additional windows at their centers,
+subject to `max_windows` and `min_spacing`. Existing centers are not duplicated;
+longer pilots can improve their support. `adaptive-plan.json` retains the full
+cell counts, effective sample estimates, coverage fraction and decisions.
+
+Once all enabled criteria pass, the window set is frozen. **Fresh production streams
 start from newly equilibrated states and a different seed. No pilot samples
 enter the production MBAR or UI estimate.** The saved `adaptive-plan.json`
 contains a checksum, initial/final windows, every decision, diagnostics and
@@ -48,11 +75,20 @@ seeds. `adaptation/round_*/checkpoints/` contains the pilot states;
 the current pilot or the frozen production without redesigning an already
 committed stage. Changing analysis bins/bootstrap does not resample pilots.
 
-Exhausting `max_rounds`, `max_windows` or admissible spacing stops with
-`adaptation_incomplete`; production is not silently launched. A reached pilot
-target is a local overlap/ESS diagnostic, not proof of equilibration, adequate
-CVs, domain coverage, or physical convergence. The algorithm refines a supplied
+Exhausting `max_rounds`, or finding no admissible midpoint while the overlap
+graph is disconnected, stops with `adaptation_incomplete`; production is not
+silently launched. `max_windows` limits insertion: a connected set may still
+pass ESS/coverage targets after longer pilots without adding more windows.
+A reached pilot
+target is a local overlap/ESS/coverage diagnostic, not proof of equilibration,
+adequate CVs, final histogram coverage, or physical convergence. The local ESS
+does not include uncertainty in fitted MBAR offsets or unseen slow variables.
+The algorithm refines a supplied
 domain and does not automatically discover unspecified distant basins.
+
+Previously frozen plans keep their saved decisions on restart; their summaries
+identify legacy coordinate-only ESS diagnostics. Use a fresh output directory
+to reevaluate them under the new moment and optional coverage criteria.
 
 The rate workflow retains its `rate_flux` metric bias during both stages;
 the downstream PMF and recrossing preparation use the actual frozen window
@@ -94,6 +130,12 @@ the value at a hill center equals its deposited height. An equivalent Fourier
 sum is used for broad periodic kernels. This avoids a force discontinuity at
 half a period. The ordinary nonperiodic Gaussian convention is
 `exp(-delta**2 / (2*sigma**2))`.
+
+The Python `MetadynamicsBias.hills` property returns a detached, serializable
+history snapshot. Modify the running bias through `deposit()` or
+`truncate_history()`, or construct a new bias with `hills=modified_history`
+for reanalysis. Editing a snapshot does not change the running forces. This
+keeps the cached Gaussian arrays consistent with the deposited history.
 
 PyRPMD uses the sum-beads Hamiltonian sampled at `beta/P`. Therefore:
 
