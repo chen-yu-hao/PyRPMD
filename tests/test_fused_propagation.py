@@ -193,3 +193,46 @@ def test_custom_observer_error_rolls_back_reference_block(libraries):
     np.testing.assert_array_equal(state.q, saved.q)
     np.testing.assert_array_equal(state.p, saved.p)
     assert state.step == 0
+
+
+def test_instance_stack_observation_is_not_bypassed(libraries):
+    from pyrpmd.cv import CVStack
+    cv = CVStack([Cartesian(0)])
+    calls = []
+    def custom_value(q):
+        calls.append(True)
+        return np.array([42.])
+    cv.value = custom_value
+    dyn = Dynamics(CABIPotential(libraries['ok']), [1.], 1., 1, .01)
+    state = State([[[.1, 0, 0]]], [[[0., 0, 0]]])
+    result = dyn.propagate(state, 3, observe=cv)
+    assert result.backend == 'python' and len(calls) == 3
+    np.testing.assert_array_equal(result.values, np.full((3, 1), 42.))
+
+
+def test_changed_python_pes_function_is_not_bypassed(libraries):
+    from pyrpmd.potentials.python import PythonPotential
+    pes = PythonPotential(CABIPotential(libraries['ok']))
+    original = pes.fn
+    calls = []
+    def altered(q):
+        calls.append(True)
+        result = original(q)
+        result.forces *= .5
+        return result
+    pes.fn = altered
+    dyn = Dynamics(pes, [1.], 1., 1, .01)
+    state = State([[[.1, 0, 0]]], [[[0., 0, 0]]])
+    result = dyn.propagate(state, 3)
+    assert result.backend == 'python' and calls
+
+
+def test_nested_rate_cv_override_rejects_native():
+    from pyrpmd.cv import RPMDrateCoordinate
+    from pyrpmd.propagation import cv_descriptor
+    c = RPMDrateCoordinate([[0], [1, 2]], [1., 1., 1.],
+                           [[-1., 0, 0], [0., 0, 0], [1., 0, 0]], [[0, 1]], [[1, 2]], 10.)
+    surface = c.dividing_surface(1.)
+    c.com.centroid_value_gradient_hessian = lambda q: None
+    with pytest.raises(NativeUnavailableError, match='overridden'):
+        cv_descriptor(surface, 3)

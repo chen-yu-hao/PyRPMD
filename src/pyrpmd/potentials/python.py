@@ -86,6 +86,8 @@ class PythonPotential(Potential):
         from ..propagation import NativeUnavailableError
         if type(self) is not PythonPotential or self.sign != 1 or self.length_factor != 1 or self.energy_factor != 1:
             raise NativeUnavailableError("custom or unit-converting Python PES requires Python")
+        if "evaluate" in self.__dict__ or self.fn != (self.obj.evaluate if hasattr(self.obj, "evaluate") else self.obj):
+            raise NativeUnavailableError("overridden Python PES function requires Python")
         factory = getattr(self.obj, "native_binding", None)
         if factory is None:
             raise NativeUnavailableError("Python PES has no explicit native binding")

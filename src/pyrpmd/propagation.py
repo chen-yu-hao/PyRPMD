@@ -73,14 +73,20 @@ def _bond(n, atoms):
     return w
 
 
+def _check_cv_methods(cv):
+    methods = ("value", "value_and_jacobian", "centroid_value_gradient",
+               "centroid_value_gradient_hessian", "surfaces")
+    if any(k in getattr(cv, "__dict__", {}) for k in methods):
+        raise NativeUnavailableError("overridden CV methods require Python")
+
+
 def cv_descriptor(cv, n):
     from .cv import Distance, BondDifference, Cartesian, COMDistance, RPMDrateCoordinate, RateSurface
     if getattr(cv, "estimator", None) != "centroid":
         raise NativeUnavailableError("native CV path requires centroid estimator")
     if any(p is not None for p in cv.periods):
         raise NativeUnavailableError("periodic CV uses Python compatibility path")
-    if any(k in cv.__dict__ for k in ("value", "value_and_jacobian", "centroid_value_gradient", "centroid_value_gradient_hessian", "surfaces")):
-        raise NativeUnavailableError("overridden CV methods require Python")
+    _check_cv_methods(cv)
     t = type(cv)
     if t is Distance:
         primitive = _primitive(n, terms=[(1., _bond(n, cv.atoms))])
@@ -99,6 +105,8 @@ def cv_descriptor(cv, n):
         c = cv.coordinate if t is RateSurface else cv
         if type(c) is not RPMDrateCoordinate or type(c.com) is not COMDistance:
             raise NativeUnavailableError("custom rate coordinate requires Python")
+        _check_cv_methods(c)
+        _check_cv_methods(c.com)
         if len(c.com.weights) != n:
             raise ValueError("rate coordinate atom count mismatch")
         result = {"kind": 2 if t is RateSurface else 1,
@@ -116,6 +124,7 @@ def cv_descriptor(cv, n):
 
 def _cvs(cv, n):
     from .cv import CVStack
+    _check_cv_methods(cv)
     return [cv_descriptor(c, n) for c in (cv.cvs if type(cv) is CVStack else (cv,))]
 
 
