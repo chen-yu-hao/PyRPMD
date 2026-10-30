@@ -98,3 +98,43 @@ def test_surface_support_policy_does_not_change_existing_gas_phase_uncertainty(t
     assert rejected_metadata["rate_standard_error_cm3_s"] > 0
     assert not any(key.startswith("supported_draw_") for key in rejected_metadata)
     assert "pmf_bootstrap_contains_unsupported_draws" not in rejected_metadata["rate_uncertainty"]["reasons"]
+
+
+@pytest.mark.parametrize("block_status", ["finite_block_estimate", "limited_blocks", "unavailable"])
+@pytest.mark.parametrize("task", ["rate", "surface_rate"])
+@pytest.mark.parametrize("rejected_support", [False, True])
+def test_block_support_gates_all_combined_errors_and_preserves_conditional_recrossing(
+    tmp_path, block_status, task, rejected_support,
+):
+    if task == "surface_rate":
+        pmf = pmf_surface()
+        unit = "s_inv"
+    else:
+        pmf = {
+            "ready": True, "method": "mbar", "warnings": [],
+            "k_qtst_cm3_s": 12.0, "free_energy_barrier_hartree": 0.2,
+            "pmf_bootstrap_barriers": [0.12, 0.18, 0.23, 0.27],
+            "bootstrap": {"requested": 4, "attempted": 4, "valid": 4},
+        }
+        unit = "cm3_s"
+    pmf["bootstrap"]["block_plan"] = {"status": block_status}
+    if rejected_support:
+        pmf["bootstrap"].update(requested=6, attempted=6)
+    result = aggregate(pmf, tmp_path, task=task)
+    supported_uncertainty = block_status != "unavailable"
+    joint_uncertainty = supported_uncertainty and not (
+        task == "surface_rate" and rejected_support
+    )
+    assert result["rate_uncertainty"]["available"] is joint_uncertainty
+    assert (result["rate_standard_error_" + unit] is not None) is joint_uncertainty
+    assert (result["rate_percentile_95_ci_" + unit] is not None) is joint_uncertainty
+    assert result["rate_uncertainty"]["pmf_block_status"] == block_status
+    assert result["conditional_rate_standard_error_" + unit] > 0
+    if task == "surface_rate" and rejected_support:
+        assert (result["supported_draw_rate_standard_error_s_inv"] is not None) is supported_uncertainty
+        assert (result["supported_draw_rate_percentile_95_ci_s_inv"] is not None) is supported_uncertainty
+    if block_status != "finite_block_estimate":
+        assert "pmf_bootstrap_" + block_status in result["rate_uncertainty"]["reasons"]
+    if block_status == "limited_blocks" and joint_uncertainty:
+        assert any("Complete rate uncertainty has limited support" in w for w in result["warnings"])
+        assert not any("Complete rate uncertainty is unavailable" in w for w in result["warnings"])

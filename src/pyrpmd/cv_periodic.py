@@ -9,58 +9,32 @@ from __future__ import annotations
 
 import numpy as np
 
-from .cv import CollectiveVariable, Distance, BondDifference, Angle, _indices
-from .geometry import minimum_image, validate_cell_pbc
+from .cv import (
+    PeriodicDistance, BondDifference, Angle, _indices, _distance,
+    _AffineCoordinate, _PeriodicCellCV,
+)
+from .geometry import validate_cell_pbc
 
 
-def _pair(q, a, b, cell, pbc):
-    if a == b or min(a, b) < 0 or max(a, b) >= len(q):
-        raise ValueError("distance requires distinct in-range atom indices")
-    vector = minimum_image(q[a] - q[b], cell, pbc)
-    length = float(np.linalg.norm(vector))
-    if length < 1e-12:
-        raise ValueError("Periodic distance derivative undefined at coincident images")
-    unit = vector / length
-    gradient = np.zeros_like(q)
-    gradient[a], gradient[b] = unit, -unit
-    return length, gradient
+# Keep the historical import path as an alias to the public factory's class.
+# Value, gradient and optional Hessian evaluation now have one implementation.
 
 
-class PeriodicDistance(Distance):
-    def __init__(self, atoms, cell, pbc, **kwargs):
-        super().__init__(atoms, **kwargs)
-        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
-
-    def centroid_value_gradient(self, q):
-        return _pair(q, *self.atoms, self.cell, self.pbc)
-
-    def centroid_value_gradient_hessian(self, q):
-        r, gradient = self.centroid_value_gradient(q)
-        a, b = self.atoms
-        unit = gradient[a]
-        block = (np.eye(3) - np.outer(unit, unit)) / r
-        hessian = np.zeros((len(q), 3, len(q), 3))
-        for i, si in ((a, 1), (b, -1)):
-            for j, sj in ((a, 1), (b, -1)):
-                hessian[i, :, j, :] = si * sj * block
-        return r, gradient, hessian
-
-
-class PeriodicBondDifference(BondDifference):
+class PeriodicBondDifference(_PeriodicCellCV, BondDifference):
     def __init__(self, cell, pbc, **kwargs):
         super().__init__(**kwargs)
-        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
+        self._bind_geometry(cell, pbc)
 
     def centroid_value_gradient(self, q):
-        a, ga = _pair(q, *self.bonds[0], self.cell, self.pbc)
-        b, gb = _pair(q, *self.bonds[1], self.cell, self.pbc)
+        a, ga = _distance(q, *self.bonds[0], geometry=self._geometry)
+        b, gb = _distance(q, *self.bonds[1], geometry=self._geometry)
         return a - b, ga - gb
 
 
-class PeriodicAngle(Angle):
+class PeriodicAngle(_PeriodicCellCV, Angle):
     def __init__(self, atoms, cell, pbc, **kwargs):
         super().__init__(atoms, **kwargs)
-        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
+        self._bind_geometry(cell, pbc)
 
     def centroid_value_gradient(self, q):
         a, b, c = self.atoms
@@ -69,18 +43,17 @@ class PeriodicAngle(Angle):
         # Within one image branch this is a constant translation, so the
         # ordinary analytic angle gradient is exactly the desired derivative.
         image = np.array(q, dtype=float, copy=True)
-        image[a] = q[b] + minimum_image(q[a] - q[b], self.cell, self.pbc)
-        image[c] = q[b] + minimum_image(q[c] - q[b], self.cell, self.pbc)
+        image[a] = q[b] + self._geometry.minimum_image(q[a] - q[b])
+        image[c] = q[b] + self._geometry.minimum_image(q[c] - q[b])
         return super().centroid_value_gradient(image)
 
 
-class LinearProjection(CollectiveVariable):
+class LinearProjection(_AffineCoordinate):
     """Unwrapped atom displacement along a unit direction, optionally relative
     to a mass-weighted reference group. Its mass metric is constant.
     """
 
     units = ("bohr",)
-    constant_gradient = True
 
     def __init__(self, atom, direction, masses, reference_atoms=None, origin=0.0, **kwargs):
         super().__init__(**kwargs)
@@ -109,15 +82,10 @@ class LinearProjection(CollectiveVariable):
         if not np.isfinite(self.origin):
             raise ValueError("Projection origin must be finite")
 
-    def centroid_value_gradient(self, q):
-        if np.shape(q) != (len(self.weights), 3):
-            raise ValueError("Projection coordinate shape does not match System")
-        gradient = self.weights[:, None] * self.direction[None]
-        return float(np.sum(gradient * q) - self.origin), gradient
-
-    def centroid_value_gradient_hessian(self, q):
-        value, gradient = self.centroid_value_gradient(q)
-        return value, gradient, np.zeros((len(q), 3, len(q), 3))
+    def _affine_gradient(self):
+        # Retain the public direction/weight semantics, including the
+        # unnormalized reciprocal vector installed by FractionalCoordinate.
+        return self.weights[:, None] * self.direction[None]
 
 
 class FractionalCoordinate(LinearProjection):

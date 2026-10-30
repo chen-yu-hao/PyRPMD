@@ -80,24 +80,46 @@ ordinary lock for the whole block. No Fortran COMMON state is made reentrant by
 this change. Providers are not called concurrently inside a process. The GIL is
 released during propagation; no Python callback is invoked from that section.
 
-The first version deliberately retains **two force evaluations per BCB step**.
-It does not reuse forces across steps or assume that a new PES supports caching.
+`propagate()` retains two force evaluations per BCB step. The segmented
+`propagate_block()` API additionally accepts `reuse_forces=True` for ordinary
+native propagation without bias, constraints or fragment projections. Within
+a block of L steps it reuses each endpoint force, reducing PES batches from
+2L to L+1. Its default remains false for direct API callers; ordinary native
+dRPMD collision blocks enable it. No force cache survives a block or restart,
+so a Python classifier can still change the full state between blocks.
 Energy observations reuse the last returned physical energy and add the same
-kinetic, ring-spring and bias terms. It allocates work arrays once per block,
-not per time step, and preserves the existing cyclic Cayley factorization.
+kinetic, ring-spring and bias terms. Work arrays are allocated once per block,
+and the existing cyclic Cayley factorization is preserved.
 
 ## Workflow/event semantics
 
-**dRPMD:** collision blocks use `propagate_block()` and stop at the next
-classifier or checkpoint boundary, or the 4096-step limit. Per-step records
-preserve the exact trajectory-output times even when an output stride falls
-inside a block. The actual built-in or
-custom Python classifier sees the accepted full q/p at its original check
-interval; it is not replaced by a native classifier. Every accepted step
-contributes to the energy-deviation diagnostic. Stop/persistence counts are
-unchanged. PES or observation failure retains the valid prefix without retrying
-PES calls through Python. Classifier exceptions use the workflow's established
-rollback rule; physical state and accepted-step counters are restored together.
+**dRPMD:** collision blocks use `propagate_block()`. The exact, unmodified
+`ConnectivityClassifier` with explicit channels and the benchmark's identity-aware
+`H3ExchangeClassifier` can export `native_outcome_descriptor()`. With a compatible
+native PES, C++ evaluates these classifiers at the original `check_interval`,
+maintains the original candidate/persistence state and returns immediately when
+an outcome resolves. A block can therefore span several classification checks,
+while still ending at a checkpoint, the configured block length or 4096 steps.
+Near a bond, exit-distance or outward-motion threshold, the native observer yields
+the accepted state to the original Python predicate. This conservative roundoff
+band changes only where a check executes, never its strict threshold or label.
+
+Pilot candidate discovery, arbitrary Python classifiers, subclasses and overridden
+classification hooks retain the Python callback path and its check boundaries.
+They still receive the live full q/p. A version marker prevents an older compiled
+extension from silently ignoring native event descriptors; the workflow then uses
+the original callback path. Every accepted step contributes to the energy-deviation
+diagnostic. Per-step energy/centroid records preserve the exact output stride;
+only one pre-final q/p snapshot is retained for classifier-error rollback, rather
+than a full bead-state history. PES or observation failures retain the valid prefix
+without retrying through Python. Classification failures restore the pre-final
+state, candidate state and accepted-step counters together.
+
+The input resolver defaults to `check_interval=1` and `persistence="1 fs"`;
+the low-level workflow defaults used when bypassing the resolver are 10 steps
+and `3*check_interval`. These defaults are unchanged. Native event checks can
+keep an every-step check inside a longer block; raising `block_steps` alone
+cannot enlarge blocks on the Python-classifier path beyond its check interval.
 
 Trajectory checkpoints retain cumulative accepted `native_steps` and
 `python_steps` across restart. Rolled-back steps are excluded. Older checkpoints
@@ -163,8 +185,15 @@ production calculation or a different PES/hardware setup.
 
 The companion segmented harness adds native RATTLE, full multi-window FES/PMF,
 three parent configurations and six children, eight real H3 collisions with the
-identity-aware Python classifier, and interrupted collision restart. It records
+identity-aware H3 classifier, and interrupted collision restart. It records
 its exact source commit, source hashes, timing repeats and actual execution
 counts. Its core microbenchmark uses the original `Dynamics.step()` reference;
 its workflow comparisons include the same checkpoint/output operations. Those
 two baselines must be distinguished when quoting timings.
+
+The dedicated [dRPMD optimization validation](validation/drpmd-optimization-2026-10-30/README.md)
+compares separate baseline/candidate checkouts with the same BKMP2 library,
+build commands, classification cadence, checkpoint settings and observations.
+`benchmarks/h3/drpmd_optimization.py` records all timing repeats, source/binary
+hashes, exact output comparisons and interrupted-restart checks. It measures
+both core propagation and complete dRPMD jobs; these are separate workloads.

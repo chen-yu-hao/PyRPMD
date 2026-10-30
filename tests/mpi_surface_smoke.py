@@ -127,6 +127,16 @@ def compare_outputs(root):
             files += 1
     a = json.loads((serial / "results" / "summary.json").read_text())
     b = json.loads((mpi / "results" / "summary.json").read_text())
+    # Each result points to its own output directory. Check the reference and
+    # retained weights before comparing the directory-independent PMF data;
+    # all NPZ arrays, including weights, were compared exactly above.
+    for result, directory in ((a, serial), (b, mpi)):
+        pmf = result["pmf"]
+        weights_file = Path(pmf["sample_weights_file"])
+        assert weights_file.resolve() == (directory / "surface_pmf.npz").resolve()
+        with np.load(weights_file, allow_pickle=False) as saved:
+            assert pmf["sample_weights_key"] in saved.files
+        pmf["sample_weights_file"] = str(weights_file.resolve().relative_to(directory.resolve()))
     for key in ("task", "status", "rate_unit", "rate_s_inv", "rate_estimate_s_inv",
                 "rate_standard_error_s_inv", "rate_percentile_95_ci_s_inv", "rate_uncertainty",
                 "kappa", "kappa_standard_error", "plateau_detected", "child_trajectories",

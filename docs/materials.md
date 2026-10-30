@@ -41,6 +41,13 @@ pbc = [true, true, false]
 四舍五入替代。环弹簧使用同一连续坐标覆盖，适用于可区分、局域核的闭合路径；
 不采样核交换置换或非零绕胞拓扑扇区。
 
+内置周期距离、键差和角度 CV 在构造时保存只读晶胞/PBC 快照，复用固定晶格的
+正交性判断和 QR 分解。`cv.cell` 或数组形式的 `cv.pbc` 不支持原地修改；需要
+重新绑定时使用 `cv.cell = new_cell`、`cv.pbc = new_flags`，这会重新验证并更新缓存。
+旧的 `pyrpmd.cv_periodic.PeriodicDistance` 导入路径仍可用，现在与
+`pyrpmd.cv.PeriodicDistance` 指向同一个实现。普通值/梯度计算不构造稠密 Hessian；
+显式调用 Hessian 接口仍返回原来的 `[N,3,N,3]` 数组。
+
 H/D/T 共用电子势能上的氢元素身份，但动力学质量不同。可写 `symbols=["D"]`，
 也可用 `isotopes=[{atom=0, mass="2.01410177812 amu"}]`；不需要为氘训练另一套
 Born–Oppenheimer 势。缺少内置精确质量的元素须显式提供 `masses_amu`。
@@ -102,6 +109,11 @@ E_{\mathrm{cv}}=\langle V\rangle_P+K_{\mathrm{cv}}.
 物理内能不使用虚拟环动量的瞬时动能。`ring_polymer_hamiltonian` 单独用于
 传播诊断。独立副本均值之间的标准误不包含珠子数或步长系统误差；PIMD
 恒温采样时间本身不作为材料的真实动力学时间。[1,2]
+
+`sampling_diagnostics` 另外逐副本、逐观测量报告保存序列的统计低效因子、
+有效样本数和相关块长度。至少四个完整块时才提供 `conditional_standard_error`；
+它条件于估计块长足以覆盖相关时间，不替代独立副本误差或混合性验证。原有
+`estimators` 均值和副本间标准误保持原义；不能把保存帧数当成独立样本数。
 
 ## 扩散：无恒温 RPMD 与保存后再分析
 
@@ -174,6 +186,12 @@ Python API 允许 `fit_range=(None, stop)` 或 `(start, None)`。
 MSD、VACF 和副本数据，但顶层 `diffusion_m2_s`/tensor 为 `null`。
 所有状态均保留 `physical_converged=false`；模型准确性和参数收敛不能由
 一次线性拟合自动证明。
+
+扩散工作流还提供 `nve_energy_diagnostics`，以首个生产保存帧为参考，计算
+`(H_P(t)-H_P(0))/(P*kBT)` 的最大绝对误差、终点误差和每 fs 的线性漂移。
+默认诊断阈值为每珠子 `0.1 kBT`，超过时添加 warning。该诊断只覆盖已保存帧，
+可能漏掉帧间偏离；不适用于恒温 PIMD，也不自动改变 MSD 的候选状态或认定
+步长已经收敛。能量零点的常数平移不影响这个差值诊断。
 
 ```bash
 # 解析自由粒子负对照：应报告弹道运动，并不提供有效 D。
@@ -248,6 +266,17 @@ direction = 1
 没有将一个局部跳跃率自动换算成宏观 D，因为跳距、邻居简并度和连续
 跳跃相关性仍需明确。[4,5]
 
+回穿误差以母构型和母链为统计单位。增加同一母构型的子轨迹或 bootstrap draw
+数量不能补足独立构型支持；只有一个有效母构型时，误差与联合区间为 `null`，
+而非零误差。`site_rate` 的主联合误差要求至少两条独立的非零通量母链；单链
+具备至少两个有效相关块时，只提供明确标记为
+`conditional_on_single_chain_mixing` 的条件误差。零通量母构型不增加有效支持，
+出现零通量 bootstrap draw 时主误差也留空，原因记录在 `rate_uncertainty`。
+
+site PMF bootstrap 复用同一偏置矩阵并重抽样其列，估计器和随机流不变。
+`pmf_uncertainty` 中的 `attempted`、`draws`、`failures`、`failure_counts` 记录
+每次重采样是否得到有效 QTST，以及 MBAR 不收敛、重叠断开或盆地支持不足的原因。
+
 ```bash
 pyrpmd prepare examples/materials/site_rate.inp --pilot
 pyrpmd run examples/materials/site_rate.inp --output runs/materials-site
@@ -269,6 +298,13 @@ pyrpmd run examples/materials/site_rate.inp --output runs/materials-site
 serial/process/MPI 使用相同稳定副本 ID。允许改变执行分块/进程布局续跑；
 温度、质量、晶胞、势模型和科学时间参数不能静默改变。分析参数可离线
 调整，生产轨迹不因此重新计算。单步传播或观测失败时恢复至上一次已提交状态。
+
+材料传播在每个单步事务内复用相同坐标的 PES 结果，供力、能量和保存帧观测量
+共同使用。缓存拥有坐标及返回数组的副本，失败或事务结束即清空，不跨步或续跑
+复用。Python 确定性传播且该步保存观测量时，原来的五次 provider 调用减少为
+两次；PILE-L 对应步骤由三次减为两次。原生传播仍使用 provider 原有绑定。
+轨迹导出统一在分析阶段执行一次，checkpoint 格式和逐步提交/回滚语义保持不变。
+这些改动没有解决上述全历史 checkpoint 的长轨迹存储开销。
 
 实际材料验证见 [`benchmarks/materials`](../benchmarks/materials/README.md)：
 使用可核对来源和 SHA256 的 Ni–Al–H EAM，运行 Ni(100) slab 上 H/D 的

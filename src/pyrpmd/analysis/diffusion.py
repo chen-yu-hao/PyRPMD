@@ -37,11 +37,12 @@ def _integer(value, name, minimum=0):
     return int(value)
 
 
-def _trajectory_array(value, name):
+def _trajectory_array(value, name, *, copy=True):
     raw = np.asarray(value)
     if raw.dtype.kind not in "iuf" or np.iscomplexobj(raw):
         raise ValueError(f"{name} must contain real numeric values")
-    result = np.array(raw, dtype=float, order="C", copy=True)
+    result = (np.array(raw, dtype=float, order="C", copy=True) if copy
+              else np.asarray(raw, dtype=float))
     if result.ndim == 3:
         result = result[None, ...]
     if result.ndim != 4 or result.shape[-1] != 3 or min(result.shape) < 1:
@@ -246,7 +247,9 @@ def analyze_diffusion(
     physical convergence test.  Other statuses retain ``raw_fit`` but expose
     no accepted ``diffusion_*`` values.  All return values are strict JSON data.
     """
-    original = _trajectory_array(positions, "positions")
+    # Validate the full input without copying every unselected substrate atom.
+    # Advanced indexing below owns the measured data before frame subtraction.
+    original = _trajectory_array(positions, "positions", copy=False)
     replicas, frames, atoms, _ = original.shape
     if frames < 2:
         raise ValueError("diffusion needs at least two saved frames")
@@ -276,13 +279,14 @@ def analyze_diffusion(
             raise ValueError("block_length must be at least four times max_lag")
     velocity = None
     if velocities is not None:
-        velocity = _trajectory_array(velocities, "velocities")
+        velocity = _trajectory_array(velocities, "velocities", copy=False)
         if velocity.shape != original.shape:
             raise ValueError("velocities must match positions")
     diagnostics = []
     reference_count = 0
+    position_reference = velocity_reference = None
     if reference_positions is not None:
-        reference = _trajectory_array(reference_positions, "reference_positions")
+        reference = _trajectory_array(reference_positions, "reference_positions", copy=False)
         if reference.shape[:2] != original.shape[:2]:
             raise ValueError("reference_positions must match replica and frame counts")
         reference_count = reference.shape[2]
@@ -297,23 +301,27 @@ def analyze_diffusion(
                 raise ValueError("reference_masses must be finite and positive")
         weights = masses / masses.max()
         weights /= weights.sum()
-        original -= np.einsum("rfnc,n->rfc", reference, weights)[:, :, None, :]
+        position_reference = np.einsum("rfnc,n->rfc", reference, weights)
         if velocity is not None:
             if reference_velocities is None:
                 raise ValueError("reference_velocities are required for a reference-frame VACF")
-            reference_velocity = _trajectory_array(reference_velocities, "reference_velocities")
+            reference_velocity = _trajectory_array(reference_velocities, "reference_velocities", copy=False)
             if reference_velocity.shape != reference.shape:
                 raise ValueError("reference_velocities must match reference_positions")
-            velocity -= np.einsum("rfnc,n->rfc", reference_velocity, weights)[:, :, None, :]
+            velocity_reference = np.einsum("rfnc,n->rfc", reference_velocity, weights)
         elif reference_velocities is not None:
             raise ValueError("reference_velocities require velocities")
         diagnostics.append("Coordinates are relative to the declared reference centre of mass.")
     elif reference_masses is not None or reference_velocities is not None:
         raise ValueError("reference masses/velocities require reference_positions")
     positions = original[:, :, selected_atoms, :][..., selected_axes]
+    if position_reference is not None:
+        positions -= position_reference[..., selected_axes][:, :, None, :]
     dimension = len(selected_axes)
     if velocity is not None:
         velocity = velocity[:, :, selected_atoms, :][..., selected_axes]
+        if velocity_reference is not None:
+            velocity -= velocity_reference[..., selected_axes][:, :, None, :]
     lag_time = np.arange(max_lag + 1) * dt
     default_start = lag_time[max(1, max_lag // 2)]
     lower, upper = default_start, float(lag_time[-1])

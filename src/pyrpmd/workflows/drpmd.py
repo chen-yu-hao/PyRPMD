@@ -207,6 +207,63 @@ def _canonical_formula(text):
     return formula([s for s, n in counts.items() for _ in range(n)])
 
 
+def _original_classifier_methods(instance, cls, methods):
+    """Only optimize the exact built-in implementation, including its hooks."""
+    return type(instance) is cls and all(
+        getattr(getattr(instance, name, None), "__func__", None) is function
+        for name, function in methods.items()
+    )
+
+
+def _connectivity_pair_data(classifier):
+    """Cache element-pair lookups, refreshing after public parameter changes."""
+    symbols = tuple(classifier.symbols)
+    cached = getattr(classifier, "_pair_data", None)
+    if cached is None or cached[0] != symbols or cached[1] != classifier.cutoffs:
+        pairs = [(i, j) for i in range(len(symbols)) for j in range(i + 1, len(symbols))]
+        indices = np.asarray(pairs, dtype=np.intp).reshape((-1, 2))
+        cutoffs = np.array([
+            classifier.cutoffs[tuple(sorted((symbols[i], symbols[j])))]
+            for i, j in pairs
+        ], dtype=float)
+        cached = (symbols, dict(classifier.cutoffs), indices, cutoffs)
+        classifier._pair_data = cached
+    return cached[2], cached[3]
+
+
+def _centroid_bonds(classifier, centroid):
+    pairs, cutoffs = _connectivity_pair_data(classifier)
+    delta = centroid[pairs[:, 0]] - centroid[pairs[:, 1]]
+    distances = np.linalg.norm(delta, axis=1)
+    # Batched reductions can round differently from the original scalar norm.
+    # Re-evaluate threshold neighbours using that exact operation so a strict
+    # bond cutoff keeps its original behaviour at floating-point boundaries.
+    near = np.abs(distances - cutoffs) <= (
+        8 * np.finfo(float).eps * np.maximum(1.0, np.maximum(distances, np.abs(cutoffs)))
+    )
+    for index in np.flatnonzero(near):
+        distances[index] = np.linalg.norm(delta[index])
+    return {tuple(pair) for pair in pairs[distances < cutoffs].tolist()}
+
+
+def _bond_components(bonds, natoms):
+    adjacency = [set() for _ in range(natoms)]
+    for i, j in bonds:
+        adjacency[i].add(j)
+        adjacency[j].add(i)
+    remaining, components = set(range(natoms)), []
+    while remaining:
+        queue, component = [min(remaining)], set()
+        while queue:
+            atom = queue.pop()
+            if atom not in component:
+                component.add(atom)
+                queue.extend(adjacency[atom] - component)
+        remaining -= component
+        components.append(sorted(component))
+    return components
+
+
 class ConnectivityClassifier:
     """Explicit centroid bond graph plus separation and outward motion.
 
@@ -261,30 +318,10 @@ class ConnectivityClassifier:
 
     def bond_graph(self, q):
         centroid = np.asarray(q).mean(axis=0)
-        bonds = set()
-        for i, symbol in enumerate(self.symbols):
-            for j in range(i + 1, len(self.symbols)):
-                cutoff = self.cutoffs[tuple(sorted((symbol, self.symbols[j])))]
-                if np.linalg.norm(centroid[i] - centroid[j]) < cutoff:
-                    bonds.add((i, j))
-        return bonds
+        return _centroid_bonds(self, centroid)
 
     def components(self, q):
-        adjacency = [set() for _ in self.symbols]
-        for i, j in self.bond_graph(q):
-            adjacency[i].add(j)
-            adjacency[j].add(i)
-        remaining, components = set(range(len(self.symbols))), []
-        while remaining:
-            queue, component = [min(remaining)], set()
-            while queue:
-                atom = queue.pop()
-                if atom not in component:
-                    component.add(atom)
-                    queue.extend(adjacency[atom] - component)
-            remaining -= component
-            components.append(sorted(component))
-        return components
+        return _bond_components(self.bond_graph(q), len(self.symbols))
 
     def validate_reactants(self, q):
         if {frozenset(f) for f in self.components(q)} != {
@@ -295,17 +332,78 @@ class ConnectivityClassifier:
             )
 
     def __call__(self, state):
-        components = self.components(state.q)
+        builtin = _original_classifier_methods(
+            self, ConnectivityClassifier, _CONNECTIVITY_CLASSIFIER_METHODS
+        ) or _original_classifier_methods(
+            self, PilotConnectivityClassifier, _PILOT_CLASSIFIER_METHODS
+        )
+        if builtin:
+            centroid = np.asarray(state.q).mean(axis=0)
+            bonds = _centroid_bonds(self, centroid)
+            components = _bond_components(bonds, len(self.symbols))
+        else:
+            # Preserve all extension hooks for subclasses and patched instances.
+            components = self.components(state.q)
         if len(components) < 2:
             return None
-        centers = [fragment_com(state.q, self.masses, f) for f in components]
-        velocities = [fragment_velocity(state.p, self.masses, f) for f in components]
+        if builtin:
+            momentum = np.asarray(state.p).mean(axis=0)
+            masses = [self.masses[f].sum() for f in components]
+            centers = [np.sum(centroid[f] * self.masses[f, None], axis=0) / mass
+                       for f, mass in zip(components, masses)]
+            velocities = [momentum[f].sum(axis=0) / mass
+                          for f, mass in zip(components, masses)]
+        else:
+            centers = [fragment_com(state.q, self.masses, f) for f in components]
+            velocities = [fragment_velocity(state.p, self.masses, f) for f in components]
         for i in range(len(components)):
             for j in range(i + 1, len(components)):
                 r, v = centers[j] - centers[i], velocities[j] - velocities[i]
                 if np.linalg.norm(r) < self.exit_distance or np.dot(r, v) <= 0:
                     return None
+        if builtin and type(self) is PilotConnectivityClassifier:
+            return self._classify_with_bonds(state, components, bonds)
         return self.classify_components(state, components)
+
+    def native_outcome_descriptor(self):
+        """Opt in to native event checks only for the unchanged explicit classifier."""
+        if not _original_classifier_methods(
+            self, ConnectivityClassifier, _CONNECTIVITY_CLASSIFIER_METHODS
+        ):
+            return None
+        try:
+            symbols = tuple(self.symbols)
+            masses = np.asarray(self.masses, dtype=float)
+            _, cutoffs = _connectivity_pair_data(self)
+            signatures = [self.reactants, *self.channels]
+            if (
+                masses.shape != (len(symbols),)
+                or not np.isfinite(masses).all() or (masses <= 0).any()
+                or not np.isfinite(cutoffs).all() or (cutoffs <= 0).any()
+                or not np.isfinite(self.exit_distance) or self.exit_distance <= 0
+                or (cutoffs >= self.exit_distance).any()
+                or len(self.reactants) != 2
+                or any(len(signature) < 2 or signature == self.reactants
+                       for signature in self.channels)
+                or any(not isinstance(s, str) or not re.fullmatch(r"[A-Z][a-z]?", s)
+                       for s in symbols)
+                or any(tuple(s) != tuple(sorted(_canonical_formula(x) for x in s))
+                       for s in signatures)
+                or any(not isinstance(label, str) or not label for label in self.channels.values())
+                or len(set(self.channels.values())) != len(self.channels)
+            ):
+                return None
+            return {
+                "kind": "connectivity", "masses": masses.tolist(),
+                "symbols": list(symbols), "pair_cutoffs": cutoffs.tolist(),
+                "reactants": list(self.reactants),
+                "channels": [list(signature) for signature in self.channels],
+                "channel_labels": list(self.channels.values()),
+                "exit_distance": float(self.exit_distance),
+            }
+        except (AttributeError, KeyError, TypeError, ValueError):
+            # Mutated/custom public parameters retain the Python behaviour.
+            return None
 
     def classify_components(self, state, components):
         signature = tuple(
@@ -341,6 +439,9 @@ class PilotConnectivityClassifier(ConnectivityClassifier):
         self.reference_components = {frozenset(f) for f in self.fragments}
 
     def classify_components(self, state, components):
+        return self._classify_with_bonds(state, components)
+
+    def _classify_with_bonds(self, state, components, bonds=None):
         signature = tuple(
             sorted(formula(self.symbols[i] for i in f) for f in components)
         )
@@ -348,11 +449,23 @@ class PilotConnectivityClassifier(ConnectivityClassifier):
             unchanged_atoms = {
                 frozenset(f) for f in components
             } == self.reference_components
-            if unchanged_atoms and self.bond_graph(state.q) == self.reference_bonds:
+            if unchanged_atoms and (
+                self.bond_graph(state.q) if bonds is None else bonds
+            ) == self.reference_bonds:
                 return {"status": "nonreactive", "channel": None}
             return None
         channel = self.channels.get(signature, "candidate:" + "+".join(signature))
         return {"status": "product", "channel": channel}
+
+
+_CONNECTIVITY_CLASSIFIER_METHODS = {
+    name: getattr(ConnectivityClassifier, name)
+    for name in ("__call__", "bond_graph", "components", "classify_components", "validate_reactants")
+}
+_PILOT_CLASSIFIER_METHODS = {
+    name: getattr(PilotConnectivityClassifier, name)
+    for name in (*_CONNECTIVITY_CLASSIFIER_METHODS, "_classify_with_bonds")
+}
 
 
 def resolve_pilot_outcomes(system, outcomes=None, *, separation_au, preset="pilot"):
@@ -926,20 +1039,65 @@ def _trajectory(
             trace_energy=np.asarray(trace_energy),
         )
 
+    # Optional native outcome observers preserve the same check clock and
+    # persistence state while allowing a block to span several checks. A custom
+    # Python classifier still receives the live full state at every boundary.
+    from pyrpmd.block_propagation import native_outcome_supported
+
+    native_events = status == "unresolved" and native_outcome_supported(dynamics)
+    descriptor_factory = getattr(classifier, "native_outcome_descriptor", None)
+    modern_native = getattr(dynamics.integrator._native, "DRPMD_OUTCOMES_API", 0) >= 1
+    previous_available = modern_native or dynamics.loop_backend == "python" or not dynamics.native
+    checkpoint_current = False
+
     while done < max_steps and status == "unresolved":
+        descriptor = descriptor_factory() if native_events and callable(descriptor_factory) else None
         count = min(dynamics.block_steps, 4096, max_steps - done,
-                    check - done % check, checkpoint_interval - done % checkpoint_interval)
-        before = state.copy()
+                    checkpoint_interval - done % checkpoint_interval)
+        if classifier is not None and descriptor is None:
+            count = min(count, check - done % check)
+        python_classifier = classifier is not None and descriptor is None
+        # A native classifier can yield a near-threshold check to the original
+        # Python predicate. Keep only its pre-final state for exception rollback.
+        record_previous = classifier is not None and previous_available
+        record_states = python_classifier and not record_previous
+        before = state.copy() if record_states else None
         start_done = done
         stats_before_block = copy.deepcopy(dynamics.propagation_stats)
-        block = dynamics.propagate_block(state, count, record_states=True, raise_on_error=False)
+        options = {"record_states": record_states, "raise_on_error": False}
+        if record_previous:
+            options["record_previous"] = True
+        if native_events:
+            options["reuse_forces"] = True
+        if descriptor is not None:
+            options["outcome"] = {
+                "descriptor": descriptor,
+                "check_interval": check,
+                "persistence_steps": persistence,
+                "start_step": done,
+                "candidate": candidate,
+                "candidate_since": candidate_since,
+            }
+        block = dynamics.propagate_block(state, count, **options)
+        checkpoint_current = False
         valid = block.completed
         failure = block.error
         previous_candidate, previous_since = candidate, candidate_since
         energy = block.energies / config["beads"]
-        # The next classifier boundary is always the final step of a block.
-        # An arbitrary Python classifier still sees the exact full q/p state.
-        if not failure and classifier is not None and (done + valid) % check == 0:
+        pending_check = False
+        if descriptor is not None:
+            event = block.outcome
+            candidate, candidate_since = event["candidate"], event["candidate_since"]
+            pending_check = event.get("pending_check", False)
+            # Earlier checks in this block remain accepted if the final Python
+            # check raises. Roll back to this event state, not the block start.
+            previous_candidate, previous_since = candidate, candidate_since
+            if event["resolved"] is not None:
+                status, channel = event["resolved"]
+                reason = ("stable_separated_outgoing_products" if status == "product"
+                          else "stable_separated_outgoing_reactants")
+        # A Python classifier boundary is always the final step of its block.
+        if not failure and (python_classifier or pending_check) and (done + valid) % check == 0:
             try:
                 label = _normalize_label(classifier(state))
                 block.centroids[valid - 1] = state.q.mean(axis=0)
@@ -954,7 +1112,10 @@ def _trajectory(
                 # A classifier failure rolls back only its step, just like the
                 # original per-step workflow, not the whole completed prefix.
                 valid -= 1
-                if valid:
+                if record_previous:
+                    state = State(block.previous_q, block.previous_p,
+                                  block.previous_step, block.previous_time)
+                elif valid:
                     state = State(block.q[valid-1], block.p[valid-1],
                                   int(block.steps[valid-1]), float(block.times[valid-1]))
                 else:
@@ -987,9 +1148,12 @@ def _trajectory(
         # I/O exceptions remain job failures, never chemical trajectory failures.
         if done % checkpoint_interval == 0 or status != "unresolved":
             save_checkpoint()
+            checkpoint_current = True
     if classifier is None and status == "unresolved":
         reason = "no_validated_product_classifier"
-    save_checkpoint()
+        checkpoint_current = False
+    if not checkpoint_current:
+        save_checkpoint()
     _atomic_npz(
         base.with_suffix(".npz"),
         {

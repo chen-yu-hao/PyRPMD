@@ -231,4 +231,11 @@ static PyMethodDef methods[]={
  {nullptr,nullptr,0,nullptr}
 };
 static PyModuleDef module={PyModuleDef_HEAD_INIT,"_native","PyRPMD C++17/OpenMP kernels",-1,methods};
-PyMODINIT_FUNC PyInit__native(){return PyModule_Create(&module);}
+PyMODINIT_FUNC PyInit__native(){
+    PyObject* result=PyModule_Create(&module);
+    if(!result)return nullptr;
+    if(PyModule_AddIntConstant(result,"DRPMD_OUTCOMES_API",1)<0){
+        Py_DECREF(result);return nullptr;
+    }
+    return result;
+}

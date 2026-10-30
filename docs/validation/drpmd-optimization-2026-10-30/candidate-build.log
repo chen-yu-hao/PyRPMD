@@ -1,0 +1,5 @@
+running build_ext
+building 'pyrpmd._native' extension
+/usr/bin/c++ -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIC -fPIC -I/workspace/scratch/701b67400000/pyrpmd-bench-venv/include -I/opt/codex/runtimes/codex-primary-runtime/dependencies/python/include/python3.12 -c native/cayley.cpp -o build/temp.linux-x86_64-cpython-312/native/cayley.o -O3 -std=c++17 -fopenmp
+/usr/bin/c++ -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIC -pthread -shared -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--build-id=sha1 -Wl,--exclude-libs,ALL build/temp.linux-x86_64-cpython-312/native/cayley.o -L/install/lib -o build/lib.linux-x86_64-cpython-312/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so -fopenmp
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so -> src/pyrpmd

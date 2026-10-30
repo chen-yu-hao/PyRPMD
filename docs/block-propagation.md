@@ -27,9 +27,15 @@ print(result.steps, result.times, result.energies, result.values)
 **H_P**，不是 H_P/P。观测缓存限制为 256 MiB，超过时要求缩小分段，
 不会降低用户指定的记录频率。
 
+`record_previous=True` 仅保留成功分段最后一步之前的完整 q/p 和精确时钟，
+通过 `previous_q/previous_p/previous_step/previous_time` 返回，适合 Python
+分类器拒绝最后一步时回滚。失败分段已经保留合法前缀，不提供这个额外快照。
+它不依赖观测 mask，也不需要 `record_states=True` 的逐步完整历史。
+
 输入文件仍使用 `block_steps=256`，合法范围 1..65536。使用本接口的
-dRPMD 碰撞和受约束母轨迹会将实际分段限制在 4096 及相应的热浴、分类
-或 checkpoint 边界。
+dRPMD 碰撞和受约束母轨迹会将实际分段限制在 4096 及相应的热浴、Python
+分类或 checkpoint 边界。原生分类器可以在块内按原频率检查，并在确认
+产物或非反应结局时提前返回。
 直接 Python 调用超过 4096 则报错，调用者应自行分段。
 
 `auto` 在执行前检查能力，不支持时进入 Python 兼容路径；`native` 缺少
@@ -91,9 +97,11 @@ Fortran batch v1 使用按值传递的 `int32_t B`，q/force 为 C 连续
 hartree/bohr；status 每帧 0 表示成功。提供者需保证确定性的完整输出，
 不能使用 Python 回调，也不能让异常或 STOP 穿越原生边界。
 
-每步仍有两次物理力调用。能量观测复用最后一次力调用返回的能量；
-片段投影改变终点坐标时重新求值。因此能量观测加速也包含减少重复
-PES 调用，不能全部归因于去除 Python 循环。
+默认每步有两次物理力调用。`reuse_forces=True` 在无偏置、约束和片段投影
+的原生传播中启用块内终点力复用，L 步由 2L 次 PES 批调用降为 L+1 次。
+普通原生 dRPMD 碰撞自动使用它；其他分支保持参考调用顺序。缓存不跨块、
+不写入 checkpoint，恢复时重新求力。能量观测继续复用终点 PES 能量；
+片段投影改变终点坐标时重新求值。这不会合并两次半步 kick 或更换积分器。
 
 `Dynamics.propagation_stats` 记录接受的 native/Python 步数和回退原因；
 `loop_stats` 是其兼容别名。生产输出的 `propagation` 是相应轨迹或流的
@@ -102,13 +110,32 @@ PES 调用，不能全部归因于去除 Python 循环。
 
 ## 工作流与复现
 
-dRPMD 碰撞使用本接口，Python 分类器在原来的分类时刻读取完整 q/p；
-块不跨越分类或 checkpoint。轨迹输出时刻可位于块内，由逐步记录保持
-精确的输出 stride。受约束 recrossing 母轨迹也使用本接口，块停止于
+dRPMD 碰撞使用本接口。精确内置 `ConnectivityClassifier` 的显式通道和
+基准中的 `H3ExchangeClassifier` 支持原生判定：检查的绝对步号、候选标签、
+持续时间和停止条件均保持原规则，块可以跨越检查时刻。接近成键阈值、
+出口距离或朝外运动零点的状态会返回 Python 使用原始严格判据；这个
+舍入保护区间只决定执行后端，不改变物理阈值。
+
+Pilot 候选通道发现、任意自定义分类器及覆写的分类方法仍在 Python 中按
+原检查时刻读取完整 q/p，此时块不跨越检查边界。轨迹输出时刻可位于块内，
+由逐步记录保持精确的输出 stride。每个接受步都参与最大能量漂移统计。
+终态 checkpoint 在状态未改变时不重复保存。受约束 recrossing 母轨迹也使用
+本接口，块停止于
 Andersen 或 checkpoint 边界，观测 mask 保持块内的精确构型采样时刻。
 FES/PMF、普通
 Andersen 热化和 recrossing child 继续使用已验证的 `propagate()` 路径。
 这次整合没有改变动态任务池、MPI 拓扑或添加 GPU 积分器。
+
+低层 `outcome` 参数包含 `descriptor`、`check_interval`、`persistence_steps`、
+`start_step`、`candidate` 和 `candidate_since`。描述符使用显式通道编号，
+不允许静默替换 Python 实现。`result.outcome` 返回新的候选状态、`resolved`
+和本块原生 `checks`；`pending_check=True` 表示调用者必须在当前完整状态上
+执行原 Python 判定并更新 persistence 后再继续。确认结局或待 Python 检查
+都可能使 `completed < requested`，此时 `success=True` 且 `error=None`。
+普通调用仍保留原来的完整块/失败前缀契约。内置 dRPMD 工作流负责这些
+边界和恢复状态，常规输入无需手工构造此参数。
+显式请求 `outcome` 而原生能力不足时，即使使用 `backend="auto"`，也会在
+状态改变前报错，不会静默忽略分类器或进入不处理 outcome 的 Python 长块。
 
 `loop_backend` 与 `block_steps` 不参与科学参数哈希；温度、珠子数、
 势能和步长等物理身份检查保留。相同后端、环境和初态下，不同分段和
@@ -116,6 +143,7 @@ Andersen 热化和 recrossing child 继续使用已验证的 `propagate()` 路�
 
 ```bash
 python -m pytest -q tests/test_native_propagation.py
+python -m pytest -q tests/test_native_outcomes.py tests/test_drpmd_native_workflow.py
 python benchmarks/h3/build_pes.py
 python benchmarks/h3/native_propagation.py --output runs/fused-segmented/report.json
 ```
@@ -123,3 +151,6 @@ python benchmarks/h3/native_propagation.py --output runs/fused-segmented/report.
 报告同时保存源码 commit/摘要、原始重复计时、数值误差、实际后端和
 生产工作流结果；没有设定脆弱的速度阈值。`physical_convergence=false`
 明确说明这些是实现一致性验证，不是收敛物理速率的结论。
+
+dRPMD 原生分类、力复用及紧凑回滚的独立版本对照、完整工作流计时与
+复现命令见 [2026-10-30 验证记录](validation/drpmd-optimization-2026-10-30/README.md)。

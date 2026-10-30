@@ -17,9 +17,10 @@ from ..checkpoint import load_checkpoint
 
 from ..analysis.fes import (
     umbrella_integration,
-    statistical_inefficiency,
     _block_resample,
+    _bootstrap_block_plan,
 )
+from ..analysis.recrossing import summarize_recrossing
 from ..constants import AU_RATE_TO_CM3_S, ATOMIC_TIME_S
 from ..cv import RPMDrateCoordinate
 from ..dynamics import Dynamics, State
@@ -211,6 +212,7 @@ def _recrossing_options(config):
     if (
         values["equilibration_steps"] < 0
         or not 0 < values["plateau_fraction"] <= 1
+        or not np.isfinite(values["plateau_tolerance"])
         or values["plateau_tolerance"] <= 0
     ):
         raise ValueError("invalid recrossing burn-in/plateau options")
@@ -604,13 +606,15 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
     barrier = float(np.interp(xi, grid, curve) - curve[0])
     connected = bool(sampled["data"]["connected"])
     gs = np.asarray(sampled["data"]["statistical_inefficiency"])
+    block_plan = _bootstrap_block_plan(np.asarray([len(s) for s in samples]), gs)
     rng = np.random.default_rng(np.random.SeedSequence([options["analysis_seed"], 401]))
     barriers, curves, records, endpoints, failures = [], [], [], [], []
     if connected:
         for draw in range(options["bootstrap"]):
             record = {"draw": draw, "valid": False, "reason": None}
             draws = [
-                _block_resample(s, int(np.ceil(g)), rng) for s, g in zip(samples, gs)
+                _block_resample(s, block, rng)
+                for s, block in zip(samples, block_plan["block_lengths"])
             ]
             try:
                 fb, _ = umbrella_integration(
@@ -640,6 +644,9 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         if len(curves) >= 2
         else np.full_like(curve, np.nan)
     )
+    if block_plan["status"] == "unavailable":
+        barrier_error = None
+        standard_error[:] = np.nan
     empirical = {
         "reference": _histogram_endpoint_support(sampled["data"], 0.0),
         "dividing_surface": _histogram_endpoint_support(sampled["data"], xi),
@@ -647,6 +654,7 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
     warnings = [
         "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR."
     ]
+    warnings.extend(block_plan["warnings"])
     if not all(point["supported"] for point in empirical.values()):
         warnings.append(
             "A Gaussian UI endpoint lacks observed histogram support; the model value is not an interpolation of measured supported bins."
@@ -672,7 +680,7 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         "barrier_standard_error_hartree": barrier_error,
         "barrier_percentile_95_ci_hartree": (
             np.quantile(barriers, [0.025, 0.975]).tolist()
-            if len(barriers) >= 2
+            if len(barriers) >= 2 and block_plan["status"] != "unavailable"
             else None
         ),
         "pmf_bootstrap_barriers": barriers,
@@ -707,7 +715,8 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
             "draws": records,
             "surface_held_fixed": True,
             "skipped_reason": None if connected else "disconnected_overlap",
-            "block_lengths": np.ceil(gs).astype(int),
+            "block_lengths": block_plan["block_lengths"],
+            "block_plan": block_plan,
             "endpoint_values_hartree": np.asarray(endpoints).reshape(-1, 2),
             "endpoint_covariance_hartree_squared": (
                 np.cov(np.asarray(endpoints).T, ddof=1) if len(endpoints) >= 2 else None
@@ -884,13 +893,18 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
             diagnostics[key] = estimate[key]
     diagnostics["uncertainty"] = {
         "available": estimate["barrier_standard_error_hartree"] is not None,
+        "block_status": estimate.get("bootstrap", {}).get("block_plan", {}).get("status"),
         "reason": (
             None
             if estimate["barrier_standard_error_hartree"] is not None
             else (
                 "bootstrap_disabled"
                 if pmf_options["bootstrap"] == 0
-                else "fewer_than_two_valid_bootstrap_draws"
+                else (
+                    "insufficient_correlated_blocks"
+                    if estimate.get("bootstrap", {}).get("block_plan", {}).get("status") == "unavailable"
+                    else "fewer_than_two_valid_bootstrap_draws"
+                )
             )
         ),
         "surface_held_fixed": True,
@@ -978,86 +992,31 @@ def _aggregate(children, pmf, config, output, options):
         raise ValueError(
             "cannot combine recrossing trajectories with an unsupported PMF"
         )
-    # A child pair is correlated and all pairs from one parent share its
-    # configuration; aggregate by parent before any uncertainty estimate.
-    grouped = {}
-    for child in children:
-        key = (child["chain"], child["parent"])
-        if key not in grouped:
-            grouped[key] = [np.zeros(options["child_steps"]), 0.0]
-        grouped[key][0] += child["numerator"]
-        grouped[key][1] += child["denominator"]
-    keys = sorted(grouped)
-    num = np.array([grouped[k][0] for k in keys])
-    den = np.array([grouped[k][1] for k in keys])
-    if den.sum() <= 0:
-        raise RuntimeError(
-            "zero initial reactive flux; no transmission coefficient can be estimated"
-        )
-    transmission = num.sum(axis=0) / den.sum()
-    tail = max(2, int(np.ceil(len(transmission) * options["plateau_fraction"])))
-    tail = min(tail, len(transmission))
-    start = len(transmission) - tail
-    middle = start + tail // 2
-    estimate = float(np.mean(transmission[start:]))
-    drift = (
-        float(np.mean(transmission[middle:]) - np.mean(transmission[start:middle]))
-        if middle > start
-        else float("inf")
-    )
     rng = np.random.default_rng(
         np.random.SeedSequence([int(config.get("seed", 0)), 503])
     )
-    boots = []
-    boot_curves = []
-    chain_indices = {
-        c: np.array([i for i, k in enumerate(keys) if k[0] == c]) for c, _ in keys
-    }
-    blocks = {}
-    for chain, ix in chain_indices.items():
-        observable = np.divide(
-            num[ix, start:].mean(axis=1),
-            den[ix],
-            out=np.zeros(len(ix)),
-            where=den[ix] > 0,
-        )
-        blocks[chain] = max(1, int(np.ceil(statistical_inefficiency(observable))))
-    for _ in range(options["bootstrap"]):
-        selected = []
-        # Resample chains and contiguous parent blocks to preserve parent-chain
-        # correlation. Multiple children from a parent remain one cluster.
-        chains = list(chain_indices)
-        for chain in rng.choice(chains, size=len(chains), replace=True):
-            ix = chain_indices[chain]
-            selected.extend(_block_resample(ix, blocks[chain], rng).tolist())
-        ix = np.asarray(selected, int)
-        if den[ix].sum() <= 0:
-            continue
-        curve = num[ix].sum(axis=0) / den[ix].sum()
-        boot_curves.append(curve)
-        boots.append(curve[start:].mean())
-    stderr = float(np.std(boots, ddof=1)) if len(boots) > 1 else None
-    drift_error = None
-    if len(boot_curves) > 1:
-        b = np.asarray(boot_curves)
-        drift_error = float(
-            np.std(b[:, middle:].mean(axis=1) - b[:, start:middle].mean(axis=1), ddof=1)
-        )
-        curve_error = np.std(b, axis=0, ddof=1)
-    else:
-        curve_error = np.full_like(transmission, np.nan)
-    threshold = max(
-        options["plateau_tolerance"] * abs(estimate), 2 * (drift_error or 0.0)
+    statistics = summarize_recrossing(
+        children, rng=rng,
+        **{key: options[key] for key in (
+            "child_steps", "plateau_fraction", "plateau_tolerance", "bootstrap"
+        )},
     )
-    plateau = bool(tail >= 10 and abs(drift) <= threshold and estimate > 0)
+    keys = statistics["parent_ids"]
+    num, den = statistics["parent_numerator"], statistics["parent_denominator"]
+    transmission, start = statistics["curve"], statistics["start"]
+    estimate, drift = statistics["kappa"], statistics["drift"]
+    boots = statistics["bootstrap_kappa"]
+    stderr, drift_error = statistics["standard_error"], statistics["drift_standard_error"]
+    curve_error, plateau = statistics["curve_standard_error"], statistics["plateau_detected"]
+    recrossing_uncertainty = statistics["uncertainty"]
     candidate = pmf[qtst_key] * estimate
     total_boot = []
     barriers = pmf.get("pmf_bootstrap_barriers", [])
     qtst_draws = pmf.get("pmf_bootstrap_qtst", [])
     pmf_draws = qtst_draws if is_surface else barriers
-    if is_surface and len(qtst_draws) >= 2 and len(boots) >= 2:
+    if is_surface and len(qtst_draws) >= 2 and recrossing_uncertainty["available"]:
         total_boot = [float(rng.choice(qtst_draws)) * kval for kval in boots]
-    elif not is_surface and len(barriers) >= 2 and len(boots) >= 2:
+    elif not is_surface and len(barriers) >= 2 and recrossing_uncertainty["available"]:
         for kval in boots:
             barrier = rng.choice(barriers)
             total_boot.append(
@@ -1072,12 +1031,16 @@ def _aggregate(children, pmf, config, output, options):
     conditional_error = (
         abs(pmf[qtst_key]) * stderr if stderr is not None else None
     )
-    uncertainty_reasons = []
+    uncertainty_reasons = list(recrossing_uncertainty["reasons"])
     if len(pmf_draws) < 2:
         uncertainty_reasons.append("fewer_than_two_valid_pmf_bootstrap_draws")
-    if len(boots) < 2:
-        uncertainty_reasons.append("fewer_than_two_valid_recrossing_bootstrap_draws")
     pmf_bootstrap = pmf.get("bootstrap", {})
+    pmf_block_status = pmf_bootstrap.get("block_plan", {}).get("status")
+    if pmf_block_status in ("limited_blocks", "unavailable"):
+        uncertainty_reasons.append("pmf_bootstrap_" + pmf_block_status)
+    if pmf_block_status == "unavailable":
+        error = None
+        supported_draw_error = None
     rejected_pmf_draws = max(0, pmf_bootstrap.get("attempted", 0) - pmf_bootstrap.get("valid", 0))
     if is_surface and rejected_pmf_draws:
         uncertainty_reasons.append("pmf_bootstrap_contains_unsupported_draws")
@@ -1106,7 +1069,8 @@ def _aggregate(children, pmf, config, output, options):
     warnings = list(pmf["warnings"])
     if uncertainty_reasons:
         warnings.append(
-            "Complete rate uncertainty is unavailable: "
+            ("Complete rate uncertainty is unavailable: " if error is None
+             else "Complete rate uncertainty has limited support: ")
             + "; ".join(uncertainty_reasons)
             + ". Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
         )
@@ -1134,7 +1098,7 @@ def _aggregate(children, pmf, config, output, options):
         warnings.append(
             "Child endpoint energy error exceeds 0.1 kBT per bead; reduce timestep before publishing a rate estimate."
         )
-    if len(grouped) < 20:
+    if len(keys) < 20:
         warnings.append(
             "Fewer than 20 parent configurations; uncertainty and plateau checks are preliminary."
         )
@@ -1156,17 +1120,21 @@ def _aggregate(children, pmf, config, output, options):
         "rate_standard_error_" + unit_key: error,
         "rate_percentile_95_ci_" + unit_key: (
             np.quantile(total_boot, [0.025, 0.975]).tolist()
-            if len(total_boot) >= 2 and not (is_surface and rejected_pmf_draws)
+            if error is not None
             else None
         ),
         "conditional_rate_standard_error_" + unit_key: conditional_error,
         "rate_uncertainty": {
             "available": error is not None,
+            "pmf_block_status": pmf_block_status,
             "reasons": uncertainty_reasons,
             "pmf_bootstrap_valid": len(pmf_draws),
             "recrossing_bootstrap_valid": len(boots),
             "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
             "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+            "recrossing_scope": recrossing_uncertainty["scope"],
+            "recrossing_support": recrossing_uncertainty,
+            "parent_block_lengths": statistics["parent_block_lengths"],
         },
         "kappa": estimate,
         "kappa_standard_error": stderr,
@@ -1175,7 +1143,7 @@ def _aggregate(children, pmf, config, output, options):
         "plateau_drift": drift,
         "plateau_drift_standard_error": drift_error,
         "child_time_fs": float(times[-1] * ATOMIC_TIME_S / 1e-15),
-        "parent_configurations": len(grouped),
+        "parent_configurations": len(keys),
         "child_pairs": len(children),
         "child_trajectories": 2 * len(children),
         "maximum_scaled_energy_drift": max_drift,
@@ -1206,7 +1174,8 @@ def _aggregate(children, pmf, config, output, options):
         if rejected_pmf_draws:
             result["supported_draw_rate_standard_error_s_inv"] = supported_draw_error
             result["supported_draw_rate_percentile_95_ci_s_inv"] = (
-                np.quantile(total_boot, [0.025, 0.975]).tolist() if len(total_boot) >= 2 else None
+                np.quantile(total_boot, [0.025, 0.975]).tolist()
+                if supported_draw_error is not None else None
             )
             result["rate_uncertainty"]["supported_draw_condition"] = "conditional on the bootstrap draw having complete basin-to-surface support"
     write_json(Path(output) / "summary.json", result)

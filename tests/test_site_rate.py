@@ -161,6 +161,21 @@ def test_initial_scope_is_explicitly_rejected(change):
         site.validate_site_rate(config, system)
 
 
+@pytest.mark.parametrize("method", ["centroid_value_gradient", "_affine_gradient"])
+def test_site_rate_rejects_overridden_constant_gradient_methods(method):
+    config, system = configuration(), hydrogen()
+    original = site.resolve_umbrellas
+
+    def modified(*args):
+        resolved = original(*args)
+        setattr(resolved[0].cvs[0], method, lambda *unused: None)
+        return resolved
+
+    with patch.object(site, "resolve_umbrellas", modified):
+        with pytest.raises(ValueError, match="overridden CV methods"):
+            site.validate_site_rate(config, system)
+
+
 @pytest.mark.parametrize("direction", [1, -1])
 def test_unthermostatted_free_child_pair_has_unit_initial_flux(direction, tmp_path):
     config, system = configuration(), hydrogen()
@@ -316,9 +331,7 @@ def test_unsupported_pmf_stops_before_constrained_trajectories(tmp_path):
     parent.assert_not_called()
 
 
-def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
-    config, system = configuration(), hydrogen()
-    config["analysis"]["bootstrap"] = 12
+def sampled_harmonic_pmf(config, system):
     rng = np.random.default_rng(781)
     beta, physical_k, umbrella_k = config["beta"], .2, 2.
     streams = []
@@ -332,11 +345,30 @@ def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
                            [stream["center"] for stream in streams],
                            [stream["stiffness"] for stream in streams], beta,
                            bins=12, ranges=[[-1.5, 1.5]], bootstrap=0)
-    sampled = {"data": data, "streams": streams, "summary": {"warnings": []}}
-    pmf, tasks = site._estimate_pmf(sampled, config, system, tmp_path)
+    return {"data": data, "streams": streams, "summary": {"warnings": []}}
+
+
+def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
+    config, system = configuration(), hydrogen()
+    config["analysis"]["bootstrap"] = 12
+    sampled = sampled_harmonic_pmf(config, system)
+    data = sampled["data"]
+    with patch.object(site, "umbrella_reduced_potentials", wraps=site.umbrella_reduced_potentials) as bias_matrix:
+        pmf, tasks = site._estimate_pmf(sampled, config, system, tmp_path)
+    assert bias_matrix.call_count == 1
     assert pmf["ready"]
     assert pmf["pmf_uncertainty"]["available"]
     assert pmf["pmf_uncertainty"]["valid"] == 12
+    assert pmf["pmf_uncertainty"]["attempted"] == 12
+    assert not pmf["pmf_uncertainty"]["failures"]
+    # Original af90f20d draws: caching/reindexing the bias matrix must retain
+    # each circular-block draw and its density/population covariance.
+    np.testing.assert_allclose(pmf["_bootstrap_qtst_s"], [
+        5318747484353080.0, 5205230174098718.0, 4537989576419254.0,
+        5120295485005186.0, 5178448838812025.0, 5190898006599793.0,
+        5177997520763552.0, 5449767309564981.0, 5209963077366592.0,
+        4815956230820733.0, 5271839157421368.0, 5222931139830863.0,
+    ], rtol=3e-13)
     assert pmf["pmf_uncertainty"]["standard_error_s"] > 0
     assert len(tasks) == 2
     children = [
@@ -355,6 +387,45 @@ def test_correlated_pmf_bootstrap_and_chain_cluster_rate_uncertainty(tmp_path):
     assert not incomplete["pmf_uncertainty"]["available"]
     assert incomplete["pmf_uncertainty"]["standard_error_s"] is None
     assert "fewer_than_two_correlation_blocks_in_a_pmf_stream" in incomplete["pmf_uncertainty"]["reasons"]
+
+
+def test_site_pmf_records_each_rejected_draw_without_reporting_partial_uncertainty(tmp_path):
+    config, system = configuration(), hydrogen()
+    config["analysis"]["bootstrap"] = 4
+    sampled = sampled_harmonic_pmf(config, system)
+    original, calls = site.solve_mbar, 0
+
+    def incomplete_draw(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        result = original(*args, **kwargs)
+        if calls == 1:
+            result.converged = False
+        elif calls == 2:
+            result.components = np.arange(len(result.components))
+        return result
+
+    with patch.object(site, "solve_mbar", incomplete_draw):
+        pmf, _ = site._estimate_pmf(sampled, config, system, tmp_path)
+    info = pmf["pmf_uncertainty"]
+    assert info["requested"] == info["attempted"] == 4
+    assert info["valid"] == 2
+    assert len(info["draws"]) == 4
+    assert [draw["draw"] for draw in info["failures"]] == [0, 1]
+    assert info["failure_counts"] == {"mbar_not_converged": 1, "disconnected_overlap": 1}
+    assert not info["available"]
+    assert info["standard_error_s"] is None
+    assert info["percentile_95_ci_s"] is None
+    assert np.all(np.asarray(pmf["_bootstrap_qtst_s"]) > 0)
+
+
+def test_site_pmf_solver_exception_keeps_its_existing_failure_semantics(tmp_path):
+    config, system = configuration(), hydrogen()
+    config["analysis"]["bootstrap"] = 2
+    sampled = sampled_harmonic_pmf(config, system)
+    with patch.object(site, "solve_mbar", side_effect=FloatingPointError("injected solver failure")):
+        with pytest.raises(FloatingPointError, match="injected solver failure"):
+            site._estimate_pmf(sampled, config, system, tmp_path)
 
 
 @pytest.mark.parametrize("kind", ["parent", "child"])
