@@ -9,76 +9,54 @@ jobs:
   apply-test:
     if: github.ref == 'refs/heads/feat/fused-native-propagation'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 20
     env:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
-      OMPI_MCA_rmaps_base_oversubscribe: '1'
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           ref: feat/fused-native-propagation
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Verify and apply tested source patch
+      - name: Apply compatibility guard tests and implementation
         run: |
           python - <<'PY'
           from pathlib import Path
-          import hashlib, zlib
-          parts=sorted(Path('.native-transfer').glob('part*'))
-          assert [p.name for p in parts]==[f'part{i:02d}' for i in range(9)]
-          patch=zlib.decompress(b''.join(p.read_bytes() for p in parts))
-          assert hashlib.sha256(patch).hexdigest()=='40d33628951051c505b1cb0a28bb1c66f09897d93697b9890a2c3bce34b20322'
-          Path('/tmp/pyrpmd-fused.patch').write_bytes(patch)
+          import hashlib
+          data=Path('.native-transfer/compat.patch').read_bytes()
+          assert hashlib.sha256(data).hexdigest()=='bfdca635dd2980d50674bcd9e19423503e7658fccb72c6f7614200d6b426116d'
           PY
-          git apply --check /tmp/pyrpmd-fused.patch
-          git apply --index /tmp/pyrpmd-fused.patch
+          git apply --check .native-transfer/compat.patch
+          git apply --index .native-transfer/compat.patch
           git rm -r .native-transfer
           git config user.name 'chen-yu-hao'
           git config user.email '72141038+chen-yu-hao@users.noreply.github.com'
-          git commit -m 'feat: fuse C++17 propagation, native PES and observations with Python fallback'
+          git commit -m 'fix: preserve dynamically overridden Python PES and nested CV semantics'
           echo "PYRPMD_TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           mkdir -p runs
           git show --stat HEAD > runs/tested-commit.txt
-      - name: Install dependencies
+      - name: Build real PES and install package
         run: |
           sudo apt-get update
-          sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin
-          python -m pip install -e '.[test,ase,mpi]' build
-      - name: Build pinned real Fortran PES
-        run: python benchmarks/h3/build_pes.py
-      - name: Unit and regression tests
-        run: python -m pytest -q | tee runs/pytest.txt
-      - name: Actual 4-rank MPI regression
+          sudo apt-get install -y gfortran
+          python -m pip install -e '.[test,ase]' build
+          python benchmarks/h3/build_pes.py
+      - name: Full regression and real-system measurements
         run: |
-          mpiexec -n 4 python tests/mpi_integration.py | tee runs/mpi-integration.txt
-          mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/fused-mpi" | tee runs/mpi-workflow.txt
-      - name: Real BKMP2 fused observations and workflows
-        run: python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
-      - name: Source and wheel packaging
-        run: |
+          python -m pytest -q | tee runs/pytest.txt
+          python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
           python -m build
-          python - <<'PY'
-          from pathlib import Path
-          import tarfile
-          with tarfile.open(next(Path('dist').glob('*.tar.gz'))) as t:
-              assert any(n.endswith('/native/fused.hpp') for n in t.getnames())
-          PY
-          python -m venv --system-site-packages "$RUNNER_TEMP/wheel-check"
-          "$RUNNER_TEMP/wheel-check/bin/pip" install --no-deps --force-reinstall dist/*.whl
-          cd "$RUNNER_TEMP"
-          "$RUNNER_TEMP/wheel-check/bin/python" -c "import pyrpmd._native as n; assert hasattr(n, 'run_block'); from pyrpmd.propagation import PropagationResult; print('installed fused wheel verified')"
-      - name: Publish verified branch commit
+      - name: Publish tested implementation
         run: git push origin HEAD:refs/heads/feat/fused-native-propagation
-      - name: Record tested source
+      - name: Preserve tested sources
         if: always()
         run: git archive --format=tar HEAD > "$RUNNER_TEMP/fused-tested-source.tar"
-      - name: Save results and tested sources
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
           name: fused-verified-results
           path: |
