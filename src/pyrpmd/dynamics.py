@@ -207,6 +207,16 @@ class Dynamics:
         from .propagation import propagate
         return propagate(self, state, steps, **options)
 
+    def propagate_block(self, state, steps, **options):
+        """Advance a block, retaining its valid prefix if a later step fails."""
+        from .block_propagation import propagate_block
+        return propagate_block(self, state, steps, **options)
+
+    @property
+    def loop_stats(self):
+        """Compatibility name for the live propagation counters."""
+        return self.propagation_stats
+
 
     def can_fuse(self, *, bias=None, observe=None):
         from .propagation import native_supported

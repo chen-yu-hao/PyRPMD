@@ -3,8 +3,17 @@
 PyRPMD can now advance a block of BCB steps inside the existing C++17 Cayley
 extension, directly invoking a stateless native PES and calculating energy,
 centroid and supported collective-variable observations. This is production
-code used by `Dynamics.propagate`, dRPMD, umbrella/FES and recrossing children;
-it is not the separate loop-language benchmark.
+code used by the production workflows. Two public entrypoints share the same
+Cayley map and explicit native PES bindings, with different recording and
+failure contracts:
+
+| API | Observations | Numerical failure | Production use |
+| --- | --- | --- | --- |
+| `Dynamics.propagate()` | Centroid CVs, sample interval, energy extrema | Entire block leaves the caller's state unchanged | FES/PMF, recrossing children, Andersen thermalization |
+| `Dynamics.propagate_block()` | CVs, boolean mask, optional full q/p, centroid RATTLE | Last accepted step and valid result prefix are retained | dRPMD collision blocks and constrained recrossing parents |
+
+The second entrypoint also supports bead-average geometric CVs. Its full
+contract is documented in [block-propagation.md](block-propagation.md).
 
 ## Input and API
 
@@ -25,6 +34,11 @@ Python definitions. `native=False` disables both compiled Cayley and fusion.
 The block options are execution settings, not a changed Hamiltonian, and are
 removed from physical checkpoint identities. Other scientific settings and
 existing PES fingerprints remain checked.
+
+The input default remains 256 and its maximum remains 65536. A direct
+`propagate_block()` call accepts 0..4096 steps; workflows that use it cap the
+configured block length at 4096 and at their next event. This does not change
+the user-requested observation cadence.
 
 ```python
 from pyrpmd.dynamics import Dynamics, State
@@ -47,13 +61,14 @@ print(observations.backend, observations.fallback_reason)
 print(dynamics.propagation_stats)
 ```
 
-## Supported direct paths
+## Supported direct paths for `propagate()`
 
 * The standard PyRPMD C ABI v1 adapter, when metadata explicitly declares
   `capabilities.stateful=false`. C, C++ and Fortran BIND(C) libraries can provide
   this existing ABI. The exact initialized context is reused.
-* The pinned real BKMP2 Fortran batch wrapper. It uses the same process-global
-  lock and physical function as ordinary Python/ctypes evaluation.
+* The pinned real BKMP2 Fortran batch wrapper. It uses the same canonical-library
+  path lock and physical function as ordinary Python/ctypes evaluation, including
+  when Python imports the provider under different module names.
 * Centroid Distance, BondDifference, Cartesian, COMDistance, RPMDrateCoordinate
   and RateSurface, including the existing equivalent-path min/max rule.
 * Full-matrix centroid umbrella bias (including two-dimensional off-diagonal
@@ -73,14 +88,16 @@ not per time step, and preserves the existing cyclic Cayley factorization.
 
 ## Workflow/event semantics
 
-**dRPMD:** built-in geometric classifiers are invoked at their original check
-intervals; blocks do not cross classifier, trajectory-output or checkpoint
-boundaries. Every step contributes to the maximum energy-deviation diagnostic,
-even when only a boundary is written. Stop/persistence counts are unchanged.
-Custom identity-aware Python classifiers retain the original stepwise path;
-`native` explicitly rejects that combination. An unsuccessful stateless native
-block is replayed through the reference path only to locate the last accepted
-step and preserve failed-trajectory diagnostics.
+**dRPMD:** collision blocks use `propagate_block()` and stop at the next
+classifier or checkpoint boundary, or the 4096-step limit. Per-step records
+preserve the exact trajectory-output times even when an output stride falls
+inside a block. The actual built-in or
+custom Python classifier sees the accepted full q/p at its original check
+interval; it is not replaced by a native classifier. Every accepted step
+contributes to the energy-deviation diagnostic. Stop/persistence counts are
+unchanged. PES or observation failure retains the valid prefix without retrying
+PES calls through Python. Classifier exceptions use the workflow's established
+rollback rule; physical state and accepted-step counters are restored together.
 
 Trajectory checkpoints retain cumulative accepted `native_steps` and
 `python_steps` across restart. Rolled-back steps are excluded. Older checkpoints
@@ -96,19 +113,28 @@ uninterrupted run.
 
 **Recrossing:** every child timepoint evaluates the actual dividing surface in
 C++, including equivalent arrangements. Python accumulates the returned indicator
-array into the existing paired-child numerator. The constrained parent
-Cayley-RATTLE solver is **still the reference Python implementation**; fusion does
-not replace it with unconstrained NVE or a different constraint algorithm.
+array into the existing paired-child numerator. Constrained parents use
+`propagate_block()` with centroid Cayley-RATTLE when its PES and surface are
+supported, and the original constrained Python algorithm otherwise. Their
+Andersen and checkpoint boundaries are preserved; an observation mask retains
+the exact parent-snapshot times within each block. The native
+constraint implements the same map and momentum projection, rather than
+unconstrained NVE.
 
 ## Python and distributed compatibility
 
-Arbitrary Python PESs, custom/subclassed CVs or biases, bead-average/periodic CVs,
-Angle, BCOCB/PILE, ASE, Torch/GPU, legacy f2py without an explicit native binding,
+Arbitrary Python PESs, custom/subclassed CVs or biases, Angle,
+BCOCB/PILE, ASE, Torch/GPU, legacy f2py without an explicit native binding,
 and process/MPI bead-service providers retain their existing paths. A Python PES
 wrapper forwards a binding only for identity unit/sign conversion and explicit
 native-provider opt-in. Overridden built-in types do not bypass their Python
 mathematics. Independent trajectory processes/MPI groups with one rank can still
 use the fused engine. This does not implement native distributed PES messaging.
+Bead-average geometric CVs use Python in `propagate()` and have native support
+in `propagate_block()`; the latter's rate-coordinate surfaces remain centroid
+based. Periodic CVs use Python in `propagate()`; the segmented API applies
+periodic umbrella displacement for otherwise supported built-in CVs.
+`Dynamics.loop_stats` is a compatibility alias for `propagation_stats`.
 
 A successful `propagate()` commits the entire block. A failure, invalid
 observation, interrupt or nonfinite result leaves its caller's q/p/clock unchanged.
@@ -121,8 +147,10 @@ retained, so changing block sizes does not alter the state clock by rounding.
 
 ```bash
 python -m pytest -q tests/test_fused_propagation.py
+python -m pytest -q tests/test_native_propagation.py
 python benchmarks/h3/build_pes.py
 python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
+python benchmarks/h3/native_propagation.py --output runs/fused-segmented/report.json
 ```
 
 The real-system harness compares 1/2/8/16/32 beads, two-dimensional umbrellas,
@@ -132,3 +160,11 @@ and CV observations in each backend; they are not physical-rate convergence.
 Checkpoint/file I/O is included in the short workflow measurements but not in the
 block-throughput rows. Do not generalize those measurements to an entire
 production calculation or a different PES/hardware setup.
+
+The companion segmented harness adds native RATTLE, full multi-window FES/PMF,
+three parent configurations and six children, eight real H3 collisions with the
+identity-aware Python classifier, and interrupted collision restart. It records
+its exact source commit, source hashes, timing repeats and actual execution
+counts. Its core microbenchmark uses the original `Dynamics.step()` reference;
+its workflow comparisons include the same checkpoint/output operations. Those
+two baselines must be distinguished when quoting timings.

@@ -34,18 +34,30 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin
           python -m pip install -e '.[test,ase,mpi]' build 'setuptools>=68' wheel
+      - name: Record compiler, CPU and Python environment
+        run: |
+          mkdir -p runs
+          uname -a > runs/fused-environment.txt
+          lscpu >> runs/fused-environment.txt
+          gcc --version >> runs/fused-environment.txt
+          g++ --version >> runs/fused-environment.txt
+          gfortran --version >> runs/fused-environment.txt
+          python -VV >> runs/fused-environment.txt
+          python -m pip freeze >> runs/fused-environment.txt
       - name: Build pinned real BKMP2
         run: python benchmarks/h3/build_pes.py
       - name: Unit and compatibility tests
         run: |
           mkdir -p runs
-          python -m pytest -q | tee runs/fused-tests.txt
+          python -m pytest -q --junitxml=runs/fused-tests.xml | tee runs/fused-tests.txt
       - name: Actual 4-rank MPI regression
         run: |
           mpiexec -n 4 python tests/mpi_integration.py | tee runs/fused-mpi.txt
           mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-fused-mpi" | tee runs/fused-mpi-workflows.txt
       - name: Fused real-system observations, restart and timing
         run: python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
+      - name: Segmented API, constrained parents and compatibility workflows
+        run: python benchmarks/h3/native_propagation.py --output runs/fused-segmented/report.json
       - name: Build packages
         run: python -m build
       - name: Rebuild and test source distribution
@@ -63,8 +75,10 @@ jobs:
           roots = [path for path in target.iterdir() if path.is_dir()]
           assert len(roots) == 1, roots
           required = [
-              'native/fused.hpp', 'native/include/pyrpmd/pes_api_v1.h',
+              'native/fused.hpp', 'native/propagation.h',
+              'native/include/pyrpmd/pes_api_v1.h',
               'benchmarks/h3/fused_propagation.py',
+              'benchmarks/h3/native_propagation.py',
               'benchmarks/h3/source.json', 'benchmarks/h3/wrapper.f90',
               'benchmarks/loop_native/benchmark.py',
               'benchmarks/loop_native/cayley_common.h',
@@ -72,6 +86,7 @@ jobs:
               'benchmarks/loop_native/loop_cpp.cpp',
               'benchmarks/loop_native/loop_fortran.f90',
               'tests/test_fused_propagation.py',
+              'tests/test_native_propagation.py',
           ]
           for relative in required:
               assert (roots[0] / relative).is_file(), relative
@@ -84,11 +99,12 @@ jobs:
           from pyrpmd import _native
           assert Path(_native.__file__).resolve().is_relative_to(Path.cwd())
           assert callable(_native.run_block)
-          from benchmarks.h3 import fused_propagation
-          print('Source distribution imports its rebuilt native extension and real-system harness')
+          assert callable(_native.advance)
+          from benchmarks.h3 import fused_propagation, native_propagation
+          print('Source distribution imports both rebuilt native APIs and real-system harnesses')
           PY
           python benchmarks/h3/build_pes.py --source "$GITHUB_WORKSPACE/benchmarks/h3/build/h3_bkmp2.f"
-          python -m pytest -q tests/test_fused_propagation.py | tee "$GITHUB_WORKSPACE/runs/fused-sdist-tests.txt"
+          python -m pytest -q tests/test_fused_propagation.py tests/test_native_propagation.py | tee "$GITHUB_WORKSPACE/runs/fused-sdist-tests.txt"
       - name: Reproducible source snapshot
         if: always()
         run: |

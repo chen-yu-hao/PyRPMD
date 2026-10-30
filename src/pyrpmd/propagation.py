@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import dataclass
-import ctypes
 import numbers
 import numpy as np
 
@@ -21,7 +20,7 @@ class NativeUnavailableError(RuntimeError):
 class NativePESBinding:
     """Trusted process-local native function, context, lifetime owner and lock.
 
-    kind=0: PyRPMD PES C ABI v1; kind=1: pinned BKMP2 batch BIND(C) signature.
+    kind=0: PyRPMD PES C ABI v1; kind=1: Fortran batch BIND(C) signature.
     Never pass a ctypes/Python callback: these functions run with the GIL freed.
     All ordinary evaluate/close calls must use the same lock. Recreated for each
     block, not cached on owner, to avoid owner/capsule reference cycles.
@@ -31,19 +30,46 @@ class NativePESBinding:
     lock: object
     natoms: int
     kind: int = 0
-    context: int = 0
+    context: object = 0
+    is_open: object = None
 
     @contextmanager
     def acquire(self):
         from . import _native
-        with self.lock:
-            if getattr(self.owner, "closed", False):
-                raise RuntimeError("PES context is closed")
-            address = ctypes.cast(self.function, ctypes.c_void_p).value
+        from .potentials.native import descriptor_binding
+        with descriptor_binding(self).acquire() as (_, address, context, natoms):
             capsule = _native.bind_pes(
-                self.kind, address, int(self.context or 0), int(self.natoms), self.owner
+                self.kind, address, context, natoms, self.owner
             )
             yield capsule
+
+
+def _atomic_binding(binding):
+    """Accept both public bindings while retaining owner, lock and open check."""
+    if isinstance(binding, NativePESBinding):
+        return binding
+    from .potentials.native import NativePESBinding as DescriptorBinding
+    if isinstance(binding, DescriptorBinding):
+        kinds = {"cabi-v1": 0, "fortran-batch-v1": 1}
+        if binding.kind not in kinds:
+            raise NativeUnavailableError("unsupported native PES binding version")
+        return NativePESBinding(
+            binding.owner, binding.function, binding.lock, binding.natoms,
+            kind=kinds[binding.kind], context=binding.context, is_open=binding.is_open,
+        )
+    raise NativeUnavailableError("PES has no usable stateless native binding")
+
+
+def _check_dynamics_methods(dynamics):
+    from .dynamics import Dynamics, CayleyIntegrator
+    methods = ("step", "_propagate", "_force", "energy", "_project_fragments", "_fragment_data")
+    if type(dynamics) is not Dynamics or any(name in dynamics.__dict__ for name in methods):
+        raise NativeUnavailableError("custom Dynamics methods require the Python path")
+    integrator = dynamics.integrator
+    if type(integrator) is not CayleyIntegrator or any(
+        name in integrator.__dict__ for name in ("free_step", "kick", "_fourier_step")
+    ):
+        raise NativeUnavailableError("custom integrator methods require the Python path")
 
 
 @dataclass
@@ -174,7 +200,7 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
     if not len(offsets) or offsets[-1] != steps:
         offsets = np.append(offsets, steps)
     rows, n = len(offsets), len(dynamics.masses)
-    dimension = 0 if observe is None else int(observe.dimension)
+    dimension = 0 if observe is None else _integer(observe.dimension, "CV dimension")
     es = np.empty(rows, dtype=float)
     cs = np.empty((rows, n, 3), dtype=float) if record_centroids else None
     vs = np.empty((rows, dimension), dtype=float) if observe is not None else None
@@ -182,14 +208,13 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
     binding = None
     if backend != "python":
         try:
+            _check_dynamics_methods(dynamics)
             if dynamics.integrator._native is None or not hasattr(dynamics.integrator._native, "run_block"):
                 raise NativeUnavailableError("fused extension unavailable or native=False")
             factory = getattr(dynamics.potential, "native_binding", None)
             if factory is None:
                 raise NativeUnavailableError("PES has no explicit native binding")
-            binding = factory()
-            if not isinstance(binding, NativePESBinding):
-                raise NativeUnavailableError("PES has no usable stateless native binding")
+            binding = _atomic_binding(factory())
             spec = {"observers": [] if observe is None else _cvs(observe, n),
                     "biases": _biases(bias, n, dynamics.masses),
                     "fragments": [{"atoms": ix.tolist(), "reference": ref.tolist()}
@@ -258,11 +283,13 @@ def native_supported(dynamics, *, bias=None, observe=None):
     if dynamics.loop_backend == "python":
         return False
     try:
+        _check_dynamics_methods(dynamics)
         if dynamics.integrator._native is None or not hasattr(dynamics.integrator._native, "run_block"):
             raise NativeUnavailableError("fused extension unavailable or native=False")
         factory = getattr(dynamics.potential, "native_binding", None)
-        if factory is None or not isinstance(factory(), NativePESBinding):
+        if factory is None:
             raise NativeUnavailableError("PES has no explicit stateless native binding")
+        _atomic_binding(factory())
         n = len(dynamics.masses)
         _biases(bias, n, dynamics.masses)
         if observe is not None:
@@ -284,3 +311,7 @@ def scientific_config(config):
         if not result["dynamics"]:
             result.pop("dynamics")
     return result
+
+
+# The valid-prefix API is additive; propagate() retains whole-block rollback.
+from .block_propagation import BlockResult, PropagationError, propagate_block

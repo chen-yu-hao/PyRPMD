@@ -175,7 +175,7 @@ def run(output, steps=1500, repeats=5):
                 environment=dict(platform=platform.platform(),python=sys.version,numpy=np.__version__,
                                  cpu_affinity=sorted(os.sched_getaffinity(0)) if hasattr(os,'sched_getaffinity') else None),
                 numerical_checks=checks,workflows=workflows,timings=timings,
-                scope='Integrated stateless BCB loops; not physical rate convergence. RATTLE parents, arbitrary Python callbacks and MPI-bead/GPU providers retain reference execution.')
+                scope='Integrated stateless BCB loops; not physical rate convergence. Native RATTLE parents and valid-prefix blocks are covered by native_propagation.py. Arbitrary Python dynamics callbacks and MPI-bead/GPU providers retain reference execution.')
     output=Path(output);output.parent.mkdir(parents=True,exist_ok=True)
     output.write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
     print(json.dumps(report,indent=2,allow_nan=False))

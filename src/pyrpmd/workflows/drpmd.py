@@ -753,69 +753,67 @@ def _trajectory(
             trace_energy=np.asarray(trace_energy),
         )
 
-    supported_classifier = classifier is None or type(classifier) in (ConnectivityClassifier, PilotConnectivityClassifier)
-    if not supported_classifier and dynamics.loop_backend == "native":
-        from pyrpmd.propagation import NativeUnavailableError
-        raise NativeUnavailableError("custom dRPMD classifier requires loop_backend='auto' or 'python'")
-    fused_loop = supported_classifier and dynamics.can_fuse()
     while done < max_steps and status == "unresolved":
-        count = min(dynamics.block_steps, max_steps-done, check-done % check,
-                    stride-done % stride, checkpoint_interval-done % checkpoint_interval) if fused_loop else 1
-        number = done + count
-        previous = state.copy()
+        count = min(dynamics.block_steps, 4096, max_steps - done,
+                    check - done % check, checkpoint_interval - done % checkpoint_interval)
+        before = state.copy()
+        start_done = done
         stats_before_block = copy.deepcopy(dynamics.propagation_stats)
-        previous_energy, previous_drift = final, drift
+        block = dynamics.propagate_block(state, count, record_states=True, raise_on_error=False)
+        valid = block.completed
+        failure = block.error
         previous_candidate, previous_since = candidate, candidate_since
-        try:
-            if fused_loop:
-                block = dynamics.propagate(state, count, sample_interval=count, record_centroids=False)
-                final = float(block.energies[-1]) / config["beads"]
-                drift = max(drift, abs(block.minimum_energy/config["beads"]-initial),
-                            abs(block.maximum_energy/config["beads"]-initial))
-            else:
-                dynamics.step(state)
-                dynamics.propagation_stats["python_steps"] += 1
-                final = float(dynamics.energy(state)) / config["beads"]
-            if not math.isfinite(final):
-                raise FloatingPointError("Nonfinite total ring energy")
-            drift = max(drift, abs(final - initial))
-            if classifier is not None and number % check == 0:
+        energy = block.energies / config["beads"]
+        # The next classifier boundary is always the final step of a block.
+        # An arbitrary Python classifier still sees the exact full q/p state.
+        if not failure and classifier is not None and (done + valid) % check == 0:
+            try:
                 label = _normalize_label(classifier(state))
+                block.centroids[valid - 1] = state.q.mean(axis=0)
+                number = done + valid
                 if label != candidate:
                     candidate, candidate_since = label, number if label else None
                 if label is not None and number - candidate_since >= persistence:
                     status, channel = label
-                    reason = (
-                        "stable_separated_outgoing_products"
-                        if status == "product"
-                        else "stable_separated_outgoing_reactants"
-                    )
-        except Exception as exc:
-            state = previous
-            final, drift = previous_energy, previous_drift
-            dynamics.propagation_stats = copy.deepcopy(stats_before_block)
-            # Replay only the failed stateless block to retain last-valid-step
-            # and existing failed-trajectory/checkpoint semantics.
-            if fused_loop and count > 1:
+                    reason = ("stable_separated_outgoing_products" if status == "product"
+                              else "stable_separated_outgoing_reactants")
+            except Exception as exc:
+                # A classifier failure rolls back only its step, just like the
+                # original per-step workflow, not the whole completed prefix.
+                valid -= 1
+                if valid:
+                    state = State(block.q[valid-1], block.p[valid-1],
+                                  int(block.steps[valid-1]), float(block.times[valid-1]))
+                else:
+                    state = before
                 candidate, candidate_since = previous_candidate, previous_since
-                fused_loop = False
-                continue
-            done = number - 1
-            candidate, candidate_since = previous_candidate, previous_since
-            status, channel = "failed", None
-            reason = f"{type(exc).__name__}: {exc}"
+                failure = f"{type(exc).__name__}: {exc}"
+        # Only accepted physical steps contribute to trajectory accounting.
+        # A classifier may reject the final step after the block committed it.
+        if valid != block.completed:
+            dynamics.propagation_stats = stats_before_block
+            dynamics.propagation_stats[block.backend + "_steps"] += valid
+            if block.fallback_reason:
+                reasons = dynamics.propagation_stats["fallback_reasons"]
+                reasons[block.fallback_reason] = reasons.get(block.fallback_reason, 0) + valid
+        if valid:
+            final = float(energy[valid-1])
+            drift = max(drift, float(np.max(np.abs(energy[:valid] - initial))))
+            numbers = start_done + np.arange(1, valid + 1)
+            keep = (numbers % stride == 0) | (numbers == max_steps)
+            if status != "unresolved" and not failure:
+                keep[-1] = True
+            selected = np.flatnonzero(keep)
+            trace_steps.extend(numbers[selected].tolist())
+            trace_q.extend(block.centroids[selected].copy())
+            trace_energy.extend(energy[selected].tolist())
+            done += valid
+        if failure:
+            status, channel, reason = "failed", None, failure
             break
-        done = number
-        if number % stride == 0 or number == max_steps or status != "unresolved":
-            trace_steps.append(number)
-            trace_q.append(state.q.mean(axis=0).copy())
-            trace_energy.append(final)
-        # Filesystem errors must stop the job for restart, not be mislabeled as
-        # a failed physical trajectory and roll back a completed dynamics step.
-        if number % checkpoint_interval == 0 or status != "unresolved":
+        # I/O exceptions remain job failures, never chemical trajectory failures.
+        if done % checkpoint_interval == 0 or status != "unresolved":
             save_checkpoint()
-        if status != "unresolved":
-            break
     if classifier is None and status == "unresolved":
         reason = "no_validated_product_classifier"
     save_checkpoint()

@@ -129,7 +129,7 @@ struct Bias {
 
 static constexpr const char* PES_CAPSULE="pyrpmd.NativePES.v1";
 using CABIFn=pyrpmd_rc_v1(*)(pyrpmd_pes_context_v1*,const pyrpmd_pes_input_v1*,pyrpmd_pes_output_v1*,pyrpmd_error_v1*);
-using BKMPFn=void(*)(int32_t,const double*,double*,double*,int32_t*);
+using FortranBatchFn=void(*)(int32_t,const double*,double*,double*,int32_t*);
 struct Binding {
     int kind; uintptr_t address,context; Py_ssize_t natoms; PyObject* owner;
     ~Binding(){Py_XDECREF(owner);} // Destructor invoked with GIL held.
@@ -140,7 +140,7 @@ static void destroy_binding(PyObject* capsule){
 static PyObject* bind_pes(PyObject*,PyObject* args){
     int kind; unsigned long long addr,context; Py_ssize_t n; PyObject* owner;
     if(!PyArg_ParseTuple(args,"iKKnO",&kind,&addr,&context,&n,&owner))return nullptr;
-    if((kind!=0&&kind!=1)||!addr||n<1||(kind==1&&n!=3)){
+    if((kind!=0&&kind!=1)||!addr||n<1||n>PY_SSIZE_T_MAX/3){
         PyErr_SetString(PyExc_ValueError,"invalid native PES binding");return nullptr;}
     auto* b=new(std::nothrow)Binding{kind,static_cast<uintptr_t>(addr),static_cast<uintptr_t>(context),n,nullptr};
     if(!b)return PyErr_NoMemory();
@@ -152,13 +152,13 @@ struct PES {
     std::vector<double> energy,force; std::vector<int32_t> status;
     PES(Binding& b,Py_ssize_t p,Py_ssize_t dims):binding(b),P(p),d(dims),energy(p),force(p*dims),status(p) {
         ensure(binding.natoms*3==d,"PES atom count differs from integrator");
-        ensure(binding.kind!=1||P<=INT32_MAX,"BKMP2 batch exceeds int32");
+        ensure(binding.kind!=1||P<=INT32_MAX,"Fortran batch exceeds int32");
     }
     void evaluate(const double* q){
         std::fill(energy.begin(),energy.end(),std::numeric_limits<double>::quiet_NaN());
         std::fill(force.begin(),force.end(),std::numeric_limits<double>::quiet_NaN());
         std::fill(status.begin(),status.end(),-1);
-        if(binding.kind==1)reinterpret_cast<BKMPFn>(binding.address)(static_cast<int32_t>(P),q,energy.data(),force.data(),status.data());
+        if(binding.kind==1)reinterpret_cast<FortranBatchFn>(binding.address)(static_cast<int32_t>(P),q,energy.data(),force.data(),status.data());
         else{
             pyrpmd_pes_input_v1 in{1,sizeof(pyrpmd_pes_input_v1),1,1,P,d/3,q,P*d};
             pyrpmd_pes_output_v1 out{1,sizeof(pyrpmd_pes_output_v1),energy.data(),P,force.data(),P*d,status.data(),P,nullptr,0,0};

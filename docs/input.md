@@ -190,4 +190,9 @@ min_count = 5
 `block_steps=256`（1..65536）。`auto` 对已支持的原生 PES/CV 使用 C++17
 连续传播，其余情况保留 Python；`native` 在请求的 block 路径不支持时明确报错。
 `python` 保留旧的逐步调度，不必关闭已经存在的 C++ Cayley 单步内核。
-支持范围、事件边界与约束母轨迹限制见 [连续传播说明](native-propagation.md)。
+受约束 recrossing 母轨迹与 dRPMD 碰撞使用 `propagate_block()`，其单次调用
+上限为 4096 步；工作流自动把较大的 `block_steps` 限制到这个上限，并继续
+遵守原有热浴、分类、采样和 checkpoint 时间轴。输入范围与默认值仍为
+1..65536 和 256，FES/PMF 与 child 的原有 `propagate()` 路径保持兼容。
+支持范围及两种 API 的故障语义见 [连续传播说明](native-propagation.md) 和
+[分段 API](block-propagation.md)。
