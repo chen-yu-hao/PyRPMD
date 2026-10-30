@@ -33,8 +33,10 @@ umbrella 力和热通量都会出现 P 因子错误。
 Cayley 步在环正常模中实现，其 centroid 模是精确自由漂移。有限时间步下，
 这一积分器仍然需要时间步收敛检验。普通工作流的平衡采样采用周期性
 Andersen 动量重采样；速率 child 和直接碰撞生产段不加 thermostat。
-低层 `Dynamics.sample_step` 另外提供 BCOCB/PILE-L，尚不是输入文件工作流
-的可选采样后端。原生 C++ 与 NumPy 参考实现使用相同的 Cayley 映射。
+`Dynamics.sample_step` 另外提供 BCOCB/PILE-L 和 BAOAB/PILE-L，已由独立
+`pimd`/`diffusion` 材料工作流提供为采样选项；扩散生产段仍无恒温。
+固定晶胞、量子能量估计器、MSD/VACF 和盆地归一化位点速率见
+[材料计算科学约定](materials.md)。原生 C++ 与 NumPy 参考实现使用相同的 Cayley 映射。
 
 ## 2. CV 和 umbrella 的 P 因子
 

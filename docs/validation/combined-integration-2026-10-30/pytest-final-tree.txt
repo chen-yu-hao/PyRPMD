@@ -1,0 +1,18 @@
+.............................................................. [ 10%]
+..................................................................................s.................... [ 27%]
+sss............ssssss............................................... [ 39%]
+......s.............................................................. [ 50%]
+........................................................................ [ 62%]
+.....................................ss................................. [ 74%]
+........................................................................ [ 86%]
+........................................................................ [ 98%]
+.......                                                  [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_materials_eam.py:32: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [2] ../venv-integration/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+584 passed, 13 skipped, 146 subtests passed in 81.98s (0:01:21)

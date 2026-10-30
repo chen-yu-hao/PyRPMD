@@ -1,0 +1,57 @@
+# Surface migration/height FES on an analytic periodic teaching potential.
+task = "fes"
+preset = "pilot"
+temperature = "300 K"
+beads = 8
+seed = 418
+
+[system]
+symbols = ["H", "Cu", "Cu", "Cu", "Cu"]
+geometry = [[0.0, 0.0, 3.0], [-1.5, -1.5, 0.0], [1.5, -1.5, 0.0], [-1.5, 1.5, 0.0], [1.5, 1.5, 0.0]]
+geometry_unit = "bohr"
+cell = [[6.0, 0.0, 0.0], [0.0, 6.0, 0.0], [0.0, 0.0, 20.0]]
+cell_unit = "bohr"
+pbc = [true, true, false]
+fixed_atoms = [1, 2, 3, 4]
+
+[potential]
+provider = "python"
+factory = "toy_surface.py:build"
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 300
+production_steps = 1500
+interval_steps = 5
+andersen_interval = 25
+replicas = 1
+
+[[cvs]]
+name = "migration"
+kind = "surface_lateral"
+atoms = [0]
+reference_atoms = [1, 2, 3, 4]
+direction = [1.0, 0.0, 0.0]
+
+[[cvs]]
+name = "height"
+kind = "surface_height"
+atoms = [0]
+reference_atoms = [1, 2, 3, 4]
+normal = [0.0, 0.0, 1.0]
+
+[umbrella]
+cvs = ["migration", "height"]
+grid = [{start = "-3 bohr", stop = "3 bohr", count = 9}, {start = "2.5 bohr", stop = "3.5 bohr", count = 3}]
+stiffness = ["0.01 hartree/bohr^2", "0.01 hartree/bohr^2"]
+
+[analysis]
+bins = [24, 12]
+bootstrap = 10
+min_count = 3
+
+[output]
+directory = "runs/fes2d"
+checkpoint_steps = 500

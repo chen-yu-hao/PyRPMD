@@ -1,0 +1,47 @@
+{
+  "name": "PyRPMD",
+  "version": "0.2.0",
+  "native": {
+    "available": true,
+    "openmp": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "workflows": [
+    "rate",
+    "drpmd",
+    "fes",
+    "network",
+    "metadynamics",
+    "pcet",
+    "pimd",
+    "diffusion",
+    "site_rate",
+    "surface_rate"
+  ],
+  "materials": {
+    "cell": "fixed",
+    "trajectory": "unwrapped_centroid",
+    "pressure_ensemble": false
+  },
+  "integrators": [
+    "cayley-bcb",
+    "normal-mode-bab",
+    "velocity-verlet"
+  ],
+  "enhanced_sampling": [
+    "adaptive_umbrella",
+    "standard_metadynamics",
+    "well_tempered_metadynamics"
+  ],
+  "input_schema_version": 1,
+  "run_manifest_schema_version": 2,
+  "checkpoint_schema_version": 2,
+  "input_formats": [
+    "TOML .inp",
+    "Python build()"
+  ]
+}

@@ -14,6 +14,16 @@ from .io import write_json, referenced_files, fingerprint, jsonable
 from .system import System
 
 
+def _read_identity(config, directory):
+    """Restore a molecular System or the explicit system-free PCET model."""
+    path = Path(directory) / "input"
+    if config["task"] == "pcet":
+        from .pcet_input import PCETModelIdentity
+
+        return PCETModelIdentity.from_dict(json.loads((path / "model.json").read_text()))
+    return System.from_dict(json.loads((path / "system.json").read_text()))
+
+
 def _spec(value):
     if isinstance(value, JobSpec):
         return value
@@ -45,9 +55,7 @@ def _initialize_output(config, system, output, resume=False):
             # Authenticate the saved input before migrating an old identity.
             # A v0.1 run may have included execution-only block/backend options.
             stored_config = json.loads((path / "input" / "resolved.json").read_text())
-            stored_system = System.from_dict(
-                json.loads((path / "input" / "system.json").read_text())
-            )
+            stored_system = _read_identity(stored_config, path)
             if fingerprint(stored_config, stored_system) != old_digest:
                 raise InputError("Legacy saved input does not match its run manifest")
             old_digest = fingerprint(scientific_config(stored_config), stored_system)
@@ -76,7 +84,7 @@ def _initialize_output(config, system, output, resume=False):
     for child in ("input", "results", "checkpoints", "samples", "logs"):
         (path / child).mkdir(exist_ok=True)
     versions = {}
-    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch"):
+    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch", "ase"):
         try:
             versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
@@ -99,7 +107,10 @@ def _initialize_output(config, system, output, resume=False):
         "native": native_capabilities(),
         "parallel": config.get("parallel", {}),
         "preset": config.get("preset", "pilot"),
-        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "hamiltonian_convention": (
+            "one_proton_vibronic_golden_rule" if config["task"] == "pcet"
+            else "sum_beads_beta_over_P"
+        ),
         "units": {
             "length": "bohr",
             "momentum": "atomic",
@@ -107,9 +118,18 @@ def _initialize_output(config, system, output, resume=False):
             "time": "atomic",
         },
     }
+    if config["task"] == "pcet":
+        manifest["model_schema"] = "pyrpmd.pcet-model"
+        manifest["checkpoint_schema"] = "pyrpmd.pcet-case"
+        manifest["checkpoint_schema_version"] = 1
+        manifest["normalization"] = "local_first_order"
+        manifest["units"].pop("momentum")
+        manifest["units"]["rate"] = "s^-1"
+        manifest["units"]["electrode_potential"] = "V"
     write_json(manifest_path, manifest)
     write_json(path / "input" / "resolved.json", config)
-    write_json(path / "input" / "system.json", system.to_dict())
+    identity_file = "model.json" if config["task"] == "pcet" else "system.json"
+    write_json(path / "input" / identity_file, system.to_dict())
     if config.get("_input_path"):
         source = Path(config["_input_path"])
         shutil.copy2(source, path / "input" / ("original" + source.suffix))
@@ -126,13 +146,21 @@ def run(job, *, output=None, resume=False):
 
 def run_resolved(config, system, *, output=None, resume=False):
     config = copy.deepcopy(config)
+    if ("nonadiabatic" in config
+            or config.get("potential", {}).get("provider", config.get("potential", {}).get("type")) == "diabatic_python"):
+        from .input import validate_nonadiabatic
+        validate_nonadiabatic(config, system=system)
     target = str(Path(output or config["output"]["directory"]).resolve())
     config["output"]["directory"] = target
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
 
     root_call(_initialize_output, config, system, target, resume)
-    if config["task"] == "drpmd":
+    if config["task"] == "pcet":
+        from .workflows.pcet import run_pcet
+
+        result = run_pcet(config, system, Path(target))
+    elif config["task"] == "drpmd":
         from .workflows.drpmd import run_drpmd
 
         result = run_drpmd(config, system, Path(target))
@@ -144,6 +172,10 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.rate import run_rate
 
         result = run_rate(config, system, Path(target))
+    elif config["task"] == "surface_rate":
+        from .workflows.surface import run_surface_rate
+
+        result = run_surface_rate(config, system, Path(target))
     elif config["task"] == "metadynamics":
         from .workflows.metadynamics import run_metadynamics
 
@@ -152,6 +184,14 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.network import run_network
 
         result = run_network(config, system, Path(target))
+    elif config["task"] in ("pimd", "diffusion"):
+        from .workflows.materials import run_materials
+
+        result = run_materials(config, system, Path(target))
+    elif config["task"] == "site_rate":
+        from .workflows.site_rate import run_site_rate
+
+        result = run_site_rate(config, system, Path(target))
     else:
         raise InputError("Unknown workflow")
     if is_root() and result is not None:
@@ -172,7 +212,9 @@ def resume_run(directory, *, parallel=None, execution=None):
     if path.name == "checkpoints":
         path = path.parent
     config = json.loads((path / "input" / "resolved.json").read_text())
-    system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
+    system = _read_identity(config, path)
+    if config["task"] == "pcet" and (parallel is not None or execution is not None):
+        raise InputError("PCET resume does not accept trajectory parallelism or propagation overrides")
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
     if parallel is not None:
@@ -190,22 +232,55 @@ def resume_run(directory, *, parallel=None, execution=None):
     return run_resolved(config, system, output=path, resume=True)
 
 
-def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None):
-    """Read results, or reweight saved FES samples without new trajectories."""
+def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffusion=None):
+    """Read results or reanalyze saved FES/transport data without new trajectories."""
     path = Path(directory).resolve()
-    if not recompute and bins is None and bootstrap is None:
+    if not recompute and bins is None and bootstrap is None and diffusion is None:
         summary = path / "results" / "summary.json"
         if not summary.is_file():
             summary = path / "summary.json"
         return json.loads(summary.read_text())
     config = json.loads((path / "input" / "resolved.json").read_text())
-    if config["task"] not in ("fes", "metadynamics"):
+    if config["task"] not in ("fes", "metadynamics", "diffusion"):
         raise InputError(
-            "Recomputing analysis supports FES and metadynamics; omit --recompute to read other results"
+            "Recomputing analysis supports FES, metadynamics and diffusion; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
+    if config["task"] == "diffusion":
+        from .input import _SECTIONS
+        from .units import parse_quantity
+        from .workflows.materials import reanalyze_diffusion, validate_materials
+        from .parallel import root_call
+
+        if bins is not None:
+            raise InputError("Diffusion analysis does not use histogram bins")
+        if diffusion is not None:
+            if not isinstance(diffusion, dict) or set(diffusion) - _SECTIONS["diffusion"]:
+                raise InputError("diffusion overrides must contain documented diffusion analysis options")
+            config.setdefault("diffusion", {}).update(copy.deepcopy(diffusion))
+        if bootstrap is not None:
+            config.setdefault("diffusion", {})["bootstrap"] = bootstrap
+        options = config.setdefault("diffusion", {})
+        if "fit_range" in options:
+            if not isinstance(options["fit_range"], (list, tuple)) or len(options["fit_range"]) != 2:
+                raise InputError("diffusion.fit_range must be [start, stop] times")
+            options["fit_range"] = [None if v is None else parse_quantity(v, "time")
+                                    for v in options["fit_range"]]
+        validate_materials(config, system)
+        result = reanalyze_diffusion(config, system, path)
+        if result is None:
+            return None
+        result = {
+            **result, "software": "PyRPMD", "version": __version__,
+            "output": str(path), "preset": config.get("preset", "pilot"),
+            "input_warnings": config.get("_warnings", []),
+        }
+        root_call(write_json, path / "results" / "summary.json", result)
+        return result
+    if diffusion is not None:
+        raise InputError("Diffusion analysis overrides require a diffusion run")
     analysis = config.setdefault("analysis", {})
     if bins is not None:
         if not bins or any(
@@ -247,6 +322,14 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None):
 def prepare(job, *, numerical=False):
     spec = _spec(job)
     config, system = spec.resolve()
+    if config["task"] == "pcet":
+        from .workflows.pcet import prepare_pcet
+
+        return {
+            "task": "pcet", "resolved": config, "model": system.to_dict(),
+            "diagnostics": config.get("_warnings", []),
+            "ready": True, "pcet_preparation": prepare_pcet(config, system, numerical=numerical),
+        }
     result = {
         "task": config["task"],
         "resolved": config,
@@ -270,7 +353,7 @@ def prepare(job, *, numerical=False):
             result["diagnostics"].append(
                 "Pilot simulations are available; production estimation requires a converged bmax and an explicit validated outcome classifier"
             )
-    elif config["task"] == "fes":
+    elif config["task"] in ("fes", "surface_rate"):
         from .workflows.fes import resolve_umbrellas
 
         cv, specs, centers, stiffness = resolve_umbrellas(config, system)
@@ -281,6 +364,13 @@ def prepare(job, *, numerical=False):
             "centers_au": centers,
             "stiffness_au": stiffness,
         }
+        if config["task"] == "surface_rate":
+            from .workflows.surface import surface_definition
+
+            definition = surface_definition(config, system)
+            result["surface_preparation"] = {
+                key: value for key, value in definition.items() if key != "coordinate"
+            }
     elif config["task"] == "metadynamics":
         from .workflows.metadynamics import validate_metadynamics
 
@@ -292,6 +382,23 @@ def prepare(job, *, numerical=False):
         result["network_preparation"] = prepare_network(config, system, numerical=numerical)
         result["ready"] = result["network_preparation"].get("ready", False)
         return result
+    elif config["task"] in ("pimd", "diffusion"):
+        from .workflows.materials import validate_materials
+
+        validate_materials(config, system)
+        result["materials_preparation"] = {
+            "cell_bohr": system.to_dict().get("cell"),
+            "pbc": list(getattr(system, "pbc", (False, False, False))),
+            "ensemble": "fixed_cell",
+            "sampling_thermostat": config["sampling"]["thermostat"],
+            "production_method": "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling",
+            "sampling": config["sampling"],
+            "analysis": config.get("diffusion", {}),
+        }
+    elif config["task"] == "site_rate":
+        from .workflows.site_rate import validate_site_rate
+
+        result["site_rate_preparation"] = validate_site_rate(config, system)
     if numerical:
         from .potentials import make_potential
 
@@ -302,11 +409,20 @@ def prepare(job, *, numerical=False):
             evaluated = provider.evaluate(x)
             from .potentials import validate_result
 
-            validate_result(evaluated, x.shape)
-            result["pes_check"] = {
-                "energy_hartree": evaluated.energy.tolist(),
-                "status": evaluated.status.tolist(),
-            }
+            if "nonadiabatic" in config:
+                from .nonadiabatic import validate_diabatic_result
+                from .potentials.diabatic import check_diabatic_potential
+                checked = validate_diabatic_result(evaluated, x.shape, config["nonadiabatic"]["nstates"])
+                result["pes_check"] = {
+                    "matrix_hartree": checked.matrix.tolist(),
+                    **check_diabatic_potential(provider, x, config["nonadiabatic"]["nstates"]),
+                }
+            else:
+                validate_result(evaluated, x.shape)
+                result["pes_check"] = {
+                    "energy_hartree": evaluated.energy.tolist(),
+                    "status": evaluated.status.tolist(),
+                }
         finally:
             provider.close()
     return result

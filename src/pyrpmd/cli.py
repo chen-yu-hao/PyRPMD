@@ -23,7 +23,7 @@ def _input_options(p):
 def parser():
     p = argparse.ArgumentParser(
         prog="pyrpmd",
-        description="PyRPMD: ring-polymer dynamics, reaction networks and enhanced sampling",
+        description="PyRPMD: ring-polymer dynamics, reaction networks, enhanced sampling and PCET models",
     )
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     commands = p.add_subparsers(dest="command", required=True)
@@ -51,13 +51,13 @@ def parser():
     c.add_argument("--loop-backend", choices=("auto", "native", "python"))
     c.add_argument("--block-steps", type=int)
     a = commands.add_parser(
-        "analyze", help="Read results or recompute umbrella/metadynamics free energies"
+        "analyze", help="Read results or reanalyze saved free-energy/transport data"
     )
     a.add_argument("directory")
     a.add_argument(
         "--recompute",
         action="store_true",
-        help="Reanalyze saved umbrella samples or metadynamics bias without new dynamics",
+        help="Reanalyze saved umbrella, metadynamics or diffusion data without new dynamics",
     )
     a.add_argument(
         "--bins", nargs="+", type=int, help="FES bins per CV (implies --recompute)"
@@ -65,8 +65,14 @@ def parser():
     a.add_argument(
         "--bootstrap",
         type=int,
-        help="FES block-bootstrap replicates (implies --recompute)",
+        help="Analysis bootstrap replicates (implies --recompute)",
     )
+    a.add_argument("--fit-range", nargs=2, metavar=("START", "STOP"),
+                   help="Diffusion lag-time fit range, e.g. '10 fs' '100 fs'")
+    a.add_argument("--axes", nargs="+", type=int, choices=(0, 1, 2),
+                   help="Diffusion Cartesian axes (0=x, 1=y, 2=z)")
+    a.add_argument("--atoms", nargs="+", type=int, help="Diffusion atom indices")
+    a.add_argument("--max-lag", type=int, help="Maximum diffusion lag in saved frames")
     commands.add_parser("info", help="Report version and compiled native capabilities")
     checkpoint = commands.add_parser("checkpoint", help="Verify a portable NPZ checkpoint")
     checkpoint.add_argument("path")
@@ -216,22 +222,32 @@ def main(argv=None):
                     from .workflows.fes import resolve_umbrellas
 
                     resolve_umbrellas(config, system)
-                result = {
-                    "valid": True,
-                    "task": config["task"],
-                    "natoms": system.natoms,
-                    "temperature_K": config["temperature_K"],
-                    "beads": config["beads"],
-                    "parallel": execution_plan(config["parallel"]).__dict__,
-                    "warnings": config["_warnings"],
-                }
+                if config["task"] == "pcet":
+                    from .workflows.pcet import prepare_pcet
+
+                    result = {
+                        "valid": True, "task": "pcet",
+                        "model": prepare_pcet(config, system, numerical=False),
+                        "temperature_K": config["temperature_K"],
+                        "warnings": config["_warnings"],
+                    }
+                else:
+                    result = {
+                        "valid": True,
+                        "task": config["task"],
+                        "natoms": system.natoms,
+                        "temperature_K": config["temperature_K"],
+                        "beads": config["beads"],
+                        "parallel": execution_plan(config["parallel"]).__dict__,
+                        "warnings": config["_warnings"],
+                    }
             if args.write_resolved:
                 from .parallel import root_call
 
                 root_call(
                     write_json,
                     args.write_resolved,
-                    {"config": config, "system": system.to_dict()},
+                    {"config": config, "model" if config["task"] == "pcet" else "system": system.to_dict()},
                 )
             _print(result)
         elif args.command == "prepare":
@@ -248,7 +264,7 @@ def main(argv=None):
 
             override = (
                 {"trajectory_workers": args.workers, "trajectory_groups": args.workers}
-                if args.workers
+                if args.workers is not None
                 else None
             )
             execution = {
@@ -269,6 +285,10 @@ def main(argv=None):
                     recompute=args.recompute,
                     bins=args.bins,
                     bootstrap=args.bootstrap,
+                    diffusion={key: value for key, value in {
+                        "fit_range": args.fit_range, "axes": args.axes,
+                        "atom_indices": args.atoms, "max_lag": args.max_lag,
+                    }.items() if value is not None} or None,
                 )
             )
         elif args.command == "info":
@@ -279,7 +299,8 @@ def main(argv=None):
                     "name": "PyRPMD",
                     "version": __version__,
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics"],
+                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "pcet", "pimd", "diffusion", "site_rate", "surface_rate"],
+                    "materials": {"cell": "fixed", "trajectory": "unwrapped_centroid", "pressure_ensemble": False},
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
                     "enhanced_sampling": ["adaptive_umbrella", "standard_metadynamics", "well_tempered_metadynamics"],
                     "input_schema_version": 1,

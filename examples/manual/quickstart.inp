@@ -1,0 +1,51 @@
+# Short end-to-end tutorial, not a converged free-energy calculation.
+schema_version = 1
+task = "fes"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 20261030
+
+[system]
+symbols = ["H"]
+geometry = [[0.0, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.002}
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 20
+production_steps = 100
+sample_interval = 5
+andersen_interval = 10
+replicas = 2
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+unit = "bohr"
+
+[umbrella]
+cvs = ["x"]
+centers = [-0.5, 0.0, 0.5]
+stiffness = "0.002 hartree/bohr^2"
+
+[analysis]
+bins = 12
+ranges = [[-2.0, 2.0]]
+bootstrap = 0
+min_count = 2
+
+[output]
+directory = "runs/manual-quickstart"
+checkpoint_steps = 20
+

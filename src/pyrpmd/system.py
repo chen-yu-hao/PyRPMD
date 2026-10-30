@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 from .constants import AMU_TO_AU, ANGSTROM_TO_AU
 from .units import parse_quantity
+from .geometry import validate_cell_pbc
 
 _SYMBOLS = (
     "X H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og"
@@ -61,6 +62,9 @@ class System:
     fragments: tuple[tuple[int, ...], ...] = ()
     charge: int = 0
     multiplicity: int = 1
+    cell: np.ndarray | None = None
+    pbc: tuple[bool, bool, bool] | None = None
+    fixed_atoms: tuple[int, ...] = ()
 
     def __post_init__(self):
         self.symbols = tuple(self.symbols)
@@ -74,6 +78,9 @@ class System:
         )
         self.charge = _integer(self.charge, "Charge")
         self.multiplicity = _integer(self.multiplicity, "Multiplicity", 1)
+        self.cell, self.pbc = validate_cell_pbc(self.cell, self.pbc)
+        self.pbc = tuple(bool(flag) for flag in self.pbc)
+        self.fixed_atoms = tuple(_integer(i, "Fixed atom index", 0) for i in self.fixed_atoms)
         n = len(self.symbols)
         if n < 1 or self.masses.shape != (n,) or self.geometry.shape != (n, 3):
             raise ValueError("System needs N symbols, masses[N], geometry[N,3]")
@@ -85,6 +92,10 @@ class System:
             raise ValueError("System coordinates must be finite and masses positive")
         if any(s not in _Z and s not in ("D", "T") for s in self.symbols):
             raise ValueError("Unknown element symbol")
+        if len(set(self.fixed_atoms)) != len(self.fixed_atoms) or any(
+            i >= n for i in self.fixed_atoms
+        ):
+            raise ValueError("fixed_atoms must contain distinct in-range 0-based indices")
         if self.fragments:
             all_ids = [i for f in self.fragments for i in f]
             if any(not f for f in self.fragments) or sorted(all_ids) != list(range(n)):
@@ -106,8 +117,14 @@ class System:
     def atom_ids(self):
         return tuple(f"{s}{i}" for i, s in enumerate(self.symbols))
 
+    @property
+    def mobile_mask(self):
+        mask = np.ones(self.natoms, dtype=bool)
+        mask[list(self.fixed_atoms)] = False
+        return mask
+
     def to_dict(self):
-        return {
+        result = {
             "symbols": list(self.symbols),
             "masses": self.masses.tolist(),
             "geometry": self.geometry.tolist(),
@@ -115,17 +132,34 @@ class System:
             "charge": self.charge,
             "multiplicity": self.multiplicity,
         }
+        # Preserve the exact pre-materials molecular checkpoint identity.
+        if self.cell is not None:
+            result["cell"] = self.cell.tolist()
+            if any(self.pbc) or not getattr(self, "_omit_nonperiodic_pbc", False):
+                result["pbc"] = list(self.pbc)
+        if self.fixed_atoms:
+            result["fixed_atoms"] = list(self.fixed_atoms)
+        return result
 
     @classmethod
     def from_dict(cls, d):
-        return cls(
+        result = cls(
             tuple(d["symbols"]),
             np.array(d["masses"]),
             np.array(d["geometry"]),
             tuple(tuple(f) for f in d.get("fragments", [])),
             d.get("charge", 0),
             d.get("multiplicity", 1),
+            d.get("cell"),
+            d.get("pbc", (False, False, False)),
+            d.get("fixed_atoms", ()),
         )
+        # Both precursor branches used the same manifest version, but the
+        # surface branch omitted explicit false flags. Keep that byte-level
+        # representation for saved fingerprints without changing boundaries.
+        if result.cell is not None and "pbc" not in d:
+            result._omit_nonperiodic_pbc = True
+        return result
 
 
 def _xyz_data(path):
@@ -199,6 +233,18 @@ def system_from_config(spec):
     isotopes = spec.get("isotopes", ())
     charge = spec.get("charge", 0)
     multiplicity = spec.get("multiplicity", 1)
+    inline = "symbols" in spec and "geometry" in spec and not isinstance(spec["geometry"], str)
+    cell = spec.get("cell")
+    if cell is not None:
+        raw_cell = np.asarray(cell)
+        if raw_cell.dtype.kind not in "iuf":
+            raise ValueError("cell must contain real numerical values")
+        cell_unit = spec.get("cell_unit", spec.get("geometry_unit", "bohr" if inline else "angstrom"))
+        cell = np.asarray(cell, dtype=float) * parse_quantity(f"1 {cell_unit}", "length")
+    elif "cell_unit" in spec:
+        raise ValueError("cell_unit requires a cell")
+    cell, pbc = validate_cell_pbc(cell, spec.get("pbc"))
+    boundaries = {"cell": cell, "pbc": pbc, "fixed_atoms": spec.get("fixed_atoms", ())}
     if (
         "symbols" in spec
         and "geometry" in spec
@@ -217,6 +263,7 @@ def system_from_config(spec):
             spec.get("fragments", ()),
             charge,
             multiplicity,
+            **boundaries,
         )
     factor = parse_quantity(f"1 {spec.get('geometry_unit','angstrom')}", "length")
     if "reactants" in spec:
@@ -251,7 +298,8 @@ def system_from_config(spec):
                 "Reactant files define their atom partition; explicit fragments disagree"
             )
         return System(
-            symbols, mass, np.vstack([qa, qb]), fragments, charge, multiplicity
+            symbols, mass, np.vstack([qa, qb]), fragments, charge, multiplicity,
+            **boundaries,
         )
     else:
         p = spec.get("transition_state", spec.get("geometry"))
@@ -267,4 +315,5 @@ def system_from_config(spec):
             spec.get("fragments", ()),
             charge,
             multiplicity,
+            **boundaries,
         )

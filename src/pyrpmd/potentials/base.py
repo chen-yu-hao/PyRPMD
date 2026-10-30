@@ -18,6 +18,9 @@ class PESResult:
     forces: np.ndarray
     status: np.ndarray | None = None
     messages: tuple[str, ...] | None = None
+    # Optional physical configurational virial, [B,3,3], in hartree. No
+    # kinetic/ring-spring terms; not by itself a quantum pressure estimator.
+    virial: np.ndarray | None = None
 
     def __post_init__(self):
         if (
@@ -27,6 +30,10 @@ class PESResult:
             raise PotentialError("PES energy/forces must be real numerical arrays")
         self.energy = np.asarray(self.energy, dtype=np.float64)
         self.forces = np.asarray(self.forces, dtype=np.float64)
+        if self.virial is not None:
+            if np.asarray(self.virial).dtype.kind not in "fiu":
+                raise PotentialError("PES virial must be a real numerical array")
+            self.virial = np.asarray(self.virial, dtype=np.float64)
         n = len(self.energy) if self.energy.ndim else 0
         if self.status is None:
             self.status = np.zeros(n, dtype=np.int32)
@@ -59,9 +66,9 @@ def coordinates(value):
 
 def validate_result(result, shape, *, require_success=True):
     if isinstance(result, (tuple, list)):
-        if len(result) not in (2, 3, 4):
+        if len(result) not in (2, 3, 4, 5):
             raise PotentialError(
-                "PES must return energy, forces, optional status/messages"
+                "PES must return energy, forces, optional status/messages/virial"
             )
         result = PESResult(*result)
     if not isinstance(result, PESResult):
@@ -71,6 +78,7 @@ def validate_result(result, shape, *, require_success=True):
                 result.forces,
                 getattr(result, "status", None),
                 getattr(result, "messages", None),
+                getattr(result, "virial", None),
             )
         else:
             raise PotentialError(
@@ -88,6 +96,11 @@ def validate_result(result, shape, *, require_success=True):
         )
     good = result.status == 0
     finite = np.isfinite(result.energy) & np.isfinite(result.forces).all(axis=(1, 2))
+    if result.virial is not None:
+        if result.virial.shape != (n, 3, 3):
+            raise PotentialError("PES virial shape must be [B,3,3]")
+        finite &= np.isfinite(result.virial).all(axis=(1, 2))
+        result.virial = np.ascontiguousarray(result.virial)
     if np.any(good & ~finite):
         raise PotentialError("PES reported success with nonfinite energy/forces")
     if require_success and not np.all(good):

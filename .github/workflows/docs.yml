@@ -1,0 +1,46 @@
+name: Documentation
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manual:
+    runs-on: ubuntu-latest
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[docs]'
+      - name: Build searchable HTML and single-page manual
+        run: |
+          python -m sphinx -W --keep-going -b html docs docs/_build/html
+          python -m sphinx -W --keep-going -b singlehtml docs docs/_build/singlehtml
+      - name: Run the documented quickstart and low-level API
+        run: |
+          pyrpmd validate examples/manual/quickstart.inp --check-pes
+          pyrpmd run examples/manual/quickstart.inp --output "$RUNNER_TEMP/manual-smoke"
+          pyrpmd resume "$RUNNER_TEMP/manual-smoke"
+          pyrpmd analyze "$RUNNER_TEMP/manual-smoke" --recompute --bins 8 --bootstrap 10
+          python examples/manual/low_level.py
+      - name: Run the experimental state-selected NRPMD tutorial
+        run: |
+          pyrpmd validate examples/nonadiabatic/exchange.inp --check-pes
+          pyrpmd run examples/nonadiabatic/exchange.inp --workers 2 --output "$RUNNER_TEMP/manual-nrpmd"
+          pyrpmd resume "$RUNNER_TEMP/manual-nrpmd" --block-steps 32
+          pyrpmd analyze "$RUNNER_TEMP/manual-nrpmd"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pyrpmd-manual-html
+          path: |
+            docs/_build/html
+            docs/_build/singlehtml
+          if-no-files-found: error

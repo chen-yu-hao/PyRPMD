@@ -62,7 +62,9 @@ def _atomic_binding(binding):
 
 def _check_dynamics_methods(dynamics):
     from .dynamics import Dynamics, CayleyIntegrator
-    methods = ("step", "_propagate", "_force", "energy", "_project_fragments", "_fragment_data")
+    if getattr(dynamics, "fixed_atoms", ()):
+        raise NativeUnavailableError("fixed atoms require the Python propagation loop")
+    methods = ("step", "_propagate", "_force", "energy", "_project_fragments", "_fragment_data", "_project_fixed", "_check_fixed")
     if type(dynamics) is not Dynamics or any(name in dynamics.__dict__ for name in methods):
         raise NativeUnavailableError("custom Dynamics methods require the Python path")
     integrator = dynamics.integrator
@@ -196,6 +198,7 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
         raise ValueError("loop backend must be auto/native/python")
     dynamics._check_parameters()
     dynamics.integrator._check(state.q, state.p)
+    dynamics._check_fixed(state.q, state.p)
     offsets = np.arange(stride, steps + 1, stride, dtype=np.int64)
     if not len(offsets) or offsets[-1] != steps:
         offsets = np.append(offsets, steps)

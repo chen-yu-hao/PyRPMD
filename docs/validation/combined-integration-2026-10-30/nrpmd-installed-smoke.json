@@ -1,0 +1,34 @@
+{
+  "source_commit": "1b1c03668a4fb6d211813eaec4ebe29f9229a2db",
+  "execution": "installed wheel, process backend, 2 trajectory workers",
+  "trajectories": 8,
+  "counts": {
+    "product": 0,
+    "nonreactive": 8,
+    "unresolved": 0,
+    "failed": 0
+  },
+  "beads": 4,
+  "all_trajectories_resolved": true,
+  "matrix_gradient_max_absolute_error": 1.4854624644331394e-11,
+  "mapping_population_sum_max_error": 3.397282455352979e-13,
+  "max_energy_drift_per_bead": 1.1320737159196959e-06,
+  "run_resume_analyze_equal": true,
+  "unchanged_npz_files": 26,
+  "mapping_checkpoint_shape": [
+    4,
+    2
+  ],
+  "new_sdist_files_verified": [
+    "docs/nonadiabatic.md",
+    "src/pyrpmd/nonadiabatic.py",
+    "src/pyrpmd/potentials/diabatic.py",
+    "examples/nonadiabatic/README.md",
+    "examples/nonadiabatic/atom.xyz",
+    "examples/nonadiabatic/diatom.xyz",
+    "examples/nonadiabatic/exchange.inp",
+    "examples/nonadiabatic/matrix_pes.py"
+  ],
+  "sdist_sha256": "5e68c9c45808c688b0562edac94c289a26b522398c78909df17806e2abc4b695",
+  "physical_status": "artificial mechanics example; physically_validated=false"
+}

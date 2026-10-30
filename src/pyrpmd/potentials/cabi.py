@@ -12,6 +12,7 @@ import threading
 import tomllib
 import numpy as np
 from .base import Potential, PESResult, PotentialError, coordinates, validate_result
+from ..geometry import validate_cell_pbc
 
 I32 = C.c_int32
 I64 = C.c_int64
@@ -153,6 +154,11 @@ def build_object(library, manifest, cache_directory=None):
 
 class CABIPotential(Potential):
     def __init__(self, library, config=None, system=None, manifest=None):
+        cell = system.get("cell") if isinstance(system, dict) else getattr(system, "cell", None)
+        pbc = system.get("pbc") if isinstance(system, dict) else getattr(system, "pbc", None)
+        _, flags = validate_cell_pbc(cell, pbc)
+        if flags.any():
+            raise PotentialError("PES C ABI v1 is nonperiodic and cannot accept a periodic System")
         path = Path(library).resolve()
         if path.suffix == ".o":
             path = build_object(path, manifest)

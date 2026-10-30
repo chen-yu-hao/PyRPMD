@@ -1,0 +1,27 @@
+{
+  "manual_pages": 15,
+  "manual_chapters": 14,
+  "html_build": "passed, warnings treated as errors",
+  "singlehtml_build": "passed, warnings treated as errors",
+  "missing_repository_links": 0,
+  "missing_rendered_local_links": 0,
+  "quickstart": {
+    "task": "fes",
+    "windows": 3,
+    "streams": 6,
+    "samples": 120,
+    "overlap_connected": true,
+    "converged": false,
+    "completed_resume_samples": 120,
+    "reanalysis_bins": 8,
+    "reanalysis_bootstrap": 10
+  },
+  "source_tree": "038948fcffc4513bbec8a54a16506fbe9f84b842",
+  "test_tree": "d2053aef8f81203109152f479e2150b7e9f0a828",
+  "pytest": {
+    "passed": 584,
+    "skipped": 13,
+    "subtests_passed": 146
+  },
+  "package_note": "Archive hashes describe local validation builds; later evidence-only documentation additions do not change validated Python modules."
+}

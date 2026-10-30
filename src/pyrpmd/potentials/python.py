@@ -7,9 +7,8 @@ from pathlib import Path
 import sys
 import numpy as np
 from .base import Potential, PESResult, PotentialError, coordinates, validate_result
-
-BOHR_ANGSTROM = 0.529177210903
-EV_HARTREE = 1 / 27.211386245988
+from ..geometry import validate_cell_pbc
+from ..constants import BOHR_ANGSTROM, EV_TO_AU as EV_HARTREE
 
 
 def import_object(name):
@@ -69,7 +68,7 @@ def unit_factors(units):
 
 
 class PythonPotential(Potential):
-    def __init__(self, obj, *, units=None, derivative="force"):
+    def __init__(self, obj, *, units=None, derivative="force", cell=None, pbc=None):
         if not (callable(obj) or callable(getattr(obj, "evaluate", None))):
             raise TypeError("Python factory must return callable or PES provider")
         if derivative not in ("force", "gradient"):
@@ -81,9 +80,41 @@ class PythonPotential(Potential):
         self.metadata = dict(getattr(obj, "metadata", {}) or {})
         self.metadata.setdefault("thread_safety", "context_serial")
         self.metadata.setdefault("execution_device", "cpu")
+        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
+        self._periodic_kwargs = False
+        self._check_periodic_contract()
+
+    def _check_periodic_contract(self):
+        """Accept either explicit periodic contract, never infer one from a cell."""
+        if not self.pbc.any():
+            self._periodic_kwargs = False
+            return
+        if self.metadata.get("supports_pbc") is True:
+            if not callable(getattr(self.obj, "bind_system", None)):
+                raise PotentialError("Periodic Python PES must implement bind_system(system)")
+            self._periodic_kwargs = False
+        elif (self.metadata.get("periodic") is True
+              or self.metadata.get("boundary_conditions") == "periodic"):
+            self._periodic_kwargs = True
+        else:
+            raise PotentialError(
+                "Periodic Python PES must declare metadata['periodic']=True with "
+                "evaluate(q, *, cell, pbc), or metadata['supports_pbc']=True with bind_system(system)"
+            )
+
+    def bind_system(self, system):
+        """Bind either provider-unit evaluation or a canonical-AU callback."""
+        get = system.get if isinstance(system, dict) else lambda key, default=None: getattr(system, key, default)
+        self.cell, self.pbc = validate_cell_pbc(get("cell"), get("pbc"))
+        self._check_periodic_contract()
+        bind = getattr(self.obj, "bind_system", None)
+        if callable(bind):
+            bind(system)
 
     def native_binding(self):
         from ..propagation import NativeUnavailableError
+        if self.pbc.any():
+            raise NativeUnavailableError("periodic Python PES requires the cell-aware Python route")
         if type(self) is not PythonPotential or self.sign != 1 or self.length_factor != 1 or self.energy_factor != 1:
             raise NativeUnavailableError("custom or unit-converting Python PES requires Python")
         if "evaluate" in self.__dict__ or self.fn != (self.obj.evaluate if hasattr(self.obj, "evaluate") else self.obj):
@@ -95,13 +126,21 @@ class PythonPotential(Potential):
 
     def evaluate(self, x):
         x = coordinates(x)
-        result = self.fn(x / self.length_factor)
+        if self.pbc.any() and self._periodic_kwargs:
+            result = self.fn(
+                x / self.length_factor,
+                cell=self.cell.copy() / self.length_factor,
+                pbc=self.pbc.copy(),
+            )
+        else:
+            result = self.fn(x / self.length_factor)
         result = validate_result(result, x.shape, require_success=False)
         result = PESResult(
             result.energy * self.energy_factor,
             result.forces * (self.sign * self.energy_factor / self.length_factor),
             result.status,
             result.messages,
+            None if result.virial is None else result.virial * self.energy_factor,
         )
         return validate_result(result, x.shape, require_success=False)
 

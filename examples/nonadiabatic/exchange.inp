@@ -1,0 +1,64 @@
+# Artificial H + HD -> H2 + D; mechanics demonstration, not physical chemistry.
+schema_version = 1
+task = "drpmd"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 2187
+
+[system]
+reactants = ["atom.xyz", "diatom.xyz"]
+separation = "5 angstrom"
+
+[potential]
+provider = "diabatic_python"
+factory = "matrix_pes.py:make"
+derivative = "gradient"
+
+[nonadiabatic]
+method = "nrpmd"
+nstates = 2
+initial_state = 0
+state_labels = ["entrance", "excited"]
+initialization = "focused"
+asymptotic_coupling_tolerance = "1e-8 hartree"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.05 fs"
+loop_backend = "python"
+
+[sampling]
+integrator = "cayley-bcb-andersen"
+thermostat = "andersen"
+parents = 2
+equilibration_steps = 100
+interval_steps = 20
+andersen_interval = 10
+
+[collision]
+trajectories = 8
+bmax = "0.5 angstrom"
+sampling = "fixed_energy"
+energy = "0.03 hartree"
+impact_sampling = "uniform_area"
+orientation = "isotropic"
+max_time = "100 fs"
+
+[outcomes]
+bond_cutoffs = { "H-H" = "1.1 angstrom", "H-D" = "1.1 angstrom" }
+channels = { exchange = ["H2", "D"] }
+exit_distance = "5 angstrom"
+check_interval = 5
+persistence_steps = 10
+
+[parallel]
+backend = "process"
+mode = "serial"
+trajectory_workers = 2
+threads_per_rank = 1
+
+[output]
+directory = "runs/nrpmd-exchange"
+checkpoint_steps = 100
+trajectory_stride = 20

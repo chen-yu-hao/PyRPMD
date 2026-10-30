@@ -1,0 +1,75 @@
+# A periodic analytic teaching model, not a validated hydrogen/copper PES.
+task = "surface_rate"
+preset = "pilot"
+temperature = "300 K"
+beads = 8
+seed = 417
+
+[system]
+symbols = ["H", "Cu", "Cu", "Cu", "Cu"]
+geometry = [[0.0, 0.0, 3.0], [-1.5, -1.5, 0.0], [1.5, -1.5, 0.0], [-1.5, 1.5, 0.0], [1.5, 1.5, 0.0]]
+geometry_unit = "bohr"
+cell = [[6.0, 0.0, 0.0], [0.0, 6.0, 0.0], [0.0, 0.0, 20.0]]
+cell_unit = "bohr"
+pbc = [true, true, false]
+fixed_atoms = [1, 2, 3, 4]
+
+[potential]
+provider = "python"
+factory = "toy_surface.py:build"
+
+[dynamics]
+timestep = "0.1 fs"
+loop_backend = "auto"
+
+[sampling]
+equilibration_steps = 500
+production_steps = 2500
+interval_steps = 5
+andersen_interval = 25
+replicas = 2
+
+[[cvs]]
+name = "migration"
+kind = "surface_lateral"
+atoms = [0]
+reference_atoms = [1, 2, 3, 4]
+direction = [1.0, 0.0, 0.0]
+
+[umbrella]
+cvs = ["migration"]
+start = "-3.5 bohr"
+stop = "3.5 bohr"
+count = 15
+stiffness = "0.01 hartree/bohr^2"
+
+[surface]
+# One complete local reactant well; this run measures only its right exit.
+reactant_basin = ["-3 bohr", "3 bohr"]
+dividing_surface = "3 bohr"
+product_side = "higher"
+
+[recrossing]
+parent_replicas = 2
+parent_samples = 8
+equilibration_steps = 500
+parent_interval_steps = 100
+child_pairs = 2
+child_steps = 400
+plateau_fraction = 0.25
+bootstrap = 40
+
+[analysis]
+method = "mbar"
+measure = "cv_density"
+bins = 40
+ranges = [["-4 bohr", "4 bohr"]]
+min_count = 5
+bootstrap = 20
+
+[parallel]
+backend = "serial"
+
+[output]
+directory = "runs/diffusion"
+checkpoint_steps = 500

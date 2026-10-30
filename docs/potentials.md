@@ -13,6 +13,12 @@ return PESResult(energy, forces, status, messages)
 
 能量形状 `[B]`，力 `[B,N,3]`，status `[B]`（0 成功），messages 可选。也可返回 `(energy, forces)`，适配器补成功状态。力必须是 **负梯度**。只返回物理 PES，不加入环弹簧、umbrella、约束或 `1/P` 因子。失败状态由调用方显式处理，不能用零力掩盖失败。
 
+可选 `PESResult(..., virial=virial)` 接受 `[B,3,3]` hartree 物理构型 virial。
+它不含动量/环弹簧，不能直接作为量子压力。周期 Python provider 须声明
+`metadata['periodic']=True`，并通过 `evaluate(q, *, cell, pbc)` 或匹配系统的
+已绑定 cell/PBC 接收固定晶胞。也兼容 `supports_pbc=True` 与 canonical-AU `bind_system(system)` 回调契约。
+完整约定见[材料计算](materials.md)与[表面计算](surface-catalysis.md)。
+
 Python、f2py 与 Torch 接口可声明 `units={positions="angstrom", energy="eV"}`；入口/出口自动转换到原子单位。C ABI 始终使用规范 AU。需要梯度而非力的 Python PES 可声明 `derivative="gradient"`。单位字符串的 provider 支持范围见 `potentials/python.py`；复杂单位变换可在自定义 wrapper 中明确实现。
 
 ## Python PES
@@ -45,6 +51,15 @@ params = {k = 0.002}
 ```
 
 factory 在每个实际势能进程中创建自己的对象。带有全局 Fortran COMMON、GPU context 或 socket 的对象不跨进程传输。普通 Python 输入中的配置仍使用可导入 factory，避免让 lambda/本地闭包承担重启和 MPI 序列化职责。低层 `Dynamics` 可直接接受实现 `evaluate` 的对象。
+
+## 周期表面 PES
+
+周期 System 的 cell/PBC 会传入 ASE `Atoms`。自定义 Python provider 须声明
+`metadata["supports_pbc"]=True` 并实现 `bind_system(system)`，接收原子单位的
+完整系统；所有串行／进程／珠子 worker 均执行该绑定。当前 C ABI v1、原 f2py、
+Torch 和 i-PI socket 工厂不能承载该固定晶胞契约，周期请求会明确拒绝。
+参见 [表面 PES 契约](surface-catalysis.md#周期-pes-契约和性能) 与
+`examples/surface/toy_surface.py`、`examples/surface/ase_emt.py`。
 
 ## 既有 RPMDrate/f2py 势能
 
@@ -104,6 +119,10 @@ factory = "calculators.py:build_calculator"
 
 factory 返回 ASE Calculator。适配器逐结构更新 Atoms，从 ASE eV/angstrom 转换为 AU。因此能通过 ASE 对接已有 Calculator，但实际模型下载、许可证、适用元素、电子态、设备与 batch 能力由模型自身决定。已实际验证 ASE Lennard-Jones；没有声明所有 MACE/DeepMD/xTB 模型都已跑过。
 
+ASE 收到真实晶胞/PBC，D/T 映射为电子势能上的 H 元素；核质量由 Dynamics 保留。
+若 calculator 提供 stress，adapter 转换为 `virial=-volume*stress`。
+真实 Ni–H EAM 的验证脚本与模型来源见[材料 pilot](../benchmarks/materials/README.md)。
+
 ## Torch 与多 GPU
 
 ```toml
@@ -132,7 +151,9 @@ provider = "ipi"
 params = {host="127.0.0.1", port=31415, timeout=60.0, init={periodic=false}}
 ```
 
-PyRPMD 充当同步 force server，外部 driver 连接并按 i-PI 协议提供力。每个 context 对应一个 driver。并行执行器为不同轨迹/珠子 context 分配不同端口或 Unix socket 后缀；需自行启动相应数量的 driver 并连接正确地址。多节点 hostname/防火墙/driver 批处理由站点配置。这个适配器只支持非周期分子，cell 矩阵只作为协议传输项，外部 driver 必须正确设置非周期计算。
+PyRPMD 充当同步 force server，外部 driver 连接并按 i-PI 协议提供力。每个 context 对应一个 driver。并行执行器为不同轨迹/珠子 context 分配不同端口或 Unix socket 后缀；需自行启动相应数量的 driver 并连接正确地址。多节点 hostname/防火墙/driver 批处理由站点配置。固定晶胞任务传入真实 cell 与逆矩阵；部分 PBC 另需匹配的 `params.init.pbc` 和服务端支持，因为 POSDATA 不传边界布尔标志。非周期分子保留原协议行为。
+
+周期能力当前不扩展到分子 Torch、C ABI v1 或 f2py；这些入口会拒绝周期系统。
 
 ## 自定义 CV
 

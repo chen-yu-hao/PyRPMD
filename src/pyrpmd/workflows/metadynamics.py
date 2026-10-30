@@ -31,6 +31,11 @@ METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au"
 
 def resolve_metadynamics(config, system):
     """Validate algorithm options and convert widths/height to canonical units."""
+    if any(system.pbc) or system.fixed_atoms:
+        raise ValueError(
+            "Metadynamics does not yet support periodic systems or fixed atoms; "
+            "use the surface FES umbrella workflow"
+        )
     table = config.get("metadynamics", {})
     if not isinstance(table, Mapping):
         raise ValueError("metadynamics must be a table")

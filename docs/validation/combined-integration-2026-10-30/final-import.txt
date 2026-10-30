@@ -1,0 +1,2 @@
+/workspace/scratch/0e77c5369c77/PyRPMD/src/pyrpmd/__init__.py
+{'available': True, 'openmp': True, 'integrators': ['cayley-bcb', 'normal-mode-bab', 'velocity-verlet']}

@@ -35,7 +35,7 @@ in the scientific configuration. Avoid oversubscribing BLAS/OpenMP pools.
 ```bash
 python -m pip install build
 python -m build
-python -m pip install dist/pyrpmd-0.1.0-*.whl
+python -m pip install dist/pyrpmd-0.2.0-*.whl
 pyrpmd info
 ```
 

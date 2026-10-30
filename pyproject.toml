@@ -18,6 +18,7 @@ gpu = ["torch>=2.2"]
 ase = ["ase>=3.23"]
 analysis = ["pymbar>=4"]
 test = ["pytest>=8"]
+docs = ["sphinx>=8.2,<9", "myst-parser>=4,<5", "pydata-sphinx-theme>=0.16,<0.17"]
 
 [project.scripts]
 pyrpmd = "pyrpmd.cli:main"

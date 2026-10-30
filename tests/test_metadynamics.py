@@ -187,6 +187,23 @@ def test_unsupported_analysis_and_native_history_are_rejected_before_sampling():
             validate_metadynamics(cfg, system())
 
 
+@pytest.mark.parametrize("extra", [
+    {"cell": np.diag([6.0, 6.0, 12.0]).tolist(), "pbc": [True, True, False]},
+    {"fixed_atoms": [0]},
+])
+def test_surface_metadynamics_is_rejected_before_any_trajectory(tmp_path, extra):
+    slab = System.from_dict({**system().to_dict(), **extra})
+    for operation in (
+        lambda: resolve_metadynamics(config(), slab),
+        lambda: run_metadynamics(config(), slab, tmp_path),
+        lambda: _sample_replica({"config": config(), "system": slab,
+                                "output": str(tmp_path), "replica": 0}),
+    ):
+        with pytest.raises(ValueError, match="periodic systems or fixed atoms"):
+            operation()
+    assert not list(tmp_path.iterdir())
+
+
 def test_frontend_resolves_width_units_and_rejects_bad_options():
     from pyrpmd.input import JobSpec, InputError
     job = {"task": "metadynamics", "temperature": "300 K", "beads": 2,

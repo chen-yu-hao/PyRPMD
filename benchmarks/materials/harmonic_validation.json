@@ -1,0 +1,102 @@
+{
+  "schema": "pyrpmd.materials-harmonic-validation",
+  "schema_version": 1,
+  "command": ".venv/bin/python benchmarks/materials/harmonic_validation.py --output benchmarks/materials/harmonic_validation.json",
+  "description": "Four independent PIMD streams for a synthetic three-dimensional harmonic oscillator.",
+  "physical_converged": false,
+  "environment": {
+    "pyrpmd": "0.2.0",
+    "numpy": "2.3.5",
+    "python": "3.12.14"
+  },
+  "units": {
+    "energy": "hartree",
+    "mass": "electron_mass",
+    "position": "bohr",
+    "time": "atomic_time",
+    "beta": "hartree^-1",
+    "force_constant": "hartree/bohr^2"
+  },
+  "system": {
+    "atoms": 1,
+    "dimensions": 3,
+    "mass": 1.0,
+    "force_constant": 1.0,
+    "periodic": false
+  },
+  "configuration": {
+    "task": "pimd",
+    "beta": 4.0,
+    "beads": 16,
+    "dt_au": 0.04,
+    "seed": 6703,
+    "native": false,
+    "potential": {
+      "provider": "builtin",
+      "name": "harmonic",
+      "params": {
+        "k": 1.0
+      }
+    },
+    "sampling": {
+      "equilibration_steps": 4000,
+      "production_steps": 24000,
+      "sample_interval": 10,
+      "replicas": 4,
+      "thermostat": "pile-l",
+      "gamma_centroid": 1.0
+    },
+    "dynamics": {
+      "loop_backend": "python",
+      "integrator": "cayley-bcb"
+    },
+    "output": {
+      "checkpoint_steps": 100000
+    }
+  },
+  "hamiltonian_convention": "sum_beads_beta_over_P",
+  "reference": {
+    "finite_P_potential_energy": 0.772272526442342,
+    "finite_P_kinetic_energy": 0.772272526442342,
+    "finite_P_internal_energy": 1.544545052884684,
+    "continuum_quantum_internal_energy": 1.555972081091322,
+    "classical_internal_energy": 0.75,
+    "finite_P_formula": "<V> = 3*k/(2*beta) * sum_j [k + 4*m*(P/beta)^2*sin(pi*j/P)^2]^-1; <K> = <V>",
+    "continuum_formula": "<E> = (3*omega/2) coth(beta*omega/2), omega=sqrt(k/m), hbar=1"
+  },
+  "results": {
+    "potential_energy": {
+      "mean": 0.7760925746870955,
+      "standard_error_between_replicas": 0.00268195417641317,
+      "finite_P_exact": 0.772272526442342,
+      "difference_in_between_replica_standard_errors": 1.4243525405278812
+    },
+    "kinetic_centroid_virial": {
+      "mean": 0.773887990463437,
+      "standard_error_between_replicas": 0.0032149874136185867,
+      "finite_P_exact": 0.772272526442342,
+      "difference_in_between_replica_standard_errors": 0.5024791121271487
+    },
+    "kinetic_primitive": {
+      "mean": 0.7827715574510605,
+      "standard_error_between_replicas": 0.011215905868195849,
+      "finite_P_exact": 0.772272526442342,
+      "difference_in_between_replica_standard_errors": 0.9360840873754012
+    },
+    "internal_energy_centroid_virial": {
+      "mean": 1.5499805651505316,
+      "standard_error_between_replicas": 0.005624685111364547,
+      "finite_P_exact": 1.544545052884684,
+      "difference_in_between_replica_standard_errors": 0.9663673891477533
+    }
+  },
+  "wall_seconds": 31.672605894998924,
+  "limitations": [
+    "A synthetic equilibrium check does not validate hydrogen migration or a material-specific potential.",
+    "Standard errors use four independent replica means; they are noisy statistical estimates, not rigorous error bounds.",
+    "This single timestep and bead count does not certify discretization or equilibration convergence.",
+    "The finite-P reference is distinct from the continuum quantum value; their difference is not Monte Carlo error.",
+    "No diffusive rate, real-time correlation, exchange statistics, or periodic winding sector is tested here.",
+    "The reported deviations are diagnostics without a pass/fail significance threshold."
+  ]
+}
