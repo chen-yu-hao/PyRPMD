@@ -7,6 +7,8 @@ Reference implementations are MIT licensed; see THIRD_PARTY_NOTICES.md.
 """
 
 from __future__ import annotations
+from pyrpmd.propagation import loop_options, scientific_config
+
 import copy
 import json
 from pathlib import Path
@@ -218,6 +220,7 @@ def _parent_task(task):
             seed=np.random.SeedSequence([int(config.get("seed", 0)), 211, chain]),
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            **loop_options(config),
         )
         snapshots = []
         elapsed = 0
@@ -339,6 +342,7 @@ def _child_task(task):
                     "xi_star": task["xi_star"],
                     "pmf_method": method,
                     "numerator": saved["numerator"],
+                    "propagation": json.loads(str(saved["propagation"])) if "propagation" in saved else {},
                     "denominator": float(saved["denominator"]),
                     "energy_drift": float(saved["energy_drift"]),
                     "endpoint_energy_error_hartree_per_bead": (
@@ -363,6 +367,7 @@ def _child_task(task):
             ),
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1),
+            **loop_options(config),
         )
         q = np.asarray(task["q"])
         p = dyn.sample_momenta()
@@ -384,11 +389,21 @@ def _child_task(task):
             state = State(q, sign * p)
             weight = sign * velocity / fs
             initial = dyn.energy(state)
-            for step in range(nsteps):
-                dyn.step(state)
-                value, _ = surface.centroid_value_gradient(state.q.mean(axis=0))
-                if value > 0:
-                    numerator[step] += weight
+            if dyn.can_fuse(observe=surface):
+                completed = 0
+                while completed < nsteps:
+                    count = min(dyn.block_steps, nsteps-completed)
+                    block = dyn.propagate(state, count, observe=surface,
+                                          sample_interval=1, record_centroids=False)
+                    numerator[completed:completed+count] += weight*(block.values[:, 0] > 0)
+                    completed += count
+            else:
+                for step in range(nsteps):
+                    dyn.step(state)
+                    dyn.propagation_stats["python_steps"] += 1
+                    value, _ = surface.centroid_value_gradient(state.q.mean(axis=0))
+                    if value > 0:
+                        numerator[step] += weight
             final = dyn.energy(state)
             endpoint_error_per_bead = max(
                 endpoint_error_per_bead, abs(final - initial) / config["beads"]
@@ -408,6 +423,7 @@ def _child_task(task):
             fingerprint=identity,
             xi_star=task["xi_star"],
             pmf_method=method,
+            propagation=json.dumps(dyn.propagation_stats),
         )
         return {
             "chain": chain,
@@ -420,6 +436,7 @@ def _child_task(task):
             "energy_drift": drift,
             "endpoint_energy_error_hartree_per_bead": endpoint_error_per_bead,
             "endpoint_energy_error_kbt": endpoint_error_per_bead * config["beta"],
+            "propagation": dict(dyn.propagation_stats),
         }
     finally:
         if hasattr(provider, "close"):

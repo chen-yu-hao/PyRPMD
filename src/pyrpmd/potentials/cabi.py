@@ -285,6 +285,15 @@ class CABIPotential(Potential):
                 self._context = C.c_void_p()
                 raise
 
+    def native_binding(self):
+        from ..propagation import NativePESBinding, NativeUnavailableError
+        if type(self) is not CABIPotential or "evaluate" in self.__dict__:
+            raise NativeUnavailableError("overridden C ABI provider uses Python semantics")
+        if self.metadata.get("capabilities", {}).get("stateful") is not False:
+            raise NativeUnavailableError("C ABI provider must explicitly declare stateful=false")
+        return NativePESBinding(self, self._evaluate, self._lock, self.natoms,
+                                context=self._context.value or 0)
+
     def evaluate(self, x):
         if self.closed:
             raise PotentialError("PES context is closed")

@@ -11,6 +11,8 @@ parallel scheduling/checkpoints are new PyRPMD code.
 from __future__ import annotations
 
 from collections import Counter
+from pyrpmd.propagation import loop_options, scientific_config
+
 import copy
 from dataclasses import asdict, is_dataclass
 import csv
@@ -566,6 +568,7 @@ def _dependency_fingerprints(config):
 
 
 def _physics_hash(config, system, parents):
+    config = scientific_config(config)
     scientific = {
         k: v
         for k, v in config.items()
@@ -735,13 +738,30 @@ def _trajectory(
             trace_energy=np.asarray(trace_energy),
         )
 
-    for number in range(done + 1, max_steps + 1) if status == "unresolved" else ():
+    stats_before = copy.deepcopy(dynamics.propagation_stats)
+    supported_classifier = classifier is None or type(classifier) in (ConnectivityClassifier, PilotConnectivityClassifier)
+    if not supported_classifier and dynamics.loop_backend == "native":
+        from pyrpmd.propagation import NativeUnavailableError
+        raise NativeUnavailableError("custom dRPMD classifier requires loop_backend='auto' or 'python'")
+    fused_loop = supported_classifier and dynamics.can_fuse()
+    while done < max_steps and status == "unresolved":
+        count = min(dynamics.block_steps, max_steps-done, check-done % check,
+                    stride-done % stride, checkpoint_interval-done % checkpoint_interval) if fused_loop else 1
+        number = done + count
         previous = state.copy()
+        stats_before_block = copy.deepcopy(dynamics.propagation_stats)
         previous_energy, previous_drift = final, drift
         previous_candidate, previous_since = candidate, candidate_since
         try:
-            dynamics.step(state)
-            final = float(dynamics.energy(state)) / config["beads"]
+            if fused_loop:
+                block = dynamics.propagate(state, count, sample_interval=count, record_centroids=False)
+                final = float(block.energies[-1]) / config["beads"]
+                drift = max(drift, abs(block.minimum_energy/config["beads"]-initial),
+                            abs(block.maximum_energy/config["beads"]-initial))
+            else:
+                dynamics.step(state)
+                dynamics.propagation_stats["python_steps"] += 1
+                final = float(dynamics.energy(state)) / config["beads"]
             if not math.isfinite(final):
                 raise FloatingPointError("Nonfinite total ring energy")
             drift = max(drift, abs(final - initial))
@@ -758,8 +778,15 @@ def _trajectory(
                     )
         except Exception as exc:
             state = previous
-            done = number - 1
             final, drift = previous_energy, previous_drift
+            # Replay only the failed stateless block to retain last-valid-step
+            # and existing failed-trajectory/checkpoint semantics.
+            if fused_loop and count > 1:
+                dynamics.propagation_stats = copy.deepcopy(stats_before_block)
+                candidate, candidate_since = previous_candidate, previous_since
+                fused_loop = False
+                continue
+            done = number - 1
             candidate, candidate_since = previous_candidate, previous_since
             status, channel = "failed", None
             reason = f"{type(exc).__name__}: {exc}"
@@ -818,6 +845,8 @@ def _trajectory(
         "max_energy_drift_per_bead": drift,
         "launch": launch,
         "wall_seconds": time.perf_counter() - started,
+        "propagation": {key: dynamics.propagation_stats[key]-stats_before[key]
+                        for key in ("native_steps", "python_steps")},
     }
     _atomic_json(result_path, record)
     return record
@@ -864,6 +893,7 @@ def _parent_task(task):
         seed=parent_seed,
         native=native,
         threads=plan.threads,
+        **loop_options(config),
     )
     production = Dynamics(
         potential,
@@ -874,6 +904,7 @@ def _parent_task(task):
         seed=np.random.SeedSequence([seed, 3, parent_id]),
         native=native,
         threads=plan.threads,
+        **loop_options(config),
     )
     classifier = _make_classifier(config, system)
     parent_path = out / "checkpoints" / f"parent-{parent_id:06d}.npz"

@@ -82,6 +82,15 @@ class PythonPotential(Potential):
         self.metadata.setdefault("thread_safety", "context_serial")
         self.metadata.setdefault("execution_device", "cpu")
 
+    def native_binding(self):
+        from ..propagation import NativeUnavailableError
+        if type(self) is not PythonPotential or self.sign != 1 or self.length_factor != 1 or self.energy_factor != 1:
+            raise NativeUnavailableError("custom or unit-converting Python PES requires Python")
+        factory = getattr(self.obj, "native_binding", None)
+        if factory is None:
+            raise NativeUnavailableError("Python PES has no explicit native binding")
+        return factory()
+
     def evaluate(self, x):
         x = coordinates(x)
         result = self.fn(x / self.length_factor)

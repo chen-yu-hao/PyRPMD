@@ -176,7 +176,8 @@ class CayleyIntegrator:
 
 class Dynamics:
     def __init__(
-        self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1
+        self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1,
+        loop_backend="auto", block_steps=256
     ):
         self.potential = potential
         self.integrator = CayleyIntegrator(
@@ -193,6 +194,23 @@ class Dynamics:
         )
         self.native = self.integrator.native
         self._cached_normal_modes = None
+        if loop_backend not in ("auto", "native", "python"):
+            raise ValueError("loop_backend must be auto/native/python")
+        if isinstance(block_steps, bool) or not isinstance(block_steps, (int, np.integer)) or not 1 <= block_steps <= 65536:
+            raise ValueError("block_steps must be an integer in [1, 65536]")
+        self.loop_backend = loop_backend
+        self.block_steps = int(block_steps)
+        self.propagation_stats = {"native_steps": 0, "python_steps": 0, "fallback_reasons": {}}
+
+    def propagate(self, state, steps, **options):
+        """Advance a block, using native PES/CVs when available, else Python."""
+        from .propagation import propagate
+        return propagate(self, state, steps, **options)
+
+
+    def can_fuse(self, *, bias=None, observe=None):
+        from .propagation import native_supported
+        return native_supported(self, bias=bias, observe=observe)
 
     def sample_momenta(self):
         return self.rng.normal(size=self.integrator.shape) * np.sqrt(
@@ -324,13 +342,23 @@ class Dynamics:
         if resample:
             state.p[:] = self.sample_momenta()
         self._fix_fragments(state, data)
-        for _ in range(steps):
-            if state.step % interval == 0:
-                state.p[:] = self.sample_momenta()
-                self._fix_fragments(state, data)
-            # Linear centroid COM constraints: project both kicks and the free
-            # step, so every PES call sees the constrained configuration.
-            self._propagate(state, bias, data)
+        if self.can_fuse(bias=bias):
+            remaining = int(steps)
+            while remaining:
+                if state.step % interval == 0:
+                    state.p[:] = self.sample_momenta()
+                    self._fix_fragments(state, data)
+                count = min(remaining, self.block_steps, interval - state.step % interval)
+                self.propagate(state, count, bias=bias, fragment_data=data,
+                               record_centroids=False, sample_interval=count)
+                remaining -= count
+        else:
+            for _ in range(steps):
+                if state.step % interval == 0:
+                    state.p[:] = self.sample_momenta()
+                    self._fix_fragments(state, data)
+                self._propagate(state, bias, data)
+                self.propagation_stats["python_steps"] += 1
         return state
 
     def sample_step(self, state, bias=None, *, gamma_centroid=1.0):
