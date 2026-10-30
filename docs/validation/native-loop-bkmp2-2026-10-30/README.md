@@ -36,3 +36,17 @@ Fusing the outer loop and real Fortran PES calls into native code reduced dispat
 The test libraries are currently **benchmark-only**, not production dRPMD/FES/PMF/recrossing backends. Exact matching of biases, thermostats, constraint projection, trajectory classification, callbacks, checkpoints and numerical error semantics is required before moving those workflow loops into C++ or Fortran. No physical chemical rate convergence is claimed.
 
 Reproduction: install PyRPMD; build the pinned Fortran PES with benchmarks/h3/build_pes.py; execute benchmarks/loop_native/benchmark.py with --potential real --sizes 16 32 --steps 2500 --repeats 3 --pin-cpu. Use the GitHub workflow for the recorded environment.
+
+
+## Independent default-branch rerun — hardware/run variability
+
+The squash-merged main commit ca1e86a was independently rerun on a fresh GitHub-hosted runner. [Workflow 41002549955](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41002549955) passed the same 20 short-trajectory correctness checks per PES mode; [raw artifact](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41002549955/artifacts/12953488774).
+
+Run-specific medians, real Fortran BKMP2, 2500 steps × 3 repeats, one pinned CPU:
+
+| Beads | Python steps/s | C steps/s | C++ steps/s | Fortran steps/s | Fastest/native over Python |
+|---:|---:|---:|---:|---:|---:|
+| 16 | 8032.25 | 42692.84 | 42586.58 | 42581.54 | 5.315x |
+| 32 | 6762.50 | 23739.06 | 23676.90 | 23718.80 | 3.510x |
+
+The original experimental-branch run and the main rerun differ materially in **absolute throughput and native/Python speedup** despite the same algorithm and runner class. Do not pool repetitions across runners as though they were same-hardware trials. Together the two successful runs show ~5.32–7.62x at 16 beads and ~3.51–4.69x at 32 beads, while C/C++/Fortran remain effectively tied within each run. This is the stronger supported statement than citing only the largest speedup. These runs are not a controlled study of compiler/hardware topology effects.
