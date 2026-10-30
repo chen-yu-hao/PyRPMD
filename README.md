@@ -2,11 +2,15 @@
 
 **Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维自由能面、自适应伞抽样和 metadynamics。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
 
+当前开发分支增加**固定晶胞材料计算**：独立 PIMD 平衡采样、无恒温 RPMD 氢扩散、
+MSD/VACF/扩散张量，以及有限盆地归一化的位点跃迁速率。方法与范围见
+[材料计算说明](docs/materials.md)。
+
 本项目是初始科研实现。随附示例用于验证算法和程序连接；真实化学体系仍需要合适的势能面、通道定义及珠子数、步长、采样、远区距离和回穿时间等收敛检查。程序会分别报告有限采样估计、失败/未决轨迹和诊断，不把一次运行成功标成物理收敛。
 
 ## 已实现
 
-| 需求 | 0.2.0 行为 |
+| 需求 | 当前行为 |
 | --- | --- |
 | 自由 Python 输入 | `.py` 中 `build()` 返回 `JobSpec` 或字典；自定义 PES、CV、产物分类器通过可导入 factory 构造 |
 | 简单 `.inp` | TOML，严格检查字段、单位、原子索引、输入相对路径；命令行可覆盖 PES、温度、珠子数、轨迹进程数 |
@@ -21,6 +25,10 @@
 | 可选积分器 | `cayley-bcb`、`normal-mode-bab`、`velocity-verlet`；两套原生 block API、Andersen 母链、centroid RATTLE 均保留所选方法 |
 | 自适应伞抽样 | 1D/2D pilot 根据 MBAR overlap 与有效样本数插窗、延长采样；冻结后独立 production，支持标准速率的 PMF |
 | Metadynamics | Standard / well-tempered，1D/2D 与周期 CV、完整 Jacobian、独立 replica、HILLS 和有限时间 bias FES 估计 |
+| 固定晶胞 / PBC | 正交与倾斜晶胞、部分周期 slab、连续未包装坐标；ASE/Python/i-PI 周期势能契约 |
+| 独立 PIMD | 匹配的 PILE-L/Andersen 采样；primitive/centroid-virial 物理能量估计器、回转半径 |
+| 材料扩散 | 热化后无恒温 RPMD，质心 MSD、扩散张量、VACF、独立副本误差与离线再分析；非扩散区间不报告有效 D |
+| 位点跃迁 | 线性质心坐标，有限盆地归一化 QTST、受约束母链与成对回穿；单分子 s⁻¹ 单位 |
 | 续跑 | 完整 q/p、RNG、偏置历史、阶段与科学指纹；v2 原子 checkpoint 逐数组 SHA256 校验，兼容旧 v1 数据；可调整执行分块和后端 |
 
 多 TS 结果按入口、通道标签、TS 分别报告，当前只接受 `aggregation="separate"`。
@@ -84,6 +92,28 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 ```
 
 所有示例都可以先运行 `validate`。`validate --check-pes` 还会初始化并评估势能；对 TS-only 速率输入，这也会进行数值准备。每次新运行使用新目录；续跑使用 `resume` 或原输入的 `run --resume`。
+
+## 材料中的氢与质子
+
+```bash
+# 固定晶胞 PIMD 解析模型。
+pyrpmd run examples/materials/pimd.inp --output runs/materials-pimd
+
+# 自由粒子负对照：程序应识别弹道运动并暂不报告 D。
+pyrpmd run examples/materials/diffusion.inp --output runs/materials-free
+pyrpmd analyze runs/materials-free --recompute --axes 0 1 \
+  --fit-range '10 fs' '20 fs' --max-lag 40
+
+# 有限盆地、单一有向分割面的速率 pilot。
+pyrpmd run examples/materials/site_rate.inp --output runs/materials-site
+```
+
+真实势能接入验证见 [Ni–H EAM pilot](benchmarks/materials/README.md)，包含
+Ni(100) slab 上 H/D、1/4 珠子的短计算及来源校验。它验证数值链路，不提供
+物理收敛的扩散系数。材料任务当前为固定晶胞、全部原子可动；尚无 NPT、
+一般非线性约束速率或集体电导率。质子导体需提供适合其成分、电荷和机制的
+周期势模型。输入、单位、周期 CV、统计状态和收敛边界见[材料计算说明](docs/materials.md)。
+本次实际测试与数值证据见[材料验证记录](docs/validation/materials-2026-10-30.md)。
 
 ## 真实体系验证：H + H₂ / BKMP2
 
@@ -201,12 +231,12 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 
 | 路径 | 职责 |
 | --- | --- |
-| `src/pyrpmd/input.py`, `units.py`, `system.py` | 输入、单位与原子/同位素系统 |
+| `src/pyrpmd/input.py`, `units.py`, `system.py`, `geometry.py` | 输入、单位、原子/同位素系统与固定晶胞几何 |
 | `src/pyrpmd/dynamics.py`, `native/` | 三种完整环积分器、动量采样、热化、C++/OpenMP |
 | `src/pyrpmd/potentials/` | 统一势能接口及各类适配器 |
 | `src/pyrpmd/cv.py`, `bias.py` | CV、完整 Jacobian、umbrella、速率 flux metric、历史 Gaussian bias |
 | `src/pyrpmd/workflows/`, `reactions.py` | rate、dRPMD、FES、自适应窗口、metadynamics、多 TS 组织与准备 |
-| `src/pyrpmd/analysis/` | MBAR、umbrella integration、metadynamics bias FES、统计诊断 |
+| `src/pyrpmd/analysis/` | MBAR、umbrella integration、metadynamics bias FES、MSD/VACF/扩散张量、统计诊断 |
 | `src/pyrpmd/checkpoint.py`, `runner.py` | 原子状态容器、完整性验证、科学运行身份与公共入口 |
 | `src/pyrpmd/parallel/` | 轨迹进程池、珠子池、MPI、GPU 放置 |
 | `examples/`, `tests/`, `docs/` | 可运行示例、数值/集成测试、规范 |
@@ -219,6 +249,7 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 - [原生传播与兼容性](docs/native-propagation.md)、[分段 API 与故障处理](docs/block-propagation.md)
 - [积分器选择](docs/integrators.md)、[多入口与多 TS](docs/reaction-networks.md)
 - [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
+- [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)
 - [公共接口约定](docs/interfaces.md)、[checkpoint 与恢复规范](docs/checkpoints.md)
 
 运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据及 `results/summary.json`。FES 另有 `fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条初始状态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。

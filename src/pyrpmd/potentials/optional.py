@@ -1,6 +1,7 @@
 """Optional ASE and PyTorch adapters. Imports occur only when requested."""
 
 import numpy as np
+from ..geometry import validate_cell_pbc
 from .base import (
     Potential,
     PESResult,
@@ -23,16 +24,25 @@ class ASEPotential(Potential):
         "provider": "ase",
         "thread_safety": "context_serial",
         "execution_device": "cpu",
+        "periodic": True,
     }
 
-    def __init__(self, symbols, calculator):
+    def __init__(self, symbols, calculator, *, cell=None, pbc=None):
         try:
             from ase import Atoms
         except ImportError as exc:
             raise BackendUnavailableError(
                 "ASE provider requires pip install 'pyrpmd[ase]'"
             ) from exc
-        self.atoms = Atoms(symbols=symbols)
+        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
+        # Isotope masses are carried by Dynamics, while ASE calculators need
+        # chemical element identities (ASE does not recognize D/T symbols).
+        symbols = ["H" if s in ("D", "T") else s for s in symbols]
+        self.atoms = Atoms(
+            symbols=symbols,
+            cell=None if self.cell is None else self.cell * BOHR_ANGSTROM,
+            pbc=self.pbc,
+        )
         self.atoms.calc = calculator
 
     def evaluate(self, x):
@@ -41,11 +51,15 @@ class ASEPotential(Potential):
             raise PotentialError("ASE atom count mismatch")
         es = []
         fs = []
+        virials = [] if self.cell is not None and "stress" in getattr(self.atoms.calc, "implemented_properties", ()) else None
         for frame in x:
             self.atoms.set_positions(frame * BOHR_ANGSTROM)
             es.append(self.atoms.get_potential_energy() * EV_HARTREE)
             fs.append(self.atoms.get_forces() * EV_HARTREE * BOHR_ANGSTROM)
-        return validate_result(PESResult(es, fs), x.shape)
+            if virials is not None:
+                # ASE stress is tensile-positive eV/angstrom^3; W=-V*stress.
+                virials.append(-self.atoms.get_stress(voigt=False) * self.atoms.get_volume() * EV_HARTREE)
+        return validate_result(PESResult(es, fs, virial=virials), x.shape)
 
     def close(self):
         close = getattr(self.atoms.calc, "close", None)

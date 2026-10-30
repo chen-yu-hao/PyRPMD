@@ -10,6 +10,7 @@ import struct
 import time
 import numpy as np
 from .base import Potential, PESResult, PotentialError, coordinates, validate_result
+from ..geometry import validate_cell_pbc
 
 
 class IPIPotential(Potential):
@@ -18,18 +19,33 @@ class IPIPotential(Potential):
         "thread_safety": "context_serial",
         "execution_device": "external",
         "requires_bead_affinity": True,
+        "periodic": True,
     }
 
     def __init__(
-        self, host="127.0.0.1", port=31415, *, unix=None, timeout=60.0, init=None
+        self, host="127.0.0.1", port=31415, *, unix=None, timeout=60.0, init=None,
+        cell=None, pbc=None
     ):
-        if timeout <= 0:
+        if not np.isfinite(timeout) or timeout <= 0:
             raise ValueError("socket timeout must be positive")
+        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
+        parameters = dict(init or {})
+        if self.cell is not None and not self.pbc.all():
+            declared = np.asarray(parameters.get("pbc"))
+            if declared.shape != (3,) or declared.dtype.kind != "b" or not np.array_equal(declared, self.pbc):
+                raise ValueError(
+                    "i-PI POSDATA has no PBC flags: partial/nonperiodic cells require "
+                    "matching init.pbc and a driver configured to honor those flags"
+                )
+        # i-PI h stores lattice vectors as columns; ih is its actual inverse.
+        # q remains unwrapped and Cartesian on the wire.
+        self._wire_cell = np.eye(3) * 1e6 if self.cell is None else self.cell.T.copy()
+        self._wire_inverse = np.linalg.inv(self._wire_cell)
         self.timeout = float(timeout)
         self.unix = unix
         self.connection = None
         self.closed = False
-        self.init = json.dumps(init or {}).encode()
+        self.init = json.dumps(parameters).encode()
         self.server = socket.socket(
             socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM
         )
@@ -68,6 +84,7 @@ class IPIPotential(Potential):
                 self.connection.settimeout(self.timeout)
             es = []
             fs = []
+            virials = []
             for bead, frame in enumerate(x):
                 status = self._status()
                 if status == "NEEDINIT":
@@ -79,13 +96,9 @@ class IPIPotential(Potential):
                 if status != "READY":
                     raise PotentialError(f"i-PI expected READY, received {status}")
                 self._send_header("POSDATA")
-                # The molecule is nonperiodic. Driver must use the nonperiodic
-                # setting supplied in init; these invertible cells are transport.
-                cell = np.eye(3) * 1e6
-                inverse = np.eye(3) * 1e-6
                 self.connection.sendall(
-                    cell.astype("=f8").tobytes()
-                    + inverse.astype("=f8").tobytes()
+                    self._wire_cell.astype("=f8").tobytes()
+                    + self._wire_inverse.astype("=f8").tobytes()
                     + struct.pack("=i", len(frame))
                     + frame.astype("=f8").tobytes()
                 )
@@ -111,14 +124,16 @@ class IPIPotential(Potential):
                     .reshape(n, 3)
                     .copy()
                 )
-                self._recv(9 * 8)
+                # Match the i-PI/ASE tensor wire convention, W=-V*stress.
+                virial = np.frombuffer(self._recv(9 * 8), dtype="=f8").reshape(3, 3).T.copy()
                 extra = struct.unpack("=i", self._recv(4))[0]
                 if not 0 <= extra <= 16 * 1024 * 1024:
                     raise PotentialError("invalid i-PI extra payload size")
                 self._recv(extra)
                 es.append(energy)
                 fs.append(force)
-            return validate_result(PESResult(es, fs), x.shape)
+                virials.append(virial)
+            return validate_result(PESResult(es, fs, virial=virials), x.shape)
         except (OSError, UnicodeError, struct.error) as exc:
             raise PotentialError(f"i-PI communication failed: {exc}") from exc
 

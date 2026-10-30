@@ -152,6 +152,14 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.network import run_network
 
         result = run_network(config, system, Path(target))
+    elif config["task"] in ("pimd", "diffusion"):
+        from .workflows.materials import run_materials
+
+        result = run_materials(config, system, Path(target))
+    elif config["task"] == "site_rate":
+        from .workflows.site_rate import run_site_rate
+
+        result = run_site_rate(config, system, Path(target))
     else:
         raise InputError("Unknown workflow")
     if is_root() and result is not None:
@@ -190,22 +198,55 @@ def resume_run(directory, *, parallel=None, execution=None):
     return run_resolved(config, system, output=path, resume=True)
 
 
-def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None):
-    """Read results, or reweight saved FES samples without new trajectories."""
+def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffusion=None):
+    """Read results or reanalyze saved FES/transport data without new trajectories."""
     path = Path(directory).resolve()
-    if not recompute and bins is None and bootstrap is None:
+    if not recompute and bins is None and bootstrap is None and diffusion is None:
         summary = path / "results" / "summary.json"
         if not summary.is_file():
             summary = path / "summary.json"
         return json.loads(summary.read_text())
     config = json.loads((path / "input" / "resolved.json").read_text())
-    if config["task"] not in ("fes", "metadynamics"):
+    if config["task"] not in ("fes", "metadynamics", "diffusion"):
         raise InputError(
-            "Recomputing analysis supports FES and metadynamics; omit --recompute to read other results"
+            "Recomputing analysis supports FES, metadynamics and diffusion; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
+    if config["task"] == "diffusion":
+        from .input import _SECTIONS
+        from .units import parse_quantity
+        from .workflows.materials import reanalyze_diffusion, validate_materials
+        from .parallel import root_call
+
+        if bins is not None:
+            raise InputError("Diffusion analysis does not use histogram bins")
+        if diffusion is not None:
+            if not isinstance(diffusion, dict) or set(diffusion) - _SECTIONS["diffusion"]:
+                raise InputError("diffusion overrides must contain documented diffusion analysis options")
+            config.setdefault("diffusion", {}).update(copy.deepcopy(diffusion))
+        if bootstrap is not None:
+            config.setdefault("diffusion", {})["bootstrap"] = bootstrap
+        options = config.setdefault("diffusion", {})
+        if "fit_range" in options:
+            if not isinstance(options["fit_range"], (list, tuple)) or len(options["fit_range"]) != 2:
+                raise InputError("diffusion.fit_range must be [start, stop] times")
+            options["fit_range"] = [None if v is None else parse_quantity(v, "time")
+                                    for v in options["fit_range"]]
+        validate_materials(config, system)
+        result = reanalyze_diffusion(config, system, path)
+        if result is None:
+            return None
+        result = {
+            **result, "software": "PyRPMD", "version": __version__,
+            "output": str(path), "preset": config.get("preset", "pilot"),
+            "input_warnings": config.get("_warnings", []),
+        }
+        root_call(write_json, path / "results" / "summary.json", result)
+        return result
+    if diffusion is not None:
+        raise InputError("Diffusion analysis overrides require a diffusion run")
     analysis = config.setdefault("analysis", {})
     if bins is not None:
         if not bins or any(
@@ -292,6 +333,23 @@ def prepare(job, *, numerical=False):
         result["network_preparation"] = prepare_network(config, system, numerical=numerical)
         result["ready"] = result["network_preparation"].get("ready", False)
         return result
+    elif config["task"] in ("pimd", "diffusion"):
+        from .workflows.materials import validate_materials
+
+        validate_materials(config, system)
+        result["materials_preparation"] = {
+            "cell_bohr": system.to_dict().get("cell"),
+            "pbc": list(getattr(system, "pbc", (False, False, False))),
+            "ensemble": "fixed_cell",
+            "sampling_thermostat": config["sampling"]["thermostat"],
+            "production_method": "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling",
+            "sampling": config["sampling"],
+            "analysis": config.get("diffusion", {}),
+        }
+    elif config["task"] == "site_rate":
+        from .workflows.site_rate import validate_site_rate
+
+        result["site_rate_preparation"] = validate_site_rate(config, system)
     if numerical:
         from .potentials import make_potential
 

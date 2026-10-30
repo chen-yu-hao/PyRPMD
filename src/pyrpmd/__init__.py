@@ -20,10 +20,14 @@ def __getattr__(name):
         from . import runner
 
         return getattr(runner, name)
+    if name == "analyze_diffusion":
+        from .analysis.diffusion import analyze_diffusion
+
+        return analyze_diffusion
     raise AttributeError(name)
 
 
 __all__ = [
     "JobSpec", "System", "State", "Dynamics", "run", "prepare",
-    "resume_run", "analyze_run", "__version__",
+    "resume_run", "analyze_run", "analyze_diffusion", "__version__",
 ]

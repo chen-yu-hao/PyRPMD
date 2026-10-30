@@ -26,6 +26,7 @@ jobs:
       - run: python -m pytest -q
       - run: mpiexec -n 4 python tests/mpi_integration.py
       - run: mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-workflows"
+      - run: mpiexec -n 4 python tests/mpi_materials_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-materials"
       - run: python -m pip install build && python -m build
   torch-cpu:
     runs-on: ubuntu-latest

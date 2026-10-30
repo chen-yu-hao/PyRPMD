@@ -118,6 +118,7 @@ class Cartesian(CollectiveVariable):
     """A Cartesian component, useful for model systems and restrained sampling."""
 
     units = ("bohr",)
+    constant_gradient = True
 
     def __init__(self, atom, axis=0, **kwargs):
         super().__init__(**kwargs)
@@ -136,6 +137,10 @@ class Cartesian(CollectiveVariable):
         g = np.zeros_like(q)
         g[self.atom, self.axis] = 1.0
         return float(q[self.atom, self.axis]), g
+
+    def centroid_value_gradient_hessian(self, q):
+        value, gradient = self.centroid_value_gradient(q)
+        return value, gradient, np.zeros((len(q), 3, len(q), 3))
 
 
 class Angle(CollectiveVariable):
@@ -431,6 +436,8 @@ class PythonCV:
             atom_ids=self.system.atom_ids,
             step_index=0,
             time_au=0.0,
+            cell=None if getattr(self.system, "cell", None) is None else self.system.cell.copy(),
+            pbc=np.asarray(getattr(self.system, "pbc", (False, False, False))).copy(),
         )
         result = self.plugin.value_and_jacobian(state)
         if hasattr(result, "value"):
@@ -455,6 +462,30 @@ def make_cv(spec, system):
 
     kind = spec.get("kind", "distance")
     kwargs = {"estimator": spec.get("estimator", "centroid"), "name": spec.get("name")}
+    periodic = bool(np.any(getattr(system, "pbc", False)))
+    if periodic:
+        from .cv_periodic import PeriodicDistance, PeriodicBondDifference, PeriodicAngle
+
+        if kind == "distance":
+            return PeriodicDistance(spec["atoms"], system.cell, system.pbc, **kwargs)
+        if kind in ("difference", "bond_difference"):
+            return PeriodicBondDifference(cell=system.cell, pbc=system.pbc,
+                atoms=spec.get("atoms"), bonds=spec.get("bonds"), **kwargs)
+        if kind == "angle":
+            return PeriodicAngle(spec["atoms"], system.cell, system.pbc, **kwargs)
+        if kind in ("com_distance", "rpmdrate", "rpmdrate_xi"):
+            raise ValueError("Periodic COM/reaction CV needs an explicit molecular image convention; use a periodic distance or continuous projection")
+    if kind in ("projection", "fractional"):
+        from .cv_periodic import LinearProjection, FractionalCoordinate
+
+        options = dict(atom=spec["atom"], masses=system.masses,
+                       reference_atoms=spec.get("reference_atoms"), **kwargs)
+        options["origin"] = parse_quantity(spec.get("origin", 0.0),
+                                           "dimensionless" if kind == "fractional" else "length")
+        if kind == "fractional":
+            return FractionalCoordinate(axis=spec.get("axis", 0), cell=system.cell,
+                                        pbc=system.pbc, **options)
+        return LinearProjection(direction=spec["direction"], **options)
     if kind == "distance":
         return Distance(spec["atoms"], **kwargs)
     if kind in ("difference", "bond_difference"):

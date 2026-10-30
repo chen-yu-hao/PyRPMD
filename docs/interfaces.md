@@ -26,6 +26,10 @@ pilot calculation are present; it is not a physical-convergence certificate.
 `analyze_run(..., recompute=True, bins=..., bootstrap=...)` reanalyzes saved
 umbrella or metadynamics data. Metadynamics rejects unsupported nonzero
 bootstrap requests. Without recomputation it reads any workflow's summary.
+For a diffusion run, `analyze_run(..., recompute=True, diffusion={...})` reads
+saved unwrapped centroid data and can change atom/axis/reference selections,
+lag and fit windows without a PES evaluation. `analyze_diffusion` is also
+exported as a standalone array API; see [materials.md](materials.md).
 Command-line commands expose these same entry points, plus `validate`, `info`,
 `checkpoint` and PES adapter tools.
 
@@ -36,6 +40,9 @@ Command-line commands expose these same entry points, plus `validate`, `info`,
 | `fes` | Fixed-bias 1D/2D umbrella FES; optional pilot adaptation followed by independent production |
 | `network` | Entrance → channel label → TS matrix of independent complete rate calculations; no implicit sum |
 | `metadynamics` | Standard/WT bias history and finite-time 1D/2D bias FES estimates; no rate inferred from biased time |
+| `pimd` | Fixed-cell equilibrium sampling, quantum energy estimators and ring spread |
+| `diffusion` | Equilibrate then unthermostatted RPMD; unwrapped centroid MSD/tensor, VACF, uncertainty and finite-record diagnostics |
+| `site_rate` | Finite-basin QTST and paired recrossing for one constant-gradient centroid surface; rate in s⁻¹ |
 
 Workflow return values are JSON-compatible dictionaries. MPI workers may
 return `None`; the root result and `results/summary.json` carry software version,
@@ -72,6 +79,14 @@ evaluation receives atomic-unit `float64[B,N,3]` coordinates and returns
 finite-value and lifecycle checks remain enforced. Thread safety, per-context
 state and native stateless capability must be declared honestly; Python
 callbacks do not become native just because a C++ ring substep is available.
+
+`System` adds optional fixed `cell[3,3]` (row lattice vectors, bohr) and
+`pbc[3]`. No-cell molecular serialization and existing identities are preserved.
+Periodic requests must reach a cell-aware provider: ASE, explicitly capable
+Python, or i-PI. The existing molecular C ABI v1, f2py and Torch interfaces
+reject periodic systems. `PESResult` adds optional physical configurational
+`virial[B,3,3]` in hartree; it is not a quantum pressure estimator. Dynamics
+keeps ring positions continuous and unwrapped.
 
 A CV provides its declared estimator's `value[D]` and complete
 `jacobian[D,P,N,3]`, canonical units and optional periods. Centroid and

@@ -7,7 +7,7 @@
 | 字段 | 类型、单位与含义 |
 | --- | --- |
 | `schema_version` | 当前为整数 1 |
-| `task` | `rate`、`drpmd`、`fes`、`network`、`metadynamics` |
+| `task` | `rate`、`drpmd`、`fes`、`network`、`metadynamics`、`pimd`、`diffusion`、`site_rate` |
 | `preset` | `pilot`（缺省）或 `production` |
 | `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
 | `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
@@ -29,6 +29,10 @@
 
 Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（电子质量）或 `masses_amu`。`geometry_unit` 可覆盖坐标单位。同位素可用 `isotopes=[{atom=0, mass="2.01410177812 amu"}]`。质量在反应物居中和放置前解析。电荷 `charge` 为整数，`multiplicity` 为正整数，默认 0 和 1；须与所选电子势能面一致。软件不从几何自动推断自旋统计权重。
 
+固定晶胞使用 `cell=[[...],[...],[...]]`（每行一个矢量）、`cell_unit="angstrom"`
+及 `pbc=[true,true,false]`。有 cell 时默认全周期，无 cell 时默认非周期。
+晶胞、部分 PBC、连续质心坐标及支持的势能接口见[材料计算](materials.md)。
+
 ## 热化与持续母轨迹
 
 ```toml
@@ -45,7 +49,17 @@ parents = 8
 
 `equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
 
-FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。正式工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。独立的 `Dynamics.sample_step` 提供与 Cayley 匹配的 BCOCB、与正常模匹配的 BAOAB，当前不作为工作流可选采样器。采样和子轨迹步长须相同。真实碰撞和回穿子轨迹使用无温控的生产传播。
+FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和 `diffusion` 生产段使用无温控传播。
+
+## 固定晶胞材料任务
+
+`pimd` 和 `diffusion` 使用上述 sampling 时间配置，不接受 reaction、umbrella 或
+metadynamics 偏置。`diffusion` 增加 `[diffusion]`：`atom_indices`、`axes`、
+`reference_atoms`、`fit_range`、`max_lag`、`bootstrap`、`seed`、`block_length`。
+`max_lag`/`block_length` 的单位是保存帧，`fit_range` 是两个时间数量；所有选择索引
+均从零起始。`site_rate` 使用一个线性 centroid CV、固定 umbrella 和 `[recrossing]`，
+并显式设置 `[site_rate]` 的 `cv`、`basin`、`dividing_surface`、`direction`。
+三种任务的完整配置与结果解释见[材料计算](materials.md)。
 
 ## dRPMD
 

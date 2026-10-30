@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 from .constants import AMU_TO_AU, ANGSTROM_TO_AU
 from .units import parse_quantity
+from .geometry import validate_cell_pbc
 
 _SYMBOLS = (
     "X H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og"
@@ -61,6 +62,8 @@ class System:
     fragments: tuple[tuple[int, ...], ...] = ()
     charge: int = 0
     multiplicity: int = 1
+    cell: np.ndarray | None = None
+    pbc: np.ndarray | None = None
 
     def __post_init__(self):
         self.symbols = tuple(self.symbols)
@@ -74,6 +77,7 @@ class System:
         )
         self.charge = _integer(self.charge, "Charge")
         self.multiplicity = _integer(self.multiplicity, "Multiplicity", 1)
+        self.cell, self.pbc = validate_cell_pbc(self.cell, self.pbc)
         n = len(self.symbols)
         if n < 1 or self.masses.shape != (n,) or self.geometry.shape != (n, 3):
             raise ValueError("System needs N symbols, masses[N], geometry[N,3]")
@@ -107,7 +111,7 @@ class System:
         return tuple(f"{s}{i}" for i, s in enumerate(self.symbols))
 
     def to_dict(self):
-        return {
+        result = {
             "symbols": list(self.symbols),
             "masses": self.masses.tolist(),
             "geometry": self.geometry.tolist(),
@@ -115,6 +119,10 @@ class System:
             "charge": self.charge,
             "multiplicity": self.multiplicity,
         }
+        # Preserve the exact pre-materials molecular checkpoint identity.
+        if self.cell is not None:
+            result.update(cell=self.cell.tolist(), pbc=self.pbc.tolist())
+        return result
 
     @classmethod
     def from_dict(cls, d):
@@ -125,6 +133,8 @@ class System:
             tuple(tuple(f) for f in d.get("fragments", [])),
             d.get("charge", 0),
             d.get("multiplicity", 1),
+            d.get("cell"),
+            d.get("pbc"),
         )
 
 
@@ -199,6 +209,17 @@ def system_from_config(spec):
     isotopes = spec.get("isotopes", ())
     charge = spec.get("charge", 0)
     multiplicity = spec.get("multiplicity", 1)
+    inline = "symbols" in spec and "geometry" in spec and not isinstance(spec["geometry"], str)
+    cell = spec.get("cell")
+    if cell is not None:
+        raw_cell = np.asarray(cell)
+        if raw_cell.dtype.kind not in "iuf":
+            raise ValueError("cell must contain real numerical values")
+        cell_unit = spec.get("cell_unit", spec.get("geometry_unit", "bohr" if inline else "angstrom"))
+        cell = np.asarray(cell, dtype=float) * parse_quantity(f"1 {cell_unit}", "length")
+    elif "cell_unit" in spec:
+        raise ValueError("cell_unit requires a cell")
+    cell, pbc = validate_cell_pbc(cell, spec.get("pbc"))
     if (
         "symbols" in spec
         and "geometry" in spec
@@ -217,6 +238,8 @@ def system_from_config(spec):
             spec.get("fragments", ()),
             charge,
             multiplicity,
+            cell,
+            pbc,
         )
     factor = parse_quantity(f"1 {spec.get('geometry_unit','angstrom')}", "length")
     if "reactants" in spec:
@@ -251,7 +274,7 @@ def system_from_config(spec):
                 "Reactant files define their atom partition; explicit fragments disagree"
             )
         return System(
-            symbols, mass, np.vstack([qa, qb]), fragments, charge, multiplicity
+            symbols, mass, np.vstack([qa, qb]), fragments, charge, multiplicity, cell, pbc
         )
     else:
         p = spec.get("transition_state", spec.get("geometry"))
@@ -267,4 +290,6 @@ def system_from_config(spec):
             spec.get("fragments", ()),
             charge,
             multiplicity,
+            cell,
+            pbc,
         )
