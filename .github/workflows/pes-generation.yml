@@ -21,6 +21,8 @@ jobs:
       MKL_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -28,30 +30,51 @@ jobs:
         run: |
           sudo apt-get update -q
           sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin libfftw3-dev liblapack-dev
-      - name: Fetch pinned upstream and record dependency sources
+      - name: Fetch pinned upstream and record sources
         run: |
-          mkdir -p reference-sources/wheels
+          set -euo pipefail
+          mkdir -p reference-sources
           git clone https://github.com/Trebonius91/Caracal.git reference-sources/Caracal
           git -C reference-sources/Caracal checkout 7f95ce9818b7f6d81d7cb3b634f360373c090820
           test "$(git -C reference-sources/Caracal rev-parse HEAD)" = 7f95ce9818b7f6d81d7cb3b634f360373c090820
-          tar --exclude=.git -czf reference-sources/Caracal.tar.gz -C reference-sources Caracal
           git archive 76dd6ad24adc6c244f775857987cd2f0e119845f | gzip > reference-sources/PyRPMD-main.tar.gz
-          python -m pip download --only-binary=:all: --no-deps 'pyscf>=2.8,<3' -d reference-sources/wheels
-          python -m pip install 'pyscf>=2.8,<3'
+          python -m pip install 'pyscf==2.14.0'
           python -m pip freeze > reference-sources/python-packages.txt
-          sha256sum reference-sources/*.tar.gz reference-sources/wheels/* > reference-sources/SHA256SUMS
+      - name: Build native Caracal
+        run: |
+          set -euo pipefail
+          root="$PWD/reference-sources/Caracal"
+          mkdir -p "$root/bin"
+          make -C "$root/src" -f ../Makefile FC=mpifort CC=mpicc BINDIR="$root/bin" \
+            FFLAGS='-cpp -fopenmp -fPIC -fno-align-commons -DPARALLEL -fallow-argument-mismatch -O2 -I/usr/include' \
+            LINKFLAGS="-fopenmp -Wl,--no-as-needed -llapack -lblas -lfftw3 $(python3-config --embed --ldflags)" \
+            > reference-sources/caracal-build.log 2>&1
+      - name: Preserve native build and reproducibility metadata
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p reference-sources/runtime-libs
+          for executable in reference-sources/Caracal/bin/*.x; do
+            test -e "$executable" || continue
+            ldd "$executable" | awk '/=> \/.* /{print $3}' | while read -r lib; do
+              cp -L "$lib" reference-sources/runtime-libs/
+            done
+          done
+          tar --exclude=.git -czf reference-sources/caracal-build.tar.gz -C reference-sources Caracal runtime-libs
+          sha256sum reference-sources/*.tar.gz > reference-sources/SHA256SUMS
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: pes-generation-reference-sources
+          name: pes-generation-native-build
           path: |
             reference-sources/*.tar.gz
-            reference-sources/wheels/*
             reference-sources/*.txt
+            reference-sources/*.log
             reference-sources/SHA256SUMS
           retention-days: 7
       - name: Install and test PES generation
         run: |
           python -m pip install -e '.[test]'
           if test -f tests/test_pesgen.py; then
-            python -m pytest -q tests/test_pesgen.py
+            PYRPMD_CARACAL_ROOT="$PWD/reference-sources/Caracal" python -m pytest -q tests/test_pesgen*.py
           fi
