@@ -1,6 +1,7 @@
 # 快速入门：可续跑的自由能计算
 
-本节使用内置谐振子势，无需外部模型，几秒即可完成。你将检查输入、运行伞抽样、读取结果、续跑并重新分析。
+几秒内你将走完所有任务共用的 PyRPMD 流程：检查输入、运行伞抽样、读取结果、续跑，并在不重跑动力学的情况下重新分析。
+本节使用内置谐振子势，无需外部模型。
 
 ## 1. 运行第一个任务
 
@@ -68,7 +69,7 @@ for key in ("task", "dimension", "windows", "streams", "samples",
 
 摘要给出 `task="fes"`、一维 CV、3 个窗口、6 条采样流和 120 个保存样本；`effective_samples_per_stream`
 给出统计独立的样本数。`overlap_connected=true` 表示所有窗口共享一个全局归一化。`warnings` 列出有效样本不足
-和未采样的网格。单次运行的 `converged` 总是 `false`；收敛由[科学约定](science.md)中的系列计算确定。
+和未采样的网格。单次运行的 `converged` 按设计保持为 `false`：收敛由[科学约定](science.md)中的系列计算确定。
 
 `summary["files"]` 给出数据文件路径。FES 表中 `free_energy_hartree` 是相对自由能，`raw_count` 是每格样本数，
 `masked` 标记没有采样支持的格子，这些格子的值为 NaN。见[输出与分析](results.md)。

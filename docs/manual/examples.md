@@ -1,6 +1,8 @@
 # Example index and learning path
 
-Run every command from the repository root: `pyrpmd validate INPUT` first (add `--check-pes` to
+Every task has a runnable example on an analytic model that finishes in seconds to about a minute
+on one core, so you can see a complete workflow and its output before connecting your own
+potential. Run every command from the repository root: `pyrpmd validate INPUT` first (add `--check-pes` to
 construct the PES), then `pyrpmd run` with a new `--output` directory. External models, MPI and GPU
 need the dependencies listed in [Installation](installation.md).
 
@@ -51,8 +53,8 @@ pyrpmd run examples/pcet/harmonic_scan.inp --output runs/tutorial-pcet
 pyrpmd resume runs/tutorial-pcet
 ```
 
-The surface and site-rate examples run umbrella sampling, constrained parents and recrossing, which
-is why they take longer. Their output is described in [Materials and surfaces](periodic.md) and
+The surface and site-rate examples run the full umbrella sampling, constrained-parent and
+recrossing pipeline, hence the longer times. Their output is described in [Materials and surfaces](periodic.md) and
 [PCET](pcet.md).
 
 ## Benchmarks with real models
@@ -66,7 +68,7 @@ The [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/ben
 runs H and D in nickel with P=1 and 4 on a pinned, checksummed EAM model, which is downloaded
 separately.
 
-The [ASE surface example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/surface/README.md) *(partly Chinese)*
+The [ASE surface example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/surface/README.md)
 connects ASE EMT for a Cu adatom on Cu(111).
 
 The [PCET comparison](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/pcet-model-2026-10-30/README.md)
