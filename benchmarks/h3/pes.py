@@ -85,6 +85,8 @@ class BKMP2Potential(Potential):
 
 # The exported native batch must not bypass a later evaluate() replacement.
 _BKMP2_EVALUATE = BKMP2Potential.evaluate
+# Standalone radial kernels use the same rule for the public radial method.
+_BKMP2_RADIAL = BKMP2Potential.radial
 
 
 def build(library=None):
