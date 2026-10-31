@@ -8,6 +8,11 @@ dRPMD、二维自由能面、伞抽样 PMF 和 recrossing。它不是裸 PES 的
 [SOURCE.md](SOURCE.md)。默认统一温度 **1500 K**，氢核质量使用
 `1.00782503223 u`；原子索引为 0、1、2，原反应物为 H0 + H1H2。
 
+32 珠子态选择 NE-RPMD / QCT 的论文对照见
+[态选择复现记录](STATE_SELECTED_REPRODUCTION.md)。后续的
+[初态制备敏感性研究](STATE_PREPARATION_STUDY.md) 分别检查论文的质心筛选、
+全势作用量 QCT 和实验性平滑切换，并给出配对统计与孤立 H₂ 能量诊断。
+
 ## 运行
 
 需要从仓库根目录运行，安装 PyRPMD 原生内核、GNU Fortran 和图表依赖：

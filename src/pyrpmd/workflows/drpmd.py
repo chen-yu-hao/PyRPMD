@@ -60,6 +60,25 @@ def _integer(value, name, minimum=1):
     return int(value)
 
 
+def _checkpoint_clock_matches(value, steps, dt):
+    """Accept roundoff from repeated ``time += dt`` without hiding bad clocks.
+
+    A positive constant timestep accumulated n times has forward error bounded
+    by gamma_n * n*dt, gamma_n = n*u/(1-n*u), with binary64 unit roundoff u.
+    Include the final multiplication's rounding and retain the legacy absolute
+    floor for very short runs. The integer step count is still checked exactly.
+    """
+    expected = steps * dt
+    if not (math.isfinite(value) and math.isfinite(expected)) or value < 0:
+        return False
+    roundoff = (steps + 1) * (np.finfo(float).eps / 2)
+    if roundoff >= 0.5:
+        return False
+    tolerance = max(1e-12, roundoff / (1 - roundoff) * abs(expected)
+                    + 2 * math.ulp(expected))
+    return abs(value - expected) <= tolerance
+
+
 def validate_fragments(fragments, natoms):
     if len(fragments) != 2 or any(len(f) == 0 for f in fragments):
         raise ValueError("dRPMD requires exactly two nonempty reactant fragments")
@@ -807,8 +826,8 @@ def _nrpmd_trajectory(dynamics, state, classifier, config, out, trajectory_id,
         trace_energy = arrays["trace_energy"].tolist()
         trace_population = list(arrays["trace_populations"])
         _integer(done, "checkpoint.done", 0)
-        if done > max_steps or state.step != done or not math.isclose(
-                state.time, done * config["dt_au"], rel_tol=1e-11, abs_tol=1e-12):
+        if done > max_steps or state.step != done or not _checkpoint_clock_matches(
+                state.time, done, config["dt_au"]):
             raise ValueError("NRPMD checkpoint has inconsistent trajectory clock")
         length = len(trace_steps)
         if (arrays["trace_centroid"].shape != (length, *state.q.shape[1:])
@@ -1005,8 +1024,7 @@ def _trajectory(
         _integer(done, "checkpoint.done", 0)
         length = len(trace_steps)
         if (done > max_steps or state.step != done
-                or not math.isclose(state.time, done * config["dt_au"],
-                                    rel_tol=1e-11, abs_tol=1e-12)
+                or not _checkpoint_clock_matches(state.time, done, config["dt_au"])
                 or state.q.shape != (config["beads"], len(dynamics.masses), 3)
                 or state.p.shape != state.q.shape
                 or arrays["trace_centroid"].shape != (length, *state.q.shape[1:])

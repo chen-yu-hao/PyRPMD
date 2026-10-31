@@ -150,6 +150,12 @@ commit and checks its SHA256, then verifies the authors' energy/gradient referen
 equilibrium structure and the first-order saddle before propagating. The benchmark runs at 1500 K
 with 16 beads.
 
+The [state-selected reproduction](benchmarks/h3/STATE_SELECTED_REPRODUCTION.md) uses 32-bead
+NE-RPMD and QCT for comparison with published H + H₂ scattering cross sections. The follow-up
+[initial-state preparation study](benchmarks/h3/STATE_PREPARATION_STUDY.md) separates the paper's
+centroid conditioning, full-PES action QCT, and an experimental smooth switching preparation,
+with paired trajectory statistics and isolated-diatom energy diagnostics.
+
 ```bash
 # Needs GNU Fortran; figures need matplotlib.
 python -m pip install matplotlib
