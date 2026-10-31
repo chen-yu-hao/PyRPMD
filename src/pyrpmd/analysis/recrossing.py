@@ -13,7 +13,8 @@ from .fes import _block_resample, statistical_inefficiency
 
 
 def summarize_recrossing(
-    children, *, child_steps, plateau_fraction, plateau_tolerance, bootstrap, rng
+    children, *, child_steps, plateau_fraction, plateau_tolerance, bootstrap, rng,
+    extra_parent_observables=None, return_bootstrap_indices=False,
 ):
     """Group paired fluxes and resample chains and correlated parent blocks.
 
@@ -22,6 +23,11 @@ def summarize_recrossing(
     child pairs from one configuration cannot supply that missing evidence.
     Workflows may impose a stricter independent-chain policy for their primary
     uncertainty fields without changing the retained diagnostic draws.
+
+    ``extra_parent_observables`` maps ``(chain, parent)`` to one or more finite
+    observables whose correlation times must also bound the block length.
+    Optional resample indices preserve covariance with quantities estimated
+    from the same constrained parents (for example a surface mass metric).
     """
     if (isinstance(child_steps, (bool, np.bool_))
             or not isinstance(child_steps, (int, np.integer)) or child_steps < 2):
@@ -49,6 +55,13 @@ def summarize_recrossing(
         entry[0] += numerator
         entry[1] += denominator
     keys = sorted(grouped)
+    extra = None
+    if extra_parent_observables is not None:
+        if set(extra_parent_observables) != set(keys):
+            raise ValueError("extra parent observables must match the recrossing parents")
+        extra = np.asarray([np.atleast_1d(extra_parent_observables[key]) for key in keys], dtype=float)
+        if extra.ndim != 2 or not extra.shape[1] or not np.isfinite(extra).all():
+            raise ValueError("extra parent observables must be finite equally sized vectors")
     num = np.asarray([grouped[key][0] for key in keys])
     den = np.asarray([grouped[key][1] for key in keys])
     if not len(keys) or den.sum() <= 0:
@@ -69,6 +82,11 @@ def summarize_recrossing(
             out=np.zeros(len(ix)), where=den[ix] > 0,
         )
         blocks[chain] = max(1, int(np.ceil(statistical_inefficiency(observable))))
+        if extra is not None:
+            blocks[chain] = max(blocks[chain], *[
+                max(1, int(np.ceil(statistical_inefficiency(column))))
+                for column in extra[ix].T
+            ])
         # Zero-flux configurations contribute no information to a ratio of
         # flux sums and must not make a one-configuration sample look adequate.
         effective_blocks[chain] = float(np.count_nonzero(den[ix] > 0) / blocks[chain])
@@ -87,6 +105,7 @@ def summarize_recrossing(
 
     # Keep the established chain-choice / circular-block RNG draw order.
     boot_curves = []
+    boot_indices = []
     chains = list(chain_indices)
     for _ in range(bootstrap):
         selected = []
@@ -96,6 +115,8 @@ def summarize_recrossing(
         ix = np.asarray(selected, int)
         if den[ix].sum() > 0:
             boot_curves.append(num[ix].sum(axis=0) / den[ix].sum())
+            if return_bootstrap_indices:
+                boot_indices.append(ix.copy())
     boot_curves = np.asarray(boot_curves).reshape((-1, len(curve)))
     draws = boot_curves[:, start:].mean(axis=1)
     reasons = list(support_reasons)
@@ -113,7 +134,7 @@ def summarize_recrossing(
     )
     threshold = max(plateau_tolerance * abs(estimate), 2 * (drift_error or 0.0))
     plateau = bool(tail >= 10 and abs(drift) <= threshold and estimate > 0)
-    return {
+    result = {
         "parent_ids": keys, "parent_numerator": num, "parent_denominator": den,
         "curve": curve, "start": start, "kappa": estimate, "drift": drift,
         "bootstrap_curves": boot_curves, "bootstrap_kappa": draws,
@@ -136,3 +157,6 @@ def summarize_recrossing(
             "bootstrap_rejected": rejected,
         },
     }
+    if return_bootstrap_indices:
+        result["bootstrap_parent_indices"] = boot_indices
+    return result

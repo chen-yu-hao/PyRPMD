@@ -1,0 +1,67 @@
+# Nonlinear-CV workflow regression in a confined analytic harmonic model.
+# Artificial masses/temperature are chosen for a fast numerical pilot.
+# This input does not represent a physically calibrated chemical reaction.
+task = "site_rate"
+preset = "pilot"
+temperature = "105258.34 K"
+beads = 2
+seed = 37
+
+[system]
+symbols = ["H", "H", "H"]
+masses = [2.0, 2.0, 2.0]
+geometry = [[-1.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.6, 0.8, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.2}
+
+[dynamics]
+timestep = 0.03
+loop_backend = "python"
+
+[sampling]
+thermostat = "andersen"
+equilibration_steps = 200
+production_steps = 2000
+sample_interval = 2
+andersen_interval = 10
+replicas = 1
+
+[[cvs]]
+name = "transfer"
+kind = "bond_difference"
+atoms = [0, 1, 2]
+estimator = "centroid"
+
+[umbrella]
+cvs = ["transfer"]
+centers = [-0.8, -0.4, 0.0, 0.4]
+stiffness = 8.0
+
+[analysis]
+bins = 10
+ranges = [[-1.25, 1.25]]
+bootstrap = 0
+
+[site_rate]
+cv = "transfer"
+basin = ["-0.75 bohr", "0.0 bohr"]
+dividing_surface = "0.0 bohr"
+direction = 1
+
+[recrossing]
+parent_replicas = 2
+parent_samples = 4
+equilibration_steps = 5
+parent_interval_steps = 3
+child_pairs = 2
+child_steps = 40
+plateau_fraction = 0.5
+bootstrap = 16
+constraint_tolerance = 1e-11
+
+[output]
+directory = "runs/general-coordinate"
+checkpoint_steps = 200

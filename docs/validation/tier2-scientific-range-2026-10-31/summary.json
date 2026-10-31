@@ -1,0 +1,185 @@
+{
+  "schema": "pyrpmd.tier2-scientific-range.validation",
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "source_base_commit": "347facf9b57d281ba7b3c78bc6a06dcc0c138149",
+  "physical_converged": false,
+  "scope": "Local software regression and analytic-model validation; no production reaction scan or experimental rate validation.",
+  "tests": {
+    "non_socket": {
+      "passed": 1613,
+      "skipped": 23,
+      "deselected": 2,
+      "subtests_passed": 153,
+      "elapsed_seconds": 134.85,
+      "log": "pytest-non-socket.txt"
+    },
+    "socket": {
+      "passed": 2,
+      "elapsed_seconds": 0.54,
+      "log": "pytest-socket.txt",
+      "execution_note": "The two local socket tests ran separately with approved socket access."
+    },
+    "combined": {
+      "passed": 1615,
+      "skipped": 23,
+      "subtests_passed": 153,
+      "deselected_tests_executed_separately": 2
+    },
+    "skip_categories": [
+      "optional real BKMP2 PES not built",
+      "source-pinned EAM not configured",
+      "ASE runtime absent",
+      "PyTorch runtime absent",
+      "independent optional reference solver absent"
+    ]
+  },
+  "documentation": {
+    "status": "passed",
+    "tool": "Sphinx 8.2.3 HTML build",
+    "log": "documentation-build.txt"
+  },
+  "packaging": {
+    "status": "passed",
+    "details": "package-build.json",
+    "wheel_import_smoke": "wheel-import-smoke.json",
+    "outside_checkout_import_passed": true
+  },
+  "general_coordinate_rate": {
+    "details": "general-coordinate-result.json",
+    "example": "examples/rate/general_coordinate.inp",
+    "model": "Artificial three-atom harmonic-confinement regression; masses 2 electron masses each, T=105258.34 K, P=2.",
+    "coordinate": "BondDifference; smooth scalar centroid coordinate with varying mass metric",
+    "rate_estimate_s_inverse": 1.6587545557694696e+16,
+    "qtst_estimate_s_inverse": 1.8855838620650584e+16,
+    "kappa": 0.8797034113098692,
+    "parent_configurations": 8,
+    "child_trajectories": 32,
+    "maximum_endpoint_energy_error_kBT_per_bead": 9.181016922096213e-05,
+    "full_rate_uncertainty_available": false,
+    "physical_converged": false,
+    "limitations": [
+      "Tiny pilot with 8 parent configurations and 32 child trajectories",
+      "PMF bootstrap disabled; complete rate standard error unavailable",
+      "Finite-time plateau and energy check do not establish sampling/bead/time-step/bin convergence",
+      "Artificial model rate is not a calibrated chemical prediction"
+    ]
+  },
+  "studies": {
+    "site_plan": {
+      "example": "examples/studies/site_rate.json",
+      "cases": 72,
+      "executed": false
+    },
+    "drpmd_plan": {
+      "example": "examples/studies/drpmd.json",
+      "cases": 48,
+      "executed": false
+    },
+    "validated_behaviors": [
+      "Independent reproducible case streams",
+      "Physical durations and observation/thermostat cadences held fixed under timestep scans",
+      "Isotope masses and dRPMD parent/launch COM placement updated consistently",
+      "Primary withheld rates never replaced by pilot estimates",
+      "Explicit rate-unit consistency",
+      "Arrhenius residuals, oriented KIEs and numerical equivalence tests",
+      "Restart identity validation; unavailable KIE uncertainty does not discard other completed results"
+    ],
+    "physical_converged": false
+  },
+  "instanton": {
+    "details": "instanton-results.json",
+    "quantitative_scope": "one active Cartesian coordinate; supplied reactant partition function",
+    "multidimensional_scope": "stationary path, action and full-ring mode diagnostics; no multidimensional prefactor",
+    "continuum_relative_error_vs_exact_quantum": -0.06300882643310157,
+    "physical_converged": false
+  },
+  "quantum_equilibrium": {
+    "details": "../../../examples/quantum_statistics/harmonic_validation.json",
+    "details_sha256": "d96b2b070fb30f81df2ceafb8f0604a7a1a0b71c489f46ae741c79bc41eab60d",
+    "temperature_K": 197.35939050249195,
+    "trace_comparison": {
+      "TI_beads": 16,
+      "TI_absolute_logZ_error_per_Cartesian_mode": 0.0003348970809762264,
+      "primitive_beads": 128,
+      "primitive_absolute_logZ_error_per_Cartesian_mode": 0.0006511927699786035,
+      "bead_count_reduction_factor_for_this_comparison": 8,
+      "TI_error_divided_by_primitive_error": 0.5142825541309837,
+      "runtime_speedup_measured": false
+    },
+    "heat_capacity": {
+      "A": {
+        "thermodynamic_heat_capacity_over_kB": -0.04435917820308255,
+        "thermodynamic_standard_error_over_kB": 0.41950806918660827,
+        "scaled_coordinates_heat_capacity_over_kB": -0.18599710516999224,
+        "scaled_coordinates_standard_error_over_kB": 0.22984746486206706,
+        "conditional_standard_error_reduction_factor": 1.8251585652178404,
+        "conditional_estimated_variance_reduction_factor": 3.331203788188046,
+        "exact_quantum_heat_capacity_over_kB": 0.06445205981887961,
+        "finite_bead_TI_reference_heat_capacity_over_kB": 0.08373906013048327,
+        "finite_difference_h_vs_half_h_heat_difference_over_kB": 3.1014650758720563e-07,
+        "physical_converged": false
+      },
+      "B": {
+        "thermodynamic_heat_capacity_over_kB": 0.22925785730038228,
+        "thermodynamic_standard_error_over_kB": 0.4307299632424818,
+        "scaled_coordinates_heat_capacity_over_kB": 0.7943069637668505,
+        "scaled_coordinates_standard_error_over_kB": 0.09699695393544751,
+        "conditional_standard_error_reduction_factor": 4.440654533637594,
+        "conditional_estimated_variance_reduction_factor": 19.71941268711612,
+        "exact_quantum_heat_capacity_over_kB": 0.9122619580568532,
+        "finite_bead_TI_reference_heat_capacity_over_kB": 0.91289553694196,
+        "finite_difference_h_vs_half_h_heat_difference_over_kB": 1.9063787881634653e-08,
+        "physical_converged": false
+      }
+    },
+    "low_temperature_phase_A_heat_capacity_resolved": false,
+    "fractionation": {
+      "alpha_A_over_B": 4.988789573857457,
+      "log_alpha_A_over_B": 1.6071933099692297,
+      "1000_log_alpha": 1607.1933099692296,
+      "log_alpha_standard_error": 0.02094323868316651,
+      "temperature_K": 197.35939050249195,
+      "overlap_adequate": true,
+      "definition": "(new/old isotope ratio in phase A)/(new/old isotope ratio in phase B)",
+      "physical_converged": false,
+      "exact_quantum_log_alpha_A_over_B": 1.639534346400584
+    },
+    "momentum": {
+      "imaginary_time_links": 32,
+      "bandwidth_bohr": 0.12451034078477749,
+      "integral_on_supplied_momentum_grid": 1.0033833111136565,
+      "negative_area_on_supplied_grid": 0.008634706761461906,
+      "exact_quantum_momentum_variance_au": 4.595582258219727,
+      "exact_quantum_end_to_end_variance_bohr2": 0.21760028301340598,
+      "sample_end_to_end_second_moment_bohr2": 0.20862269683860168
+    },
+    "scope_limits": [
+      "TI fourth order applies to closed partition traces and consistent derivatives, not arbitrary PMF/density histograms",
+      "No PIGLET implementation or reduction of physical RPMD real-time bead requirements is claimed",
+      "Scaled-coordinate finite differences cost four additional PES evaluations per saved configuration",
+      "Momentum uses primitive one-component-open paths, with bandwidth, finite-grid and sampling errors",
+      "All error bars are conditional statistical diagnostics, not proof of physical convergence"
+    ],
+    "physical_converged": false
+  },
+  "validated_code_sha256": {
+    "src/pyrpmd/instanton.py": "504bbf5d46ebc05dbb875ef01de47a3df9dc2271ee30b2dbdeee5c4897b3e005",
+    "src/pyrpmd/path_integral.py": "72d85927c1f2230d24938eb1ae0e210f61e7bd6654d484e46f6f5a726506fd5c",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/studies.py": "022349efbd744ab624df36b7f54dd5d98d2e4e32e2124089c65dd88629030843",
+    "src/pyrpmd/workflows/site_rate.py": "881f57be6909dba13c372d5807874cf67e4ad9165e2300b24d0a67e9ed5336bb",
+    "src/pyrpmd/analysis/recrossing.py": "a9c81e8d5138a13f73ea3dd186b517b9ef4a99b231be8cee1fdd5602e08c5ec0",
+    "src/pyrpmd/cli.py": "60e3c89051f708037e243c6221d10543344458393912917bfe78bda719a5caec",
+    "src/pyrpmd/__init__.py": "27ce7074d7689baa8fb190279dfef75f95fc9144d3e5bcff289c8ee43361301a"
+  },
+  "evidence_sha256": {
+    "pytest-non-socket.txt": "c271c02604eaa1b10ced3eb82b815b80ac1f442ff1f84d9e34078c6eba841acd",
+    "pytest-socket.txt": "2f86d6e00fe040f161a2957fe1080a435069dbb1158c2975c3b86c577069cdf2",
+    "documentation-build.txt": "26feaeb22924e038a27c90cbe851b5454b964bcfcc12681d90d5bccea50a6115",
+    "instanton-results.json": "d33c530267d9a8bbf6880830b039e93b376a5ad082c2fe2b5ab349a4b502d997",
+    "general-coordinate-result.json": "3eba0ed43b4b41fc7a164f56ba3b536f4d1c523660455fa44cc917d8ca980e09",
+    "package-build.json": "87981df8ccd3f6651277fa1632e212227564d98bee8806273ebe2bf684c8738f",
+    "wheel-import-smoke.json": "1e06f2eff06d45886e6153852fe598fcde62a793b3a4a4c3a26a45fabbdb3bf3"
+  }
+}

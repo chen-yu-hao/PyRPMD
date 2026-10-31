@@ -74,6 +74,11 @@ def parser():
     a.add_argument("--atoms", nargs="+", type=int, help="Diffusion atom indices")
     a.add_argument("--max-lag", type=int, help="Maximum diffusion lag in saved frames")
     commands.add_parser("info", help="Report version and compiled native capabilities")
+    study = commands.add_parser("study", help="Run temperature/isotope and numerical-convergence rate scans")
+    study.add_argument("input", help="Study JSON or TOML file referencing an existing rate job")
+    study.add_argument("--output", help="Study output directory; required unless --plan")
+    study.add_argument("--resume", action="store_true")
+    study.add_argument("--plan", action="store_true", help="Resolve and print cases without dynamics")
     checkpoint = commands.add_parser("checkpoint", help="Verify a portable NPZ checkpoint")
     checkpoint.add_argument("path")
     checkpoint.add_argument(
@@ -303,12 +308,25 @@ def main(argv=None):
                     "materials": {"cell": "fixed", "trajectory": "unwrapped_centroid", "pressure_ensemble": False},
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
                     "enhanced_sampling": ["adaptive_umbrella", "standard_metadynamics", "well_tempered_metadynamics"],
+                    "scientific_tools": ["general_centroid_site_rates", "temperature_isotope_studies", "ring_polymer_instanton", "takahashi_imada_thermodynamics", "open_path_momentum"],
                     "input_schema_version": 1,
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
                 }
             )
+        elif args.command == "study":
+            from .studies import plan_rate_study, run_rate_study
+
+            if args.plan:
+                if args.resume:
+                    raise InputError("--plan and --resume cannot be combined")
+                plan = plan_rate_study(args.input)
+                _print({**plan, "cases": [case.to_dict() for case in plan["cases"]]})
+            else:
+                if not args.output:
+                    raise InputError("study requires --output, or --plan to inspect the cases")
+                _print(run_rate_study(args.input, output=args.output, resume=args.resume))
         elif args.command == "pes":
             _print(_pes(args))
         elif args.command == "checkpoint":

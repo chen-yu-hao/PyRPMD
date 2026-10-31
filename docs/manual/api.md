@@ -39,6 +39,59 @@ from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 ```{autofunction} pyrpmd.runner.analyze_run
 ```
 
+## 科学范围扩展 API
+
+温度／同位素扫描复用现有工作流和检查点；低温 instanton 和量子统计采样器
+使用现有 `Potential.evaluate` 接口。它们不隐式替换原有 RPMD 实时传播。
+完整用法与适用边界分别见[速率研究](../rate-studies.md)、
+[Instanton](../instanton.md)和[量子统计](../quantum-statistics.md)。
+
+```{autofunction} pyrpmd.studies.plan_rate_study
+```
+
+```{autofunction} pyrpmd.studies.run_rate_study
+```
+
+```{autofunction} pyrpmd.studies.arrhenius_fit
+```
+
+```{autofunction} pyrpmd.studies.kinetic_isotope_effect
+```
+
+```{autofunction} pyrpmd.instanton.optimize_instanton
+```
+
+```{autofunction} pyrpmd.instanton.instanton_rate_1d
+```
+
+```{autoclass} pyrpmd.path_integral.PathIntegralAction
+:members: evaluate, evaluate_batch
+```
+
+```{autofunction} pyrpmd.path_integral.sample_path_integral
+```
+
+```{autoclass} pyrpmd.path_integral.OpenPathAction
+```
+
+```{autofunction} pyrpmd.path_integral.sample_open_path
+```
+
+```{autofunction} pyrpmd.quantum_statistics.energy_heat_capacity
+```
+
+```{autofunction} pyrpmd.quantum_statistics.quantum_kinetic_energy
+```
+
+```{autofunction} pyrpmd.quantum_statistics.isotope_substitution_free_energy
+```
+
+```{autofunction} pyrpmd.quantum_statistics.isotope_fractionation
+```
+
+```{autofunction} pyrpmd.quantum_statistics.momentum_distribution_from_open_paths
+```
+
 ## System 与 State
 
 `System` 记录原子、核质量、初始几何、片段、电子态以及可选 cell/PBC/固定原子。

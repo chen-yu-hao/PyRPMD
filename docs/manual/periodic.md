@@ -8,7 +8,7 @@
 | --- | --- | --- | --- | --- |
 | `pimd` | 平衡量子统计 | 支持 | 当前拒绝 | 能量估计器、回转半径 |
 | `diffusion` | 连续质心轨迹与输运分析 | 支持 | 当前拒绝 | MSD、VACF、D 与诊断 |
-| `site_rate` | 全原子可动材料中的选定局部出口 | 支持 | 当前拒绝 | 一个恒定梯度 CV 的盆地速率 |
+| `site_rate` | 全原子可动材料中的选定局部出口 | 支持 | 当前拒绝 | 一个光滑标量质心 CV 的盆地速率，含非线性质量度量修正 |
 | `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、overlap、mask |
 | `surface_rate` | 可含固定层的表面局部出口 | 支持，也可使用有限簇 | 支持 | 活动自由度质量度量的一阶速率 |
 
@@ -47,7 +47,7 @@ H/D/T 在电子 PES 上都对应氢元素，区别在于核质量。可以使用
 | `surface_height` | 吸附原子组 COM 沿表面法向的投影 | 高度自由能、线性表面分割面 |
 | `surface_lateral` | 指定方向的连续展开 COM 投影 | 面内迁移自由能与选定出口 |
 
-`periodic_bond_difference` 也接受别名 `periodic_difference`。普通几何 CV 不会因任务类型或是否固定底层而隐式改变定义。最近像 CV 在像切换处可有导数分支，需检查所选范围是否适合平滑偏置和采样。`site_rate` / `surface_rate` 的恒定质量度量约束只接受各自明确支持的线性 centroid CV，不把任意周期距离或质子转移坐标当作已实现的约束速率。
+`periodic_bond_difference` 也接受别名 `periodic_difference`。普通几何 CV 不会因任务类型或是否固定底层而隐式改变定义。最近像 CV 在像切换处可有导数分支，需检查所选范围是否适合平滑偏置和采样。`site_rate` 支持满足光滑标量质心合同的非线性坐标，并对约束母轨迹施加质量度量权重；`surface_rate` 保留其原有恒定质量度量限制。周期像切换或坐标奇点不能直接当作光滑分割面，详见[通用坐标速率](../general-coordinate-rates.md)。
 
 ## 周期势能接口
 
@@ -136,7 +136,7 @@ $$
 
 ## 位点与表面速率的共同物理定义
 
-两个局部速率工作流都对一个恒定质量度量的线性 centroid 坐标 s，使用同一位置密度的分割面值与盆地概率：
+对于恒定质量度量的线性 centroid 坐标 s，两个局部速率工作流使用同一位置密度的分割面值与盆地概率。非线性 `site_rate` 进一步使用约束母轨迹的质量度量平均，详见[通用公式](../general-coordinate-rates.md)：
 
 $$
 k_{\mathrm{QTST}}=
@@ -157,7 +157,7 @@ pyrpmd run examples/materials/site_rate.inp --output runs/manual-site-rate
 pyrpmd analyze runs/manual-site-rate
 ```
 
-[示例](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)使用未包装的 `fractional` centroid 坐标。支持的 CV 是 `cartesian`、`projection` 或 `fractional`；后两者可参考指定晶格原子组。`site_rate.cv` 指定同一个 umbrella CV，`basin=[lo,hi]` 定义有限盆地，`direction=1` 要求分割面为 hi，`direction=-1` 要求分割面为 lo。
+[示例](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)使用未包装的 `fractional` centroid 坐标。`cartesian`、`projection` 或 `fractional` 保持原有恒定度量路径；光滑的距离、键长差、角度及兼容的 Python centroid CV 也可使用非线性度量路径，详见[通用坐标速率](../general-coordinate-rates.md)。`projection` 和 `fractional` 可参考指定晶格原子组。`site_rate.cv` 指定同一个 umbrella CV，`basin=[lo,hi]` 定义有限盆地，`direction=1` 要求分割面为 hi，`direction=-1` 要求分割面为 lo。
 
 窗口与分析范围需覆盖整个盆地，并在出口另一侧提供所需支持。窗口/受约束母链用 Andersen，±p 子轨迹不恒温；负的有限样本 κ 不会被裁为零。结果含 `site_qtst.npz`、`pmf/fes.csv`、`recrossing.csv`，摘要字段是 `rate_s`、`rate_estimate_s`、`rate_standard_error_s` 及 `rate_uncertainty`。
 

@@ -27,6 +27,22 @@ def __getattr__(name):
         from .analysis.diffusion import analyze_diffusion
 
         return analyze_diffusion
+    if name in ("plan_rate_study", "run_rate_study", "arrhenius_fit", "kinetic_isotope_effect"):
+        from . import studies
+
+        return getattr(studies, name)
+    if name in ("optimize_instanton", "instanton_rate_1d", "instanton_seed", "crossover_temperature"):
+        from . import instanton
+
+        return getattr(instanton, name)
+    if name in ("PathIntegralAction", "PathIntegralSamples", "OpenPathAction", "OpenPathSamples", "sample_path_integral", "sample_open_path"):
+        from . import path_integral
+
+        return getattr(path_integral, name)
+    if name in ("energy_heat_capacity", "quantum_kinetic_energy", "isotope_substitution_free_energy", "isotope_fractionation", "fractionation_mass_integration", "momentum_distribution_from_open_paths"):
+        from . import quantum_statistics
+
+        return getattr(quantum_statistics, name)
     raise AttributeError(name)
 
 
@@ -34,4 +50,8 @@ __all__ = [
     "NRPMDState", "NRPMDDynamics", "DiabaticResult",
     "JobSpec", "System", "State", "Dynamics", "run", "prepare",
     "resume_run", "analyze_run", "analyze_diffusion", "__version__",
+    "plan_rate_study", "run_rate_study", "arrhenius_fit", "kinetic_isotope_effect",
+    "optimize_instanton", "instanton_rate_1d", "instanton_seed", "crossover_temperature",
+    "PathIntegralAction", "PathIntegralSamples", "OpenPathAction", "OpenPathSamples", "sample_path_integral", "sample_open_path",
+    "energy_heat_capacity", "quantum_kinetic_energy", "isotope_substitution_free_energy", "isotope_fractionation", "fractionation_mass_integration", "momentum_distribution_from_open_paths",
 ]

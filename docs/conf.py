@@ -22,7 +22,7 @@ extensions = [
 ]
 source_suffix = {".md": "markdown"}
 root_doc = "index"
-include_patterns = ["index.md", "manual/*.md"]
+include_patterns = ["index.md", "manual/*.md", "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "quantum-statistics.md"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 myst_enable_extensions = ["dollarmath", "colon_fence"]
 myst_heading_anchors = 4

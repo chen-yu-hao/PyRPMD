@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "build_products": [
+    {
+      "filename": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+      "sha256": "85f41db02b49c6468b29e1af65f2e78298c49727b6b3d3b7c7bf053832e937c1",
+      "bytes": 1105979,
+      "new_scientific_modules_present": [
+        "instanton.py",
+        "path_integral.py",
+        "quantum_statistics.py",
+        "studies.py"
+      ]
+    },
+    {
+      "filename": "pyrpmd-0.2.0.tar.gz",
+      "sha256": "18644bf9d17b58be342c718fe2774b39fa7038e9bdb384a5db9673b6a948d359",
+      "bytes": 2401792,
+      "new_scientific_modules_present": [
+        "instanton.py",
+        "path_integral.py",
+        "quantum_statistics.py",
+        "studies.py"
+      ]
+    }
+  ],
+  "build_log_sha256": "3581273d417f0ff0658c2c7ae4977265e01bc3806a6beabb68e579dea9c6bee7",
+  "build_log_terminal_line": "removing build/bdist.linux-x86_64/wheel",
+  "known_nonfatal_warning": "The setuptools direct setup.py build path emits a deprecation warning.",
+  "scope": "Source distribution and CPython 3.12 Linux wheel built before this documentation-only dossier was added; archive contents inspected for all four new scientific modules."
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "job": "../materials/site_rate.inp",
+  "temperatures": ["300 K", "400 K", "600 K"],
+  "isotopologues": {
+    "H": [],
+    "D": [{"atom": 0, "mass": "2.01410177812 amu"}]
+  },
+  "kie_reference": "H",
+  "convergence": {
+    "beads": [4, 8, 16],
+    "timestep": ["0.1 fs", "0.05 fs"]
+  },
+  "replicates": 3,
+  "design": "one_at_a_time",
+  "relative_tolerance": 0.05
+}

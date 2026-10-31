@@ -49,6 +49,23 @@ RPMD 速率、显式恒电势界面模拟或电流密度。其近似和能量约
 
 MPI 路径已在**同一台机器的 4 个真实 MPI 进程**中测试。跨物理节点和真实 CUDA 硬件尚未实测。Torch CPU 和多 GPU 分配逻辑分别有测试。当前 MPI 是静态分组，`pes_ranks=1`；不声称支持任意势能程序内部的 MPI communicator。
 
+## 科学范围扩展
+
+当前代码还提供以下相互独立的接口，使用前请检查各自归一化和适用范围：
+
+- [光滑非线性质心坐标速率](docs/general-coordinate-rates.md)：`site_rate` 复用 umbrella/MBAR、Cayley–RATTLE 和成对子轨迹，加入质量度量及相关 bootstrap 修正。
+- [温度／同位素／收敛扫描](docs/rate-studies.md)：`pyrpmd study` 自动运行温度、质量、珠子、时间步、气相分离距离与 dRPMD `bmax` 扫描，输出 Arrhenius、KIE 和数值等价性检查。
+- [Ring-polymer instanton](docs/instanton.md)：多维作用量与路径检查，以及具有显式反应物配分函数的一维低温速率；多维完整速率前因子尚未实现。
+- [高阶路径积分与量子估计量](docs/quantum-statistics.md)：primitive/Takahashi–Imada 平衡 MC、热容、量子动能、同位素分馏与单分量开链动量分布。TI 的四阶精度限于迹热力学，不改变真实时间 RPMD 的 Hamiltonian。
+
+```bash
+pyrpmd study examples/studies/site_rate.json --plan
+python examples/instanton/eckart.py
+python examples/quantum_statistics/harmonic_validation.py
+```
+
+这些示例是解析模型的数值验证；成功运行不自动代表真实反应或材料的物理收敛。
+
 ## 安装
 
 从源码安装，而非假定已有同名 PyPI 发布：

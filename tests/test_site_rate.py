@@ -137,13 +137,10 @@ def test_validation_units_direction_and_fractional_mass_metric():
     json.dumps(prepared, allow_nan=False)
 
 
-@pytest.mark.parametrize("change", ["nonlinear", "bead_average", "wrong_cv", "gas", "rate_flux", "native", "boolean_direction", "wrapped_bias"])
+@pytest.mark.parametrize("change", ["bead_average", "wrong_cv", "gas", "rate_flux", "native", "boolean_direction", "wrapped_bias"])
 def test_initial_scope_is_explicitly_rejected(change):
     config, system = configuration(), hydrogen()
-    if change == "nonlinear":
-        config["cvs"][0] = {"name": "x", "kind": "distance", "atoms": [0, 1]}
-        system = System(("H", "H"), [2., 2.], [[0., 0., 0.], [1., 0., 0.]])
-    elif change == "bead_average":
+    if change == "bead_average":
         config["cvs"][0]["estimator"] = "bead_average"
     elif change == "wrong_cv":
         config["site_rate"]["cv"] = "another"
