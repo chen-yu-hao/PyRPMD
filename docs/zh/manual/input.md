@@ -150,18 +150,20 @@ FES 中是两次保存样本之间的时间。
 | `[system]` | 除 `pcet` 外全部 | `geometry`、`transition_state`、`reactants`、`separation`、`symbols`、`masses`、`masses_amu`、`isotopes`、`geometry_unit`、`fragments`、`charge`、`multiplicity`、`cell`、`cell_unit`、`pbc`、`fixed_atoms` |
 | `[potential]` | 除 `pcet` 外全部 | `provider`、`factory`、`library`、`manifest`、`params`、`units`、`derivative`、`device` 等，见[势能](potentials.md) |
 | `[dynamics]`、`[sampling]`、`[parallel]` | 除 `pcet` 外全部 | 见上文与[执行与并行](execution.md) |
-| `[[cvs]]`、`[umbrella]`、`[analysis]` | `fes`、`rate`、`network`、`site_rate`、`surface_rate`；`metadynamics` 和 `opes` 使用 `cvs` 与 `analysis` | 见下文 |
+| `[[cvs]]`、`[analysis]` | 三种 FES 方法；`rate`、`network`、`site_rate`、`surface_rate` | CV 定义与重构设置，见下文 |
+| `[umbrella]` | 伞形 FES；`rate`、`network`、`site_rate`、`surface_rate` | 窗口中心与刚度；FES 中可写为 `[fes.umbrella]` |
 | `[reaction]` | `rate`（`drpmd` 可用 `electronic_weight`） | `fragments`、`forming_bonds`、`breaking_bonds`、`rinf`、`symmetry_factor`、`equivalent_paths` |
-| `[rate]` | `rate` | `pmf_method`、`dividing_surface`、`pmf_search_range`、`compare_ui` |
+| `[rate]` | `rate` | `pmf_method`、`dividing_surface`、`pmf_search_range`、`compare_ui`、可选 `pmf_source`，见[PMF 来源](../enhanced-sampling.md#rate-选择-pmf-来源) |
 | `[recrossing]` | `rate`、`network`、`site_rate`、`surface_rate` | 母链数、母链间隔、child pairs、child 时间、bootstrap |
 | `[collision]`、`[outcomes]` | `drpmd` | 发射分布、`bmax`、总轨迹数、最大时间；产物分类 |
 | `[nonadiabatic]` | `drpmd`（实验性 NRPMD） | 见[非绝热 NRPMD](nonadiabatic.md) |
 | `[electronic_friction]` | `diffusion` | `method = "centroid"`、`provider`、`gamma` 或 `tensor`，或 Python `factory` 与 `params`；见[电子摩擦](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
 | `[initial_ensemble]` | `drpmd`（实验性核初态选择） | `method = "ne_rpmd"` 或 `"qct"`、NE 显式 `beta`、片段 Hessian/模式和 `vibrational_quanta`；见[直接碰撞](workflows.md) |
-| `[adaptive_umbrella]` | `fes`、`rate` | 见[气相与自由能](workflows.md) |
-| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` 可选偏置网格 |
-| `[opes]` | `opes` | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
-| `[replica_exchange]` | `fes` | 同温固定窗口的交换间隔与可选连通图，见[副本交换](../replica-exchange.md) |
+| `[adaptive_umbrella]` | 伞形 FES；`rate` | 见[气相与自由能](workflows.md) |
+| `[fes]`、`[[fes.cvs]]`、`[fes.sampling]`、`[fes.analysis]`、`[fes.<method>]` | `fes` | 选择 umbrella / metadynamics / opes；公共与方法参数分层，见[统一增强采样](../enhanced-sampling.md) |
+| `[fes.metadynamics]` 或 `[metadynamics]` | FES 方法 `metadynamics` | hill 参数、可选偏置网格、`multiple_walkers` / `block_steps` |
+| `[fes.opes]` 或 `[opes]` | FES 方法 `opes` | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
+| `[replica_exchange]` | 伞形 FES | 同温固定窗口的交换间隔与可选连通图，见[副本交换](../replica-exchange.md) |
 | `[barostat]` | `pimd` | 默认引擎：`method="bzp"`、`pressure`、`time_constant`、`friction`；原生引擎使用单独的控制参数，见[材料](periodic.md) |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |
 | `[network]` | `network` | 入口、通道、过渡态 |
@@ -169,6 +171,18 @@ FES 中是两次保存样本之间的时间。
 | `[output]` | 全部 | `directory`、`checkpoint_interval` / `checkpoint_steps`、`trajectory_stride` |
 
 全部字段与组合规则见[输入规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)。
+
+### 选择 FES 方法
+
+使用 `task="fes"`，并在 `[fes]` 中设置 `method="umbrella"`、`"metadynamics"` 或 `"opes"`，
+缺省为 `umbrella`。公共 `cvs`、`sampling`、`analysis` 可以放在 `fes` 下或顶层，但同一部分
+只能选择一种位置。偏置参数放在所选方法的表中；其他方法的表会被拒绝，包括空表。
+伞形和 MetaD 支持 1–3 维 CV，OPES 支持 1–2 维。完整迁移例子与公共输出格式见
+[统一 FES 指南](../enhanced-sampling.md)。
+
+旧的 `task="metadynamics"` 和 `task="opes"` 仍受支持，但会给出弃用提示。它们分发到相应
+FES 方法，可续算兼容的旧 checkpoint。输出目录的缺省值保留原输入中的任务拼写；迁移
+需要续算的运行时，应显式指定原目录。
 
 ## 原子、同位素与几何
 
@@ -196,7 +210,9 @@ isotopes = [{atom = 0, mass = "2.01410177812 amu"}]
 
 ## 集体变量与偏置
 
-`[[cvs]]` 定义带名字的 CV，`umbrella.cvs` 选择要偏置的 CV。`centroid` 在环质心上求坐标；`bead_average`
+`[[cvs]]`（或 `[[fes.cvs]]`）定义带名字的 CV。所选方法的 `cvs` 列表（如 `fes.umbrella.cvs` 或
+`fes.metadynamics.cvs`）选择要偏置的 CV；`umbrella.cvs` 等顶层方法表仍受支持。
+`centroid` 在环质心上求坐标；`bead_average`
 逐珠子求值后平均，对非线性 CV 两者不同。自定义 CV 返回完整 Jacobian，见[势能与插件](potentials.md)。
 
 数值伞中心使用 CV 声明的输入单位；带单位字符串携带自身单位。数值 stiffness 以原子单位计。`distance`、
@@ -228,15 +244,16 @@ isotopes = [{atom = 0, mass = "2.01410177812 amu"}]
 
 ### 伞窗口
 
-用以下任一形式给出窗口中心，`cvs` 指定被偏置的 CV：
+用以下任一形式给出窗口中心，`cvs` 指定被偏置的 CV。新的 `task="fes"` 输入可将表名写为
+`[fes.umbrella]`；速率等使用伞形采样的其他工作流继续使用 `[umbrella]`：
 
 ```toml
 [umbrella]
 cvs = ["x"]
-centers = [-0.5, 0.0, 0.5]              # 显式列表；二维时为 [[x, y], ...]
+centers = [-0.5, 0.0, 0.5]              # 二维/三维时为 [[x, y], ...] / [[x, y, z], ...]
 # start = -1.0, stop = 1.0, count = 9   # 一维等间距
 # grid = [{start = -1.0, stop = 1.0, count = 3},
-#         {start = -1.0, stop = 1.0, count = 3}]  # 二维张量网格；每轴也可直接给列表
+#         {start = -1.0, stop = 1.0, count = 3}]  # 每个 CV 一轴；每轴也可直接给列表
 stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 ```
 
@@ -272,8 +289,13 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
   `validate --write-resolved FILE` 显式写出解析后的配置。
 - `--workers N` 设置 `parallel.trajectory_workers`；非 MPI 输入在 N>1 时使用 `process` 后端。
 - `run` 不写入已有的非空输出目录。继续运行使用 `pyrpmd resume DIR` 或 `pyrpmd run INPUT --resume`。
-- `--bins` 与 `--bootstrap` 隐含 `--recompute`。离线重分析适用于 `fes`、`metadynamics`、`opes` 和 `diffusion`；
-  其他任务的 `analyze` 读取保存的摘要。
+- `--bins` 与 `--bootstrap` 隐含 `--recompute`。离线重分析适用于三种 FES 方法（包括旧任务别名）和
+  `diffusion`；其他任务的 `analyze` 读取保存的摘要。FES bootstrap 仅用于伞形采样；MetaD/OPES
+  使用独立副本 spread，要求 `bootstrap=0`。
+
+FES 在创建运行目录之前执行所选方法的预检。伞形预检包括 CV 与窗口维度、刚度、直方图范围和
+每个窗口至少两个保存样本；`analysis.bootstrap` 必须为零或至少为二。这些检查用于发现静态输入
+错误。样本支持、窗口重叠与科学收敛仍需根据实际轨迹判断。
 
 扩散重分析接受 `--fit-range '10 fs' '100 fs'`、`--axes 0 1`、`--atoms 0` 和 `--max-lag N`，其中延迟以保存帧数计。
 拟合范围须在保存的时长之内，见[输出与分析](results.md)。

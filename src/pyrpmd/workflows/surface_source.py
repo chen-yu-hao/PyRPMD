@@ -16,10 +16,10 @@ import numpy as np
 
 from ..cv import CVStack, make_cvs
 from ..io import file_sha256, fingerprint, jsonable, write_json
-from ..checkpoint import load_checkpoint
+from ..analysis.fes_result import FESResult
 from ..system import System
 from ..potentials.base import PESResult, validate_result
-from .fes import _atomic_npz, checked_integer
+from .common import _atomic_npz, checked_integer, fes_method
 
 
 def source_paths(raw, base=None):
@@ -48,12 +48,14 @@ def source_context(config, system, *, verify=False):
     paths = source_paths(config["surface"]["free_energy"])
     source = json.loads(Path(paths["config_file"]).read_text())
     source_system = System.from_dict(json.loads(Path(paths["system_file"]).read_text()))
-    if source["task"] not in ("fes", "metadynamics") or source.get("analysis", {}).get("measure", "cv_density") != "cv_density":
+    method = fes_method(source)
+    if (source["task"] not in ("fes", "metadynamics") or method not in ("umbrella", "metadynamics")
+            or source.get("analysis", {}).get("measure", "cv_density") != "cv_density"):
         raise ValueError("surface source must be an ordinary CV-density FES or metadynamics run")
     specs = source.get("cvs", [])
     if isinstance(specs, dict):
         specs = [dict(v, name=k) for k, v in specs.items()]
-    table = source.get("metadynamics" if source["task"] == "metadynamics" else "umbrella", {})
+    table = source.get(method, {})
     names = table.get("cvs")
     if isinstance(names, str):
         names = [names]
@@ -94,8 +96,8 @@ def source_context(config, system, *, verify=False):
 def _domain(data_file, selection_file, data_mtime, selection_mtime):
     # The run manifest hashes these files. Cache only small edges and a Boolean
     # domain per worker, not every replica's large free-energy arrays.
-    with np.load(data_file, allow_pickle=False) as data:
-        edges = [data[f"edges_{i}"].copy() for i in range(3) if f"edges_{i}" in data]
+    result = FESResult.read(data_file)
+    edges = [edge.copy() for edge in result.edges]
     shape = tuple(len(e) - 1 for e in edges)
     selection = np.ones(shape, bool) if selection_file is None else np.load(selection_file, allow_pickle=False)
     if not isinstance(selection, np.ndarray):
@@ -173,9 +175,9 @@ def source_pmf_and_parents(config, system, output, options):
     context = source_context(config, system, verify=True)
     edges, domain = source_domain(context)
     paths, axis = context["paths"], context["paths"]["axis"]
-    with load_checkpoint(paths["data_file"]) as data:
-        projected = marginalize_fes(data["free_energy"], edges, config["beta"], axes=axis,
-                                   mask=data["mask"], selection=domain)
+    result = FESResult.read(paths["data_file"])
+    projected = marginalize_fes(result.free_energy, edges, config["beta"], axes=axis,
+                               mask=result.mask, selection=domain)
     grid = (edges[axis][1:] + edges[axis][:-1]) / 2
     norm, reason = None, None
     try:

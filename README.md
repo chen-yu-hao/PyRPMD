@@ -10,7 +10,7 @@ recrossing-corrected rate, with fingerprinted checkpoint restart.**
 Give PyRPMD a transition state and a potential, and it builds the whole Bennett–Chandler
 calculation for you: a numerical Hessian and two-sided descent identify the reaction channel,
 umbrella sampling gives the PMF, and constrained parent chains launch paired recrossing
-trajectories for the transmission coefficient. The same Python or TOML input drives eleven tasks,
+trajectories for the transmission coefficient. The same Python or TOML input drives the workflows,
 from gas-phase rates and direct collisions to free-energy surfaces, metadynamics, PIMD, diffusion,
 surface hops and electrochemical PCET, on C++17/OpenMP integrator kernels with a NumPy reference
 implementation alongside.
@@ -112,10 +112,10 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Bimolecular RPMD rate from a TS | `rate` | `pyrpmd prepare examples/rate/pilot.inp --pilot` then `pyrpmd run examples/rate/pilot.inp` | ~15 s |
 | Direct collisions (dRPMD) | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
 | Rate matrix over several entrances and TSs | `network` | `examples/network/two_entrances.py` | ~25 s |
-| 1D/2D free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
+| 1D–3D umbrella free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
 | Adaptive umbrella windows | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
-| Standard or well-tempered metadynamics | `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
-| OPES probability-based enhanced sampling | `opes` | `examples/opes/harmonic_2d.inp` | — |
+| Standard or well-tempered metadynamics | `fes`, method `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
+| OPES probability-based enhanced sampling | `fes`, method `opes` | `examples/opes/harmonic_2d.inp` | — |
 | Fixed-cell PIMD and energy estimators | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | Directed site-to-site hop in a material | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
@@ -123,7 +123,11 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Electrochemical PCET, H/D, potential and temperature scans | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | State-selected nonadiabatic scattering (NRPMD, experimental) | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
 
-Run any of them with `pyrpmd run INPUT --output runs/NAME`. Two more patterns worth knowing:
+Run any of them with `pyrpmd run INPUT --output runs/NAME`. FES selects its method in `[fes]`;
+omitting `method` defaults to `umbrella`. The old `metadynamics` and `opes` task names remain
+deprecated aliases, so the existing examples still run. See the
+[unified FES guide](docs/enhanced-sampling.md) for method subtables, shared walkers and result files.
+Two more patterns worth knowing:
 
 ```bash
 # Restart with a different block size; the scientific settings keep the run identity.
@@ -147,8 +151,8 @@ to a research calculation.
 | Reaction networks | Separate entrances, TSs and PESs for one atom and isotope inventory; each path fills a rate matrix, reported per entrance, channel and TS |
 | dRPMD | Two reactant XYZ files and an initial COM distance; persistent parent chains launch collisions at a set interval |
 | Selected nuclear initial states | Approximate vibrational NE-RPMD and P=1 QCT at fixed collision energy, independent initial-state draws, precollision checks and unresolved-trajectory extension ([guide](docs/state-selected.md), [examples](examples/state_selected/README.md)) |
-| Free energy | 1D/2D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive window insertion from MBAR overlap, effective sample size and optional coverage targets |
-| Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories and finite-time bias FES |
+| Free energy | 1D–3D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive 1D–3D window insertion from MBAR overlap, effective sample size and optional coverage targets |
+| Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories or synchronized shared-bias multiple walkers; common FESResult and finite-time bias FES |
 | Replica-exchange umbrellas | Same-temperature fixed-window REUS, PILE-L or Andersen, synchronized ensemble restart and joint window bootstrap ([guide](docs/replica-exchange.md)) |
 | OPES | Fixed-bandwidth weighted probability estimation, optional frozen-bias reweighting and restartable independent histories ([guide](docs/opes.md)) |
 | PLUMED and path sampling | Optional centroid-bias PLUMED bridge; unbiased two-way shooting transition-interface ensembles with separate flux normalization ([PLUMED](docs/plumed.md), [TIS](docs/transition-interface-sampling.md)) |
@@ -345,7 +349,7 @@ the auxiliary beta parameter and fixed-energy statistical eligibility rules.
 
 ## Documentation
 
-The user manual covers installation, a quickstart, guides for all eleven tasks, the API and developer
+The user manual covers installation, a quickstart, guides for all supported workflows, the API and developer
 notes, in [English](docs/index.md) and [Chinese](docs/zh/index.md) with matching chapters. Build
 the searchable HTML manual (the Chinese edition goes to `zh/`):
 
@@ -362,7 +366,8 @@ See the [user-experience review and to-do list](docs/ux-review-2026-10-31.md) fo
 onboarding audit and follow-up work.
 
 A run directory holds `manifest.json`, `input/`, `checkpoints/`, workflow data and
-`results/summary.json`. FES adds `fes.h5`/`fes.npz`/`fes.csv`; dRPMD stores each initial state,
+`results/summary.json`. Every FES method adds `fes.npz`, `fes.csv`, `fes.json` and `summary.json`;
+umbrella sampling also saves `fes.h5` diagnostics. dRPMD stores each initial state,
 collision trajectory and classification record. MPI ranks never share one HDF5 file.
 
 Reference specifications (some in Chinese):
@@ -377,7 +382,7 @@ Reference specifications (some in Chinese):
 - [Electronic friction](docs/electronic-friction.md), [thermal NRPMD](docs/thermal-nrpmd.md), [KC/MV/isomorphic methods](docs/nonadiabatic-methods.md), [SOC and RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP constant-pressure PIMD](docs/materials-npt.md), [grid metadynamics](docs/grid-metadynamics.md), [streaming trajectories](docs/streaming-trajectories.md)
 - [Constant-potential electrode models and HER postprocessing](docs/electrochemistry.md)
-- [Adaptive umbrella sampling and metadynamics](docs/enhanced-sampling.md)
+- [Unified FES, adaptive umbrellas and shared-bias metadynamics](docs/enhanced-sampling.md)
 - [Electrochemical PCET model](docs/pcet.md), [runnable PCET example](examples/pcet/README.md)
 - [Fixed cells, PIMD, materials diffusion and site rates](docs/materials.md)
 - [Surface catalysis and periodic slabs](docs/surface-catalysis.md)

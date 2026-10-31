@@ -1,6 +1,10 @@
 # OPES probability-based sampling
 
-`task = "opes"` runs native Python OPES with one or two collective variables.
+`task = "fes"` with `[fes] method = "opes"` runs native Python OPES with one or two collective variables.
+The old `task="opes"` remains a deprecated alias. Common input nesting, the
+`FESResult` file contract and legacy checkpoint continuation are described in
+[enhanced sampling](enhanced-sampling.md); method parameters may be placed in
+`[fes.opes]` instead of the legacy `[opes]` table.
 It reuses PyRPMD's ring dynamics, potential adapters, CV Jacobians, task
 scheduler and atomic checkpoints. Each `sampling.replicas` stream has an
 independent probability estimate and random stream.

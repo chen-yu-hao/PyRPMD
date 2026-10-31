@@ -6,21 +6,33 @@ import numpy as np
 import pytest
 
 from pyrpmd.analysis.projection import project_run
+from pyrpmd.analysis.fes_result import FESResult, write_fes_result
 from pyrpmd.checkpoint import atomic_savez, load_checkpoint
 from pyrpmd.io import write_json
 
 
 @pytest.mark.parametrize("axes", [0, np.int64(0), (0,), [2, 0]])
-def test_saved_projection_accepts_scalar_and_reordered_axes(tmp_path, axes):
+@pytest.mark.parametrize("canonical", [False, True])
+def test_saved_projection_accepts_scalar_and_reordered_axes(tmp_path, axes, canonical):
     source = tmp_path / "source"
     edges = [np.array([0., 1., 3.]), np.array([0., 2., 3., 6.]),
              np.array([0., 1., 2., 4., 8.])]
     free = np.arange(24, dtype=float).reshape(2, 3, 4) / 20
     beta = 2.
-    write_json(source / "input" / "resolved.json", {"beta": beta})
-    write_json(source / "summary.json", {"measure": "cv_density"})
-    atomic_savez(source / "fes.npz", free_energy=free, mask=np.zeros(free.shape, bool),
-                 **{f"edges_{i}": edge for i, edge in enumerate(edges)})
+    if canonical:
+        # New results carry their own temperature and method, without input
+        # files. Scalar/reordered axes must work for this common reader too.
+        surface = FESResult.from_data(
+            {"free_energy": free, "edges": edges, "mask": np.zeros(free.shape, bool),
+             "measure": "cv_density", "beta": beta},
+            method="metadynamics", cv_units=["bohr"] * 3,
+        )
+        write_fes_result(source, surface)
+    else:
+        write_json(source / "input" / "resolved.json", {"beta": beta})
+        write_json(source / "summary.json", {"measure": "cv_density"})
+        atomic_savez(source / "fes.npz", free_energy=free, mask=np.zeros(free.shape, bool),
+                     **{f"edges_{i}": edge for i, edge in enumerate(edges)})
     output = tmp_path / "projection"
     result = project_run(source, axes=axes, output=output)
     retained = [int(axes)] if isinstance(axes, (int, np.integer)) else list(axes)

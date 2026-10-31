@@ -29,15 +29,9 @@ from ..input import rate_pmf_options
 from ..parallel import run_tasks, root_call, task_potential, execution_plan
 from ..units import parse_quantity, time_steps
 from .prepare import prepare_rate
-from .fes import (
-    run_fes,
-    write_json,
-    jsonable,
-    resolve_umbrellas,
-    _atomic_npz,
-    _fingerprint,
-    checked_integer,
-)
+from .fes import run_fes, resolve_umbrellas
+from .common import write_json, jsonable, _atomic_npz, _fingerprint, checked_integer
+
 
 FLUX_MEASURE = "delta(xi-x) * sqrt(grad(xi) M^-1 grad(xi)/(2*pi*beta))"
 
@@ -62,7 +56,8 @@ def rate_coordinate(config, system):
 def _pmf_method(config):
     if config.get("task") == "surface_rate":
         return "projected_surface_density" if config.get("surface", {}).get("free_energy") else "mbar_surface_density"
-    return rate_pmf_options(config)["method"]
+    options = rate_pmf_options(config)
+    return "source" if options["source"] is not None else options["method"]
 
 
 def _normal(surface, q, masses):
@@ -572,16 +567,21 @@ def _prepare(config, system, output):
     ]
     if reaction.get("equivalent_paths"):
         result["cvs"][0]["equivalent_paths"] = reaction["equivalent_paths"]
+    if result.get("analysis", {}).get("measure", "rate_flux") != "rate_flux":
+        raise ValueError(
+            "standard RPMD rate sampling requires analysis.measure='rate_flux'"
+        )
+    if pmf_options["source"] is not None:
+        from .rate_source import read_source
+
+        read_source(result, system)
+        return result
     umbrella = result.setdefault("umbrella", {})
     if not any(k in umbrella for k in ("centers", "centers_au", "grid", "start")):
         umbrella.update(start=-0.05, stop=1.05, count=23)
     if not any(k in umbrella for k in ("stiffness", "stiffness_au", "kappa")):
         umbrella["kappa"] = 50.0 / result["beta"]
     umbrella["cvs"] = ["xi"]
-    if result.get("analysis", {}).get("measure", "rate_flux") != "rate_flux":
-        raise ValueError(
-            "standard RPMD rate sampling requires analysis.measure='rate_flux'"
-        )
     result.setdefault("analysis", {}).update(measure="rate_flux")
     result["analysis"].setdefault("bins", 100)
     result["analysis"].setdefault(
@@ -841,38 +841,47 @@ def _save_pmf_arrays(output, estimate, method):
 
 
 def _pmf_and_parent_tasks(sampled, config, system, output, options):
-    streams = sampled["streams"]
-    centers = np.array([s["center"][0] for s in streams])
-    samples = [s["samples"][:, 0] for s in streams]
-    stiffness = np.array([s["stiffness"][0, 0] for s in streams])
     pmf_options = rate_pmf_options(config)
-    _check_pmf_domain(centers, pmf_options)
-    method = pmf_options["method"]
-    if method == "mbar":
-        from ..analysis.fes import mbar_rate_pmf
+    if pmf_options["source"] is not None:
+        from .rate_source import source_estimate
 
-        estimate = mbar_rate_pmf(
-            samples,
-            centers,
-            stiffness,
-            config["beta"],
-            xi_star=pmf_options["xi_star"],
-            reference=0.0,
-            bins=pmf_options["bins"],
-            ranges=pmf_options["ranges"],
-            search_range=pmf_options["search_range"],
-            bootstrap=pmf_options["bootstrap"],
-            seed=np.random.SeedSequence([pmf_options["analysis_seed"], 401]),
-            min_count=pmf_options["min_count"],
-            overlap_threshold=pmf_options["overlap_threshold"],
-            compare_ui=pmf_options["compare_ui"],
-            ui_points=pmf_options["points"],
-            measure="rate_flux",
-        )
+        estimate = source_estimate(config, system)
+        method = "source"
+        centers = np.array([estimate["xi_star"] or 0.0])
+        streams = [{"last_q": np.repeat(system.geometry[None], config["beads"], axis=0)}]
+        sampled = {"summary": {"warnings": []}}
     else:
-        estimate = _ui_rate_pmf(
-            sampled, config, centers, samples, stiffness, pmf_options
-        )
+        streams = sampled["streams"]
+        centers = np.array([s["center"][0] for s in streams])
+        samples = [s["samples"][:, 0] for s in streams]
+        stiffness = np.array([s["stiffness"][0, 0] for s in streams])
+        _check_pmf_domain(centers, pmf_options)
+        method = pmf_options["method"]
+        if method == "mbar":
+            from ..analysis.fes import mbar_rate_pmf
+
+            estimate = mbar_rate_pmf(
+                samples,
+                centers,
+                stiffness,
+                config["beta"],
+                xi_star=pmf_options["xi_star"],
+                reference=0.0,
+                bins=pmf_options["bins"],
+                ranges=pmf_options["ranges"],
+                search_range=pmf_options["search_range"],
+                bootstrap=pmf_options["bootstrap"],
+                seed=np.random.SeedSequence([pmf_options["analysis_seed"], 401]),
+                min_count=pmf_options["min_count"],
+                overlap_threshold=pmf_options["overlap_threshold"],
+                compare_ui=pmf_options["compare_ui"],
+                ui_points=pmf_options["points"],
+                measure="rate_flux",
+            )
+        else:
+            estimate = _ui_rate_pmf(
+                sampled, config, centers, samples, stiffness, pmf_options
+            )
     _save_pmf_arrays(output, estimate, method)
     xi = estimate["xi_star"]
     barrier = estimate["free_energy_barrier_hartree"]
@@ -927,9 +936,11 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         "rinf_bohr": rinf,
         "reduced_mass_au": float(reduced),
         "pmf_method": (
-            "Gaussian umbrella integration; MBAR overlap checked"
-            if method == "ui"
-            else "Histogram MBAR with paired endpoint bootstrap"
+            "Saved, validated rate-flux FESResult"
+            if method == "source" else (
+                "Gaussian umbrella integration; MBAR overlap checked"
+                if method == "ui" else "Histogram MBAR with paired endpoint bootstrap"
+            )
         ),
         "measure": FLUX_MEASURE,
         "sampling_measure": "rate_flux",
@@ -939,9 +950,13 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
             dict.fromkeys(sampled["summary"]["warnings"] + estimate["warnings"])
         ),
         "intermediate_fes_bootstrap": (
-            0 if method == "mbar" else pmf_options["bootstrap"]
+            0 if method in ("mbar", "source") else pmf_options["bootstrap"]
         ),
-        "intermediate_fes_purpose": "Saved umbrella samples, overlap and a preliminary histogram; the selected rate PMF backend owns barrier bootstrap.",
+        "intermediate_fes_purpose": (
+            "Validated external FESResult; no intermediate umbrella sampling."
+            if method == "source" else
+            "Saved umbrella samples, overlap and a preliminary histogram; the selected rate PMF backend owns barrier bootstrap."
+        ),
     }
     for key in (
         "support",
@@ -951,6 +966,10 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         "ui_comparison",
         "effective_samples_per_stream",
         "weight_ess",
+        "source",
+        "source_method",
+        "source_reweighted",
+        "source_sha256",
         "barrier_uncertainty",
         "supported_draw_barrier_standard_error_hartree",
         "supported_draw_barrier_percentile_95_ci_hartree",
@@ -961,7 +980,7 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         diagnostics["adaptive_umbrella"] = copy.deepcopy(sampled["summary"]["adaptive_umbrella"])
     diagnostics["uncertainty"] = dict(estimate["barrier_uncertainty"])
     # Retain the historical singular reason while exposing all support limits.
-    diagnostics["uncertainty"]["reason"] = (
+    diagnostics["uncertainty"]["reason"] = diagnostics["uncertainty"].get("reason") or (
         None if diagnostics["uncertainty"]["available"] else (
             "pmf_bootstrap_contains_unsupported_draws"
             if diagnostics["uncertainty"]["bootstrap_rejected"] else (
@@ -1104,6 +1123,8 @@ def _aggregate(children, pmf, config, output, options):
         abs(pmf[qtst_key]) * stderr if stderr is not None else None
     )
     uncertainty_reasons = list(recrossing_uncertainty["reasons"])
+    if pmf.get("method") == "source":
+        uncertainty_reasons.extend(pmf.get("uncertainty", {}).get("reasons", []))
     if len(pmf_draws) < 2:
         uncertainty_reasons.append("fewer_than_two_valid_pmf_bootstrap_draws")
     pmf_bootstrap = pmf.get("bootstrap", {})
@@ -1282,7 +1303,11 @@ def _aggregate(children, pmf, config, output, options):
         pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
         pmf_bootstrap_attempted=pmf_bootstrap.get("attempted", 0),
         pmf_bootstrap_rejected=rejected_pmf_draws,
-        independence_assumption="Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically.",
+        independence_assumption=(
+            "The saved source PMF and constrained-parent samples must be statistically independent; this is not established automatically."
+            if pmf.get("method") == "source" else
+            "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+        ),
     )
     if rejected_pmf_draws:
         result["supported_draw_rate_standard_error_" + unit_key] = supported_draw_error
@@ -1315,18 +1340,21 @@ def run_rate(config, system, output, executor=None):
     config = root_call(_prepare, config, system, str(output))
     options = _recrossing_options(config)
     sampling_config = config
-    if rate_pmf_options(config)["method"] == "mbar":
+    pmf_options = rate_pmf_options(config)
+    if pmf_options["source"] is None and pmf_options["method"] == "mbar":
         sampling_config = copy.deepcopy(config)
         # The rate backend performs the one paired endpoint bootstrap. The
         # intermediate FES only saves samples, overlap and a preliminary curve.
         sampling_config["analysis"]["bootstrap"] = 0
-    sampled = run_fes(
-        sampling_config,
-        system,
-        Path(output) / "umbrella",
-        executor=executor,
-        return_data=True,
-    )
+    sampled = None
+    if pmf_options["source"] is None:
+        sampled = run_fes(
+            sampling_config,
+            system,
+            Path(output) / "umbrella",
+            executor=executor,
+            return_data=True,
+        )
     pmf, parent_tasks = root_call(
         _pmf_and_parent_tasks, sampled, config, system, str(output), options
     )

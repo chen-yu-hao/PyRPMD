@@ -12,8 +12,8 @@ procedure for converging a result. The inputs and commands for each task are in 
 | Explicit collisions with product classification | `drpmd` | Thermal rate or fixed-energy cross section, set by the launch distribution |
 | Equilibrium free energy along chosen CVs | `fes` | Probability density per CV volume element, and its free energy |
 | Separate rates for several entrances and TSs | `network` | Rate matrix indexed by entrance, channel and TS |
-| History-dependent bias on 1D–3D CVs | `metadynamics` | Finite-time bias free-energy estimate and HILLS |
-| Probability-based enhanced sampling | `opes` | Adaptive probability bias and optional frozen-bias reweighting |
+| History-dependent bias on 1D–3D CVs | `fes` + `method="metadynamics"` | Finite-time bias free-energy estimate and HILLS |
+| Probability-based enhanced sampling | `fes` + `method="opes"` | Adaptive probability bias and optional frozen-bias reweighting |
 | Equilibrium nuclear quantum statistics at fixed volume or pressure | `pimd` | Physical energy estimators, ring radius of gyration; cells and volumes for NPT |
 | RPMD transport, optionally with electronic friction | `diffusion` | Centroid MSD, VACF, diffusion tensor and diagnostics |
 | A selected exit from a material site or surface basin | `site_rate` / `surface_rate` | Basin-normalized first-order rate in `s^-1` |

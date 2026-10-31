@@ -1,4 +1,4 @@
-"""Independent umbrella trajectories and 1D/2D MBAR reconstruction.
+"""Independent umbrella trajectories and 1D/2D/3D MBAR reconstruction.
 
 The physical umbrella W(s) is inserted as P*W in the sum-beads Hamiltonian.
 Each stream owns its random generator and resumable state; scheduling does not
@@ -7,116 +7,28 @@ change stream identities. Only the coordinator writes aggregate products.
 
 from __future__ import annotations
 
-from pyrpmd.propagation import loop_options, scientific_config
+from pyrpmd.propagation import loop_options
 
 import copy
-import hashlib
 import json
 import os
 from pathlib import Path
 import numpy as np
 
 from ..analysis.fes import reconstruct_fes
+from ..analysis.fes_result import FESResult, write_fes_result
 from ..bias import UmbrellaBias, FluxMetricBias, CompositeBias, displacement
 from ..cv import make_cvs, RPMDrateCoordinate
 from ..dynamics import Dynamics, State
-from ..block_propagation import PropagationError
-from ..checkpoint import atomic_savez, load_checkpoint
-from ..io import atomic_write_text
-from ..parallel import run_tasks, task_potential, root_call
-from ..units import parse_quantity, unit_factor, DIMS
+from ..checkpoint import load_checkpoint
+from ..parallel import task_potential, root_call
+from ..units import parse_quantity, DIMS
 from .sampling import fes_sampler
-
-
-def jsonable(value):
-    if isinstance(value, np.ndarray):
-        return jsonable(value.tolist())
-    if isinstance(value, np.generic):
-        return jsonable(value.item())
-    if isinstance(value, Path):
-        return str(value)
-    if isinstance(value, dict):
-        return {str(k): jsonable(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [jsonable(v) for v in value]
-    if isinstance(value, float) and not np.isfinite(value):
-        return None
-    if hasattr(value, "to_dict"):
-        return value.to_dict()
-    return value
-
-
-def write_json(path, data):
-    atomic_write_text(
-        path, json.dumps(jsonable(data), indent=2, allow_nan=False) + "\n"
-    )
-
-
-def _fingerprint(config, system, extras):
-    config = scientific_config(config)
-    # Analysis settings, output path and worker count do not change a stream.
-    physics = {
-        k: v
-        for k, v in config.items()
-        if k
-        not in (
-            "parallel",
-            "output",
-            "analysis",
-            "resume",
-            "_resume",
-            "_input_path",
-            "_base_directory",
-            "_warnings",
-        )
-    }
-    value = {
-        "schema": 1,
-        "physics": physics,
-        "sampling_measure": config.get("analysis", {}).get("measure", "cv_density"),
-        "system": system.to_dict(),
-        "stream": extras,
-    }
-    if "flux_axis" in config.get("analysis", {}):
-        value["sampling_flux_axis"] = config["analysis"]["flux_axis"]
-    from ..cv import geometry_convention_identity
-
-    convention = geometry_convention_identity(config, system)
-    if convention is not None:
-        value["cv_geometry_convention"] = convention
-    from ..potentials import energy_convention_identity
-
-    energy_convention = energy_convention_identity(config)
-    if energy_convention is not None:
-        value["potential_energy_convention"] = energy_convention
-    return hashlib.sha256(
-        json.dumps(
-            jsonable(value), sort_keys=True, separators=(",", ":"), default=repr
-        ).encode()
-    ).hexdigest()
-
-
-def _atomic_npz(path, **arrays):
-    atomic_savez(path, kind="arrays", **arrays)
-
-
-def _dimension(unit):
-    return {
-        "bohr": DIMS["length"],
-        "radian": DIMS["angle"],
-        "hartree": DIMS["energy"],
-        "dimensionless": DIMS["dimensionless"],
-    }[unit]
-
-
-def checked_integer(value, name, minimum=1):
-    if (
-        isinstance(value, bool)
-        or not isinstance(value, (int, np.integer))
-        or value < minimum
-    ):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
+from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_tasks
+from .common import (
+    _atomic_npz, _fingerprint, _dimension, checked_integer, write_json, jsonable,
+    fingerprint_matches, resolve_cvs,
+)
 
 
 def _flux_coordinate(config, cv):
@@ -158,40 +70,10 @@ def resolve_umbrellas(config, system):
     explicit quantity strings carry their own units. Numerical stiffness is
     always atomic; quantity strings are dimension-checked for mixed CVs.
     """
-    specs = config.get("cvs", [])
-    if isinstance(specs, dict):
-        specs = [dict(v, name=k) for k, v in specs.items()]
     umbrella = config.get("umbrella", {})
-    names = umbrella.get("cvs")
-    if names is not None and isinstance(names, str):
-        names = [names]
-    cv = make_cvs(specs, system, names)
-    selected = (
-        specs
-        if names is None
-        else [next(s for s in specs if s.get("name") == n) for n in names]
-    )
-    if cv.dimension not in (1, 2):
-        raise ValueError("umbrella FES supports one or two CV dimensions")
+    cv, selected, scales = resolve_cvs(config, system, "umbrella")
     _flux_coordinate(config, cv)
-    dims = [_dimension(u) for u in cv.units]
-    scales = []
-    for spec, component in zip(selected, cv.cvs):
-        unit = (
-            spec.get("unit", spec.get("units", component.units))
-            if isinstance(spec, dict)
-            else component.units
-        )
-        if isinstance(unit, str):
-            unit = [unit] * component.dimension
-        if len(unit) != component.dimension:
-            raise ValueError("CV input units dimension mismatch")
-        scales.extend(
-            [
-                1.0 if u == "dimensionless" else unit_factor(u, _dimension(c))
-                for u, c in zip(unit, component.units)
-            ]
-        )
+    dims = [_dimension(unit) for unit in cv.units]
 
     def center(value, atomic=False):
         if cv.dimension == 1 and (isinstance(value, (str, int, float, np.number))):
@@ -494,16 +376,9 @@ def _sample_window(task):
         / "checkpoints"
         / f"window_{window:05d}_replica_{replica:04d}.npz"
     )
-    fingerprint = _fingerprint(
-        config,
-        system,
-        {
-            "window": window,
-            "replica": replica,
-            "center": center,
-            "stiffness": stiffness,
-        },
-    )
+    identity = {"window": window, "replica": replica,
+                "center": center, "stiffness": stiffness}
+    fingerprint = _fingerprint(config, system, identity)
     seed = np.random.SeedSequence([int(config.get("seed", 0)), 101, window, replica])
     with task_potential(config["potential"], system,
                         reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
@@ -533,7 +408,7 @@ def _sample_window(task):
         saved_elapsed = None
         if checkpoint.exists():
             with load_checkpoint(checkpoint) as saved:
-                if str(saved["fingerprint"]) != fingerprint:
+                if not fingerprint_matches(saved["fingerprint"], config, system, identity):
                     raise ValueError(
                         f"checkpoint physics differs: {checkpoint}; choose a fresh output directory"
                     )
@@ -569,8 +444,11 @@ def _sample_window(task):
         # Validate even a completed checkpoint before accepting its samples.
         dynamics._check_fixed(state.q, state.p)
 
-        def save():
+        runtime = SamplingRuntime(state, elapsed, values=values, energies=energies)
+
+        def save(current):
             nonlocal saved_elapsed
+            state, elapsed = current.state, current.elapsed
             if saved_elapsed == elapsed:
                 return
             _atomic_npz(
@@ -588,70 +466,12 @@ def _sample_window(task):
             )
             saved_elapsed = elapsed
 
-        fused_loop = sampler.thermostat == "andersen" and dynamics.can_fuse(bias=bias, observe=cv)
-        while elapsed < neq + nprod:
-            initial_elapsed = elapsed
-            thermostat_p = thermostat_rng = None
-            if sampler.thermostat == "andersen" and state.step % andersen == 0:
-                thermostat_p = state.p.copy()
-                thermostat_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
-                state.p[:] = dynamics.sample_momenta()
-            try:
-                if fused_loop:
-                    # Observations are selected within the block. Only Python
-                    # RNG/checkpoint boundaries require returning from native.
-                    count = min(dynamics.block_steps, 4096, neq+nprod-elapsed,
-                                andersen-state.step % andersen,
-                                checkpoint_steps-elapsed % checkpoint_steps)
-                    production = elapsed + np.arange(1, count + 1) - neq
-                    observe = (production > 0) & (production % interval == 0)
-                    block = dynamics.propagate_block(
-                        state, count, bias=bias, cv=cv, observe=observe,
-                        check_energy=True, raise_on_error=False,
-                    )
-                    # A later failure must not discard or replay valid steps
-                    # and observations that the block has already committed.
-                    elapsed += block.completed
-                    values.extend(block.values.copy())
-                    energies.extend(block.energies.tolist())
-                    if block.error is not None:
-                        raise PropagationError(block)
-                else:
-                    # Custom/stateful Python providers retain the old callback
-                    # schedule: energy is evaluated only at a sampled step.
-                    previous = state.copy()
-                    previous_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
-                    try:
-                        sampler.step(dynamics, state, bias)
-                        production = elapsed + 1 - neq
-                        if production > 0 and production % interval == 0:
-                            value = np.asarray(cv.value(state.q), dtype=float)
-                            if value.shape != (cv.dimension,) or not np.isfinite(value).all():
-                                raise ValueError("CV returned invalid observation")
-                            energy = float(dynamics.energy(state, bias))
-                            if not np.isfinite(energy):
-                                raise FloatingPointError("nonfinite total ring energy")
-                    except Exception:
-                        state.q[:] = previous.q; state.p[:] = previous.p
-                        state.step, state.time = previous.step, previous.time
-                        dynamics.rng.bit_generator.state = previous_rng
-                        raise
-                    if production > 0 and production % interval == 0:
-                        values.append(value.copy())
-                        energies.append(energy)
-                    elapsed += 1
-                    dynamics._record_python_steps(1)
-            except Exception:
-                if elapsed == initial_elapsed and thermostat_p is not None:
-                    # Resume will encounter this same Andersen boundary. Keep
-                    # its pre-draw RNG/momenta so the redraw occurs exactly once.
-                    state.p[:] = thermostat_p
-                    dynamics.rng.bit_generator.state = thermostat_rng
-                save()
-                raise
-            if elapsed % checkpoint_steps == 0:
-                save()
-        save()
+        run_biased_sampling(
+            runtime, dynamics, cv, bias, neq=neq, nprod=nprod, interval=interval,
+            checkpoint_steps=checkpoint_steps, sampling=sampling, sampler=sampler,
+            save=save, initial_save=False,
+        )
+        state, elapsed = runtime.state, runtime.elapsed
         samples = np.asarray(values).reshape(-1, cv.dimension)
         if len(samples) < 2:
             raise ValueError("at least two samples per umbrella stream required")
@@ -670,20 +490,11 @@ def _sample_window(task):
         }
 
 
-def _write_fes(output, data, streams, cv, config):
+def _write_fes(output, data, streams, cv, config, _postprocess=None):
     path = Path(output)
     path.mkdir(parents=True, exist_ok=True)
     arrays = {k: v for k, v in data.items() if isinstance(v, np.ndarray)}
     arrays.update({f"edges_{i}": edge for i, edge in enumerate(data["edges"])})
-    metadata = {
-        "measure": np.asarray(data["measure"]),
-        "energy_unit": np.asarray("hartree"),
-        "cv_units": np.asarray(cv.units),
-        "beta": np.asarray(config["beta"]),
-    }
-    if data["measure"] == "rate_flux":
-        metadata["flux_axis"] = np.asarray(0, dtype=np.int32)
-    _atomic_npz(path / "fes.npz", **arrays, **metadata)
     try:
         import h5py
     except ImportError:
@@ -713,39 +524,6 @@ def _write_fes(output, data, streams, cv, config):
                     g.attrs["exchange_group"] = stream["exchange_group"]
                     g.create_dataset("walker_ids", data=stream["walker_ids"])
         os.replace(tmp, path / "fes.h5")
-    mid = [0.5 * (e[1:] + e[:-1]) for e in data["edges"]]
-    mesh = np.meshgrid(*mid, indexing="ij")
-    table = np.column_stack(
-        [m.ravel() for m in mesh]
-        + [
-            data[k].ravel()
-            for k in (
-                "free_energy",
-                "standard_error",
-                "probability_mass",
-                "density",
-                "mask",
-                "raw_count",
-            )
-        ]
-    )
-    np.savetxt(
-        path / "fes.csv",
-        table,
-        delimiter=",",
-        header=",".join(
-            [f"cv{i}_{unit}" for i, unit in enumerate(cv.units)]
-            + [
-                "free_energy_hartree",
-                "standard_error_hartree",
-                "probability_mass",
-                "density",
-                "masked",
-                "raw_count",
-            ]
-        ),
-        comments="",
-    )
     warnings = list(config.get("_warnings", []))
     if data.get("bootstrap_requested", 0):
         warnings.extend(data.get("bootstrap_block_plan", {}).get("warnings", []))
@@ -797,7 +575,9 @@ def _write_fes(output, data, streams, cv, config):
         "bootstrap_requested": data.get("bootstrap_requested", 0),
         "bootstrap_attempted": data.get("bootstrap_attempted", 0),
         "bootstrap_reference_bin": data.get("bootstrap_reference_bin"),
-        "standard_error_scope": "complete_bootstrap_support_per_bin_fixed_reference",
+        "standard_error_scope": data.get(
+            "standard_error_scope", "complete_bootstrap_support_per_bin_fixed_reference"),
+        "supported_draw_condition": data.get("supported_draw_condition"),
         "bootstrap_diagnostics": data.get("bootstrap_diagnostics", []),
         "bootstrap_block_plan": data.get("bootstrap_block_plan", {}),
         "warnings": warnings,
@@ -807,8 +587,14 @@ def _write_fes(output, data, streams, cv, config):
     }
     if h5py is not None:
         summary["files"]["hdf5"] = str(path / "fes.h5")
-    write_json(path / "summary.json", summary)
-    return summary
+    if _postprocess is not None:
+        # Adaptive diagnostics need the fit and streams only on root. Add
+        # their provenance before serializing the authoritative FESResult so
+        # fes.npz, fes.json and summary.json describe the same production.
+        summary = _postprocess({"summary": summary, "data": data, "streams": streams})["summary"]
+    result = FESResult.from_data(data, method="umbrella", cv_units=cv.units,
+                                 metadata=summary)
+    return write_fes_result(path, result, summary=summary)
 
 
 def _analyze_streams(streams, config, system, output, return_data, _postprocess=None):
@@ -859,12 +645,8 @@ def _analyze_streams(streams, config, system, output, return_data, _postprocess=
                           if all("exchange_group" in s for s in streams) else None),
     )
     data["measure"] = options.get("measure", "cv_density")
-    summary = _write_fes(output, data, streams, cv, config)
+    summary = _write_fes(output, data, streams, cv, config, _postprocess)
     result = {"summary": summary, "data": data, "streams": streams}
-    if _postprocess is not None:
-        # Adaptive production diagnostics reuse this fit on root, before a
-        # summary-only request discards arrays or broadcasts its result.
-        result = _postprocess(result)
     return result if return_data else result["summary"]
 
 
@@ -903,11 +685,7 @@ def run_fes(config, system, output, executor=None, return_data=False, *, _postpr
         for i, center in enumerate(centers)
         for r in range(replicas)
     ]
-    streams = (
-        executor.map(_sample_window, tasks)
-        if executor is not None
-        else run_tasks(_sample_window, tasks, config.get("parallel", {}))
-    )
+    streams = dispatch_tasks(_sample_window, tasks, config, executor)
     return root_call(
         _analyze_streams, streams, config, system, str(output), return_data, _postprocess
     )
@@ -941,18 +719,10 @@ def reanalyze_fes(config, system, output, return_data=False, *, _postprocess=Non
                     / "checkpoints"
                     / f"window_{window:05d}_replica_{replica:04d}.npz"
                 )
-                expected = _fingerprint(
-                    config,
-                    system,
-                    {
-                        "window": window,
-                        "replica": replica,
-                        "center": center,
-                        "stiffness": stiffness,
-                    },
-                )
+                identity = {"window": window, "replica": replica,
+                            "center": center, "stiffness": stiffness}
                 with load_checkpoint(checkpoint) as saved:
-                    if str(saved["fingerprint"]) != expected:
+                    if not fingerprint_matches(saved["fingerprint"], config, system, identity):
                         raise ValueError(f"checkpoint physics differs: {checkpoint}")
                     streams.append(
                         {

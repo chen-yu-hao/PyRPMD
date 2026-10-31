@@ -362,6 +362,10 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            if config["task"] == "fes":
+                from .input import fes_method
+
+                result["method"] = fes_method(config)
             if config.get("initial_ensemble"):
                 result["temperature_K"] = None
                 result["beta_au"] = config["beta"]

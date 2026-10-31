@@ -1,0 +1,27 @@
+[
+  {
+    "example": "examples/fes/harmonic3d.inp",
+    "method": "umbrella",
+    "dimension": 3,
+    "shape": [
+      6,
+      6,
+      6
+    ],
+    "resume_reanalysis_exact": true,
+    "uncertainty_kind": "block_bootstrap",
+    "report_generated": true
+  },
+  {
+    "example": "examples/metadynamics/multiple_walkers.inp",
+    "method": "metadynamics",
+    "dimension": 2,
+    "shape": [
+      24,
+      24
+    ],
+    "resume_reanalysis_exact": true,
+    "uncertainty_kind": "replica_spread",
+    "report_generated": true
+  }
+]

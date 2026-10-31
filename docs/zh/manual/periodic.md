@@ -11,7 +11,7 @@ PyRPMD 支持周期体系、带冻结层的 slab，以及恒压 PIMD。本章介
 | `pimd` | 平衡量子统计，可选 BZP 恒压 | 支持 | 固定晶胞时支持 | 能量估计量、回转半径 |
 | `diffusion` | 连续质心轨迹与输运 | 支持 | 支持 | MSD、VACF、D 与诊断 |
 | `site_rate` | 全原子可动材料中的有向出口 | 支持 | 不支持 | 沿单一受支持的光滑标量质心 CV 的盆地速率 |
-| `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
+| `fes`，method 为 `umbrella` | 一至三维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
 | `surface_rate` | 表面上的有向出口，可含固定层 | 支持，也可为有限团簇 | 支持 | 以可动原子质量度量计算的一阶速率 |
 
 `pimd`、`diffusion`、`fes`、`metadynamics` 和 `surface_rate` 支持固定原子；固定原子在所有珠子上保持

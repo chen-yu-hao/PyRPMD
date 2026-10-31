@@ -25,7 +25,7 @@ from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
 from ..units import parse_quantity
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
-from .fes import _fingerprint, checked_integer, write_json
+from .common import _fingerprint, checked_integer, write_json
 
 
 CHECKPOINT_KIND = "PyRPMD.materials.v1"

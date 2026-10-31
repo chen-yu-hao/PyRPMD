@@ -34,15 +34,9 @@ from ..dynamics import Dynamics, State
 from ..parallel import task_potential, root_call, run_tasks
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
-from .fes import (
-    _dimension,
-    _fingerprint,
-    checked_integer,
-    jsonable,
-    resolve_umbrellas,
-    run_fes,
-    write_json,
-)
+from .fes import resolve_umbrellas, run_fes
+from .common import _dimension, _fingerprint, checked_integer, jsonable, write_json
+
 from .rate import (
     _recrossing_options,
     _recrossing_dynamics,

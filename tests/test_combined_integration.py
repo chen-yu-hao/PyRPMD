@@ -113,7 +113,7 @@ def test_old_implicit_periodic_cv_hash_is_not_accepted_as_new_science(kind):
     """Hash a precursor payload independently: its math was branch-ambiguous."""
     import hashlib
     from pyrpmd.io import jsonable
-    from pyrpmd.workflows.fes import _fingerprint
+    from pyrpmd.workflows.common import _fingerprint, fingerprint_matches
 
     system = System(("H", "H", "H"), [1837.0] * 3,
                     [[0.1, 0, 0], [3.9, 0.2, 0], [1, 1, 0]], cell=np.eye(3) * 4)
@@ -126,7 +126,10 @@ def test_old_implicit_periodic_cv_hash_is_not_accepted_as_new_science(kind):
         return hashlib.sha256(json.dumps(jsonable(payload), sort_keys=True, **options).encode()).hexdigest()
     assert fingerprint(config, system) != old_hash(legacy_manifest)
     assert _fingerprint(config, system, {"window": 0}) != old_hash(legacy_stream, stream=True)
-    # Explicit image choices never had that ambiguity and retain their identity.
+    assert not fingerprint_matches(old_hash(legacy_stream, stream=True), config, system, {"window": 0})
+    # Explicit image choices never had that ambiguity. Their historical hash
+    # remains resumable, while new hashes also identify the selected FES method.
     config["cvs"][0]["kind"] = "periodic_" + kind
     assert fingerprint(config, system) == old_hash(legacy_manifest)
-    assert _fingerprint(config, system, {"window": 0}) == old_hash(legacy_stream, stream=True)
+    assert _fingerprint(config, system, {"window": 0}) != old_hash(legacy_stream, stream=True)
+    assert fingerprint_matches(old_hash(legacy_stream, stream=True), config, system, {"window": 0})

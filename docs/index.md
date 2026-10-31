@@ -16,11 +16,11 @@ go straight to your task:
 | --- | --- | --- |
 | Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
 | Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
-| 1D/2D free-energy surface | `fes` | [Quickstart](manual/quickstart.md), [Gas phase and free energy](manual/workflows.md) |
+| 1D–3D umbrella free-energy surface | `fes` | [Quickstart](manual/quickstart.md), [Unified enhanced sampling](enhanced-sampling.md) |
 | Postprocess saved PMF/FES rates and branching | `rate-postprocess` command | [2D rate postprocessing](rate-postprocessing.md) |
 | Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
-| Standard or well-tempered metadynamics | `metadynamics` | [Gas phase and free energy](manual/workflows.md) |
-| OPES probability-based sampling | `opes` | [OPES](opes.md) |
+| Standard or well-tempered metadynamics, shared walkers | `fes` + `method="metadynamics"` | [Unified enhanced sampling](enhanced-sampling.md) |
+| OPES probability-based sampling | `fes` + `method="opes"` | [Unified enhanced sampling](enhanced-sampling.md), [OPES](opes.md) |
 | Replica-exchange umbrellas | `fes` + `[replica_exchange]` | [Replica exchange](replica-exchange.md) |
 | Optional PLUMED centroid biases | Python API | [PLUMED bridge](plumed.md) |
 | Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
@@ -47,7 +47,7 @@ To create a ready input first, use `pyrpmd init my-first-run` and follow the
 ```bash
 pyrpmd validate job.inp --check-pes     # check input and units, construct the PES
 pyrpmd run job.inp --output runs/job    # run; results in runs/job/results/summary.json
-pyrpmd analyze runs/job                 # read the summary; FES, metadynamics, OPES, diffusion accept --recompute
+pyrpmd analyze runs/job                 # read the summary; all three FES methods and diffusion accept --recompute
 pyrpmd resume runs/job                  # continue from checkpoints without changing the science
 ```
 
@@ -110,6 +110,7 @@ Quantum statistics <quantum-statistics>
 :caption: Enhanced sampling
 :hidden:
 
+Unified FES and enhanced sampling <enhanced-sampling>
 Replica exchange <replica-exchange>
 OPES <opes>
 PLUMED bridge <plumed>

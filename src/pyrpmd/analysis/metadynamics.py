@@ -13,6 +13,8 @@ implemented here. Unsampled bins are masked even though V can be evaluated.
 from __future__ import annotations
 import numpy as np
 
+from .fes_result import estimate_fes_uncertainty
+
 
 def _cv_signature(cv):
     """Semantic identity for built-in CVs; plugin parameters remain user-owned."""
@@ -156,7 +158,7 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1, max_grid_poi
         shifted = raw - raw[(slice(None),) + reference].reshape((-1,) + (1,) * dimension)
         free[common] = shifted.mean(axis=0)[common]
         if len(biases) > 1:
-            spread[common] = shifted.std(axis=0, ddof=1)[common]
+            spread = estimate_fes_uncertainty(shifted, kind="replica_spread", mask=~common)
     else:
         shifted = raw.copy()
         for i in range(len(biases)):

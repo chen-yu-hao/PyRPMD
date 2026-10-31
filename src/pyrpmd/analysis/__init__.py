@@ -15,6 +15,7 @@ from .rate_postprocess import (
 )
 from .projection import marginalize_fes
 from .reporting import generate_report
+from .fes_result import FESResult, write_fes_result, estimate_fes_uncertainty
 
 __all__ = [
     "solve_mbar",
@@ -28,4 +29,7 @@ __all__ = [
     "channel_rates",
     "marginalize_fes",
     "generate_report",
+    "FESResult",
+    "write_fes_result",
+    "estimate_fes_uncertainty",
 ]

@@ -24,6 +24,7 @@ from ..checkpoint import load_checkpoint
 from ..constants import AU_TIME_FS
 from ..io import jsonable
 from ..units import unit_factor
+from .fes_result import FESResult, fes_method
 
 SCHEMA = "pyrpmd.analysis-report"
 REFERENCES = [
@@ -108,10 +109,12 @@ def _line(run, suffix, title, xlabel, ylabel, series, caption, **extra):
     return plot
 
 
-def _selected_cv_names(config, task):
+def _selected_cv_names(config, task, method=None):
     """Resolve the saved sampling selection in the producer's axis order."""
-    section = task if task in ("metadynamics", "opes") else "umbrella"
-    selected = config.get(section, {}).get("cvs")
+    section = method if method in ("umbrella", "metadynamics", "opes") else fes_method({**config, "task": task})
+    selected = config.get("fes", {}).get(section, config.get(section, {})).get("cvs")
+    if selected is None:
+        selected = config.get("fes", {}).get("cvs")
     if selected is not None:
         return [selected] if isinstance(selected, str) else list(selected)
     specifications = config.get("cvs", [])
@@ -122,7 +125,7 @@ def _selected_cv_names(config, task):
 
 def _cv_axes(run, summary, dimension, length_unit, data=None):
     config = run["_config"]
-    selected = _selected_cv_names(config, summary.get("task", run["task"]))
+    selected = _selected_cv_names(config, summary.get("task", run["task"]), summary.get("method"))
     specifications = config.get("cvs", [])
     if isinstance(specifications, dict):
         specifications = [dict(value, name=name) for name, value in specifications.items()]
@@ -254,44 +257,44 @@ def _fes_artifacts(run, folder, energy_unit, length_unit):
     path = Path(folder)
     summary_path = path / "summary.json"
     summary = _json(run, summary_path) if summary_path.exists() else run["_summary"]
-    data = _npz(run, path / "fes.npz")
-    declared_energy = str(np.asarray(data.get("energy_unit", summary.get("energy_unit", "hartree"))).item())
-    if declared_energy != "hartree":
-        raise ValueError("Native FES arrays must declare hartree energy units")
-    saved_measure = str(np.asarray(data["measure"]).item()) if "measure" in data else None
-    summary_measure = summary.get("measure")
-    if saved_measure is not None and summary_measure is not None and saved_measure != summary_measure:
+    try:
+        provenance = {"task": run["task"], **summary}
+        config = run["_config"]
+        if path == Path(run["path"]) and config.get("task") in ("fes", "metadynamics", "opes"):
+            # The saved selection determines axis order. Refuse a surface whose
+            # method disagrees with that selection instead of guessing labels.
+            provenance["fes"] = {"method": fes_method(config)}
+        result = FESResult.from_arrays(_npz(run, path / "fes.npz"),
+                                       metadata=provenance,
+                                       strict_uncertainty=False)
+    except ValueError:
         run["_comparison_identity_available"] = False
-        raise ValueError("Summary measure contradicts the saved FES array measure")
-    measure = saved_measure if saved_measure is not None else summary_measure
+        raise
+    summary = result.summary()
+    data = {**result.extras, "cv_units": np.asarray(result.cv_units)}
+    measure = result.measure
     if measure not in ("cv_density", "rate_flux"):
         run["_comparison_identity_available"] = False
         _finding(run, "fes_measure_unavailable", "The FES measure is unavailable or unsupported; curves are not grouped or overlaid.")
     if path == Path(run["path"]):
         run["_measure"] = run["metadata"]["measure"] = measure
-    f = np.asarray(data["free_energy"], float)
-    if f.ndim not in (1, 2) or not f.size:
-        raise ValueError("Automatic FES figures support nonempty 1D or 2D grids")
-    dimension = f.ndim
-    edges = [np.asarray(data[f"edges_{j}"], float) for j in range(dimension)]
-    for j, edge in enumerate(edges):
-        if edge.shape != (f.shape[j] + 1,) or not np.isfinite(edge).all() or np.any(np.diff(edge) <= 0):
-            raise ValueError("FES bin edges must be finite, increasing and match the grid")
+        run["_fes_result"] = result
+        run["metadata"]["fes_method"] = result.method
+        run["metadata"]["uncertainty_kind"] = result.uncertainty_kind
+    f = result.free_energy
+    dimension = result.dimension
+    edges = result.edges
     axes = _cv_axes(run, summary, dimension, length_unit, data)
-    mask = np.asarray(data.get("mask", ~np.isfinite(f)), bool)
-    if mask.shape != f.shape:
-        raise ValueError("FES mask shape differs from the free-energy grid")
-    mask = mask | ~np.isfinite(f)
+    mask = result.mask
     factor = 1 / unit_factor(energy_unit, "energy")
     prefix = "umbrella" if path != Path(run["path"]) else "fes"
     if prefix == "umbrella" and summary.get("samples") is not None:
         run["metadata"]["samples"] = summary["samples"]
         run["metadata"]["sample_scope"] = "PMF umbrella production samples (not recrossing children)"
-    is_meta = summary.get("task") == "metadynamics"
-    caption = ("Finite-time metadynamics bias estimate; biased time is not a reaction-rate clock. " if is_meta else "Free energy in the saved CV measure and gauge. ")
-    caption += "Unsupported bins remain masked; no interpolation or extrapolation is used."
-    if is_meta:
-        caption += " Replica spread is descriptive and is not a standard error."
+    caption = "Free energy in the saved CV measure and gauge. Unsupported bins remain masked; no interpolation or extrapolation is used. "
+    caption += summary["uncertainty_note"]
+    error_label = {"block_bootstrap": "Standard error", "replica_spread": "Replica spread"}[result.uncertainty_kind]
+    error_band = {"block_bootstrap": "1 SE", "replica_spread": "1 SD (descriptive)"}[result.uncertainty_kind]
     run["metrics"][f"{prefix}_supported_bins"] = int((~mask).sum())
     run["metrics"][f"{prefix}_total_bins"] = int(mask.size)
     if summary.get("overlap_connected") is False:
@@ -301,32 +304,50 @@ def _fes_artifacts(run, folder, energy_unit, length_unit):
     error = np.full(f.shape, np.nan)
     def uncertainty():
         nonlocal error
-        saved = np.asarray(data.get("standard_error", error), float)
-        unavailable = np.asarray(data.get("standard_error_mask", np.zeros(f.shape)), bool)
-        if saved.shape != f.shape or unavailable.shape != f.shape:
-            raise ValueError("FES uncertainty and its mask must match the grid")
-        error = np.where(mask | unavailable | ~np.isfinite(saved) | (saved < 0), np.nan, saved)
+        if result.uncertainty_issue:
+            raise ValueError(result.uncertainty_issue)
+        error = result.uncertainty
     _guard(run, "FES uncertainty", uncertainty)
     if dimension == 1:
         x = (edges[0][:-1] + edges[0][1:]) * 0.5 * axes[0][1]
-        plot = _line(run, prefix, f"{run['label']}: {'bias FES' if is_meta else 'FES'}", axes[0][0],
+        plot = _line(run, prefix, f"{run['label']}: FES", axes[0][0],
                     f"Free energy ({energy_unit})", [{"label": run["label"], "x": x,
                     "y": np.where(mask, np.nan, f) * factor,
-                    "yerr": None if is_meta else error * factor}], caption + (" Bands are saved 1 SE." if not is_meta else ""))
+                    "yerr": error * factor}], caption + f" Bands show saved {error_band}.")
         if prefix == "fes":
             plot["_compare"] = "pmf"
             run["_pmf_axis"] = axes[0][0]
             run["_measure"] = measure
-    else:
-        run["_plots"].append({"id": f"{run['id']}-{prefix}", "kind": "heatmap", "title": f"{run['label']}: 2D {'bias FES' if is_meta else 'FES'}",
+    elif dimension == 2:
+        run["_plots"].append({"id": f"{run['id']}-{prefix}", "kind": "heatmap", "title": f"{run['label']}: 2D FES",
                                "xlabel": axes[0][0], "ylabel": axes[1][0], "xedges": edges[0] * axes[0][1],
                                "yedges": edges[1] * axes[1][1], "z": f * factor, "mask": mask,
                                "colorbar": f"Free energy ({energy_unit})", "caption": caption})
-        if np.isfinite(error).any() and not is_meta:
+        if np.isfinite(error).any():
             run["_plots"].append({**run["_plots"][-1], "id": f"{run['id']}-{prefix}-error",
                                    "title": f"{run['label']}: FES uncertainty", "z": error * factor,
-                                   "mask": mask | ~np.isfinite(error), "colorbar": f"Standard error ({energy_unit})",
-                                   "caption": "Saved bootstrap standard error (1 SE). Missing uncertainty is masked, not zero."})
+                                   "mask": mask | ~np.isfinite(error), "colorbar": f"{error_label} ({energy_unit})",
+                                   "caption": f"Saved uncertainty ({error_band}). Missing uncertainty is masked, not zero."})
+    else:
+        # Show actual orthogonal slices, never an implicit projection or a
+        # minimum-energy marginal that would change the observable's meaning.
+        reference = np.unravel_index(np.argmin(np.where(mask, np.inf, f)), f.shape)
+        if np.all(mask):
+            reference = tuple(size // 2 for size in f.shape)
+        for fixed in range(3):
+            shown = [axis for axis in range(3) if axis != fixed]
+            selector = [slice(None)] * 3
+            selector[fixed] = reference[fixed]
+            selector = tuple(selector)
+            value = result.grid[reference][fixed] * axes[fixed][1]
+            run["_plots"].append({"id": f"{run['id']}-{prefix}-slice-{fixed}", "kind": "heatmap",
+                "title": f"{run['label']}: 3D FES slice ({axes[fixed][0]} = {value:.6g})",
+                "xlabel": axes[shown[0]][0], "ylabel": axes[shown[1]][0],
+                "xedges": edges[shown[0]] * axes[shown[0]][1],
+                "yedges": edges[shown[1]] * axes[shown[1]][1],
+                "z": f[selector] * factor, "mask": mask[selector],
+                "colorbar": f"Free energy ({energy_unit})",
+                "caption": caption + " Orthogonal slice through the lowest supported bin; not a marginal free energy."})
     def counts():
         count = np.asarray(data["raw_count"], float)
         if count.shape != f.shape or not np.isfinite(count).all() or np.any(count < 0):
@@ -334,7 +355,7 @@ def _fes_artifacts(run, folder, energy_unit, length_unit):
         if dimension == 1:
             _line(run, prefix + "-counts", f"{run['label']}: sampling coverage", axes[0][0], "Saved sample count",
                   [{"label": "Raw count", "x": x, "y": count}], "Raw saved frames are correlated and are not independent sample counts.")
-        else:
+        elif dimension == 2:
             run["_plots"].append({"id": f"{run['id']}-{prefix}-counts", "kind": "heatmap", "title": f"{run['label']}: sampling coverage",
                                    "xlabel": axes[0][0], "ylabel": axes[1][0], "xedges": edges[0] * axes[0][1],
                                    "yedges": edges[1] * axes[1][1], "z": count, "colorbar": "Saved sample count",
@@ -539,7 +560,7 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
             adaptive_progress(path)
     else:
         adaptive_progress(path)
-        if run["task"] in ("fes", "metadynamics"):
+        if run["task"] in ("fes", "metadynamics", "opes"):
             _skip(run, "free-energy surface", "Saved fes.npz is unavailable; available pilot diagnostics are reported separately")
     from .report_observables import collect_observables
     supplemental = collect_observables(path, summary, config, prefix=prefix, label=run["label"],

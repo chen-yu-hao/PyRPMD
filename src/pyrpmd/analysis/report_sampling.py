@@ -294,6 +294,8 @@ def _traces(run, streams, axes, prefix, *, biased=False):
                "All saved frames of the selected streams are retained. ")
     caption += ("The changing bias makes these nonstationary diagnostics; sampling time is not reaction time. " if biased else
                 "Thermostatted sampling trajectories do not represent reaction kinetics. ")
+    if any(stream.get("shared_walker") for stream in streams):
+        caption += "Shared-bias walkers are correlated and do not define independent error estimates. "
     caption += "Linear-coordinate running means do not prove equilibration and are not circular averages."
     for j, (label, factor) in enumerate(axes):
         raw, running = [], []
@@ -304,7 +306,8 @@ def _traces(run, streams, axes, prefix, *, biased=False):
         for stream, clock in zip(chosen, clocks):
             values = stream["samples"][:, j] * factor
             x = clock[0] if common_clock else np.arange(1, len(values) + 1)
-            name = f"r{stream['replica']}" if biased else f"w{stream['window']}/r{stream['replica']}"
+            name = (f"walker {stream['replica']}" if stream.get("shared_walker") else
+                    f"r{stream['replica']}" if biased else f"w{stream['window']}/r{stream['replica']}")
             raw.append({"label": name, "x": x, "y": values})
             running.append({"label": name, "x": x, "y": np.cumsum(values) / np.arange(1, len(values) + 1)})
         _line(run, f"{prefix}-trace-{j+1}", f"{run['label']}: CV {j+1} traces", xlabel, label, raw, caption)
@@ -388,12 +391,23 @@ def _umbrella_diagnostics(run, streams, axes, energy_unit, prefix):
 def _metadynamics(run, path, axes, energy_unit, prefix):
     heights, biases = [], []
     factor = 1 / unit_factor(energy_unit, "energy")
-    for file in sorted(path.glob("replicas/*/HILLS.csv")):
+    histories = [path / "HILLS.csv"] if (path / "HILLS.csv").exists() else sorted(path.glob("replicas/*/HILLS.csv"))
+    for file in histories:
         def read(file=file):
             data = _table(run, file)
             time = np.asarray(data["time_au"], float) * AU_TIME_FS
-            if time.ndim != 1 or not len(time) or not np.isfinite(time).all() or np.any(np.diff(time) <= 0):
+            if time.ndim != 1 or not len(time) or not np.isfinite(time).all():
                 raise ValueError("HILLS time must be finite and increasing")
+            if file.parent == path:
+                walkers = np.asarray(data["walker"], float)
+                if (walkers.shape != time.shape or not np.isfinite(walkers).all()
+                        or np.any(walkers < 0) or np.any(walkers != np.floor(walkers))):
+                    raise ValueError("Shared HILLS walker identities must be nonnegative integers")
+                groups = [(f"Walker {int(walker)}", walkers == walker) for walker in np.unique(walkers)]
+            else:
+                groups = [(f"Replica {file.parent.name}", np.ones(time.shape, bool))]
+            if any(np.any(np.diff(time[selected]) <= 0) for _, selected in groups):
+                raise ValueError("HILLS time must be finite and increasing within each walker")
             energies = []
             for key in ("height_hartree", "bias_before_hartree"):
                 values = np.asarray(data[key], float)
@@ -402,19 +416,29 @@ def _metadynamics(run, path, axes, energy_unit, prefix):
                 energies.append(values * factor)
             # Commit this replica only after every required column is valid.
             # A skipped HILLS file must not leave a partial height curve behind.
-            for target, values in zip((heights, biases), energies):
-                target.append({"label": f"Replica {file.parent.name}", "x": time, "y": values})
+            for label, selected in groups:
+                for target, values in zip((heights, biases), energies):
+                    target.append({"label": label, "x": time[selected], "y": values[selected]})
         _guard(run, str(file.relative_to(path)), read)
     caption = "Saved deposited hill history. This is biased sampling time, not reaction time; decreasing hill heights do not establish a converged FES or a kinetic rate."
     for name, title, values in (("hill-height", "deposited hill height", heights), ("hill-bias", "bias before deposition", biases)):
         if values:
             _line(run, prefix + "-" + name, f"{run['label']}: {title}", "Biased sampling time (fs)", f"Energy ({energy_unit})", values, caption)
         else:
-            _skip(run, title, "Saved replicas/*/HILLS.csv is unavailable or invalid")
+            _skip(run, title, "Saved HILLS.csv or replicas/*/HILLS.csv is unavailable or invalid")
     streams = []
     for checkpoint in sorted((path / "checkpoints").glob("metadynamics_*.npz")):
         def read(checkpoint=checkpoint):
             data = _npz(run, checkpoint)
+            if checkpoint.name == "metadynamics_walkers.npz":
+                samples = np.asarray(data["samples"])
+                if samples.ndim != 3 or not len(samples):
+                    raise ValueError("Shared walker samples must have shape (walkers, frames, CVs)")
+                validated = [_sample_array(values, len(axes)) for values in samples]
+                streams.extend({"replica": walker, "samples": values,
+                                "sample_steps": data.get("sample_steps"), "shared_walker": True}
+                               for walker, values in enumerate(validated))
+                return
             match = re.fullmatch(r"metadynamics_(\d+)\.npz", checkpoint.name)
             if not match:
                 raise ValueError("Unrecognized metadynamics checkpoint name")
@@ -467,7 +491,7 @@ def _adaptive(run, path, prefix):
         if row.get("overlap_metric", metric) != metric:
             raise ValueError("Adaptive round overlap metric contradicts its plan")
         centers = np.asarray(row["centers"], float)
-        if (centers.ndim != 2 or not len(centers) or centers.shape[1] not in (1, 2)
+        if (centers.ndim != 2 or not len(centers) or centers.shape[1] not in (1, 2, 3)
                 or not np.isfinite(centers).all()
                 or dimension is not None and centers.shape[1] != dimension):
             raise ValueError("Adaptive round centers must be finite and preserve the CV dimension")
@@ -546,7 +570,9 @@ def collect_sampling(run, path, summary, axes, energy_unit):
     """Append optional sampling plots, descriptive statistics and provenance."""
     path = Path(path)
     prefix = "umbrella" if path != Path(run["path"]) else "sampling"
-    if summary.get("task") == "metadynamics":
+    from .fes_result import fes_method
+
+    if fes_method(summary) == "metadynamics":
         _guard(run, "metadynamics sampling history", lambda: _metadynamics(run, path, axes, energy_unit, prefix))
     else:
         def umbrella():

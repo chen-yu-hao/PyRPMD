@@ -7,7 +7,7 @@
 **一个输入文件完成环聚合物分子动力学——从过渡态到经回穿校正的速率，支持带科学指纹的检查点续跑。**
 
 给 PyRPMD 一个过渡态和一个势能，它会自动搭建完整的 Bennett–Chandler 计算：数值 Hessian 与双向下降识别反应通道，伞抽样
-给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动 11 类任务，从气相速率、直接碰撞到自由能面、
+给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动这些工作流，从气相速率、直接碰撞到自由能面、
 metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核为 C++17/OpenMP，并配有 NumPy 参考实现。
 
 ## 为什么选择 PyRPMD
@@ -86,10 +86,10 @@ pyrpmd resume my-first-run/run
 | 从 TS 出发的双分子 RPMD 速率 | `rate` | `pyrpmd prepare examples/rate/pilot.inp --pilot`，再 `pyrpmd run examples/rate/pilot.inp` | ~15 s |
 | 直接碰撞（dRPMD） | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
 | 多入口多 TS 速率矩阵 | `network` | `examples/network/two_entrances.py` | ~25 s |
-| 一维/二维自由能面 | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
+| 一至三维伞形自由能面 | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
 | 自适应伞窗口 | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
-| Standard 或 well-tempered metadynamics | `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
-| OPES 概率增强采样 | `opes` | `examples/opes/harmonic_2d.inp` | — |
+| Standard 或 well-tempered metadynamics | `fes`，method 为 `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
+| OPES 概率增强采样 | `fes`，method 为 `opes` | `examples/opes/harmonic_2d.inp` | — |
 | 固定晶胞 PIMD 与能量估计量 | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD 自扩散、MSD、VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | 材料中的有向位点跃迁 | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
@@ -97,7 +97,10 @@ pyrpmd resume my-first-run/run
 | 电化学 PCET，H/D、电势与温度扫描 | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | 态选择非绝热散射（NRPMD，实验性） | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
 
-用 `pyrpmd run INPUT --output runs/NAME` 运行其中任意一个。另外两种常用方式：
+用 `pyrpmd run INPUT --output runs/NAME` 运行其中任意一个。FES 在 `[fes]` 中选择方法；
+省略 `method` 时默认使用 `umbrella`。旧的 `metadynamics` 和 `opes` 任务名作为弃用别名保留，
+现有算例仍可运行。方法子表、共享 walkers 和统一结果文件见[统一 FES 指南](docs/zh/enhanced-sampling.md)。
+另外两种常用方式：
 
 ```bash
 # 用不同分块大小续跑；科学设置保持运行身份。
@@ -120,8 +123,8 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 | 反应网络 | 同一原子与同位素组成下的不同入口、TS 和 PES；每条路径填入速率矩阵，按入口、通道和 TS 分别报告 |
 | dRPMD | 两个反应物 XYZ 和初始质心距离；常驻母链按设定间隔发射碰撞 |
 | 核初态选择 | 固定碰撞能下近似振动态选择 NE-RPMD / 单珠子 QCT，独立初态采样、碰撞前检查与未决轨迹延长续跑（[方法](docs/state-selected.md)、[示例](examples/state_selected/README.md)） |
-| 自由能 | 带完整 CV Jacobian 的一维/二维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
-| Metadynamics | Standard 与 well-tempered，1–3 维 CV、周期/固定层体系、NHC/PILE-L/Andersen、软墙、可选 1D/2D 偏置网格、独立历史与有限时间 FES |
+| 自由能 | 带完整 CV Jacobian 的一至三维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；一至三维可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
+| Metadynamics | Standard 与 well-tempered，1–3 维 CV、周期/固定层体系、NHC/PILE-L/Andersen、软墙、可选 1D/2D 偏置网格、独立历史或同步共享偏置 multiple-walker、统一 FESResult 与有限时间 FES |
 | 副本交换伞抽样 | 同温固定窗口 REUS、PILE-L 或 Andersen、同步集合续跑与跨窗口联合 bootstrap（[指南](docs/replica-exchange.md)） |
 | OPES | 固定带宽加权概率估计、可选冻结偏置重加权与可续跑的独立历史（[指南](docs/opes.md)） |
 | PLUMED 与路径抽样 | 可选的质心偏置 PLUMED 桥接；无偏双向 shooting 的跃迁界面集合与独立通量归一化（[PLUMED](docs/plumed.md)、[TIS](docs/transition-interface-sampling.md)） |
@@ -286,7 +289,7 @@ RATTLE，数值失败时保留成功的前缀。两者都支持三种积分器�
 
 ## 文档
 
-使用手册涵盖安装、快速入门、全部 11 类任务的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，
+使用手册涵盖安装、快速入门、全部受支持工作流的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，
 章节一一对应。构建带搜索的 HTML 手册（中文版输出到 `zh/`）：
 
 ```bash
@@ -299,8 +302,9 @@ GitHub **Documentation** 工作流构建两个版本、运行入门示例，并�
 
 [用户体验审查与 to-do list](docs/ux-review-2026-10-31.md)记录当前上手流程的审查结果及后续工作。
 
-运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据和 `results/summary.json`。FES 另有
-`fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条轨迹的初态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。
+运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据和 `results/summary.json`。三种 FES 方法统一写出
+`fes.npz`、`fes.csv`、`fes.json` 和 `summary.json`；伞形采样另存 `fes.h5` 诊断。dRPMD 保存每条轨迹的初态、
+碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。
 
 参考规范：
 
@@ -314,7 +318,7 @@ GitHub **Documentation** 工作流构建两个版本、运行入门示例，并�
 - [电子摩擦](docs/electronic-friction.md)、[热 NRPMD](docs/thermal-nrpmd.md)、[KC/MV/isomorphic 模型](docs/nonadiabatic-methods.md)、[SOC 与 RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP 恒压 PIMD](docs/materials-npt.md)、[网格 metadynamics](docs/grid-metadynamics.md)、[流式轨迹](docs/streaming-trajectories.md)
 - [恒电位电极模型与 HER 后处理](docs/electrochemistry.md)
-- [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
+- [统一 FES、自适应伞抽样与共享偏置 metadynamics](docs/zh/enhanced-sampling.md)
 - [电化学 PCET 模型](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
 - [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)
 - [表面催化与周期 slab](docs/surface-catalysis.md)

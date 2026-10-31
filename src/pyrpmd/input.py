@@ -11,6 +11,7 @@ import math
 from pathlib import Path
 import sys
 import tomllib
+import warnings
 from collections.abc import Mapping
 import numpy as np
 
@@ -38,7 +39,7 @@ def _unknown_fields(unknown, allowed, section):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble fes".split()
 )
 _SECTIONS = {
     "electronic_friction": set("method provider gamma tensor factory params".split()),
@@ -76,14 +77,14 @@ _SECTIONS = {
         "cvs grid centers centers_au kappa stiffness stiffness_au start stop count".split()
     ),
     "rate": set(
-        "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui".split()
+        "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source".split()
     ),
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale".split()
     ),
     "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid multiple_walkers block_steps".split()
     ),
     "opes": set(
         "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps".split()
@@ -98,6 +99,89 @@ _SECTIONS = {
     ),
     "site_rate": set("cv basin dividing_surface direction".split()),
 }
+
+
+_FES_METHODS = ("umbrella", "metadynamics", "opes")
+_FES_COMMON = ("cvs", "sampling", "analysis")
+
+
+def fes_method(config):
+    """Select a method with the same policy as direct workflow calls."""
+    from .workflows.common import fes_method as resolve_method
+
+    try:
+        return resolve_method(config)
+    except (ValueError, TypeError) as error:
+        raise InputError(str(error)) from error
+
+
+def normalize_fes_task(config, *, warn=True):
+    """Normalize resolved aliases and reject options that would be ignored."""
+    if config.get("task") not in ("fes", "metadynamics", "opes"):
+        if "fes" in config:
+            raise InputError("[fes] requires task='fes'")
+        return config
+    method, messages = _normalize_fes_input(config, warn=False)
+    for section in (method, "sampling", "analysis"):
+        if section not in config:
+            continue
+        table = config[section]
+        if not isinstance(table, Mapping):
+            raise InputError(f"{section} must be a table")
+        allowed = _SECTIONS[section] | ({"dt_au"} if section == "sampling" else set())
+        unknown = set(table) - allowed
+        if unknown:
+            raise _unknown_fields(unknown, allowed, section)
+    if method != "umbrella":
+        for section in ("adaptive_umbrella", "replica_exchange"):
+            if section in config:
+                raise InputError(f"{section} requires fes.method='umbrella'")
+    notes = config.setdefault("_warnings", [])
+    for message in messages:
+        if message not in notes:
+            notes.append(message)
+            if warn:
+                warnings.warn(message, FutureWarning, stacklevel=2)
+    return config
+
+
+def _normalize_fes_input(data, *, warn=True):
+    """Flatten checked public subtables into the workflow configuration."""
+    task = data.get("task")
+    if task not in ("fes", "metadynamics", "opes"):
+        if "fes" in data:
+            raise InputError("[fes] requires task='fes'")
+        return None, []
+    method = fes_method(data)
+    table = data.get("fes", {})
+    allowed = {"method", *_FES_COMMON, *_FES_METHODS}
+    unknown = set(table) - allowed
+    if unknown:
+        raise _unknown_fields(unknown, allowed, "fes")
+    for other in _FES_METHODS:
+        if other != method and (other in table or other in data):
+            raise InputError(f"fes.method='{method}' does not accept {other} parameters")
+    for common in _FES_COMMON:
+        if common in table:
+            if common in data:
+                raise InputError(f"Use either [fes].{common} or top-level {common}, not both")
+            data[common] = deepcopy(table[common])
+    if method in table:
+        if not isinstance(table[method], Mapping):
+            raise InputError(f"fes.{method} must be a table")
+        if method in data:
+            raise InputError(f"Use either [fes.{method}] or [{method}], not both")
+        data[method] = deepcopy(table[method])
+    # Keep only the method in the resolved namespace. Existing consumers share
+    # the same canonical CV, sampling and analysis sections.
+    notes = []
+    if task != "fes":
+        notes.append(f"task='{task}' is deprecated; use task='fes' with [fes] method='{method}'.")
+        if warn:
+            warnings.warn(notes[-1], FutureWarning, stacklevel=3)
+    data["task"] = "fes"
+    data["fes"] = {"method": method}
+    return method, notes
 
 
 def _integer(v, name, minimum=1):
@@ -174,6 +258,27 @@ def rate_pmf_options(config):
     rate = config.get("rate", {})
     if not isinstance(rate, Mapping):
         raise InputError("rate must be a table")
+    source = rate.get("pmf_source")
+    if source == "umbrella":
+        source = None
+    if source is not None:
+        if isinstance(source, str):
+            if source in ("metadynamics", "opes"):
+                raise InputError(
+                    f"rate.pmf_source='{source}' requires an explicitly supplied reweighted PMF; "
+                    "MetaD/OPES bias estimates are not rate-flux PMFs"
+                )
+            if not source.strip():
+                raise InputError("rate.pmf_source must name a FES result directory")
+        elif isinstance(source, Mapping):
+            allowed = {"directory", "allow_non_umbrella", "data_file", "config_file", "system_file", "summary_file", "metadata_file", "manifest_file"}
+            if (set(source) - allowed or not isinstance(source.get("directory"), str)
+                    or not source["directory"].strip()):
+                raise InputError("rate.pmf_source accepts directory and allow_non_umbrella")
+            if not isinstance(source.get("allow_non_umbrella", False), bool):
+                raise InputError("rate.pmf_source.allow_non_umbrella must be boolean")
+        else:
+            raise InputError("rate.pmf_source must be a FES directory or a table")
     method = rate.get("pmf_method", "ui")
     if method not in ("ui", "mbar"):
         raise InputError("rate.pmf_method must be 'ui' or 'mbar'")
@@ -268,6 +373,7 @@ def rate_pmf_options(config):
         )
     return {
         "method": method,
+        "source": source,
         "xi_star": xi_star,
         "search_range": search_range,
         "compare_ui": compare_ui,
@@ -429,6 +535,8 @@ class JobSpec:
     def resolve(self):
         # Network and PCET have dedicated early-return resolvers; do not let
         # those routes silently ignore native PIMD-only ensemble controls.
+        if "fes" in self.data and self.data.get("task") not in ("fes", "metadynamics", "opes"):
+            raise InputError("[fes] requires task='fes'")
         raw_sampling = self.data.get("sampling", {})
         if not isinstance(raw_sampling, Mapping):
             raise InputError("sampling must be a table")
@@ -460,6 +568,8 @@ class JobSpec:
                 )
             return resolved, system
         d = deepcopy(self.data)
+        original_task = d.get("task")
+        method, fes_notes = _normalize_fes_input(d)
         unknown = set(d) - _ROOT
         if unknown:
             raise _unknown_fields(unknown, _ROOT, "top-level")
@@ -503,6 +613,10 @@ class JobSpec:
         selected = "initial_ensemble" in d
         initial_ensemble = None
         base = Path(self.base_directory).resolve()
+        if task == "rate" and d.get("rate", {}).get("pmf_source") not in (None, "umbrella"):
+            from .workflows.rate_source import source_paths
+
+            d["rate"]["pmf_source"] = source_paths(d["rate"]["pmf_source"], base)
         if selected:
             if "temperature" in d:
                 raise InputError("State-selected initial_ensemble does not accept temperature; specify initial_ensemble.beta for NE-RPMD")
@@ -539,21 +653,21 @@ class JobSpec:
             raise InputError("[pcet] requires task='pcet'")
         if "network" in d:
             raise InputError("[network] requires task='network'")
-        if "metadynamics" in d and task != "metadynamics":
-            raise InputError("[metadynamics] requires task='metadynamics'")
-        if "opes" in d and task != "opes":
-            raise InputError("[opes] requires task='opes'")
-        if task == "opes" and any(
+        if "metadynamics" in d and method != "metadynamics":
+            raise InputError("[metadynamics] requires fes.method='metadynamics'")
+        if "opes" in d and method != "opes":
+            raise InputError("[opes] requires fes.method='opes'")
+        if method == "opes" and any(
             key in d for key in ("umbrella", "reaction", "rate", "recrossing", "collision", "outcomes")
         ):
             raise InputError("OPES uses its own probability bias; umbrella and reaction/rate settings do not apply")
-        if "adaptive_umbrella" in d and task not in ("fes", "rate"):
+        if "adaptive_umbrella" in d and (task not in ("fes", "rate") or method not in (None, "umbrella")):
             raise InputError("Adaptive umbrellas require task='fes' or task='rate'")
-        if "replica_exchange" in d and task != "fes":
+        if "replica_exchange" in d and (task != "fes" or method != "umbrella"):
             raise InputError("[replica_exchange] requires task='fes'")
-        if task in ("metadynamics", "opes"):
+        if method in ("metadynamics", "opes"):
             analysis = d.setdefault("analysis", {})
-            analysis.setdefault("method", "kde" if task == "opes" else "bias_estimate")
+            analysis.setdefault("method", "kde" if method == "opes" else "bias_estimate")
             analysis.setdefault("measure", "cv_density")
             if not any(key in analysis for key in ("bootstrap", "bootstrap_replicates", "bootstrap_samples")):
                 analysis["bootstrap"] = 0
@@ -567,7 +681,7 @@ class JobSpec:
                 raise InputError("analysis.flux_axis currently supports only zero")
         source_pmf = task == "surface_rate" and bool(d.get("surface", {}).get("free_energy"))
         expected_analysis = "source" if source_pmf else "mbar"
-        if task in ("fes", "surface_rate") and analysis.get("method", expected_analysis) != expected_analysis:
+        if (task == "surface_rate" or (task == "fes" and method == "umbrella")) and analysis.get("method", expected_analysis) != expected_analysis:
             raise InputError(
                 f"This FES/surface workflow requires analysis.method='{expected_analysis}'"
             )
@@ -605,7 +719,7 @@ class JobSpec:
         preset = d.get("preset", "pilot")
         if preset not in ("pilot", "production"):
             raise InputError("preset must be pilot or production")
-        notes = []
+        notes = list(fes_notes)
         if preset == "production":
             required = ("beads", "dynamics") if selected else ("temperature", "beads", "dynamics", "sampling")
             for k in required:
@@ -759,7 +873,7 @@ class JobSpec:
                     if sampling["thermostat"] != "pile-l":
                         raise InputError("sampling.gamma_centroid requires PILE-L")
                     sampling["gamma_centroid"] = _positive(parse_quantity(sampling["gamma_centroid"], "frequency"), "gamma_centroid")
-            elif task == "metadynamics" and sampling["thermostat"] == "nose-hoover-chain":
+            elif method == "metadynamics" and sampling["thermostat"] == "nose-hoover-chain":
                 from .thermostats import nhc_options
                 try:
                     nhc_options(sampling)
@@ -769,7 +883,7 @@ class JobSpec:
                     raise InputError("NHC sampling.integrator must match dynamics.integrator + '-nose-hoover-chain'")
                 if "gamma_centroid" in sampling:
                     raise InputError("sampling.gamma_centroid requires PILE-L sampling")
-            elif (materials or task in ("fes", "metadynamics")) and sampling["thermostat"] == "pile-l":
+            elif (materials or (task == "fes" and method in ("umbrella", "metadynamics"))) and sampling["thermostat"] == "pile-l":
                 if sampler is None or sampling["integrator"] != sampler:
                     raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
                 sampling["gamma_centroid"] = _positive(
@@ -799,7 +913,7 @@ class JobSpec:
                 allow_zero=True,
             )
             adaptive_table = d.get("adaptive_umbrella", {})
-            enhanced_sampling = task == "metadynamics" or (
+            enhanced_sampling = method == "metadynamics" or (
                 isinstance(adaptive_table, Mapping)
                 and adaptive_table.get("enabled", bool(adaptive_table))
             )
@@ -987,7 +1101,7 @@ class JobSpec:
                     "Pilot connectivity is inferred from covalent radii; candidate outcomes are diagnostic and chemical rate/cross-section estimates are withheld"
                 )
         output = deepcopy(d.get("output", {}))
-        output["directory"] = _path(base, output.get("directory", f"runs/{task}"))
+        output["directory"] = _path(base, output.get("directory", f"runs/{original_task}"))
         output["checkpoint_steps"] = _steps(
             output, "checkpoint_steps", "checkpoint_interval", "10 fs", dt
         )
@@ -1038,7 +1152,11 @@ class JobSpec:
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         try:
-            if task in ("fes", "surface_rate") and not source_pmf:
+            if task == "fes":
+                from .workflows.fes_dispatch import validate_fes
+
+                validate_fes(resolved, system)
+            elif task == "surface_rate" and not source_pmf:
                 from .workflows.fes import validate_fes_request
 
                 validate_fes_request(resolved, system)
@@ -1065,14 +1183,6 @@ class JobSpec:
                 for unused in ("reaction", "collision", "outcomes"):
                     resolved.pop(unused, None)
                 validate_site_rate(resolved, system)
-            if task == "metadynamics":
-                from .workflows.metadynamics import validate_metadynamics
-
-                validate_metadynamics(resolved, system)
-            if task == "opes":
-                from .workflows.opes import validate_opes
-
-                validate_opes(resolved, system)
             if "replica_exchange" in d:
                 from .workflows.replica_exchange import exchange_options
 

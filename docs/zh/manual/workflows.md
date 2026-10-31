@@ -1,6 +1,8 @@
 # 气相反应、自由能与增强采样
 
 本章介绍 `rate`、`drpmd`、`fes`、`network` 和 `metadynamics`。从仓库根目录运行命令，每个计算使用新的输出目录。
+三种 FES 方法现在统一使用 `task="fes"` 加 `[fes] method="umbrella" | "metadynamics" | "opes"`。
+公共结果、旧入口兼容、三维伞形、共享 walkers 与外部 PMF 见[统一增强采样](../enhanced-sampling.md)。
 周期材料与固定表面见[材料与表面](periodic.md)，局域电化学见 [PCET](pcet.md)，单位与归一化见[科学概念](science.md)。
 
 ## 气相 RPMD 速率：`rate`
@@ -217,7 +219,9 @@ PES 按全局 → 入口 → TS 继承，更具体的 `potential` 表整体替�
 
 ## Metadynamics
 
-`task="metadynamics"` 在一至三维 CV 上支持 standard 和 well-tempered 模式，多个副本各自积累偏置历史。
+`task="fes"` 加 `[fes] method="metadynamics"` 在一至三维 CV 上支持 standard 和 well-tempered 模式，默认多个副本各自积累偏置历史。
+旧 `task="metadynamics"` 继续作为带弃用提示的别名。`[fes.metadynamics] multiple_walkers=true`
+启用 block 边界同步的共享偏置，详见[共享 walker 与续算](../enhanced-sampling.md#metad-共享偏置-multiple-walker)。
 CV 可以声明周期。该工作流支持分子体系、固定晶胞的周期体系，以及 `system.fixed_atoms` 指定的固定基底原子。
 采样可选择 Andersen、Nosé–Hoover 链或 PILE-L，并可对长度 CV 添加二次软墙。
 

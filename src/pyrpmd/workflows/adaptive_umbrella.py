@@ -1,6 +1,6 @@
 """Pilot-only adaptive placement followed by an independent, frozen production.
 
-The algorithm refines the supplied 1D/2D domain; it does not discover arbitrary
+The algorithm refines the supplied 1D/2D/3D domain; it does not discover arbitrary
 unspecified basins. Missing overlap is repaired by midpoint insertion along
 the shortest gaps between overlap components. Pilot length grows only when
 effective sample size is insufficient, subject to an explicit cap. Stiffness is kept
@@ -16,6 +16,7 @@ pilot samples cannot be passed off as samples from the frozen umbrella set.
 from __future__ import annotations
 import copy
 import hashlib
+from math import prod
 import json
 from pathlib import Path
 from collections.abc import Mapping
@@ -26,8 +27,9 @@ from ..analysis.fes import (solve_mbar, umbrella_reduced_potentials,
                             cv_statistical_inefficiency, CV_CORRELATION_OBSERVABLES)
 from ..bias import displacement
 from ..parallel import root_call, run_tasks
-from .fes import (resolve_umbrellas, _fingerprint, _sample_window,
-                  checked_integer, write_json, jsonable, _dimension)
+from .fes import resolve_umbrellas, _sample_window
+from .common import (_fingerprint, checked_integer, write_json, jsonable, _dimension,
+                     fingerprint_matches)
 from ..units import parse_quantity
 
 
@@ -80,10 +82,10 @@ def adaptive_options(config):
     if (bins is None) != (ranges is None):
         raise ValueError("adaptive_umbrella.coverage_bins and coverage_ranges must be supplied together")
     if bins is not None:
-        if not isinstance(bins, (list, tuple, np.ndarray)) or len(bins) not in (1, 2):
-            raise ValueError("adaptive_umbrella.coverage_bins must list one or two positive integers")
+        if not isinstance(bins, (list, tuple, np.ndarray)) or len(bins) not in (1, 2, 3):
+            raise ValueError("adaptive_umbrella.coverage_bins must list one to three positive integers")
         bins = [checked_integer(n, "adaptive_umbrella.coverage_bins") for n in bins]
-        if bins[0] * (bins[1] if len(bins) == 2 else 1) > 1_000_000:
+        if prod(bins) > 1_000_000:
             raise ValueError("adaptive_umbrella.coverage_bins must not exceed one million cells")
         if not isinstance(ranges, (list, tuple, np.ndarray)) or len(ranges) != len(bins):
             raise ValueError("adaptive_umbrella.coverage_ranges dimension must match coverage_bins")
@@ -410,7 +412,7 @@ def _open_plan(config, system, output, centers, stiffness, options, create=True)
         plan = json.loads(path.read_text())
         if plan.get("checksum") != _plan_checksum(plan):
             raise ValueError("adaptive umbrella plan checksum mismatch")
-        if plan.get("fingerprint") != identity:
+        if not fingerprint_matches(plan.get("fingerprint"), config, system, {"adaptive_umbrella_schema": 1}):
             raise ValueError("adaptive umbrella plan physics differs; choose a fresh output directory")
         if plan.get("schema_version", 1) not in (1, 2, 3):
             raise ValueError("unsupported adaptive umbrella plan schema version")
@@ -568,7 +570,8 @@ def _annotate(result, plan, output, production_steps=None, *, periods=None):
         summary["warnings"].append("Frozen production does not meet the declared adaptive umbrella coverage target; pilot coverage is reported separately and cannot establish production support.")
     if production_steps is not None and production_steps < plan["rounds"][-1]["pilot"]["production_steps"]:
         summary["warnings"].append("Production is shorter than the final accepted pilot; pilot success does not establish adequate production statistics.")
-    write_json(Path(output) / "summary.json", summary)
+    # The FES writer persists this annotated summary in all canonical files.
+    # Writing only summary.json here would leave the NPZ metadata stale.
     return result
 
 

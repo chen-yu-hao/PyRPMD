@@ -60,7 +60,8 @@ def _identity(run, *, isotope=False, varying=None):
     if (run["task"] in ("fes", "metadynamics", "opes")
             and run.get("_measure", run.get("metadata", {}).get("measure")) not in ("cv_density", "rate_flux")):
         return None
-    selected = _selected_cv_names(config, run["task"])
+    fes = run.get("_fes_result")
+    selected = _selected_cv_names(config, run["task"], None if fes is None else fes.method)
     references = _cv_references(config, system, selected)
     if references is None:
         return None
@@ -79,13 +80,12 @@ def _identity(run, *, isotope=False, varying=None):
     if varying == "rinf_bohr":
         for key in ("rinf", "Rinf", "rinf_au"):
             reaction.pop(key, None)
-    identity = {"task": run["task"], "system": system, "potential": config.get("potential"),
+    identity = {"task": "fes" if fes is not None else run["task"], "system": system, "potential": config.get("potential"),
                 "model_files": run.get("_model_files"),
                 "reaction": reaction, "site_rate": config.get("site_rate"), "surface": config.get("surface"),
-                "cvs": config.get("cvs"), "umbrella_cvs": config.get("umbrella", {}).get("cvs"),
-                "metadynamics_cvs": config.get("metadynamics", {}).get("cvs"),
+                "cvs": config.get("cvs"),
                 "selected_cvs": selected, "cv_references": references,
-                "static_walls": config.get("metadynamics", {}).get("walls"),
+                "static_walls": config.get("fes", {}).get("metadynamics", config.get("metadynamics", {})).get("walls"),
                 "measure": run.get("_measure", run.get("metadata", {}).get("measure"))}
     if run["task"] == "drpmd":
         collision = dict(config.get("collision", {}))
@@ -171,6 +171,8 @@ def fit_arrhenius(temperatures, rates):
 def _description(run):
     metadata = run["metadata"]
     parts = [run["label"]]
+    if metadata.get("fes_method"):
+        parts.append(metadata["fes_method"])
     for name, suffix in (("temperature_K", "K"), ("beads", "beads")):
         value = _finite(metadata.get(name))
         if value is not None:
@@ -228,7 +230,7 @@ def collect_comparisons(runs, *, series=None, reference=None, include_estimates=
         result["plots"].append({"id": f"comparison-{kind}-{i+1:02d}", "kind": "line",
             "title": "PMF comparison" if kind == "pmf" else "Transmission comparison", "xlabel": xlabel, "ylabel": ylabel,
             "series": [{**plot["series"][0], "label": _description(run)} for run, plot in members],
-            "caption": "Saved gauges and 1 SE bands are retained. Each label identifies its temperature and bead count; overlays do not establish convergence."})
+            "caption": "Saved gauges and uncertainty bands are retained: block-bootstrap bands are 1 SE; replica spread is descriptive 1 SD, not a standard error. Each label identifies its temperature and bead count; overlays do not establish convergence."})
     rate_series = defaultdict(list)
     accepted = {}
     fits = []

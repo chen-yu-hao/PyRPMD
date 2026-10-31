@@ -12,7 +12,7 @@ checkpoint contracts; select the engine explicitly when using the native route.
 | `pimd` | Equilibrium quantum statistics; optional BZP NPT | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
 | `diffusion` | Continuous centroid trajectories and transport | Yes | Yes | MSD, VACF, D and diagnostics |
 | `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one supported smooth scalar centroid CV |
-| `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
+| `fes`, method `umbrella` | 1D–3D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
 | `surface_rate` | A directed exit on a surface, optionally with fixed layers | Yes, or a finite cluster | Yes | First-order rate with the mass metric of the mobile atoms |
 
 Fixed atoms are supported by `pimd`, `diffusion`, `fes`, `metadynamics` and `surface_rate`; they keep
