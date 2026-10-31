@@ -22,8 +22,6 @@ jobs:
       # Official v2.9.4 tag; kernel and Python wrapper use the same source.
       # https://github.com/plumed/plumed2/tree/52da2bb76d37dbad0d19f59c6fe0b2ab939e3ded
       PYRPMD_PLUMED_COMMIT: 52da2bb76d37dbad0d19f59c6fe0b2ab939e3ded
-      PYRPMD_PLUMED_PREFIX: ${{ runner.temp }}/pyrpmd-plumed
-      PLUMED_KERNEL: ${{ runner.temp }}/pyrpmd-plumed/lib/libplumedKernel.so
       PYRPMD_REQUIRE_PLUMED: '1'
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
@@ -32,6 +30,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Initialize runner-local build paths
+        run: |
+          # The runner context is unavailable in jobs.<job_id>.env.
+          # Set these after the job has reached its runner instead.
+          printf 'PYRPMD_PLUMED_PREFIX=%s/pyrpmd-plumed\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'PLUMED_KERNEL=%s/pyrpmd-plumed/lib/libplumedKernel.so\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Install build and test dependencies
         run: |
