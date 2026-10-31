@@ -1,9 +1,0 @@
-.......................................................s....................sss..................................................................ss...................................................................... [ 82%]
-..............................................           [100%]
-=========================== short test summary info ============================
-SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
-SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
-SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
-SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
-SKIPPED [2] .venv/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
-257 passed, 6 skipped, 87 subtests passed in 54.78s

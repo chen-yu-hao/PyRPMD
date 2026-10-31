@@ -1,1 +1,0 @@
-MPI G=2 B=2: ordered tasks, collective failure, continuous parents and restart passed; MPI GPU node-local routing passed with a mock provider (no CUDA test)

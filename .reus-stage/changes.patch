@@ -1,0 +1,206 @@
+diff --git a/MANIFEST.in b/MANIFEST.in
+index 927c0043ee5e63f6a28821ded7471c4cb9b999de..c3f111f35bc27637585d24d20f4c30502491ba00 100644
+--- a/MANIFEST.in
++++ b/MANIFEST.in
+@@ -10,0 +11 @@ recursive-include benchmarks/h3/convergence_inputs *.inp
++recursive-include benchmarks/hho2 *.py *.md
+diff --git a/docs/enhanced-sampling.md b/docs/enhanced-sampling.md
+index c7d5d65cb8c684669f1b133b27338096165c63b0..9a1cbe4ac31e0e12ddc0f6499ad5249bed8c7160 100644
+--- a/docs/enhanced-sampling.md
++++ b/docs/enhanced-sampling.md
+@@ -2,0 +3,3 @@
++For FES PILE-L and fixed-window replica exchange, see the
++[replica-exchange guide](replica-exchange.md).
++
+diff --git a/docs/manual/examples.md b/docs/manual/examples.md
+index 333916c0012b1e53d6b76bf57fca5be88c24e5f1..56e282ebb29bfd8f4528e1adca4e082b42de9773 100644
+--- a/docs/manual/examples.md
++++ b/docs/manual/examples.md
+@@ -13,0 +14 @@
++| `examples/fes/replica_exchange_2d.inp` | PILE-L、REUS 与同步 bootstrap | [气相与自由能](workflows.md) |
+diff --git a/docs/manual/workflows.md b/docs/manual/workflows.md
+index a774fa23e18953a128145a3543be6f04720f0c03..67af3c30923cabddd15bd8216e021070d8a31787 100644
+--- a/docs/manual/workflows.md
++++ b/docs/manual/workflows.md
+@@ -106,0 +107,14 @@ pyrpmd analyze runs/manual-fes --recompute --bins 20 20 --bootstrap 50
++### PILE-L 与副本交换
++
++普通 FES 仍默认 Andersen；设置 `sampling.thermostat="pile-l"` 可复用 BCOCB/BAOAB。
++固定窗口增加 `[replica_exchange]`、`enabled=true` 和 `interval_steps=50` 可启用同温
++副本交换。此时 `sampling.replicas` 是独立完整交换链数，链内窗口顺序推进；窗口样本按
++同步块重采样。整个交换链共同保存/恢复，交换时间不能解释为物理反应时间。
++当前不同时启用自适应插窗，亦不支持 `rate_flux`。详见
++[方法和输入说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/replica-exchange.md)。
++
++```bash
++pyrpmd run examples/fes/replica_exchange_2d.inp --output runs/manual-reus
++pyrpmd resume runs/manual-reus
++```
++
+diff --git a/src/pyrpmd/analysis/fes.py b/src/pyrpmd/analysis/fes.py
+index 8316aa6050b785ffc3d9ac543b54823538653003..466a394c8d485dc29729a76a497c0b538ad173a3 100644
+--- a/src/pyrpmd/analysis/fes.py
++++ b/src/pyrpmd/analysis/fes.py
+@@ -433,0 +434,26 @@ def _bootstrap_block_plan(counts, inefficiencies):
++def _bootstrap_groups(groups, counts):
++    """A partition of synchronized streams; independent streams are singleton groups."""
++    if groups is None:
++        return [np.array([i], dtype=int) for i in range(len(counts))]
++    labels = np.asarray(groups)
++    if (labels.shape != counts.shape or labels.dtype.kind not in "iu"
++            or np.any(labels < 0)):
++        raise ValueError("bootstrap_groups needs one nonnegative integer per stream")
++    result = [np.flatnonzero(labels == label) for label in dict.fromkeys(labels.tolist())]
++    if any(np.any(counts[group] != counts[group[0]]) for group in result):
++        raise ValueError("streams in a bootstrap group must have equal synchronized lengths")
++    return result
++
++
++def _grouped_resample_indices(counts, block_lengths, groups, rng):
++    """Preserve cross-window correlation by using one clock draw per exchange ladder."""
++    offsets = np.r_[0, np.cumsum(counts)]
++    indices = [None] * len(counts)
++    for group in groups:
++        first = group[0]
++        clock = _block_resample(np.arange(counts[first]), block_lengths[first], rng)
++        for i in group:
++            indices[i] = offsets[i] + clock
++    return np.concatenate(indices)
++
++
+@@ -446,0 +473,2 @@ def reconstruct_fes(
++    *,
++    bootstrap_groups=None,
+@@ -451 +479,4 @@ def reconstruct_fes(
+-    each window/replica. No unsupported region is filled by interpolation.
++    each window/replica by default. With bootstrap_groups, equally spaced and
++    synchronized streams in a group use the same clock indices and the largest
++    estimated correlation block in that group (for replica-exchange ladders).
++    Different groups remain independent. No unsupported region is interpolated.
+@@ -501,0 +533 @@ def reconstruct_fes(
++    groups = _bootstrap_groups(bootstrap_groups, counts)
+@@ -565 +597,11 @@ def reconstruct_fes(
+-    block_plan = _bootstrap_block_plan(counts, gs)
++    block_gs = gs.copy()
++    for group in groups:
++        block_gs[group] = np.max(gs[group])
++    block_plan = _bootstrap_block_plan(counts, block_gs)
++    if bootstrap_groups is not None:
++        block_plan["resampling"] = "synchronous_within_group"
++        block_plan["group_ids"] = np.asarray(bootstrap_groups, dtype=int)
++        block_plan["group_max_statistical_inefficiency"] = block_gs
++        block_plan["warnings"].append(
++            "Exchange windows are jointly block-resampled within each independent ladder; "
++            "CV-based block lengths do not establish hidden-coordinate or walker mixing.")
+@@ -575,3 +616,0 @@ def reconstruct_fes(
+-        offsets = np.r_[0, np.cumsum(counts)]
+-        stream_indices = [np.arange(start, stop)
+-                          for start, stop in zip(offsets[:-1], offsets[1:])]
+@@ -579,4 +618,2 @@ def reconstruct_fes(
+-            indices = np.concatenate([
+-                _block_resample(indices, block, rng)
+-                for indices, block in zip(stream_indices, block_plan["block_lengths"])
+-            ])
++            indices = _grouped_resample_indices(
++                counts, block_plan["block_lengths"], groups, rng)
+diff --git a/src/pyrpmd/input.py b/src/pyrpmd/input.py
+index 8c0330057e5c65c911d2350c3724edaff43f7424..1ff09803011eb569aa26801adf8414804aa204c2 100644
+--- a/src/pyrpmd/input.py
++++ b/src/pyrpmd/input.py
+@@ -26 +26 @@ _ROOT = set(
+-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
++    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange".split()
+@@ -70,0 +71 @@ _SECTIONS = {
++    "replica_exchange": set("enabled interval_steps pairs".split()),
+@@ -435,0 +437,2 @@ class JobSpec:
++        if "replica_exchange" in d and task != "fes":
++            raise InputError("[replica_exchange] requires task='fes'")
+@@ -594 +597 @@ class JobSpec:
+-        if materials and sampling["thermostat"] == "pile-l":
++        if (materials or task == "fes") and sampling["thermostat"] == "pile-l":
+@@ -857,0 +861,4 @@ class JobSpec:
++            if "replica_exchange" in d:
++                from .workflows.replica_exchange import exchange_options
++
++                exchange_options(resolved, system)
+diff --git a/src/pyrpmd/workflows/fes.py b/src/pyrpmd/workflows/fes.py
+index b00e4183a2d02554ec4b291960b385ff1913966b..fbfbbac4174b36e3640f5695b4ac25de8062a145 100644
+--- a/src/pyrpmd/workflows/fes.py
++++ b/src/pyrpmd/workflows/fes.py
+@@ -26,0 +27 @@ from ..units import parse_quantity, unit_factor, DIMS
++from .sampling import fes_sampler
+@@ -359,0 +361 @@ def _sample_window(task):
++    sampler = fes_sampler(config)
+@@ -478 +480 @@ def _sample_window(task):
+-        fused_loop = dynamics.can_fuse(bias=bias, observe=cv)
++        fused_loop = sampler.thermostat == "andersen" and dynamics.can_fuse(bias=bias, observe=cv)
+@@ -482 +484 @@ def _sample_window(task):
+-            if state.step % andersen == 0:
++            if sampler.thermostat == "andersen" and state.step % andersen == 0:
+@@ -512 +514 @@ def _sample_window(task):
+-                        dynamics.step(state, bias)
++                        sampler.step(dynamics, state, bias)
+@@ -590,0 +593,3 @@ def _write_fes(output, data, streams, cv, config):
++                if "exchange_group" in stream:
++                    g.attrs["exchange_group"] = stream["exchange_group"]
++                    g.create_dataset("walker_ids", data=stream["walker_ids"])
+@@ -724,0 +730,2 @@ def _analyze_streams(streams, config, system, output, return_data):
++        bootstrap_groups=([s["exchange_group"] for s in streams]
++                          if all("exchange_group" in s for s in streams) else None),
+@@ -733,0 +741,6 @@ def run_fes(config, system, output, executor=None, return_data=False):
++    fes_sampler(config)
++    if config.get("replica_exchange"):
++        from .replica_exchange import exchange_options, run_replica_exchange_fes
++        if exchange_options(config, system)["enabled"]:
++            return run_replica_exchange_fes(config, system, output, executor=executor,
++                                            return_data=return_data)
+@@ -779,0 +793,4 @@ def reanalyze_fes(config, system, output, return_data=False):
++    if config.get("replica_exchange"):
++        from .replica_exchange import exchange_options, reanalyze_replica_exchange_fes
++        if exchange_options(config, system)["enabled"]:
++            return reanalyze_replica_exchange_fes(config, system, output, return_data=return_data)
+diff --git a/tests/mpi_workflow_smoke.py b/tests/mpi_workflow_smoke.py
+index f97c6ddab51e98fea5f993073db80ad211598576..464343beeb078548d6a2140d1b2f79e6cc6871fa 100644
+--- a/tests/mpi_workflow_smoke.py
++++ b/tests/mpi_workflow_smoke.py
+@@ -103,0 +104,2 @@ if __name__ == "__main__":
++    from mpi_exchange_smoke import run_mpi_exchange
++    run_mpi_exchange(Path(sys.argv[1]) / "replica-exchange")
+diff --git a/tests/test_fes_block_sampling.py b/tests/test_fes_block_sampling.py
+index 1ed8b3ea7849635b5e0b61d01855f12b912e302e..15505ca7fb97ae0aedb737f174f79ad781cad782 100644
+--- a/tests/test_fes_block_sampling.py
++++ b/tests/test_fes_block_sampling.py
+@@ -444,0 +445,33 @@ def test_python_failed_observation_is_rolled_back_before_saving_samples(tmp_path
++
++
++@pytest.mark.parametrize("scheme", ["cayley-bcb", "normal-mode-bab"])
++@pytest.mark.parametrize("thermostat", ["andersen", "pile-l"])
++def test_reus_cabi_native_matches_numpy(tmp_path, cabi_library, cabi_controls, scheme, thermostat):
++    cfg = {
++        "task": "fes", "beta": 1.7, "beads": 4, "dt_au": .03, "seed": 67,
++        "native": False, "dynamics": {"integrator": scheme, "loop_backend": "python"},
++        "potential": {"provider": "cabi", "library": str(cabi_library)},
++        "sampling": {"thermostat": thermostat, "equilibration_steps": 8,
++                     "production_steps": 40, "sample_interval": 2, "replicas": 1,
++                     "andersen_interval": 7},
++        "cvs": [{"kind": "cartesian", "atom": 0, "axis": a} for a in ("x", "y")],
++        "umbrella": {"centers": [[-.2, -.2], [-.2, .2], [.2, -.2], [.2, .2]],
++                     "stiffness": [[1., .2], [.2, .8]]},
++        "replica_exchange": {"enabled": True, "interval_steps": 9},
++        "analysis": {"bins": [4, 5], "bootstrap": 0}, "output": {"checkpoint_steps": 11},
++    }
++    if thermostat == "pile-l":
++        cfg["sampling"]["gamma_centroid"] = .5
++    system = System(("H",), np.array([2.3]), np.zeros((1, 3)))
++    fes.run_fes(cfg, system, tmp_path / "numpy")
++    cfg["native"] = True
++    cfg["dynamics"]["loop_backend"] = "native" if thermostat == "andersen" else "auto"
++    fes.run_fes(cfg, system, tmp_path / "native")
++    with load_checkpoint(tmp_path / "numpy/checkpoints/exchange_0000.npz") as a, \
++         load_checkpoint(tmp_path / "native/checkpoints/exchange_0000.npz") as b:
++        for key in ("q", "p", "samples", "energies"):
++            np.testing.assert_allclose(a[key], b[key], rtol=3e-12, atol=3e-13, err_msg=key)
++        for key in ("decisions", "walker_history", "walker_ids", "attempts", "accepts", "rngs", "exchange_rng"):
++            np.testing.assert_array_equal(a[key], b[key], err_msg=key)
++        if thermostat == "andersen":
++            assert all(s["native_steps"] == 48 for s in json.loads(str(b["propagation"])))

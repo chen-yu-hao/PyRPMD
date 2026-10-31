@@ -1,0 +1,72 @@
+name: Materialize reviewed REUS feature branch
+on:
+  push:
+    branches: ['staging/reus-reviewed-20261031']
+permissions:
+  contents: write
+jobs:
+  materialize:
+    if: github.repository == 'chen-yu-hao/PyRPMD' && github.ref == 'refs/heads/staging/reus-reviewed-20261031'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      OMPI_MCA_rmaps_base_oversubscribe: '1'
+      FEATURE: feat/fes-pile-l-replica-exchange-20261031
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: transport
+      - uses: actions/checkout@v6
+        with:
+          ref: 3dc82c399a7701d19d636ee78b43f2e8ba7659f9
+          path: candidate
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify all reviewed bytes and materialize clean candidate
+        run: |
+          mkdir -p evidence
+          python transport/.reus-stage/materialize.py candidate | tee evidence/source-identity.json
+      - name: Publish only the new feature branch, never main
+        working-directory: candidate
+        run: |
+          set -euo pipefail
+          test -z "$(git ls-remote --heads origin "refs/heads/$FEATURE")"
+          git config user.name 'chen-yu-hao'
+          git config user.email '72141038+chen-yu-hao@users.noreply.github.com'
+          git commit -m 'feat(fes): add PILE-L and transactional replica-exchange umbrellas'
+          git push origin "HEAD:refs/heads/$FEATURE"
+          git rev-parse HEAD > ../evidence/feature-commit.txt
+      - name: Install validation dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libopenmpi-dev openmpi-bin gfortran
+          python -m pip install -e './candidate[test,analysis,ase,mpi,docs]' build
+      - name: Full repository regression
+        working-directory: candidate
+        run: |
+          set -o pipefail
+          python -m pytest -q --junitxml=../evidence/pytest.xml | tee ../evidence/pytest.txt
+      - name: Real four-rank exchange and serial equivalence
+        working-directory: candidate
+        run: |
+          set -o pipefail
+          mpiexec -n 4 python tests/mpi_exchange_smoke.py "$RUNNER_TEMP/reus-mpi" | tee ../evidence/mpi.txt
+          cp "$RUNNER_TEMP/reus-mpi/result.json" ../evidence/mpi.json
+      - name: CLI and distribution
+        working-directory: candidate
+        run: |
+          pyrpmd run examples/fes/replica_exchange_2d.inp --output "$RUNNER_TEMP/reus-cli" > ../evidence/cli.json
+          pyrpmd resume "$RUNNER_TEMP/reus-cli" > ../evidence/resume.json
+          pyrpmd analyze "$RUNNER_TEMP/reus-cli" --recompute > ../evidence/analysis.json
+          python -m build
+          python -m sphinx -b html -W --keep-going docs ../evidence/docs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reus-implementation-validation
+          path: evidence
+          retention-days: 14

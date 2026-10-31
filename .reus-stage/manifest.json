@@ -1,0 +1,40 @@
+{
+  "base": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+  "new_files": [
+    "src/pyrpmd/workflows/sampling.py",
+    "src/pyrpmd/workflows/replica_exchange.py",
+    "tests/test_fes_pile_l.py",
+    "tests/test_exchange_bootstrap.py",
+    "tests/test_replica_exchange.py",
+    "tests/mpi_exchange_smoke.py",
+    "docs/replica-exchange.md",
+    "examples/fes/replica_exchange_2d.inp",
+    "docs/validation/fes-replica-exchange-2026-10-31/README.md",
+    "docs/validation/fes-replica-exchange-2026-10-31/available-suite.txt",
+    "docs/validation/fes-replica-exchange-2026-10-31/example.json",
+    "docs/validation/fes-replica-exchange-2026-10-31/focused-tests.txt"
+  ],
+  "blobs": {
+    "MANIFEST.in": "c3f111f35bc27637585d24d20f4c30502491ba00",
+    "docs/enhanced-sampling.md": "9a1cbe4ac31e0e12ddc0f6499ad5249bed8c7160",
+    "docs/manual/examples.md": "56e282ebb29bfd8f4528e1adca4e082b42de9773",
+    "docs/manual/workflows.md": "67af3c30923cabddd15bd8216e021070d8a31787",
+    "src/pyrpmd/analysis/fes.py": "466a394c8d485dc29729a76a497c0b538ad173a3",
+    "src/pyrpmd/input.py": "1ff09803011eb569aa26801adf8414804aa204c2",
+    "src/pyrpmd/workflows/fes.py": "fbfbbac4174b36e3640f5695b4ac25de8062a145",
+    "tests/mpi_workflow_smoke.py": "464343beeb078548d6a2140d1b2f79e6cc6871fa",
+    "tests/test_fes_block_sampling.py": "15505ca7fb97ae0aedb737f174f79ad781cad782",
+    "src/pyrpmd/workflows/sampling.py": "6afe4987e70bb5fd91fb04b2722167960ec09583",
+    "src/pyrpmd/workflows/replica_exchange.py": "1b70b58ec682aa60f9338ef333877977306a817e",
+    "tests/test_fes_pile_l.py": "ccfe98910d564ded85e20aff75a4c7388a291a3f",
+    "tests/test_exchange_bootstrap.py": "cf83aa41cfda9471c93ef63e5574958ef80de772",
+    "tests/test_replica_exchange.py": "40fa6049f425301c496e8dc461c98850bb35c5fd",
+    "tests/mpi_exchange_smoke.py": "266913b9518ba4f09a88321d36738d2d35f05d9c",
+    "docs/replica-exchange.md": "e474f1a9c4b9f001c5c986bf8d5a9878ded0ab3d",
+    "examples/fes/replica_exchange_2d.inp": "0ade8f04c3903ba102ba79c0804fdbf9c9da2629",
+    "docs/validation/fes-replica-exchange-2026-10-31/README.md": "e2249092a8b8c8965582f415538824a37d5c8f65",
+    "docs/validation/fes-replica-exchange-2026-10-31/available-suite.txt": "0acbdb054a1fcfc103956bb00367e7f2e924f647",
+    "docs/validation/fes-replica-exchange-2026-10-31/example.json": "098d08d7f0c564ba6a0e630d3d1413d644443c2f",
+    "docs/validation/fes-replica-exchange-2026-10-31/focused-tests.txt": "4deb1059d921e15b157502e25ca3fd0d400c1537"
+  }
+}
