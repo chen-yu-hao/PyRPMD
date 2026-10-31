@@ -11,8 +11,10 @@ recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
 include examples/analysis/reference-rates.csv
 recursive-include tests *.py
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json
+include benchmarks/h3/diatomic_switch.cpp
 recursive-include benchmarks/h3/convergence_inputs *.inp
 recursive-include benchmarks/h3/reproduction_results *.md *.json *.csv *.svg
+recursive-include benchmarks/h3/preparation_results *.md *.json *.csv *.svg
 recursive-include benchmarks/hho2 *.py *.md
 recursive-include benchmarks/brhcl *.py *.md *.json *.cpp *.f90 *.map
 prune benchmarks/brhcl/build
@@ -26,6 +28,7 @@ include benchmarks/batched_dynamics.py benchmarks/rpc_mts.py benchmarks/tier1_re
 recursive-include benchmarks/trpmd *.py *.json
 recursive-include benchmarks/published_rates *.py *.json *.md
 include benchmarks/efficiency/native-ensembles-summary.json
+recursive-include benchmarks/analysis_reports *.py *.md
 global-exclude __pycache__ *.py[cod] *.so *.o
 
 recursive-include src/pyrpmd/pesgen/_native *.cpp *.f90 *.h

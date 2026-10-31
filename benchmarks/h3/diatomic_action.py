@@ -159,8 +159,14 @@ class DiatomicOrbit:
         mu = float(masses[0] * masses[1] / masses.sum())
         if not np.isclose(mu, self.reduced_mass, rtol=1e-12, atol=0):
             raise ValueError("Cartesian masses do not match the orbit reduced mass")
-        if axis.shape != (3,) or not np.isfinite(axis).all() or not np.linalg.norm(axis) > 0:
+        if axis.shape != (3,) or not np.isfinite(axis).all():
             raise ValueError("axis must be a finite nonzero three-vector")
+        scale = np.max(np.abs(axis))
+        if scale == 0:
+            raise ValueError("axis must be a finite nonzero three-vector")
+        # Normalize a direction independently of its magnitude; the unscaled
+        # squared norm can overflow or underflow for otherwise finite inputs.
+        axis = axis / scale
         axis = axis / np.linalg.norm(axis)
         r, p = map(np.asarray, self.sample_phase(phase))
         relative = r[..., None] * axis

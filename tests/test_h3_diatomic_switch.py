@@ -1,4 +1,5 @@
 """Independent physics oracles for the opt-in native diatom preparation loop."""
+import ctypes
 import hashlib
 import json
 import os
@@ -6,11 +7,14 @@ from pathlib import Path
 import shlex
 import shutil
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 from scipy.integrate import solve_ivp, trapezoid
 
-from benchmarks.h3.diatomic_switch import DiatomicSwitchError, DiatomicSwitcher
+from benchmarks.h3.diatomic_switch import (
+    DiatomicSwitchError, DiatomicSwitcher, _Options, _Output,
+)
 from pyrpmd.constants import FS_TO_AU
 
 MU = 918.5763237198094
@@ -179,6 +183,26 @@ class AnalyticDiatomicSwitchTests(unittest.TestCase):
         self.assertEqual(len(self.same.metadata["cpp_sha256"]), 64)
         json.dumps(self.same.metadata, allow_nan=False)
 
+    def test_direct_abi_trace_capacity_cannot_wrap_at_int64_limit(self):
+        maximum = np.iinfo(np.int64).max
+        for switching, holding in ((maximum, 0), (0, maximum)):
+            with self.subTest(switching=switching, holding=holding):
+                options = _Options(1, switching, holding, 1, .1, 600., MU, OMEGA,
+                                   REQ, 0., 99., OMEGA, REQ, 0., 1)
+                r, p = np.array([REQ]), np.zeros(1)
+                r_out, p_out = np.full(1, -7.), np.full(1, -8.)
+                trace = np.full((1, 18), -9.)
+                output, error = _Output(), ctypes.create_string_buffer(256)
+                status = self.same._run(ctypes.byref(options), None,
+                    r, p, r_out, p_out, trace, 1, ctypes.byref(output), error, len(error))
+                self.assertEqual(status, 3)
+                self.assertIn(b"Insufficient trace capacity", error.value)
+                self.assertEqual(output.completed_steps, 0)
+                self.assertEqual(output.trace_count, 0)
+                np.testing.assert_array_equal(r_out, -7.)
+                np.testing.assert_array_equal(p_out, -8.)
+                np.testing.assert_array_equal(trace, -9.)
+
 
 @unittest.skipUnless(COMPILER and LIBRARY.is_file(), "Build verified BKMP2 for the real-PES switch checks")
 class BKMP2DiatomicSwitchTests(unittest.TestCase):
@@ -214,6 +238,12 @@ class BKMP2DiatomicSwitchTests(unittest.TestCase):
         potential.radial = lambda r: (0., np.zeros(3))
         with self.assertRaisesRegex(TypeError, "overridden radial"):
             DiatomicSwitcher(potential, mass=2*MU, omega=OMEGA, equilibrium=REQ)
+
+    def test_class_radial_override_is_also_rejected(self):
+        from benchmarks.h3.pes import BKMP2Potential
+        with patch.object(BKMP2Potential, "radial", lambda self, r: (0., np.zeros(3))):
+            with self.assertRaisesRegex(TypeError, "overridden radial"):
+                DiatomicSwitcher(BKMP2Potential(), mass=2*MU, omega=OMEGA, equilibrium=REQ)
 
     def test_real_noncentroid_ring_short_switch_has_second_order_work_balance(self):
         index = np.arange(32)

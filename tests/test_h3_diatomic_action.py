@@ -113,6 +113,17 @@ class AnalyticDiatomicActionTests(unittest.TestCase):
             self.assertAlmostEqual(orbit.energy_hartree, exact_energy, places=11)
             self.assertAlmostEqual(orbit.period_au/exact_period, 1, places=9)
 
+    def test_cartesian_direction_is_invariant_to_extreme_finite_axis_scaling(self):
+        orbit = self.orbits[0]
+        phases = np.array([0.0, 0.23, 0.5, 0.77])
+        axis = np.array([1., -2., 3.])
+        expected = orbit.cartesian_at_phase(phases, axis=axis)
+        for scale in (1e300, 1e-300):
+            with self.subTest(scale=scale):
+                actual = orbit.cartesian_at_phase(phases, axis=axis*scale)
+                for observed, reference in zip(actual, expected):
+                    np.testing.assert_allclose(observed, reference, rtol=2e-15, atol=1e-15)
+
     def test_phase_mass_axis_and_quantum_number_guards(self):
         orbit = self.orbits[0]
         for phase in (-0.1, 1.1, np.nan, np.inf, [0.0, np.nan], 1+2j, True):

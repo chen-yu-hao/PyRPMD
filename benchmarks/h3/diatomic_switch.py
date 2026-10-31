@@ -202,10 +202,11 @@ class DiatomicSwitcher:
                 "omega_au": self.target_omega, "equilibrium_bohr": self.target_equilibrium,
                 "offset_hartree": self.target_offset}
         else:
-            from benchmarks.h3.pes import BKMP2Potential
+            from benchmarks.h3.pes import BKMP2Potential, _BKMP2_RADIAL
             if type(potential) is not BKMP2Potential:
                 raise TypeError("Native diatomic switch requires the unmodified BKMP2Potential")
-            if "radial" in potential.__dict__:
+            if ("radial" in potential.__dict__
+                    or BKMP2Potential.radial is not _BKMP2_RADIAL):
                 raise TypeError("Native diatomic switch cannot bypass an overridden radial method")
             potential.native_binding()  # Do not bypass overridden provider semantics.
             if target_omega is not None or target_equilibrium is not None or target_offset != 0. or energy_zero_hartree != 0.:

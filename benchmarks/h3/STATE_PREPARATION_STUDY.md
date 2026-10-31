@@ -376,6 +376,14 @@ output directories: existing case ledgers are refused rather than overwritten.
 Choose worker counts to fit available CPU resources, especially when running
 collision and audit groups concurrently.
 
+The source distribution includes these benchmark scripts, the standalone C++
+source and its `native/ring_fft.h` dependency, and the compact
+[checked-in results](preparation_results/README.md). Work from a writable Git
+checkout or extracted source distribution: the switch builds its cached
+library under `benchmarks/h3/build/`. A wheel installation alone does not
+include the benchmark tree. The compact results do not contain the complete
+raw ledgers needed to repeat the paired analysis below.
+
 ```bash
 python -m pip install -e '.[test]' matplotlib
 export PYTHONPATH=src:.
@@ -458,10 +466,12 @@ The analysis writes:
 - `preparation_report.html`, plus PNG/SVG figures for scattering and, when
   audits are available, hold-energy diagnostics.
 
-The optional Chinese PDF uses ReportLab and a CJK TrueType font:
+The optional Chinese PDF uses ReportLab and a CJK TrueType font. Supply an
+installed font path explicitly if the default WenQuanYi font is unavailable:
 
 ```bash
-python benchmarks/h3/render_preparation_report.py
+python -m pip install reportlab
+python benchmarks/h3/render_preparation_report.py --font /path/to/cjk-font.ttf
 ```
 
 After the exact calculation/analysis sources have been committed, the archive
@@ -471,6 +481,8 @@ isolated audits. It verifies the supplied commit against the current source
 bytes, all completed ledgers and their recorded analysis hashes; it refuses
 incomplete data and existing output files. The commit must exist in the local
 Git object database (fetch a connector-published commit first if necessary).
+Use a Git checkout for this provenance-checked data-bundle command; an
+extracted source distribution has no Git object database.
 
 ```bash
 python benchmarks/h3/package_preparation_study.py \

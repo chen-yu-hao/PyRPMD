@@ -128,5 +128,36 @@ class PreparationAnalysisTests(unittest.TestCase):
         self.assertIsNone(row["sem_difference"])
 
 
+def test_single_successful_audit_keeps_mean_without_zero_sem_band(tmp_path, monkeypatch):
+    import pytest
+    pytest.importorskip("matplotlib")
+    from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
+    from benchmarks.h3 import analyze_preparation_study as analysis
+
+    case = PreparationAnalysisTests.case("direct-none", (10, 11))
+    case.rows[10].update(status="prepared", preparation_study={
+        "switch": {"switch_time_fs": 0.},
+        "trace": [{"time_fs": t, "primitive_internal_per_bead_hartree": value}
+                  for t, value in ((0., .01), (100., .02))],
+    })
+    case.rows[11]["status"] = "failed"
+    bands = []
+    original = Axes.fill_between
+
+    def record(ax, *args, **kwargs):
+        band = original(ax, *args, **kwargs)
+        bands.append((ax, band))
+        return band
+
+    monkeypatch.setattr(Axes, "fill_between", record)
+    monkeypatch.setattr(Figure, "savefig", lambda *args, **kwargs: None)
+    assert analysis.audit_plot([case], {}, tmp_path)
+    assert len(bands) == 1
+    ax, band = bands[0]
+    np.testing.assert_allclose(ax.lines[0].get_ydata(), np.array([.01, .02])/analysis.EV_TO_AU)
+    assert len(band.get_paths()) == 0, "Unavailable SEM must not become a zero-error band"
+
+
 if __name__ == "__main__":
     unittest.main()

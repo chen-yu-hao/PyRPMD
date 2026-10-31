@@ -267,6 +267,10 @@ RATTLE，数值失败时保留成功的前缀。两者都支持三种积分器�
 不增加 PES 调用。`pyrpmd state-check` 在生产块外将稀疏保存的状态投影到分子参考模式；
 谐振初态近似、辅助 beta 与固定能量统计的适用条件见[态选择说明](docs/state-selected.md)。
 
+[BKMP2 态选择对照](benchmarks/h3/STATE_SELECTED_REPRODUCTION.md)及其
+[初态制备研究](benchmarks/h3/STATE_PREPARATION_STUDY.md)区分论文的质心筛选、全势作用量 QCT
+与实验性平滑切换，并给出配对轨迹统计和孤立双原子能量诊断。
+
 ## 文档
 
 使用手册涵盖安装、快速入门、全部 10 类任务的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，

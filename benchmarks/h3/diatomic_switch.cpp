@@ -194,10 +194,13 @@ extern "C" int pyrpmd_diatomic_switch_v1(
         for (double value : scalars) if (!std::isfinite(value))
             throw std::invalid_argument("Nonfinite diatomic switch option");
         const std::int64_t total = o.switch_steps+o.hold_steps;
-        const std::int64_t required = 1+total/o.trace_stride
+        // Include the initial/end/switch observations without signed overflow
+        // for a direct ABI caller supplying an extreme int64 step budget.
+        const std::uint64_t required = 1+static_cast<std::uint64_t>(total/o.trace_stride)
             +(total%o.trace_stride != 0)
             +(o.switch_steps > 0 && o.switch_steps < total && o.switch_steps%o.trace_stride != 0);
-        if (trace_capacity < required) throw std::invalid_argument("Insufficient trace capacity");
+        if (static_cast<std::uint64_t>(trace_capacity) < required)
+            throw std::invalid_argument("Insufficient trace capacity");
         const std::size_t n = static_cast<std::size_t>(o.beads);
         std::copy(r_input, r_input+n, r_output);
         std::copy(p_input, p_input+n, p_output);
@@ -236,7 +239,8 @@ extern "C" int pyrpmd_diatomic_switch_v1(
         update_extrema(row, *output, o.switch_steps == 0);
         std::copy(row, row+WIDTH, trace); output->trace_count = 1;
         const int hold_indices[HOLD_FIELDS] = {9, 2, 4, 5, 15, 12};
-        for (std::int64_t step = 1; step <= total; ++step) {
+        for (std::int64_t step = 0; step < total;) {
+            ++step;
             const auto previous = schedule(step-1,o), current = schedule(step,o);
             trial_r = r; trial_p = p;
             for (std::size_t j = 0; j < n; ++j) trial_p[j] += .5*o.dt*f[j];

@@ -591,7 +591,9 @@ def audit_plot(cases, quantum_levels, output):
             times = sorted(by_time)
             values = [mean_sem(by_time[t]) for t in times]
             means = np.array([r["mean"] for r in values])
-            sems = np.array([r["sem"] or 0. for r in values])
+            # A single successful trajectory has no estimable ensemble SEM.
+            # Preserve that absence instead of drawing a zero-width error band.
+            sems = np.array([np.nan if r["sem"] is None else r["sem"] for r in values])
             ax.plot(times, means, color=AUDIT_COLORS[case.variant], lw=1.0, marker=".", markersize=3)
             ax.fill_between(times, means-sems, means+sems, color=AUDIT_COLORS[case.variant], alpha=.10, linewidth=0)
             plotted = True
