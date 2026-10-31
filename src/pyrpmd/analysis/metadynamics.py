@@ -17,14 +17,28 @@ import numpy as np
 def _cv_signature(cv):
     """Semantic identity for built-in CVs; plugin parameters remain user-owned."""
     from ..cv import (CVStack, Distance, BondDifference, Cartesian, Angle,
-                      COMDistance, RPMDrateCoordinate, RateSurface)
+                      COMDistance, RPMDrateCoordinate, RateSurface,
+                      PeriodicDistance, SurfaceHeight, SurfaceLateral)
+    from ..cv_periodic import (PeriodicAngle, PeriodicBondDifference,
+                               LinearProjection, FractionalCoordinate)
 
     kind = type(cv)
     if kind is CVStack:
         return ("stack", tuple(_cv_signature(c) for c in cv.cvs))
     common = (kind.__module__, kind.__qualname__, getattr(cv, "estimator", None),
               tuple(cv.units), tuple(cv.periods))
-    if kind in (Distance, Angle):
+    if kind in (PeriodicDistance, PeriodicAngle, PeriodicBondDifference):
+        selection = cv.bonds if kind is PeriodicBondDifference else cv.atoms
+        cell = None if cv.cell is None else tuple(cv.cell.ravel())
+        parameters = (selection, cell, tuple(cv.pbc))
+    elif kind in (SurfaceHeight, SurfaceLateral, LinearProjection, FractionalCoordinate):
+        # Compare the coefficients actually used by the mapping: reference
+        # masses matter through their weights, while unused masses do not.
+        gradient = cv._affine_gradient()
+        parameters = (gradient.shape, tuple(gradient.ravel()), cv.origin)
+        if kind is FractionalCoordinate:
+            parameters += (tuple(cv.cell.ravel()), tuple(cv.pbc))
+    elif kind in (Distance, Angle):
         parameters = cv.atoms
     elif kind is BondDifference:
         parameters = cv.bonds

@@ -170,25 +170,17 @@ def _pes(args):
         ):
             raise InputError("step and tolerance must be positive and finite")
         q = system.geometry[None, :, :].copy()
-        result = provider.evaluate(q)
-        from .potentials import validate_result
+        from .potentials import check_potential, validate_result
 
-        validate_result(result, q.shape)
-        finite = np.empty_like(q)
-        for a in range(system.natoms):
-            for c in range(3):
-                qp = q.copy()
-                qm = q.copy()
-                qp[0, a, c] += args.step
-                qm[0, a, c] -= args.step
-                plus = validate_result(provider.evaluate(qp), qp.shape)
-                minus = validate_result(provider.evaluate(qm), qm.shape)
-                finite[0, a, c] = -(plus.energy[0] - minus.energy[0]) / (2 * args.step)
-        error = float(np.max(np.abs(result.forces - finite)))
+        checked = check_potential(provider, q, epsilon=args.step)
+        error = checked["max_absolute_force_error"]
         if not np.isfinite(error) or error > args.tolerance:
             raise InputError(
                 f"PES energy/force finite-difference check failed: max error {error:g}"
             )
+        # Re-evaluate the original geometry: the diagnostic's displaced calls
+        # may have overwritten provider-owned energy and result buffers.
+        result = validate_result(provider.evaluate(q), q.shape)
         return {
             "passed": True,
             "max_force_error_au": error,
