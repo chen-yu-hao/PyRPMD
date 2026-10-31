@@ -37,10 +37,10 @@ print(result["rate_cm3_s"])
 适配器使用 `input/resolved.json`、`rate_pmf.json`、`rate_pmf.npz`、
 `recrossing.npz` 和 `summary.json`。它独立重算
 
-\[
+$$
 k_{\rm TST}^{(2)}=\frac{4\pi R_\infty^2}{\sqrt{2\pi\beta\mu}}
 e^{-\beta\Delta W}\,g_{\rm electronic}\,g_{\rm symmetry}
-\]
+$$
 
 并核对已保存的分界面、PMF 方法、静态前因子和父构型通量总和。
 原计算若缺少平台或能量检查未通过，后处理仍保留 `rate_cm3_s=null`；
@@ -50,17 +50,17 @@ e^{-\beta\Delta W}\,g_{\rm electronic}\,g_{\rm symmetry}
 
 对与 `ds0 ds1` 对应的自由能面，静态正通量为
 
-\[
+$$
 I_\Sigma=\int_\Sigma e^{-\beta F(s)}\langle v_n\Theta(v_n)\mid s\rangle\,d\ell.
-\]
+$$
 
 支持两种归一化：
 
-\[
+$$
 k_\Sigma^{(2),+}=V\frac{I_\Sigma}{\int_\mathcal R e^{-\beta F(s)}d^2s},
 \qquad
 k_\Sigma^{(2),+}=k_{\rm ref}^{(2),+}\frac{I_\Sigma}{I_{\rm ref}}.
-\]
+$$
 
 第一种的 `V` 必须是游离反应物的可及相对平移体积；接触复合物盆地不能代替
 自由双分子反应物。第二种的参考曲线必须是已知完整入射通量的截面，不能随意选一个
@@ -115,10 +115,10 @@ flux_axis = 0
 
 采样在第一个 CV 的法向通量测度下进行。辅助 CV 可以是键长等变量。此时
 
-\[
+$$
 A(x)=\int e^{-\beta F_{\rm flux}(x,y)}dy,\qquad
 k^{(2),+}(x^*)=k_{\rm ref}^{(2),+}\frac{A(x^*)}{A(x_{\rm ref})}.
-\]
+$$
 
 不要再乘法向热速度。此面只适用于固定 `s0` 截面，不能旋转后用于另一方向的通量。
 横向积分使用各 bin 的真实宽度；在 `s0` 非 bin 中心处，只沿 `s0` 插值自由能。
@@ -161,10 +161,10 @@ pyrpmd rate-postprocess run --spec rate-spec.json --output rate-result.json
 
 每个子轨迹对的通道贡献包含正、反动量传播的差：
 
-\[
+$$
 \kappa_i(t)=\frac{\sum_p N_{pi}(t)}{\sum_p D_p},\quad
 k_i=k_\Sigma^+\kappa_i,\quad b_i=\frac{\kappa_i}{\sum_j\kappa_j}.
-\]
+$$
 
 父构型内的多个子轨迹不能当作独立样本。实现对所有通道共同重采样相同的父链和
 相关块，以保留通道之间及总通量的协方差。每条通道和总通量都要检查平台；总通量

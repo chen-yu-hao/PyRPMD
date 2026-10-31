@@ -22,7 +22,8 @@ extensions = [
 ]
 source_suffix = {".md": "markdown"}
 root_doc = "index"
-include_patterns = ["index.md", "manual/*.md"]
+# Keep the standalone rate guide in the searchable and single-page manuals.
+include_patterns = ["index.md", "manual/*.md", "rate-postprocessing.md"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 myst_enable_extensions = ["dollarmath", "colon_fence"]
 myst_heading_anchors = 4
