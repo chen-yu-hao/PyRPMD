@@ -77,6 +77,7 @@ def bond_entrance_observables(centroid, masses_au, beta):
                 target_topology=np.asarray([
                     r02 > max(r01,r12), r01 > max(r02,r12)
                 ], bool),
+                reference_reactant=bool(r12 < min(r01,r02)),
                 r01_bohr=r01, r02_bohr=r02, r12_bohr=r12)
 
 
@@ -89,7 +90,7 @@ def entrance_flux_ratio(reference_coordinate, target_coordinates, weights,
                         reference_speed, target_speed, *,
                         reference_radius, reference_width, target_width,
                         canonical_identity, measure, connected, target_topology,
-                        masses_au, beta, min_effective=20,
+                        reference_reactant_mask, masses_au, beta, min_effective=20,
                         electronic_weight=1., symmetry_factor=1.):
     """Calibrate physical bond fluxes against the free incoming sphere.
 
@@ -122,6 +123,9 @@ def entrance_flux_ratio(reference_coordinate, target_coordinates, weights,
     vr = np.asarray(reference_speed, float)
     vs = np.asarray(target_speed, float)
     topo = np.asarray(target_topology)
+    reactant = np.asarray(reference_reactant_mask)
+    if reactant.shape != (n,) or reactant.dtype.kind != "b":
+        raise ValueError("reference_reactant_mask must identify intact H2 in every sample")
     if (w.shape != (n,) or vr.shape != (n,) or vs.shape != (n,channels)
             or topo.shape != (n,channels) or topo.dtype.kind != 'b'):
         raise ValueError("flux weights, speeds and topology must match sample/channel shapes")
@@ -133,7 +137,7 @@ def entrance_flux_ratio(reference_coordinate, target_coordinates, weights,
     if np.any(topo.sum(axis=1)>1):
         raise ValueError("overlapping chemical channel assignment")
     w = w/w.max()  # invariant even for globally tiny MBAR-gauge weights
-    ref_hit = np.abs(R-radius) <= dr
+    ref_hit = (np.abs(R-radius) <= dr) & reactant
     tgt_hit = (np.abs(S) <= ds) & topo
     ref_flux = w*ref_hit*vr/(2*dr)
     tgt_flux = w[:,None]*tgt_hit*vs/(2*ds)
@@ -192,6 +196,7 @@ def h3_entrance_from_centroid_samples(centroids, weights, masses_au, beta, *,
         target_width=target_width_bohr,canonical_identity=canonical_identity,
         measure=measure,connected=connected,
         target_topology=np.array([o['target_topology'] for o in obs]),
+        reference_reactant_mask=np.array([o['reference_reactant'] for o in obs]),
         masses_au=masses_au,beta=beta,min_effective=min_effective,
         electronic_weight=electronic_weight,symmetry_factor=symmetry_factor)
 
