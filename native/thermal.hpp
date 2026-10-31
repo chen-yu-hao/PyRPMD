@@ -13,7 +13,9 @@
 #include <cstdint>
 #include <limits>
 #include <fstream>
+#ifdef _WIN32
 #include <filesystem>
+#endif
 #include <numeric>
 #include <random>
 #include <sstream>
@@ -180,7 +182,10 @@ private:
         for(size_t i=begin;i<end;++i)if(active(i%d)){++dof;k+=p[i]*p[i]/(2*c.masses[(i%d)/3]);}
         if(!dof)return;
         if(k<=std::numeric_limits<double>::min()){
-            for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=std::sqrt(c.masses[(i%d)/3]*theta)*g();
+            // Exact zero-energy limit of the CIR kinetic-energy transition:
+            // K' = theta*(1-exp(-h/tau))*chi_square(dof)/2, not a full redraw.
+            double variance=theta*(-std::expm1(-h/c.tau));
+            for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=std::sqrt(c.masses[(i%d)/3]*variance)*g();
             return;
         }
         double decay=std::exp(-h/c.tau),one=-std::expm1(-h/c.tau),r=g();
@@ -400,7 +405,13 @@ public:
             out.samples.resize(out.frames*ncolumns);if(centroids)out.centroids.resize(out.frames*d);
         }else{
             stream.exceptions(std::ios::badbit|std::ios::failbit);
+            #ifdef _WIN32
             stream.open(std::filesystem::u8path(path),std::ios::binary|std::ios::trunc);
+#else
+            // UTF-8 paths are native POSIX byte strings. Avoid std::filesystem
+            // here so macOS wheels retain their 10.13 deployment target.
+            stream.open(path,std::ios::binary|std::ios::trunc);
+#endif
             const uint16_t endian=1;
             // NPY v1 header; records are native-endian IEEE binary64.
             std::string header="{'descr': '"+std::string(*reinterpret_cast<const uint8_t*>(&endian)?"<f8":">f8")+"', 'fortran_order': False, 'shape': ("+std::to_string(count)+", "+std::to_string(ncolumns+(centroids?d:0))+"), }";
