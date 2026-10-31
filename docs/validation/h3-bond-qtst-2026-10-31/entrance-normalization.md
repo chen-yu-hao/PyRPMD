@@ -34,7 +34,7 @@ k_i^{(2),\mathrm{QTST}}=k_\mathrm{in}^{(2)}
 
 `entrance_flux_ratio` 使用一个共享 MBAR 权重集合和矩形核
 `delta_h(s)=1(|s|<=h)/(2h)`，要求原始采样关联身份、连通的
-reference-to-target overlap、入口和目标各自的最小有效样本数。单个 PMF
+reference-to-target overlap、入口和目标各自的最小有效样本数。入口参考要求 H1H2 为较短的键（显式 `reference_reactant_mask`），\n避免把不属于 H + H2 的构型误当成自由双分子入口。单个 PMF
 的任意零点或接触复合物归一化不能替代这个比。对使用不同偏置重建的
 两份 FES **不能分别归一后相除**。
 
