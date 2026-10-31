@@ -26,6 +26,7 @@ from .mbar import (
     solve_mbar,
 )
 from .rate_pmf import (
+    _rate_bootstrap_statistics,
     _rate_bracket,
     _rate_draw_statistics,
     _rate_support,
@@ -71,7 +72,11 @@ def reconstruct_fes(
     adding an integer number of periods cannot change the surface. A periodic
     axis defaults to [-period/2, period/2] and may cover at most one period.
     The error is relative to the original minimum bin, which is held fixed in
-    every bootstrap draw. Per-bin valid-draw counts expose missing support.
+    every bootstrap draw. A primary bin error requires support in every
+    requested draw, including a converged, connected MBAR fit and the fixed
+    reference. ``supported_draw_standard_error`` retains an explicitly
+    conditional diagnostic from surviving draws; per-bin valid counts expose
+    the selection. Neither error is available for unresolved correlation blocks.
 
     ``correlation_observables`` optionally supplies one finite real [Ns,M]
     array per stream, with the same M >= 1 across streams. Its observations
@@ -274,12 +279,23 @@ def reconstruct_fes(
         f[:] = np.nan
         mask[:] = True
         se[:] = np.nan
+    supported_se = se.copy()
+    # Missing fits, reference bins or local histogram support select a subset
+    # of draws. Its spread is useful only with an explicit conditional label.
+    # Point estimates and their original support mask remain unchanged.
+    se[valid < bootstrap] = np.nan
     ess = 1 / float(np.sum(mbar.weights**2))
     result = {
         "free_energy": f,
         "probability_mass": mass,
         "density": density,
         "standard_error": se,
+        "supported_draw_standard_error": supported_se,
+        "standard_error_scope": "all requested draws support the original bin and fixed reference",
+        "supported_draw_condition": (
+            "conditional on a converged, connected MBAR fit and histogram "
+            "support for this bin and the fixed reference in the bootstrap draw"
+        ),
         "mask": mask,
         "raw_count": count,
         "edges": edges,

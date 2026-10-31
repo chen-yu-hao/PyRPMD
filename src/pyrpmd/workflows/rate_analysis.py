@@ -104,7 +104,7 @@ def _aggregate(children, pmf, config, output, options):
         error = None
         supported_draw_error = None
     rejected_pmf_draws = max(0, pmf_bootstrap.get("attempted", 0) - pmf_bootstrap.get("valid", 0))
-    if is_surface and rejected_pmf_draws:
+    if rejected_pmf_draws:
         uncertainty_reasons.append("pmf_bootstrap_contains_unsupported_draws")
         # A confidence interval conditional on complete histogram support is
         # not an unconditional joint interval. Preserve it under an explicit
@@ -268,18 +268,21 @@ def _aggregate(children, pmf, config, output, options):
             result.pop(name, None)
     if is_surface:
         result["rate_quality"] = quality
-        result["rate_uncertainty"].update(
-            pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
-            pmf_bootstrap_attempted=pmf_bootstrap.get("attempted", 0),
-            pmf_bootstrap_rejected=rejected_pmf_draws,
-            independence_assumption="Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically.",
+    result["rate_uncertainty"].update(
+        pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
+        pmf_bootstrap_attempted=pmf_bootstrap.get("attempted", 0),
+        pmf_bootstrap_rejected=rejected_pmf_draws,
+        independence_assumption="Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically.",
+    )
+    if rejected_pmf_draws:
+        result["supported_draw_rate_standard_error_" + unit_key] = supported_draw_error
+        result["supported_draw_rate_percentile_95_ci_" + unit_key] = (
+            np.quantile(total_boot, [0.025, 0.975]).tolist()
+            if supported_draw_error is not None else None
         )
-        if rejected_pmf_draws:
-            result["supported_draw_rate_standard_error_s_inv"] = supported_draw_error
-            result["supported_draw_rate_percentile_95_ci_s_inv"] = (
-                np.quantile(total_boot, [0.025, 0.975]).tolist()
-                if supported_draw_error is not None else None
-            )
-            result["rate_uncertainty"]["supported_draw_condition"] = "conditional on the bootstrap draw having complete basin-to-surface support"
+        result["rate_uncertainty"]["supported_draw_condition"] = (
+            "conditional on the bootstrap draw having complete PMF support "
+            "and a valid estimator fit"
+        )
     write_json(Path(output) / "summary.json", result)
     return result

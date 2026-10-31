@@ -63,12 +63,17 @@ Maxwell momenta and launches with `+p` and `-p`, without thermostat or umbrella.
 | `kappa`, `plateau_detected` | Final transmission coefficient and whether a plateau was found |
 | `rate_estimate_cm3_s` | Finite-time rate estimate |
 | `rate_cm3_s` | The rate, when the plateau and energy diagnostics pass; otherwise `null` |
-| `rate_standard_error_cm3_s`, `rate_percentile_95_ci_cm3_s` | Joint sampling error and percentile interval from the PMF and recrossing |
+| `rate_standard_error_cm3_s`, `rate_percentile_95_ci_cm3_s` | Joint PMF/recrossing error and percentile interval; `null` if any PMF draw is rejected or uncertainty support is insufficient |
+| `supported_draw_rate_standard_error_cm3_s`, `supported_draw_rate_percentile_95_ci_cm3_s` | When PMF draws are rejected, diagnostics conditional on the accepted draws having complete PMF support and a valid fit; not unconditional confidence intervals |
 | `conditional_rate_standard_error_cm3_s` | Recrossing error with the QTST factor held fixed |
-| `rate_uncertainty` | Error availability, valid bootstrap counts and qualifying notes |
+| `rate_uncertainty` | Error availability, requested/attempted/valid/rejected bootstrap counts and qualifying notes |
+| `pmf.adaptive_umbrella` | Adaptive pilot and independent production diagnostics in the final summary; also `adaptive_umbrella` in `rate_pmf.json` and `umbrella/summary.json` |
 
 Rates are in `cm^3 molecule^-1 s^-1`. If the PMF overlap is disconnected or the dividing surface
 lacks support, add windows or sampling before reading a rate.
+For an adaptive run, inspect `pmf.adaptive_umbrella.production_target_met` separately from
+`pilot_target_met`. A non-null rate or a successful pilot does not establish production sampling
+or physical convergence. See the [acceptance procedure](science.md#assessing-adaptive-umbrella-results).
 
 The mathematics is in the
 [rate conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md) *(Chinese)* and

@@ -1,0 +1,220 @@
+{
+  "baseline_commit": "c4fa743f552c1d71db35fab791a2e63409bc1c3e",
+  "scope": "deterministic synthetic regression examples, not physical convergence",
+  "overlap_input": {
+    "windows": 64,
+    "samples_per_window": 400,
+    "rng_seed": 2026,
+    "center_range": [
+      -0.0001,
+      0.0001
+    ],
+    "beta": 1.0,
+    "stiffness": 1.0
+  },
+  "bootstrap_input": {
+    "histogram_populations": [
+      120,
+      1,
+      120
+    ],
+    "shuffle_seed": 7,
+    "bootstrap_seed": 52,
+    "requested": 40,
+    "beta": 2.0,
+    "histogram_coordinates": [
+      0.5,
+      1.5,
+      2.5
+    ],
+    "centers": [
+      1.5
+    ],
+    "stiffness": 1e-12,
+    "histogram_edges": [
+      0.0,
+      1.0,
+      2.0,
+      3.0
+    ],
+    "rate_reference": 0.5,
+    "rate_xi_star": 2.5,
+    "min_count": 1,
+    "shuffle": "numpy.random.default_rng(7).shuffle after concatenating the populations in the recorded coordinate order",
+    "fes_reference": "original minimum bin, held fixed across all draws"
+  },
+  "masked_rate_bin_input": {
+    "histogram_coordinates": [
+      0.5,
+      1.5,
+      2.5,
+      3.5
+    ],
+    "histogram_populations": [
+      120,
+      120,
+      120,
+      1
+    ],
+    "centers": [
+      1.5
+    ],
+    "stiffness": 1e-12,
+    "beta": 2.0,
+    "histogram_edges": [
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0
+    ],
+    "reference": 0.5,
+    "xi_star": 2.5,
+    "min_count": 2,
+    "shuffle_seed": 7,
+    "bootstrap_seed": 52,
+    "requested": 40,
+    "regression_test": "tests/test_mbar_rate_analysis.py::MBARRatePMFTests::test_bootstrap_cannot_promote_an_originally_masked_bin"
+  },
+  "before": {
+    "overlap": {
+      "metric": "mbar_symmetric_transition",
+      "target_met": false,
+      "spanning_overlap": 0.015624999999960443,
+      "minimum_ess": 145.33182442716569,
+      "inserted_windows": 63
+    },
+    "rate_bootstrap": {
+      "ready": true,
+      "requested": 40,
+      "valid": 26,
+      "failures": 14,
+      "block_status": "finite_block_estimate",
+      "primary_standard_error": 0.06707890159487216,
+      "primary_percentile_95_ci": [
+        -0.11591608752539706,
+        0.1182745892864544
+      ],
+      "supported_draw_standard_error": null,
+      "uncertainty": null
+    },
+    "fes_bootstrap": {
+      "free_energy": [
+        0.0,
+        2.3937458713915243,
+        0.0
+      ],
+      "valid": [
+        40,
+        26,
+        40
+      ],
+      "primary_standard_error": [
+        0.0,
+        0.24356948294160938,
+        0.06116494205794299
+      ],
+      "supported_draw_standard_error": null
+    },
+    "masked_rate_bin": {
+      "mask": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "primary_standard_error": [
+        0.0,
+        0.05410778570822666,
+        0.06358268964696723,
+        0.0826486020557486
+      ],
+      "valid": [
+        40,
+        40,
+        40,
+        10
+      ]
+    }
+  },
+  "after": {
+    "overlap": {
+      "metric": "normalized_mbar_cosine",
+      "target_met": true,
+      "spanning_overlap": 0.9999999999949345,
+      "minimum_ess": 145.33182442716569,
+      "inserted_windows": 0
+    },
+    "rate_bootstrap": {
+      "ready": true,
+      "requested": 40,
+      "valid": 26,
+      "failures": 14,
+      "block_status": "finite_block_estimate",
+      "primary_standard_error": null,
+      "primary_percentile_95_ci": null,
+      "supported_draw_standard_error": 0.06707890159487216,
+      "uncertainty": {
+        "available": false,
+        "block_status": "finite_block_estimate",
+        "reasons": [
+          "pmf_bootstrap_contains_unsupported_draws"
+        ],
+        "bootstrap_requested": 40,
+        "bootstrap_attempted": 40,
+        "bootstrap_valid": 26,
+        "bootstrap_rejected": 14,
+        "surface_held_fixed": true,
+        "selection_uncertainty_included": false,
+        "supported_draw_condition": "conditional on the bootstrap draw having complete PMF support and a valid estimator fit"
+      }
+    },
+    "fes_bootstrap": {
+      "free_energy": [
+        0.0,
+        2.3937458713915243,
+        0.0
+      ],
+      "valid": [
+        40,
+        26,
+        40
+      ],
+      "primary_standard_error": [
+        0.0,
+        null,
+        0.06116494205794299
+      ],
+      "supported_draw_standard_error": [
+        0.0,
+        0.24356948294160938,
+        0.06116494205794299
+      ]
+    },
+    "masked_rate_bin": {
+      "mask": [
+        false,
+        false,
+        false,
+        true
+      ],
+      "primary_standard_error": [
+        0.0,
+        0.05410778570822666,
+        0.06358268964696723,
+        null
+      ],
+      "valid": [
+        40,
+        40,
+        40,
+        0
+      ]
+    }
+  },
+  "source_sha256": {
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "d9faeb92991e73ff38d45d2ad657e6c72759454dde0171a443a8f65054ceb18d",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "src/pyrpmd/workflows/rate.py": "e7f04ba3af8b9d41ac42291e1b983de53b34c8a467160b6234fd759056beac5a"
+  }
+}

@@ -27,6 +27,7 @@ jobs:
       - run: mpiexec -n 4 python tests/mpi_integration.py
       - run: mpiexec -n 5 python tests/mpi_dynamic_integration.py
       - run: mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-workflows"
+      - run: mpiexec -n 4 python tests/mpi_adaptive_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-adaptive"
       - run: mpiexec -n 4 python tests/mpi_opes_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-opes"
       - run: mpiexec -n 4 python tests/mpi_materials_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-materials"
       - run: mpiexec -n 4 python tests/mpi_surface_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface"
