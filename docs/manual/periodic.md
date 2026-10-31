@@ -159,7 +159,7 @@ pyrpmd analyze runs/manual-site-rate
 
 [示例](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)使用未包装的 `fractional` centroid 坐标。支持的 CV 是 `cartesian`、`projection` 或 `fractional`；后两者可参考指定晶格原子组。`site_rate.cv` 指定同一个 umbrella CV，`basin=[lo,hi]` 定义有限盆地，`direction=1` 要求分割面为 hi，`direction=-1` 要求分割面为 lo。
 
-窗口与分析范围需覆盖整个盆地，并在出口另一侧提供所需支持。窗口/受约束母链用 Andersen，±p 子轨迹不恒温；负的有限样本 κ 不会被裁为零。结果含 `site_qtst.npz`、`pmf/fes.csv`、`recrossing.csv`，摘要字段是 `rate_s`、`rate_estimate_s`、`rate_standard_error_s` 及 `rate_uncertainty`。
+窗口与分析范围需覆盖整个盆地，并在出口另一侧提供所需支持。窗口/受约束母链用 Andersen，±p 子轨迹不恒温；负的有限样本 κ 不会被裁为零。结果含 `site_qtst.json` / `.npz`、`pmf/fes.csv`、`recrossing.csv`，摘要字段是 `k_qtst_s`、`kappa`、`rate_s`、`rate_estimate_s`、`rate_standard_error_s`、`rate_percentile_95_ci_s` 及 `rate_uncertainty`。
 
 ### `surface_rate`：带固定层的表面
 
@@ -172,11 +172,11 @@ pyrpmd run examples/surface/fes2d.inp --output runs/manual-surface-fes
 pyrpmd analyze runs/manual-surface-fes --recompute --bins 24 12 --bootstrap 40
 ```
 
-虽然示例名为 `diffusion.inp`，其任务是 **`surface_rate`**，计算一个局部井的右侧出口；不要将它与 MSD 的 `diffusion` 任务混淆。解析势是可分离教学模型，不能验证真实热化位点跳跃或材料扩散系数。
+虽然示例名为 `diffusion.inp`，其任务是 **`surface_rate`**，计算一个局部井的右侧出口；不要将它与 MSD 的 `diffusion` 任务混淆。解析势是可分离教学模型，不能验证真实热化位点跳跃或材料扩散系数。这两个表面例子比快速入门昂贵：单线程下 `surface_rate` 约需 1–2 分钟，二维表面 FES 约 1 分钟。
 
 使用 `system.fixed_atoms` 固定底层的所有珠子，动量保持为零；这些原子仍进入真实 PES，作用于活动原子。支持一个 centroid `cartesian`、`surface_height` 或 `surface_lateral` 坐标。`surface.reactant_basin`、`surface.dividing_surface` 和 `surface.product_side="higher"/"lower"` 指定归一化区域和产品侧；整个盆地须在分割面的反应物侧。这里的长度推荐写带单位字符串。
 
-表面输出为 `surface_pmf.csv` / `.npz` / `.json`、`recrossing.csv` 和摘要。表面速率字段使用 `rate_s_inv`、`rate_estimate_s_inv`、`rate_standard_error_s_inv`，与 `site_rate` 的字段名称不同，但物理单位相同。若 bootstrap 中盆地支持失败，主联合区间可能被保留为空；仅对成功 draw 的条件统计不能冒充完整误差。
+表面输出为 `surface_pmf.csv` / `.npz` / `.json`、`recrossing.csv`、`umbrella/` 和摘要。表面速率字段使用 `rate_s_inv`、`rate_estimate_s_inv`、`rate_standard_error_s_inv`、`rate_percentile_95_ci_s_inv`，与 `site_rate` 的字段名称不同，但物理单位相同。若 bootstrap 中盆地支持失败，主联合区间可能被保留为空；仅对成功 draw 的条件统计不能冒充完整误差。
 
 表面 `fes` 支持自适应 umbrella；`surface_rate` 当前要求固定声明的窗口。若要检验实际 ASE 连接，可安装 ASE 后运行：
 

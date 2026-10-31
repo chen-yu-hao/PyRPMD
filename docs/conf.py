@@ -1,4 +1,8 @@
-"""Build the current user manual; historical validation stays in the repository."""
+"""Build the Chinese user manual; historical validation stays in the repository.
+
+The English edition in ``docs/en`` reuses these settings through ``docs/en/conf.py``.
+Build it into ``<outdir>/en`` so the navbar language switcher can link both editions.
+"""
 
 from pathlib import Path
 import sys
@@ -33,12 +37,16 @@ html_theme = "pydata_sphinx_theme"
 html_title = f"PyRPMD {release} 使用手册"
 html_static_path = ["_static"]
 html_css_files = ["manual.css"]
+templates_path = ["_templates"]
+# Every chapter is a top-level page, so the primary sidebar would stay empty on
+# desktop; the navbar and the mobile drawer still list all chapters.
+html_sidebars = {"**": []}
 html_theme_options = {
     "github_url": "https://github.com/chen-yu-hao/PyRPMD",
     "show_toc_level": 2,
     "navigation_depth": 3,
     "show_nav_level": 1,
-    "navbar_end": ["theme-switcher", "navbar-icon-links"],
+    "navbar_end": ["language-switcher", "theme-switcher", "navbar-icon-links"],
 }
 html_context = {
     "github_user": "chen-yu-hao",

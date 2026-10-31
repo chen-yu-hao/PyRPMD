@@ -1,8 +1,9 @@
-/* Readable CJK prose and compact numerical/reference tables. */
+/* Readable CJK and Latin prose and compact numerical/reference tables. */
 html { --pst-font-family-base: system-ui, -apple-system, "Noto Sans CJK SC", sans-serif; }
 .bd-article-container { max-width: 58rem; }
 .bd-article p, .bd-article li { line-height: 1.8; }
+html[lang="en"] .bd-article p, html[lang="en"] .bd-article li { line-height: 1.65; }
 .bd-article table { font-size: .94rem; }
 .bd-article table td, .bd-article table th { white-space: normal; }
 .bd-article pre { line-height: 1.5; }
-
+.pyrpmd-language-switcher { font-weight: 600; white-space: nowrap; }

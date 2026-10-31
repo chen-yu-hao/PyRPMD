@@ -1,5 +1,7 @@
 # PyRPMD 使用手册
 
+**中文** · [English](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/en/index.md)
+
 **从一个可运行的输入开始，完成环聚合物采样、动力学与结果分析。**
 
 PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输入，连接势能面、
@@ -27,6 +29,20 @@ PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输�
 统计及离散化收敛是不同的问题。每一章都解释结果的单位、归一化和使用边界；
 正式计算前请阅读[科学约定与收敛](manual/science.md)。
 
+## 一次计算的基本循环
+
+所有任务都使用同一组命令，每个新计算使用新的输出目录：
+
+```bash
+pyrpmd validate job.inp --check-pes     # 检查输入、单位并构造势能
+pyrpmd run job.inp --output runs/job    # 执行；结果在 runs/job/results/summary.json
+pyrpmd analyze runs/job                 # 读取摘要；FES、metadynamics、扩散可 --recompute
+pyrpmd resume runs/job                  # 中断后从检查点继续，不改变科学设置
+```
+
+命令行选项见[输入与命令行](manual/input.md#命令行参考)，同样的流程在 Python 中为
+`prepare`、`run`、`analyze_run`、`resume_run`（见[快速入门](manual/quickstart.md)）。
+
 ## 学习与使用
 
 以下目录也可直接在 GitHub 上阅读：
@@ -43,10 +59,10 @@ PyRPMD 是可扩展的 Python 科研计算包，使用统一的 Python/TOML 输�
 :caption: 开始使用
 :hidden:
 
-manual/installation
-manual/quickstart
-manual/input
-manual/science
+安装 <manual/installation>
+快速入门 <manual/quickstart>
+输入与命令行 <manual/input>
+科学约定 <manual/science>
 ```
 
 ```{toctree}
@@ -54,14 +70,14 @@ manual/science
 :caption: 用户指南
 :hidden:
 
-manual/workflows
-manual/periodic
-manual/pcet
-manual/nonadiabatic
-manual/potentials
-manual/execution
-manual/results
-manual/examples
+气相与自由能 <manual/workflows>
+材料与表面 <manual/periodic>
+PCET <manual/pcet>
+非绝热 NRPMD <manual/nonadiabatic>
+势能与插件 <manual/potentials>
+执行与并行 <manual/execution>
+输出与分析 <manual/results>
+示例索引 <manual/examples>
 ```
 
 ```{toctree}
@@ -69,9 +85,9 @@ manual/examples
 :caption: 参考与开发
 :hidden:
 
-manual/api
-manual/troubleshooting
-manual/development
+Python API <manual/api>
+常见问题 <manual/troubleshooting>
+开发者指南 <manual/development>
 ```
 
 ## 文档组织与来源
@@ -81,6 +97,9 @@ manual/development
 公共 API、开发者指南；使用 Sphinx、MyST 与 PyData Sphinx Theme 构建可搜索的 HTML。
 文字、示例和接口说明依据 PyRPMD 的源码编写。PySCF 是文档组织的参考，
 不是本项目已实现的势能适配器名称。
+
+手册提供中文与[英文](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/en/index.md)两个版本，
+章节一一对应；HTML 版本可用导航栏右上角的语言按钮切换到同一页面的另一语言。
 
 既有[输入规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)、
 [公共接口约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md)和

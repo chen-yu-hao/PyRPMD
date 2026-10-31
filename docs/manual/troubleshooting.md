@@ -10,6 +10,7 @@
 | 找不到 `pyrpmd` | 确认已激活安装所在虚拟环境；核对 `python -m pip show PyRPMD` |
 | C++/OpenMP 编译失败 | 检查 C++17 编译器和 OpenMP；必要时用干净环境构建 `PYRPMD_NO_OPENMP=1` 或 `PYRPMD_NO_NATIVE=1` |
 | 安装成功但某积分器不可用 | 查看 `pyrpmd info`；更新源码后重新编译，排除旧 `.so` |
+| pytest 出现跳过项 | 可选依赖（ASE、BKMP2、EAM 模型、PyMBAR、Torch、matplotlib 等）缺失时相应测试跳过；跳过不等于该路径已验证 |
 | `native="required"` 报错 | 当前扩展未提供要求的积分能力；若只是需要兼容路径，可用默认设置重新创建任务 |
 | `loop_backend="native"` 被拒绝 | 检查 PES、CV、动态偏置、周期/固定原子等是否支持融合路径；通常用 `auto` |
 
@@ -17,7 +18,9 @@
 
 | 现象 | 检查与处理 |
 | --- | --- |
-| 未知字段或任务组合错误 | 读取当前 `--help` 与[输入规范](input.md)，不要删掉报错而保留原先物理假设 |
+| `Output directory is not empty` | 新计算换一个 `--output`；继续同一计算用 `pyrpmd resume DIR` 或 `run INPUT --resume` |
+| `... overrides; beads is not applicable` 等覆盖错误 | 该任务不接受这个命令行覆盖；PCET 只接受 `--temperature` 与 `--output` |
+| 未知字段或任务组合错误 | 读取当前 `--help` 与[输入规范](input.md)的 section 一览，不要删掉报错而保留原先物理假设 |
 | 找不到 XYZ、factory 或模型 | 输入内路径相对输入文件；CLI 覆盖相对启动目录 |
 | 时间不是步长整数倍 | 使用实际整数步数，或选择能整除目标时间的步长 |
 | 初始结构巨大/过近 | 确认内联 bohr、XYZ angstrom 以及显式 `geometry_unit` / `cell_unit` |

@@ -6,18 +6,21 @@
 
 ## 无需外部模型的起点
 
-| 输入/程序 | 内容 | 推荐阅读 |
-| --- | --- | --- |
-| `examples/manual/quickstart.inp` | 三个伞窗口的一维谐势 FES，6 条独立流 | [快速入门](quickstart.md) |
-| `examples/manual/low_level.py` | `Dynamics` / `State` 的完整 100 步程序 | [API](api.md) |
-| `examples/fes/harmonic2d.inp` | 两个质心 CV、二维 MBAR 与 mask | [气相与自由能](workflows.md) |
-| `examples/fes/custom_input.py` | 自定义完整二维 CV Jacobian | [势能与插件](potentials.md) |
-| `examples/fes/adaptive_harmonic.inp` | pilot 插窗后冻结独立 production | [气相与自由能](workflows.md) |
-| `examples/drpmd/free_scattering.inp` | 两条持续母链分配共 5 次直接碰撞 | [气相与自由能](workflows.md) |
-| `examples/nonadiabatic/exchange.inp` | 实验性指定入射电子态、带耦合的人工矩阵势散射 | [非绝热 NRPMD](nonadiabatic.md) |
-| `examples/rate/pilot.inp` | 教学反应势的 TS 准备、PMF 与回穿 | [气相与自由能](workflows.md) |
-| `examples/network/two_entrances.py` | 两入口、四个独立 TS/PES 路径 | [气相与自由能](workflows.md) |
-| `examples/metadynamics/well_tempered_2d.inp` | 二维 well-tempered 历史偏置 | [气相与自由能](workflows.md) |
+“耗时”是单个 CPU 核心、`OMP_NUM_THREADS=1` 下 `run` 的实测量级，仅用于安排练习时间；
+实际耗时随硬件与并行设置改变。
+
+| 输入/程序 | 内容 | 耗时 | 推荐阅读 |
+| --- | --- | --- | --- |
+| `examples/manual/quickstart.inp` | 三个伞窗口的一维谐势 FES，6 条独立流 | 约 2 s | [快速入门](quickstart.md) |
+| `examples/manual/low_level.py` | `Dynamics` / `State` 的完整 100 步程序 | <1 s | [API](api.md) |
+| `examples/fes/harmonic2d.inp` | 两个质心 CV、二维 MBAR 与 mask | 约 6 s | [气相与自由能](workflows.md) |
+| `examples/fes/custom_input.py` | 自定义完整二维 CV Jacobian | 约 7 s | [势能与插件](potentials.md) |
+| `examples/fes/adaptive_harmonic.inp` | pilot 插窗后冻结独立 production | 约 4 s | [气相与自由能](workflows.md) |
+| `examples/drpmd/free_scattering.inp` | 两条持续母链分配共 5 次直接碰撞 | 约 2 s | [气相与自由能](workflows.md) |
+| `examples/nonadiabatic/exchange.inp` | 实验性指定入射电子态、带耦合的人工矩阵势散射 | 约 15 s | [非绝热 NRPMD](nonadiabatic.md) |
+| `examples/rate/pilot.inp` | 教学反应势的 TS 准备、PMF 与回穿 | 约 15 s | [气相与自由能](workflows.md) |
+| `examples/network/two_entrances.py` | 两入口、四个独立 TS/PES 路径 | 约 25 s | [气相与自由能](workflows.md) |
+| `examples/metadynamics/well_tempered_2d.inp` | 二维 well-tempered 历史偏置 | 约 2 s | [气相与自由能](workflows.md) |
 
 ```bash
 pyrpmd validate examples/fes/harmonic2d.inp
@@ -30,14 +33,14 @@ pyrpmd analyze runs/tutorial-fes2d --recompute --bins 20 20 --bootstrap 50
 
 ## 材料、表面与 PCET
 
-| 输入 | 实际 `task` | 模型与结果定位 |
-| --- | --- | --- |
-| `examples/materials/pimd.inp` | `pimd` | 有限 P 谐振子平衡能量与环尺寸 |
-| `examples/materials/diffusion.inp` | `diffusion` | 自由粒子弹道区反例，不接受为收敛扩散系数 |
-| `examples/materials/site_rate.inp` | `site_rate` | 周期教学势、显式盆地和单一有向出口 |
-| `examples/surface/fes2d.inp` | `fes` | 固定基底的二维表面 CV |
-| `examples/surface/diffusion.inp` | `surface_rate` | 单一有向表面跃迁率；不是 MSD diffusion 工作流 |
-| `examples/pcet/harmonic_scan.inp` | `pcet` | 局域谐势井的 18 条件电势/温度/同位素扫描 |
+| 输入 | 实际 `task` | 模型与结果定位 | 耗时 |
+| --- | --- | --- | --- |
+| `examples/materials/pimd.inp` | `pimd` | 有限 P 谐振子平衡能量与环尺寸 | 约 2 s |
+| `examples/materials/diffusion.inp` | `diffusion` | 自由粒子弹道区反例，不接受为收敛扩散系数 | 约 3 s |
+| `examples/materials/site_rate.inp` | `site_rate` | 周期教学势、显式盆地和单一有向出口 | 约 25 s |
+| `examples/surface/fes2d.inp` | `fes` | 固定基底的二维表面 CV | 约 1 min |
+| `examples/surface/diffusion.inp` | `surface_rate` | 单一有向表面跃迁率；不是 MSD diffusion 工作流 | 约 1.5 min |
+| `examples/pcet/harmonic_scan.inp` | `pcet` | 局域谐势井的 18 条件电势/温度/同位素扫描 | 约 2 s |
 
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
@@ -49,7 +52,7 @@ pyrpmd run examples/pcet/harmonic_scan.inp --output runs/tutorial-pcet
 pyrpmd resume runs/tutorial-pcet
 ```
 
-表面例子和 site-rate 例子需要检查采样长度与回穿，不承诺与最短 quickstart 相同的运行成本。
+表面与 site-rate 例子包含伞抽样、受约束母链和回穿，耗时明显长于快速入门。
 以[周期任务指南](periodic.md)与 [PCET 指南](pcet.md)解释输出。
 
 ## 外部模型与真实体系基准

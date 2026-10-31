@@ -42,14 +42,18 @@ pyrpmd resume runs/manual-rate
 
 | 文件 / 摘要字段 | 解释 |
 | --- | --- |
+| `preparation.json` | TS 准备：Hessian 本征值、双向下降端点、识别的反应定义与诊断 |
 | `rate_pmf.csv`、`rate_pmf.npz` | 专用速率 PMF、支撑区域及相关数组 |
+| `rate_pmf.json` | PMF 势垒及误差、$k_{\mathrm{QTST}}$、所选分割面 `xi_star` 与诊断 |
 | `recrossing.csv`、`recrossing.npz` | 完整 $\kappa(t)$ 曲线、误差与 bootstrap 信息 |
 | `umbrella/` | 各窗口采样、checkpoint 和中间分析 |
 | `results/summary.json` | 公共运行摘要、警告和诊断 |
+| `kappa`、`plateau_detected` | 末端传输系数及是否检测到平台 |
 | `rate_estimate_cm3_s` | 可审查的有限时间候选估计 |
 | `rate_cm3_s` | 满足当前平台与能量诊断时填写的估计，否则 `null` |
-| `rate_standard_error_cm3_s` | PMF 和回穿不确定度均可用时的联合采样误差 |
+| `rate_standard_error_cm3_s`、`rate_percentile_95_ci_cm3_s` | PMF 和回穿不确定度均可用时的联合采样误差与百分位区间 |
 | `conditional_rate_standard_error_cm3_s` | 把 QTST 因子固定后的条件性回穿误差 |
+| `rate_uncertainty` | 误差是否可用、bootstrap 有效次数及限定原因 |
 
 速率单位为 `cm^3 molecule^-1 s^-1`。平台被检测到仍不代表珠子数、步长、远区距离和统计长度全部收敛。PMF overlap 断连或分割面缺少支持时，不应通过平滑、填洞或忽略警告制造一个速率。
 
@@ -86,7 +90,9 @@ pyrpmd resume runs/manual-scattering
 
 在 `results/summary.json` 中先看 `counts`、`all_trajectories_resolved` 和 `classification`，再看 `total_reaction` / `channels`。通道项的热速率字段是 `rate_cm3_molecule_s`，固定能截面字段是 `cross_section_bohr2`。未决或失败轨迹单独保留；相应观察下界/可能上界不等同于置信区间。同一母链内存在相关性，应结合 `parent_cluster_bootstrap95` 和更多独立母链判断误差。
 
-运行目录还保存 `states/initial-*.npz`、`trajectories/` 和 checkpoint，便于复查每条轨迹的初态和分类。详见 [dRPMD 示例说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/drpmd/README.md)。
+`results/channels.csv` 逐通道列出计数、点估计以及观察下界/可能上界。运行目录还保存 `states/initial-*.npz`、`trajectories/` 和 checkpoint，便于复查每条轨迹的初态和分类。详见 [dRPMD 示例说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/drpmd/README.md)。
+
+未写 `[collision]` 时，pilot 使用 4 条 `thermal_flux` 轨迹、`max_time="100 fs"` 与 `bmax=R0/4`，并因此不报告热速率；完整缺省值见[输入](input.md#省略字段时的缺省值)。
 
 ## 一维与二维自由能：`fes`
 

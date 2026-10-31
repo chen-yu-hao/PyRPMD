@@ -52,7 +52,14 @@ python -m build
 
 ## 手册的结构与构建
 
-综合手册入口是 `docs/index.md`，章节为 `docs/manual/*.md`。
+手册有中英文两个版本，各自是一个 Sphinx 项目：
+
+| 版本 | 入口与章节 | 配置 |
+| --- | --- | --- |
+| 中文 | `docs/index.md`、`docs/manual/*.md` | `docs/conf.py` |
+| English | `docs/en/index.md`、`docs/en/manual/*.md` | `docs/en/conf.py`（复用中文配置，仅改语言与标题） |
+
+两者共享 `docs/_static/manual.css` 与 `docs/_templates/language-switcher.html`。
 采用 [Sphinx](https://www.sphinx-doc.org/)、[MyST](https://myst-parser.readthedocs.io/) 和
 [PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/)。
 组织方式参考 [PySCF](https://pyscf.org/user/index.html) 的 Quickstart / User Guide / API / Contributor Guide，
@@ -61,12 +68,19 @@ python -m build
 ```bash
 python -m pip install -e '.[docs]'
 python -m sphinx -W --keep-going -b html docs docs/_build/html
+python -m sphinx -W --keep-going -b html docs/en docs/_build/html/en
 python -m sphinx -W --keep-going -b singlehtml docs docs/_build/singlehtml
+python -m sphinx -W --keep-going -b singlehtml docs/en docs/_build/singlehtml/en
 ```
 
-普通 HTML 提供导航、搜索和独立章节；singlehtml 将正文集中到一页。
-生成文件在忽略目录，不提交到源码。GitHub 的 **Documentation** 工作流执行严格构建与
+普通 HTML 提供导航、搜索和独立章节；singlehtml 将正文集中到一页。英文版必须输出到
+中文版目录下的 `en/`，导航栏语言切换才能找到对应页面。
+生成文件在忽略目录，不提交到源码。GitHub 的 **Documentation** 工作流执行两种语言的严格构建与
 入门示例 smoke，并上传 `pyrpmd-manual-html` 构建产物。
+
+两种语言保持同一章节文件名、标题层级、示例命令与表格内容。修改一章时在同一提交中更新
+另一语言的对应章节；两版之间的跨语言链接使用 GitHub 完整路径，因为每个 Sphinx 项目
+只包含自身语言的文件。
 
 专题规范和历史验证仍留在原 `docs/` 路径，通过仓库链接引用。
 Sphinx 只把当前综合手册纳入导航，避免将针对旧提交的实验记录混作当前教程。

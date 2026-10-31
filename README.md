@@ -2,7 +2,13 @@
 
 **[中文使用手册](docs/index.md)** · [安装](docs/manual/installation.md) ·
 [快速入门](docs/manual/quickstart.md) · [任务与示例](docs/manual/examples.md) ·
-[Python API](docs/manual/api.md)
+[Python API](docs/manual/api.md) · **[English manual](docs/en/index.md)**
+
+> **English:** PyRPMD is an extensible Python package for ring-polymer molecular dynamics:
+> RPMD rates, direct-collision dRPMD, free-energy surfaces, enhanced sampling, periodic
+> materials and surfaces, and a local PCET model. The full user manual is available in English —
+> start with [Installation](docs/en/manual/installation.md) and the
+> [Quickstart](docs/en/manual/quickstart.md).
 
 **Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维自由能面、自适应伞抽样和 metadynamics，并提供局域弱耦合电化学 PCET 速率模型。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
 
@@ -256,17 +262,20 @@ PES 接收 `float64[B,N,3]` 原子单位坐标，返回 `[B]` 能量和 `[B,N,3]
 
 综合手册采用安装 → 快速入门 → 任务指南 → API → 开发说明的组织，参考 PySCF 手册。
 包含气相、自由能、周期材料、固定表面与 PCET 全部 10 类任务，并解释单位、输出、
-续跑与科学适用范围。既有专题规范和历史验证记录仍保留在原路径。
+续跑与科学适用范围。手册有[中文](docs/index.md)与[英文](docs/en/index.md)两个版本，
+章节一一对应。既有专题规范和历史验证记录仍保留在原路径。
 
-构建带导航与搜索的 HTML 手册：
+构建带导航与搜索的 HTML 手册（英文版输出到 `en/`，导航栏可切换语言）：
 
 ```bash
 python -m pip install -e '.[docs]'
 python -m sphinx -W --keep-going -b html docs docs/_build/html
+python -m sphinx -W --keep-going -b html docs/en docs/_build/html/en
 ```
 
-打开 `docs/_build/html/index.html`。GitHub **Documentation** 工作流会构建手册、
-执行入门示例，并提供 `pyrpmd-manual-html` 下载产物。
+打开 `docs/_build/html/index.html`（中文）或 `docs/_build/html/en/index.html`（英文）。
+GitHub **Documentation** 工作流会构建两种语言的手册、执行入门示例，并提供
+`pyrpmd-manual-html` 下载产物。
 
 | 路径 | 职责 |
 | --- | --- |

@@ -24,7 +24,8 @@ preset 与输入诊断；任务自身保留物理量、统计限定和文件索�
 | `input/original.*` | 来自文件输入时保存的原输入副本 |
 | `checkpoints/` | 任务状态、随机流和阶段检查点 |
 | `samples/`、工作流数据目录 | 保存的轨迹、窗口或其他任务数据 |
-| `results/summary.json` | 首先阅读的任务结果与诊断 |
+| `summary.json`（运行目录顶层） | 工作流自身写出的摘要；network 未完成时为 `network-progress.json` |
+| `results/summary.json` | 首先阅读的任务结果与诊断；在顶层摘要之上加入软件版本、输出路径、preset 与输入提示，`analyze` 优先读取它 |
 
 文件存在不等于整个任务完成。检查摘要中的状态、样本量、失败轨迹和未决结果；
 中断后使用 `resume`，不要手工把半成品补成“成功”。
@@ -82,8 +83,8 @@ bootstrap 处理保存样本的统计不确定度，不能修复错误势能、�
 静态 PMF/QTST 与动态 κ 的联合误差按独立采样假设组合，并保留母链 burn-in 与独立性限定。
 这些检查的用途与各工作流实际字段见[工作流](workflows.md)和[材料与表面](periodic.md)。
 
-dRPMD 需要同时阅读 completed、failed、unresolved 事件及分类规则；缺失轨迹不能
-全部按非反应处理。没有经验证分类器或碰撞参数时，几何事件计数不等于正式化学截面。
+dRPMD 需要同时阅读 `counts` 中的 product、nonreactive、unresolved、failed 事件、
+`results/channels.csv` 及分类规则；缺失轨迹不能全部按非反应处理。没有经验证分类器或碰撞参数时，几何事件计数不等于正式化学截面。
 `network` 当前保留各入口/通道/TS 的独立结果，不隐式相加为总速率。
 
 启用实验性 NRPMD 时，另外阅读 `summary["nonadiabatic"]` 和

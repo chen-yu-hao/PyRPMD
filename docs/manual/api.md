@@ -71,6 +71,8 @@ python examples/manual/low_level.py
 这段示例使用零初始动量，演示确定性传播与环 Hamiltonian 变化。没有热化和生产采样，
 不能从它估计 300 K 的量子热力学能量。变量 `beta` 的单位是 `hartree^-1`，
 `dt` 是原子时间；高级输入中的 `temperature="300 K"` 会代为转换这些量。
+最后一行打印 `loop_stats`：这里使用的 Python `HarmonicPotential` 没有原生 PES 绑定，
+因此全部步骤走 Python 路径，回退原因中会写明这一点。
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
 :members: step, energy, sample_momenta, propagate, propagate_block, sample_step, loop_stats

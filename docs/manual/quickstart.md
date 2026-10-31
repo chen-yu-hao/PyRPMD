@@ -15,7 +15,23 @@ pyrpmd analyze runs/manual-first
 
 `validate` 检查输入、单位、任务限制及资源设置；`--check-pes` 还会实例化势能并进行数值准备。
 `run` 执行计算，终端显示 JSON 摘要，运行目录保存配置、样本和检查点。
-`analyze` 默认读取已保存的摘要，不增加轨迹。
+`analyze` 默认读取已保存的摘要，不增加轨迹。在普通笔记本上整个流程只需几秒。
+
+运行结束后的目录结构如下：
+
+```text
+runs/manual-first/
+├── manifest.json          # 软件、依赖、原生能力与科学指纹
+├── input/                 # original.inp、resolved.json（解析后配置）、system.json
+├── checkpoints/           # window_00000_replica_0000.npz …（每窗口每副本一个）
+├── samples/  logs/
+├── fes.csv  fes.npz  fes.h5
+├── summary.json           # 工作流自身写出的摘要
+└── results/summary.json   # 公共摘要：另含软件版本、输出路径、preset 与输入提示
+```
+
+`analyze` 和下文的 Python 示例读取 `results/summary.json`。`run` 不会覆盖已有的非空目录；
+重复练习时换一个新的 `--output`。
 
 ## 2. 阅读完整输入
 
@@ -73,7 +89,8 @@ pyrpmd analyze runs/manual-first --recompute --bins 8 --bootstrap 10
 
 已完成运行的 `resume` 应保持终态，不再增加生产步。断点运行则从已提交状态继续。
 `--recompute` 只重新分析保存样本，可修改 FES 分箱与 bootstrap 次数；它不会改善采样覆盖，
-也不会延长动力学。新的分析结果会写回结果文件，重要版本应另外保存。
+也不会延长动力学。给出 `--bins` 或 `--bootstrap` 时会自动重分析。
+新的分析结果会覆盖 `fes.*` 与 `results/summary.json`，重要版本应另外保存。
 
 如要改变珠子数、温度、势能、时间步或采样方案，请创建新运行目录。为了运行更长的任务而
 直接修改已保存 `resolved.json` 或检查点，会破坏运行身份；不要用这种方式延长任务。

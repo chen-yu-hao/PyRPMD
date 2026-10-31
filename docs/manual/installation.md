@@ -21,8 +21,16 @@ pyrpmd info
 [`pyproject.toml`](https://github.com/chen-yu-hao/PyRPMD/blob/main/pyproject.toml)为准。
 上述 shell 激活命令用于 Linux/macOS；Windows PowerShell 使用 `.venv\Scripts\Activate.ps1`。
 
-`pyrpmd info` 会报告加载到的原生能力。完成安装不表示所有外部势能库、MPI、CUDA
-和可选接口都已经就绪；按实际使用的功能安装对应依赖。
+`pyrpmd info` 输出 JSON，关键字段如下：
+
+| 字段 | 含义 |
+| --- | --- |
+| `native.available`、`native.openmp` | 是否加载了 C++ 扩展及 OpenMP |
+| `native.integrators` | 已编译的积分器；正常应包含 `cayley-bcb`、`normal-mode-bab`、`velocity-verlet` |
+| `workflows` | 可用的 10 类 `task` |
+| `input_schema_version` | 当前输入版本（1） |
+
+完成安装不表示所有外部势能库、MPI、CUDA 和可选接口都已经就绪；按实际使用的功能安装对应依赖。
 
 ## 编译器与参考实现
 
@@ -79,17 +87,22 @@ pyrpmd validate examples/manual/quickstart.inp --check-pes
 python examples/manual/low_level.py
 ```
 
-记录通过、跳过和失败三类结果。跳过真实 BKMP2、Torch 或某个 MPI 测试，表示该环境
-未验证对应路径。运行完整的[快速入门](quickstart.md)，还可以检查输出、分析与续跑。
+记录通过、跳过和失败三类结果。仅安装 `.[test]` 时，依赖 ASE、BKMP2、EAM 模型、PyMBAR、
+Torch 或 matplotlib 的测试会跳过，这表示该环境未验证对应路径；任何失败都应当报告。
+运行完整的[快速入门](quickstart.md)，还可以检查输出、分析与续跑。
 
 ## 构建手册
+
+手册有中文与英文两个版本，章节一一对应。英文版要构建到中文版输出目录下的 `en/`，
+导航栏的语言切换按钮才能互相链接：
 
 ```bash
 python -m pip install -e '.[docs]'
 python -m sphinx -W --keep-going -b html docs docs/_build/html
+python -m sphinx -W --keep-going -b html docs/en docs/_build/html/en
 ```
 
-用浏览器打开 `docs/_build/html/index.html`。构建包括目录、章节交叉引用和从当前源码导入的
-公共 API；`-W` 使文档警告导致失败。无需在生成手册时连接外部势能程序或运行长轨迹。
-开发与发布说明见[开发者指南](development.md)。
+用浏览器打开 `docs/_build/html/index.html`（中文）或 `docs/_build/html/en/index.html`（英文）。
+构建包括目录、章节交叉引用和从当前源码导入的公共 API；`-W` 使文档警告导致失败。
+无需在生成手册时连接外部势能程序或运行长轨迹。开发与发布说明见[开发者指南](development.md)。
 

@@ -2,7 +2,7 @@ include README.md LICENSE THIRD_PARTY_NOTICES.md
 include pyproject.toml setup.py
 include native/CMakeLists.txt native/README.md native/ABI.md
 recursive-include native *.cpp *.h *.hpp *.c
-recursive-include docs *.md *.json *.png *.pdf *.py *.css *.txt
+recursive-include docs *.md *.json *.png *.pdf *.py *.css *.txt *.html
 prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
 recursive-include tests *.py
