@@ -1,0 +1,52 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+.............................................................. [ 14%]
+........................................................................ [ 19%]
+....................................................................................................... [ 26%]
+...........................s....................sss............ [ 30%]
+...ssssss.....................................................s......... [ 35%]
+................................................................... [ 40%]
+........................................................................ [ 45%]
+........................................................................ [ 50%]
+........................................................................ [ 55%]
+........................................................................ [ 60%]
+........................................................................ [ 65%]
+...............................................................s........ [ 70%]
+................................. [ 72%]
+...........s...s.....................................s......... [ 76%]
+.................................................s......... [ 80%]
+............................................................. [ 84%]
+........................................................................ [ 89%]
+...........................................sss.s........................ [ 94%]
+.......s..................................................................                                                       [100%]
+=============================== warnings summary ===============================
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /opt/pyvenv/lib/python3.13/site-packages/torch/jit/_trace.py:1000: DeprecationWarning: `torch.jit.trace` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /opt/pyvenv/lib/python3.13/site-packages/torch/jit/_trace.py:1139: DeprecationWarning: `torch.jit.trace_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /opt/pyvenv/lib/python3.13/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_materials_eam.py:32: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [1] tests/test_parallel.py:63: optional ASE runtime not installed
+SKIPPED [1] tests/test_periodic_materials.py:124: ASE runtime required
+SKIPPED [1] tests/test_periodic_materials.py:140: ASE runtime required
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [1] ../../../opt/pyvenv/lib/python3.13/site-packages/_pytest/unittest.py:498: optional ASE runtime not installed
+SKIPPED [3] tests/test_surface_examples.py:18: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_surface_examples.py:45: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_surface_geometry.py:246: could not import 'ase': No module named 'ase'
+1428 passed, 21 skipped, 4 warnings, 153 subtests passed in 107.22s (0:01:47)

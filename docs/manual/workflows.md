@@ -104,6 +104,20 @@ pyrpmd analyze runs/manual-fes --recompute --bins 20 20 --bootstrap 50
 
 `analyze --recompute` 从保存的窗口 checkpoint 重建分析，可以改变 bins、计数门槛和 bootstrap，而不重新调用 PES。减小 bin 数有时提高每个 bin 的样本数，但不会修复未采样的盆地或缺少窗口 overlap。
 
+### PILE-L 与副本交换
+
+普通 FES 仍默认 Andersen；设置 `sampling.thermostat="pile-l"` 可复用 BCOCB/BAOAB。
+固定窗口增加 `[replica_exchange]`、`enabled=true` 和 `interval_steps=50` 可启用同温
+副本交换。此时 `sampling.replicas` 是独立完整交换链数，链内窗口顺序推进；窗口样本按
+同步块重采样。整个交换链共同保存/恢复，交换时间不能解释为物理反应时间。
+当前不同时启用自适应插窗，亦不支持 `rate_flux`。详见
+[方法和输入说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/replica-exchange.md)。
+
+```bash
+pyrpmd run examples/fes/replica_exchange_2d.inp --output runs/manual-reus
+pyrpmd resume runs/manual-reus
+```
+
 ### 自适应 umbrella
 
 自适应工作流在给定域内，根据 pilot 的 overlap 和有效样本数插入窗口、增加 pilot 长度，然后冻结窗口，并以新的独立随机流重新热化和生产：

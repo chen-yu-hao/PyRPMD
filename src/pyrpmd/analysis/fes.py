@@ -431,6 +431,32 @@ def _bootstrap_block_plan(counts, inefficiencies):
     }
 
 
+def _bootstrap_groups(groups, counts):
+    """A partition of synchronized streams; independent streams are singleton groups."""
+    if groups is None:
+        return [np.array([i], dtype=int) for i in range(len(counts))]
+    labels = np.asarray(groups)
+    if (labels.shape != counts.shape or labels.dtype.kind not in "iu"
+            or np.any(labels < 0)):
+        raise ValueError("bootstrap_groups needs one nonnegative integer per stream")
+    result = [np.flatnonzero(labels == label) for label in dict.fromkeys(labels.tolist())]
+    if any(np.any(counts[group] != counts[group[0]]) for group in result):
+        raise ValueError("streams in a bootstrap group must have equal synchronized lengths")
+    return result
+
+
+def _grouped_resample_indices(counts, block_lengths, groups, rng):
+    """Preserve cross-window correlation by using one clock draw per exchange ladder."""
+    offsets = np.r_[0, np.cumsum(counts)]
+    indices = [None] * len(counts)
+    for group in groups:
+        first = group[0]
+        clock = _block_resample(np.arange(counts[first]), block_lengths[first], rng)
+        for i in group:
+            indices[i] = offsets[i] + clock
+    return np.concatenate(indices)
+
+
 def reconstruct_fes(
     samples,
     centers,
@@ -444,11 +470,16 @@ def reconstruct_fes(
     min_count=1,
     overlap_threshold=1e-6,
     return_reweighting=False,
+    *,
+    bootstrap_groups=None,
 ):
     """Reconstruct 1D/2D density w.r.t. ds1...dsD, not bin probability mass.
 
     Bootstrap resamples contiguous circular time blocks independently inside
-    each window/replica. No unsupported region is filled by interpolation.
+    each window/replica by default. With bootstrap_groups, equally spaced and
+    synchronized streams in a group use the same clock indices and the largest
+    estimated correlation block in that group (for replica-exchange ladders).
+    Different groups remain independent. No unsupported region is interpolated.
     Disconnected overlap components are reported; a single global FES is then
     masked because its relative offset is not identifiable.
 
@@ -499,6 +530,7 @@ def reconstruct_fes(
         raise ValueError("periods must contain one positive finite number or None per CV")
     x = np.concatenate(arrays)
     counts = np.array([len(a) for a in arrays])
+    groups = _bootstrap_groups(bootstrap_groups, counts)
     if np.isscalar(bins):
         bins = [bins] * d
     if len(bins) != d:
@@ -562,7 +594,17 @@ def reconstruct_fes(
         return statistical_inefficiency(np.column_stack(observables))
 
     gs = np.array([stream_inefficiency(a) for a in arrays])
-    block_plan = _bootstrap_block_plan(counts, gs)
+    block_gs = gs.copy()
+    for group in groups:
+        block_gs[group] = np.max(gs[group])
+    block_plan = _bootstrap_block_plan(counts, block_gs)
+    if bootstrap_groups is not None:
+        block_plan["resampling"] = "synchronous_within_group"
+        block_plan["group_ids"] = np.asarray(bootstrap_groups, dtype=int)
+        block_plan["group_max_statistical_inefficiency"] = block_gs
+        block_plan["warnings"].append(
+            "Exchange windows are jointly block-resampled within each independent ladder; "
+            "CV-based block lengths do not establish hidden-coordinate or walker mixing.")
     se = np.full_like(f, np.nan)
     connected = len(set(mbar.components)) == 1
     boots = []
@@ -572,14 +614,9 @@ def reconstruct_fes(
     if connected and bootstrap and np.any(~mask):
         rng = np.random.default_rng(seed)
         ref = np.unravel_index(np.nanargmin(f), f.shape)
-        offsets = np.r_[0, np.cumsum(counts)]
-        stream_indices = [np.arange(start, stop)
-                          for start, stop in zip(offsets[:-1], offsets[1:])]
         for draw in range(int(bootstrap)):
-            indices = np.concatenate([
-                _block_resample(indices, block, rng)
-                for indices, block in zip(stream_indices, block_plan["block_lengths"])
-            ])
+            indices = _grouped_resample_indices(
+                counts, block_plan["block_lengths"], groups, rng)
             xb = x[indices]
             # Every umbrella is already evaluated at each original (wrapped)
             # frame. Resampling columns retains the identical bias problem.

@@ -23,7 +23,7 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange".split()
 )
 _SECTIONS = {
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
@@ -68,6 +68,7 @@ _SECTIONS = {
     "metadynamics": set(
         "cvs mode sigma sigma_au height height_au pace bias_factor".split()
     ),
+    "replica_exchange": set("enabled interval_steps pairs".split()),
     "adaptive_umbrella": set(
         "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
     ),
@@ -433,6 +434,8 @@ class JobSpec:
             raise InputError("[metadynamics] requires task='metadynamics'")
         if "adaptive_umbrella" in d and task not in ("fes", "rate"):
             raise InputError("Adaptive umbrellas require task='fes' or task='rate'")
+        if "replica_exchange" in d and task != "fes":
+            raise InputError("[replica_exchange] requires task='fes'")
         if task == "metadynamics":
             analysis = d.setdefault("analysis", {})
             analysis.setdefault("method", "bias_estimate")
@@ -591,7 +594,7 @@ class JobSpec:
         sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
         expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-andersen"
         sampling["integrator"] = sampling.get("integrator", expected_sampler)
-        if materials and sampling["thermostat"] == "pile-l":
+        if (materials or task == "fes") and sampling["thermostat"] == "pile-l":
             if sampler is None or sampling["integrator"] != sampler:
                 raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
             sampling["gamma_centroid"] = _positive(
@@ -855,6 +858,10 @@ class JobSpec:
                 from .workflows.metadynamics import validate_metadynamics
 
                 validate_metadynamics(resolved, system)
+            if "replica_exchange" in d:
+                from .workflows.replica_exchange import exchange_options
+
+                exchange_options(resolved, system)
             if "adaptive_umbrella" in d:
                 from .workflows.adaptive_umbrella import validate_adaptive_umbrella
 

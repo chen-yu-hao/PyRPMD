@@ -8,6 +8,7 @@ recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
 recursive-include tests *.py
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json
 recursive-include benchmarks/h3/convergence_inputs *.inp
+recursive-include benchmarks/hho2 *.py *.md
 recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 recursive-include benchmarks/materials *.py *.md *.json
 recursive-include benchmarks/efficiency *.py *.md

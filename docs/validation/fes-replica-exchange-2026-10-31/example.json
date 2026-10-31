@@ -1,0 +1,14 @@
+{
+  "samples": 9000,
+  "windows": 9,
+  "ladders": 2,
+  "status": "sampled",
+  "supported_bins": 118,
+  "converged": false,
+  "resume_checkpoint_sha256_unchanged": true,
+  "offline_arrays_identical": true,
+  "checkpoint_sha256": {
+    "exchange_0000.npz": "d219a66471b100e50ecc60877149676641be3e2f28440b6f8caac839cfa3af99",
+    "exchange_0001.npz": "abba4e71a484c58ca7c889d14715b0694ed347187eeb7cc1e43c44a9bae535b3"
+  }
+}

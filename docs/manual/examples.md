@@ -11,6 +11,7 @@
 | `examples/manual/quickstart.inp` | 三个伞窗口的一维谐势 FES，6 条独立流 | [快速入门](quickstart.md) |
 | `examples/manual/low_level.py` | `Dynamics` / `State` 的完整 100 步程序 | [API](api.md) |
 | `examples/fes/harmonic2d.inp` | 两个质心 CV、二维 MBAR 与 mask | [气相与自由能](workflows.md) |
+| `examples/fes/replica_exchange_2d.inp` | PILE-L、REUS 与同步 bootstrap | [气相与自由能](workflows.md) |
 | `examples/fes/custom_input.py` | 自定义完整二维 CV Jacobian | [势能与插件](potentials.md) |
 | `examples/fes/adaptive_harmonic.inp` | pilot 插窗后冻结独立 production | [气相与自由能](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | 两条持续母链分配共 5 次直接碰撞 | [气相与自由能](workflows.md) |
