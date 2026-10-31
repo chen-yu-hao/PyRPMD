@@ -226,4 +226,5 @@ standard 模式的自由能估计为 $F\approx -V+C$，WT 模式为 $F\approx-\g
 历史偏置在 Python 时间步循环中运行并使用编译子步骤，因此拒绝 `loop_backend="native"`。直接求和的计算量随 hill 数增长；
 可选的[网格偏置](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)通过局部插值使每步偏置查询量与历史长度无关。
 网格默认间距不超过 `sigma/5`；网格加密需要独立检查，非周期 CV 超出范围会报错并回滚该步。
-Metadynamics 只输出自由能估计。方法与续跑时序见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。
+Metadynamics 只输出自由能估计。三维估计可用 `pyrpmd project RUN --axes 0 1 --output NEW` 约化到一或两个 CV，
+见[输出与分析](results.md)。方法与续跑时序见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。

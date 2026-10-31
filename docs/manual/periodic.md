@@ -7,7 +7,7 @@ equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop 
 
 | Task | Purpose | Periodic cell | `fixed_atoms` | Main result |
 | --- | --- | --- | --- | --- |
-| `pimd` | Equilibrium quantum statistics; optional BZP NPT | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
+| `pimd` | Equilibrium quantum statistics; optional NPT (Python BZP, or native BZP/MTTK/RGB/SCR) | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
 | `diffusion` | Continuous centroid trajectories and transport | Yes | Yes | MSD, VACF, D and diagnostics |
 | `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one constant-gradient CV |
 | `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
@@ -153,6 +153,54 @@ The optional `friction` defaults to the inverse time constant. Samples include c
 and volumes; checkpoint state includes the cell piston. See the
 [BZP method and example](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials-npt.md).
 RPMD diffusion production remains fixed-cell and thermostat-free by default.
+
+### Native PIMD engine
+
+`sampling.engine="native"` runs the same `pimd` task in the C++ trajectory driver: one call
+advances a replica to the next checkpoint, with thermostat noise, observations and streaming
+done in C++. Historical inputs keep the default `engine="legacy"` and their checkpoints; selecting
+the native engine starts a new run identity.
+
+```bash
+pyrpmd validate examples/ensembles/pimd_native.inp --check-pes
+pyrpmd run examples/ensembles/pimd_native.inp --output runs/pimd-native
+pyrpmd resume runs/pimd-native
+pyrpmd run examples/ensembles/pimd_native_npt.inp --output runs/pimd-native-npt
+```
+
+```toml
+[dynamics]
+integrator = "cayley-bcb"
+loop_backend = "native"
+timestep = "0.1 fs"
+
+[sampling]
+engine = "native"
+thermostat = "pile-g"
+thermostat_params = {tau = "100 fs"}
+
+[barostat]            # optional NPT
+mode = "bzp"          # or "mttk", "rgb", "scr"
+pressure = "100 bar"
+tau = "100 fs"
+gamma = "0.01 fs^-1"
+```
+
+| Item | Native engine |
+| --- | --- |
+| Thermostats | `andersen`, `langevin`, `pile-l`, `pile-g`, `svr`, `gle`, `nm-gle`, `nm-gle-g`, `piglet` (NVT, supply calibrated matrices), `ffl`; `thermostat_params` takes `gamma`, `tau`, `pile_scale`, `interval`, `gle` |
+| Barostats | `mode="bzp"`, `"mttk"`, `"rgb"` (needs `stress` and `reference_cell`), `"scr"` (one bead); 3D PBC, all atoms mobile |
+| Potentials | Built-in `free`, scalar harmonic and `periodic_cosine`; molecular C ABI/Fortran in nonperiodic NVT; `provider="native_periodic"` for a compiled periodic evaluator |
+| Parallelism | Independent replicas over serial/process/MPI; each trajectory `mode="serial"` with one bead worker |
+| Output | `samples/native_pimd_NNNN/journal.json` plus checksummed transaction directories; restart validates hashes and sample clocks |
+
+The two engines take different barostat fields (`method`/`time_constant`/`friction` versus
+`mode`/`tau`/`gamma`) and cannot be mixed. Fixed atoms work in native NVT only. `H_P` in the
+native records is the particle ring Hamiltonian, not the NPT conserved quantity. The standalone
+`pyrpmd-native INPUT --output DIR` command runs the same driver from its own TOML format
+(`examples/ensembles/native_nvt.toml`, `native_npt.toml`); on `--resume CHECKPOINT` the input
+duration is *added*. Details: [native PIMD workflow](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)
+and [native ensembles](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md).
 
 ## Diffusion: MSD and D from continuous trajectories
 

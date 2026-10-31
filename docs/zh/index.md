@@ -13,18 +13,29 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | --- | --- | --- |
 | 气相双分子 RPMD 速率 | `rate` | [气相与自由能](manual/workflows.md) |
 | 直接碰撞与产物通道 | `drpmd` | [气相](manual/workflows.md)；[NRPMD](manual/nonadiabatic.md) |
+| 从选定入射振动态出发的碰撞（NE-RPMD、QCT） | `drpmd` + `[initial_ensemble]`；`state-check`、`extend` 命令 | [气相](manual/workflows.md) |
 | 一维/二维自由能面 | `fes` | [快速入门](manual/quickstart.md)、[气相与自由能](manual/workflows.md) |
+| 由已保存 PMF/FES 后处理速率与分支比 | `rate-postprocess` 命令 | [二维速率后处理（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
+| 把已保存 FES 边缘化到更少的 CV | `project` 命令 | [输出与分析](manual/results.md) |
+| 自动分析、出版级图与 HTML 报告 | `report` 命令，或 `run`/`analyze --report` | [自动分析与出图](manual/analysis-reports.md) |
 | 多入口、多过渡态的速率矩阵 | `network` | [气相与自由能](manual/workflows.md) |
 | Standard 或 well-tempered metadynamics | `metadynamics` | [气相与自由能](manual/workflows.md) |
 | 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
 | OPES 概率增强采样 | `opes` | [OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
 | PLUMED 质心偏置、过渡界面路径采样 | Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
+| C++ PIMD 驱动：SVR、GLE、PIGLET、FFL 恒温器；BZP/MTTK/RGB/SCR 恒压 | `pimd` + `sampling.engine="native"`；`pyrpmd-native` | [材料与表面](manual/periodic.md) |
 | RPMD 自扩散、MSD、VACF | `diffusion` | [材料与表面](manual/periodic.md) |
 | 材料中的有向位点跃迁 | `site_rate` | [材料与表面](manual/periodic.md) |
 | 固定基底上的有向逃逸 | `surface_rate` | [材料与表面](manual/periodic.md) |
 | 弱振电耦合极限下的电化学 PCET | `pcet` | [PCET](manual/pcet.md) |
 | 恒电位有效势、电子数平衡采样与 HER 电流 | `fes` / Python API | [电极模型](manual/electrochemistry.md) |
+| 光滑非线性质心逃逸坐标 | `site_rate` | [一般坐标速率（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md) |
+| 温度、同位素与数值收敛扫描 | `pyrpmd study` | [速率研究（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
+| 瞬子路径与一维低温速率 | Python API | [瞬子（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
+| 高阶平衡采样与量子估计量 | Python API | [量子统计（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-statistics.md) |
+| 热 NRPMD、表面跳跃、SOC、KC-/MV-RPMD、电子摩擦 | Python API；`diffusion` + `[electronic_friction]` | [非绝热动力学](manual/nonadiabatic.md) |
+| 从头算参考数据、PES 拟合、JaxPIP 与原生 ONNX 导出 | `python -m pyrpmd.pesgen`、Python API | [势能生成](manual/pes-generation.md)、[JaxPIP](manual/jaxpip-generation.md) |
 
 示例使用解析模型势，几秒内即可完成。进行正式研究前，请按[科学约定与收敛](manual/science.md)完成收敛流程。
 
@@ -37,6 +48,7 @@ pyrpmd validate job.inp --check-pes     # 检查输入与单位，构造势能
 pyrpmd run job.inp --output runs/job    # 运行；结果位于 runs/job/results/summary.json
 pyrpmd analyze runs/job                 # 读取摘要；FES、metadynamics、扩散支持 --recompute
 pyrpmd resume runs/job                  # 从检查点续跑，科学设置保持不变
+pyrpmd report runs/job                  # 可选：由保存数据生成图、index.html 与 report.json
 ```
 
 全部选项见[输入与命令行](manual/input.md#命令行参考)。对应的 Python 入口是 `prepare`、`run`、
@@ -47,8 +59,8 @@ pyrpmd resume runs/job                  # 从检查点续跑，科学设置保�
 | 主题 | 章节 |
 | --- | --- |
 | 开始使用 | [安装](manual/installation.md) · [快速入门](manual/quickstart.md) · [输入与命令行](manual/input.md) · [科学约定](manual/science.md) |
-| 计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [示例](manual/examples.md) |
-| 模型与运行 | [势能与插件](manual/potentials.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) |
+| 计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [电极模型](manual/electrochemistry.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [示例](manual/examples.md) |
+| 模型与运行 | [势能与插件](manual/potentials.md) · [势能生成](manual/pes-generation.md) · [JaxPIP 拟合](manual/jaxpip-generation.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) · [自动分析与出图](manual/analysis-reports.md) |
 | 动力学扩展（英文指南） | [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
 | 参考 | [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
 

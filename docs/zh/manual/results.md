@@ -81,9 +81,26 @@ bootstrap 给出保存样本的统计误差。没有有效误差时该字段为 
 启用 NRPMD 时，另读 `summary["nonadiabatic"]` 和 `results/electronic_channels.csv`。电子布居是有符号的 MMST 估计量，
 可以落在 [0,1] 之外。有轨迹失败或未决时，最终的态分辨速率或截面为空，同时报告已观察到的贡献。见[非绝热 NRPMD](nonadiabatic.md)。
 
+## 速率后处理、FES 投影与自动报告
+
+```bash
+pyrpmd rate-postprocess runs/manual-rate --bootstrap 200
+pyrpmd project runs/meta3d --axes 0 1 --output runs/meta3d-xy
+pyrpmd report runs/manual-first
+```
+
+`rate-postprocess` 由已保存的气相速率或 FES 运行重新计算速率，支持二维分割曲线与带符号通道通量，结果单独写出，
+见[二维速率后处理（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md)。`project` 在未保留的轴上积分已保存 CV 密度 FES 的概率密度
+（带 bin 宽体积因子的 log-sum-exp），向新目录写出 `pmf.csv`、`pmf.npz` 和 `summary.json`；`--selection mask.npy`
+把积分限制在与源 FES 同形状的布尔通道区域内。缺少支撑的切片会被扣留，不添加径向 Jacobian。`report` 只读取保存结果，
+写出图（默认 PNG/PDF）、`index.html` 和 `report.json`，需要 `plots` 附加依赖，见[自动分析与出图](analysis-reports.md)。
+这三条命令都不调用 PES。
+
 ## PIMD 与扩散
 
-PIMD 的 primitive 和 centroid-virial 估计量给出物理热力学能量；环 Hamiltonian 是传播诊断。PIMD 在固定晶胞体积下运行。
+PIMD 的 primitive 和 centroid-virial 估计量给出物理热力学能量；环 Hamiltonian 是传播诊断。除非给出 `[barostat]`，
+PIMD 在固定晶胞下运行；NPT 样本另外记录晶胞、体积与压力。原生引擎的记录流式写入 `samples/native_pimd_NNNN/`，
+见[材料与表面](periodic.md)。
 
 扩散保存连续、展开的质心位置和速度。MSD 拟合需要长时扩散区，`analysis_status` 标出弹道运动和不稳定的拟合。
 VACF 积分和副本间误差提供另外两项检查。

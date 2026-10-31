@@ -27,7 +27,8 @@ environment with `.venv\Scripts\Activate.ps1`.
 | --- | --- |
 | `native.available`, `native.openmp` | The C++ extension and OpenMP are loaded |
 | `native.integrators` | Compiled integrators: `cayley-bcb`, `normal-mode-bab`, `velocity-verlet` |
-| `workflows` | The 10 available `task` values |
+| `workflows` | The 11 available `task` values (`rate`, `drpmd`, `fes`, `network`, `metadynamics`, `opes`, `pcet`, `pimd`, `diffusion`, `site_rate`, `surface_rate`) |
+| `enhanced_sampling`, `initial_ensembles` | Sampling methods and selected-state preparations (`thermal_parent`, `ne_rpmd`, `qct`) |
 | `input_schema_version` | Current input schema version (1) |
 
 Optional features such as ASE, MPI, Torch and external potential libraries need their own
@@ -53,7 +54,8 @@ To keep the C++ kernels but build without OpenMP:
 PYRPMD_NO_OPENMP=1 python -m pip install -e .
 ```
 
-Both variables act at build time. Reinstall after updating the source, especially the native
+Both variables act at build time. `PYRPMD_NO_NATIVE=1` also disables the C++ PIMD driver
+(`sampling.engine="native"`, `pyrpmd-native`), which then fails explicitly instead of falling back. Reinstall after updating the source, especially the native
 interfaces, so Python never loads an extension built from older code; `pyrpmd info` shows what is
 loaded.
 
@@ -69,7 +71,11 @@ compiled integrator substeps inside a Python outer loop; see [Execution and para
 | `python -m pip install -e '.[ase]'` | ASE calculator potentials | The calculator's model or program |
 | `python -m pip install -e '.[mpi]'` | MPI trajectory groups and bead splitting | An MPI library and launcher matching mpi4py |
 | `python -m pip install -e '.[gpu]'` | Torch potentials | A PyTorch/CUDA build matching the node driver, and a model |
-| `python -m pip install -e '.[analysis]'` | PyMBAR cross-checks | Nothing else; routine FES uses the built-in MBAR |
+| `python -m pip install -e '.[analysis]'` | PyMBAR cross-checks and matplotlib | Nothing else; routine FES uses the built-in MBAR |
+| `python -m pip install -e '.[plots]'` | `pyrpmd report` figures and `--report` | matplotlib |
+| `python -m pip install -e '.[mace]'`, `'.[nequip]'`, `'.[fairchem]'`, `'.[deepmd]'` | Ready-made ML potential providers | The model checkpoint |
+| `python -m pip install -e '.[tblite]'` (alias `xtb`), `'.[pyscf]'` | On-the-fly xTB and HF/DFT providers | Nothing else |
+| `python -m pip install -e '.[pesgen]'` | PySCF reference generation for [PES generation](pes-generation.md) | Optional native Caracal tools; JaxPIP has its own pinned stack, see [JaxPIP](jaxpip-generation.md) |
 | `python -m pip install -e '.[test]'` | pytest suite | Tests for optional interfaces skip when those are missing |
 | `python -m pip install -e '.[docs]'` | Building this manual | Sphinx, MyST, PyData theme |
 

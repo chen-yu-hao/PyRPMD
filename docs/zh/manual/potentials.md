@@ -95,6 +95,7 @@ finally:
 | `python` | `module:factory` 或 `file.py:factory`；包装自己的模型 |
 | `rpmdrate` / `f2py` | 旧 Fortran 包装，`(3,N,B)` 布局与正梯度 |
 | `cabi` / `native` | C ABI v1/v2；v2 支持晶胞、PBC、物理 virial 和批量求值 |
+| `native_periodic` | 由 C++ PIMD 驱动（`sampling.engine="native"`）直接调用的编译周期求值函数；`library`、`function`；签名见 `native/include/pyrpmd/thermal_pes.h` |
 | `ase` | factory 返回 ASE Calculator；处理 eV/Å、晶胞/PBC 与 stress |
 | `torch` | 分子或显式支持晶胞/PBC 的周期 Torch 模型 |
 | `ipi` | 多客户端持久连接池，并行计算不同珠子 |

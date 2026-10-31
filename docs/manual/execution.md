@@ -26,7 +26,10 @@ block_steps = 256
 | `block_steps` | Execution block size, 1–65536 |
 
 Periodic and fixed-atom systems, PILE-L sampling and metadynamics run in the Python outer loop with
-compiled deterministic substeps. The `pimd`, `diffusion` and `metadynamics` summaries report
+compiled deterministic substeps. `pimd` with `sampling.engine="native"` is different: the C++
+driver advances each replica from checkpoint to checkpoint without a Python step loop, and
+`block_steps` does not change its checkpoint cadence; see
+[Materials and surfaces](periodic.md#native-pimd-engine). The `pimd`, `diffusion` and `metadynamics` summaries report
 native and Python step counts with fallback reasons under `propagation`; in the API,
 `Dynamics.loop_stats` gives the same counters.
 
@@ -137,11 +140,19 @@ device is unavailable or the model runs on the CPU. GPU mode uses one bead worke
 ```bash
 pyrpmd resume runs/example
 pyrpmd resume runs/example --workers 4 --loop-backend auto --block-steps 128
+pyrpmd resume runs/adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192 --adaptive-max-pilot-steps 4000
+pyrpmd extend runs/selected --max-time '20 ps'
 ```
+
+The adaptive options raise the budget of an exhausted adaptive-umbrella pilot. `extend` raises the
+total propagation time of a dRPMD ensemble and continues only unresolved trajectories from their
+saved q/p.
 
 A restart reads the saved resolved input, the system or PCET model, q/p, RNG state, stage and
 history. A finished task stays finished, and a checkpoint that fails verification stops the restart
-with an error. Worker layout, backend and block size can change between restarts. In dRPMD, the
+with an error. Worker layout, backend and block size can change between restarts. Worker processes reuse their
+potential objects across tasks by default (`parallel.reuse_potentials=true`); see
+[expensive potentials](../performance-dynamics.md). In dRPMD, the
 number of parents follows the number of execution slots when `sampling.parents` is omitted, so set
 `parents` explicitly if you plan to change the worker count.
 

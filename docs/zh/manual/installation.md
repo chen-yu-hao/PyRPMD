@@ -25,7 +25,8 @@ PyRPMD 需要 **Python 3.11 或更高版本**、NumPy ≥ 1.26、SciPy ≥ 1.11 
 | --- | --- |
 | `native.available`、`native.openmp` | C++ 扩展与 OpenMP 已加载 |
 | `native.integrators` | 已编译的积分器：`cayley-bcb`、`normal-mode-bab`、`velocity-verlet` |
-| `workflows` | 10 类可用 `task` |
+| `workflows` | 11 类可用 `task`（`rate`、`drpmd`、`fes`、`network`、`metadynamics`、`opes`、`pcet`、`pimd`、`diffusion`、`site_rate`、`surface_rate`） |
+| `enhanced_sampling`、`initial_ensembles` | 增强采样方法与选态初始制备（`thermal_parent`、`ne_rpmd`、`qct`） |
 | `input_schema_version` | 当前输入版本（1） |
 
 ASE、MPI、Torch 和外部势能库等可选功能需要各自的依赖，见[可选依赖](#可选依赖)。
@@ -50,7 +51,7 @@ PYRPMD_NO_NATIVE=1 python -m pip install -e .
 PYRPMD_NO_OPENMP=1 python -m pip install -e .
 ```
 
-这两个变量在构建时生效。更新源码（尤其是原生接口）后重新安装，使 Python 始终加载与源码一致的扩展；
+这两个变量在构建时生效。`PYRPMD_NO_NATIVE=1` 同时禁用 C++ PIMD 驱动（`sampling.engine="native"`、`pyrpmd-native`），此时它们会明确报错而不回退。更新源码（尤其是原生接口）后重新安装，使 Python 始终加载与源码一致的扩展；
 `pyrpmd info` 显示实际加载的内容。
 
 运行时由两个输入设置控制编译代码：`dynamics.native="required"` 要求编译的积分内核；
@@ -64,7 +65,11 @@ PYRPMD_NO_OPENMP=1 python -m pip install -e .
 | `python -m pip install -e '.[ase]'` | ASE calculator 势能 | calculator 的模型或程序 |
 | `python -m pip install -e '.[mpi]'` | MPI 轨迹组与珠子分块 | 与 mpi4py 匹配的 MPI 库和启动器 |
 | `python -m pip install -e '.[gpu]'` | Torch 势能 | 与节点驱动匹配的 PyTorch/CUDA 及模型 |
-| `python -m pip install -e '.[analysis]'` | PyMBAR 对照 | 无；常规 FES 使用内置 MBAR |
+| `python -m pip install -e '.[analysis]'` | PyMBAR 对照与 matplotlib | 无；常规 FES 使用内置 MBAR |
+| `python -m pip install -e '.[plots]'` | `pyrpmd report` 与 `--report` 出图 | matplotlib |
+| `python -m pip install -e '.[mace]'`、`'.[nequip]'`、`'.[fairchem]'`、`'.[deepmd]'` | 现成的 ML 势能 provider | 模型检查点 |
+| `python -m pip install -e '.[tblite]'`（别名 `xtb`）、`'.[pyscf]'` | 即时 xTB 与 HF/DFT provider | 无 |
+| `python -m pip install -e '.[pesgen]'` | [势能生成](pes-generation.md)中的 PySCF 参考数据 | 可选原生 Caracal 工具；JaxPIP 有单独固定的依赖栈，见 [JaxPIP](jaxpip-generation.md) |
 | `python -m pip install -e '.[test]'` | pytest 测试 | 缺少可选接口时相应测试跳过 |
 | `python -m pip install -e '.[docs]'` | 构建本手册 | Sphinx、MyST、PyData 主题 |
 

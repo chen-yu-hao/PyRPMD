@@ -24,6 +24,8 @@ block_steps = 256
 | `block_steps` | 执行分块大小，1–65536 |
 
 周期与固定原子体系、PILE-L 采样和 metadynamics 在 Python 外层循环中运行，并使用编译的确定性子步骤。
+`sampling.engine="native"` 的 `pimd` 不同：C++ 驱动在检查点之间推进每个副本，没有 Python 步进循环，`block_steps`
+也不改变其检查点节奏，见[材料与表面](periodic.md)。
 `pimd`、`diffusion` 和 `metadynamics` 的摘要在 `propagation` 下报告原生与 Python 步数及回退原因；API 中
 `Dynamics.loop_stats` 给出同样的计数。
 
@@ -123,10 +125,15 @@ bead_workers = 1
 ```bash
 pyrpmd resume runs/example
 pyrpmd resume runs/example --workers 4 --loop-backend auto --block-steps 128
+pyrpmd resume runs/adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192 --adaptive-max-pilot-steps 4000
+pyrpmd extend runs/selected --max-time '20 ps'
 ```
 
+自适应选项放宽已耗尽的自适应伞抽样 pilot 预算。`extend` 提高 dRPMD 系综的总传播时间，只从保存的 q/p 继续未结束的轨迹。
+
 续跑读取保存的解析输入、体系或 PCET 模型、q/p、RNG 状态、阶段和历史。已完成的任务保持完成，校验失败的检查点会以
-错误终止续跑。worker 布局、后端和分块大小可以在续跑之间改变。dRPMD 省略 `sampling.parents` 时母链数随执行槽数而定，
+错误终止续跑。worker 布局、后端和分块大小可以在续跑之间改变。worker 进程默认在任务之间复用势能对象
+（`parallel.reuse_potentials=true`），见[昂贵势能（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md)。dRPMD 省略 `sampling.parents` 时母链数随执行槽数而定，
 若计划改变 worker 数，请显式设置 `parents`。
 
 温度、珠子数、同位素、势能、时间步、积分器、CV 和采样设置构成运行身份，改变其中任何一项都需要新的输出目录。

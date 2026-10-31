@@ -15,17 +15,24 @@ need the dependencies listed in [Installation](installation.md).
 | `examples/manual/quickstart.inp` | 1D harmonic FES with three umbrella windows and 6 streams | ~2 s | [Quickstart](quickstart.md) |
 | `examples/manual/low_level.py` | 100-step program with `Dynamics` / `State` | <1 s | [API](api.md) |
 | `examples/fes/harmonic2d.inp` | Two centroid CVs, 2D MBAR and masks | ~6 s | [Gas phase and free energy](workflows.md) |
-| `examples/fes/replica_exchange_2d.inp` | PILE-L, replica-exchange umbrellas and synchronized bootstrap | — | [Replica exchange](../replica-exchange.md) |
+| `examples/fes/replica_exchange_2d.inp` | PILE-L, replica-exchange umbrellas and synchronized bootstrap | ~8 s | [Replica exchange](../replica-exchange.md) |
 | `examples/fes/custom_input.py` | Custom 2D CV with a full Jacobian | ~7 s | [Potentials and plugins](potentials.md) |
 | `examples/fes/adaptive_harmonic.inp` | Pilot window insertion, then frozen production | ~4 s | [Gas phase and free energy](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | Two parent chains sharing 5 collisions on V=0 | ~2 s | [Gas phase and free energy](workflows.md) |
+| `examples/state_selected/ne_rpmd.inp`, `qct.inp` | Selected-vibrational-state NE-RPMD and its one-bead QCT control on a Morse model; `state-check`, `extend` | ~1 s each | [Gas phase and free energy](workflows.md#selected-vibrational-initial-states) |
 | `examples/nonadiabatic/exchange.inp` | NRPMD scattering from a selected state on a coupled two-state model | ~15 s | [Nonadiabatic NRPMD](nonadiabatic.md) |
 | `examples/rate/pilot.inp` | TS preparation, PMF and recrossing on an analytic reaction potential | ~15 s | [Gas phase and free energy](workflows.md) |
+| `examples/rate/general_coordinate.inp` | `site_rate` along a smooth nonlinear centroid coordinate | — | [General-coordinate rates](../general-coordinate-rates.md) |
+| `examples/studies/site_rate.json`, `drpmd.json` | `pyrpmd study` temperature/isotope/convergence scans; inspect with `--plan` | — | [Rate studies](../rate-studies.md) |
 | `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 2D well-tempered metadynamics | ~2 s | [Gas phase and free energy](workflows.md) |
-| `examples/opes/harmonic_2d.inp` | OPES adaptation, frozen-bias relaxation and histogram reweighting | — | [OPES](../opes.md) |
+| `examples/metadynamics/standard.inp` | Standard constant-height metadynamics on a quartic model | ~1 s | [Gas phase and free energy](workflows.md) |
+| `examples/opes/harmonic_2d.inp` | OPES adaptation, frozen-bias relaxation and histogram reweighting | ~3 s | [OPES](../opes.md) |
 | `examples/plumed/centroid_metadynamics.py` | Optional PLUMED centroid MetaD with explicit kernel updates | — | [PLUMED](../plumed.md) |
-| `examples/sampling/transition_interface.py` | Four interface ensembles on a confined double-well model | — | [TIS](../transition-interface-sampling.md) |
+| `examples/sampling/transition_interface.py` | Four interface ensembles on a confined double-well model | ~7 s | [TIS](../transition-interface-sampling.md) |
+| `examples/instanton/eckart.py` | Ring-polymer instanton and quantum cross-check on an Eckart barrier | ~1 s | [Instantons](../instanton.md) |
+| `examples/quantum_statistics/harmonic_validation.py` | Higher-order PIMD estimators against analytic harmonic results | ~13 s | [Quantum statistics](../quantum-statistics.md) |
+| `examples/nonadiabatic/method_models.py`, `soc_and_rpsh.py`, `thermal_rates.py` | KC-/MV-/isomorphic RPMD, SOC-NRPMD and RPSH, thermal NRPMD rate curves | 1–3 s | [Nonadiabatic](nonadiabatic.md) |
 
 ```bash
 pyrpmd validate examples/fes/harmonic2d.inp
@@ -41,11 +48,17 @@ separation) show the smallest valid inputs, with every other setting at its pilo
 | Input | `task` | Content | Time |
 | --- | --- | --- | --- |
 | `examples/materials/pimd.inp` | `pimd` | Equilibrium energies and ring size in a periodic model | ~2 s |
+| `examples/materials/fixed_slab.inp` | `pimd` | Periodic slab with fixed layers | ~1 s |
+| `examples/materials/npt_free.inp` | `pimd` | Python BZP NPT on an ideal gas with an analytic volume check | ~4 s |
+| `examples/ensembles/pimd_native.inp`, `pimd_native_npt.inp` | `pimd` | Native C++ engine, NVT and BZP NPT | ~1 s each |
+| `examples/metadynamics/grid_fixed_slab.inp` | `metadynamics` | Grid-accelerated bias on a fixed slab | ~1 s |
+| `examples/nonadiabatic/friction_surface.inp` | `diffusion` | Centroid electronic friction on a fixed slab | ~3 s |
 | `examples/materials/diffusion.inp` | `diffusion` | Free particle; the analysis flags ballistic motion | ~3 s |
 | `examples/materials/site_rate.inp` | `site_rate` | Periodic model, explicit basin and one directed exit | ~25 s |
 | `examples/surface/fes2d.inp` | `fes` | 2D surface CVs on a fixed substrate | ~1 min |
 | `examples/surface/diffusion.inp` | `surface_rate` | One directed surface hop rate | ~1.5 min |
 | `examples/pcet/harmonic_scan.inp` | `pcet` | 18-condition potential/temperature/isotope scan | ~2 s |
+| `examples/electrochemistry/fes2d.inp`, `sample_grand_canonical.py`, `her_scan.py` | `fes` / API | Constant-potential effective PES, electron-number sampling, HER current | ≤5 s |
 
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
@@ -56,6 +69,11 @@ pyrpmd validate examples/pcet/harmonic_scan.inp
 pyrpmd run examples/pcet/harmonic_scan.inp --output runs/tutorial-pcet
 pyrpmd resume runs/tutorial-pcet
 ```
+
+Further inputs: `examples/pesgen/` ([PES generation](pes-generation.md), [JaxPIP](jaxpip-generation.md)),
+`examples/potentials/` (periodic Torch model, on-the-fly tblite/PySCF), `examples/drpmd/*.py`
+(Python, Torch, bead, MPI and GPU layouts), `examples/slurm/` (cluster job scripts) and
+`examples/analysis/reference-rates.csv` (the `pyrpmd report --reference` format).
 
 The surface and site-rate examples run the full umbrella sampling, constrained-parent and
 recrossing pipeline, hence the longer times. Their output is described in [Materials and surfaces](periodic.md) and

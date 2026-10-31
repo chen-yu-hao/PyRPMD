@@ -16,8 +16,11 @@ go straight to your task:
 | --- | --- | --- |
 | Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
 | Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
+| Collisions from selected incoming vibrational states (NE-RPMD, QCT) | `drpmd` + `[initial_ensemble]`; `state-check`, `extend` commands | [Gas phase](manual/workflows.md#selected-vibrational-initial-states) |
 | 1D/2D free-energy surface | `fes` | [Quickstart](manual/quickstart.md), [Gas phase and free energy](manual/workflows.md) |
 | Postprocess saved PMF/FES rates and branching | `rate-postprocess` command | [2D rate postprocessing](rate-postprocessing.md) |
+| Marginalize a saved FES onto fewer CVs | `project` command | [Output and analysis](manual/results.md) |
+| Automatic analysis, publication figures and HTML reports | `report` command, or `run`/`analyze --report` | [Automatic analysis and figures](manual/analysis-reports.md) |
 | Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
 | Standard or well-tempered metadynamics | `metadynamics` | [Gas phase and free energy](manual/workflows.md) |
 | OPES probability-based sampling | `opes` | [OPES](opes.md) |
@@ -25,6 +28,7 @@ go straight to your task:
 | Optional PLUMED centroid biases | Python API | [PLUMED bridge](plumed.md) |
 | Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
 | Equilibrium nuclear quantum statistics and energy estimators | `pimd` | [Materials and surfaces](manual/periodic.md) |
+| C++ PIMD driver: SVR, GLE, PIGLET, FFL thermostats; BZP/MTTK/RGB/SCR NPT | `pimd` + `sampling.engine="native"`; `pyrpmd-native` | [Materials and surfaces](manual/periodic.md#native-pimd-engine) |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | [Materials and surfaces](manual/periodic.md) |
 | Directed site-to-site hop in a material | `site_rate` | [Materials and surfaces](manual/periodic.md) |
 | Directed escape on a fixed substrate | `surface_rate` | [Materials and surfaces](manual/periodic.md) |
@@ -33,6 +37,8 @@ go straight to your task:
 | Smooth nonlinear centroid escape coordinate | `site_rate` | [General-coordinate rates](general-coordinate-rates.md) |
 | Temperature, isotope and numerical convergence scans | `pyrpmd study` | [Rate studies](rate-studies.md) |
 | Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
+| Thermal NRPMD, surface hopping, SOC, KC-/MV-RPMD, electronic friction | Python API; `diffusion` + `[electronic_friction]` | [Nonadiabatic dynamics](manual/nonadiabatic.md) |
+| Ab initio reference data, fitted PES, JaxPIP and native ONNX export | `python -m pyrpmd.pesgen`, Python API | [PES generation](manual/pes-generation.md), [JaxPIP](manual/jaxpip-generation.md) |
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 
 The examples use analytic model potentials so they run in seconds. Before a production study,
@@ -47,6 +53,7 @@ pyrpmd validate job.inp --check-pes     # check input and units, construct the P
 pyrpmd run job.inp --output runs/job    # run; results in runs/job/results/summary.json
 pyrpmd analyze runs/job                 # read the summary; FES, metadynamics, diffusion accept --recompute
 pyrpmd resume runs/job                  # continue from checkpoints without changing the science
+pyrpmd report runs/job                  # optional: figures, index.html and report.json from saved data
 ```
 
 All options are listed in [Input and command line](manual/input.md#command-line-reference). The
@@ -58,8 +65,8 @@ Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 | Topic | Chapters |
 | --- | --- |
 | Getting started | [Installation](manual/installation.md) · [Quickstart](manual/quickstart.md) · [Input and CLI](manual/input.md) · [Scientific conventions](manual/science.md) |
-| Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
-| Models and runs | [Potentials and plugins](manual/potentials.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) |
+| Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Electrode models](manual/electrochemistry.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
+| Models and runs | [Potentials and plugins](manual/potentials.md) · [PES generation](manual/pes-generation.md) · [JaxPIP fitting](manual/jaxpip-generation.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) · [Automatic analysis and figures](manual/analysis-reports.md) |
 | Dynamics extensions | [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
 | Reference | [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
 

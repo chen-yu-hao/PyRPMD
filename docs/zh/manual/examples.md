@@ -15,10 +15,21 @@
 | `examples/fes/custom_input.py` | 带完整 Jacobian 的自定义二维 CV | 约 7 s | [势能与插件](potentials.md) |
 | `examples/fes/adaptive_harmonic.inp` | pilot 插入窗口后冻结并运行生产段 | 约 4 s | [气相与自由能](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | 两条母链在 V=0 上共享 5 次碰撞 | 约 2 s | [气相与自由能](workflows.md) |
+| `examples/state_selected/ne_rpmd.inp`、`qct.inp` | Morse 模型上的选定振动态 NE-RPMD 及其单珠子 QCT 对照；`state-check`、`extend` | 各约 1 s | [气相与自由能](workflows.md) |
 | `examples/nonadiabatic/exchange.inp` | 在耦合双态模型上从指定态出发的 NRPMD 散射 | 约 15 s | [非绝热 NRPMD](nonadiabatic.md) |
 | `examples/rate/pilot.inp` | 解析反应势上的 TS 准备、PMF 与回穿 | 约 15 s | [气相与自由能](workflows.md) |
+| `examples/rate/general_coordinate.inp` | 沿光滑非线性质心坐标的 `site_rate` | — | [一般坐标速率（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md) |
+| `examples/studies/site_rate.json`、`drpmd.json` | `pyrpmd study` 温度/同位素/收敛扫描；用 `--plan` 查看算例 | — | [速率研究（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | `examples/network/two_entrances.py` | 两个入口、四条 TS/PES 路径 | 约 25 s | [气相与自由能](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 二维 well-tempered metadynamics | 约 2 s | [气相与自由能](workflows.md) |
+| `examples/metadynamics/standard.inp` | 四次势模型上的标准（恒定高度）metadynamics | 约 1 s | [气相与自由能](workflows.md) |
+| `examples/fes/replica_exchange_2d.inp` | PILE-L、副本交换伞形采样与同步 bootstrap | 约 8 s | [副本交换](../replica-exchange.md) |
+| `examples/opes/harmonic_2d.inp` | OPES 自适应、冻结偏置再平衡与直方图重加权 | 约 3 s | [OPES（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
+| `examples/plumed/centroid_metadynamics.py` | 可选的 PLUMED 质心 MetaD | — | [PLUMED（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) |
+| `examples/sampling/transition_interface.py` | 受限双势阱上的四个界面系综 | 约 7 s | [TIS（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
+| `examples/instanton/eckart.py` | Eckart 势垒上的环聚合物瞬子与量子对照 | 约 1 s | [瞬子（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
+| `examples/quantum_statistics/harmonic_validation.py` | 高阶 PIMD 估计量与谐振解析结果对照 | 约 13 s | [量子统计（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-statistics.md) |
+| `examples/nonadiabatic/method_models.py`、`soc_and_rpsh.py`、`thermal_rates.py` | KC-/MV-/同构 RPMD、SOC-NRPMD 与 RPSH、热 NRPMD 速率曲线 | 1–3 s | [非绝热](nonadiabatic.md) |
 
 ```bash
 pyrpmd validate examples/fes/harmonic2d.inp
@@ -34,11 +45,17 @@ pyrpmd analyze runs/tutorial-fes2d --recompute --bins 20 20 --bootstrap 50
 | 输入 | `task` | 内容 | 耗时 |
 | --- | --- | --- | --- |
 | `examples/materials/pimd.inp` | `pimd` | 周期模型中的平衡能量与环尺寸 | 约 2 s |
+| `examples/materials/fixed_slab.inp` | `pimd` | 带固定层的周期 slab | 约 1 s |
+| `examples/materials/npt_free.inp` | `pimd` | 理想气体上的 Python BZP 恒压及解析体积检验 | 约 4 s |
+| `examples/ensembles/pimd_native.inp`、`pimd_native_npt.inp` | `pimd` | 原生 C++ 引擎，NVT 与 BZP NPT | 各约 1 s |
+| `examples/metadynamics/grid_fixed_slab.inp` | `metadynamics` | 固定 slab 上的网格加速偏置 | 约 1 s |
+| `examples/nonadiabatic/friction_surface.inp` | `diffusion` | 固定 slab 上的质心电子摩擦 | 约 3 s |
 | `examples/materials/diffusion.inp` | `diffusion` | 自由粒子；分析标出弹道运动 | 约 3 s |
 | `examples/materials/site_rate.inp` | `site_rate` | 周期模型、显式盆地与单一有向出口 | 约 25 s |
 | `examples/surface/fes2d.inp` | `fes` | 固定基底上的二维表面 CV | 约 1 min |
 | `examples/surface/diffusion.inp` | `surface_rate` | 单一有向表面跃迁速率 | 约 1.5 min |
 | `examples/pcet/harmonic_scan.inp` | `pcet` | 18 个条件的电势/温度/同位素扫描 | 约 2 s |
+| `examples/electrochemistry/fes2d.inp`、`sample_grand_canonical.py`、`her_scan.py` | `fes` / API | 恒电位有效势、电子数采样、HER 电流 | ≤5 s |
 
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
@@ -49,6 +66,10 @@ pyrpmd validate examples/pcet/harmonic_scan.inp
 pyrpmd run examples/pcet/harmonic_scan.inp --output runs/tutorial-pcet
 pyrpmd resume runs/tutorial-pcet
 ```
+
+其他输入：`examples/pesgen/`（[势能生成](pes-generation.md)、[JaxPIP](jaxpip-generation.md)）、`examples/potentials/`
+（周期 Torch 模型、即时 tblite/PySCF）、`examples/drpmd/*.py`（Python、Torch、珠子、MPI 与 GPU 布局）、`examples/slurm/`
+（集群作业脚本），以及 `examples/analysis/reference-rates.csv`（`pyrpmd report --reference` 的格式）。
 
 表面与位点速率例子包含伞抽样、受约束母链和回穿，因此耗时更长。输出说明见[材料与表面](periodic.md)和 [PCET](pcet.md)。
 

@@ -100,10 +100,36 @@ Electronic populations are signed MMST estimators and can fall outside [0,1]. Wh
 failed or remain unresolved, the final state-resolved rates or cross sections are empty and the
 observed contributions are reported. See [Nonadiabatic NRPMD](nonadiabatic.md).
 
+## Projecting a saved FES
+
+```bash
+pyrpmd project runs/meta3d --axes 0 1 --output runs/meta3d-xy
+```
+
+`project` integrates the probability density of a saved CV-density FES over the axes you do not
+keep (log-sum-exp with bin-width volume factors) and writes `pmf.csv`, `pmf.npz` and
+`summary.json` to a new directory. `--selection mask.npy` restricts the integration to a Boolean
+channel domain with the full source shape. Slices with missing support are withheld; no radial
+Jacobian is added. The PES is never called.
+
+## Automatic figures and reports
+
+```bash
+pyrpmd report runs/manual-first
+pyrpmd report runs/a runs/b --labels H D --series H D --output reports/kie --kie H D
+```
+
+`report` reads saved results only and writes figures (PNG/PDF by default), `index.html` and
+`report.json`; `run --report` and `analyze --report` do the same at the end of a command. It needs
+the `plots` extra. Styles, unit options, reference CSVs and the scientific checks applied to each
+figure are in [Automatic analysis and figures](analysis-reports.md).
+
 ## PIMD and diffusion
 
 The PIMD primitive and centroid-virial estimators give physical thermodynamic energies; the ring
-Hamiltonian is a propagation diagnostic. PIMD runs at the fixed cell volume.
+Hamiltonian is a propagation diagnostic. PIMD runs at a fixed cell unless `[barostat]` is given;
+NPT samples also record cells, volumes and pressures. The native engine streams its records under
+`samples/native_pimd_NNNN/` (see [Materials and surfaces](periodic.md#native-pimd-engine)).
 
 Diffusion saves continuous, unwrapped centroid positions and velocities. The MSD fit needs the
 long-time diffusive regime, and `analysis_status` flags ballistic motion and unstable fits. The VACF
