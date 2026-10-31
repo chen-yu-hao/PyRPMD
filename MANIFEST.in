@@ -2,7 +2,8 @@ include README.md LICENSE THIRD_PARTY_NOTICES.md
 include pyproject.toml setup.py
 include native/CMakeLists.txt native/README.md native/ABI.md
 recursive-include native *.cpp *.h *.hpp *.c
-recursive-include docs *.md *.json *.png *.pdf *.py *.css *.txt
+recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt
+exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
 recursive-include tests *.py
@@ -11,4 +12,7 @@ recursive-include benchmarks/h3/convergence_inputs *.inp
 recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 recursive-include benchmarks/materials *.py *.md *.json
 recursive-include benchmarks/efficiency *.py *.md
+include benchmarks/batched_dynamics.py benchmarks/rpc_mts.py benchmarks/tier1_recrossing.py
+recursive-include benchmarks/trpmd *.py *.json
+recursive-include benchmarks/published_rates *.py *.json *.md
 global-exclude __pycache__ *.py[cod] *.so *.o

@@ -73,7 +73,7 @@ python examples/manual/low_level.py
 `dt` 是原子时间；高级输入中的 `temperature="300 K"` 会代为转换这些量。
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
-:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, loop_stats
+:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, loop_stats
 ```
 
 ```{autofunction} pyrpmd.dynamics.native_capabilities
@@ -82,6 +82,23 @@ python examples/manual/low_level.py
 `step()` 是一次无恒温确定性步骤。`sample_step()` 需要匹配积分器与采样方法。
 `energy()` 返回 sum-beads 环 Hamiltonian，不是物理量子能量估计器。
 `propagate()` 与 `propagate_block()` 的失败提交边界不同，见[执行与续跑](execution.md)。
+
+## 批量轨迹、RPC/MTS 与谱分析
+
+```python
+from pyrpmd import BatchedState, BatchedDynamics, MTSDynamics
+from pyrpmd import RingPolymerContraction, SplitPotential, DifferencePotential
+from pyrpmd.analysis.spectroscopy import (
+    velocity_autocorrelation, dipole_autocorrelation, flux_correlation,
+    power_spectrum, relative_ir_spectrum,
+)
+```
+
+`BatchedState` 使用 `[K,P,N,3]` 数组以及每条轨迹的独立时钟。
+`MTSDynamics` 明确区分外层步长和内层步数；RPC 的慢势能必须是显式声明的修正。
+TRPMD 保持真实核质量，只对环内部模施加摩擦。接口示例和适用范围见
+[批量传播](../batched-dynamics.md)、[RPC/MTS](../rpc-mts.md)和
+[TRPMD/谱](../trpmd-spectroscopy.md)。
 
 ## 势能接口
 

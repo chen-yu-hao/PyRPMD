@@ -38,7 +38,7 @@ _SECTIONS = {
         "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params".split()
     ),
     "parallel": set(
-        "backend mode trajectory_groups trajectory_workers workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling".split()
+        "backend mode trajectory_groups trajectory_workers workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling reuse_potentials".split()
     ),
     "collision": set(
         "sampling impact_sampling bmax trajectories max_time max_steps energy orientation".split()
@@ -62,7 +62,7 @@ _SECTIONS = {
         "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui".split()
     ),
     "recrossing": set(
-        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance".split()
+        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale".split()
     ),
     "surface": set("reactant_basin dividing_surface product_side".split()),
     "metadynamics": set(
@@ -832,6 +832,10 @@ class JobSpec:
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         try:
+            if task in ("rate", "surface_rate"):
+                from .workflows.rate import _recrossing_options
+
+                _recrossing_options(resolved)
             if materials:
                 from .workflows.materials import validate_materials
 

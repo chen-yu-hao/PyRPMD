@@ -12,6 +12,11 @@ MSD/VACF/扩散张量，以及有限盆地归一化的位点跃迁速率。方�
 
 另提供固定晶胞表面的自由能与一阶 RPMD 速率工作流，见[表面计算说明](docs/surface-catalysis.md)。
 
+昂贵势能计算新增[worker 势能复用与批量传播](docs/performance-dynamics.md)、
+[显式 RPC/MTS Python API](docs/rpc-mts.md)和
+[TRPMD、相关函数及相对 IR 谱](docs/trpmd-spectroscopy.md)。
+[文献速率比较工具](benchmarks/published_rates/README.md)分别检查模型、统计约定和收敛证据。
+
 本项目是初始科研实现。随附示例用于验证算法和程序连接；真实化学体系仍需要合适的势能面、通道定义及珠子数、步长、采样、远区距离和回穿时间等收敛检查。程序会分别报告有限采样估计、失败/未决轨迹和诊断，不把一次运行成功标成物理收敛。
 
 ## 已实现

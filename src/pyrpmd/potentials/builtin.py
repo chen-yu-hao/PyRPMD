@@ -179,3 +179,12 @@ class DoubleWellPotential(Potential):
         )
         f[:, self.atom, self.axis] = -4 * self.height * y * (y * y - 1) / self.width
         return PESResult(v + vv, f)
+
+
+# Capture at provider-module import, before any optional batch dispatcher is
+# loaded. Class-level scientific overrides must not acquire an implicit promise
+# that frames are independent merely because the class has a built-in name.
+_BUILTIN_EVALUATE = {kind: kind.evaluate for kind in (
+    FreePotential, HarmonicPotential, MorsePairPotential,
+    DoubleWellPotential, PeriodicCosinePotential,
+)}

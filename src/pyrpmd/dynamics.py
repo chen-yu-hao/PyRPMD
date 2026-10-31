@@ -3,7 +3,8 @@
 Cayley BCB remains the default. Exact normal-mode BAB and full-Hamiltonian
 velocity Verlet use the same real masses and physical force convention.
 No thermostat is applied in step(). Andersen sampling has bead momentum
-variance m*P/beta; BCOCB/BAOAB with PILE-L are explicit sampling-only APIs.
+variance m*P/beta. PILE-L sampling and internal-mode-only TRPMD are explicit,
+distinct APIs; neither changes the physical masses.
 """
 
 from dataclasses import dataclass
@@ -524,16 +525,54 @@ class Dynamics:
                 self._record_python_steps(1)
         return state
 
-    def sample_step(self, state, bias=None, *, gamma_centroid=1.0, method=None):
-        """Explicit BCOCB/BAOAB PILE-L sampling; never real-time RPMD.
+    def trpmd_step(self, state, bias=None, *, friction_scale=1.0, method=None):
+        """Advance TRPMD with gamma_k=2*friction_scale*omega_k and gamma_0=0.
+
+        Only internal ring modes are thermostatted. Physical bead masses are
+        retained. This is an approximate real-time method, distinct from PILE-L
+        equilibrium sampling and from mass-scaled (PA-)CMD. A failed step leaves
+        the state, clock, and RNG unchanged, just as ``sample_step`` does.
+        """
+        return self.sample_step(
+            state, bias, gamma_centroid=0.0, method=method,
+            thermostat="trpmd", friction_scale=friction_scale,
+        )
+
+    def sample_step(
+        self, state, bias=None, *, gamma_centroid=None, method=None,
+        thermostat="pile-l", friction_scale=1.0,
+    ):
+        """BCOCB/BAOAB with explicit PILE-L sampling or TRPMD dynamics.
 
         BCOCB uses the square root of the full Cayley map, whereas BAOAB uses
         exact half normal-mode rotations. gamma_centroid is inverse atomic time.
+        Its default is 1 for PILE-L and 0 for TRPMD; a nonzero centroid friction
+        is forbidden for TRPMD. ``friction_scale`` applies only to TRPMD internal
+        modes. Existing PILE-L calls retain their coefficients and noise order.
         State and RNG are restored together if a force or observation fails.
         Auto uses a native free/OU/free kernel when available; Python still
         owns the two PES calls and the exact real-mode NumPy noise sequence.
         """
         self._check_parameters()
+        if thermostat not in ("pile-l", "trpmd"):
+            raise ValueError("thermostat must be pile-l or trpmd")
+        if (isinstance(friction_scale, (bool, np.bool_))
+                or not np.isscalar(friction_scale)
+                or not np.isfinite(friction_scale) or friction_scale < 0):
+            raise ValueError("friction_scale must be a finite nonnegative number")
+        if thermostat == "pile-l" and friction_scale != 1.0:
+            raise ValueError("friction_scale is a TRPMD option; PILE-L retains gamma_k=2*omega_k")
+        if gamma_centroid is None:
+            gamma_centroid = 0.0 if thermostat == "trpmd" else 1.0
+        if thermostat == "trpmd":
+            if gamma_centroid != 0.0:
+                raise ValueError("TRPMD requires gamma_centroid=0")
+        elif not np.isfinite(gamma_centroid) or gamma_centroid <= 0:
+            raise ValueError("gamma_centroid must be positive")
+        if self.dt <= 0:
+            raise ValueError("thermostatted sampling requires positive dt")
+        if not np.isfinite(state.time + self.dt):
+            raise FloatingPointError("nonfinite integration clock")
         expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
         if expected is None:
             raise ValueError("velocity-verlet sampling uses Andersen; BCOCB/BAOAB require their matching integrator")
@@ -542,12 +581,12 @@ class Dynamics:
             raise ValueError("sampling method must be bcocb or baoab")
         if selected != expected:
             raise ValueError(f"{selected} sampling requires {'cayley-bcb' if selected == 'bcocb' else 'normal-mode-bab'}; selected integrator is {self.integrator_name}")
+        if thermostat == "trpmd" and (self.nbeads == 1 or friction_scale == 0):
+            # No stochastic degrees of freedom: use the identical RPMD map and
+            # do not consume random numbers for a thermostat with zero strength.
+            return self.step(state, bias)
         if self.loop_backend == "native":
-            raise RuntimeError("BCOCB/BAOAB PILE-L retains Python/NumPy sampling orchestration; choose loop_backend='auto' or 'python'")
-        if not np.isfinite(gamma_centroid) or gamma_centroid <= 0:
-            raise ValueError("gamma_centroid must be positive")
-        if self.dt <= 0:
-            raise ValueError("thermostatted sampling requires positive dt")
+            raise RuntimeError("BCOCB/BAOAB PILE-L/TRPMD retains Python/NumPy sampling orchestration; choose loop_backend='auto' or 'python'")
         rng_state = copy.deepcopy(self.rng.bit_generator.state)
         q = state.q.copy()
         p = state.p.copy()
@@ -570,23 +609,24 @@ class Dynamics:
         if fused_sampler:
             P = self.nbeads
             # Immutable dynamics parameters are checked above. Only the
-            # caller-selected centroid friction can change between steps.
+            # caller-selected thermostat frictions can change between steps.
+            coefficient_key = (gamma_centroid, friction_scale)
             if (self._cached_pile_coefficients is None
-                    or self._cached_pile_coefficients[0] != gamma_centroid):
+                    or self._cached_pile_coefficients[0] != coefficient_key):
                 frequencies = np.empty(P)
                 frequencies[0] = 0.
                 frequencies[1:1 + 2 * ((P - 1) // 2)] = np.repeat(
                     self.integrator._omega[1:(P + 1) // 2], 2)
                 if P % 2 == 0:
                     frequencies[-1] = self.integrator._omega[-1]
-                gamma = 2 * frequencies
+                gamma = (2 * friction_scale) * frequencies
                 gamma[0] = gamma_centroid
                 decay = np.exp(-gamma * self.dt)
                 amplitude = np.sqrt(1 - decay * decay)
                 scale = np.sqrt(self.masses[None, :, None] * P / self.beta)
                 fixed = np.zeros(len(self.masses), dtype=np.uint8)
                 fixed[self._fixed_indices] = 1
-                self._cached_pile_coefficients = (gamma_centroid, decay, amplitude, scale, fixed)
+                self._cached_pile_coefficients = (coefficient_key, decay, amplitude, scale, fixed)
             _, decay, amplitude, scale, fixed = self._cached_pile_coefficients
             try:
                 noise = self.rng.normal(size=p.shape) * scale
@@ -632,7 +672,7 @@ class Dynamics:
             self._cached_normal_modes = (np.asarray(rows), np.asarray(freq))
         C, freq = self._cached_normal_modes
         pk = np.einsum("kb,bac->kac", C, p)
-        gamma = 2 * np.asarray(freq)
+        gamma = (2 * friction_scale) * np.asarray(freq)
         gamma[0] = gamma_centroid
         c = np.exp(-gamma * self.dt)
         try:

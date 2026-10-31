@@ -16,6 +16,15 @@ def __getattr__(name):
         from . import dynamics
 
         return getattr(dynamics, name)
+    if name in ("BatchedState", "BatchedDynamics", "BatchedPropagationError"):
+        from . import batched
+        return getattr(batched, name)
+    if name == "MTSDynamics":
+        from .multitime import MTSDynamics
+        return MTSDynamics
+    if name in ("RingPolymerContraction", "SplitPotential", "DifferencePotential"):
+        from .potentials import contraction
+        return getattr(contraction, name)
     if name in ("NRPMDState", "NRPMDDynamics", "DiabaticResult"):
         from . import nonadiabatic
         return getattr(nonadiabatic, name)
@@ -31,6 +40,8 @@ def __getattr__(name):
 
 
 __all__ = [
+    "BatchedState", "BatchedDynamics", "BatchedPropagationError", "MTSDynamics",
+    "RingPolymerContraction", "SplitPotential", "DifferencePotential",
     "NRPMDState", "NRPMDDynamics", "DiabaticResult",
     "JobSpec", "System", "State", "Dynamics", "run", "prepare",
     "resume_run", "analyze_run", "analyze_diffusion", "__version__",

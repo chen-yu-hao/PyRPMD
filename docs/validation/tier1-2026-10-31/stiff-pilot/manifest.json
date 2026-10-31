@@ -1,0 +1,35 @@
+{
+  "source": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff",
+  "files": {
+    "calculation.json": {
+      "sha256": "1e5fbb59324993df40efff0859d00736f7af278064c84390989ac70a1cbb280f",
+      "saved_as": "calculation.json"
+    },
+    "comparison.json": {
+      "sha256": "c9ca0a0e06aaffabe0ba03b8e28cc86fa29c9f8288fa5a6204c5d3f9210b3519",
+      "saved_as": "comparison.json"
+    },
+    "settings.json": {
+      "sha256": "b12383146d2b5672c3b3940e7cd8fe518c68b05516091b3a4af0c73de07c9ed7",
+      "saved_as": "settings.json"
+    },
+    "run/summary.json": {
+      "sha256": "fa9ff7e21222c5b66e31cb8ef9e6f884fa80e40a720ea1e08998c2649a1fb3c2",
+      "saved_as": "summary.json"
+    },
+    "run/rate_pmf.csv": {
+      "sha256": "495bc353090c25a0d912ed0f6395488e10c031ea00b265adb1cfe59432534e76",
+      "saved_as": "rate_pmf.csv"
+    },
+    "run/recrossing.csv": {
+      "sha256": "dc6687528488eea866944e7c93e6c3650ea1e4b7644fcee9a9ebe9889e747b76",
+      "saved_as": "recrossing.csv"
+    },
+    "historical_driver.py": {
+      "sha256": "a36ee36adeb95a1a2b1cf7263561c273404664c45133108dc265e4a3a6a2b73e",
+      "saved_as": "driver.py"
+    }
+  },
+  "physical_converged": false,
+  "driver_note": "Historical exact source snapshot; run current benchmarks/published_rates/h3.py from the repository instead."
+}

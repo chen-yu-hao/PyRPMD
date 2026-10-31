@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import ExitStack, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import copy
 import multiprocessing as mp
 from multiprocessing.util import Finalize
@@ -45,6 +45,8 @@ class ExecutionPlan:
 
 def execution_plan(config=None):
     c = dict(config or {})
+    if "reuse_potentials" in c and not isinstance(c["reuse_potentials"], (bool, np.bool_)):
+        raise ValueError("parallel.reuse_potentials must be a boolean")
     backend = c.get("backend", "serial")
     mode = c.get("mode", c.get("pes_mode", "serial"))
     # Older user inputs used the backend names for PES execution modes.
@@ -213,6 +215,8 @@ def _bead_init(spec, system):
     try:
         limits.enter_context(_blas_thread_limit())
         _BEAD_PROVIDER = make_potential(spec, system)
+        if callable(getattr(_BEAD_PROVIDER, "close", None)):
+            limits.callback(_BEAD_PROVIDER.close)
         # A provider factory may have loaded another BLAS implementation.
         limits.enter_context(threadpool_limits(limits=1, user_api="blas"))
     except BaseException:
@@ -223,6 +227,10 @@ def _bead_init(spec, system):
 
 def _bead_evaluate(x):
     return _BEAD_PROVIDER.evaluate(x)
+
+
+def _bead_reuse_allowed():
+    return _can_reuse_potential(_BEAD_PROVIDER)
 
 
 class ProcessBeadPotential:
@@ -255,6 +263,11 @@ class ProcessBeadPotential:
         if not self.closed:
             self.pool.shutdown(wait=True, cancel_futures=True)
             self.closed = True
+
+    def _task_reuse_allowed(self):
+        # Ask the actual initialized plugin, not a guessed capability from its
+        # factory name. All workers use the same spec/System and initializer.
+        return self.pool.submit(_bead_reuse_allowed).result()
 
 
 class _MPIBeadPotential:
@@ -296,6 +309,9 @@ class _MPIBeadPotential:
         if errors:
             raise RuntimeError("MPI bead PES failure: " + "; ".join(errors))
         return _combine([r[0] for r in responses if r[0] is not None])
+
+    def _task_reuse_allowed(self):
+        return _can_reuse_potential(self.local)
 
     def close(self):
         if not self.closed:
@@ -365,6 +381,10 @@ class _Context:
     slot: int
     comm: Any = None
     next_id: int = 0
+    potentials: dict = field(default_factory=dict)
+    releases: dict = field(default_factory=dict)
+    borrowed: set = field(default_factory=set)
+    cleanup: ExitStack = field(default_factory=ExitStack)
 
 
 _CONTEXT = None
@@ -376,9 +396,111 @@ def _context(plan, slot, comm=None):
     previous = _CONTEXT
     _CONTEXT = _Context(plan, slot, comm)
     try:
-        yield _CONTEXT
+        with _CONTEXT.cleanup:
+            yield _CONTEXT
     finally:
         _CONTEXT = previous
+
+
+def _potential_cache_token(value):
+    """Snapshot only ordinary configuration data; never hash mutable identity.
+
+    Unsupported Python objects are deliberately not reused. In particular an
+    already constructed provider remains an explicitly owned per-task object.
+    Including the complete System prevents sharing across different cells,
+    isotopes, geometries, charges or atom orderings.
+    """
+    from pathlib import Path
+    from pyrpmd.system import System
+
+    if type(value) is System:
+        return ("System", _potential_cache_token(vars(value)))
+    if isinstance(value, np.ndarray):
+        if value.dtype.hasobject:
+            raise TypeError("object arrays cannot identify a reusable potential")
+        return ("array", value.dtype.str, value.shape, value.tobytes())
+    if isinstance(value, np.generic):
+        return _potential_cache_token(value.item())
+    if value is None or type(value) in (bool, int, float, str, bytes):
+        return (type(value).__name__, value)
+    if isinstance(value, Path):
+        return ("path", str(value))
+    if type(value) in (list, tuple):
+        return (type(value).__name__, tuple(_potential_cache_token(x) for x in value))
+    if type(value) is dict and all(isinstance(k, str) for k in value):
+        return ("dict", tuple((k, _potential_cache_token(value[k])) for k in sorted(value)))
+    raise TypeError("potential reuse requires ordinary serializable configuration")
+
+
+def _can_reuse_potential(provider):
+    check = getattr(provider, "_task_reuse_allowed", None)
+    if callable(check):
+        return bool(check())
+    metadata = getattr(provider, "metadata", {}) or {}
+    capabilities = metadata.get("capabilities", {}) or {}
+    return (metadata.get("reuse_across_tasks", True) is not False
+            and metadata.get("stateful", False) is not True
+            and capabilities.get("stateful", False) is not True)
+
+
+@contextmanager
+def task_potential(spec, system, *, reuse=True):
+    """Lease an actual provider for one task, reusing it within its worker.
+
+    The worker closes cached providers once, after its entire task batch (also
+    on exceptions), before an MPI group sends ``finish``. The returned object
+    is not proxied, so native PES bindings and custom dispatch keep working.
+    Outside ``run_tasks`` this is an ordinary create/close context manager.
+    Stateful plugins can declare ``metadata['reuse_across_tasks']=False``;
+    callers can opt out with ``reuse=False``.
+    """
+    if not isinstance(reuse, (bool, np.bool_)):
+        raise ValueError("reuse_potentials must be a boolean")
+    context = _CONTEXT
+    key = None
+    if reuse and context is not None and isinstance(spec, dict):
+        try:
+            key = (_potential_cache_token(spec), _potential_cache_token(system))
+        except TypeError:
+            pass
+    # Nested leases must not alias a non-reentrant provider.
+    if key is not None and key in context.borrowed:
+        key = None
+    provider = context.potentials.get(key) if key is not None else None
+    if provider is None:
+        provider = make_task_potential(spec, system)
+        try:
+            reusable = key is not None and _can_reuse_potential(provider)
+        except BaseException:
+            if callable(getattr(provider, "close", None)):
+                provider.close()
+            raise
+        if reusable:
+            context.potentials[key] = provider
+            release = ExitStack()
+            if callable(getattr(provider, "close", None)):
+                release.callback(provider.close)
+            context.releases[key] = release
+            context.cleanup.callback(release.close)
+        else:
+            key = None
+    if key is not None:
+        context.borrowed.add(key)
+    try:
+        yield provider
+    except BaseException:
+        # A caller may catch a task failure and continue its batch. Do not hand
+        # a possibly damaged backend to that next task. Cleanup still owns it.
+        if key is not None:
+            context.potentials.pop(key, None)
+            context.releases.pop(key).close()
+        raise
+    finally:
+        if key is None:
+            if callable(getattr(provider, "close", None)):
+                provider.close()
+        else:
+            context.borrowed.remove(key)
 
 
 def make_task_potential(spec, system):

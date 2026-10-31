@@ -29,7 +29,7 @@ from ..constants import ATOMIC_TIME_S
 from ..cv import Cartesian
 from ..cv_periodic import FractionalCoordinate, LinearProjection
 from ..dynamics import Dynamics, State
-from ..parallel import make_task_potential, root_call, run_tasks
+from ..parallel import task_potential, root_call, run_tasks
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
 from .fes import (
@@ -43,6 +43,8 @@ from .fes import (
 )
 from .rate import (
     _recrossing_options,
+    _recrossing_dynamics,
+    _recrossing_spec,
     constrained_step,
     project_momenta,
     project_positions,
@@ -62,6 +64,10 @@ class SiteSurface:
 
 
 def _setup(config, system):
+    if _recrossing_dynamics(config)[0] != "rpmd":
+        raise ValueError("site_rate does not yet support TRPMD recrossing")
+    if _recrossing_spec(config).get("child_batch_pairs", 1) != 1:
+        raise ValueError("site_rate does not yet support batched recrossing checkpoints")
     if system.fixed_atoms:
         raise ValueError("site_rate requires all atoms mobile; use surface_rate for fixed layers")
     table = config.get("site_rate", {})
@@ -411,8 +417,8 @@ def _parent_task(task):
     identity = _fingerprint(config, system, {
         "workflow_version": 1, "stage": "site_parent", "chain": chain,
         "surface": metadata, "options": options, "initial_q": task["initial_q"]})
-    provider = make_task_potential(config["potential"], system)
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         dyn = _dynamics(config, system, provider, 1211, chain)
         elapsed, snapshots = 0, []
         target = options["equilibration_steps"] + options["parent_samples"] * options["parent_interval_steps"]
@@ -484,8 +490,6 @@ def _parent_task(task):
         save()
         return {"chain": chain, "snapshots": np.asarray(snapshots), "checkpoint": str(checkpoint),
                 "propagation": dyn.propagation_stats}
-    finally:
-        provider.close()
 
 
 def _child_task(task):
@@ -501,8 +505,8 @@ def _child_task(task):
     identity = _fingerprint(config, system, {
         "workflow_version": 1, "stage": "site_child", "chain": chain, "parent": parent,
         "pair": pair, "surface": metadata, "child_steps": nsteps, "q": q0})
-    provider = make_task_potential(config["potential"], system)
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         dyn = _dynamics(config, system, provider, 1307, chain, parent, pair)
         if checkpoint.exists():
             with load_checkpoint(checkpoint, expected_kind="site_rate_child") as saved:
@@ -578,8 +582,6 @@ def _child_task(task):
                 "endpoint_energy_error_hartree_per_bead": endpoint,
                 "endpoint_energy_error_kbt": endpoint * config["beta"],
                 "checkpoint": str(checkpoint), "propagation": dyn.propagation_stats}
-    finally:
-        provider.close()
 
 
 def _child_tasks(parents, config, system, output):

@@ -327,6 +327,21 @@ def scientific_config(config):
         result["dynamics"].pop("block_steps", None)
         if not result["dynamics"]:
             result.pop("dynamics")
+    # These controls change resource ownership / launch grouping only, never
+    # momenta, force definitions, estimator weights or the sampling measure.
+    if "parallel" in result:
+        result["parallel"].pop("reuse_potentials", None)
+        if not result["parallel"]:
+            result.pop("parallel")
+    for parent in (result, result.get("rate", {})):
+        recrossing = parent.get("recrossing")
+        if isinstance(recrossing, dict) and "child_batch_pairs" in recrossing:
+            recrossing.pop("child_batch_pairs")
+            if not recrossing:
+                parent.pop("recrossing")
+    if (result.get("rate") == {}
+            and "child_batch_pairs" in config.get("rate", {}).get("recrossing", {})):
+        result.pop("rate")
     return result
 
 

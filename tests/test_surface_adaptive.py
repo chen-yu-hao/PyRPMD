@@ -88,7 +88,9 @@ def test_periodic_fixed_adaptive_pilot_production_and_completed_resume(tmp_path,
     pilot_paths = sorted((tmp_path / "adaptation").rglob("window_*.npz"))
     production_paths = sorted((tmp_path / "checkpoints").glob("window_*.npz"))
     assert len(pilot_paths) == len(production_paths) == 2
-    assert len(observations) == 4
+    # Pilot and production remain separate task batches and RNG streams. Each
+    # batch now reuses one bound provider across its two window tasks.
+    assert len(observations) == 2
     assert all(item["calls"] > 0 and item["fixed_force"] for item in observations.values())
     assert step_count == 2 * (8 + 24) + 2 * (6 + 32)
     for paths, expected_elapsed, expected_samples in ((pilot_paths, 32, 12), (production_paths, 38, 16)):
@@ -112,7 +114,7 @@ def test_periodic_fixed_adaptive_pilot_production_and_completed_resume(tmp_path,
     monkeypatch.setattr(Dynamics, "propagate_block", no_propagation)
     resumed = run_fes(config, system, tmp_path, return_data=True)
     assert plan_path.read_bytes() == plan_bytes
-    assert len(observations) == 6  # Only frozen production windows are reopened.
+    assert len(observations) == 3  # One provider for the frozen production batch.
     assert all(item["calls"] == previous_calls.get(provider, 0)
                for provider, item in observations.items())
     for before, after in zip(result["streams"], resumed["streams"]):

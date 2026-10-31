@@ -397,7 +397,9 @@ def test_python_fes_retains_stateful_provider_evaluation_schedule(tmp_path, monk
 
     task = _task(tmp_path, backend="python")
     provider = CountedPotential()
-    monkeypatch.setattr(fes, "make_task_potential", lambda spec, system: provider)
+    # The workflow now borrows from a worker-scoped lifetime manager, which
+    # still calls this factory for an uncached provider outside run_tasks.
+    monkeypatch.setattr("pyrpmd.parallel.execution.make_task_potential", lambda spec, system: provider)
     result = fes._sample_window(task)
     assert provider.calls == 2 * 69 + 15
     assert result["propagation"]["python_steps"] == 69

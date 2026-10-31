@@ -159,6 +159,16 @@ class TorchPotential(Potential):
             "native_batch": True,
             "dtype": "float64",
         }
+        # A model's independent-frame promise is distinct from accepting a
+        # tensor batch. Preserve declarations for opt-in trajectory batching;
+        # never infer independence merely from ``native_batch=True``.
+        batch_metadata = getattr(self.delegate if self.delegate is not None else self.model,
+                                 "metadata", {}) or {}
+        if isinstance(batch_metadata, dict):
+            for name in ("trajectory_batch_safe", "batch_independent", "ring_polymer_coupled",
+                         "coupled_frames", "stateful", "capabilities", "reuse_across_tasks"):
+                if name in batch_metadata:
+                    self.metadata[name] = batch_metadata[name]
 
     def evaluate(self, x):
         x = coordinates(x)

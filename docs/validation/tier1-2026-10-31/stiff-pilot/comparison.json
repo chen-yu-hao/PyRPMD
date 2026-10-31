@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "reference_id": "h_h2_bkmp2_rpmd_300k",
+  "reference_method": "RPMD",
+  "calculation_method": "RPMD",
+  "comparison_role": "implementation_reference",
+  "comparison_kind": "implementation_agreement",
+  "status": "pilot_comparison",
+  "compatible": true,
+  "compatibility_reasons": [],
+  "convergence_reasons": [
+    "convergence_not_established:beads",
+    "convergence_not_established:timestep",
+    "convergence_not_established:rinf",
+    "convergence_not_established:sampling",
+    "convergence_evidence_missing:plateau",
+    "rate_standard_error_exceeds_comparison_tolerance"
+  ],
+  "convergence_asserted_with_evidence": false,
+  "evidence_independently_verified": false,
+  "gate_basis": "matched supplied metadata and declared convergence/uncertainty evidence",
+  "rate_unit": "cm3 molecule-1 s-1",
+  "reference_rate_cm3_molecule_s": 1.95e-16,
+  "calculation_rate_cm3_molecule_s": 1.927575511516218e-20,
+  "ratio": 9.885002623160092e-05,
+  "relative_difference": -0.9999011499737684,
+  "absolute_relative_difference": 0.9999011499737684,
+  "relative_tolerance": 0.1,
+  "within_tolerance": false,
+  "gate_eligible": false,
+  "passed": null,
+  "implementation_failure": null,
+  "reference_source": {
+    "id": "rpmdrate_2013",
+    "doi": "10.1016/j.cpc.2012.10.017",
+    "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+    "table": "Table 2, H+H2 row, RPMD column",
+    "retrieval_url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics"
+  },
+  "calculation_provenance": {
+    "source": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff/run/summary.json",
+    "settings": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff/settings.json",
+    "driver_sha256": "a36ee36adeb95a1a2b1cf7263561c273404664c45133108dc265e4a3a6a2b73e",
+    "pes": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "83a35e84b9212c4010d4d9541dc6115d8c1d7fbd6e6477d7066558b26bba9c03"
+    }
+  },
+  "uncertainty": {
+    "includes_pmf": true,
+    "includes_recrossing": true,
+    "standard_error_cm3_molecule_s": 5.9425951176415114e-18,
+    "independent_parent_chains": 2,
+    "method": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed"
+  },
+  "input_files": {
+    "calculation": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff/calculation.json",
+    "calculation_sha256": "1e5fbb59324993df40efff0859d00736f7af278064c84390989ac70a1cbb280f",
+    "references": "/workspace/scratch/bb7406a4ed41/PyRPMD/benchmarks/published_rates/references.json",
+    "references_sha256": "12ae0316e8461a77c8f729292677629bdb37034b3bba28fe81990589772ad07b"
+  }
+}

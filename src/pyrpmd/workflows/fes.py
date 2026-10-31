@@ -22,7 +22,7 @@ from ..cv import make_cvs, RPMDrateCoordinate
 from ..dynamics import Dynamics, State
 from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
-from ..parallel import run_tasks, make_task_potential, root_call
+from ..parallel import run_tasks, task_potential, root_call
 from ..units import parse_quantity, unit_factor, DIMS
 
 
@@ -392,8 +392,8 @@ def _sample_window(task):
         },
     )
     seed = np.random.SeedSequence([int(config.get("seed", 0)), 101, window, replica])
-    provider = make_task_potential(config["potential"], system)
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         dynamics = Dynamics(
             provider,
             system.masses,
@@ -555,9 +555,6 @@ def _sample_window(task):
             "native": dynamics.native,
             "propagation": dict(dynamics.propagation_stats),
         }
-    finally:
-        if hasattr(provider, "close"):
-            provider.close()
 
 
 def _write_fes(output, data, streams, cv, config):

@@ -25,7 +25,7 @@ from ..constants import AU_RATE_TO_CM3_S, ATOMIC_TIME_S
 from ..cv import RPMDrateCoordinate
 from ..dynamics import Dynamics, State
 from ..input import rate_pmf_options
-from ..parallel import run_tasks, root_call, make_task_potential
+from ..parallel import run_tasks, root_call, task_potential, execution_plan
 from ..units import parse_quantity, time_steps
 from .prepare import prepare_rate
 from .fes import (
@@ -154,8 +154,41 @@ def _recrossing_spec(config):
     return config.get("recrossing", config.get("rate", {}).get("recrossing", {}))
 
 
+def _recrossing_dynamics(config):
+    """Keep friction changes in scientific fingerprints, batching out of them."""
+    raw = _recrossing_spec(config)
+    method = raw.get("dynamics", "rpmd")
+    if method not in ("rpmd", "trpmd"):
+        raise ValueError("recrossing.dynamics must be 'rpmd' or 'trpmd'")
+    scale = raw.get("friction_scale", 1.0)
+    if isinstance(scale, (bool, np.bool_)) or not np.isscalar(scale):
+        raise ValueError("recrossing.friction_scale must be finite and nonnegative")
+    scale = float(scale)
+    if not np.isfinite(scale) or scale < 0:
+        raise ValueError("recrossing.friction_scale must be finite and nonnegative")
+    if method == "rpmd" and "friction_scale" in raw:
+        raise ValueError("recrossing.friction_scale requires dynamics='trpmd'")
+    batch = checked_integer(raw.get("child_batch_pairs", 1), "recrossing.child_batch_pairs")
+    if batch > 1 and execution_plan(config.get("parallel", {})).bead_workers > 1:
+        raise ValueError(
+            "recrossing.child_batch_pairs>1 requires parallel.bead_workers=1; "
+            "process/MPI bead proxies do not declare independent-frame batching. "
+            "Use trajectory_workers/trajectory_groups, or child_batch_pairs=1."
+        )
+    if batch > 1 and loop_options(config)["loop_backend"] == "native":
+        raise ValueError("Batched recrossing requires loop_backend='auto' or 'python'")
+    if method == "trpmd" and batch > 1:
+        raise ValueError("TRPMD recrossing currently requires child_batch_pairs=1")
+    if method == "trpmd" and config.get("dynamics", {}).get("loop_backend") == "native":
+        raise ValueError("TRPMD child propagation requires loop_backend='auto' or 'python'")
+    if method == "trpmd" and loop_options(config)["integrator"] == "velocity-verlet":
+        raise ValueError("TRPMD requires cayley-bcb or normal-mode-bab integration")
+    return method, scale
+
+
 def _recrossing_options(config):
     raw = _recrossing_spec(config)
+    _recrossing_dynamics(config)
     dt = config["dt_au"]
     sampling = config["sampling"]
 
@@ -225,14 +258,14 @@ def _parent_task(task):
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
     chain = int(task["chain"])
     method = _pmf_method(config)
-    provider = make_task_potential(config["potential"], system)
     checkpoint = Path(task["output"]) / "checkpoints" / f"parent_{chain:04d}.npz"
     identity = _fingerprint(
         config,
         system,
         {"stage": "parent", "chain": chain, "xi": task["xi_star"], "options": options},
     )
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         dyn = Dynamics(
             provider,
             system.masses,
@@ -346,9 +379,6 @@ def _parent_task(task):
             "xi_star": task["xi_star"],
             "pmf_method": method,
         }
-    finally:
-        if hasattr(provider, "close"):
-            provider.close()
 
 
 def _child_task(task):
@@ -357,7 +387,10 @@ def _child_task(task):
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
     chain, parent, pair = task["chain"], task["parent"], task["pair"]
     method = _pmf_method(config)
-    provider = make_task_potential(config["potential"], system)
+    child_dynamics, friction_scale = _recrossing_dynamics(config)
+    dynamics_metadata = ({"dynamics": "trpmd", "friction_scale": friction_scale,
+                          "energy_conservation_applicable": False}
+                         if child_dynamics == "trpmd" else {})
     checkpoint = (
         Path(task["output"])
         / "checkpoints"
@@ -376,7 +409,8 @@ def _child_task(task):
             "q": task["q"],
         },
     )
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         if checkpoint.exists():
             with load_checkpoint(checkpoint) as saved:
                 if str(saved["fingerprint"]) != identity:
@@ -386,6 +420,7 @@ def _child_task(task):
                 if "pmf_method" in saved and str(saved["pmf_method"]) != method:
                     raise ValueError("child checkpoint PMF method differs")
                 return {
+                    **dynamics_metadata,
                     "chain": chain,
                     "parent": parent,
                     "pair": pair,
@@ -442,7 +477,7 @@ def _child_task(task):
             state = State(q, sign * p)
             weight = sign * velocity / fs
             initial = dyn.energy(state)
-            if dyn.can_fuse(observe=surface):
+            if child_dynamics == "rpmd" and dyn.can_fuse(observe=surface):
                 completed = 0
                 while completed < nsteps:
                     count = min(dyn.block_steps, nsteps-completed)
@@ -452,7 +487,10 @@ def _child_task(task):
                     completed += count
             else:
                 for step in range(nsteps):
-                    dyn.step(state)
+                    if child_dynamics == "trpmd":
+                        dyn.trpmd_step(state, friction_scale=friction_scale)
+                    else:
+                        dyn.step(state)
                     dyn._record_python_steps(1)
                     value, _ = surface.centroid_value_gradient(state.q.mean(axis=0))
                     if value > 0:
@@ -468,6 +506,7 @@ def _child_task(task):
             )
         _atomic_npz(
             checkpoint,
+            **dynamics_metadata,
             numerator=numerator,
             denominator=denominator,
             energy_drift=drift,
@@ -479,6 +518,7 @@ def _child_task(task):
             propagation=json.dumps(dyn.propagation_stats),
         )
         return {
+            **dynamics_metadata,
             "chain": chain,
             "parent": parent,
             "pair": pair,
@@ -491,9 +531,6 @@ def _child_task(task):
             "endpoint_energy_error_kbt": endpoint_error_per_bead * config["beta"],
             "propagation": dict(dyn.propagation_stats),
         }
-    finally:
-        if hasattr(provider, "close"):
-            provider.close()
 
 
 def _prepare(config, system, output):
@@ -961,6 +998,8 @@ def _child_tasks(parents, config, system, output, options, pmf):
 
 
 def _aggregate(children, pmf, config, output, options):
+    child_dynamics, friction_scale = _recrossing_dynamics(config)
+    thermostatted = child_dynamics == "trpmd"
     is_surface = config.get("task") == "surface_rate"
     task_name = "surface_rate" if is_surface else "rate"
     unit_key = "s_inv" if is_surface else "cm3_s"
@@ -1086,11 +1125,19 @@ def _aggregate(children, pmf, config, output, options):
     ]
     endpoint_error = max(endpoint_errors) if endpoint_errors else None
     energy_diagnostics_complete = len(endpoint_errors) == len(children)
-    if max_drift > 0.01:
+    if not thermostatted and max_drift > 0.01:
         warnings.append(
             "Some child trajectories have >1% legacy scaled endpoint drift; this energy-zero-dependent field is informational."
         )
-    if not energy_diagnostics_complete:
+    if thermostatted:
+        warnings.append(
+            "TRPMD friction sensitivity calculation: the centroid is unthermostatted, "
+            "but the internal modes exchange heat. Endpoint energy changes include "
+            "thermostat heat and cannot by themselves diagnose integration error. "
+            "Compare friction and timestep series; "
+            "this estimate is not an RPMD rate."
+        )
+    elif not energy_diagnostics_complete:
         warnings.append(
             "Some older child checkpoints lack energy-zero-independent errors; rate publication is withheld until those children are recomputed."
         )
@@ -1107,7 +1154,8 @@ def _aggregate(children, pmf, config, output, options):
             "Estimated transmission exceeds one beyond sampling noise; inspect PMF/surface and equilibration."
         )
     valid = (
-        plateau
+        not thermostatted
+        and plateau
         and energy_diagnostics_complete
         and endpoint_error * config["beta"] <= 0.1
     )
@@ -1164,6 +1212,22 @@ def _aggregate(children, pmf, config, output, options):
             "recrossing": str(Path(output) / "recrossing.csv"),
         },
     }
+    if thermostatted:
+        result.update(
+            status="trpmd_sensitivity_estimate",
+            dynamics="trpmd",
+            friction_scale=friction_scale,
+            centroid_friction=0.0,
+            energy_conservation_applicable=False,
+            maximum_endpoint_energy_change_kbt=(
+                endpoint_error * config["beta"] if endpoint_error is not None else None
+            ),
+        )
+        result["trpmd_rate_estimate_" + unit_key] = candidate
+        # Do not publish thermostat heat under a numerical energy-error label.
+        for name in ("maximum_scaled_energy_drift", "maximum_endpoint_energy_error_hartree_per_bead",
+                     "maximum_endpoint_energy_error_kbt", "energy_diagnostic_child_pairs"):
+            result.pop(name, None)
     if is_surface:
         result["rate_uncertainty"].update(
             pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
@@ -1180,6 +1244,17 @@ def _aggregate(children, pmf, config, output, options):
             result["rate_uncertainty"]["supported_draw_condition"] = "conditional on the bootstrap draw having complete basin-to-surface support"
     write_json(Path(output) / "summary.json", result)
     return result
+
+
+def _dispatch_children(tasks, config, dispatch):
+    batch_pairs = checked_integer(_recrossing_spec(config).get("child_batch_pairs", 1),
+                                  "recrossing.child_batch_pairs")
+    if batch_pairs == 1:
+        return dispatch(_child_task, tasks)
+    from .batched_recrossing import _child_batch_task
+    batches = [tasks[start:start + batch_pairs] for start in range(0, len(tasks), batch_pairs)]
+    grouped = dispatch(_child_batch_task, batches)
+    return None if grouped is None else [child for batch in grouped for child in batch]
 
 
 def run_rate(config, system, output, executor=None):
@@ -1215,5 +1290,5 @@ def run_rate(config, system, output, executor=None):
         return root_call(_aggregate, [], pmf, config, str(output), options)
     parents = dispatch(_parent_task, parent_tasks)
     tasks = root_call(_child_tasks, parents, config, system, str(output), options, pmf)
-    children = dispatch(_child_task, tasks)
+    children = _dispatch_children(tasks, config, dispatch)
     return root_call(_aggregate, children, pmf, config, str(output), options)

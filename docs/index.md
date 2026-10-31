@@ -60,6 +60,10 @@ manual/pcet
 manual/nonadiabatic
 manual/potentials
 manual/execution
+performance-dynamics
+batched-dynamics
+rpc-mts
+trpmd-spectroscopy
 manual/results
 manual/examples
 ```
@@ -72,6 +76,8 @@ manual/examples
 manual/api
 manual/troubleshooting
 manual/development
+validation/tier1-2026-10-31/README
+validation/tier1-2026-10-31/pmf-replay
 ```
 
 ## 文档组织与来源
