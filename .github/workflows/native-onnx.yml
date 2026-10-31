@@ -8,8 +8,6 @@ on:
       - 'tests/test_onnx_native.py'
       - 'tests/onnx/**'
       - '.github/workflows/native-onnx.yml'
-  push:
-    branches: ['feat/jaxpip-native-onnx']
   workflow_dispatch:
 permissions:
   contents: read

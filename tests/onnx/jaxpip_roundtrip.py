@@ -51,8 +51,12 @@ def run(output):
             "--geometries", str(geometries), "--output", str(onnx_file), "--kind", kind,
             "--atomic-numbers", "1", "1", "8", "--charge", "0", "--multiplicity", "1",
             "--position-unit", "angstrom", "--energy-unit", "eV"],
-            check=True, text=True, capture_output=True)
+            check=False, text=True, capture_output=True)
         (output / f"{kind}-export.log").write_text(result.stdout + result.stderr)
+        print(result.stdout, flush=True)
+        if result.returncode:
+            print(result.stderr, file=sys.stderr, flush=True)
+            result.check_returncode()
         # Use a fresh process for conversion, keeping this JAX reference clean.
         @eqx.filter_jit
         def reference(q):
