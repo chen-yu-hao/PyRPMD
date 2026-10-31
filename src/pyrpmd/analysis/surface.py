@@ -59,15 +59,24 @@ def surface_normalization(options, system):
         return result
     if "reference_adsorbates" not in options:
         raise ValueError("second-order normalization requires explicit reference_adsorbates")
+    area_vectors = None
     if "area" in options:
         area = parse_quantity(options["area"], (2, 0, 0, 0, 0, 0))
-    elif system.cell is not None and all(system.pbc[:2]):
-        area = float(np.linalg.norm(np.cross(system.cell[0], system.cell[1])))
+        area_source = "explicit"
+    elif system.cell is not None and np.count_nonzero(system.pbc) == 2:
+        # PBC flags select lattice vectors, not Cartesian axes. Reordering
+        # cell rows must not change the surface concentration or rate. A
+        # fully periodic cell does not identify a unique surface plane.
+        area_vectors = np.flatnonzero(system.pbc).tolist()
+        a, b = system.cell[area_vectors]
+        area = float(np.linalg.norm(np.cross(a, b)))
+        area_source = "periodic_cell_vectors"
     else:
-        raise ValueError("second-order normalization requires area or two periodic in-plane cell vectors")
+        raise ValueError("second-order normalization requires explicit area unless the cell has exactly two periodic lattice vectors")
     if not np.isfinite(area) or area <= 0:
         raise ValueError("surface normalization area must be finite and positive")
     result.update(area_cm2=area * (BOHR_M * 100)**2,
+                  area_source=area_source, area_lattice_vectors=area_vectors,
                   reference_adsorbates=integer("reference_adsorbates", 1))
     if ("coverage" in options) != ("site_count" in options):
         raise ValueError("coverage and site_count must be specified together")

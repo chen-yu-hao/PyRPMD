@@ -1,0 +1,233 @@
+{
+  "schema": "pyrpmd.materials-eam-pilot",
+  "schema_version": 1,
+  "generated_utc": "2026-10-31T14:19:55.871104+00:00",
+  "potential": {
+    "model": "Angelo-Moody-Baskes Ni-Al-H EAM; only Ni and H species used",
+    "filename": "NiAlH_jea.eam.alloy",
+    "repository": "https://github.com/lammps/lammps",
+    "commit": "5f0288a471841037872e673f93abe6af41490a6a",
+    "url": "https://raw.githubusercontent.com/lammps/lammps/5f0288a471841037872e673f93abe6af41490a6a/potentials/NiAlH_jea.eam.alloy",
+    "sha256": "545b0f79207ae519b7f355451812acd999bd6ed095f40a6bcfa9aa5258a38388",
+    "bytes": 291035,
+    "citation": "J. E. Angelo, N. R. Moody and M. I. Baskes, Trapping of hydrogen to lattice defects in nickel, Modelling Simul. Mater. Sci. Eng. 3, 289-307 (1995).",
+    "doi": "10.1088/0965-0393/3/3/001",
+    "registry": "https://www.ctcms.nist.gov/potentials/entry/1995--Angelo-J-E-Moody-N-R-Baskes-M-I--Ni-Al-H/",
+    "format_documentation": "https://docs.lammps.org/pair_eam.html",
+    "units": "DYNAMO setfl, LAMMPS metal units (angstrom, eV)",
+    "redistributed": false
+  },
+  "source_at_start": {
+    "base_revision": "c4fa743f552c1d71db35fab791a2e63409bc1c3e",
+    "working_tree_dirty": true,
+    "pyrpmd_version": "0.2.0",
+    "sha256": {
+      "src/pyrpmd/system.py": "3c409e5e5d05f76bab4f1aa26d4fd0cbdd120f4bc33b60ecfd3ee28770d54b1d",
+      "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+      "src/pyrpmd/input.py": "94bf00e1be18163aa29063b77685952fcc8471f4bfb21cc8b9b46b21f1a4436b",
+      "src/pyrpmd/runner.py": "f9ab313b47bc670bc98bcb4dd81a3ce91b65a2b7812648e66f68e88a18b965e1",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/units.py": "822802d84fdde4b5476e592bc0342abc18cde6fe03f1adbf993e5c6056a18f3c",
+      "src/pyrpmd/dynamics.py": "77677fbe972e253853883ae8d0a6715fdb8d35bd6a8cec632603e8eed990c664",
+      "src/pyrpmd/propagation.py": "f97ff6e6c8a2b95447397bab84cf596718d6dcc28f1b476fac1600efc633103e",
+      "native/cayley.cpp": "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124",
+      "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+      "src/pyrpmd/potentials/python.py": "cdfe785ba02940188e02d65720cf7666ec016a703c8a8dba602be9d01c43b95f",
+      "src/pyrpmd/potentials/optional.py": "e83a0544d32dd9d58ebecedff9fd1bc0d6ccd624ab9797e97e3e71e702107fd4",
+      "src/pyrpmd/workflows/materials.py": "7d1a12eb9377f105a69befa6eb73ab068e606d3aa0f27a75e3e75a2ce0f6adcd",
+      "src/pyrpmd/trajectory.py": "2fb27eae9f4b7449a53d12c885f1a0f205ea0bb144f6311678638e48cfccb104",
+      "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+      "benchmarks/materials/ni_h_eam.py": "4ba896f6b3669490fa2fd8dcedd3006bc26c0007ef333daf5c1810bbb7faf030"
+    }
+  },
+  "dependencies": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "ase": "3.29.0",
+    "h5py": "3.16.0"
+  },
+  "scope": "Real PES/interface, finite-step sampling and NVE propagation smoke validation",
+  "physical_converged": false,
+  "equilibration_converged": false,
+  "reproduces_suleimanov_2012": false,
+  "limitations": [
+    "27-atom three-layer Ni slab, no fixed layers, one H at 1/9 surface coverage.",
+    "Short records and four beads are not a convergence study.",
+    "One replica per isotope/bead case provides no independent diffusion uncertainty.",
+    "No quantum enhancement, isotope transport ratio or macroscopic diffusion is inferred.",
+    "Absolute H/Ni(100) accuracy of this historical EAM is not established by these tests."
+  ],
+  "adapter_validation": {
+    "passed": true,
+    "natoms": 28,
+    "cell_angstrom": [
+      [
+        7.467047609329942,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        7.467047609329942,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        19.52
+      ]
+    ],
+    "pbc": [
+      true,
+      true,
+      false
+    ],
+    "direct_energy_eV": -108.3998579800787,
+    "energy_error_hartree": 4.440892098500626e-16,
+    "force_error_hartree_per_bohr": 6.938893903907228e-18,
+    "translation_energy_error_hartree": 0.0,
+    "translation_force_error_hartree_per_bohr": 1.3444106938820255e-17,
+    "force_finite_differences": [
+      {
+        "atom": 27,
+        "axis": 0,
+        "force_eV_per_angstrom": -0.07198019504822901,
+        "finite_difference_eV_per_angstrom": -0.07198019460474825,
+        "absolute_error_eV_per_angstrom": 4.434807659992046e-10
+      },
+      {
+        "atom": 27,
+        "axis": 2,
+        "force_eV_per_angstrom": -0.15942650187217872,
+        "finite_difference_eV_per_angstrom": -0.15942650222200427,
+        "absolute_error_eV_per_angstrom": 3.4982555741081e-10
+      },
+      {
+        "atom": 26,
+        "axis": 2,
+        "force_eV_per_angstrom": -0.3857010618330043,
+        "finite_difference_eV_per_angstrom": -0.3857010618446565,
+        "absolute_error_eV_per_angstrom": 1.1652234732650868e-11
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "h-p1",
+      "isotope": "H",
+      "beads": 1,
+      "hydrogen_mass_electron_masses": 1837.1526474396187,
+      "temperature_K": 600.0,
+      "dt_fs": 0.1,
+      "equilibration_steps": 64,
+      "production_steps": 160,
+      "samples": 81,
+      "workflow_status": "complete",
+      "analysis_status": "ballistic_or_drifting",
+      "physical_converged": false,
+      "finite_state_and_observables": true,
+      "max_H_P_drift_hartree": 1.6704324190541797e-07,
+      "max_H_P_drift_per_bead_hartree": 1.6704324190541797e-07,
+      "energy_drift_tolerance_per_bead_hartree": 0.0001,
+      "energy_drift_check": true,
+      "mean_H_radius_of_gyration_squared_bohr2": 0.0,
+      "ring_spread_check": true,
+      "elapsed_seconds": 13.468483799006208,
+      "summary_relative_path": "h-p1/results/summary.json"
+    },
+    {
+      "name": "d-p1",
+      "isotope": "D",
+      "beads": 1,
+      "hydrogen_mass_electron_masses": 3671.4829415365825,
+      "temperature_K": 600.0,
+      "dt_fs": 0.1,
+      "equilibration_steps": 64,
+      "production_steps": 160,
+      "samples": 81,
+      "workflow_status": "complete",
+      "analysis_status": "ballistic_or_drifting",
+      "physical_converged": false,
+      "finite_state_and_observables": true,
+      "max_H_P_drift_hartree": 1.1438047842204924e-07,
+      "max_H_P_drift_per_bead_hartree": 1.1438047842204924e-07,
+      "energy_drift_tolerance_per_bead_hartree": 0.0001,
+      "energy_drift_check": true,
+      "mean_H_radius_of_gyration_squared_bohr2": 0.0,
+      "ring_spread_check": true,
+      "elapsed_seconds": 15.762361088003672,
+      "summary_relative_path": "d-p1/results/summary.json"
+    },
+    {
+      "name": "h-p4",
+      "isotope": "H",
+      "beads": 4,
+      "hydrogen_mass_electron_masses": 1837.1526474396187,
+      "temperature_K": 600.0,
+      "dt_fs": 0.1,
+      "equilibration_steps": 64,
+      "production_steps": 160,
+      "samples": 81,
+      "workflow_status": "complete",
+      "analysis_status": "ballistic_or_drifting",
+      "physical_converged": false,
+      "finite_state_and_observables": true,
+      "max_H_P_drift_hartree": 7.312986269880639e-07,
+      "max_H_P_drift_per_bead_hartree": 1.8282465674701598e-07,
+      "energy_drift_tolerance_per_bead_hartree": 0.0001,
+      "energy_drift_check": true,
+      "mean_H_radius_of_gyration_squared_bohr2": 0.03932315800097868,
+      "ring_spread_check": true,
+      "elapsed_seconds": 98.81164498699945,
+      "summary_relative_path": "h-p4/results/summary.json"
+    },
+    {
+      "name": "d-p4",
+      "isotope": "D",
+      "beads": 4,
+      "hydrogen_mass_electron_masses": 3671.4829415365825,
+      "temperature_K": 600.0,
+      "dt_fs": 0.1,
+      "equilibration_steps": 64,
+      "production_steps": 160,
+      "samples": 81,
+      "workflow_status": "complete",
+      "analysis_status": "ballistic_or_drifting",
+      "physical_converged": false,
+      "finite_state_and_observables": true,
+      "max_H_P_drift_hartree": 6.429203942559525e-07,
+      "max_H_P_drift_per_bead_hartree": 1.6073009856398812e-07,
+      "energy_drift_tolerance_per_bead_hartree": 0.0001,
+      "energy_drift_check": true,
+      "mean_H_radius_of_gyration_squared_bohr2": 0.019856943316966913,
+      "ring_spread_check": true,
+      "elapsed_seconds": 73.5863373539978,
+      "summary_relative_path": "d-p4/results/summary.json"
+    }
+  ],
+  "source_at_end": {
+    "base_revision": "c4fa743f552c1d71db35fab791a2e63409bc1c3e",
+    "working_tree_dirty": true,
+    "pyrpmd_version": "0.2.0",
+    "sha256": {
+      "src/pyrpmd/system.py": "3c409e5e5d05f76bab4f1aa26d4fd0cbdd120f4bc33b60ecfd3ee28770d54b1d",
+      "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+      "src/pyrpmd/input.py": "94bf00e1be18163aa29063b77685952fcc8471f4bfb21cc8b9b46b21f1a4436b",
+      "src/pyrpmd/runner.py": "f9ab313b47bc670bc98bcb4dd81a3ce91b65a2b7812648e66f68e88a18b965e1",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/units.py": "822802d84fdde4b5476e592bc0342abc18cde6fe03f1adbf993e5c6056a18f3c",
+      "src/pyrpmd/dynamics.py": "77677fbe972e253853883ae8d0a6715fdb8d35bd6a8cec632603e8eed990c664",
+      "src/pyrpmd/propagation.py": "f97ff6e6c8a2b95447397bab84cf596718d6dcc28f1b476fac1600efc633103e",
+      "native/cayley.cpp": "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124",
+      "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+      "src/pyrpmd/potentials/python.py": "cdfe785ba02940188e02d65720cf7666ec016a703c8a8dba602be9d01c43b95f",
+      "src/pyrpmd/potentials/optional.py": "e83a0544d32dd9d58ebecedff9fd1bc0d6ccd624ab9797e97e3e71e702107fd4",
+      "src/pyrpmd/workflows/materials.py": "7d1a12eb9377f105a69befa6eb73ab068e606d3aa0f27a75e3e75a2ce0f6adcd",
+      "src/pyrpmd/trajectory.py": "2fb27eae9f4b7449a53d12c885f1a0f205ea0bb144f6311678638e48cfccb104",
+      "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+      "benchmarks/materials/ni_h_eam.py": "4ba896f6b3669490fa2fd8dcedd3006bc26c0007ef333daf5c1810bbb7faf030"
+    }
+  },
+  "source_files_changed_during_run": [],
+  "implementation_checks_passed": true
+}

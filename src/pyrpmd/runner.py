@@ -491,19 +491,30 @@ def prepare(job, *, numerical=False):
         from .workflows.materials import resolve_materials
 
         materials_options = resolve_materials(config, system)
+        native_pimd = config.get("sampling", {}).get("engine", "legacy") == "native"
+        if native_pimd:
+            barostat = copy.deepcopy(config.get("barostat", {"mode": "none"}))
+            if barostat.get("mode", "none") == "none":
+                barostat = None
+            storage = "native_pimd_journal"
+        else:
+            barostat = materials_options["barostat"]
+            storage = materials_options["storage"]
         result["materials_preparation"] = {
             "cell_bohr": system.to_dict().get("cell"),
             "pbc": list(getattr(system, "pbc", (False, False, False))),
-            "ensemble": "npt" if materials_options["barostat"] is not None else "fixed_cell",
-            "barostat": materials_options["barostat"],
+            "ensemble": "npt" if barostat is not None else "fixed_cell",
+            "barostat": barostat,
             "fixed_atoms": list(system.fixed_atoms),
-            "trajectory_storage": materials_options["storage"],
+            "trajectory_storage": storage,
             "sampling_thermostat": config["sampling"]["thermostat"],
             "production_method": ("centroid_ef_rpmd" if "electronic_friction" in config else
                                   "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling"),
             "sampling": config["sampling"],
             "analysis": config.get("diffusion", {}),
         }
+        if native_pimd:
+            result["materials_preparation"]["engine"] = "native"
     elif config["task"] == "site_rate":
         from .workflows.site_rate import validate_site_rate
 
@@ -513,12 +524,36 @@ def prepare(job, *, numerical=False):
 
         # The provider itself validates array shape, status and finite results.
         provider = make_potential(config["potential"], system)
+        native_engine = None
         try:
             x = system.geometry[None, :, :]
-            evaluated = provider.evaluate(x)
             from .potentials import validate_result
 
-            if "nonadiabatic" in config:
+            if config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
+                from .potentials.base import PESResult
+                from .workflows.native_pimd import _engine
+
+                # Use the actual native thermostat/barostat and compiled PES
+                # contract. Construction evaluates the initial full ring;
+                # no trajectory, checkpoint, or production step is created.
+                native_engine = _engine(config, system, 0, provider)
+                initial = native_engine.state()
+                checked = validate_result(PESResult(
+                    initial["energy"], initial["force"], virial=initial["virial"],
+                ), (config["beads"], system.natoms, 3))
+                if any(not np.isfinite(initial[key]).all()
+                       for key in ("q", "p", "aux", "cell", "cell_p")):
+                    raise FloatingPointError("nonfinite native PIMD initial state")
+                result["pes_check"] = {
+                    "engine": "native", "backend": "native-cxx17",
+                    "energy_hartree": checked.energy.tolist(),
+                    "status": checked.status.tolist(),
+                    "initial_virial_hartree": checked.virial.tolist(),
+                    "step": initial["step"],
+                    "force_evaluations": initial["force_evaluations"],
+                }
+            elif "nonadiabatic" in config:
+                evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result
                 from .potentials.diabatic import check_diabatic_potential
                 checked = validate_diabatic_result(evaluated, x.shape, config["nonadiabatic"]["nstates"])
@@ -529,6 +564,7 @@ def prepare(job, *, numerical=False):
                 if checked.matrix.dtype.kind == "c":
                     result["pes_check"]["matrix_imag_hartree"] = checked.matrix.imag.tolist()
             else:
+                evaluated = provider.evaluate(x)
                 validate_result(evaluated, x.shape)
                 result["pes_check"] = {
                     "energy_hartree": evaluated.energy.tolist(),
@@ -542,7 +578,11 @@ def prepare(job, *, numerical=False):
                     q = np.repeat(x, config["beads"], axis=0)
                     result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
         finally:
-            provider.close()
+            # Destroy the temporary native engine before releasing its PES.
+            native_engine = None
+            close = getattr(provider, "close", None)
+            if callable(close):
+                close()
         if "electronic_friction" in config:
             from .electronic_friction import make_electronic_friction, validate_friction_result
             friction = make_electronic_friction(config, system)

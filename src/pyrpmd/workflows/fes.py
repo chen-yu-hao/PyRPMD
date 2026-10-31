@@ -84,6 +84,11 @@ def _fingerprint(config, system, extras):
     convention = geometry_convention_identity(config, system)
     if convention is not None:
         value["cv_geometry_convention"] = convention
+    from ..potentials import energy_convention_identity
+
+    energy_convention = energy_convention_identity(config)
+    if energy_convention is not None:
+        value["potential_energy_convention"] = energy_convention
     return hashlib.sha256(
         json.dumps(
             jsonable(value), sort_keys=True, separators=(",", ":"), default=repr

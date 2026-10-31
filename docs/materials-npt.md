@@ -1,9 +1,16 @@
-# Constant-pressure PIMD
+# Constant-pressure PIMD with the default materials engine
 
-The materials `pimd` workflow accepts an isotropic Bussi–Zykova–Parrinello
+The default (`sampling.engine="legacy"`) materials `pimd` workflow accepts an isotropic Bussi–Zykova–Parrinello
 (BZP) barostat. The cell changes volume while preserving its shape and
 orientation. All three directions must be periodic and every atom must be
 mobile. Orthogonal and tilted reference cells use the same algorithm.
+
+The separately selected [native PIMD workflow](native-pimd-workflow.md) also provides
+native BZP, MTTK/RGB flexible cells and one-bead stochastic cell rescaling. Its
+compiled potential contract and `mode`/`tau`/`gamma` controls are different from
+the `method`/`time_constant`/`friction` controls below. Both routes reject
+partially periodic slabs and frozen atoms for NPT; a flexible-cell mask does
+not define a supported slab ensemble.
 
 ## Input and execution
 

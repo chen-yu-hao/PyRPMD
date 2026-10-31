@@ -21,6 +21,28 @@ from ..geometry import validate_cell_pbc
 import numpy as np
 
 
+def energy_convention_identity(config):
+    """Identify the ASE energy convention without constructing a calculator.
+
+    All named ASE-backed adapters now request force-consistent free energy.
+    Conservatively distinguish every such run from older default-energy runs,
+    even if a particular calculator returns the same value for both. Opaque
+    Python factories remain responsible for declaring their own provenance.
+    """
+    potential = config.get("potential", {})
+    if isinstance(potential, dict) and potential.get(
+        "provider", potential.get("type")
+    ) in ("ase", "mace", "nequip", "fairchem"):
+        return "ase-force-consistent-v1"
+    if config.get("task") == "network":
+        # Resolved networks store effective PES specifications in path jobs;
+        # arbitrary plugin parameters are not potential declarations.
+        for job in config.get("network", {}).get("jobs", []):
+            if energy_convention_identity(job["config"]) is not None:
+                return "ase-force-consistent-v1"
+    return None
+
+
 def validate_periodic_spec(config, system=None):
     """Reject statically incompatible cell/provider choices without loading PESs.
 

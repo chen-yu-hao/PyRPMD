@@ -1,0 +1,118 @@
+........................................................................ [  1%]
+........................................................................ [  3%]
+....................................................sssssss............. [  5%]
+...................ssssssssssssssss.ss....................ssssssssssssss [  7%]
+ssssssssssssss.......................................................... [  9%]
+........................................................................ [ 10%]
+........................................................................ [ 12%]
+.............................................................. [ 14%]
+........................................................................ [ 15%]
+.................................... [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 20%]
+........................................................................................................................................... [ 23%]
+........................................................................ [ 25%]
+........................................................................ [ 27%]
+......................................s................................. [ 29%]
+..............................................................ssss.........ssssssss............... [ 31%]
+........................................................................ [ 33%]
+......................................ssssss.......... [ 34%]
+........................................................................ [ 36%]
+...................................................sssssssss............ [ 38%]
+........................................................................ [ 40%]
+................................................................... [ 42%]
+........................................................................ [ 43%]
+........................................................................ [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 63%]
+................................. [ 64%]
+....................................................ssssss.ssss [ 66%]
+ssss............................s.....................................s. [ 67%]
+........................................................sssssss......... [ 69%]
+..................................................ss................. [ 71%]
+...................................................................................................................................... [ 74%]
+............................................................. [ 76%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 85%]
+........................................................................................ [ 87%]
+........................................................................ [ 89%]
+........................................................................ [ 91%]
+........................................................................ [ 92%]
+........................................................ [ 94%]
+..............................................................sssssss... [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 99%]
+..............                                                           [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_onnx_native.py:20: optional native ONNX plugin not configured
+SKIPPED [1] tests/test_brhcl_pes.py:45: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:57: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:71: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:91: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:102: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:126: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:147: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_reference.py:246: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [11] tests/test_brhcl_reference.py:260: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [4] tests/test_brhcl_reference.py:290: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:331: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:349: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_scan.py:50: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:83: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:100: build optional pinned BrHCl PES first
+SKIPPED [15] tests/test_brhcl_scan.py:139: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:166: build optional pinned BrHCl PES first
+SKIPPED [8] tests/test_brhcl_scan.py:186: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:209: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_diatomic_action.py:178: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:205: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:216: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:190: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:215: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:242: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:222: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:235: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:248: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [4] tests/test_jaxpip_pesgen.py:138: optional real JaxPIP environment
+SKIPPED [2] tests/test_jaxpip_pesgen.py:167: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:189: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:196: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:208: optional real PySCF
+SKIPPED [1] tests/test_pesgen.py:86: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [3] tests/test_pesgen.py:101: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:111: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:120: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen_native.py:48: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:65: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:95: explicit pinned native Caracal build/source required
+SKIPPED [2] tests/test_pesgen_native.py:110: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:149: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pesgen_native.py:158: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:174: full MPI installation for original optimizer
+SKIPPED [1] tests/test_plumed.py:379: optional PLUMED Python wrapper unavailable
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [1] tests/test_potential_adapters.py:266: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:276: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:289: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:305: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:325: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] tests/test_potential_adapters.py:339: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] ../.venv/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+SKIPPED [7] tests/test_torch_periodic.py:13: could not import 'torch': No module named 'torch'
+3885 passed, 114 skipped, 264 subtests passed in 471.94s (0:07:51)
