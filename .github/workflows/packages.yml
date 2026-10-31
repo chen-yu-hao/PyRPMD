@@ -26,7 +26,7 @@ jobs:
             python: '3.11'
           - os: ubuntu-24.04
             python: '3.12'
-          - os: macos-14
+          - os: macos-15
             python: '3.12'
     env:
       OMP_NUM_THREADS: '1'
@@ -70,6 +70,8 @@ jobs:
               'src/pyrpmd/pcet.py', 'src/pyrpmd/pcet_input.py',
               'src/pyrpmd/workflows/pcet.py',
               'native/fused.hpp', 'native/propagation.h', 'native/ring_fft.h',
+              'benchmarks/efficiency/audit_optimization.py',
+              'benchmarks/efficiency/README.md',
               'native/include/pyrpmd/pes_api_v1.h',
               'examples/network/two_entrances.py',
               'examples/rate/toy_exchange.py',
@@ -80,6 +82,9 @@ jobs:
               'tests/package_smoke.py', 'tests/test_integrators.py',
               'tests/test_native_sampling.py', 'tests/test_fes_block_sampling.py',
               'tests/test_integrator_workflows.py',
+              'tests/test_native_override_compatibility.py',
+              'tests/test_native_block_compatibility.py',
+              'tests/test_force_buffer_ownership.py',
               'tests/test_reaction_network.py', 'tests/test_metadynamics.py',
               'tests/test_pcet_science.py', 'tests/test_pcet_workflow.py',
               'docs/checkpoints.md', 'docs/interfaces.md',

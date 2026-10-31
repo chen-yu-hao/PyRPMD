@@ -1,0 +1,19 @@
+{
+  "source_tree": "1dc54d50c2362c4d9bc8156b37078e47847f3bb3",
+  "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONPATH=src:. /workspace/scratch/b8c76611c785/.venv/bin/python -m pytest -q -ra",
+  "exit_code": 0,
+  "passed": 1566,
+  "skipped": 3,
+  "subtests_passed": 153,
+  "warnings": 103,
+  "seconds": 173.35,
+  "skip_reasons": {
+    "source_pinned_external_EAM_not_configured": 1,
+    "optional_PyTorch_not_installed": 2
+  },
+  "raw_log": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/pytest.txt",
+  "raw_log_sha256": "0581ab9741e9d732725987a4743db2aea0e19d4b91ad7c2ee86981c0ab34034b",
+  "repository_log_sha256": "0581ab9741e9d732725987a4743db2aea0e19d4b91ad7c2ee86981c0ab34034b",
+  "normalization": "Only trailing whitespace is removed from the archived copy.",
+  "scope": "Functional validation with local socket support; elapsed time is not a performance measurement."
+}

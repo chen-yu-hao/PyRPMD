@@ -1,0 +1,17 @@
+{
+  "source_tree": "1dc54d50c2362c4d9bc8156b37078e47847f3bb3",
+  "candidate_head_during_measurement": "38a16e4263ccd28909f99c3b73c16c605928150b",
+  "baseline_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "report_sha256": "337f9989a98bfeaeeff2669b672d33ee40cc2d5d1f25912a9efae7d4ddaa004e",
+  "raw_directory": "/workspace/scratch/b8c76611c785/perf-audit-integration-final",
+  "raw_file_count": 991,
+  "raw_bytes": 20824725,
+  "cases": [
+    "bkmp2_drpmd",
+    "bkmp2_fes",
+    "pimd_pile_l"
+  ],
+  "repeats": 5,
+  "cpu": 0,
+  "scope": "Final integrated source versus the original baseline. These ratios do not isolate the incremental cost of the new ownership or provider guards. Earlier benchmark records remain unchanged."
+}

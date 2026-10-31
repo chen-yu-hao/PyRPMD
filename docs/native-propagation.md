@@ -1,10 +1,10 @@
 # Fused C++17 production propagation
 
-PyRPMD can now advance a block of BCB steps inside the existing C++17 Cayley
-extension, directly invoking a stateless native PES and calculating energy,
+PyRPMD can advance a block of the selected deterministic integrator inside the
+C++17 extension, directly invoking a stateless native PES and calculating energy,
 centroid and supported collective-variable observations. This is production
 code used by the production workflows. Two public entrypoints share the same
-Cayley map and explicit native PES bindings, with different recording and
+selected integration map and explicit native PES bindings, with different recording and
 failure contracts:
 
 | API | Observations | Numerical failure | Production use |
@@ -14,6 +14,14 @@ failure contracts:
 
 The second entrypoint also supports bead-average geometric CVs. Its full
 contract is documented in [block-propagation.md](block-propagation.md).
+
+Native descriptors encode built-in mathematics without calling the corresponding
+Python methods. Both APIs therefore check instance overrides and class-level
+method replacements against identities saved by the defining modules. This
+also applies to nested CVs/biases and the built-in native PES adapters, including
+changes made before the propagation dispatcher is first imported. `auto` keeps
+such objects on the compatible Python route; strict `native` rejects them before
+advancing the state. Unmodified built-in objects retain native execution.
 
 ## Input and API
 

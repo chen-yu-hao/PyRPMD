@@ -1,0 +1,1298 @@
+........FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 76%]
+FFFFFFFFFF............                                                   [100%]
+=================================== FAILURES ===================================
+___________ test_force_returns_an_independent_writable_buffer[False] ___________
+tests/test_force_buffer_ownership.py:74: in test_force_returns_an_independent_writable_buffer
+    assert not np.shares_memory(force, provider.forces)
+E   assert not True
+E    +  where True = <function shares_memory at 0x7f7ddbf18e30>(array([[[1., 2., 3.],\n        [4., 5., 6.]]]), array([[[1., 2., 3.],\n        [4., 5., 6.]]]))
+E    +    where <function shares_memory at 0x7f7ddbf18e30> = np.shares_memory
+E    +    and   array([[[1., 2., 3.],\n        [4., 5., 6.]]]) = <test_force_buffer_ownership.ConstantProvider object at 0x7f7dd8bdfb00>.forces
+___________ test_force_returns_an_independent_writable_buffer[True] ____________
+tests/test_force_buffer_ownership.py:73: in test_force_returns_an_independent_writable_buffer
+    assert force.flags.writeable
+E   assert False
+E    +  where False =   C_CONTIGUOUS : True\n  F_CONTIGUOUS : False\n  OWNDATA : True\n  WRITEABLE : False\n  ALIGNED : True\n  WRITEBACKIFCOPY : False\n.writeable
+E    +    where   C_CONTIGUOUS : True\n  F_CONTIGUOUS : False\n  OWNDATA : True\n  WRITEABLE : False\n  ALIGNED : True\n  WRITEBACKIFCOPY : False\n = array([[[1., 2., 3.],\n        [4., 5., 6.]]]).flags
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:106: in _force
+    return scale(super()._force(q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:106: in _force
+    return scale(super()._force(q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:106: in _force
+    return scale(super()._force(q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:106: in _force
+    return scale(super()._force(q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:106: in _force
+    return scale(super()._force(q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:106: in _force
+    return scale(super()._force(q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+                            ^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:114: in changed
+    return scale(original(self, q, bias))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:125: in kick
+    return super().kick(p, scale(force), h)
+                           ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:125: in kick
+    return super().kick(p, scale(force), h)
+                           ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:125: in kick
+    return super().kick(p, scale(force), h)
+                           ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:125: in kick
+    return super().kick(p, scale(force), h)
+                           ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:125: in kick
+    return super().kick(p, scale(force), h)
+                           ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:125: in kick
+    return super().kick(p, scale(force), h)
+                           ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:62: in _advance_twice
+    dynamics.step(state)
+src/pyrpmd/dynamics.py:367: in step
+    return self._propagate(state, bias)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/dynamics.py:388: in _propagate
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-False-False] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-False-True] _
+tests/test_force_buffer_ownership.py:142: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    np.testing.assert_array_equal(provider.forces, original_buffer)
+E   AssertionError:
+E   Arrays are not equal
+E
+E   Mismatched elements: 6 / 6 (100%)
+E   First 5 mismatches are at indices:
+E    [0, 0, 0]: 0.0625 (ACTUAL), 1.0 (DESIRED)
+E    [0, 0, 1]: 0.125 (ACTUAL), 2.0 (DESIRED)
+E    [0, 0, 2]: 0.1875 (ACTUAL), 3.0 (DESIRED)
+E    [0, 1, 0]: 0.25 (ACTUAL), 4.0 (DESIRED)
+E    [0, 1, 1]: 0.3125 (ACTUAL), 5.0 (DESIRED)
+E   Max absolute difference among violations: 5.625
+E   Max relative difference among violations: 0.9375
+E    ACTUAL: array([[[0.0625, 0.125 , 0.1875],
+E           [0.25  , 0.3125, 0.375 ]]])
+E    DESIRED: array([[[1., 2., 3.],
+E           [4., 5., 6.]]])
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-True-False] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+_ test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-True-True] _
+tests/test_force_buffer_ownership.py:140: in test_inplace_overrides_do_not_mutate_reused_provider_forces
+    _advance_twice(dynamics, actual, operation)
+tests/test_force_buffer_ownership.py:64: in _advance_twice
+    dynamics.sample_step(state)
+src/pyrpmd/dynamics.py:540: in sample_step
+    self.integrator.kick(p, self._force(q, bias), 0.5 * self.dt)
+tests/test_force_buffer_ownership.py:130: in changed
+    return original(self, p, scale(force), h)
+                             ^^^^^^^^^^^^
+tests/test_force_buffer_ownership.py:100: in scale
+    force *= 0.5
+E   ValueError: output array is read-only
+=========================== short test summary info ============================
+FAILED tests/test_force_buffer_ownership.py::test_force_returns_an_independent_writable_buffer[False]
+FAILED tests/test_force_buffer_ownership.py::test_force_returns_an_independent_writable_buffer[True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-step-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_python-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-subclass-sample_auto-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-step-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_python-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-class-sample_auto-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-step-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_python-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[force-instance-sample_auto-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-step-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_python-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-subclass-sample_auto-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-step-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_python-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-class-sample_auto-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-step-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_python-True-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-False-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-False-True]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-True-False]
+FAILED tests/test_force_buffer_ownership.py::test_inplace_overrides_do_not_mutate_reused_provider_forces[kick-instance-sample_auto-True-True]
+74 failed, 20 passed in 1.50s

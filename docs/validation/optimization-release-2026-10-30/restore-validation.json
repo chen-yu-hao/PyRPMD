@@ -1,0 +1,345 @@
+{
+  "schema": "pyrpmd.audit-restore.v1",
+  "passed": true,
+  "started_utc": "2026-10-30T16:21:48.409200+00:00",
+  "archive": "/workspace/scratch/b8c76611c785/perf-audit-optimization-evidence.tar.gz",
+  "archive_sha256": "00daad7cf6e48ecbc17625500dcbf0a2a18eb30d732f22f58d5be123a7493cae",
+  "bundle_sha256": "ab064c3b1aadcaba5212a0ca6d4b8cb8450f40914616a1ce706ac4782a7867a6",
+  "destination": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced",
+  "restore_script_sha256": "fd7d961cf6dd22be36d7cf18d7f948ec11be4e1d8c7dd7252146755539d79b30",
+  "formal_performance_measurement": false,
+  "commands": [
+    {
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "config",
+        "core.autocrlf",
+        "false"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "bundle",
+        "verify",
+        "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "The bundle contains this ref:\n6fde29d2039c01921f00393bf17830b939af131b refs/heads/measured-baseline\nThe bundle records a complete history.\nThe bundle uses this hash algorithm: sha1\n",
+      "stderr": "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle is okay\n"
+    },
+    {
+      "command": [
+        "git",
+        "bundle",
+        "list-heads",
+        "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "6fde29d2039c01921f00393bf17830b939af131b refs/heads/measured-baseline\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--quiet",
+        "--no-tags",
+        "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle",
+        "refs/heads/measured-baseline:refs/heads/measured-baseline"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--quiet",
+        "--detach",
+        "6fde29d2039c01921f00393bf17830b939af131b"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "write-tree"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "80e21b261a1b3b66084af982ffd696907843f4cc\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "6fde29d2039c01921f00393bf17830b939af131b\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-c",
+        "import json, pathlib, sys; import pyrpmd; from pyrpmd import _native; root=pathlib.Path(sys.argv[1]).resolve(); assert pathlib.Path(pyrpmd.__file__).resolve().is_relative_to(root); assert pathlib.Path(_native.__file__).resolve().is_relative_to(root); print(json.dumps({\"package\":pyrpmd.__file__,\"native\":_native.__file__, \"version\":pyrpmd.__version__,\"has_openmp\":bool(_native.has_openmp()), \"has_sample_free\":hasattr(_native,\"sample_free\")}))",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "returncode": 0,
+      "stdout": "{\"package\": \"/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline/src/pyrpmd/__init__.py\", \"native\": \"/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so\", \"version\": \"0.2.0\", \"has_openmp\": true, \"has_sample_free\": false}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "config",
+        "core.autocrlf",
+        "false"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "bundle",
+        "verify",
+        "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "The bundle contains this ref:\n6fde29d2039c01921f00393bf17830b939af131b refs/heads/measured-baseline\nThe bundle records a complete history.\nThe bundle uses this hash algorithm: sha1\n",
+      "stderr": "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle is okay\n"
+    },
+    {
+      "command": [
+        "git",
+        "bundle",
+        "list-heads",
+        "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "6fde29d2039c01921f00393bf17830b939af131b refs/heads/measured-baseline\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--quiet",
+        "--no-tags",
+        "/workspace/scratch/b8c76611c785/perf-audit-optimization-restore-supplement/baseline.bundle",
+        "refs/heads/measured-baseline:refs/heads/measured-baseline"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "checkout",
+        "--quiet",
+        "--detach",
+        "6fde29d2039c01921f00393bf17830b939af131b"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "--index",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/evidence/perf-audit-optimization-evidence/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "--index",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/evidence/perf-audit-optimization-evidence/candidate.patch"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "write-tree"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "899cc0618ba92db03e891c236845dac671704c00\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "6fde29d2039c01921f00393bf17830b939af131b\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-c",
+        "import json, pathlib, sys; import pyrpmd; from pyrpmd import _native; root=pathlib.Path(sys.argv[1]).resolve(); assert pathlib.Path(pyrpmd.__file__).resolve().is_relative_to(root); assert pathlib.Path(_native.__file__).resolve().is_relative_to(root); print(json.dumps({\"package\":pyrpmd.__file__,\"native\":_native.__file__, \"version\":pyrpmd.__version__,\"has_openmp\":bool(_native.has_openmp()), \"has_sample_free\":hasattr(_native,\"sample_free\")}))",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "returncode": 0,
+      "stdout": "{\"package\": \"/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate/src/pyrpmd/__init__.py\", \"native\": \"/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so\", \"version\": \"0.2.0\", \"has_openmp\": true, \"has_sample_free\": true}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate/benchmarks/efficiency/audit_optimization.py",
+        "--baseline",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+        "--candidate",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+        "--library",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/evidence/perf-audit-optimization-evidence/pes/libbkmp2.so",
+        "--output",
+        "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/smoke-output",
+        "--smoke"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced",
+      "returncode": 0,
+      "stdout": "{\"repeat\": 0, \"variant\": \"baseline\", \"functional_only\": true, \"completed_cases\": [\"bkmp2_drpmd\", \"bkmp2_fes\", \"pimd_pile_l\", \"com_gradient_n3\", \"com_gradient_n1000\", \"nrpmd_mint_s16\", \"fes_bootstrap\", \"normal_mode_n32_p256\"]}\n{\"repeat\": 0, \"variant\": \"candidate\", \"functional_only\": true, \"completed_cases\": [\"bkmp2_drpmd\", \"bkmp2_fes\", \"pimd_pile_l\", \"com_gradient_n3\", \"com_gradient_n1000\", \"nrpmd_mint_s16\", \"fes_bootstrap\", \"normal_mode_n32_p256\"]}\n{\"passed\": true, \"mode\": \"smoke_functional_only\", \"report\": \"/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/smoke-output/report.json\"}\n",
+      "stderr": ""
+    }
+  ],
+  "archive_members": 1358,
+  "raw_manifest": {
+    "files": 1041,
+    "bytes": 42300624,
+    "all_match": true
+  },
+  "support_manifest": {
+    "files": 12,
+    "bytes": 19630431,
+    "all_match": true
+  },
+  "original_report_sha256": "5ba28b0feaa65c351a2fd674c411e8a8df2c850863bd6ce5d470b1cd3ab43a78",
+  "checkouts": {
+    "baseline": {
+      "path": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+      "head": "6fde29d2039c01921f00393bf17830b939af131b",
+      "index_tree": "80e21b261a1b3b66084af982ffd696907843f4cc",
+      "all_archived_source_files_match": 357,
+      "measured_source_hashes_match": 77,
+      "native_sha256": "01b24ab0941a41267955cc979e7c027930a00aa6a73e43b2c851051d6dc4f4bd",
+      "import_probe": {
+        "package": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline/src/pyrpmd/__init__.py",
+        "native": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "version": "0.2.0",
+        "has_openmp": true,
+        "has_sample_free": false
+      }
+    },
+    "candidate": {
+      "path": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+      "head": "6fde29d2039c01921f00393bf17830b939af131b",
+      "index_tree": "899cc0618ba92db03e891c236845dac671704c00",
+      "all_archived_source_files_match": 366,
+      "measured_source_hashes_match": 78,
+      "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+      "import_probe": {
+        "package": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate/src/pyrpmd/__init__.py",
+        "native": "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "version": "0.2.0",
+        "has_openmp": true,
+        "has_sample_free": true
+      }
+    }
+  },
+  "smoke_command": [
+    "/workspace/scratch/b8c76611c785/.venv/bin/python",
+    "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate/benchmarks/efficiency/audit_optimization.py",
+    "--baseline",
+    "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/baseline",
+    "--candidate",
+    "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/candidate",
+    "--library",
+    "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/evidence/perf-audit-optimization-evidence/pes/libbkmp2.so",
+    "--output",
+    "/workspace/scratch/b8c76611c785/evidence-restore-check-wm0vdj_5/reproduced/smoke-output",
+    "--smoke"
+  ],
+  "smoke": {
+    "passed": true,
+    "case_count": 8,
+    "cases": [
+      "bkmp2_drpmd",
+      "bkmp2_fes",
+      "pimd_pile_l",
+      "com_gradient_n3",
+      "com_gradient_n1000",
+      "nrpmd_mint_s16",
+      "fes_bootstrap",
+      "normal_mode_n32_p256"
+    ],
+    "report_sha256": "98608c5c671ce80f47542bda301355d1c523e20dd52180c51185881e84320fd5",
+    "timings_collected": false
+  },
+  "completed_utc": "2026-10-30T16:21:52.579436+00:00"
+}

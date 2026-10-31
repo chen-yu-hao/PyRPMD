@@ -1,0 +1,1010 @@
+{
+  "source_tree": "1dc54d50c2362c4d9bc8156b37078e47847f3bb3",
+  "source_repository": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+  "started_utc": "2026-10-30T16:51:12.634529+00:00",
+  "scope": "Isolated Linux x86_64 CPython 3.12 source/wheel installation and numerical/workflow smoke validation; no benchmarks or remote writes.",
+  "dependency_mode": "Explicit symlinks to preinstalled third-party packages only; pip --no-index --no-deps --no-build-isolation. Not a fresh online dependency resolution. PyRPMD is independently installed, never editable.",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "build_python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "build_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+  "build_tool_versions": {
+    "build": "1.6.1",
+    "setuptools": "84.2.1",
+    "wheel": "0.48.0",
+    "packaging": "26.3"
+  },
+  "selected_environment": {
+    "PYTHONNOUSERSITE": "1",
+    "PIP_NO_INDEX": "1",
+    "PIP_DISABLE_PIP_VERSION_CHECK": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "CC": "/usr/bin/gcc",
+    "CXX": "/usr/bin/g++",
+    "PYRPMD_NO_NATIVE": "0",
+    "PYRPMD_NO_OPENMP": "0",
+    "CFLAGS": "",
+    "CXXFLAGS": "",
+    "LDFLAGS": ""
+  },
+  "original_native_before": {
+    "/workspace/scratch/b8c76611c785/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+    "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1"
+  },
+  "commands": [
+    {
+      "label": "00-gcc-version",
+      "command": [
+        "/usr/bin/gcc",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/00-gcc-version.txt",
+      "started_utc": "2026-10-30T16:51:12.645685+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:12.649748+00:00"
+    },
+    {
+      "label": "01-gxx-version",
+      "command": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/01-gxx-version.txt",
+      "started_utc": "2026-10-30T16:51:12.650103+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:12.654372+00:00"
+    },
+    {
+      "label": "02-git-archive",
+      "command": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output=/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/source.tar",
+        "1dc54d50c2362c4d9bc8156b37078e47847f3bb3"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/02-git-archive.txt",
+      "started_utc": "2026-10-30T16:51:12.654909+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:12.719793+00:00"
+    },
+    {
+      "label": "03-build-sdist-and-wheel",
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-m",
+        "build",
+        "--no-isolation",
+        "--outdir",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/source"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/03-build-sdist-and-wheel.txt",
+      "started_utc": "2026-10-30T16:51:12.892594+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:22.203981+00:00"
+    },
+    {
+      "label": "wheel-env-create",
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-m",
+        "venv",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/wheel-env-create.txt",
+      "started_utc": "2026-10-30T16:51:22.405477+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:25.232278+00:00"
+    },
+    {
+      "label": "wheel-env-site",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/bin/python",
+        "-c",
+        "import sysconfig; print(sysconfig.get_path('purelib'))"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/wheel-env-site.txt",
+      "started_utc": "2026-10-30T16:51:25.232898+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:25.266622+00:00"
+    },
+    {
+      "label": "wheel-install",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-deps",
+        "--no-index",
+        "--no-build-isolation",
+        "--no-cache-dir",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/wheel-install.txt",
+      "started_utc": "2026-10-30T16:51:25.343031+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:26.160734+00:00"
+    },
+    {
+      "label": "wheel-inspect",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/bin/python",
+        "-c",
+        "\nimport importlib.metadata,json,sys\nfrom pathlib import Path\nimport pyrpmd\nfrom pyrpmd import _native\nfrom pyrpmd.dynamics import native_capabilities\npackage=Path(pyrpmd.__file__).resolve()\nassert package.is_relative_to(Path(sys.prefix).resolve()), (package,sys.prefix)\nnative=Path(_native.__file__).resolve()\nassert native.is_relative_to(Path(sys.prefix).resolve()), native\nmarkers={name:getattr(_native,name,0) for name in ('SAMPLING_FREE_API','BLOCK_ENERGY_CHECK_API','DRPMD_OUTCOMES_API')}\nassert all(value == 1 for value in markers.values()), markers\ndistribution=importlib.metadata.distribution('PyRPMD')\ndirect=json.loads(distribution.read_text('direct_url.json') or '{}')\nassert not direct.get('dir_info',{}).get('editable',False),direct\nrequirements=distribution.metadata.get_all('Requires-Dist')\nassert 'threadpoolctl>=3.1' in requirements,requirements\nprint(json.dumps({'package':str(package),'native_module':str(native),'prefix':sys.prefix,'sys_path':sys.path,'markers':markers,'native_capabilities':native_capabilities(),'requirements':requirements,'direct_url':direct,'version':distribution.version},indent=2))\n"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/wheel-inspect.txt",
+      "started_utc": "2026-10-30T16:51:26.161738+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:26.528541+00:00"
+    },
+    {
+      "label": "wheel-pip-check",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/bin/python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/wheel-pip-check.txt",
+      "started_utc": "2026-10-30T16:51:26.534163+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:26.901032+00:00"
+    },
+    {
+      "label": "wheel-smoke",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/bin/python",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-extracted/pyrpmd-0.2.0/tests/package_smoke.py",
+        "--source-root",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-extracted/pyrpmd-0.2.0",
+        "--output",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-smoke"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/wheel-smoke.txt",
+      "started_utc": "2026-10-30T16:51:26.903219+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:57.140818+00:00"
+    },
+    {
+      "label": "sdist-env-create",
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-m",
+        "venv",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/sdist-env-create.txt",
+      "started_utc": "2026-10-30T16:51:57.142835+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:59.618340+00:00"
+    },
+    {
+      "label": "sdist-env-site",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/bin/python",
+        "-c",
+        "import sysconfig; print(sysconfig.get_path('purelib'))"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/sdist-env-site.txt",
+      "started_utc": "2026-10-30T16:51:59.619910+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:51:59.654234+00:00"
+    },
+    {
+      "label": "sdist-install-rebuild",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-deps",
+        "--no-index",
+        "--no-build-isolation",
+        "--no-cache-dir",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0.tar.gz"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/sdist-install-rebuild.txt",
+      "started_utc": "2026-10-30T16:51:59.733034+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:52:08.895118+00:00"
+    },
+    {
+      "label": "sdist-inspect",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/bin/python",
+        "-c",
+        "\nimport importlib.metadata,json,sys\nfrom pathlib import Path\nimport pyrpmd\nfrom pyrpmd import _native\nfrom pyrpmd.dynamics import native_capabilities\npackage=Path(pyrpmd.__file__).resolve()\nassert package.is_relative_to(Path(sys.prefix).resolve()), (package,sys.prefix)\nnative=Path(_native.__file__).resolve()\nassert native.is_relative_to(Path(sys.prefix).resolve()), native\nmarkers={name:getattr(_native,name,0) for name in ('SAMPLING_FREE_API','BLOCK_ENERGY_CHECK_API','DRPMD_OUTCOMES_API')}\nassert all(value == 1 for value in markers.values()), markers\ndistribution=importlib.metadata.distribution('PyRPMD')\ndirect=json.loads(distribution.read_text('direct_url.json') or '{}')\nassert not direct.get('dir_info',{}).get('editable',False),direct\nrequirements=distribution.metadata.get_all('Requires-Dist')\nassert 'threadpoolctl>=3.1' in requirements,requirements\nprint(json.dumps({'package':str(package),'native_module':str(native),'prefix':sys.prefix,'sys_path':sys.path,'markers':markers,'native_capabilities':native_capabilities(),'requirements':requirements,'direct_url':direct,'version':distribution.version},indent=2))\n"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/sdist-inspect.txt",
+      "started_utc": "2026-10-30T16:52:08.896429+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:52:09.584121+00:00"
+    },
+    {
+      "label": "sdist-pip-check",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/bin/python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/sdist-pip-check.txt",
+      "started_utc": "2026-10-30T16:52:09.593654+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:52:10.532471+00:00"
+    },
+    {
+      "label": "sdist-smoke",
+      "command": [
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/bin/python",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-extracted/pyrpmd-0.2.0/tests/package_smoke.py",
+        "--source-root",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-extracted/pyrpmd-0.2.0",
+        "--output",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-smoke"
+      ],
+      "cwd": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30",
+      "log": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/logs/sdist-smoke.txt",
+      "started_utc": "2026-10-30T16:52:10.539491+00:00",
+      "returncode": 0,
+      "finished_utc": "2026-10-30T16:52:58.754459+00:00"
+    }
+  ],
+  "status": "passed",
+  "gcc_version": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "gxx_version": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "source_archive": {
+    "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/source.tar",
+    "sha256": "c0a3bdc3c37fdd8fe1fe365444d63c2793fb7046b27fc54fd6855384beabaa81"
+  },
+  "native_source_hashes": {
+    "native/ABI.md": "a6e6edf09c71f1e15a7d1915cf20b002036844d2306ed7391f51c8e00e33eb44",
+    "native/CMakeLists.txt": "34ded4663aa2119e0afb9937f7df229f11556a84b74b7633e3fcfcc917daf402",
+    "native/README.md": "33143daffdbac00e16ba16769ac79eb068ed986f1c3ec9ee8c40b4bacac00efc",
+    "native/cayley.cpp": "57d7113203ad84511dffea9e717eb22a850aee91799eebea86e895b12fda547c",
+    "native/examples/harmonic_pes.c": "811eea56274b3d3013a3bca49a9f2f0b389708c202e83a7f73efcbd5884e0aeb",
+    "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/propagation.h": "9938cdbf67c24a0e57fffcd5f10919f56ae7cd6e296b3beb5b33fe79327019b4",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0"
+  },
+  "package_smoke_sha256": "4568f23cd6a41f7676b29941f6823e3792e5e8fdc77c5e5518702afd1f0645c7",
+  "artifacts": {
+    "sdist": {
+      "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0.tar.gz",
+      "sha256": "70631143491f1042ed272f590a049ba5313389224b3aa42b4347cf804ec074be"
+    },
+    "wheel": {
+      "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+      "sha256": "2de6c8b4baa2330d32d1820438882882f101d287702620e663350b9973734ab5",
+      "native_entry": "pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "native_sha256": "c05516a990fff7b1b9f544021658f628364d0f773792280f4224c98bd812f433"
+    }
+  },
+  "contents": {
+    "required_sdist_files": [
+      "src/pyrpmd/reactions.py",
+      "src/pyrpmd/checkpoint.py",
+      "src/pyrpmd/workflows/network.py",
+      "src/pyrpmd/workflows/adaptive_umbrella.py",
+      "src/pyrpmd/workflows/metadynamics.py",
+      "src/pyrpmd/pcet.py",
+      "src/pyrpmd/pcet_input.py",
+      "src/pyrpmd/workflows/pcet.py",
+      "native/fused.hpp",
+      "native/propagation.h",
+      "native/ring_fft.h",
+      "benchmarks/efficiency/audit_optimization.py",
+      "benchmarks/efficiency/README.md",
+      "native/include/pyrpmd/pes_api_v1.h",
+      "examples/network/two_entrances.py",
+      "examples/rate/toy_exchange.py",
+      "examples/fes/adaptive_harmonic.inp",
+      "examples/metadynamics/standard.inp",
+      "examples/metadynamics/well_tempered_2d.inp",
+      "examples/pcet/harmonic_scan.inp",
+      "tests/package_smoke.py",
+      "tests/test_integrators.py",
+      "tests/test_native_sampling.py",
+      "tests/test_fes_block_sampling.py",
+      "tests/test_integrator_workflows.py",
+      "tests/test_native_override_compatibility.py",
+      "tests/test_native_block_compatibility.py",
+      "tests/test_force_buffer_ownership.py",
+      "tests/test_reaction_network.py",
+      "tests/test_metadynamics.py",
+      "tests/test_pcet_science.py",
+      "tests/test_pcet_workflow.py",
+      "docs/checkpoints.md",
+      "docs/interfaces.md",
+      "docs/integrators.md",
+      "docs/reaction-networks.md",
+      "docs/enhanced-sampling.md",
+      "docs/releases/0.2.0.md",
+      "docs/pcet.md"
+    ],
+    "required_sdist_count": 39,
+    "required_sdist_byte_match": true,
+    "sdist_python_native_byte_match_count": 136,
+    "sdist_python_native_byte_match": true,
+    "wheel_python_byte_match_count": 52,
+    "wheel_python_byte_match": true,
+    "wheel_requirements": [
+      "numpy>=1.26",
+      "scipy>=1.11",
+      "h5py>=3.10",
+      "threadpoolctl>=3.1",
+      "mpi4py>=3.1; extra == \"mpi\"",
+      "torch>=2.2; extra == \"gpu\"",
+      "ase>=3.23; extra == \"ase\"",
+      "pymbar>=4; extra == \"analysis\"",
+      "pytest>=8; extra == \"test\"",
+      "sphinx<9,>=8.2; extra == \"docs\"",
+      "myst-parser<5,>=4; extra == \"docs\"",
+      "pydata-sphinx-theme<0.17,>=0.16; extra == \"docs\""
+    ],
+    "threadpoolctl_required": true,
+    "sdist_source": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-extracted/pyrpmd-0.2.0"
+  },
+  "wheel_installation": {
+    "prefix": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env",
+    "python": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/bin/python",
+    "site_packages": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages",
+    "dependency_versions": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "h5py": "3.16.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "dependency_links": [
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/numpy",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/numpy-2.5.4.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy-2.5.4.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/numpy.libs",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy.libs"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/scipy",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/scipy-1.18.1.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy-1.18.1.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/scipy.libs",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy.libs"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/h5py",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/h5py-3.16.0.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py-3.16.0.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/h5py.libs",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py.libs"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/threadpoolctl-3.6.0.dist-info",
+        "target": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/threadpoolctl-3.6.0.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/threadpoolctl.py",
+        "target": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/threadpoolctl.py"
+      }
+    ],
+    "inspection": {
+      "package": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/pyrpmd/__init__.py",
+      "native_module": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "prefix": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env",
+      "sys_path": [
+        "",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python312.zip",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/lib-dynload",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages"
+      ],
+      "markers": {
+        "SAMPLING_FREE_API": 1,
+        "BLOCK_ENERGY_CHECK_API": 1,
+        "DRPMD_OUTCOMES_API": 1
+      },
+      "native_capabilities": {
+        "available": true,
+        "openmp": true,
+        "integrators": [
+          "cayley-bcb",
+          "normal-mode-bab",
+          "velocity-verlet"
+        ]
+      },
+      "requirements": [
+        "numpy>=1.26",
+        "scipy>=1.11",
+        "h5py>=3.10",
+        "threadpoolctl>=3.1",
+        "mpi4py>=3.1; extra == \"mpi\"",
+        "torch>=2.2; extra == \"gpu\"",
+        "ase>=3.23; extra == \"ase\"",
+        "pymbar>=4; extra == \"analysis\"",
+        "pytest>=8; extra == \"test\"",
+        "sphinx<9,>=8.2; extra == \"docs\"",
+        "myst-parser<5,>=4; extra == \"docs\"",
+        "pydata-sphinx-theme<0.17,>=0.16; extra == \"docs\""
+      ],
+      "direct_url": {
+        "archive_info": {
+          "hash": "sha256=2de6c8b4baa2330d32d1820438882882f101d287702620e663350b9973734ab5",
+          "hashes": {
+            "sha256": "2de6c8b4baa2330d32d1820438882882f101d287702620e663350b9973734ab5"
+          }
+        },
+        "url": "file:///workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl"
+      },
+      "version": "0.2.0",
+      "native_sha256": "c05516a990fff7b1b9f544021658f628364d0f773792280f4224c98bd812f433",
+      "installed_python_byte_match_count": 52,
+      "installed_python_byte_match": true
+    }
+  },
+  "wheel_smoke": {
+    "version": "0.2.0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "h5py": "3.16.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "prefix": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env",
+    "package": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/pyrpmd/__init__.py",
+    "native_module": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env/lib/python3.12/site-packages/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+    "native_capabilities": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    },
+    "console_version": "PyRPMD 0.2.0",
+    "cli_info": {
+      "name": "PyRPMD",
+      "version": "0.2.0",
+      "native": {
+        "available": true,
+        "openmp": true,
+        "integrators": [
+          "cayley-bcb",
+          "normal-mode-bab",
+          "velocity-verlet"
+        ]
+      },
+      "workflows": [
+        "rate",
+        "drpmd",
+        "fes",
+        "network",
+        "metadynamics",
+        "pcet",
+        "pimd",
+        "diffusion",
+        "site_rate",
+        "surface_rate"
+      ],
+      "materials": {
+        "cell": "fixed",
+        "trajectory": "unwrapped_centroid",
+        "pressure_ensemble": false
+      },
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ],
+      "enhanced_sampling": [
+        "adaptive_umbrella",
+        "standard_metadynamics",
+        "well_tempered_metadynamics"
+      ],
+      "input_schema_version": 1,
+      "run_manifest_schema_version": 2,
+      "checkpoint_schema_version": 2,
+      "input_formats": [
+        "TOML .inp",
+        "Python build()"
+      ]
+    },
+    "imported_modules": [
+      "pyrpmd.checkpoint",
+      "pyrpmd.reactions",
+      "pyrpmd.workflows.network",
+      "pyrpmd.workflows.adaptive_umbrella",
+      "pyrpmd.workflows.metadynamics",
+      "pyrpmd.analysis.metadynamics",
+      "pyrpmd.pcet",
+      "pyrpmd.pcet_input",
+      "pyrpmd.workflows.pcet"
+    ],
+    "integrator_max_abs_errors": {
+      "cayley-bcb": 3.3306690738754696e-16,
+      "normal-mode-bab": 3.0531133177191805e-16,
+      "velocity-verlet": 2.7755575615628914e-17
+    },
+    "native_api": {
+      "SAMPLING_FREE_API": 1,
+      "BLOCK_ENERGY_CHECK_API": 1
+    },
+    "sampling_max_abs_errors": {
+      "cayley-bcb": {
+        "q": 6.661338147750939e-16,
+        "p": 6.783462680459706e-14,
+        "rng_equal": true,
+        "clock_equal": true
+      },
+      "normal-mode-bab": {
+        "q": 6.661338147750939e-16,
+        "p": 6.927791673660977e-14,
+        "rng_equal": true,
+        "clock_equal": true
+      }
+    },
+    "large_ring_max_abs_errors": {
+      "q": 3.3306690738754696e-16,
+      "p": 1.3766765505351941e-14
+    },
+    "native_release_max_abs_errors": {
+      "pile-cayley-bcb-5": 7.771561172376096e-16,
+      "pile-normal-mode-bab-5": 1.5543122344752192e-15,
+      "pile-cayley-bcb-32": 5.029310301551959e-14,
+      "pile-normal-mode-bab-32": 4.9432680171435095e-14,
+      "fft-32": 1.9095836023552692e-14,
+      "pile-cayley-bcb-256": 1.4956924587750109e-12,
+      "pile-normal-mode-bab-256": 1.5099033134902129e-12,
+      "fft-256": 1.7408297026122455e-13
+    },
+    "examples": {
+      "network": {
+        "task": "network",
+        "status": "completed",
+        "converged": false,
+        "resume_identical": true
+      },
+      "adaptive": {
+        "task": "fes",
+        "status": "sampled",
+        "converged": false,
+        "resume_identical": true
+      },
+      "meta_standard": {
+        "task": "metadynamics",
+        "status": "bias_estimate",
+        "converged": false,
+        "resume_identical": true
+      },
+      "meta_well_tempered": {
+        "task": "metadynamics",
+        "status": "bias_estimate",
+        "converged": false,
+        "resume_identical": true
+      },
+      "pcet": {
+        "task": "pcet",
+        "status": "model_rates_computed",
+        "converged": false,
+        "resume_identical": true
+      }
+    },
+    "drpmd_workflows": {
+      "normal-mode-bab": {
+        "beads": 3,
+        "trajectories": 2,
+        "parent_thermal_steps": {
+          "0": 8
+        },
+        "child_native_steps": [
+          0,
+          0
+        ],
+        "child_python_steps": [
+          72,
+          39
+        ],
+        "driver": "auto",
+        "native_substeps": "required",
+        "resume_identical": true
+      },
+      "velocity-verlet": {
+        "beads": 3,
+        "trajectories": 2,
+        "parent_thermal_steps": {
+          "0": 8
+        },
+        "child_native_steps": [
+          0,
+          0
+        ],
+        "child_python_steps": [
+          72,
+          39
+        ],
+        "driver": "auto",
+        "native_substeps": "required",
+        "resume_identical": true
+      }
+    },
+    "scope": "Installed-distribution and finite-sampling workflow validation, not physical convergence or universal wheel compatibility."
+  },
+  "sdist_installation": {
+    "prefix": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env",
+    "python": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/bin/python",
+    "site_packages": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages",
+    "dependency_versions": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "h5py": "3.16.0",
+      "threadpoolctl": "3.6.0",
+      "setuptools": "84.2.1",
+      "wheel": "0.48.0",
+      "packaging": "26.3"
+    },
+    "dependency_links": [
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/numpy",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/numpy-2.5.4.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy-2.5.4.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/numpy.libs",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy.libs"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/scipy",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/scipy-1.18.1.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy-1.18.1.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/scipy.libs",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy.libs"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/h5py",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/h5py-3.16.0.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py-3.16.0.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/h5py.libs",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py.libs"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/threadpoolctl-3.6.0.dist-info",
+        "target": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/threadpoolctl-3.6.0.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/threadpoolctl.py",
+        "target": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/threadpoolctl.py"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/_distutils_hack",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/_distutils_hack"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/distutils-precedence.pth",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/distutils-precedence.pth"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/setuptools",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/setuptools"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/setuptools-84.2.1.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/setuptools-84.2.1.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/wheel",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/wheel"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/wheel-0.48.0.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/wheel-0.48.0.dist-info"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/packaging",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/packaging"
+      },
+      {
+        "path": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/packaging-26.3.dist-info",
+        "target": "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/packaging-26.3.dist-info"
+      }
+    ],
+    "inspection": {
+      "package": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/pyrpmd/__init__.py",
+      "native_module": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "prefix": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env",
+      "sys_path": [
+        "",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python312.zip",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12",
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/lib-dynload",
+        "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages"
+      ],
+      "markers": {
+        "SAMPLING_FREE_API": 1,
+        "BLOCK_ENERGY_CHECK_API": 1,
+        "DRPMD_OUTCOMES_API": 1
+      },
+      "native_capabilities": {
+        "available": true,
+        "openmp": true,
+        "integrators": [
+          "cayley-bcb",
+          "normal-mode-bab",
+          "velocity-verlet"
+        ]
+      },
+      "requirements": [
+        "numpy>=1.26",
+        "scipy>=1.11",
+        "h5py>=3.10",
+        "threadpoolctl>=3.1",
+        "mpi4py>=3.1; extra == \"mpi\"",
+        "torch>=2.2; extra == \"gpu\"",
+        "ase>=3.23; extra == \"ase\"",
+        "pymbar>=4; extra == \"analysis\"",
+        "pytest>=8; extra == \"test\"",
+        "sphinx<9,>=8.2; extra == \"docs\"",
+        "myst-parser<5,>=4; extra == \"docs\"",
+        "pydata-sphinx-theme<0.17,>=0.16; extra == \"docs\""
+      ],
+      "direct_url": {
+        "archive_info": {
+          "hash": "sha256=70631143491f1042ed272f590a049ba5313389224b3aa42b4347cf804ec074be",
+          "hashes": {
+            "sha256": "70631143491f1042ed272f590a049ba5313389224b3aa42b4347cf804ec074be"
+          }
+        },
+        "url": "file:///workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0.tar.gz"
+      },
+      "version": "0.2.0",
+      "native_sha256": "c05516a990fff7b1b9f544021658f628364d0f773792280f4224c98bd812f433",
+      "installed_python_byte_match_count": 52,
+      "installed_python_byte_match": true
+    }
+  },
+  "sdist_smoke": {
+    "version": "0.2.0",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "h5py": "3.16.0",
+      "threadpoolctl": "3.6.0"
+    },
+    "prefix": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env",
+    "package": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/pyrpmd/__init__.py",
+    "native_module": "/workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env/lib/python3.12/site-packages/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+    "native_capabilities": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    },
+    "console_version": "PyRPMD 0.2.0",
+    "cli_info": {
+      "name": "PyRPMD",
+      "version": "0.2.0",
+      "native": {
+        "available": true,
+        "openmp": true,
+        "integrators": [
+          "cayley-bcb",
+          "normal-mode-bab",
+          "velocity-verlet"
+        ]
+      },
+      "workflows": [
+        "rate",
+        "drpmd",
+        "fes",
+        "network",
+        "metadynamics",
+        "pcet",
+        "pimd",
+        "diffusion",
+        "site_rate",
+        "surface_rate"
+      ],
+      "materials": {
+        "cell": "fixed",
+        "trajectory": "unwrapped_centroid",
+        "pressure_ensemble": false
+      },
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ],
+      "enhanced_sampling": [
+        "adaptive_umbrella",
+        "standard_metadynamics",
+        "well_tempered_metadynamics"
+      ],
+      "input_schema_version": 1,
+      "run_manifest_schema_version": 2,
+      "checkpoint_schema_version": 2,
+      "input_formats": [
+        "TOML .inp",
+        "Python build()"
+      ]
+    },
+    "imported_modules": [
+      "pyrpmd.checkpoint",
+      "pyrpmd.reactions",
+      "pyrpmd.workflows.network",
+      "pyrpmd.workflows.adaptive_umbrella",
+      "pyrpmd.workflows.metadynamics",
+      "pyrpmd.analysis.metadynamics",
+      "pyrpmd.pcet",
+      "pyrpmd.pcet_input",
+      "pyrpmd.workflows.pcet"
+    ],
+    "integrator_max_abs_errors": {
+      "cayley-bcb": 3.3306690738754696e-16,
+      "normal-mode-bab": 3.0531133177191805e-16,
+      "velocity-verlet": 2.7755575615628914e-17
+    },
+    "native_api": {
+      "SAMPLING_FREE_API": 1,
+      "BLOCK_ENERGY_CHECK_API": 1
+    },
+    "sampling_max_abs_errors": {
+      "cayley-bcb": {
+        "q": 6.661338147750939e-16,
+        "p": 6.783462680459706e-14,
+        "rng_equal": true,
+        "clock_equal": true
+      },
+      "normal-mode-bab": {
+        "q": 6.661338147750939e-16,
+        "p": 6.927791673660977e-14,
+        "rng_equal": true,
+        "clock_equal": true
+      }
+    },
+    "large_ring_max_abs_errors": {
+      "q": 3.3306690738754696e-16,
+      "p": 1.3766765505351941e-14
+    },
+    "native_release_max_abs_errors": {
+      "pile-cayley-bcb-5": 7.771561172376096e-16,
+      "pile-normal-mode-bab-5": 1.5543122344752192e-15,
+      "pile-cayley-bcb-32": 5.029310301551959e-14,
+      "pile-normal-mode-bab-32": 4.9432680171435095e-14,
+      "fft-32": 1.9095836023552692e-14,
+      "pile-cayley-bcb-256": 1.4956924587750109e-12,
+      "pile-normal-mode-bab-256": 1.5099033134902129e-12,
+      "fft-256": 1.7408297026122455e-13
+    },
+    "examples": {
+      "network": {
+        "task": "network",
+        "status": "completed",
+        "converged": false,
+        "resume_identical": true
+      },
+      "adaptive": {
+        "task": "fes",
+        "status": "sampled",
+        "converged": false,
+        "resume_identical": true
+      },
+      "meta_standard": {
+        "task": "metadynamics",
+        "status": "bias_estimate",
+        "converged": false,
+        "resume_identical": true
+      },
+      "meta_well_tempered": {
+        "task": "metadynamics",
+        "status": "bias_estimate",
+        "converged": false,
+        "resume_identical": true
+      },
+      "pcet": {
+        "task": "pcet",
+        "status": "model_rates_computed",
+        "converged": false,
+        "resume_identical": true
+      }
+    },
+    "drpmd_workflows": {
+      "normal-mode-bab": {
+        "beads": 3,
+        "trajectories": 2,
+        "parent_thermal_steps": {
+          "0": 8
+        },
+        "child_native_steps": [
+          0,
+          0
+        ],
+        "child_python_steps": [
+          72,
+          39
+        ],
+        "driver": "auto",
+        "native_substeps": "required",
+        "resume_identical": true
+      },
+      "velocity-verlet": {
+        "beads": 3,
+        "trajectories": 2,
+        "parent_thermal_steps": {
+          "0": 8
+        },
+        "child_native_steps": [
+          0,
+          0
+        ],
+        "child_python_steps": [
+          72,
+          39
+        ],
+        "driver": "auto",
+        "native_substeps": "required",
+        "resume_identical": true
+      }
+    },
+    "scope": "Installed-distribution and finite-sampling workflow validation, not physical convergence or universal wheel compatibility."
+  },
+  "exported_source_files_unchanged": true,
+  "original_native_after": {
+    "/workspace/scratch/b8c76611c785/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+    "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1"
+  },
+  "original_native_unchanged": true,
+  "finished_utc": "2026-10-30T16:52:58.797950+00:00"
+}

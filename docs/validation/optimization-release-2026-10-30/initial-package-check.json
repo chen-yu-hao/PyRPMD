@@ -1,0 +1,8 @@
+{
+  "script": "tests/package_smoke.py",
+  "script_sha256": "f6698637b995288899a71d2ba7ca37d7ad015822888989472e5e3ca59072b65c",
+  "source_tree": "b790fbc0fb651ebd95f12050ff8ff344a50a3d66",
+  "code_commit": "a7bb586b5b5fb5072401d3b5b962b0b41886cf3d",
+  "result": "passed",
+  "note": "Initial isolated build used the verified first-batch source snapshot and the strengthened installed-package smoke script; later dispatch follow-up will be separately verified."
+}

@@ -1,0 +1,27 @@
+........................................................................ [ 18%]
+........................................................................ [ 37%]
+........................................................................ [ 55%]
+..........................................Fss........................ [ 73%]
+........................................................................ [ 92%]
+.............................                                            [100%]
+=================================== FAILURES ===================================
+________________________ SocketTests.test_ipi_protocol _________________________
+tests/test_potentials.py:154: in test_ipi_protocol
+    pes = IPIPotential(port=0, timeout=5)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/potentials/socket.py:49: in __init__
+    self.server = socket.socket(
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: in __init__
+    _socket.socket.__init__(self, family, type, proto, fileno)
+E   PermissionError: [Errno 1] Operation not permitted
+=============================== warnings summary ===============================
+tests/test_potentials.py: 45 warnings
+  /workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [2] ../.venv/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+FAILED tests/test_potentials.py::SocketTests::test_ipi_protocol - PermissionE...
+1 failed, 383 passed, 2 skipped, 45 warnings, 3 subtests passed in 4.00s

@@ -1,0 +1,45 @@
+PyRPMD final integration release check
+
+RESULT: PASS
+Frozen source tree: 1dc54d50c2362c4d9bc8156b37078e47847f3bb3
+Repository used only for git archive: /workspace/scratch/b8c76611c785/PyRPMD-integration-14
+Source archive SHA256: c0a3bdc3c37fdd8fe1fe365444d63c2793fb7046b27fc54fd6855384beabaa81
+Compiler: g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+Python: 3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]
+Platform: Linux-6.18.57-x86_64-with-glibc2.39
+
+Built from the exact exported tree with python -m build --no-isolation.
+The platform wheel was built from the generated source distribution.
+The source distribution was independently rebuilt by pip in a second isolated environment.
+No editable project, source checkout sys.path entry, network dependency installation, performance benchmark, or remote write was used.
+Runtime dependencies were explicitly symlinked from preinstalled NumPy/SciPy/h5py/threadpoolctl; the sdist installation also linked preinstalled setuptools/wheel/packaging build tools.
+This verifies the local Linux x86_64 CPython 3.12 installation, not a clean network dependency solve, a universal/manylinux wheel, or macOS compatibility.
+
+Artifacts:
+  wheel: /workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl
+  wheel SHA256: 2de6c8b4baa2330d32d1820438882882f101d287702620e663350b9973734ab5
+  sdist: /workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/dist/pyrpmd-0.2.0.tar.gz
+  sdist SHA256: 70631143491f1042ed272f590a049ba5313389224b3aa42b4347cf804ec074be
+  wheel native SHA256: c05516a990fff7b1b9f544021658f628364d0f773792280f4224c98bd812f433
+  sdist rebuilt native SHA256: c05516a990fff7b1b9f544021658f628364d0f773792280f4224c98bd812f433
+
+Content checks:
+  52 Python package files in the wheel and each installed distribution exactly match the exported source bytes.
+  All 39 CI-required sdist files exist and exactly match source.
+  All 136 package/test Python and native source files in the sdist exactly match source.
+  Requires-Dist includes threadpoolctl>=3.1. Both installations pass pip check.
+  SAMPLING_FREE_API=1, BLOCK_ENERGY_CHECK_API=1, DRPMD_OUTCOMES_API=1 in both independent native installations.
+  Exported tracked source files unchanged; both original repository native modules unchanged.
+
+Independent wheel installation: /workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/wheel-env
+Independent sdist installation: /workspace/scratch/b8c76611c785/integration-release-check-2026-10-30/sdist-env
+Smoke working directory (outside source): /workspace/scratch/b8c76611c785/integration-release-check-2026-10-30
+
+Both unmodified final tests/package_smoke.py runs passed.
+Coverage includes both PILE-L schemes at P=5,32,256 with asserted native dispatch, exact RNG state/clock agreement, P=32 unequal masses, normal-mode FFT P=32,64,256, three deterministic integrators, C ABI native/Python block observations and energy checks, CLI/imports, five example validate/run/resume workflows, and two dRPMD parent/child workflows.
+These are finite numerical/workflow checks, not proof of physical convergence.
+
+Full commands/compiler output: logs/
+All source/native hashes, dependency links, actual imports, marker values, artifact hashes, and both full smoke results: metadata.json
+Wheel smoke report: wheel-smoke/report.json
+Sdist smoke report: sdist-smoke/report.json

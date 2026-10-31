@@ -1,0 +1,38 @@
+Serial native build validation
+
+Source tree: b790fbc0fb651ebd95f12050ff8ff344a50a3d66
+Result: PASSED. Existing numerical regressions: 132 passed, 2 skipped, 0 failures, 0 errors.
+The two skips are OpenMP multi-thread consistency cases, as expected for a serial build.
+
+Build: GNU C++ 13.3.0; Python 3.12.14; NumPy 2.5.4; SciPy 1.18.1; setuptools 84.2.1.
+PYRPMD_NO_OPENMP=1; PYRPMD_NO_NATIVE=0. Isolated setuptools build_py/build_ext output in runtime/ and objects/.
+The compiler command contains no -fopenmp; ldd contains no libgomp/libomp.
+
+The isolated module reports available=True, openmp=False, all three integrators,
+and SAMPLING_FREE_API=BLOCK_ENERGY_CHECK_API=DRPMD_OUTCOMES_API=1.
+Both public and raw native APIs reject threads>1 with explicit OpenMP errors.
+Import paths were asserted to resolve within this validation directory.
+
+Numerical scope: tests/test_native_sampling.py plus the missing energy-marker
+fallback/strict-refusal test and unobserved-total-energy rollback/no-replay test
+from tests/test_fes_block_sampling.py. This covers the new sample_free modes,
+FFT, RNG/fixed-atom/override semantics, and native block energy checks.
+
+CMake was not executed: no executable or Python package was present on the local
+PATH, venv or runtime search; no dependency download was attempted, as directed.
+The source CMakeLists.txt still uses the same cayley.cpp, C++17, optional OpenMP,
+and Python module target. This is a source review, not a verified CMake build.
+
+No production source changes, no original evidence changes, no remote writes,
+and no performance benchmarking were performed for this validation.
+
+Evidence:
+  metadata.json: tree, source/archive hashes, selected environment, exact commands and statuses.
+  smoke.json: actual import provenance, capabilities and thread rejection messages.
+  serial-numerics.xml: machine-readable 134-test result.
+  logs/03-serial-build.txt: full compile/link output.
+  logs/05-shared-library-dependencies.txt: shared library dependencies.
+  logs/06-serial-numerics.txt: complete pytest output and skip reasons.
+
+Built extension SHA256: 04cdfac19b8ab5425553ed16247f49733284a70978b0519c3b7671e2302f3eeb
+Original extension SHA256 before and after: f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1

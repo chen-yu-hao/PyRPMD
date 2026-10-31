@@ -1,0 +1,859 @@
+{
+  "schema": "pyrpmd.integration-final-mpi.v1",
+  "passed": true,
+  "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+  "source_tree": "1dc54d50c2362c4d9bc8156b37078e47847f3bb3",
+  "ranks": 4,
+  "started_utc": "2026-10-30T16:54:16.543940+00:00",
+  "performance_measurement": false,
+  "scope": "single-host real MPI correctness; no multi-node scaling or CUDA claim",
+  "thread_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "transport_environment": {
+    "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+    "UCX_TLS": "tcp,self"
+  },
+  "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+  "cases": [
+    {
+      "case": "integration",
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+        "-n",
+        "4",
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-B",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/rank_entry.py",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/integration-imports",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_integration.py"
+      ],
+      "test_script_sha256": "a7ec346bb16ea9cba9e4e42067f0822fadc2037777972df5d8e14e09b3ba0da4",
+      "started_utc": "2026-10-30T16:54:16.561168+00:00",
+      "log": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/integration.log",
+      "exit_code": 0,
+      "completed_utc": "2026-10-30T16:54:25.341584+00:00",
+      "log_sha256": "22a8805a3ebf46c157cd898495f053a849961646767a54a86bae8d9d2e941c87",
+      "rank_imports": [
+        {
+          "rank": 0,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_integration.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_integration.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 2,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_integration.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 3,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_integration.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        }
+      ],
+      "all_ranks_imported_frozen_checkout": true
+    },
+    {
+      "case": "workflow",
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+        "-n",
+        "4",
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-B",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/rank_entry.py",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/workflow-imports",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_workflow_smoke.py",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/workflow"
+      ],
+      "test_script_sha256": "f540a038e60ebf1b163519b1a5eb27381947ae1108c453aac0b706a4ce80945e",
+      "started_utc": "2026-10-30T16:54:25.343959+00:00",
+      "log": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/workflow.log",
+      "exit_code": 0,
+      "completed_utc": "2026-10-30T16:55:10.750751+00:00",
+      "log_sha256": "3da20d3c88be77fa4ff39f0ed60a0ae898cc4791e9bc171d49558c31846d101b",
+      "rank_imports": [
+        {
+          "rank": 0,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_workflow_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_workflow_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 2,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_workflow_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 3,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_workflow_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        }
+      ],
+      "all_ranks_imported_frozen_checkout": true
+    },
+    {
+      "case": "materials",
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+        "-n",
+        "4",
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-B",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/rank_entry.py",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/materials-imports",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_materials_smoke.py",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/materials"
+      ],
+      "test_script_sha256": "db479ffb522814088f4b8984e49d53b77b8bdf5c4de5b9e22682ed988184b46f",
+      "started_utc": "2026-10-30T16:55:10.759455+00:00",
+      "log": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/materials.log",
+      "exit_code": 0,
+      "completed_utc": "2026-10-30T16:56:05.811885+00:00",
+      "log_sha256": "5d35be103e90c73e27ce4e1bb1a83dbdbfc738bf125fcd22be14e47b50d7f8c7",
+      "rank_imports": [
+        {
+          "rank": 0,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_materials_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_materials_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 2,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_materials_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 3,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_materials_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        }
+      ],
+      "all_ranks_imported_frozen_checkout": true
+    },
+    {
+      "case": "surface",
+      "command": [
+        "/workspace/scratch/b8c76611c785/.venv/bin/mpiexec",
+        "-n",
+        "4",
+        "/workspace/scratch/b8c76611c785/.venv/bin/python",
+        "-B",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/rank_entry.py",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/surface-imports",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+        "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_surface_smoke.py",
+        "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/surface"
+      ],
+      "test_script_sha256": "acc8ce94d25aab1b8822a32db410db67b1e85a12b882695164354b960e68e59e",
+      "started_utc": "2026-10-30T16:56:05.814354+00:00",
+      "log": "/workspace/scratch/b8c76611c785/audit-integration-final-2026-10-30/mpi/tcp/surface.log",
+      "exit_code": 0,
+      "completed_utc": "2026-10-30T16:56:54.636382+00:00",
+      "log_sha256": "1e66e674ddcd7554bf749deb642fec06d1ee7b49d2e57a691fde8b812f99e1e2",
+      "rank_imports": [
+        {
+          "rank": 0,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_surface_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_surface_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 2,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_surface_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        },
+        {
+          "rank": 3,
+          "size": 4,
+          "source_root": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "test_script": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/tests/mpi_surface_smoke.py",
+          "python_executable": "/workspace/scratch/b8c76611c785/.venv/bin/python",
+          "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+          "pythonpath": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src:/workspace/scratch/b8c76611c785/PyRPMD-integration-14",
+          "package_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/__init__.py",
+          "native_path": "/workspace/scratch/b8c76611c785/PyRPMD-integration-14/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+          "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1",
+          "mpi4py_version": "4.1.2",
+          "numpy_version": "2.5.4",
+          "mpi_library": "MPICH Version:      5.0.2\nMPICH Release date: Fri Sep 25 20:45:26 UTC 2026\nMPICH ABI:          18:2:6\nMPICH Device:       ch4:ucx ofi\nMPICH configure:    --with-device=ch4:ucx,ofi --with-pm=hydra:gforker\nMPICH CC:           cc\nMPICH CXX:          c++\nMPICH F77:          gfortran\nMPICH FC:           gfortran\nMPICH features:     threadcomm\nMPICH Custom Information:\thttps://pypi.org/p/mpich/5.0.2/",
+          "thread_environment": {
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "MKL_NUM_THREADS": "1",
+            "BLIS_NUM_THREADS": "1",
+            "VECLIB_MAXIMUM_THREADS": "1",
+            "NUMEXPR_NUM_THREADS": "1"
+          },
+          "transport_environment": {
+            "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+            "UCX_TLS": "tcp,self"
+          },
+          "threadpools_at_import": [
+            {
+              "user_api": "blas",
+              "internal_api": "openblas",
+              "num_threads": 1,
+              "prefix": "libscipy_openblas"
+            },
+            {
+              "user_api": "openmp",
+              "internal_api": "openmp",
+              "num_threads": 1,
+              "prefix": "libgomp"
+            }
+          ]
+        }
+      ],
+      "all_ranks_imported_frozen_checkout": true,
+      "exact_array_checkpoint_file_count": 27
+    }
+  ],
+  "source_before": {
+    "head": "38a16e4263ccd28909f99c3b73c16c605928150b",
+    "checks": [
+      {
+        "command": [
+          "git",
+          "diff",
+          "--cached",
+          "--exit-code",
+          "1dc54d50c2362c4d9bc8156b37078e47847f3bb3",
+          "--",
+          "src",
+          "native",
+          "tests",
+          "examples",
+          "pyproject.toml",
+          "setup.py"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "--",
+          "src",
+          "native",
+          "tests",
+          "examples",
+          "pyproject.toml",
+          "setup.py"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1"
+  },
+  "source_after": {
+    "head": "38a16e4263ccd28909f99c3b73c16c605928150b",
+    "checks": [
+      {
+        "command": [
+          "git",
+          "diff",
+          "--cached",
+          "--exit-code",
+          "1dc54d50c2362c4d9bc8156b37078e47847f3bb3",
+          "--",
+          "src",
+          "native",
+          "tests",
+          "examples",
+          "pyproject.toml",
+          "setup.py"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--exit-code",
+          "--",
+          "src",
+          "native",
+          "tests",
+          "examples",
+          "pyproject.toml",
+          "setup.py"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "native_sha256": "f2b9dea09296246648c1765297afe740526950f56b47f839c4f71afdb6687bd1"
+  },
+  "completed_utc": "2026-10-30T16:56:54.653564+00:00"
+}

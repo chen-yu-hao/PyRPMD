@@ -1,0 +1,21 @@
+{
+  "wheel": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+  "wheel_sha256": "f024cad67c82bef1bf32088bb64a8111407f9de5caf55e78d45e84637b8d69ed",
+  "sdist": "pyrpmd-0.2.0.tar.gz",
+  "sdist_sha256": "1982263249caf129b13e8140392bdfa0e02ff906b2a22186838083c39614db15",
+  "linked_preinstalled_dependencies": [
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/threadpoolctl.py",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py-3.16.0.dist-info",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy.libs",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/numpy-2.5.4.dist-info",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy.libs",
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/threadpoolctl-3.6.0.dist-info",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/h5py.libs",
+    "/workspace/scratch/b8c76611c785/.venv/lib/python3.12/site-packages/scipy-1.18.1.dist-info"
+  ],
+  "source": "/workspace/scratch/b8c76611c785/local-release-check-2026-10-30/extracted/pyrpmd-0.2.0",
+  "scope": "Separate installation prefix, no editable project; third-party dependencies reused via explicit per-package links, not freshly resolved from a package index."
+}
