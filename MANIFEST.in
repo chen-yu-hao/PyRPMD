@@ -12,3 +12,5 @@ recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 recursive-include benchmarks/materials *.py *.md *.json
 recursive-include benchmarks/efficiency *.py *.md
 global-exclude __pycache__ *.py[cod] *.so *.o
+
+recursive-include src/pyrpmd/pesgen/_native *.cpp *.f90 *.h

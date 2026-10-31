@@ -2,9 +2,9 @@ name: Caracal and PySCF PES generation
 on:
   push:
     branches: ['feat/caracal-pes-generation-20261031']
-    paths: ['.github/workflows/pes-generation.yml', 'src/pyrpmd/pesgen/**', 'native/caracal/**', 'tests/test_pesgen*', 'examples/pesgen/**']
+    paths: ['.github/workflows/pes-generation.yml', 'src/pyrpmd/pesgen/**', 'tests/test_pesgen*', 'examples/pesgen/**', 'pyproject.toml', 'MANIFEST.in']
   pull_request:
-    paths: ['.github/workflows/pes-generation.yml', 'src/pyrpmd/pesgen/**', 'native/caracal/**', 'tests/test_pesgen*', 'examples/pesgen/**']
+    paths: ['.github/workflows/pes-generation.yml', 'src/pyrpmd/pesgen/**', 'tests/test_pesgen*', 'examples/pesgen/**', 'pyproject.toml', 'MANIFEST.in']
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,62 +19,51 @@ jobs:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
+      PYRPMD_PESGEN_FULL: '1'
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install compilers and numerical libraries
+      - name: Install native and electronic-structure dependencies
         run: |
           sudo apt-get update -q
-          sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin libfftw3-dev liblapack-dev
-      - name: Fetch pinned upstream and record sources
+          sudo apt-get install -y gfortran libopenmpi-dev openmpi-bin libfftw3-dev liblapack-dev python3-dev
+          python -m pip install -e '.[test,pesgen]' 'pyscf==2.14.0'
+      - name: Fetch and build the source-pinned upstream
         run: |
-          set -euo pipefail
-          mkdir -p reference-sources
           git clone https://github.com/Trebonius91/Caracal.git reference-sources/Caracal
           git -C reference-sources/Caracal checkout 7f95ce9818b7f6d81d7cb3b634f360373c090820
-          test "$(git -C reference-sources/Caracal rev-parse HEAD)" = 7f95ce9818b7f6d81d7cb3b634f360373c090820
-          git archive 76dd6ad24adc6c244f775857987cd2f0e119845f | gzip > reference-sources/PyRPMD-main.tar.gz
-          python -m pip install 'pyscf==2.14.0'
-          python -m pip freeze > reference-sources/python-packages.txt
-      - name: Build native Caracal
+          python -m pyrpmd.pesgen build-native reference-sources/Caracal native-build
+          python -m pip freeze > native-build/python-packages.txt
+      - name: Real PySCF, QMDFF, EVB and TREQ checks
         run: |
-          set -euo pipefail
-          root="$PWD/reference-sources/Caracal"
-          mkdir -p "$root/bin"
-          make -C "$root/src" -f ../Makefile FC=mpifort CC=mpicc BINDIR="$root/bin" \
-            FFLAGS='-cpp -fopenmp -fPIC -fno-align-commons -DPARALLEL -fallow-argument-mismatch -O2 -I/usr/include' \
-            LINKFLAGS="-fopenmp -Wl,--no-as-needed -llapack -lblas -lfftw3 $(python3-config --embed --ldflags)" \
-            > reference-sources/caracal-build.log 2>&1
-      - name: Preserve native build and reproducibility metadata
-        if: always()
+          set -o pipefail
+          export PYRPMD_PESGEN_BUILD="$PWD/native-build"
+          export PYRPMD_CARACAL_SOURCE="$PWD/reference-sources/Caracal"
+          python -m pytest -q tests/test_pesgen.py tests/test_pesgen_native.py \
+            --basetemp=pesgen-tests --junitxml=pesgen-junit.xml | tee pesgen-tests.log
+      - name: Package resources outside the source tree
         run: |
-          set -euo pipefail
-          mkdir -p reference-sources/runtime-libs
-          for executable in reference-sources/Caracal/bin/*.x; do
-            test -e "$executable" || continue
-            ldd "$executable" | awk '/=> \/.* /{print $3}' | while read -r lib; do
-              cp -L "$lib" reference-sources/runtime-libs/
-            done
-          done
-          tar --exclude=.git -czf reference-sources/caracal-build.tar.gz -C reference-sources Caracal runtime-libs
-          sha256sum reference-sources/*.tar.gz > reference-sources/SHA256SUMS
+          python -m pip wheel . --no-deps -w dist
+          python -m venv /tmp/pesgen-wheel
+          /tmp/pesgen-wheel/bin/pip install dist/*.whl
+          cd /tmp
+          /tmp/pesgen-wheel/bin/python -c 'from importlib.resources import files; p=files("pyrpmd.pesgen")/"_native"; assert (p/"worker.f90").is_file(); assert (p/"bridge.cpp").is_file(); assert (p/"pes_api_v1.h").is_file()'
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: pes-generation-native-build
+          name: pes-generation-validation
           path: |
-            reference-sources/*.tar.gz
-            reference-sources/*.txt
-            reference-sources/*.log
-            reference-sources/SHA256SUMS
+            pesgen-tests.log
+            pesgen-junit.xml
+            native-build/build.json
+            native-build/*.log
+            native-build/python-packages.txt
+            native-build/Caracal/pyrpmd-safety.patch
+            pesgen-tests/**/summary.json
+            pesgen-tests/**/manifest.json
+            pesgen-tests/**/references/*.json
+            pesgen-tests/**/generate.log
+            pesgen-tests/**/fit.log
           retention-days: 7
-      - name: Install and test PES generation
-        run: |
-          python -m pip install -e '.[test]'
-          if test -f tests/test_pesgen.py; then
-            PYRPMD_CARACAL_ROOT="$PWD/reference-sources/Caracal" python -m pytest -q tests/test_pesgen*.py
-          fi

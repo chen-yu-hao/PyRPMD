@@ -74,3 +74,18 @@ SOFTWARE.
 - Suleimanov et al., *Direct RPMD trajectories*, JPCL 9, 2133–2137 (2018),
   https://doi.org/10.1021/acs.jpclett.8b00783
 
+
+## Optional native Caracal PES generation
+
+`pyrpmd.pesgen` builds a user-supplied Caracal checkout pinned to
+`7f95ce9818b7f6d81d7cb3b634f360373c090820`; upstream source and compiled binaries are
+not shipped in the PyRPMD wheel. New orchestration, IPC wrapper and reference-data
+code is PyRPMD MIT code. The archived safety patch changes charge-input handling
+and an allocation, not the original energy equations. Caracal's core copyright
+(Julien Steffen; Stefan Grimme for QMDFF) and MIT notice, and all separately bundled
+third-party license/header notices, remain applicable. Generated native bundles
+include collected notices and identify the full upstream source commit; they do
+not relicense dependency code under PyRPMD's license. PySCF is an optional separately
+installed dependency. Cite the reference electronic-structure method and software
+as well as QMDFF (10.1021/ct500573f), dE-EVB (10.1039/C5CP02580J), TREQ
+(10.1063/1.5092589), and Caracal (10.1021/acs.jctc.3c00568), as applicable.

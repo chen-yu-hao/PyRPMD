@@ -18,6 +18,7 @@ gpu = ["torch>=2.2"]
 ase = ["ase>=3.23"]
 analysis = ["pymbar>=4"]
 test = ["pytest>=8"]
+pesgen = ["pyscf>=2.8,<3"]
 docs = ["sphinx>=8.2,<9", "myst-parser>=4,<5", "pydata-sphinx-theme>=0.16,<0.17"]
 
 [project.scripts]
@@ -30,3 +31,6 @@ where = ["src"]
 testpaths = ["tests"]
 addopts = "-ra"
 
+
+[tool.setuptools.package-data]
+"pyrpmd.pesgen" = ["_native/*.cpp", "_native/*.f90", "_native/*.h"]
