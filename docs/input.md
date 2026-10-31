@@ -228,8 +228,9 @@ min_count = 5
 enabled = true
 pilot_steps = 1000
 pilot_equilibration_steps = 200
-max_rounds = 4
-max_windows = 64
+max_rounds = 8
+max_windows = 128
+max_pilot_steps = 16000
 target_overlap = 0.03
 min_effective_samples = 20.0
 min_spacing = 0.000001
@@ -239,6 +240,13 @@ min_spacing = 0.000001
 overlap 与有效样本数插窗、延长 pilot。窗口冻结后使用独立种子重新平衡并
 采集 production；pilot 不进入最终 FES/PMF。预算耗尽明确失败，不静默跳过
 重叠要求。参数单位、阶段恢复及适用边界见[增强采样](enhanced-sampling.md)。
+
+只有 ESS 不足时才将下一轮 pilot 加倍；单纯插窗不增加每窗长度。
+`max_pilot_steps` 默认是 `16 * pilot_steps`。未显式指定生产长度时，启用
+自适应或 metadynamics 的任务默认生产 1000 fs；其他任务的 pilot 默认仍为
+200 fs。显式长度不变，生产 ESS 和覆盖率仍须单独检查。预算耗尽后可用
+`pyrpmd resume RUN --adaptive-max-rounds 12 --adaptive-max-windows 192`
+增加上限，已完成的 pilot 不重算；不能用这个接口降低统计门槛或重开冻结的窗口。
 
 ## Metadynamics
 

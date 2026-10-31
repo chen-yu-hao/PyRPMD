@@ -15,8 +15,9 @@ a `task="rate"` PMF job:
 enabled = true
 pilot_steps = 1000
 pilot_equilibration_steps = 200
-max_rounds = 4
-max_windows = 64
+max_rounds = 8
+max_windows = 128
+max_pilot_steps = 16000
 target_overlap = 0.03
 min_effective_samples = 20.0
 min_spacing = 0.000001
@@ -35,9 +36,13 @@ If the graph is disconnected at the requested threshold, the algorithm
 inserts midpoints along the shortest links between components. Distances use
 the dimensionless metric `sqrt(beta * delta.T @ K @ delta)`; `min_spacing`
 uses this metric too. Periodic displacements follow the shortest wrapped
-arc. The stiffness stays fixed. The next pilot doubles its sampling duration
-and uses a separate deterministic seed. This also gives a connected set with
-insufficient effective samples another chance to meet the ESS target.
+arc. The stiffness stays fixed. Only insufficient ESS doubles the next pilot's
+sampling duration; a placement-only refinement keeps the current length. Each
+round uses a separate deterministic seed. `max_pilot_steps` caps the duration
+per window/replica (default: 16 times `pilot_steps`); reaching the cap without
+adequate ESS and without further insertions stops instead of repeating equally
+short pilots. Defaults allow 8 rounds and 128 windows, including a 96-window
+initial grid. These are resource limits, not a recommendation to use all windows.
 
 Once both criteria pass, the window set is frozen. **Fresh production streams
 start from newly equilibrated states and a different seed. No pilot samples
@@ -47,6 +52,7 @@ seeds. `adaptation/round_*/checkpoints/` contains the pilot states;
 `checkpoints/window_*.npz` contains only final production. Interruptions resume
 the current pilot or the frozen production without redesigning an already
 committed stage. Changing analysis bins/bootstrap does not resample pilots.
+Existing version-1 plans retain their saved defaults and geometric schedule.
 
 Exhausting `max_rounds`, `max_windows` or admissible spacing stops with
 `adaptation_incomplete`; production is not silently launched. A reached pilot
@@ -54,9 +60,37 @@ target is a local overlap/ESS diagnostic, not proof of equilibration, adequate
 CVs, domain coverage, or physical convergence. The algorithm refines a supplied
 domain and does not automatically discover unspecified distant basins.
 
+An incomplete pilot can be continued with explicit, **increased** budgets:
+
+```bash
+pyrpmd resume runs/adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192 --adaptive-max-pilot-steps 32000
+```
+
+The checksummed plan records each extension. Completed rounds, seeds, physical
+inputs, overlap/ESS targets, and production settings stay fixed. Allow at least
+one more round when increasing another exhausted limit. Frozen plans cannot
+be reopened for adaptation; version-1 plans support rounds/windows extensions
+but have no `max_pilot_steps` setting. Python uses
+`resume_run(path, adaptive_budget={"max_rounds": 12})`.
+
+When production duration is omitted, enabled adaptive jobs and metadynamics
+now start with **1000 fs**, rather than the ordinary pilot's 200 fs. Explicit
+`sampling.production`/`production_steps` always take precedence. This is only
+a starting budget: an accepted pilot can still be longer than production or
+have better mixing. The adaptive summary reports production ESS per window,
+`production_effective_samples_target_met`, final pilot length, and production
+length separately, and warns about insufficient or shorter production.
+Increase production in a fresh run and compare independent replicas and PMFs;
+more windows alone do not increase each trajectory's independent sample count.
+
 The rate workflow retains its `rate_flux` metric bias during both stages;
 the downstream PMF and recrossing preparation use the actual frozen window
 centers from the sampled streams. Generic FES retains `cv_density`.
+
+For real H + H₂ settings, a reproducible fixed-96/adaptive comparison and an
+unconfined ξ metadynamics diagnostic are provided in
+[`benchmarks/h3/enhanced_sampling.py`](../benchmarks/h3/enhanced_sampling.py).
+See the [measured H₃ sampling audit](validation/enhanced-sampling-2026-10-31/README.md).
 
 ```bash
 pyrpmd validate examples/fes/adaptive_harmonic.inp
@@ -142,6 +176,12 @@ authoritative `checkpoints/metadynamics_0000.npz`. A stale or missing CSV cannot
 cause a duplicated hill during resume. HILLS files from different replicas
 must not be concatenated to pretend they came from one shared-bias trajectory.
 
+Numeric hill storage is reused between depositions; force evaluation still
+performs the full Gaussian sum without a grid approximation or cutoff.
+`bias.hills` now returns an owned serializable snapshot. Use `deposit()` to
+append and `truncate_hills(count)` to roll back; editing a returned dictionary
+or list does not change the live bias. Checkpoint JSON/HILLS formats are unchanged.
+
 ### Free-energy estimate and limits
 
 `analysis.method="bias_estimate"` exports `fes.npz` and `fes.csv`:
@@ -160,6 +200,22 @@ Unsampled bins are masked. Independent-replica surfaces are aligned using one
 commonly sampled reference bin; the aggregate is restricted to common sampled
 support. If no common reference exists, the aggregate is entirely masked.
 `replica_spread` is descriptive, not a calibrated error bar.
+
+`sampling_diagnostics` reports supported grid fractions for each replica and
+their intersection, the fraction of samples inside the output grid, visited
+CV extrema, total deposited height and last hill height. Small heights or many
+hills do not establish convergence. `analysis.ranges` only selects histogram
+bins: it **does not apply confining walls**. Auto ranges describe the visited
+region and cannot diagnose coverage of an unspecified target domain.
+
+In particular, the rational RPMDrate ξ coordinate can have a pole outside the
+reaction corridor. Unconfined H + H₂ metadynamics can escape the corridor or
+dissociate rather than explore the desired barrier. Simply extending time or
+increasing hill height is not a remedy for an unsuitable CV/domain. Use an
+appropriate nonsingular CV and a physically defined confined model for such
+exploration. This implementation has no metadynamics wall option. The current
+metadynamics estimator uses `cv_density`, so it cannot replace a `rate_flux`
+umbrella PMF or supply a rate from biased trajectory times.
 
 `analysis.bootstrap` must be zero; fixed-umbrella MBAR and ordinary equilibrium
 bootstrap are not applied to these evolving-bias samples. Time-dependent

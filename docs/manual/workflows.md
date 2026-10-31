@@ -116,6 +116,12 @@ pyrpmd analyze runs/manual-adaptive --recompute --bins 30 --bootstrap 20
 
 `adaptive-plan.json` 保存每轮决定、窗口、随机种子和校验信息。pilot 样本不会混入最终 production 估计。`max_rounds` 或 `max_windows` 用尽仍未达到要求时，任务明确停止；它不会将不达标 pilot 直接作为生产结果。
 
+默认允许 8 轮、128 窗，只有 ESS 不足才延长 pilot，`max_pilot_steps` 限制单窗
+pilot 长度。预算耗尽后可运行
+`pyrpmd resume runs/manual-adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192`
+继续，保留已完成的 pilot。生产阶段的 ESS 另行报告；pilot 达标不意味着生产
+达标。未显式指定长度时，增强采样生产默认 1000 fs，仍需按实际统计检查调整。
+
 自适应 umbrella 可用于普通 `fes`、表面 `fes` 和气相 `rate` PMF。它细化已给定区域，不自动发现任意远处未知盆地；`surface_rate` / `site_rate` 当前需要预先声明固定窗口。完整参数见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。
 
 ## 多入口、多 TS：`network`
