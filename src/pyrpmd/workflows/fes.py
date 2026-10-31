@@ -24,6 +24,7 @@ from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..io import atomic_write_text
 from ..parallel import run_tasks, task_potential, root_call
+from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
 from ..units import parse_quantity, unit_factor, DIMS
 from .sampling import fes_sampler
 
@@ -117,6 +118,144 @@ def checked_integer(value, name, minimum=1):
     ):
         raise ValueError(f"{name} must be an integer >= {minimum}")
     return int(value)
+
+
+_SAMPLE_STREAM_FORMAT = "PyRPMD.fes-samples.v1"
+
+
+def _production_budget(config, production_steps=None):
+    """Keep an authorized execution budget separate from the physics input."""
+    original = checked_integer(config["sampling"]["production_steps"],
+                               "sampling.production_steps")
+    if production_steps is None:
+        return original
+    target = checked_integer(production_steps, "production_steps")
+    if target < original:
+        raise ValueError("production_steps cannot reduce the original production budget")
+    return target
+
+
+def _window_checkpoint(task):
+    return (Path(task["output"]) / "checkpoints"
+            / f"window_{task['window']:05d}_replica_{task['replica']:04d}.npz")
+
+
+def _sample_schema(dimension):
+    return {"values": {"dtype": np.dtype("float64").str, "shape": [dimension]},
+            "energies": {"dtype": np.dtype("float64").str, "shape": []}}
+
+
+def _window_fingerprint(task):
+    return _fingerprint(task["config"], task["system"], {
+        "window": task["window"], "replica": task["replica"],
+        "center": np.asarray(task["center"]), "stiffness": np.asarray(task["stiffness"]),
+    })
+
+
+def read_fes_sample_history(saved, *, dimension, expected_samples=None, chunk_directory=None,
+                            materialize=True, include_sources=False):
+    """Decode samples from an already integrity-checked checkpoint payload.
+
+    This adapter needs no dynamics, CV factory or potential. Archived bounded
+    checkpoints may point at their original immutable ``chunk_directory``;
+    only the descriptor's committed prefix is followed. Callers authenticating
+    physical clocks supply ``expected_samples``. Report builders can request
+    exact source files without a second pass over the chunks.
+    """
+    dimension = checked_integer(dimension, "sample dimension")
+    if expected_samples is not None:
+        expected_samples = checked_integer(expected_samples, "sample count", 0)
+    result = {"trajectory": None, "source_files": []}
+    if "sample_stream" not in saved:
+        values, energies = saved["values"], saved["energies"]
+        count = len(values) if values.ndim else -1
+        if expected_samples is not None and count != expected_samples:
+            raise ValueError("umbrella sample count differs from its checkpoint clock")
+        for name, value, shape in (("values", values, (count, dimension)),
+                                    ("energies", energies, (count,))):
+            if value.shape != shape or value.dtype.kind not in "fiu" or not np.isfinite(value).all():
+                raise ValueError(f"invalid umbrella checkpoint {name}")
+        result.update(values=values, energies=energies, samples=count)
+        return result
+    if "values" in saved or "energies" in saved:
+        raise ValueError("umbrella checkpoint has ambiguous sample storage")
+    try:
+        storage = json.loads(str(saved["sample_stream"].item()))
+    except (ValueError, TypeError, AttributeError) as error:
+        raise ValueError("invalid umbrella sample storage metadata") from error
+    if (not isinstance(storage, dict) or set(storage) != {"format", "trajectory"}
+            or storage["format"] != _SAMPLE_STREAM_FORMAT):
+        raise ValueError("unsupported umbrella sample storage format")
+    descriptor = _descriptor(storage["trajectory"])
+    count = descriptor["frames"]
+    if (descriptor["schema"] != _sample_schema(dimension)
+            or (expected_samples is not None and count != expected_samples)):
+        raise ValueError("umbrella sample stream shape/count differs from its checkpoint clock")
+    if chunk_directory is None:
+        raise ValueError("umbrella sample stream requires its original chunk directory")
+    if materialize:
+        for name, spec in descriptor["schema"].items():
+            result[name] = np.empty((count, *spec["shape"]), dtype=spec["dtype"])
+    for digest, metadata, arrays in _walk_reverse(
+            chunk_directory, descriptor, fields=None if materialize else set()):
+        if materialize:
+            for name, value in arrays.items():
+                result[name][metadata["start"]:metadata["stop"]] = value
+        if include_sources:
+            result["source_files"].append(str((Path(chunk_directory) / f"{digest}.npz").resolve()))
+    result.update(trajectory=descriptor, samples=count)
+    return result
+
+
+def _read_window_checkpoint(task, cv, *, production_steps=None, materialize=False):
+    """Read either historical arrays or a committed immutable sample prefix.
+
+    The generic checkpoint reader still validates every member, including old
+    unsealed NPZ payloads. Streaming checkpoints additionally validate all
+    referenced chunks, not files discovered by listing a directory. No PES is
+    constructed, and reading or validating a completed run never rewrites it.
+    ``production_steps=None`` permits offline analysis of an extended prefix;
+    execution and extension preflight pass their authorized upper bound.
+    """
+    config, system = task["config"], task["system"]
+    checkpoint = _window_checkpoint(task)
+    sampling = config["sampling"]
+    neq = checked_integer(sampling["equilibration_steps"], "sampling.equilibration_steps", 0)
+    interval = checked_integer(sampling.get("sample_interval", sampling.get("interval_steps", 1)),
+                               "sampling.sample_interval")
+    with load_checkpoint(checkpoint) as saved:
+        if str(saved["fingerprint"]) != _window_fingerprint(task):
+            raise ValueError(f"checkpoint physics differs: {checkpoint}; choose a fresh output directory")
+        elapsed, step, time = saved["elapsed"], saved["step"], saved["time"]
+        if (elapsed.shape != () or elapsed.dtype.kind not in "iu" or elapsed < 0
+                or step.shape != () or step.dtype.kind not in "iu" or step != elapsed):
+            raise ValueError(f"invalid umbrella checkpoint clock: {checkpoint}")
+        elapsed = int(elapsed)
+        if production_steps is not None and elapsed > neq + production_steps:
+            raise ValueError(f"umbrella checkpoint exceeds authorized production budget: {checkpoint}")
+        dt = sampling.get("dt_au", config["dt_au"])
+        if (time.shape != () or time.dtype.kind not in "fiu" or not np.isfinite(time)
+                or not np.isclose(time, elapsed * dt, rtol=1e-10, atol=abs(dt) * 1e-8)):
+            raise ValueError(f"invalid umbrella checkpoint time: {checkpoint}")
+        state = State(saved["q"], saved["p"], int(step), float(time))
+        if state.q.shape != (config["beads"], len(system.masses), 3):
+            raise ValueError(f"invalid umbrella checkpoint state shape: {checkpoint}")
+        fixed = np.asarray(getattr(system, "fixed_atoms", ()), dtype=int)
+        if len(fixed) and (np.any(state.q[:, fixed] != system.geometry[fixed])
+                           or np.any(state.p[:, fixed] != 0)):
+            raise ValueError(f"umbrella checkpoint moved fixed atoms: {checkpoint}")
+        rng = json.loads(str(saved["rng"]))
+        np.random.default_rng(0).bit_generator.state = rng
+        propagation = json.loads(str(saved["propagation"])) if "propagation" in saved else None
+        if propagation is not None and not isinstance(propagation, dict):
+            raise ValueError(f"invalid umbrella propagation metadata: {checkpoint}")
+        count = max(0, elapsed - neq) // interval
+        result = {"state": state, "rng": rng, "elapsed": elapsed, "propagation": propagation}
+        result.update(read_fes_sample_history(
+            saved, dimension=cv.dimension, expected_samples=count,
+            chunk_directory=checkpoint.with_suffix(".chunks"), materialize=materialize,
+        ))
+    return result
 
 
 def _flux_coordinate(config, cv):
@@ -473,7 +612,7 @@ def _sample_window(task):
     neq = checked_integer(
         sampling["equilibration_steps"], "sampling.equilibration_steps", 0
     )
-    nprod = checked_integer(sampling["production_steps"], "sampling.production_steps")
+    nprod = _production_budget(config, task.get("production_steps"))
     interval = checked_integer(
         sampling.get("sample_interval", sampling.get("interval_steps", 1)),
         "sampling.sample_interval",
@@ -489,21 +628,10 @@ def _sample_window(task):
     )
     if min(interval, andersen, checkpoint_steps) < 1:
         raise ValueError("sampling/checkpoint intervals must be positive")
-    checkpoint = (
-        Path(task["output"])
-        / "checkpoints"
-        / f"window_{window:05d}_replica_{replica:04d}.npz"
-    )
-    fingerprint = _fingerprint(
-        config,
-        system,
-        {
-            "window": window,
-            "replica": replica,
-            "center": center,
-            "stiffness": stiffness,
-        },
-    )
+    checkpoint = _window_checkpoint(task)
+    fingerprint = _window_fingerprint(task)
+    saved = (_read_window_checkpoint(task, cv, production_steps=nprod)
+             if checkpoint.exists() else None)
     seed = np.random.SeedSequence([int(config.get("seed", 0)), 101, window, replica])
     with task_potential(config["potential"], system,
                         reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
@@ -531,22 +659,18 @@ def _sample_window(task):
         energies = []
         elapsed = 0
         saved_elapsed = None
-        if checkpoint.exists():
-            with load_checkpoint(checkpoint) as saved:
-                if str(saved["fingerprint"]) != fingerprint:
-                    raise ValueError(
-                        f"checkpoint physics differs: {checkpoint}; choose a fresh output directory"
-                    )
-                state = State(
-                    saved["q"], saved["p"], int(saved["step"]), float(saved["time"])
-                )
-                dynamics.rng.bit_generator.state = json.loads(str(saved["rng"]))
+        descriptor = None
+        if saved is not None:
+            state = saved["state"]
+            dynamics.rng.bit_generator.state = saved["rng"]
+            descriptor = saved["trajectory"]
+            if descriptor is None:
                 values = list(saved["values"])
                 energies = list(saved["energies"])
-                elapsed = int(saved["elapsed"])
-                saved_elapsed = elapsed
-                if "propagation" in saved:
-                    dynamics.propagation_stats = json.loads(str(saved["propagation"]))
+            elapsed = saved["elapsed"]
+            saved_elapsed = elapsed
+            if saved["propagation"] is not None:
+                dynamics.propagation_stats = saved["propagation"]
         else:
             geometry = system.geometry
             # Rigid fragment translations and equivalent-path permutations
@@ -565,27 +689,54 @@ def _sample_window(task):
             q = np.repeat(geometry[None], config["beads"], axis=0)
             q = steer_to_center(q, cv, center, system.masses, fixed_atoms=dynamics.fixed_atoms)
             state = State(q, dynamics.sample_momenta())
+        del saved
 
         # Validate even a completed checkpoint before accepting its samples.
         dynamics._check_fixed(state.q, state.p)
+        writer = None
+        if elapsed < neq + nprod and (task.get("production_steps") is not None or descriptor is not None):
+            # The reader has already validated an existing committed prefix.
+            # A legacy history is migrated at the first successful added-state
+            # checkpoint, never merely by opening a completed run.
+            writer = TrajectoryStream(checkpoint.with_suffix(".chunks"),
+                                      schema=_sample_schema(cv.dimension),
+                                      descriptor=descriptor, validate=False)
 
         def save():
-            nonlocal saved_elapsed
+            nonlocal saved_elapsed, descriptor
             if saved_elapsed == elapsed:
                 return
-            _atomic_npz(
-                checkpoint,
+            payload = dict(
                 q=state.q,
                 p=state.p,
                 step=state.step,
                 time=state.time,
                 rng=json.dumps(dynamics.rng.bit_generator.state),
-                values=np.asarray(values).reshape(-1, cv.dimension),
-                energies=np.asarray(energies),
                 elapsed=elapsed,
                 fingerprint=fingerprint,
                 propagation=json.dumps(dynamics.propagation_stats),
             )
+            arrays = {"values": np.asarray(values).reshape(-1, cv.dimension),
+                      "energies": np.asarray(energies)}
+            if writer is not None:
+                # Chunk failures abort this invocation. Never retry save with
+                # an advanced state and only a partially appended observation
+                # batch. The disk checkpoint still selects a complete prefix;
+                # any unreferenced chunks are ignored when resuming.
+                writer.extend(arrays)
+                candidate = writer.prepare_commit()
+                if candidate["frames"] != max(0, elapsed - neq) // interval:
+                    raise ValueError("umbrella sample count differs from its checkpoint clock")
+                payload["sample_stream"] = json.dumps({
+                    "format": _SAMPLE_STREAM_FORMAT, "trajectory": candidate,
+                })
+            else:
+                payload.update(arrays)
+            _atomic_npz(checkpoint, **payload)
+            if writer is not None:
+                descriptor = candidate
+                values.clear()
+                energies.clear()
             saved_elapsed = elapsed
 
         fused_loop = sampler.thermostat == "andersen" and dynamics.can_fuse(bias=bias, observe=cv)
@@ -652,7 +803,14 @@ def _sample_window(task):
             if elapsed % checkpoint_steps == 0:
                 save()
         save()
-        samples = np.asarray(values).reshape(-1, cv.dimension)
+        if descriptor is not None:
+            # Reconstruction still requires the full histories, once sampling
+            # has finished. Propagation and periodic state writes retain only
+            # observations since the previous successful checkpoint.
+            arrays = materialize_stream(checkpoint.with_suffix(".chunks"), descriptor)
+            samples, energies = arrays["values"], arrays["energies"]
+        else:
+            samples = np.asarray(values).reshape(-1, cv.dimension)
         if len(samples) < 2:
             raise ValueError("at least two samples per umbrella stream required")
         return {
@@ -868,41 +1026,88 @@ def _analyze_streams(streams, config, system, output, return_data, _postprocess=
     return result if return_data else result["summary"]
 
 
-def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None):
-    fes_sampler(config)
-    if config.get("replica_exchange"):
-        from .replica_exchange import exchange_options, run_replica_exchange_fes
-        if exchange_options(config, system)["enabled"]:
-            return run_replica_exchange_fes(config, system, output, executor=executor,
-                                            return_data=return_data)
-    if config.get("adaptive_umbrella"):
-        from .adaptive_umbrella import adaptive_options, run_adaptive_fes
-        if adaptive_options(config)["enabled"]:
-            return run_adaptive_fes(config, system, output, executor=executor, return_data=return_data)
-    config = copy.deepcopy(config)
+def _make_tasks(config, system, output, *, production_steps=None):
+    """Build independent windows without changing their original identity."""
     if config.get("analysis", {}).get("measure", "cv_density") not in (
-        "cv_density",
-        "rate_flux",
+        "cv_density", "rate_flux",
     ):
         raise ValueError("analysis.measure must be cv_density or rate_flux")
+    if production_steps is not None:
+        production_steps = _production_budget(config, production_steps)
     cv, specs, centers, stiffness = resolve_umbrellas(config, system)
     replicas = checked_integer(
         config.get("sampling", {}).get("replicas", 1), "sampling.replicas"
     )
     tasks = [
-        {
-            "config": config,
-            "system": system,
-            "specs": specs,
-            "window": i,
-            "replica": r,
-            "center": center,
-            "stiffness": stiffness,
-            "output": str(output),
-        }
+        {"config": config, "system": system, "specs": specs, "window": i,
+         "replica": r, "center": center, "stiffness": stiffness, "output": str(output)}
         for i, center in enumerate(centers)
         for r in range(replicas)
     ]
+    if production_steps is not None:
+        for task in tasks:
+            task["production_steps"] = production_steps
+    return cv, tasks
+
+
+def validate_fes_checkpoints(config, system, checkpoint_output, *, production_steps=None):
+    """Authenticate every expected independent stream without running a PES.
+
+    The extension coordinator supplies the latest authorized total production
+    budget, checks its own completed-generation lower bound, and acquires the
+    run lock before calling this read-only preflight. Missing, corrupt, foreign
+    or over-budget streams fail before that coordinator authorizes new work.
+    """
+    fes_sampler(config)
+    if config.get("replica_exchange"):
+        from .replica_exchange import exchange_options
+        if exchange_options(config, system)["enabled"]:
+            raise ValueError("production extension requires independent fixed windows")
+    if config.get("adaptive_umbrella"):
+        from .adaptive_umbrella import adaptive_options
+        if adaptive_options(config)["enabled"]:
+            raise ValueError("production extension requires independent fixed windows")
+    target = _production_budget(config, production_steps)
+    cv, tasks = _make_tasks(config, system, checkpoint_output, production_steps=target)
+    streams = []
+    for task in tasks:
+        checkpoint = _window_checkpoint(task)
+        if not checkpoint.is_file():
+            raise ValueError(f"missing umbrella checkpoint: {checkpoint}")
+        saved = _read_window_checkpoint(task, cv, production_steps=target)
+        streams.append({"window": task["window"], "replica": task["replica"],
+                        "elapsed": saved["elapsed"], "samples": saved["samples"],
+                        "checkpoint": str(checkpoint.resolve())})
+    return streams
+
+
+def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None,
+            production_steps=None, checkpoint_output=None):
+    """Sample and reconstruct, optionally using an authorized extended budget.
+
+    ``production_steps`` is an internal total budget supplied by the extension
+    coordinator, not a replacement for the original scientific configuration.
+    ``checkpoint_output`` selects existing windows while aggregate products
+    are written under ``output``. Neither option applies to adaptive or
+    replica-exchange runs.
+    """
+    fes_sampler(config)
+    if config.get("replica_exchange"):
+        from .replica_exchange import exchange_options, run_replica_exchange_fes
+        if exchange_options(config, system)["enabled"]:
+            if production_steps is not None or checkpoint_output is not None:
+                raise ValueError("production extension requires independent fixed windows")
+            return run_replica_exchange_fes(config, system, output, executor=executor,
+                                            return_data=return_data)
+    if config.get("adaptive_umbrella"):
+        from .adaptive_umbrella import adaptive_options, run_adaptive_fes
+        if adaptive_options(config)["enabled"]:
+            if production_steps is not None or checkpoint_output is not None:
+                raise ValueError("production extension requires independent fixed windows")
+            return run_adaptive_fes(config, system, output, executor=executor, return_data=return_data)
+    config = copy.deepcopy(config)
+    _, tasks = _make_tasks(config, system, output if checkpoint_output is None else checkpoint_output,
+                          production_steps=production_steps)
     streams = (
         executor.map(_sample_window, tasks)
         if executor is not None
@@ -931,42 +1136,17 @@ def reanalyze_fes(config, system, output, return_data=False, *, _postprocess=Non
             return reanalyze_adaptive_fes(config, system, output, return_data=return_data)
 
     def analyze():
-        cv, specs, centers, stiffness = resolve_umbrellas(config, system)
-        replicas = int(config.get("sampling", {}).get("replicas", 1))
+        cv, tasks = _make_tasks(config, system, output)
         streams = []
-        for window, center in enumerate(centers):
-            for replica in range(replicas):
-                checkpoint = (
-                    Path(output)
-                    / "checkpoints"
-                    / f"window_{window:05d}_replica_{replica:04d}.npz"
-                )
-                expected = _fingerprint(
-                    config,
-                    system,
-                    {
-                        "window": window,
-                        "replica": replica,
-                        "center": center,
-                        "stiffness": stiffness,
-                    },
-                )
-                with load_checkpoint(checkpoint) as saved:
-                    if str(saved["fingerprint"]) != expected:
-                        raise ValueError(f"checkpoint physics differs: {checkpoint}")
-                    streams.append(
-                        {
-                            "window": window,
-                            "replica": replica,
-                            "center": center,
-                            "stiffness": stiffness,
-                            "samples": saved["values"],
-                            "energies": saved["energies"],
-                            "last_q": saved["q"],
-                            "last_p": saved["p"],
-                            "checkpoint": str(checkpoint),
-                        }
-                    )
+        for task in tasks:
+            saved = _read_window_checkpoint(task, cv, materialize=True)
+            streams.append({
+                "window": task["window"], "replica": task["replica"],
+                "center": task["center"], "stiffness": task["stiffness"],
+                "samples": saved["values"], "energies": saved["energies"],
+                "last_q": saved["state"].q, "last_p": saved["state"].p,
+                "checkpoint": str(_window_checkpoint(task)),
+            })
         return _analyze_streams(streams, config, system, str(output), return_data, _postprocess)
 
     return root_call(analyze)

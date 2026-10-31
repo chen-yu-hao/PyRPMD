@@ -81,6 +81,48 @@ the [UI / MBAR notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-
 The [H₃/BKMP2 benchmark](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md) *(partly Chinese)*
 runs the full workflow on a published reactive potential.
 
+### Extending fixed-window rate production
+
+Continue the existing umbrella streams to a larger production budget with:
+
+```bash
+pyrpmd extend runs/manual-rate --production-steps 200000
+pyrpmd resume runs/manual-rate
+```
+
+The target is **200000 total production steps per existing window and replica**, excluding
+equilibration. For example, a stream with 50000 completed production steps advances by another
+150000 steps. The saved positions, momenta, random-generator state and sampling cadence continue
+from their checkpoints. Existing umbrella samples are retained in append-only chunks; the original
+resolved input and run manifest remain unchanged, with the authorized budget recorded separately.
+
+This extension supports fixed-window, one-dimensional gas-phase `rate` runs with local umbrella
+sampling. Adaptive umbrellas, replica exchange and an externally supplied PMF are unsupported.
+The window centers, stiffnesses, replica count and scientific settings stay fixed. Repeating the
+latest authorized target resumes interrupted work or returns its completed result; a smaller target
+is rejected. Ordinary `resume` recognizes that target even after the extension has completed.
+
+Every strictly larger target creates a fresh result generation: it reconstructs the PMF and
+regenerates constrained parents and recrossing children, including when the dividing surface is
+unchanged. An automatically selected `xi_star` may move with the new PMF; a configured
+`recrossing.dividing_surface` stays fixed. Earlier result generations are preserved, and the new
+generation becomes active only when complete. This keeps each recrossing calculation associated
+with the PMF and umbrella endpoints that produced it.
+
+After an extension, `results/summary.json` identifies the current published result. Its
+`rate_extension.generation` gives the committed directory, for example
+`extensions/rate/production-000000200000/`; read that directory's `rate_pmf.*`, `recrossing.*`
+and `umbrella/` for the extended calculation. Root-level PMF and recrossing files retain the
+original result. `report` and `rate-postprocess` select the published generation automatically.
+During the first pending extension, if the original `umbrella/fes.h5` is unavailable, reports
+withhold raw traces from shared checkpoints that have advanced beyond the original budget;
+the original PMF and recrossing remain available.
+
+The command extends umbrella production only. It does not increase parent/child counts or their
+propagation time, and it does not automatically refresh a containing rate study's aggregate results.
+Inspect PMF support, the recrossing plateau and the uncertainty diagnostics again; a larger budget
+does not by itself establish convergence or make a withheld rate available.
+
 ## Direct collisions: `drpmd`
 
 `drpmd` samples parent chains of two reactants and launches independent collisions from them, then

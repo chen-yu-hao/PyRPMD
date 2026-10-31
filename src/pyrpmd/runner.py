@@ -163,6 +163,10 @@ def run_resolved(config, system, *, output=None, resume=False):
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
 
+    # Reject before initialization can migrate a legacy manifest bound by the ledger.
+    if (resume and config["task"] == "rate"
+            and (Path(target) / "results" / "extensions.json").is_file()):
+        raise InputError("This rate run has an authorized extension budget; use resume_run or pyrpmd resume")
     root_call(_initialize_output, config, system, target, resume)
     if config["task"] == "pcet":
         from .workflows.pcet import run_pcet
@@ -273,6 +277,18 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
     extension_path = path / "results" / "extensions.json"
+    if config["task"] == "rate" and extension_path.is_file():
+        ledger = json.loads(extension_path.read_text())
+        if not isinstance(ledger, dict) or ledger.get("format") != "PyRPMD.rate.extensions.v1":
+            raise InputError("Unknown rate production extension ledger")
+        if parallel is not None or execution is not None or adaptive_budget is not None:
+            raise InputError("Resume the rate extension without execution or adaptive-budget overrides")
+        requests = ledger.get("requests")
+        if not isinstance(requests, list) or not requests or not isinstance(requests[-1], dict):
+            raise InputError("Invalid rate production extension requests")
+        # Completed requests also retain their effective total budget. Falling
+        # through to the original short configuration would publish stale rates.
+        return extend_run(path, production_steps=requests[-1].get("production_steps"))
     if config["task"] == "drpmd" and extension_path.is_file():
         ledger = json.loads(extension_path.read_text())
         if ledger.get("format") != "PyRPMD.drpmd.extensions.v1":
@@ -312,12 +328,21 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
     return run_resolved(config, system, output=path, resume=True)
 
 
-def extend_run(directory, *, max_time):
-    """Continue unresolved dRPMD launches to a larger total time limit.
+def extend_run(directory, *, max_time=None, production_steps=None):
+    """Continue a saved run to one explicitly increased total budget.
 
-    The original input, manifest and thermal-parent checkpoints remain unchanged.
-    A separate extension ledger records the authorized budget and crash recovery.
+    ``max_time`` extends unresolved dRPMD launches. ``production_steps`` extends
+    every existing fixed-window gas-rate umbrella stream, excluding equilibration,
+    and generates fresh recrossing trajectories for the resulting PMF. Supply
+    exactly one budget. Repeating its total recovers or returns the same result.
+    Original input and manifest stay unchanged; a separate ledger authorizes work.
     """
+    if (max_time is None) == (production_steps is None):
+        raise InputError("Specify exactly one of max_time or production_steps")
+    if production_steps is not None:
+        from .workflows.rate_extend import extend_rate
+
+        return extend_rate(directory, production_steps=production_steps)
     from .workflows.extend import extend_drpmd
 
     return extend_drpmd(directory, max_time=max_time)
@@ -330,7 +355,12 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         summary = path / "results" / "summary.json"
         if not summary.is_file():
             summary = path / "summary.json"
-        return json.loads(summary.read_text())
+        result = json.loads(summary.read_text())
+        if "rate_extension" in result:
+            from .rate_artifacts import active_rate_directory
+
+            active_rate_directory(path, result)
+        return result
     config = json.loads((path / "input" / "resolved.json").read_text())
     if config["task"] not in ("fes", "metadynamics", "opes", "diffusion"):
         raise InputError(

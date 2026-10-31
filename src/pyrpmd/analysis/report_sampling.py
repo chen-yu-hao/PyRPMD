@@ -245,6 +245,50 @@ def _hdf5_streams(run, path, dimension, summary):
     return result
 
 
+def _checkpoint_chunk_directory(run, checkpoint):
+    generation = run.get("_rate_generation")
+    if generation is None:
+        return checkpoint.with_suffix(".chunks")
+    root = Path(run["path"]).resolve()
+    artifacts = Path(run["_rate_artifact_directory"])
+    relative = checkpoint.relative_to(artifacts).as_posix()
+    expected = "umbrella/checkpoints/" + checkpoint.name
+    chunk_name = str(Path(expected).with_suffix(".chunks"))
+    sources = generation.get("sample_stream_sources")
+    checkpoints = generation.get("source_checkpoints")
+    if (relative != expected or not isinstance(sources, dict)
+            or sources.get(relative) != chunk_name or not isinstance(checkpoints, dict)
+            or checkpoints.get(relative) != run["_sources"][str(checkpoint.resolve())]["sha256"]):
+        raise ValueError("Archived umbrella checkpoint has inconsistent generation sources")
+    directory = root / chunk_name
+    if not directory.resolve().is_relative_to(root):
+        raise ValueError("Archived umbrella sample chunks must remain inside the run directory")
+    return directory
+
+
+def _rate_checkpoint_sample_count(run, saved):
+    """Do not combine the original result with a newer shared checkpoint."""
+    if run.get("task") != "rate":
+        return None
+    sampling = run["_config"].get("sampling", {})
+    production = run["_summary"].get("effective_production_steps", sampling.get("production_steps"))
+    equilibration = sampling.get("equilibration_steps")
+    interval = sampling.get("sample_interval", sampling.get("interval_steps", 1))
+    if (type(production) is not int or production < 1
+            or type(equilibration) is not int or equilibration < 0
+            or type(interval) is not int or interval < 1):
+        return None
+    elapsed = np.asarray(saved["elapsed"])
+    if elapsed.ndim != 0 or elapsed.dtype.kind not in "iu" or elapsed.item() < 0:
+        raise ValueError("Saved umbrella checkpoint has an invalid production clock")
+    elapsed = int(elapsed)
+    if elapsed > equilibration + production:
+        raise ValueError("Shared umbrella checkpoint has advanced beyond the published rate result; its raw sampling diagnostics are withheld")
+    if run.get("_rate_generation") is not None and elapsed != equilibration + production:
+        raise ValueError("Archived umbrella checkpoint does not reach the published production budget")
+    return max(0, elapsed - equilibration) // interval
+
+
 def _umbrella_streams(run, path, summary, dimension):
     streams = []
     hdf5 = path / "fes.h5"
@@ -267,7 +311,23 @@ def _umbrella_streams(run, path, summary, dimension):
                 raise ValueError("Unrecognized umbrella checkpoint filename")
             window, replica = map(int, match.groups())
             saved = _npz(run, checkpoint)
-            stream = {"window": window, "replica": replica, "samples": saved["values"]}
+            expected_samples = _rate_checkpoint_sample_count(run, saved)
+            if "sample_stream" in saved:
+                from ..workflows.fes import read_fes_sample_history
+
+                history = read_fes_sample_history(
+                    saved, dimension=dimension, expected_samples=expected_samples,
+                    chunk_directory=_checkpoint_chunk_directory(run, checkpoint),
+                    include_sources=True,
+                )
+                samples = history["values"]
+                for source in history["source_files"]:
+                    _source(run, source)
+            else:
+                samples = _sample_array(saved["values"], dimension)
+                if expected_samples is not None and len(samples) != expected_samples:
+                    raise ValueError("Saved umbrella sample count differs from its checkpoint clock")
+            stream = {"window": window, "replica": replica, "samples": samples}
             if centers is not None and window < len(centers):
                 stream.update(center=centers[window], stiffness=stiffness)
             streams.append(_stream_metadata(stream, dimension))

@@ -193,7 +193,7 @@ def _table(run, path):
 
 
 def _rate_artifacts(run, energy_unit, length_unit):
-    path = Path(run["path"])
+    path = Path(run.get("_rate_artifact_directory", run["path"]))
     summary = run["_summary"]
     surface = run["task"] == "surface_rate"
     name = "surface_pmf" if surface else "rate_pmf"
@@ -496,6 +496,19 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
     run["task"] = summary.get("task", config.get("task", "unknown"))
     run["status"] = summary.get("status", "not_recorded")
     run["converged"] = summary.get("converged")
+    artifacts = path
+    if run["task"] == "rate":
+        from ..rate_artifacts import active_rate_directory
+
+        # A published generation is one scientific result. Failure of its
+        # receipt must not fall back to the preserved, older root artifacts.
+        artifacts = active_rate_directory(path, summary)
+        run["_rate_artifact_directory"] = str(artifacts)
+        if artifacts != path:
+            receipt = _json(run, artifacts / "receipt.json")
+            run["_rate_generation"] = _json(run, artifacts / "generation.json")
+            for name in receipt["artifacts"]:
+                _source(run, artifacts / name)
     _comparison_sources(run)
     dt = _number(config.get("dt_au"))
     reaction, collision = run.get("_prepared_reaction", config.get("reaction", {})), config.get("collision", {})
@@ -508,6 +521,11 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
         "rinf_bohr": _number(reaction.get("rinf_au", reaction.get("rinf"))),
         "bmax_bohr": _number(collision.get("bmax_au", collision.get("bmax"))),
     }
+    if artifacts != path:
+        run["metadata"].update(
+            effective_production_steps=summary["effective_production_steps"],
+            rate_generation=summary["rate_extension"]["generation"],
+        )
     run["warnings"] = list(dict.fromkeys(str(w) for w in summary.get("warnings", []) + summary.get("input_warnings", [])))
     if not config:
         _finding(run, "resolved_input_missing", "Saved resolved input is unavailable; missing temperatures, CV names and physics identity are not guessed.")
@@ -526,7 +544,7 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
             collect_adaptive_progress(run, folder)
     if run["task"] in ("rate", "surface_rate", "site_rate"):
         _rate_artifacts(run, energy_unit, length_unit)
-        folder = path / ("pmf" if run["task"] == "site_rate" else "umbrella")
+        folder = artifacts / ("pmf" if run["task"] == "site_rate" else "umbrella")
         collected = False
         if (folder / "fes.npz").exists():
             collected = _guard(run, "umbrella sampling", lambda: _fes_artifacts(run, folder, energy_unit, length_unit))

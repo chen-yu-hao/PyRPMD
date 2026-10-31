@@ -101,10 +101,29 @@ def _legacy_rate(root, *, bootstrap, seed):
     from .rate_postprocess import channel_rates
 
     summary, config, manifest, files = _metadata(root)
+    artifacts = root
+    published_path = root / "results" / "summary.json"
+    if published_path.is_file():
+        published = _read_json(published_path)
+        if "rate_extension" in published:
+            from ..rate_artifacts import active_rate_directory
+
+            artifacts = active_rate_directory(root, published)
+            summary = published
+            # Input identity belongs to the original run; the root summary and
+            # PMF files remain its original, pre-extension scientific result.
+            files.remove(root / "summary.json")
+            receipt_path = artifacts / "receipt.json"
+            receipt = _read_json(receipt_path)
+            files.extend([published_path, receipt_path])
+            files.extend(artifacts / name for name in receipt["artifacts"])
+    system_path = root / "input" / "system.json"
+    if system_path.is_file():
+        files.append(system_path)
     if summary.get("task") != "rate" or config.get("task", "rate") != "rate":
         raise ValueError("The automatic adapter accepts a gas rate run, not surface/site rates or network entries")
     beta = _beta(config, {})
-    pmf_path, arrays_path = root / "rate_pmf.json", root / "rate_pmf.npz"
+    pmf_path, arrays_path = artifacts / "rate_pmf.json", artifacts / "rate_pmf.npz"
     pmf, arrays = _read_json(pmf_path), _load_npz(arrays_path)
     files.extend([pmf_path, arrays_path])
     if pmf.get("sampling_measure") != "rate_flux" or _scalar(arrays.get("sampling_measure"), "sampling_measure") != "rate_flux":
@@ -181,7 +200,7 @@ def _legacy_rate(root, *, bootstrap, seed):
         ),
         "measure": "rate_flux", "converged": False,
     }
-    recrossing_path = root / "recrossing.npz"
+    recrossing_path = artifacts / "recrossing.npz"
     if not recrossing_path.is_file():
         result.update(status="static_only", static=static, channels=None)
         return result, files

@@ -7,7 +7,7 @@ the integrator for method development; the caller manages sampling, results and 
 ## High-level entry points
 
 ```python
-from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
+from pyrpmd import JobSpec, prepare, run, resume_run, extend_run, analyze_run
 ```
 
 | Object/function | Input and return value |
@@ -19,6 +19,7 @@ from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 | `prepare(job, numerical=False)` | Return preparation information; `numerical=True` runs the model preparation and PES |
 | `run(job, output=None, resume=False)` | Run the task and return the JSON-compatible summary on the root rank |
 | `resume_run(directory, parallel=None, execution=None, adaptive_budget=None)` | Continue from saved input and checkpoints; override execution resources or extend an adaptive FES/rate pilot budget |
+| `extend_run(directory, *, max_time=None, production_steps=None)` | Authorize exactly one total budget: dRPMD duration from launch, or fixed-window gas-phase rate production steps per window and replica |
 | `analyze_run(directory, ...)` | Read the summary, or reanalyze offline for supported tasks |
 
 `job` is a `JobSpec`, a dictionary or an input file path. Non-root MPI ranks return `None`, so handle
@@ -41,6 +42,22 @@ checks checkpoint compatibility. PCET does not accept parallel or propagation ov
 For thermal dRPMD, set `sampling.parents` explicitly in the original input if you plan to change
 worker counts; legacy implicit parent allocation can otherwise reject a changed layout safely.
 
+To extend fixed-window gas-phase rate production:
+
+```python
+if __name__ == "__main__":
+    summary = extend_run("runs/rate", production_steps=200000)
+```
+
+`production_steps` is the total per window and replica, excluding equilibration. Supply exactly
+one of `production_steps` or `max_time`; the latter retains the dRPMD total-time behavior.
+The original input and manifest stay immutable. Repeating the latest authorized target is
+idempotent, and `resume_run` recognizes interrupted or completed extensions. A larger rate target
+creates a fresh PMF/recrossing generation while preserving earlier results. The initial scope is
+one-dimensional fixed-window gas-phase rates with local umbrella sampling; parent/child budgets
+and study-level aggregate refresh are unchanged. See the
+[workflow contract](workflows.md#extending-fixed-window-rate-production) for the full scope.
+
 ```{autoclass} pyrpmd.input.JobSpec
 :members: from_file, from_mapping, with_overrides, resolve
 ```
@@ -52,6 +69,9 @@ worker counts; legacy implicit parent allocation can otherwise reject a changed 
 ```
 
 ```{autofunction} pyrpmd.runner.resume_run
+```
+
+```{autofunction} pyrpmd.runner.extend_run
 ```
 
 ```{autofunction} pyrpmd.runner.analyze_run

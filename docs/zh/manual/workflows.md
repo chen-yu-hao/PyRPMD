@@ -69,6 +69,37 @@ pyrpmd resume runs/manual-rate
 [UI / MBAR 说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md)。
 [H₃/BKMP2 基准](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md)在已发表的反应势能面上运行完整工作流。
 
+### 扩展固定窗口速率生产采样
+
+使用以下命令把已有伞抽样流推进到更大的生产预算：
+
+```bash
+pyrpmd extend runs/manual-rate --production-steps 200000
+pyrpmd resume runs/manual-rate
+```
+
+目标是**每个已有窗口、每个副本累计 200000 个生产步**，不含平衡阶段。例如，已完成 50000 个生产步的
+采样流将再推进 150000 步。位置、动量、随机数发生器状态和采样节奏从检查点继续。
+已有伞样本以只追加的数据块保留；原始解析输入与运行 manifest 保持不变，另行记录已授权的预算。
+
+此扩展支持使用本地伞抽样的一维固定窗口气相 `rate`，不支持自适应伞、副本交换或外部提供的 PMF。
+窗口中心、刚度、副本数及科学设置保持固定。重复最近已授权的目标会恢复中断工作或返回其完成结果；
+更小的目标会被拒绝。即使扩展已经完成，普通 `resume` 仍识别这一目标。
+
+每个严格增大的目标都会创建新一代结果：重建 PMF，并重新生成受约束母构型与回穿子轨迹，
+即使分割面不变也会重新生成。自动选择的 `xi_star` 可能随新 PMF 移动；显式配置的
+`recrossing.dividing_surface` 保持固定。之前各代结果都会保留，新一代仅在全部完成后才成为当前结果，
+使每次回穿计算与生成它的 PMF 和伞采样端点对应。
+
+扩展后，`results/summary.json` 标识当前已发布的结果。其 `rate_extension.generation` 给出已完成代次的目录，
+例如 `extensions/rate/production-000000200000/`；扩展计算的 `rate_pmf.*`、`recrossing.*` 和 `umbrella/`
+均从该目录读取。根目录中的 PMF 与回穿文件保留原始结果。`report` 和 `rate-postprocess` 会自动选择已发布代次。
+首次扩展尚未完成时，如果原始 `umbrella/fes.h5` 不可用，报告会省略已经超过原始预算的共享检查点对应的原始采样曲线；
+原始 PMF 与回穿结果仍可读取。
+
+此命令仅扩展伞生产采样，不增加母链/子轨迹数量或其传播时间，也不会自动刷新所属速率研究的汇总结果。
+扩展后仍需检查 PMF 支持、回穿平台和误差诊断；更大的预算本身不证明收敛，也不保证原先保留为 `null` 的速率可报告。
+
 ## 直接碰撞：`drpmd`
 
 `drpmd` 对两个反应物采样母链，从中发射独立碰撞并对产物分类。发射分布决定结果是热速率还是固定能量截面。

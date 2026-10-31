@@ -74,11 +74,14 @@ def parser():
     c.add_argument("--adaptive-max-windows", type=int)
     c.add_argument("--adaptive-max-pilot-steps", type=int)
     extend = commands.add_parser(
-        "extend", help="Raise the total time budget of unresolved dRPMD trajectories"
+        "extend", help="Raise a saved dRPMD time or fixed-window rate production budget"
     )
     extend.add_argument("directory")
-    extend.add_argument("--max-time", required=True,
-                        help="New total duration from launch, e.g. '20 ps' (not added time)")
+    budget = extend.add_mutually_exclusive_group(required=True)
+    budget.add_argument("--max-time",
+                        help="dRPMD: new total duration from launch, e.g. '20 ps' (not added time)")
+    budget.add_argument("--production-steps", type=int, metavar="INT",
+                        help="Fixed-window gas-phase rate: total production steps per window and replica, excluding equilibration (not added steps)")
     a = commands.add_parser(
         "analyze", help="Read results or reanalyze saved free-energy/transport data"
     )
@@ -428,7 +431,8 @@ def main(argv=None):
         elif args.command == "extend":
             from .runner import extend_run
 
-            result = extend_run(args.directory, max_time=args.max_time)
+            result = extend_run(args.directory, max_time=args.max_time,
+                                production_steps=args.production_steps)
             if result is not None:
                 _print(result)
         elif args.command == "analyze":
