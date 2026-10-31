@@ -198,6 +198,192 @@ def test_default_cv_selection_retains_definition_order(tmp_path, task, mapping):
         collect_comparisons(runs, series=["same", "same"])
 
 
+def reaction_cv_run(path, *, task="fes", kind="rpmdrate", geometry=None,
+                    explicit_reference=False, selected="xi"):
+    reference = [[0., 0., 0.], [0., 0., 1.], [0., 0., 3.]]
+    spec = {"kind": kind, "forming_bonds": [[0, 1]], "breaking_bonds": [[1, 2]], "rinf": 12.}
+    if explicit_reference:
+        spec["reference"] = reference
+    config = {"task": task, "potential": {"provider": "harmonic"},
+              "cvs": {"xi": spec, "x": {"kind": "cartesian", "atom": 0, "axis": 0}},
+              task if task in ("metadynamics", "opes") else "umbrella": {"cvs": [selected]}}
+    (path / "input").mkdir(parents=True)
+    (path / "input/resolved.json").write_text(json.dumps(config))
+    (path / "input/system.json").write_text(json.dumps({
+        "symbols": ["H"] * 3, "masses": [1837.] * 3, "fragments": [[0], [1, 2]], "geometry": geometry}))
+    units = ["dimensionless" if selected == "xi" else "bohr"]
+    (path / "summary.json").write_text(json.dumps({"task": task, "measure": "cv_density", "units": units}))
+    atomic_savez(path / "fes.npz", free_energy=[0., .1], mask=[False, False],
+                 edges_0=[0., .5, 1.], cv_units=units, measure="cv_density")
+    return collect_run(path, prefix=path.name)
+
+
+@pytest.mark.parametrize("task", ["fes", "metadynamics", "opes"])
+@pytest.mark.parametrize("kind", ["rpmdrate", "rpmdrate_xi"])
+def test_implicit_reaction_cv_reference_prevents_incompatible_overlay(tmp_path, task, kind):
+    first = [[0., 0., 0.], [0., 0., 1.], [0., 0., 3.]]
+    second = [[0., 0., 0.], [0., 0., 2.], [0., 0., 3.]]
+    runs = [reaction_cv_run(tmp_path / str(index), task=task, kind=kind, geometry=geometry)
+            for index, geometry in enumerate((first, second))]
+    result = collect_comparisons(runs)
+    assert len(result["metrics"]["series_members"]) == 2
+    assert not any(plot["id"].startswith("comparison-pmf") for plot in result["plots"])
+    with pytest.raises(ValueError, match="incompatible"):
+        collect_comparisons(runs, series=["same", "same"])
+
+
+@pytest.mark.parametrize("explicit_reference,selected", [(True, "xi"), (False, "x")])
+def test_only_effective_reaction_cv_reference_constrains_comparison(tmp_path, explicit_reference, selected):
+    runs = [reaction_cv_run(tmp_path / str(index), explicit_reference=explicit_reference, selected=selected,
+                            geometry=geometry)
+            for index, geometry in enumerate((None, [[0., 0., 0.], [0., 0., 2.], [0., 0., 3.]]))]
+    result = collect_comparisons(runs, series=["same", "same"])
+    assert len(result["metrics"]["series_members"]) == 1
+    assert len([plot for plot in result["plots"] if plot["id"].startswith("comparison-pmf")]) == 1
+
+
+@pytest.mark.parametrize("geometry", [None, [], [[0., 0., 0.]], [[0., 0.]] * 3])
+def test_missing_or_incomplete_implicit_cv_reference_withholds_comparison(tmp_path, geometry):
+    runs = [reaction_cv_run(tmp_path / str(index), geometry=geometry) for index in range(2)]
+    result = collect_comparisons(runs)
+    assert len(result["metrics"]["series_members"]) == 2
+    assert not any(plot["id"].startswith("comparison-pmf") for plot in result["plots"])
+    with pytest.raises(ValueError, match="unavailable"):
+        collect_comparisons(runs, series=["same", "same"])
+
+
+def scattering_scan_run(path, bmax, *, sampling="thermal_flux", changes=None, config_changes=None,
+                        entry_changes=None):
+    from test_report_observables import scattering_summary
+
+    config = {"task": "drpmd", "temperature_K": 300., "beads": 8, "dt_au": 1.,
+              "potential": {"provider": "free"}, "dynamics": {"integrator": "cayley-bcb"},
+              "sampling": {"parents": 2, "equilibration_steps": 20},
+              "collision": {"bmax": f"{bmax} bohr", "bmax_au": bmax, "sampling": sampling,
+                            "trajectories": 10, "separation_au": 12., "max_steps": 100},
+              "outcomes": {"channels": {"exchange": [[0, 1], [2]]}, "bond_cutoffs_au": {"H-H": 2.}}}
+    for section, fields in (config_changes or {}).items():
+        config.setdefault(section, {}).update(fields)
+    entry = {"count": 3, "event_fraction": .3, "rate_cm3_molecule_s": bmax * 1e-12,
+             "observed_lower_cm3_molecule_s": bmax * 1e-12,
+             "possible_upper_cm3_molecule_s": bmax * 1e-12,
+             "parent_cluster_bootstrap95": [bmax * .25e-12, bmax * 2e-12],
+             "iid_wilson95_cm3_molecule_s": [bmax * .5e-12, bmax * 3e-12]}
+    entry.update(entry_changes or {})
+    summary = scattering_summary(
+        sampling=sampling, all_trajectories_resolved=True,
+        counts={"product": 3, "nonreactive": 7, "unresolved": 0, "failed": 0},
+        total_reaction=dict(entry), channels={"exchange": dict(entry)},
+        uncertainty_note="IID Wilson ignores parent dependence; cluster bootstrap resamples parent chains.")
+    summary.update(changes or {})
+    (path / "input").mkdir(parents=True)
+    (path / "input/resolved.json").write_text(json.dumps(config))
+    (path / "input/system.json").write_text(json.dumps({"symbols": ["H"] * 3, "masses": [1837.] * 3,
+                                                        "fragments": [[0], [1, 2]]}))
+    (path / "summary.json").write_text(json.dumps(summary))
+    return collect_run(path, prefix=path.name)
+
+
+@pytest.mark.parametrize("sampling", ["thermal_flux", "maxwell"])
+def test_accepted_scattering_bmax_scan_keeps_channels_and_uncertainty_meaning(tmp_path, sampling):
+    runs = [scattering_scan_run(tmp_path / str(bmax), bmax, sampling=sampling) for bmax in (2., 4.)]
+    assert len(collect_comparisons(runs)["metrics"]["series_members"]) == 2
+    result = collect_comparisons(runs, convergence="bmax_bohr")
+    assert len(result["metrics"]["series_members"]) == 1
+    plot, = [plot for plot in result["plots"] if plot["id"].startswith("comparison-scan")]
+    assert len(plot["series"]) == 2
+    for curve in plot["series"]:
+        assert curve["x"] == [2., 4.]
+        assert curve["y"] == pytest.approx([2e-12, 4e-12])
+        assert np.isnan(curve["yerr"]).all()
+    assert "95%" in plot["caption"] and "point estimates only" in plot["caption"]
+    scans = result["metrics"]["parameter_scans"]
+    assert {scan["observable"] for scan in scans} == {"total_reaction", "exchange"}
+    for scan in scans:
+        assert scan["rate_unit"] == "cm3 molecule^-1 s^-1"
+        assert scan["physical_convergence_certified"] is False
+        assert scan["source_statistics"][0]["parent_cluster_bootstrap95"] == pytest.approx([.5e-12, 4e-12])
+        assert scan["source_statistics"][0]["iid_wilson95_cm3_molecule_s"] == pytest.approx([1e-12, 6e-12])
+        assert "parent dependence" in scan["uncertainty_notes"][0]
+
+
+@pytest.mark.parametrize("options", [
+    {"changes": {"all_trajectories_resolved": False}},
+    {"changes": {"classification_unvalidated": True}},
+    {"changes": {"counts": {"product": 3, "nonreactive": 6, "unresolved": 0, "failed": 1}}},
+    {"entry_changes": {"candidate_only": True}},
+    {"entry_changes": {"rate_cm3_molecule_s": None}},
+    {"config_changes": {"collision": {"bmax_unvalidated": True}}},
+    {"config_changes": {"outcomes": {"classifier_unvalidated": True}}},
+    {"sampling": "fixed_energy"},
+    {"config_changes": {"initial_ensemble": {"method": "qct"}}},
+])
+def test_scattering_scan_never_promotes_withheld_or_nonthermal_results(tmp_path, options):
+    runs = [scattering_scan_run(tmp_path / str(bmax), bmax, **options) for bmax in (2., 4.)]
+    result = collect_comparisons(runs, convergence="bmax_bohr", include_estimates=True)
+    assert not any(plot["id"].startswith("comparison-scan") for plot in result["plots"])
+    assert result["metrics"]["parameter_scans"] == []
+
+
+@pytest.mark.parametrize("changes", [
+    {"outcomes": {"bond_cutoffs_au": {"H-H": 3.}}},
+    {"outcomes": {"channels": {"exchange": [[0, 2], [1]]}}},
+    {"collision": {"sampling": "maxwell"}},
+    {"collision": {"separation_au": 20.}},
+    {"collision": {"max_steps": 200}},
+    {"sampling": {"equilibration_steps": 40}},
+    {"nonadiabatic": {"initial_state": 1}},
+])
+def test_scattering_bmax_scan_keeps_other_scientific_controls_fixed(tmp_path, changes):
+    runs = [scattering_scan_run(tmp_path / "one", 2.),
+            scattering_scan_run(tmp_path / "two", 4., config_changes=changes)]
+    result = collect_comparisons(runs, convergence="bmax_bohr")
+    assert len(result["metrics"]["series_members"]) == 2
+    assert result["metrics"]["parameter_scans"] == []
+    with pytest.raises(ValueError, match="incompatible"):
+        collect_comparisons(runs, series=["same", "same"], convergence="bmax_bohr")
+
+
+def test_existing_thermal_rate_scan_preserves_standard_errors(tmp_path):
+    runs = [collect_run(prepared_rate(tmp_path, str(index)), prefix=str(index)) for index in range(2)]
+    for run, beads in zip(runs, (8, 16)):
+        run["metadata"]["beads"] = beads
+        run["_rate"]["standard_error"] = 1e-13
+    result = collect_comparisons(runs, convergence="beads")
+    plot, = [plot for plot in result["plots"] if plot["id"].startswith("comparison-scan")]
+    curve, = plot["series"]
+    assert curve["x"] == [8, 16]
+    assert curve["yerr"] == [1e-13, 1e-13]
+    assert "saved 1 SE" in plot["caption"]
+
+
+def test_rinf_scan_excludes_saved_uppercase_alias_only_for_requested_scan(tmp_path):
+    runs = []
+    for rinf in (10., 12.):
+        path = prepared_rate(tmp_path, str(rinf))
+        source = path / "input/resolved.json"
+        config = json.loads(source.read_text())
+        config["reaction"] = {"Rinf": f"{rinf} bohr", "rinf_au": rinf}
+        source.write_text(json.dumps(config))
+        source = path / "preparation.json"
+        preparation = json.loads(source.read_text())
+        preparation["reaction"].update(Rinf=f"{rinf} bohr", rinf=rinf, rinf_au=rinf)
+        source.write_text(json.dumps(preparation))
+        runs.append(collect_run(path, prefix=str(rinf)))
+    assert [run["metadata"]["rinf_bohr"] for run in runs] == [10., 12.]
+    assert len(collect_comparisons(runs)["metrics"]["series_members"]) == 2
+    for series in (None, ["same", "same"]):
+        result = collect_comparisons(runs, series=series, convergence="rinf_bohr")
+        assert len(result["metrics"]["series_members"]) == 1
+        plot, = [plot for plot in result["plots"] if plot["id"].startswith("comparison-scan")]
+        curve, = plot["series"]
+        assert curve["x"] == [10., 12.]
+        assert curve["y"] == [2e-12, 2e-12]
+    runs[1]["_prepared_reaction"]["electronic_weight"] = 2.
+    with pytest.raises(ValueError, match="incompatible"):
+        collect_comparisons(runs, series=["same", "same"], convergence="rinf_bohr")
+
+
 def fes_measure_run(path, *, saved_measure="cv_density", summary_measure=None,
                     saved_units=("bohr",), summary_units=None):
     (path / "input").mkdir(parents=True)

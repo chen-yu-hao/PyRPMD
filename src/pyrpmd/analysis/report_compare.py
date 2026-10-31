@@ -29,12 +29,40 @@ def _finite(value):
     return value if np.isfinite(value) else None
 
 
+def _cv_references(config, system, selected):
+    """Read effective references without constructing CVs or executing input."""
+    specifications = config.get("cvs", [])
+    if isinstance(specifications, dict):
+        definitions = specifications
+    else:
+        definitions = {spec.get("name", f"CV {index + 1}"): spec
+                       for index, spec in enumerate(specifications)}
+    references = {}
+    for name in selected:
+        spec = definitions.get(name, {})
+        if spec.get("kind") not in ("rpmdrate", "rpmdrate_xi"):
+            continue
+        try:
+            reference = np.asarray(spec.get("reference", system.get("geometry")), dtype=float)
+            natoms = len(system.get("masses", system.get("symbols", [])))
+        except (TypeError, ValueError):
+            return None
+        if not natoms or reference.shape != (natoms, 3) or not np.isfinite(reference).all():
+            return None
+        references[name] = reference.tolist()
+    return references
+
+
 def _identity(run, *, isotope=False, varying=None):
     config, system = run.get("_config", {}), run.get("_system", {})
     if not config or not system or run.get("_comparison_identity_available") is False:
         return None
     if (run["task"] in ("fes", "metadynamics", "opes")
             and run.get("_measure", run.get("metadata", {}).get("measure")) not in ("cv_density", "rate_flux")):
+        return None
+    selected = _selected_cv_names(config, run["task"])
+    references = _cv_references(config, system, selected)
+    if references is None:
         return None
     raw_system = system
     system = {k: system.get(k) for k in ("symbols", "masses", "fragments", "charge", "multiplicity", "cell", "pbc", "fixed_atoms")}
@@ -49,17 +77,45 @@ def _identity(run, *, isotope=False, varying=None):
         system["symbols"] = ["H" if str(s) in ("D", "T") else s for s in system.get("symbols") or []]
     reaction = dict(run.get("_prepared_reaction", config.get("reaction", {})))
     if varying == "rinf_bohr":
-        for key in ("rinf", "rinf_au"):
+        for key in ("rinf", "Rinf", "rinf_au"):
             reaction.pop(key, None)
     identity = {"task": run["task"], "system": system, "potential": config.get("potential"),
                 "model_files": run.get("_model_files"),
                 "reaction": reaction, "site_rate": config.get("site_rate"), "surface": config.get("surface"),
                 "cvs": config.get("cvs"), "umbrella_cvs": config.get("umbrella", {}).get("cvs"),
                 "metadynamics_cvs": config.get("metadynamics", {}).get("cvs"),
-                "selected_cvs": _selected_cv_names(config, run["task"]),
+                "selected_cvs": selected, "cv_references": references,
                 "static_walls": config.get("metadynamics", {}).get("walls"),
                 "measure": run.get("_measure", run.get("metadata", {}).get("measure"))}
+    if run["task"] == "drpmd":
+        collision = dict(config.get("collision", {}))
+        collision.pop("trajectories", None)  # Statistical size is not the sampled observable.
+        if varying == "bmax_bohr":
+            for key in ("bmax", "bmax_au"):
+                collision.pop(key, None)
+        identity["scattering"] = {
+            "collision": collision, "sampling": config.get("sampling"),
+            "outcomes": config.get("outcomes"), "initial_ensemble": config.get("initial_ensemble"),
+            "nonadiabatic": config.get("nonadiabatic"),
+        }
     return json.dumps(identity, sort_keys=True, ensure_ascii=False)
+
+
+def _scan_rates(run):
+    if run.get("_rate") is not None:
+        return [("rate", run["_rate"])]
+    if (run["task"] != "drpmd"
+            or run.get("_summary", {}).get("sampling") not in ("thermal_flux", "maxwell")
+            or run.get("_config", {}).get("initial_ensemble")):
+        return []
+    rates = []
+    for name, entry in run["metrics"].get("channels", {}).items():
+        value = _finite(entry.get("rate_cm3_molecule_s"))
+        if entry.get("estimate_accepted") is True and value is not None and value >= 0:
+            rates.append((name, {"value": value, "unit": "cm3 molecule^-1 s^-1", "standard_error": None,
+                                 "source_statistics": entry,
+                                 "uncertainty_note": run["metrics"].get("channel_uncertainty_note")}))
+    return rates
 
 
 def read_reference(path):
@@ -273,23 +329,36 @@ def collect_comparisons(runs, *, series=None, reference=None, include_estimates=
         for name, group in groups.items():
             buckets = defaultdict(list)
             for run in group:
-                rate, meta = run.get("_rate"), run["metadata"]
+                meta = run["metadata"]
                 x, temperature = _finite(meta.get(convergence)), _finite(meta.get("temperature_K"))
-                if rate and x is not None and temperature is not None and _finite(rate["value"]) is not None:
-                    other = tuple((k, meta.get(k)) for k in ("beads", "dt_fs", "rinf_bohr", "bmax_bohr", "integrator") if k != convergence)
-                    buckets[(rate["unit"], temperature, other)].append((x, rate, run))
-            for (unit, temperature, _), points in buckets.items():
+                if x is None or temperature is None:
+                    continue
+                other = tuple((k, meta.get(k)) for k in ("beads", "dt_fs", "rinf_bohr", "bmax_bohr", "integrator") if k != convergence)
+                for observable, rate in _scan_rates(run):
+                    if _finite(rate["value"]) is not None:
+                        kind = "scattering" if "source_statistics" in rate else "standard_error"
+                        buckets[(rate["unit"], temperature, other, observable, kind)].append((x, rate, run))
+            for (unit, temperature, _, observable, kind), points in buckets.items():
                 points.sort(key=lambda p: p[0])
                 if len({p[0] for p in points}) < 2:
                     continue
-                scans[unit].append({"label": f"{name}, {temperature:g} K", "x": [p[0] for p in points],
+                label = f"{name}, {temperature:g} K" + (f", {observable}" if kind == "scattering" else "")
+                scans[(unit, kind)].append({"label": label, "x": [p[0] for p in points],
                     "y": [p[1]["value"] for p in points], "yerr": [np.nan if p[1]["standard_error"] is None else p[1]["standard_error"] for p in points]})
-                scan_metrics.append({"series": name, "temperature_K": temperature, "variable": convergence,
-                    "run_ids": [p[2]["id"] for p in points], "physical_convergence_certified": False})
-        for i, (unit, curves) in enumerate(scans.items()):
+                record = {"series": name, "temperature_K": temperature, "variable": convergence,
+                          "observable": observable, "rate_unit": unit,
+                          "run_ids": [p[2]["id"] for p in points], "physical_convergence_certified": False}
+                if kind == "scattering":
+                    record["source_statistics"] = [p[1]["source_statistics"] for p in points]
+                    record["uncertainty_notes"] = [p[1]["uncertainty_note"] for p in points]
+                scan_metrics.append(record)
+        for i, ((unit, kind), curves) in enumerate(scans.items()):
             result["plots"].append({"id": f"comparison-scan-{i+1:02d}", "kind": "line", "title": "Numerical-parameter scan",
                 "xlabel": SCAN_LABELS[convergence], "ylabel": f"Rate coefficient ({unit})", "series": curves,
-                "caption": "Comparable source-accepted rates with fixed saved temperature and other listed numerical controls. Bands are saved 1 SE. Visual agreement does not certify convergence."})
+                "caption": "Comparable source-accepted rates with fixed saved temperature and other listed numerical controls. "
+                           + ("Scattering point estimates only; saved parent-cluster 95% intervals, IID Wilson intervals and outcome bounds remain distinctly labelled in metrics. "
+                              if kind == "scattering" else "Bands are saved 1 SE. ")
+                           + "Visual agreement does not certify convergence."})
         if not scans:
             result["skipped"].append({"figure": "parameter scan", "reason": "Need two comparable source-accepted rates differing in the selected parameter"})
         result["metrics"]["parameter_scans"] = scan_metrics

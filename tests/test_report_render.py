@@ -80,6 +80,53 @@ def test_dense_error_band_does_not_bridge_unsupported_points(tmp_path):
     assert not ax.containers
 
 
+def test_dense_curve_shows_isolated_errors_alongside_bands_and_masked_gaps(tmp_path):
+    _, ax = _figure()
+    x = np.arange(30.0)
+    y = 2.0 + 0.02 * x
+    error = np.full((2, len(x)), np.nan)
+    error[:, [0, 14, 29]] = np.array([0.2, 0.35])[:, None]
+    for section in (slice(3, 7), slice(9, 12), slice(17, 24)):
+        error[:, section] = np.array([0.2, 0.35])[:, None]
+    y[20] = np.nan  # A masked estimate splits otherwise contiguous uncertainty.
+    error[0, 26] = 0.2  # One missing side must not become a fabricated full bar.
+    _line_plot(ax, {"series": [{"x": x, "y": y, "yerr": error}]},
+               tmp_path / "mixed.csv")
+
+    assert np.isnan(ax.lines[0].get_ydata()[20])
+    paths = ax.collections[0].get_paths()
+    assert [(p.vertices[:, 0].min(), p.vertices[:, 0].max()) for p in paths] == [
+        (3, 6), (9, 11), (17, 19), (21, 23),
+    ]
+    assert len(ax.containers) == 1
+    segments = np.asarray(ax.containers[0].lines[2][0].get_segments())
+    locations = np.array([0, 14, 29])
+    np.testing.assert_array_equal(segments[:, :, 0], np.repeat(locations[:, None], 2, axis=1))
+    np.testing.assert_allclose(segments[:, :, 1],
+                               np.column_stack((y[locations] - 0.2, y[locations] + 0.35)))
+    with (tmp_path / "mixed.csv").open() as file:
+        rows = list(csv.DictReader(file))
+    assert rows[20]["y"] == ""
+    assert rows[26]["error_plus"] == ""
+    assert rows[27]["error_minus"] == rows[27]["error_plus"] == ""
+
+
+def test_dense_curve_with_only_isolated_errors_has_visible_bars(tmp_path):
+    _, ax = _figure()
+    x = np.arange(20.0)
+    error = np.full(20, np.nan)
+    error[[0, 10, 19]] = [0.1, 0.2, 0.3]
+    _line_plot(ax, {"series": [{"x": x, "y": np.ones(20), "yerr": error}]},
+               tmp_path / "isolated.csv")
+
+    assert len(ax.containers) == 1
+    segments = np.asarray(ax.containers[0].lines[2][0].get_segments())
+    np.testing.assert_array_equal(segments[:, 0, 0], [0, 10, 19])
+    np.testing.assert_allclose(segments[:, :, 1], [[0.9, 1.1], [0.8, 1.2], [0.7, 1.3]])
+    # The only collection is the visible error bars, not zero-width bands.
+    assert len(ax.collections) == 1
+
+
 def test_all_masked_and_constant_heatmaps_have_finite_scaling(tmp_path):
     for index, values in enumerate(([[None, None]], [[3.0, 3.0]])):
         fig, ax = _figure()

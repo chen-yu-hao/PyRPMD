@@ -118,14 +118,15 @@ def _channel_entry(entry):
         "observed_lower_cm3_molecule_s", "possible_upper_cm3_molecule_s",
         "observed_lower_bohr2", "possible_upper_bohr2", "iid_wilson95_bohr2",
         "parent_cluster_bootstrap95_bohr2", "uncertainty",
-        "parent_cluster_bootstrap95", "candidate_only",
+        "parent_cluster_bootstrap95", "iid_wilson95_cm3_molecule_s", "candidate_only",
     )}
     for name in ("event_fraction", "rate_cm3_molecule_s", "cross_section_bohr2",
                  "observed_lower_cm3_molecule_s", "possible_upper_cm3_molecule_s",
                  "observed_lower_bohr2", "possible_upper_bohr2"):
         if answer[name] is not None and not _finite(answer[name]):
             raise ValueError(f"{name} must be finite or unavailable")
-    for key in ("parent_cluster_bootstrap95", "parent_cluster_bootstrap95_bohr2", "iid_wilson95_bohr2"):
+    for key in ("parent_cluster_bootstrap95", "parent_cluster_bootstrap95_bohr2", "iid_wilson95_bohr2",
+                "iid_wilson95_cm3_molecule_s"):
         interval = answer[key]
         if interval is not None:
             bounds = _vector(interval, key, 2)
@@ -220,6 +221,8 @@ def _scattering(root, summary, config, result, prefix, label, factor, energy_uni
     key = "cross_section_bohr2" if fixed else "rate_cm3_molecule_s"
     withheld = (summary.get("all_trajectories_resolved") is False
                 or summary.get("classification_unvalidated") is True
+                or config.get("outcomes", {}).get("classifier_unvalidated") is True
+                or config.get("collision", {}).get("bmax_unvalidated") is True
                 or (valid_counts and bool(counts["unresolved"] or counts["failed"])))
     for name, entry in rows.items():
         if not isinstance(entry, dict):
@@ -233,7 +236,10 @@ def _scattering(root, summary, config, result, prefix, label, factor, energy_uni
         value = entry.get(key)
         if not withheld and not entry.get("candidate_only", False) and _finite(value) and value >= 0:
             accepted[name] = float(value)
+    for name, entry in channel_metrics.items():
+        entry["estimate_accepted"] = name in accepted
     result["metrics"]["channels"] = channel_metrics
+    result["metrics"]["channel_uncertainty_note"] = summary.get("uncertainty_note")
     if fixed and isinstance(summary.get("fixed_energy_scattering"), dict):
         result["metrics"]["fixed_energy_scattering"] = summary["fixed_energy_scattering"]
     result["metrics"]["channel_statistics_note"] = (

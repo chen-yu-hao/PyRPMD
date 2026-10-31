@@ -12,6 +12,7 @@ include examples/analysis/reference-rates.csv
 recursive-include tests *.py
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json
 recursive-include benchmarks/h3/convergence_inputs *.inp
+recursive-include benchmarks/h3/reproduction_results *.md *.json *.csv *.svg
 recursive-include benchmarks/hho2 *.py *.md
 recursive-include benchmarks/brhcl *.py *.md *.json *.cpp *.f90 *.map
 prune benchmarks/brhcl/build

@@ -1,0 +1,7 @@
+source_id,figure,panel,v,j,requested_total_energy_ev,harmonic_collision_energy_ev,linear_interpolated_cross_section_angstrom2,digitization_only_lower_angstrom2,digitization_only_upper_angstrom2,left_marker_total_energy_ev,left_marker_cross_section_angstrom2,right_marker_total_energy_ev,right_marker_cross_section_angstrom2,adjacent_marker_envelope_lower_angstrom2,adjacent_marker_envelope_upper_angstrom2,interpolation_model_error_quantified,published_statistical_error_available
+marjollet_welsch_2021_qua26447,5,B,0,0,0.55,0.276801,0.009594,0,0.020861,0.537438,0.004287,0.58078,0.022597,0,0.032597,False,False
+marjollet_welsch_2021_qua26447,5,B,0,0,0.7,0.426801,0.304969,0.288034,0.321903,0.667465,0.229764,0.71088,0.330118,0.219764,0.340118,False,False
+marjollet_welsch_2021_qua26447,5,B,0,0,0.9,0.626801,0.810378,0.79375,0.827005,0.884228,0.775533,0.923751,0.86285,0.765533,0.87285,False,False
+marjollet_welsch_2021_qua26447,5,B,0,0,1.1,0.826801,1.154543,1.139945,1.169051,1.097194,1.150326,1.140413,1.215275,1.140326,1.225275,False,False
+marjollet_welsch_2021_qua26447,6,B,1,0,0.9,0.080402,0.029688,0.017924,0.041452,0.866774,0.000386,0.90979,0.038322,0,0.048322,False,False
+marjollet_welsch_2021_qua26447,6,B,1,0,1.1,0.280402,1.140296,1.123319,1.157272,1.083627,1.083181,1.126687,1.233389,1.073181,1.243389,False,False

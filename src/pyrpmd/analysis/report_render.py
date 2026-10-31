@@ -92,11 +92,20 @@ def _line_plot(ax, plot, data_path):
         if plot.get("yscale") == "log":
             # Do not clip error bars at zero and thereby misrepresent their size.
             supported &= y - error[0] > 0
+        errorbar_points = supported
         if np.any(supported) and len(x) >= 20 and style != "points":
-            ax.fill_between(draw_x, y - error[0], y + error[1], where=supported,
-                            color=color, alpha=0.18, linewidth=0, interpolate=False)
-        elif np.any(supported):
-            ax.errorbar(x[supported], y[supported], yerr=error[:, supported],
+            # fill_between draws an interval only when both endpoints are
+            # supported. Isolated finite uncertainties need their own bars.
+            adjacent = supported[:-1] & supported[1:]
+            band_points = np.zeros_like(supported)
+            band_points[:-1] |= adjacent
+            band_points[1:] |= adjacent
+            if np.any(band_points):
+                ax.fill_between(draw_x, y - error[0], y + error[1], where=band_points,
+                                color=color, alpha=0.18, linewidth=0, interpolate=False)
+            errorbar_points = supported & ~band_points
+        if np.any(errorbar_points):
+            ax.errorbar(x[errorbar_points], y[errorbar_points], yerr=error[:, errorbar_points],
                         fmt="none", ecolor=color, elinewidth=0.75, capsize=2,
                         alpha=0.75)
     for item in plot.get("vlines", []):
