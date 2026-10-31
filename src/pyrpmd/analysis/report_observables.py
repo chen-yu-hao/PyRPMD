@@ -16,7 +16,7 @@ import re
 import numpy as np
 
 from ..checkpoint import load_checkpoint
-from ..constants import ATOMIC_TIME_S, BOHR_ANGSTROM, KB_AU
+from ..constants import ATOMIC_TIME_S, KB_AU
 from ..units import unit_factor
 
 
@@ -131,7 +131,8 @@ def _channel_entry(entry):
     return answer
 
 
-def _centroid_distances(data, metadata, times, path, config, result, prefix, label, index):
+def _centroid_distances(data, metadata, times, path, config, result, prefix, label, index,
+                        length_factor, length_label):
     """Display specified reaction pairs or explicitly nonbonded pair distances."""
     figure = "centroid-distances-" + path.stem
     if "centroid" not in data:
@@ -171,7 +172,7 @@ def _centroid_distances(data, metadata, times, path, config, result, prefix, lab
             pairs = {pair: [] for pair in combinations(range(natoms), 2)}
         series = []
         for (first, second), roles in pairs.items():
-            distance = np.linalg.norm(centroid[:, first] - centroid[:, second], axis=1) * BOHR_ANGSTROM
+            distance = np.linalg.norm(centroid[:, first] - centroid[:, second], axis=1) * length_factor
             if not np.isfinite(distance).all():
                 raise ValueError("Centroid pair distances are nonfinite.")
             pair_label = f"Atoms {first + 1}–{second + 1}"
@@ -179,7 +180,7 @@ def _centroid_distances(data, metadata, times, path, config, result, prefix, lab
                 pair_label += " (" + "/".join(dict.fromkeys(roles)) + ")"
             series.append(_series(pair_label, times * _TIME_FS, distance))
         _plot(result, prefix, label, f"centroid-distances-{index+1}",
-              f"Centroid pair distances: {path.stem}", "Time (fs)", "Centroid pair distance (Å)",
+              f"Centroid pair distances: {path.stem}", "Time (fs)", f"Centroid pair distance ({length_label})",
               kind="line", series=series,
               caption=("Explicit forming/breaking pairs from the saved reaction definition. " if specified else
                        "All atom pairs for this small system; these labels do not infer chemical bonds. ")
@@ -188,7 +189,8 @@ def _centroid_distances(data, metadata, times, path, config, result, prefix, lab
         _skip(result, figure, exc)
 
 
-def _scattering(root, summary, config, result, prefix, label, factor, energy_unit):
+def _scattering(root, summary, config, result, prefix, label, factor, energy_unit,
+                length_factor, length_label):
     counts = summary.get("counts", {})
     total = summary.get("trajectories")
     valid_counts = (isinstance(counts, dict)
@@ -235,20 +237,21 @@ def _scattering(root, summary, config, result, prefix, label, factor, energy_uni
         "Parent-cluster 95% intervals preserve the producer's dependence model; outcome bounds are not confidence intervals."
     )
     if accepted:
+        area_factor = length_factor ** 2 if fixed else 1.0
         errors = [[], []]
         for name, value in accepted.items():
             interval = channel_metrics[name]["parent_cluster_bootstrap95"]
             if interval is not None and interval[0] <= value <= interval[1]:
-                errors[0].append(value - interval[0])
-                errors[1].append(interval[1] - value)
+                errors[0].append((value - interval[0]) * area_factor)
+                errors[1].append((interval[1] - value) * area_factor)
             else:
                 errors[0].append(None)
                 errors[1].append(None)
                 if interval is not None:
                     _finding(result, "interval_excludes_point", f"The saved parent-cluster interval for {name} excludes its point estimate; it remains in metrics but is not represented as an error bar.")
         _plot(result, prefix, label, "channel-estimates", "Supported channel estimates", "Channel",
-              "Cross section (bohr²)" if fixed else "Rate (cm³ molecule⁻¹ s⁻¹)",
-              kind="bar", labels=list(accepted), y=list(accepted.values()), yerr=errors,
+              f"Cross section ({length_label}²)" if fixed else "Rate (cm³ molecule⁻¹ s⁻¹)",
+              kind="bar", labels=list(accepted), y=[value * area_factor for value in accepted.values()], yerr=errors,
               caption="Only supported published estimate fields are plotted. Error bars are saved asymmetric parent-cluster 95% intervals, not standard errors; unavailable intervals are omitted.")
     elif rows:
         _skip(result, "channel-estimates", "No supported rate or cross-section estimates; diagnostic bounds remain in report metrics.")
@@ -278,7 +281,8 @@ def _scattering(root, summary, config, result, prefix, label, factor, energy_uni
                     raise ValueError("electronic population traces have an invalid shape or values")
                 for state in range(pops.shape[1]):
                     population_series.append(_series(f"{path.stem}, state {state}", times * _TIME_FS, pops[:, state]))
-            _centroid_distances(data, metadata, times, path, config, result, prefix, label, index)
+            _centroid_distances(data, metadata, times, path, config, result, prefix, label, index,
+                                length_factor, length_label)
         except (OSError, ValueError, TypeError, KeyError) as exc:
             _skip(result, "trajectory-" + path.name, exc)
     if energy_series:
@@ -317,7 +321,8 @@ def _electronic(summary, result, prefix, label):
           caption="Diagnostic observed contributions retain signs. They are not final rates when the producer withholds final_estimates_available, and are not binomial probabilities.")
 
 
-def _materials(root, summary, config, result, prefix, label, factor, energy_unit):
+def _materials(root, summary, config, result, prefix, label, factor, energy_unit,
+               length_factor, length_label):
     is_pimd = summary.get("task", config.get("task")) == "pimd"
     series, gyration, energy_errors = [], [], []
     beads = config.get("beads")
@@ -356,7 +361,7 @@ def _materials(root, summary, config, result, prefix, label, factor, energy_unit
                 rg = np.asarray(data["radii_gyration_squared"], dtype=float)
                 if rg.ndim != 2 or rg.shape[0] != len(times) or not rg.shape[1] or not np.isfinite(rg).all() or np.any(rg < 0):
                     raise ValueError("radius-of-gyration samples have invalid values")
-                gyration.append(_series(path.stem, times * _TIME_FS, np.sqrt(rg.mean(axis=1)) * BOHR_ANGSTROM))
+                gyration.append(_series(path.stem, times * _TIME_FS, np.sqrt(rg.mean(axis=1)) * length_factor))
         except (OSError, ValueError, TypeError, KeyError) as exc:
             _skip(result, "materials-" + path.name, exc)
     if series:
@@ -367,7 +372,7 @@ def _materials(root, summary, config, result, prefix, label, factor, energy_unit
                        if is_pimd else "Energy-zero-independent per-bead differences from the first saved frame. Saved-frame conservation does not establish timestep convergence."))
     if gyration:
         _plot(result, prefix, label, "gyration", "Ring-polymer size", "Sampling time (fs)" if is_pimd else "Time (fs)",
-              "√mean(Rg²) (Å)", kind="line", series=gyration,
+              f"√mean(Rg²) ({length_label})", kind="line", series=gyration,
               caption="Square root of the atom-averaged squared ring-polymer radius of gyration; first four saved replicas at most.")
     if energy_errors:
         result["metrics"]["nve_energy"] = energy_errors
@@ -376,7 +381,7 @@ def _materials(root, summary, config, result, prefix, label, factor, energy_unit
         result["metrics"]["sampling_diagnostics"] = summary.get("sampling_diagnostics", [])
 
 
-def _diffusion(root, summary, result, prefix, label):
+def _diffusion(root, summary, result, prefix, label, length_factor, length_label):
     data = summary.get("diffusion")
     if not isinstance(data, dict):
         path = root / "results" / "diffusion.json"
@@ -395,13 +400,13 @@ def _diffusion(root, summary, result, prefix, label):
         raise ValueError("unsupported diffusion MSD units")
     times = _clock(data["lag_time_fs"], "lag time")
     msd = _vector(data["msd_au"], "MSD", len(times))
-    _plot(result, prefix, label, "msd", "Centroid mean-square displacement", "Lag time (fs)", "MSD (Å²)",
-          kind="line", series=[_series("MSD", times, msd * BOHR_ANGSTROM**2)],
+    _plot(result, prefix, label, "msd", "Centroid mean-square displacement", "Lag time (fs)", f"MSD ({length_label}²)",
+          kind="line", series=[_series("MSD", times, msd * length_factor**2)],
           caption="Saved unwrapped-centroid estimator. The producer's diffusion acceptance and fitting range are retained in report metrics.")
     if data.get("vacf_au") is not None:
         velocity = _vector(data["vacf_au"], "VACF", len(times))
-        _plot(result, prefix, label, "vacf", "Velocity autocorrelation", "Lag time (fs)", "VACF (Å² fs⁻²)",
-              kind="line", series=[_series("VACF", times, velocity * (BOHR_ANGSTROM / _TIME_FS)**2)])
+        _plot(result, prefix, label, "vacf", "Velocity autocorrelation", "Lag time (fs)", f"VACF ({length_label}² fs⁻²)",
+              kind="line", series=[_series("VACF", times, velocity * (length_factor / _TIME_FS)**2)])
     if data.get("vacf_integral_m2_s") is not None:
         integral = _vector(data["vacf_integral_m2_s"], "VACF integral", len(times))
         _plot(result, prefix, label, "vacf-integral", "Integrated velocity autocorrelation", "Lag time (fs)", "Running integral (m² s⁻¹)",
@@ -475,7 +480,8 @@ def _pcet(summary, result, prefix, label):
 
 
 def collect_observables(run_path: Path, summary: dict, config: dict, *,
-                        prefix: str, label: str, energy_unit="kcal/mol") -> dict:
+                        prefix: str, label: str, energy_unit="kcal/mol",
+                        length_unit="angstrom") -> dict:
     """Collect plot specifications and diagnostics from existing workflow output.
 
     Plot arrays are not decimated; individual trajectory/replica figures select
@@ -486,15 +492,19 @@ def collect_observables(run_path: Path, summary: dict, config: dict, *,
         raise ValueError("summary and config must be mappings")
     prefix = re.sub(r"[^A-Za-z0-9_-]+", "-", str(prefix)).strip("-") or "run"
     factor = 1 / unit_factor(energy_unit, "energy")
+    length_factor = 1 / unit_factor(length_unit, "length")
+    length_label = "Å" if length_unit == "angstrom" else length_unit
     result = {"plots": [], "metrics": {}, "findings": [], "skipped": [], "sources": [], "source_records": []}
     task = summary.get("task", config.get("task"))
     adapters = []
     if task == "drpmd":
-        adapters.append(("scattering", lambda: _scattering(root, summary, config, result, prefix, label, factor, energy_unit)))
+        adapters.append(("scattering", lambda: _scattering(root, summary, config, result, prefix, label, factor, energy_unit,
+                                                           length_factor, length_label)))
     if task in ("pimd", "diffusion"):
-        adapters.append(("materials", lambda: _materials(root, summary, config, result, prefix, label, factor, energy_unit)))
+        adapters.append(("materials", lambda: _materials(root, summary, config, result, prefix, label, factor, energy_unit,
+                                                         length_factor, length_label)))
     if task == "diffusion":
-        adapters.append(("diffusion", lambda: _diffusion(root, summary, result, prefix, label)))
+        adapters.append(("diffusion", lambda: _diffusion(root, summary, result, prefix, label, length_factor, length_label)))
     if task == "pcet":
         adapters.append(("pcet", lambda: _pcet(summary, result, prefix, label)))
     for name, adapter in adapters:

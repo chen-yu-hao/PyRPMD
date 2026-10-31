@@ -46,6 +46,28 @@ pyrpmd report runs/rate-300 runs/rate-500 runs/rate-700 \
 显式指定同一个系列表示你认为这些计算适合一起比较。仍需检查反应、势能、同位素、CV、
 归一化和采样方案是否一致；单位相同本身不足以证明可比性。
 
+## Nature 风格绘图
+
+使用可选 `nature` 样式，采用紧凑字号、易区分的配色、简洁坐标轴和数据区之外的图例：
+
+```bash
+pyrpmd report runs/my-run --output reports/nature \
+  --style nature --formats png pdf svg
+pyrpmd run examples/manual/quickstart.inp --output runs/nature-demo \
+  --report --report-style nature
+pyrpmd analyze runs/my-run --report --report-style nature \
+  --report-output reports/nature-reanalysis
+```
+
+图宽为 89 mm 或 183 mm，文字为 6–7 pt，主曲线为 1 pt，不加背景网格。
+PDF 嵌入 Type 42 字体，SVG 保留可编辑文字；长图例换行并放在独立区域。
+完整计算名称、标题和绘图数据均保留。尺寸与样式参考
+[Nature 绘图指南](https://research-figure-guide.nature.com/figures/building-and-exporting-figure-panels/)
+和[图形要求](https://research-figure-guide.nature.com/figures/preparing-figures-our-specifications/)。
+PDF/SVG 用于编辑，PNG 用于预览；最终拼版仍应按投稿尺寸检查。
+
+默认仍使用 `jctc` 样式。`report.json` 记录所选样式；快捷入口中的 `--report-style` 必须与 `--report` 一起使用。
+
 ## 输出内容与文件保护
 
 | 输出 | 用途 |
@@ -75,6 +97,7 @@ pyrpmd report runs/my-run --output reports/my-run --overwrite
 | 一维 PMF/FES | 曲线、有效点、已有不确定度、极值与元数据 |
 | 二维 FES | 自由能分布及已有采样覆盖、掩膜信息 |
 | 伞抽样 | 保存的窗口分布、重叠以及约束和采样诊断 |
+| 自适应伞抽样 pilot | 插窗、overlap/ESS 与保存的阈值，以及已有的覆盖率和 pilot 长度；尚未开始生产采样时也能诊断 |
 | 气相、位点或表面速率 | PMF、传输系数与原工作流的速率诊断 |
 | 多个可比计算 | PMF/recrossing 叠图、速率温度依赖 |
 | Metadynamics | 保存的 bias/FES 及已有历史信息 |
@@ -90,6 +113,8 @@ pyrpmd report runs/my-run --output reports/my-run --overwrite
 `--energy-unit` 和 `--length-unit` 只改变可以转换的展示单位，默认是 `kcal/mol` 和 `angstrom`。
 它们不改变计算，也不会把角度或无量纲 CV 变成长度。双分子速率的单位是
 `cm3 molecule^-1 s^-1`，一阶速率是 `s^-1`；不同维度的速率不会混成一个系列。
+长度选项同样适用于质心对距离、环聚合物大小、截面及其区间、MSD 和 VACF。
+名称中明确含 `bohr` 或 `m2_s` 的汇总字段仍保留原始单位，便于追溯。
 
 二维自由能面与二维势能切面不同。自由能面的横纵轴必须是实际采样的 CV，其数值对应这些坐标下的
 概率密度测度。只有采样坐标本来就是 `r(H1,H2)` 和 `r(H2,H3)`，才能把图标成这两个键长。
@@ -102,6 +127,12 @@ pyrpmd report runs/my-run --output reports/my-run --overwrite
 
 报告不会认证物理收敛。一条平滑 PMF、看似平坦的 recrossing 尾部或成功运行的短测试，仍需要
 [科学约定](science.md)中的收敛研究来支持正式预测。
+
+可选的误差、计数、overlap 或 ESS 数组缺失或损坏时，会单独记录原因，保留其他有效图。
+显式误差掩膜优先于有限占位值；长曲线中仅个别位置有有效误差时，仍会显示对应误差棒。
+
+自适应进展从保存的计划读取，并核对完整性与版本，不依赖已完成的 FES。
+pilot 样本不混入生产分布；达到 pilot 阈值也不代表生产计算已经收敛。
 
 ## 正式结果与诊断估计
 
@@ -191,6 +222,7 @@ report = generate_report(
     output="reports/rates",
     formats=("png", "pdf", "svg"),
     dpi=600,
+    style="nature",
     energy_unit="kcal/mol",
     length_unit="angstrom",
     labels=["300 K", "500 K", "700 K"],
@@ -212,8 +244,21 @@ PMF、recrossing、同位素和速率比较参考
 [Post-RPMDrate](https://github.com/chen-yu-hao/Post-RPMDrate)提供了将采样诊断与最终结果一起展示的功能参考；
 本模块独立实现，不导入或复制其源代码。
 
-紧凑图宽度为 3.33 in，较大图为 7 in，字体至少 8 pt。默认输出 300 dpi 彩色 PNG 与矢量 PDF，
+默认 `jctc` 样式的紧凑图宽度为 3.33 in，较大图为 7 in，字体至少 8 pt。默认输出 300 dpi 彩色 PNG 与矢量 PDF，
 可显式增加 SVG 或调整 DPI。
 [JCTC 当前绘图规范](https://researcher-resources.acs.org/publish/author_guidelines?coden=jctcce)
 分别规定彩色、灰度和黑白线图的最低分辨率为 300、600 和 1200 dpi。
 投稿前仍应按最终版面大小检查导出图片。
+
+## 复现分析出图测试
+
+```bash
+python -m pytest -q tests/test_report*.py
+python -m benchmarks.analysis_reports.validate \
+  --output runs/report-validation --style nature --formats png pdf svg
+```
+
+第二条命令实际运行短的解析势动力学：一维自适应采样、非方格二维 FES、well-tempered
+metadynamics、配对 recrossing，以及耗尽预算的 pilot。程序把绘图 CSV 与原始保存数组逐值核对，
+检查报告生成没有改动输入结果，并保存原始计算、报告和 `validation.json`。
+这些验证覆盖软件与有限采样流程，不证明真实化学反应速率已经物理收敛。

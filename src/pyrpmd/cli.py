@@ -24,6 +24,7 @@ def _report_shortcut_options(p):
     p.add_argument("--report", action="store_true", help="Generate saved-result figures and an HTML/JSON report (requires the plots extra)")
     p.add_argument("--report-output", help="Report directory (default: RUN/analysis-report)")
     p.add_argument("--report-overwrite", action="store_true", help="Replace an existing generated report, preserving source results")
+    p.add_argument("--report-style", choices=("jctc", "nature"), help="Figure style for --report (default: jctc)")
 
 
 def parser():
@@ -86,6 +87,7 @@ def parser():
     report.add_argument("--output", "-o", help="Report destination; required for multiple runs")
     report.add_argument("--formats", nargs="+", choices=("png", "pdf", "svg"), default=["png", "pdf"])
     report.add_argument("--dpi", type=int, default=300, help="Raster DPI (default: 300 for color figures)")
+    report.add_argument("--style", choices=("jctc", "nature"), default="jctc", help="Figure style and publication size (default: jctc)")
     report.add_argument("--energy-unit", choices=("kcal/mol", "kJ/mol", "eV", "hartree"), default="kcal/mol")
     report.add_argument("--length-unit", choices=("angstrom", "bohr", "nm"), default="angstrom")
     report.add_argument("--labels", nargs="+", help="One display label per run")
@@ -159,12 +161,13 @@ def _report_summary(report):
 
 
 def _report_after_result(args, result, directory):
-    if not args.report and (args.report_output or args.report_overwrite):
-        raise InputError("--report-output and --report-overwrite require --report")
+    if not args.report and (args.report_output or args.report_overwrite or args.report_style):
+        raise InputError("--report-output, --report-overwrite and --report-style require --report")
     from .parallel import is_root
     if args.report and is_root() and result is not None:
         from .analysis.reporting import generate_report
-        report = generate_report(directory, output=args.report_output, overwrite=args.report_overwrite)
+        report = generate_report(directory, output=args.report_output, overwrite=args.report_overwrite,
+                                 style=args.report_style or "jctc")
         return {**result, "analysis_report": _report_summary(report)}
     return result
 
@@ -234,8 +237,8 @@ def _pes(args):
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
-        if args.command in ("run", "analyze") and not args.report and (args.report_output or args.report_overwrite):
-            raise InputError("--report-output and --report-overwrite require --report")
+        if args.command in ("run", "analyze") and not args.report and (args.report_output or args.report_overwrite or args.report_style):
+            raise InputError("--report-output, --report-overwrite and --report-style require --report")
         if args.command == "run":
             from .runner import run
 
@@ -330,7 +333,7 @@ def main(argv=None):
             from .analysis.reporting import generate_report
             from .parallel import root_call
             report = root_call(generate_report, args.directories, output=args.output,
-                formats=args.formats, dpi=args.dpi, energy_unit=args.energy_unit, length_unit=args.length_unit,
+                formats=args.formats, dpi=args.dpi, style=args.style, energy_unit=args.energy_unit, length_unit=args.length_unit,
                 labels=args.labels, series=args.series, reference=args.reference,
                 include_estimates=args.include_estimates, arrhenius_fit=args.fit_arrhenius,
                 kie=args.kie, convergence=args.convergence, overwrite=args.overwrite)

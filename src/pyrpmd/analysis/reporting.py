@@ -37,6 +37,8 @@ REFERENCES = [
      "url": "https://github.com/chen-yu-hao/Post-RPMDrate"},
     {"title": "JCTC author guidelines: graphics size, resolution and accessibility",
      "url": "https://researcher-resources.acs.org/publish/author_guidelines?coden=jctcce"},
+    {"title": "Nature research figure guide: sizing, editable text and accessible graphics",
+     "url": "https://research-figure-guide.nature.com/figures/building-and-exporting-figure-panels/"},
 ]
 
 
@@ -88,12 +90,14 @@ def _skip(run, figure, reason):
 
 
 def _guard(run, figure, action):
-    """A damaged optional artifact must be visible without hiding other results."""
+    """Record optional-artifact failures and return whether collection succeeded."""
     try:
         action()
+        return True
     except (OSError, ValueError, KeyError, TypeError, ImportError) as error:
         _skip(run, figure, str(error))
         _finding(run, "artifact_unavailable", f"{figure}: {error}")
+        return False
 
 
 def _line(run, suffix, title, xlabel, ylabel, series, caption, **extra):
@@ -266,10 +270,15 @@ def _fes_artifacts(run, folder, energy_unit, length_unit):
         _finding(run, "disconnected_overlap", "Disconnected umbrella overlap: a single global FES cannot be identified.")
     if np.any(mask):
         _finding(run, "masked_fes_bins", f"{int(mask.sum())}/{mask.size} FES bins are unsupported and remain unfilled.", "info")
-    error = np.asarray(data.get("standard_error", np.full(f.shape, np.nan)), float)
-    if error.shape != f.shape:
-        raise ValueError("FES uncertainty shape differs from the grid")
-    error = np.where(mask | (error < 0), np.nan, error)
+    error = np.full(f.shape, np.nan)
+    def uncertainty():
+        nonlocal error
+        saved = np.asarray(data.get("standard_error", error), float)
+        unavailable = np.asarray(data.get("standard_error_mask", np.zeros(f.shape)), bool)
+        if saved.shape != f.shape or unavailable.shape != f.shape:
+            raise ValueError("FES uncertainty and its mask must match the grid")
+        error = np.where(mask | unavailable | ~np.isfinite(saved) | (saved < 0), np.nan, saved)
+    _guard(run, "FES uncertainty", uncertainty)
     if dimension == 1:
         x = (edges[0][:-1] + edges[0][1:]) * 0.5 * axes[0][1]
         plot = _line(run, prefix, f"{run['label']}: {'bias FES' if is_meta else 'FES'}", axes[0][0],
@@ -290,10 +299,10 @@ def _fes_artifacts(run, folder, energy_unit, length_unit):
                                    "title": f"{run['label']}: FES uncertainty", "z": error * factor,
                                    "mask": mask | ~np.isfinite(error), "colorbar": f"Standard error ({energy_unit})",
                                    "caption": "Saved bootstrap standard error (1 SE). Missing uncertainty is masked, not zero."})
-    if "raw_count" in data:
+    def counts():
         count = np.asarray(data["raw_count"], float)
-        if count.shape != f.shape or np.any(count[np.isfinite(count)] < 0):
-            raise ValueError("Raw counts must match the FES and be nonnegative")
+        if count.shape != f.shape or not np.isfinite(count).all() or np.any(count < 0):
+            raise ValueError("Raw counts must match the FES and be finite and nonnegative")
         if dimension == 1:
             _line(run, prefix + "-counts", f"{run['label']}: sampling coverage", axes[0][0], "Saved sample count",
                   [{"label": "Raw count", "x": x, "y": count}], "Raw saved frames are correlated and are not independent sample counts.")
@@ -302,25 +311,33 @@ def _fes_artifacts(run, folder, energy_unit, length_unit):
                                    "xlabel": axes[0][0], "ylabel": axes[1][0], "xedges": edges[0] * axes[0][1],
                                    "yedges": edges[1] * axes[1][1], "z": count, "colorbar": "Saved sample count",
                                    "caption": "Actual raw counts, including zero-count bins. Counts do not measure statistical independence."})
-    if "overlap" in data:
+    if "raw_count" in data:
+        _guard(run, "FES sampling coverage", counts)
+    def overlap_matrix():
         overlap = np.asarray(data["overlap"], float)
-        if overlap.ndim != 2 or overlap.shape[0] != overlap.shape[1]:
-            raise ValueError("Overlap must be a square stream matrix")
+        if (overlap.ndim != 2 or not overlap.size or overlap.shape[0] != overlap.shape[1]
+                or not np.isfinite(overlap).all() or np.any(overlap < 0)
+                or np.any(overlap > 1 + 1e-8)):
+            raise ValueError("Overlap must be a nonempty square stream matrix with finite values between zero and one")
         stream_edges = np.arange(overlap.shape[0] + 1) - 0.5
         run["_plots"].append({"id": f"{run['id']}-{prefix}-overlap", "kind": "heatmap",
                                "title": f"{run['label']}: MBAR overlap", "xlabel": "Sampling stream j", "ylabel": "Sampling stream i",
                                "xedges": stream_edges, "yedges": stream_edges, "z": overlap.T,
                                "colorbar": "Overlap O(i,j)", "caption": "Saved MBAR overlap matrix. Stream indices can include independent replicas of the same window."})
-    if "effective_samples_per_stream" in data:
+    if "overlap" in data:
+        _guard(run, "MBAR overlap", overlap_matrix)
+    def effective_samples():
         ess = np.asarray(data["effective_samples_per_stream"], float)
-        if ess.ndim != 1:
-            raise ValueError("Effective sample counts must be a 1D stream array")
+        if ess.ndim != 1 or not len(ess) or not np.isfinite(ess).all() or np.any(ess < 0):
+            raise ValueError("Effective sample counts must be a nonempty finite nonnegative 1D stream array")
         _line(run, prefix + "-ess", f"{run['label']}: effective samples", "Sampling stream", "Estimated effective samples",
               [{"label": "ESS", "x": np.arange(len(ess)), "y": ess, "style": "points"}],
               "Correlation-adjusted effective sample size, estimated by the existing analysis. This is a sampling diagnostic, not proof of equilibration.")
-        run["metrics"][f"{prefix}_minimum_stream_ess"] = float(np.nanmin(ess)) if len(ess) else None
+        run["metrics"][f"{prefix}_minimum_stream_ess"] = float(np.min(ess))
+    if "effective_samples_per_stream" in data:
+        _guard(run, "Effective sample counts", effective_samples)
     from .report_sampling import collect_sampling
-    collect_sampling(run, path, summary, axes, energy_unit)
+    _guard(run, "Window sampling diagnostics", lambda: collect_sampling(run, path, summary, axes, energy_unit))
 
 
 def _rate_metrics(run):
@@ -346,7 +363,7 @@ def _rate_metrics(run):
             run["metrics"][key] = pmf[key]
     if rate is None:
         _finding(run, "rate_withheld", "The saved workflow withholds the thermal rate. Any diagnostic estimate remains a candidate and is excluded from default rate comparisons.")
-    if error is None:
+    if run["_rate"]["standard_error"] is None:
         _finding(run, "rate_uncertainty_unavailable", "Complete saved rate uncertainty is unavailable; conditional recrossing error is not substituted.")
     if _number(summary.get("maximum_endpoint_energy_error_kbt")) is not None and summary["maximum_endpoint_energy_error_kbt"] > 0.1:
         _finding(run, "child_energy_error", "Saved child endpoint energy error exceeds 0.1 kBT per bead; inspect the timestep.")
@@ -365,10 +382,16 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
     summary_path = path / "results" / "summary.json"
     if not summary_path.is_file():
         summary_path = path / "summary.json"
-    summary = run["_summary"] = _json(run, summary_path)
     config_path, system_path = path / "input" / "resolved.json", path / "input" / "system.json"
     config = run["_config"] = _json(run, config_path) if config_path.is_file() else {}
     run["_system"] = _json(run, system_path) if system_path.is_file() else config.get("system", {})
+    if not summary_path.is_file() and any((path / part / "adaptive-plan.json").is_file()
+                                         for part in ("", "umbrella", "pmf")):
+        summary = {"task": config.get("task", "unknown"), "status": "summary_unavailable"}
+        _finding(run, "summary_unavailable", "No saved result summary is available. Adaptive plan diagnostics describe the recorded pilot state only; final results and convergence are unavailable.")
+    else:
+        summary = _json(run, summary_path)
+    run["_summary"] = summary
     run["task"] = summary.get("task", config.get("task", "unknown"))
     run["status"] = summary.get("status", "not_recorded")
     run["converged"] = summary.get("converged")
@@ -388,17 +411,37 @@ def collect_run(directory, *, label=None, prefix="run-001", energy_unit="kcal/mo
         _finding(run, "resolved_input_missing", "Saved resolved input is unavailable; missing temperatures, CV names and physics identity are not guessed.")
     _finding(run, "convergence_scope", summary.get("convergence_note", "This report preserves producer diagnostics; numerical and physical convergence require controlled comparisons."), "info")
     _rate_metrics(run)
+    def adaptive_progress(folder):
+        from .report_sampling import collect_adaptive_progress
+        if run["task"] == "unknown":
+            # In a partial archive the plan location can survive without either
+            # the summary or resolved input. Retain each plan's location rather
+            # than guessing a task or assigning duplicate figure identifiers.
+            for candidate in (path, path / "umbrella", path / "pmf"):
+                collect_adaptive_progress(run, candidate,
+                                          prefix="sampling" if candidate == path else candidate.name)
+        else:
+            collect_adaptive_progress(run, folder)
     if run["task"] in ("rate", "surface_rate", "site_rate"):
         _rate_artifacts(run, energy_unit, length_unit)
         folder = path / ("pmf" if run["task"] == "site_rate" else "umbrella")
+        collected = False
         if (folder / "fes.npz").exists():
-            _guard(run, "umbrella sampling", lambda: _fes_artifacts(run, folder, energy_unit, length_unit))
+            collected = _guard(run, "umbrella sampling", lambda: _fes_artifacts(run, folder, energy_unit, length_unit))
         else:
             _skip(run, "umbrella sampling", "Saved umbrella/fes.npz or pmf/fes.npz is unavailable")
+        if not collected:
+            adaptive_progress(folder)
     elif (path / "fes.npz").exists():
-        _guard(run, "free-energy surface", lambda: _fes_artifacts(run, path, energy_unit, length_unit))
+        if not _guard(run, "free-energy surface", lambda: _fes_artifacts(run, path, energy_unit, length_unit)):
+            adaptive_progress(path)
+    else:
+        adaptive_progress(path)
+        if run["task"] in ("fes", "metadynamics"):
+            _skip(run, "free-energy surface", "Saved fes.npz is unavailable; available pilot diagnostics are reported separately")
     from .report_observables import collect_observables
-    supplemental = collect_observables(path, summary, config, prefix=prefix, label=run["label"], energy_unit=energy_unit)
+    supplemental = collect_observables(path, summary, config, prefix=prefix, label=run["label"],
+                                       energy_unit=energy_unit, length_unit=length_unit)
     run["_plots"].extend(supplemental.get("plots", []))
     run["metrics"].update(supplemental.get("metrics", {}))
     run["findings"].extend(supplemental.get("findings", []))
@@ -457,7 +500,8 @@ def _validate_destination(output, runs, overwrite):
 def generate_report(directories, output=None, *, formats=("png", "pdf"), dpi=300,
                     energy_unit="kcal/mol", length_unit="angstrom", labels=None,
                     series=None, reference=None, include_estimates=False,
-                    arrhenius_fit=False, kie=None, convergence=None, overwrite=False):
+                    arrhenius_fit=False, kie=None, convergence=None, overwrite=False,
+                    style="jctc"):
     """Generate figures, reusable CSV data and an HTML/JSON/Markdown report.
 
     ``directories`` is a path or sequence of run paths.  Multiple runs require an
@@ -482,6 +526,8 @@ def generate_report(directories, output=None, *, formats=("png", "pdf"), dpi=300
         raise ValueError("Figure formats must be png, pdf or svg")
     if isinstance(dpi, bool) or not isinstance(dpi, int) or not 72 <= dpi <= 2400:
         raise ValueError("dpi must be an integer between 72 and 2400")
+    if style not in ("jctc", "nature"):
+        raise ValueError("Figure style must be jctc or nature")
     if output is None:
         if len(directories) != 1:
             raise ValueError("An explicit report output is required for multiple runs")
@@ -507,7 +553,7 @@ def generate_report(directories, output=None, *, formats=("png", "pdf"), dpi=300
     report = {
         "schema": SCHEMA, "schema_version": 1, "title": "PyRPMD analysis report",
         "generated_at": datetime.now(timezone.utc).isoformat(), "software_version": __version__,
-        "output": str(output), "settings": {"formats": list(formats), "dpi": dpi,
+        "output": str(output), "settings": {"formats": list(formats), "dpi": dpi, "style": style,
             "energy_unit": energy_unit, "length_unit": length_unit, "include_estimates": include_estimates,
             "arrhenius_fit": arrhenius_fit, "kie": kie, "convergence": convergence, "series": series},
         "runs": [{k: v for k, v in run.items() if not k.startswith("_")} for run in runs],
@@ -521,7 +567,7 @@ def generate_report(directories, output=None, *, formats=("png", "pdf"), dpi=300
     stage = Path(tempfile.mkdtemp(prefix=".pyrpmd-report-", dir=output.parent))
     try:
         from .report_render import render_figures, write_report
-        report["figures"] = render_figures(plots, stage, formats=formats, dpi=dpi)
+        report["figures"] = render_figures(plots, stage, formats=formats, dpi=dpi, style=style)
         report["dependencies"] = {name: importlib.metadata.version(name) for name in ("numpy", "scipy", "matplotlib")}
         with (stage / "summary.csv").open("w", newline="", encoding="utf-8") as stream:
             writer = csv.writer(stream)

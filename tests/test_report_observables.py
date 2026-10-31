@@ -73,8 +73,8 @@ def test_fixed_energy_uses_cross_section_not_thermal_rate(tmp_path):
         channels={"exchange": {"count": 3, "event_fraction": .3,
                                 "rate_cm3_molecule_s": None, "cross_section_bohr2": 2.5}})
     result = collect(tmp_path, summary)
-    assert plot(result, "channel-estimates")["ylabel"] == "Cross section (bohr²)"
-    assert plot(result, "channel-estimates")["y"] == [2.5]
+    assert plot(result, "channel-estimates")["ylabel"] == "Cross section (Å²)"
+    assert plot(result, "channel-estimates")["y"] == pytest.approx([2.5 * BOHR_ANGSTROM ** 2])
     assert plot(result, "channel-estimates")["yerr"] == [[None], [None]]
 
 

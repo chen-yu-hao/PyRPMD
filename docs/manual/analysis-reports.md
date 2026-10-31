@@ -53,6 +53,32 @@ An explicit series name is your assertion that the runs form a meaningful
 comparison. Check the reaction, potential, isotope, CV, normalization and
 sampling protocol. Compatible units alone do not establish comparability.
 
+## Nature-style figures
+
+Use the optional `nature` profile for compact typography, accessible colors,
+clean axes and legends outside the data panel:
+
+```bash
+pyrpmd report runs/my-run --output reports/nature \
+  --style nature --formats png pdf svg
+pyrpmd run examples/manual/quickstart.inp --output runs/nature-demo \
+  --report --report-style nature
+pyrpmd analyze runs/my-run --report --report-style nature \
+  --report-output reports/nature-reanalysis
+```
+
+The profile uses 89 mm or 183 mm figure widths, 6–7 pt text, 1 pt curves and no
+background grid. PDF embeds Type 42 fonts and SVG retains editable text. Long
+legends wrap into a separate row; full run labels, titles and numerical plot data
+remain available. The profile follows the
+[Nature research figure guide](https://research-figure-guide.nature.com/figures/building-and-exporting-figure-panels/)
+and [graph specifications](https://research-figure-guide.nature.com/figures/preparing-figures-our-specifications/).
+Use PDF or SVG for editable artwork and PNG for preview. Final panel assembly
+still needs inspection at its intended publication size.
+
+The default `jctc` profile remains available. The selected profile is recorded in
+`report.json`; `--report-style` requires `--report` on the shortcut commands.
+
 ## What is written
 
 | Output | Purpose |
@@ -89,6 +115,7 @@ data are reported; they are not filled with invented values.
 | One-dimensional PMF/FES | Profile, supported points, available uncertainty, extrema and metadata |
 | Two-dimensional FES | Free-energy map and available sampling/mask information |
 | Umbrella sampling | Window distributions, overlap and restraint/sampling diagnostics when saved |
+| Adaptive umbrella pilots | Window insertion, overlap/ESS and saved target thresholds; coverage and pilot length when recorded, including runs that stopped before production |
 | Gas, site or surface rates | PMF, transmission coefficient and source rate diagnostics |
 | Several compatible runs | PMF/recrossing overlays and temperature-dependent rate comparisons |
 | Metadynamics | Saved bias/FES and available history diagnostics |
@@ -106,6 +133,9 @@ The defaults are `kcal/mol` and `angstrom`; they do not change the simulation or
 turn an angular/dimensionless CV into a distance. Rate dimensions are kept
 separate: bimolecular rates use `cm3 molecule^-1 s^-1`, and first-order rates use
 `s^-1`.
+The length option also applies to centroid pair distances, ring-polymer size,
+cross sections and their intervals, MSD and VACF. Metrics whose names explicitly
+contain `bohr` or `m2_s` retain their source units for provenance.
 
 A two-dimensional FES is not a two-dimensional potential-energy cut. Its axes
 are the CVs actually sampled, and its values depend on their probability-density
@@ -122,6 +152,16 @@ failed trajectories or plateau tests remain relevant after plotting.
 The report does not certify physical convergence. A plausible PMF, apparently
 flat recrossing tail or successful pipeline test still needs the convergence
 studies described in [Scientific conventions](science.md).
+
+A missing or malformed optional uncertainty, count, overlap or ESS array is
+reported separately; valid FES and other diagnostics remain available. Explicit
+uncertainty masks take precedence over finite placeholder values. Sparse valid
+error estimates remain visible as error bars even on long curves.
+
+Adaptive progress comes from the saved plan, including its integrity check and
+schema version. It does not require a completed FES. Pilot samples remain
+excluded from production distributions, and meeting pilot targets does not
+certify production convergence.
 
 ## Published rates and diagnostic estimates
 
@@ -225,6 +265,7 @@ report = generate_report(
     output="reports/rates",
     formats=("png", "pdf", "svg"),
     dpi=600,
+    style="nature",
     energy_unit="kcal/mol",
     length_unit="angstrom",
     labels=["300 K", "500 K", "700 K"],
@@ -249,9 +290,24 @@ on the [NO/Pd(111) study](https://doi.org/10.1039/D2SC06559B).
 reference for displaying sampling diagnostics alongside final results. Its code
 is not imported or copied.
 
-The profile uses 3.33 in compact plots or 7 in larger figures and at least 8 pt
+The default `jctc` profile uses 3.33 in compact plots or 7 in larger figures and at least 8 pt
 type. Default outputs are 300 dpi color PNG and vector PDF; SVG and other DPI
 values are explicit options. The
 [current JCTC graphics guidance](https://researcher-resources.acs.org/publish/author_guidelines?coden=jctcce)
 specifies 300 dpi for color, 600 dpi for grayscale and 1200 dpi for black-and-white
 line art. Inspect exported figures at their intended publication size.
+
+## Reproduce the reporting validation
+
+```bash
+python -m pytest -q tests/test_report*.py
+python -m benchmarks.analysis_reports.validate \
+  --output runs/report-validation --style nature --formats png pdf svg
+```
+
+The second command runs short analytic-potential trajectories for adaptive 1D
+sampling, a non-square 2D FES, well-tempered metadynamics, paired recrossing and a
+pilot that exhausts its budget. It checks exported CSV values against the saved
+arrays, verifies that reporting leaves source files unchanged, and saves the
+raw runs, report and `validation.json`. These are software and finite-sampling
+checks; the examples do not establish physical convergence of a chemical rate.

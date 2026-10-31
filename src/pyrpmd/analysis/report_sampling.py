@@ -45,9 +45,15 @@ def _read_adaptive_plan(run, path, *, require_frozen=False):
                                sort_keys=True, separators=(",", ":"), allow_nan=False)
         if hashlib.sha256(canonical.encode()).hexdigest() != data["checksum"]:
             raise ValueError("Adaptive plan checksum mismatch")
-    elif require_frozen:
-        raise ValueError("Adaptive plan lacks the checksum required for production centers")
-    if require_frozen and (data.get("schema_version") != 1 or data.get("status") != "frozen"):
+    else:
+        raise ValueError("Adaptive plan lacks the checksum required for saved diagnostics")
+    # Schema 2 adds a persisted pilot/budget schedule; the saved CV centers and
+    # physical stiffness have the same canonical units and shape as schema 1.
+    if data.get("schema_version") not in (1, 2):
+        raise ValueError("Unsupported adaptive plan schema version")
+    if data.get("status") not in ("adapting", "incomplete", "frozen"):
+        raise ValueError("Unsupported adaptive plan status")
+    if require_frozen and data.get("status") != "frozen":
         raise ValueError("Adaptive production centers require a supported frozen plan")
     return data
 
@@ -78,6 +84,8 @@ def _canonical_metadata(config, summary, dimension):
     """Decode numeric/unit declarations, without invoking make_cvs or a PES."""
     umbrella = config.get("umbrella", {})
     units = summary.get("units", ["dimensionless"] * dimension if config.get("task") == "rate" else [])
+    if isinstance(units, str):
+        units = [units]
     dimensions = {"bohr": "length", "angstrom": "length", "radian": "angle", "hartree": "energy", "dimensionless": "dimensionless"}
     if len(units) != dimension or any(unit not in dimensions for unit in units):
         raise ValueError("Canonical CV units are required to decode checkpoint umbrella centers")
@@ -92,14 +100,20 @@ def _canonical_metadata(config, summary, dimension):
     specs = [by_name.get(name, {}) for name in selected] if selected else specs
     declared = []
     for i, spec in enumerate(specs):
-        unit = spec.get("unit", spec.get("units", units[min(i, dimension - 1)]))
-        declared.extend(unit if isinstance(unit, (list, tuple)) else [unit])
+        # A single vector-valued Python CV may declare one common input unit.
+        # The FES dimension identifies its width without importing its factory.
+        width = dimension if len(specs) == 1 else 1
+        default = units if len(specs) == 1 else units[min(i, dimension - 1)]
+        unit = spec.get("unit", spec.get("units", default))
+        declared.extend(unit if isinstance(unit, (list, tuple)) else [unit] * width)
     if len(declared) != dimension:
         declared = units
     scales = [1.0 if unit == "dimensionless" else unit_factor(unit, dim) for unit, dim in zip(declared, dims)]
 
     def component(value, j, atomic=False):
-        factor = 1.0 if atomic or isinstance(value, str) else scales[j]
+        # Quantity pairs, like strings, already carry their own unit. Only
+        # bare numbers inherit the CV's input-unit declaration.
+        factor = scales[j] if not atomic and isinstance(value, (int, float, np.number)) else 1.0
         return parse_quantity(value, dims[j]) * factor
 
     def center(values, atomic=False):
@@ -172,7 +186,7 @@ def _stream_metadata(stream, dimension):
     return stream
 
 
-def _hdf5_streams(run, path, dimension):
+def _hdf5_streams(run, path, dimension, summary):
     import h5py
 
     _source(run, path)
@@ -180,24 +194,46 @@ def _hdf5_streams(run, path, dimension):
     with h5py.File(path, "r") as saved:
         if saved.attrs.get("energy_unit", "hartree") != "hartree":
             raise ValueError("Sampling HDF5 stiffness must use hartree")
+        if "cv_units" in saved.attrs:
+            units = json.loads(saved.attrs["cv_units"])
+            expected = summary.get("units")
+            if isinstance(expected, str):
+                expected = [expected]
+            if not isinstance(units, list) or len(units) != dimension:
+                raise ValueError("Sampling HDF5 CV units do not match the FES dimension")
+            if expected is not None and units != expected:
+                raise ValueError("Sampling HDF5 CV units contradict the saved FES units")
+        if ("measure" in saved.attrs and summary.get("measure") is not None
+                and saved.attrs["measure"] != summary["measure"]):
+            raise ValueError("Sampling HDF5 measure contradicts the saved FES measure")
         if "streams" not in saved:
             raise ValueError("Sampling HDF5 has no raw streams")
         if not isinstance(saved.get("streams", getlink=True), h5py.HardLink):
             raise ValueError("External HDF5 stream links are not supported")
         groups = saved["streams"]
-        for name in sorted(groups, key=lambda key: int(key) if key.isdigit() else key):
+        if not isinstance(groups, h5py.Group):
+            raise ValueError("Sampling HDF5 streams must be a group")
+        for name in sorted(groups, key=lambda key: (not key.isdigit(), int(key) if key.isdigit() else key)):
             if not isinstance(groups.get(name, getlink=True), h5py.HardLink):
                 raise ValueError("External HDF5 stream links are not supported")
             group = groups[name]
+            if not isinstance(group, h5py.Group):
+                raise ValueError("Sampling HDF5 stream entries must be groups")
             data = {}
             for key in ("samples", "center", "stiffness"):
                 if not isinstance(group.get(key, getlink=True), h5py.HardLink):
                     raise ValueError("External HDF5 data links are not supported")
                 dataset = group[key]
+                if not isinstance(dataset, h5py.Dataset):
+                    raise ValueError("Sampling HDF5 stream arrays must be datasets")
                 if dataset.is_virtual or dataset.external:
                     raise ValueError("External/virtual HDF5 sampling storage is not supported")
                 data[key] = dataset[...]
-            data.update(window=int(group.attrs["window"]), replica=int(group.attrs["replica"]))
+            for key in ("window", "replica"):
+                value = group.attrs[key]
+                if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 0:
+                    raise ValueError("Sampling HDF5 window/replica identities must be nonnegative integers")
+                data[key] = int(value)
             result.append(_stream_metadata(data, dimension))
     return result
 
@@ -206,7 +242,7 @@ def _umbrella_streams(run, path, summary, dimension):
     streams = []
     hdf5 = path / "fes.h5"
     if hdf5.exists():
-        _guard(run, "raw HDF5 sampling", lambda: streams.extend(_hdf5_streams(run, hdf5, dimension)))
+        _guard(run, "raw HDF5 sampling", lambda: streams.extend(_hdf5_streams(run, hdf5, dimension, summary)))
     if streams:
         return streams
     checkpoints = sorted((path / "checkpoints").glob("window_*_replica_*.npz"))
@@ -351,11 +387,16 @@ def _metadynamics(run, path, axes, energy_unit, prefix):
             time = np.asarray(data["time_au"], float) * AU_TIME_FS
             if time.ndim != 1 or not len(time) or not np.isfinite(time).all() or np.any(np.diff(time) <= 0):
                 raise ValueError("HILLS time must be finite and increasing")
-            for key, target in (("height_hartree", heights), ("bias_before_hartree", biases)):
+            energies = []
+            for key in ("height_hartree", "bias_before_hartree"):
                 values = np.asarray(data[key], float)
                 if values.shape != time.shape or not np.isfinite(values).all():
                     raise ValueError("HILLS energies must be finite and match the time array")
-                target.append({"label": f"Replica {file.parent.name}", "x": time, "y": values * factor})
+                energies.append(values * factor)
+            # Commit this replica only after every required column is valid.
+            # A skipped HILLS file must not leave a partial height curve behind.
+            for target, values in zip((heights, biases), energies):
+                target.append({"label": f"Replica {file.parent.name}", "x": time, "y": values})
         _guard(run, str(file.relative_to(path)), read)
     caption = "Saved deposited hill history. This is biased sampling time, not reaction time; decreasing hill heights do not establish a converged FES or a kinetic rate."
     for name, title, values in (("hill-height", "deposited hill height", heights), ("hill-bias", "bias before deposition", biases)):
@@ -385,20 +426,103 @@ def _adaptive(run, path, prefix):
         return
     data = _read_adaptive_plan(run, plan)
     rounds = data.get("rounds", [])
+    if not isinstance(rounds, list) or any(not isinstance(row, dict) for row in rounds):
+        raise ValueError("Adaptive diagnostic rounds must be a list of objects")
     run["metrics"][prefix + "_adaptive_status"] = data.get("status")
+    run["metrics"][prefix + "_adaptive_failure_reason"] = data.get("failure_reason")
+    if data["status"] != "frozen":
+        reason = data.get("failure_reason", "Pilot targets have not yet been reached")
+        _finding(run, "adaptation_incomplete", f"Saved adaptive status is {data['status']}: {reason}. Pilot diagnostics remain separate from production.")
     if not rounds:
         _skip(run, "adaptive progress", "Adaptive plan contains no completed diagnostic rounds")
         return
-    x = np.asarray([row["round"] for row in rounds], float)
-    if not np.isfinite(x).all() or np.any(np.diff(x) <= 0):
+
+    def number(value, name, *, upper=None, integer=False, positive=False):
+        if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, float, np.number)):
+            raise ValueError(f"Adaptive {name} must be numeric")
+        value = float(value)
+        if (not np.isfinite(value) or value < 0 or positive and value <= 0
+                or upper is not None and value > upper or integer and value != int(value)):
+            raise ValueError(f"Adaptive {name} is outside its supported range")
+        return value
+
+    x = np.asarray([number(row["round"], "round index", integer=True) for row in rounds])
+    if np.any(np.diff(x) <= 0):
         raise ValueError("Adaptive diagnostic round indices must increase")
+    overlaps, minimum_ess, windows, steps, coverage, targets = [], [], [], [], [], []
+    dimension = None
+    for row in rounds:
+        centers = np.asarray(row["centers"], float)
+        if (centers.ndim != 2 or not len(centers) or centers.shape[1] not in (1, 2)
+                or not np.isfinite(centers).all()
+                or dimension is not None and centers.shape[1] != dimension):
+            raise ValueError("Adaptive round centers must be finite and preserve the CV dimension")
+        dimension = centers.shape[1]
+        ess = row["effective_samples_per_window"]
+        if not isinstance(ess, list) or len(ess) != len(centers):
+            raise ValueError("Adaptive effective sample counts must match each round's windows")
+        minimum_ess.append(min(number(value, "effective sample count") for value in ess))
+        windows.append(len(centers))
+        overlaps.append(number(row["spanning_overlap"], "spanning overlap", upper=1))
+        pilot = row.get("pilot", {})
+        if not isinstance(pilot, dict):
+            raise ValueError("Adaptive pilot schedule must be an object")
+        steps.append(number(pilot["production_steps"], "pilot step count", integer=True, positive=True)
+                     if "production_steps" in pilot else np.nan)
+        saved_coverage = row.get("coverage")
+        if saved_coverage is None:
+            coverage.append(np.nan)
+            targets.append(np.nan)
+        else:
+            if not isinstance(saved_coverage, dict):
+                raise ValueError("Adaptive coverage must be an object")
+            coverage.append(number(saved_coverage["fraction"], "coverage fraction", upper=1))
+            targets.append(number(saved_coverage["target"], "coverage target", upper=1, positive=True))
+    options = data.get("options", {})
+    if not isinstance(options, dict):
+        raise ValueError("Adaptive options must be an object")
+    thresholds = {}
+    for name, key, upper in (("overlap", "target_overlap", 1), ("ess", "min_effective_samples", None)):
+        if key in options:
+            thresholds[name] = number(options[key], key, upper=upper, positive=True)
     caption = "Saved adaptation pilots only; these samples are discarded before production. Pilot overlap/ESS targets do not certify physical or production convergence."
-    metrics = (("overlap", "Spanning-tree overlap", [row.get("spanning_overlap") for row in rounds]),
-               ("ess", "Minimum effective samples per window", [min(row["effective_samples_per_window"], default=np.nan) for row in rounds]),
-               ("windows", "Umbrella windows", [len(row["centers"]) for row in rounds]))
+    metrics = [("overlap", "Spanning-tree overlap", overlaps),
+               ("ess", "Minimum effective samples per window", minimum_ess),
+               ("windows", "Umbrella windows", windows)]
+    if np.isfinite(steps).any():
+        metrics.append(("pilot-steps", "Pilot production steps per stream", steps))
+    if np.isfinite(coverage).any():
+        metrics.append(("coverage", "Fraction of pilot grid meeting ESS target", coverage))
     for name, label, values in metrics:
+        series = [{"label": label, "x": x, "y": values}]
+        if name == "coverage":
+            series.append({"label": "Saved coverage target", "x": x, "y": targets, "style": "dashed"})
+        extra = {"hlines": [{"y": thresholds[name], "label": "Saved pilot target"}]} if name in thresholds else {}
         _line(run, f"{prefix}-adaptive-{name}", f"{run['label']}: adaptive {name}", "Pilot round", label,
-              [{"label": label, "x": x, "y": values}], caption)
+              series, caption, **extra)
+    run.setdefault("sampling_diagnostics", {}).setdefault(prefix, {})["adaptive"] = {
+        "schema_version": data["schema_version"], "status": data["status"],
+        "failure_reason": data.get("failure_reason"), "pilot_targets": thresholds,
+        "rounds": [{"round": int(index), "windows": count, "spanning_overlap": overlap,
+                    "minimum_effective_samples": ess, "pilot_steps_per_stream": step if np.isfinite(step) else None,
+                    "coverage_fraction": fraction if np.isfinite(fraction) else None,
+                    "coverage_target": target if np.isfinite(target) else None}
+                   for index, count, overlap, ess, step, fraction, target
+                   in zip(x, windows, overlaps, minimum_ess, steps, coverage, targets)],
+        "scope": "discarded_adaptation_pilots",
+    }
+
+
+def collect_adaptive_progress(run, path, *, prefix=None):
+    """Collect a checksummed pilot plan even when production never started.
+
+    This entry point needs no FES, CV factory or raw pilot checkpoints. It is
+    also used by complete FES reports so pilot diagnostics have one contract.
+    """
+    path = Path(path)
+    if prefix is None:
+        prefix = "umbrella" if path != Path(run["path"]) else "sampling"
+    _guard(run, "adaptive sampling progress", lambda: _adaptive(run, path, prefix))
 
 
 def collect_sampling(run, path, summary, axes, energy_unit):
@@ -415,4 +539,4 @@ def collect_sampling(run, path, summary, axes, energy_unit):
             else:
                 _skip(run, "raw umbrella sampling", "Neither fes.h5 streams nor saved window checkpoints are available")
         _guard(run, "raw umbrella diagnostics", umbrella)
-    _guard(run, "adaptive sampling progress", lambda: _adaptive(run, path, prefix))
+    collect_adaptive_progress(run, path)

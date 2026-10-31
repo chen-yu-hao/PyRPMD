@@ -162,19 +162,22 @@ def test_cli_report_and_analyze_shortcut(tmp_path, capsys):
     pytest.importorskip("matplotlib")
     source = _rate(tmp_path)
     out = tmp_path / "report-cli"
-    assert main(["report", str(source), "--output", str(out), "--formats", "svg"]) == 0
+    assert main(["report", str(source), "--output", str(out), "--formats", "svg", "--style", "nature"]) == 0
     data = json.loads(capsys.readouterr().out)
     assert data["figures"] >= 2 and Path(data["html"]).exists()
+    assert json.loads((out / "report.json").read_text())["settings"]["style"] == "nature"
     out2 = tmp_path / "report-analyze"
-    assert main(["analyze", str(source), "--report", "--report-output", str(out2)]) == 0
+    assert main(["analyze", str(source), "--report", "--report-output", str(out2), "--report-style", "nature"]) == 0
     data = json.loads(capsys.readouterr().out)
     assert "analysis_report" in data and data["rate_cm3_s"] == 2e-12
+    assert json.loads((out2 / "report.json").read_text())["settings"]["style"] == "nature"
 
 
 def test_run_shortcut_with_actual_harmonic_workflow(tmp_path, capsys):
     pytest.importorskip("matplotlib")
     source = tmp_path / "actual"
     example = Path(__file__).resolve().parents[1] / "examples/manual/quickstart.inp"
-    assert main(["run", str(example), "--output", str(source), "--report"]) == 0
+    assert main(["run", str(example), "--output", str(source), "--report", "--report-style", "nature"]) == 0
     result = json.loads(capsys.readouterr().out)
     assert result["task"] == "fes" and result["analysis_report"]["figures"] >= 3
+    assert json.loads((source / "analysis-report/report.json").read_text())["settings"]["style"] == "nature"
