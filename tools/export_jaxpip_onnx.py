@@ -54,10 +54,9 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
     if model.descriptor.basis_info.num_atoms != n or jnp.dtype(model.dtype) != jnp.float64:
         raise ValueError("model atom count/float64 precision mismatch")
 
-    def raw_batch(q):
+    @eqx.filter_jit
+    def batch_fn(q):
         return jax.vmap(model.get_energy_and_forces)(q)
-
-    batch_fn = eqx.filter_jit(raw_batch)
 
     @eqx.filter_jit
     def energy_fn(q):
@@ -84,16 +83,20 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
     np.testing.assert_allclose(reference[0][1][0], numerical, atol=1e-5, rtol=1e-4,
                                err_msg="JaxPIP forces fail finite differences in model units")
 
-    # Freeze the already differentiated primitive graph, not Python layer
-    # implementations. The symbolic-batch converter traces with B=1, then
-    # carries its symbolic B through the graph; multi-batch checks below are
-    # mandatory before publishing a model. No model math is reimplemented here.
-    closed = jax.make_jaxpr(raw_batch)(jnp.asarray(batches[0]))
+    # Freeze only ONE structure's differentiated graph. Tracing a batch here
+    # would bake B=1 into intermediate abstract values. Instead apply vmap to
+    # the primitive graph during conversion so batch provenance stays dynamic.
+    # No Equinox layer is called or differentiated inside the converter, and
+    # no PIP/NN mathematics is reimplemented in this adapter.
+    closed = jax.make_jaxpr(model.get_energy_and_forces)(jnp.asarray(xyz[0]))
     primitives = jaxpr_as_fun(closed)
 
-    def export_fn(q):
+    def single_fn(q):
         energy, forces = primitives(q)
         return energy, forces
+
+    def export_fn(q):
+        return jax.vmap(single_fn)(q)
 
     import jax2onnx
     import onnx
@@ -111,7 +114,7 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
         if (t.elem_type != onnx.TensorProto.DOUBLE or len(dims) != len(expected)
                 or not dims[0].dim_param
                 or any(dim.dim_value != size for dim, size in zip(dims[1:], expected[1:]))):
-            raise ValueError(f"invalid dynamic float64 I/O contract: {value.name}")
+            raise ValueError(f"invalid dynamic float64 I/O contract: {value.name}; type={t}")
     spec = {
         "schema": "pyrpmd.onnx/1", "batch_independent": True,
         "atomic_numbers": atomic_numbers,
@@ -120,7 +123,7 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
         "force_unit": f"{energy_unit}/{position_unit}", "derivative": "force",
         "constants": {"bohr_angstrom": float(BOHR_ANGSTROM), "ev_to_hartree": float(EV_TO_AU)},
         "source_sha256": {"basis": _digest(basis), "checkpoint": _digest(checkpoint)},
-        "export_strategy": "pretraced-energy-forces-jaxpr",
+        "export_strategy": "vmap-pretraced-single-energy-forces-jaxpr",
         "export_versions": {name: importlib.metadata.version(name)
                             for name in ("jaxpip", "jax", "equinox", "jax2onnx", "onnx", "onnxruntime", "onnx-ir")},
     }
