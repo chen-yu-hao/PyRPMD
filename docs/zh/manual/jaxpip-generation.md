@@ -5,7 +5,7 @@
 接口。它不把 QMDFF 转换为 PIP，也不新增一套动力学积分器。
 
 本实现依赖势能生成 PR #35；推理及导出复用 PR #34。集成测试固定接口提交
-`59315cd20af727a60077b327e66df30ff3ae8e02` 和 JaxPIP 提交
+`5c7c55aa7622dbadc37c47a8ed65c6b666eade02` 和 JaxPIP 提交
 `a18c8cca1e795202194d4082919ebd71722df125`。本路线不需要安装 Caracal。
 
 ## 环境与命令

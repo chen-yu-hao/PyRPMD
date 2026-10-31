@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: chen-yu-hao/PyRPMD
-          ref: 59315cd20af727a60077b327e66df30ff3ae8e02
+          ref: 5c7c55aa7622dbadc37c47a8ed65c6b666eade02
           path: external/onnx-bridge
       - uses: actions/setup-python@v5
         with:

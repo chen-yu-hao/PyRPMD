@@ -8,7 +8,7 @@ not convert QMDFF into PIP or replace any molecular-dynamics integrator.
 
 The initial implementation is stacked on the PES-generation change (#35).
 Native export/runtime reuse #34 rather than copying its code. The integration
-workflow pins bridge commit `59315cd20af727a60077b327e66df30ff3ae8e02` and JaxPIP
+workflow pins bridge commit `5c7c55aa7622dbadc37c47a8ed65c6b666eade02` and JaxPIP
 commit `a18c8cca1e795202194d4082919ebd71722df125`.
 
 ## Optional environment
@@ -20,7 +20,7 @@ No Caracal installation is needed for this route.
 
 ```bash
 git clone https://github.com/chen-yu-hao/PyRPMD.git external/onnx-bridge
-git -C external/onnx-bridge checkout 59315cd20af727a60077b327e66df30ff3ae8e02
+git -C external/onnx-bridge checkout 5c7c55aa7622dbadc37c47a8ed65c6b666eade02
 python -m pip install -e '.[test]' 'pyscf==2.14.0'
 python -m pip install -r external/onnx-bridge/tools/requirements-jaxpip-export.txt
 ```
