@@ -148,8 +148,8 @@ These objects are also importable from `pyrpmd` and serve collisions from a sele
 diabatic state; see the [nonadiabatic guide](nonadiabatic.md).
 
 `NRPMDState` stores `mapping_q/mapping_p[P,K]` next to the nuclear `q/p[P,N,3]`. `DiabaticResult`
-takes the energy matrix `[B,K,K]` and its positive gradient `[B,K,K,N,3]`, both real, finite and
-symmetric in the electronic indices.
+takes the energy matrix `[B,K,K]` and its positive gradient `[B,K,K,N,3]`, both finite and
+Hermitian in the electronic indices. Complex spin-orbit couplings retain their phases.
 
 ```{autoclass} pyrpmd.nonadiabatic.DiabaticResult
 ```
@@ -160,6 +160,57 @@ symmetric in the electronic indices.
 
 ```{autoclass} pyrpmd.nonadiabatic.NRPMDDynamics
 :members: step, energy, populations, asymptotic_coupling
+```
+
+## Electronic friction and thermal nonadiabatic models
+
+These classes are also available from `pyrpmd`. The [nonadiabatic chapter](nonadiabatic.md)
+distinguishes the initial distributions and method restrictions. Friction uses a scalar
+mean-force PES; the other methods use a complete diabatic matrix and positive gradients.
+
+```{autoclass} pyrpmd.electronic_friction.ElectronicFrictionDynamics
+:members: step, propagate
+```
+
+```{autoclass} pyrpmd.electronic_friction.ConstantElectronicFriction
+:members: from_rates
+```
+
+```{autoclass} pyrpmd.electronic_friction.FrictionResult
+```
+
+```{autoclass} pyrpmd.thermal_nrpmd.ThermalNRPMDSampler
+:members: sample, snapshot, restore
+```
+
+```{autoclass} pyrpmd.thermal_nrpmd.ThermalNRPMDDynamics
+:members: step, energy, population_flux
+```
+
+```{autofunction} pyrpmd.thermal_nrpmd.thermal_flux_side
+```
+
+```{autofunction} pyrpmd.thermal_nrpmd.thermal_population_rate
+```
+
+```{autoclass} pyrpmd.surface_hopping.RPSHDynamics
+:members: initialize, step, energy, populations, attempt_hop
+```
+
+```{autoclass} pyrpmd.mv_rpmd.MVRPMDDynamics
+:members: step, energy, populations
+```
+
+```{autoclass} pyrpmd.kc_rpmd.KCRPMDDynamics
+:members: step, energy
+```
+
+```{autoclass} pyrpmd.isomorphic.IsomorphicPotential
+:members: evaluate
+```
+
+```{autoclass} pyrpmd.isomorphic.IsomorphicEhrenfestDynamics
+:members: step, energy
 ```
 
 ## Versioning

@@ -115,6 +115,7 @@ FES 中是两次保存样本之间的时间。
 | `[recrossing]` | `rate`、`network`、`site_rate`、`surface_rate` | 母链数、母链间隔、child pairs、child 时间、bootstrap |
 | `[collision]`、`[outcomes]` | `drpmd` | 发射分布、`bmax`、总轨迹数、最大时间；产物分类 |
 | `[nonadiabatic]` | `drpmd`（实验性 NRPMD） | 见[非绝热 NRPMD](nonadiabatic.md) |
+| `[electronic_friction]` | `diffusion` | `method = "centroid"`、`provider`、`gamma` 或 `tensor`，或 Python `factory` 与 `params`；见[电子摩擦](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
 | `[adaptive_umbrella]` | `fes`、`rate` | 见[气相与自由能](workflows.md) |
 | `[metadynamics]` | `metadynamics` | |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |

@@ -52,7 +52,9 @@ def _indices(value, size, name, *, default=None):
 
 def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
-    if system.fixed_atoms:
+    from ..electronic_friction import validate_electronic_friction
+    friction = validate_electronic_friction(config, system)
+    if system.fixed_atoms and friction is None:
         raise ValueError("pimd/diffusion require all atoms mobile; fixed layers are supported by fes/surface_rate")
     task = config.get("task")
     if task not in ("pimd", "diffusion"):
@@ -90,6 +92,7 @@ def resolve_materials(config, system):
     if not np.isfinite(dt) or dt <= 0 or not np.isfinite(sample_dt) or sample_dt <= 0:
         raise ValueError("materials timesteps must be positive and finite")
     options.update(thermostat=thermostat, gamma_centroid=float(gamma), sample_dt=sample_dt,
+                   electronic_friction=friction,
                    production_dt=sample_dt if task == "pimd" else dt)
     if options["nprod"] // options["interval"] < (3 if task == "diffusion" else 1):
         raise ValueError("production_steps must contain at least three sample intervals for diffusion, one for pimd")
@@ -100,6 +103,8 @@ def resolve_materials(config, system):
         default = [i for i, symbol in enumerate(system.symbols) if symbol in ("H", "D", "T")]
         options["atom_indices"] = _indices(table.get("atom_indices"), system.natoms,
                                           "diffusion.atom_indices", default=default)
+        if set(options["atom_indices"]) & set(system.fixed_atoms):
+            raise ValueError("diffusion.atom_indices must select mobile atoms")
         options["axes"] = _indices(table.get("axes"), 3, "diffusion.axes", default=[0, 1, 2])
         options["reference_atoms"] = None
         if table.get("reference_atoms") is not None:
@@ -149,7 +154,7 @@ def validate_materials(config, system):
     resolve_materials(config, system)
 
 
-def quantum_observables(state, potential, masses, beta):
+def quantum_observables(state, potential, masses, beta, fixed_atoms=()):
     """Physical quantum estimators, distinct from the diagnostic H_P.
 
     For the sum-beads Hamiltonian sampled at beta/P, K_primitive =
@@ -160,12 +165,13 @@ def quantum_observables(state, potential, masses, beta):
     q, p = state.q, state.p
     result = validate_result(potential.evaluate(q), q.shape)
     beads, natoms, _ = q.shape
+    mobile_atoms = natoms - len(fixed_atoms)
     offsets = q - q.mean(axis=0, keepdims=True)
     dq = q - np.roll(q, -1, axis=0)
     spring = 0.5 * (beads / beta) ** 2 * np.sum(np.asarray(masses)[None, :, None] * dq * dq)
     potential_energy = float(np.mean(result.energy))
-    primitive = 3.0 * natoms * beads / (2.0 * beta) - spring / beads
-    virial = 3.0 * natoms / (2.0 * beta) - np.sum(offsets * result.forces) / (2.0 * beads)
+    primitive = 3.0 * mobile_atoms * beads / (2.0 * beta) - spring / beads
+    virial = 3.0 * mobile_atoms / (2.0 * beta) - np.sum(offsets * result.forces) / (2.0 * beads)
     hamiltonian = np.sum(result.energy) + spring + np.sum(p * p / (2.0 * np.asarray(masses)[None, :, None]))
     values = np.array([potential_energy, primitive, virial, potential_energy + virial, hamiltonian], dtype=float)
     radii = np.mean(np.sum(offsets * offsets, axis=-1), axis=0)
@@ -227,6 +233,11 @@ def _read_stream(config, system, output, replica, options=None):
         state = State(saved["q"], saved["p"], int(saved["step"]), float(saved["time"]))
         if state.q.shape != (config["beads"], system.natoms, 3):
             raise ValueError("materials checkpoint state shape disagrees with system")
+        if system.fixed_atoms:
+            indices = list(system.fixed_atoms)
+            if (not np.array_equal(state.q[:, indices], np.broadcast_to(system.geometry[indices], state.q[:, indices].shape))
+                    or np.any(state.p[:, indices] != 0)):
+                raise ValueError("materials checkpoint changed fixed atom coordinates or momenta")
         propagation = json.loads(str(saved["propagation"]))
         return {
             "replica": replica, "state": state, "elapsed": elapsed,
@@ -243,13 +254,23 @@ def _sample_replica(task):
     options = resolve_materials(config, system)
     checkpoint = _checkpoint_path(output, replica)
     provider = StepEvaluationCache(make_task_potential(config["potential"], system))
+    friction_provider = None
     try:
         rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 1301, replica]))
         kwargs = dict(seed=rng, native=config.get("native", config.get("dynamics", {}).get("native", True)),
                       threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
+        if system.fixed_atoms:
+            kwargs.update(fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry)
         sampling = Dynamics(provider, system.masses, config["beta"], config["beads"], options["sample_dt"], **kwargs)
-        production = sampling if config["task"] == "pimd" else Dynamics(
-            provider, system.masses, config["beta"], config["beads"], options["production_dt"], **kwargs)
+        if options["electronic_friction"] is not None:
+            from ..electronic_friction import ElectronicFrictionDynamics, make_electronic_friction
+            friction_provider = make_electronic_friction(config, system)
+            production = ElectronicFrictionDynamics(
+                provider, system.masses, config["beta"], config["beads"], options["production_dt"],
+                friction_provider, **kwargs)
+        else:
+            production = sampling if config["task"] == "pimd" else Dynamics(
+                provider, system.masses, config["beta"], config["beads"], options["production_dt"], **kwargs)
         elapsed = 0
         positions, velocities, observable, radii, clocks = [], [], [], [], []
         last_saved = None
@@ -290,7 +311,7 @@ def _sample_replica(task):
             last_saved = version
 
         def observe():
-            values, radius = quantum_observables(state, provider, system.masses, config["beta"])
+            values, radius = quantum_observables(state, provider, system.masses, config["beta"], system.fixed_atoms)
             return state.q.mean(axis=0), state.p.mean(axis=0) / system.masses[:, None], values, radius
 
         def append_record(record):
@@ -347,8 +368,12 @@ def _sample_replica(task):
         stream = _read_stream(config, system, output, replica, options)
         return stream
     finally:
-        if hasattr(provider, "close"):
-            provider.close()
+        try:
+            if callable(getattr(friction_provider, "close", None)):
+                friction_provider.close()
+        finally:
+            if hasattr(provider, "close"):
+                provider.close()
 
 
 def _write_trajectory(stream, config, system, output):
@@ -372,7 +397,8 @@ def _analyze(streams, config, system, output, return_data=False):
         "task": config["task"], "status": "complete" if all(s["complete"] for s in streams) else "partial",
         "physical_converged": False, "converged": False,
         "replicas": len(streams), "samples_per_replica": [len(s["times"]) for s in streams],
-        "phase": "equilibrium_sampling" if config["task"] == "pimd" else "unthermostatted_rpmd_production",
+        "phase": ("centroid_ef_rpmd_production" if options["electronic_friction"] is not None else
+                  "equilibrium_sampling" if config["task"] == "pimd" else "unthermostatted_rpmd_production"),
         "sampling_thermostat": options["thermostat"], "integrator": loop_options(config)["integrator"],
         "coordinate_convention": "continuous_unwrapped_ring_polymer_centroids",
         "cell": system.to_dict().get("cell"), "pbc": system.to_dict().get("pbc", [False, False, False]),
@@ -408,14 +434,27 @@ def _analyze(streams, config, system, output, return_data=False):
         times = streams[0]["times"]
         if any(not np.array_equal(s["times"], times) for s in streams):
             raise ValueError("diffusion replicas need the same completed sample clock for aggregation")
-        result["nve_energy_diagnostics"] = nve_energy_diagnostics(
-            [s["observables"][:, OBSERVABLE_NAMES.index("ring_polymer_hamiltonian")] for s in streams],
-            times, beads=config["beads"], beta=config["beta"],
-        )
-        if not result["nve_energy_diagnostics"]["within_tolerance"]:
+        if options["electronic_friction"] is None:
+            result["nve_energy_diagnostics"] = nve_energy_diagnostics(
+                [s["observables"][:, OBSERVABLE_NAMES.index("ring_polymer_hamiltonian")] for s in streams],
+                times, beads=config["beads"], beta=config["beta"],
+            )
+            if not result["nve_energy_diagnostics"]["within_tolerance"]:
+                result["warnings"].append(
+                    "Saved production frames exceed 0.1 kBT per bead in H_P error; "
+                    "check the timestep independently of the MSD fit."
+                )
+        else:
+            result["electronic_friction"] = {
+                "method": "markovian_centroid_ef_rpmd", "bath_temperature_K": config.get("temperature_K"),
+                "tensor_convention": "physical_eta_mass_per_time", "friction_average": "all_beads",
+                "noise_convention": "shared_bead_increment_centroid_covariance_M_over_beta",
+                "internal_mode_thermostat": False, "non_markovian_memory": False,
+            }
+            result["nve_energy_diagnostics"] = None
             result["warnings"].append(
-                "Saved production frames exceed 0.1 kBT per bead in H_P error; "
-                "check the timestep independently of the MSD fit."
+                "EF-RPMD exchanges energy with the electronic bath; H_P is not conserved. "
+                "Centroid friction omits bath-induced changes to the imaginary-time distribution."
             )
         positions = np.array([s["positions"] for s in streams])
         velocities = np.array([s["velocities"] for s in streams])

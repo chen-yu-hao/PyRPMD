@@ -136,7 +136,7 @@ Hamiltonian。`propagate()` 与 `propagate_block()` 在失败时提交的内容�
 这些对象也可从 `pyrpmd` 导入，用于从指定入射 diabatic 态出发的碰撞，见[非绝热指南](nonadiabatic.md)。
 
 `NRPMDState` 在核的 `q/p[P,N,3]` 之外保存 `mapping_q/mapping_p[P,K]`。`DiabaticResult` 接收能量矩阵 `[B,K,K]`
-及其正梯度 `[B,K,K,N,3]`，两者均为实数、有限，并在电子指标上对称。
+及其正梯度 `[B,K,K,N,3]`，两者须有限，并在电子指标上满足 Hermitian 条件；复数自旋–轨道耦合保留完整相位。
 
 ```{autoclass} pyrpmd.nonadiabatic.DiabaticResult
 ```
@@ -148,6 +148,22 @@ Hamiltonian。`propagate()` 与 `propagate_block()` 在失败时提交的内容�
 ```{autoclass} pyrpmd.nonadiabatic.NRPMDDynamics
 :members: step, energy, populations, asymptotic_coupling
 ```
+
+## 电子摩擦与其他非绝热方法
+
+以下对象可从 `pyrpmd` 直接导入。各方法的初始分布、适用范围和速率定义见[非绝热章节](nonadiabatic.md)。
+
+| 功能 | Python 入口 |
+| --- | --- |
+| 质心电子摩擦 | `ElectronicFrictionDynamics`、`ConstantElectronicFriction`、`FrictionResult` |
+| 电子热平衡 NRPMD | `ThermalNRPMDSampler`、`ThermalNRPMDDynamics`、`thermal_flux_side`、`thermal_population_rate` |
+| 环聚合物表面跳跃 | `RPSHDynamics`、`RPSHState`、`HopResult` |
+| MV-RPMD | `MVRPMDState`、`MVRPMDPotential`、`MVRPMDDynamics`、`MVRPMDSampler` |
+| KC-RPMD | `KCCalibration`、`KCRPMDState`、`KCRPMDPotential`、`KCRPMDDynamics`、`KCRPMDSampler` |
+| Isomorphic Hamiltonian | `IsomorphicPotential`、`IsomorphicEhrenfestState`、`IsomorphicEhrenfestDynamics` |
+
+电子摩擦接口使用标量平均力势和物理摩擦张量；其他方法使用完整的 diabatic 矩阵势及正梯度。
+热采样、符号重加权、QC 模型误差和数值收敛应分别检查。
 
 ## 版本
 

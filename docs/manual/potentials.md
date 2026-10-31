@@ -103,7 +103,7 @@ finally:
 | `ase` | The factory returns an ASE Calculator; handles eV/Å, cell/PBC and stress |
 | `torch` | Batched energies, or energies and forces, from a Torch model; molecular systems |
 | `ipi` | Synchronous i-PI force protocol with an external driver |
-| `diabatic_python` | Real symmetric matrix potential with gradients for experimental NRPMD |
+| `diabatic_python` | Real symmetric or complex Hermitian matrix potential with gradients for experimental NRPMD |
 
 For electronic calculations, D and T are passed as hydrogen and keep their nuclear masses.
 

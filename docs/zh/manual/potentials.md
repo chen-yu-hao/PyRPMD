@@ -98,7 +98,7 @@ finally:
 | `ase` | factory 返回 ASE Calculator；处理 eV/Å、晶胞/PBC 与 stress |
 | `torch` | Torch 模型给出批量能量或能量与力；用于分子体系 |
 | `ipi` | 与外部 driver 通信的同步 i-PI 力协议 |
-| `diabatic_python` | 实验性 NRPMD 的实对称矩阵势及其梯度 |
+| `diabatic_python` | 实验性 NRPMD 的实对称或复 Hermitian 矩阵势及其梯度 |
 
 电子计算中 D 和 T 按氢传递，同时保留各自的核质量。
 

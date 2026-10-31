@@ -146,6 +146,9 @@ def run(job, *, output=None, resume=False):
 
 def run_resolved(config, system, *, output=None, resume=False):
     config = copy.deepcopy(config)
+    if "electronic_friction" in config:
+        from .electronic_friction import validate_electronic_friction
+        validate_electronic_friction(config, system)
     if ("nonadiabatic" in config
             or config.get("potential", {}).get("provider", config.get("potential", {}).get("type")) == "diabatic_python"):
         from .input import validate_nonadiabatic
@@ -391,7 +394,8 @@ def prepare(job, *, numerical=False):
             "pbc": list(getattr(system, "pbc", (False, False, False))),
             "ensemble": "fixed_cell",
             "sampling_thermostat": config["sampling"]["thermostat"],
-            "production_method": "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling",
+            "production_method": ("centroid_ef_rpmd" if "electronic_friction" in config else
+                                  "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling"),
             "sampling": config["sampling"],
             "analysis": config.get("diffusion", {}),
         }
@@ -414,9 +418,11 @@ def prepare(job, *, numerical=False):
                 from .potentials.diabatic import check_diabatic_potential
                 checked = validate_diabatic_result(evaluated, x.shape, config["nonadiabatic"]["nstates"])
                 result["pes_check"] = {
-                    "matrix_hartree": checked.matrix.tolist(),
+                    "matrix_hartree": checked.matrix.real.tolist(),
                     **check_diabatic_potential(provider, x, config["nonadiabatic"]["nstates"]),
                 }
+                if checked.matrix.dtype.kind == "c":
+                    result["pes_check"]["matrix_imag_hartree"] = checked.matrix.imag.tolist()
             else:
                 validate_result(evaluated, x.shape)
                 result["pes_check"] = {
@@ -425,4 +431,15 @@ def prepare(job, *, numerical=False):
                 }
         finally:
             provider.close()
+        if "electronic_friction" in config:
+            from .electronic_friction import make_electronic_friction, validate_friction_result
+            friction = make_electronic_friction(config, system)
+            try:
+                checked = validate_friction_result(friction.evaluate(x), x.shape)
+                result["friction_check"] = {"tensor_atomic_units": checked.tensor.tolist(),
+                                            "method": "markovian_centroid_ef_rpmd"}
+            finally:
+                close = getattr(friction, "close", None)
+                if callable(close):
+                    close()
     return result

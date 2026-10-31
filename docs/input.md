@@ -62,7 +62,9 @@ parents = 8
 
 `equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
 
-FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和 `diffusion` 生产段使用无温控传播。
+FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置采样温控器的质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和默认的 `diffusion` 生产段使用无温控传播。
+
+`diffusion` 可额外配置 `[electronic_friction]`，在生产段启用物理电子浴的 Markovian 质心 EF-RPMD。该 section 接受 `method = "centroid"` 与 `provider = "constant"` 或 `"python"`：常量 provider 必须在松弛率 `gamma` 和物理摩擦张量 `tensor` 中二选一；Python provider 使用 `factory` 和 `params`。数值 `gamma` 使用原子时间的倒数，也可写为 `"0.01 fs^-1"`；`tensor` 使用电子质量/原子时间，维度为 `[3*N,3*N]`。固定基底原子可保留，摩擦只作用于移动自由度。此时生产轨迹与电子浴交换能量，不进行 NVE 能量漂移判定。其他任务、显式 `loop_backend = "native"` 以及混合 mapping 势均拒绝该配置。完整接口、相关噪声、模型限制和示例见[电子摩擦](electronic-friction.md)。
 
 ## 固定晶胞材料任务
 

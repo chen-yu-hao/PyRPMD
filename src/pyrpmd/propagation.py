@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import dataclass
+import copy
 import numbers
 import numpy as np
 
@@ -203,6 +204,22 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
     decimated. The final step is always sampled. On failure q/p/clock are unchanged
     for the ENTIRE block. No thermostat/RNG or constraint method is substituted.
     """
+    kwargs = dict(bias=bias, observe=observe, sample_interval=sample_interval,
+                  record_centroids=record_centroids, backend=backend, fragment_data=fragment_data)
+    if not getattr(dynamics, "_stochastic_propagation", False):
+        return _propagate(dynamics, state, steps, **kwargs)
+    rng_state = copy.deepcopy(dynamics.rng.bit_generator.state)
+    stats = copy.deepcopy(dynamics.propagation_stats)
+    try:
+        return _propagate(dynamics, state, steps, **kwargs)
+    except BaseException:
+        dynamics.rng.bit_generator.state = rng_state
+        dynamics.propagation_stats = stats
+        raise
+
+
+def _propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interval=1,
+               record_centroids=True, backend=None, fragment_data=()):
     steps = _integer(steps, "steps")
     stride = _integer(sample_interval, "sample_interval")
     backend = dynamics.loop_backend if backend is None else backend

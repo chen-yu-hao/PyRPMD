@@ -23,9 +23,10 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic electronic_friction".split()
 )
 _SECTIONS = {
+    "electronic_friction": set("method provider gamma tensor factory params".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
         "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
@@ -417,6 +418,8 @@ class JobSpec:
         materials = task in ("pimd", "diffusion")
         if "diffusion" in d and task != "diffusion":
             raise InputError("[diffusion] requires task='diffusion'")
+        if "electronic_friction" in d and task != "diffusion":
+            raise InputError("[electronic_friction] requires task='diffusion'; other protocols use the Python API")
         if "site_rate" in d and task != "site_rate":
             raise InputError("[site_rate] requires task='site_rate'")
         if materials and any(k in d for k in ("umbrella", "cvs", "reaction", "collision", "outcomes", "rate", "recrossing")):

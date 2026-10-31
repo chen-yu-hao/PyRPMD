@@ -104,6 +104,8 @@ def constrained_step(dynamics, state, surface, tolerance=1e-10, max_iterations=5
     commute with all internal modes. A new-normal tangent projection follows
     the force at the constrained final position, as required by RATTLE.
     """
+    if getattr(dynamics, "_stochastic_propagation", False):
+        raise ValueError("constrained_step requires deterministic dynamics; a constrained electronic bath is not implemented")
     dynamics._check_parameters()
     dynamics.integrator._check(state.q, state.p)
     dynamics._check_fixed(state.q, state.p)

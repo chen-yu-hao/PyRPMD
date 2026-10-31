@@ -1,4 +1,26 @@
-# Experimental nonadiabatic collisions: NRPMD
+# Nonadiabatic dynamics and electronic friction
+
+PyRPMD provides the following distinct interfaces. Model-level Python methods
+require their own initialization and analysis; they are not implicit substitutes
+for the gas-phase `rate` workflow.
+
+| Method | Public entry point | Current scope |
+| --- | --- | --- |
+| Focused NRPMD with complex SOC | `task="drpmd"`, `NRPMDDynamics` | Fixed diabatic basis, complex Hermitian matrix and gradients |
+| Thermal NRPMD | `ThermalNRPMDSampler`, `ThermalNRPMDDynamics` | Signed SEO thermal preparation, finite-time flux/population rate curves; real matrices |
+| Electronic friction | `[electronic_friction]` on `diffusion`, `ElectronicFrictionDynamics` | Markovian centroid bath, tensor friction, periodic/fixed slabs |
+| Ring-polymer surface hopping | `RPSHDynamics` | Centroid electronic propagation, real matrices, explicit hopping/rescaling policy |
+| MV-RPMD | `MVRPMDDynamics` | SEO mapping trace Hamiltonian and its own Hamiltonian flow |
+| KC-RPMD | `KCRPMDDynamics` | Two real states, kinetic constraint and explicit calibration |
+| Isomorphic RPMD | `IsomorphicPotential`, `IsomorphicEhrenfestDynamics` | Two-state trace-matched isomorphic Hamiltonian with Ehrenfest propagation |
+
+Detailed contracts and executable examples are in the
+[thermal guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/thermal-nrpmd.md),
+[friction guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md),
+[SOC/RPSH guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-soc-rpsh.md),
+and [method guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-methods.md).
+
+## State-selected collisions
 
 NRPMD is an experimental mode of `task="drpmd"`. It adds electronic mapping variables to every
 nuclear bead, propagates electrons and nuclei together on the full diabatic potential-energy matrix,
@@ -58,8 +80,8 @@ an object with `evaluate(q)`, or a callable, that returns
 | Energy matrix | `[B,K,K]`, hartree |
 | Gradient of the matrix | `[B,K,K,N,3]`, hartree/bohr |
 
-B is the batch size and K the number of electronic states. Both arrays are real, finite and
-symmetric in the electronic indices, with gradients for every diagonal element and coupling. The
+B is the batch size and K the number of electronic states. Both arrays are finite and
+Hermitian in the electronic indices, with real or complex entries and gradients for every diagonal element and coupling. The
 matrix interface takes **positive gradients** (scalar potentials return forces). If the provider
 declares coordinate or energy units, the adapter converts them.
 
@@ -112,8 +134,9 @@ the original time budget; a longer maximum collision time needs a new run.
 
 NRPMD runs on CPU with NumPy, serially or with local trajectory processes; the nuclear free ring can
 use the compiled kernels. Use `loop_backend="auto"` or `"python"`. MPI, bead-worker splitting, GPU,
-fused native electronic propagation, periodic or fixed-atom systems and complex Hermitian spin–orbit
-coupling are not available in this mode.
+fused native electronic propagation, and periodic or fixed-atom systems are not available
+in the focused scattering workflow. Complex Hermitian spin–orbit coupling is supported.
+The thermal sampler and surface-hopping model APIs currently require real matrices.
 
 For a real system, provide a diabatic basis with the full matrix and its gradients, including the
 couplings between states, and converge the asymptotic states, the energy and mapping norm, the bead
