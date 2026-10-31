@@ -227,6 +227,10 @@ def resolve_collision(d, system, sys_spec, runtime, *, selected):
 def validate_workflow(resolved, system, *, materials, source_pmf):
     task = resolved["task"]
     try:
+        if task in ("fes", "surface_rate") and not source_pmf:
+            from .workflows.fes import validate_fes_request
+
+            validate_fes_request(resolved, system)
         if task in ("rate", "surface_rate"):
             from .workflows.rate import _recrossing_options
 

@@ -13,6 +13,10 @@ the commands below. This document defines the experiment; results belong in
 the generated analysis. A completed software validation or an isolated
 preparation audit does not establish reproduction of a scattering curve.
 
+The subsequent [implementation-hardening record](PREPARATION_HARDENING.md)
+documents the audited TODO list, finite-result and failure-accounting contracts,
+near-threshold action-QCT behavior, and reproducible regression checks.
+
 ## What is being compared
 
 The original reference is Marjollet and Welsch,
@@ -141,6 +145,16 @@ to use the nominal label, so changing the collision-energy convention does
 not change the phase, orientation or impact-parameter draw.
 "Asymptotic total" excludes the small residual interaction at finite launch
 separation; the initial full collision Hamiltonian is recorded separately.
+
+For P=1 action-QCT, a positive full-PES collision energy can exist below the
+harmonic threshold used by the paper-beta formula. Existing production points
+retain exactly their original beta. Where that formula is undefined, a valid
+P=1 QCT launch instead records `1500 au` as an auxiliary API placeholder, not a
+physical temperature; P=1 has no internal ring modes or spring forces. Explicit
+beta overrides retain priority. This exception does not apply to NE-RPMD.
+The actual energy and the auxiliary-beta convention are checked and recorded
+before workers start. `fixed_collision` never permits an override that silently
+retunes the collision energy.
 
 Useful energy-definition checks, in eV above the BKMP2 well minimum, are:
 

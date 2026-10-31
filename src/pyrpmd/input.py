@@ -16,7 +16,9 @@ import sys
 import tomllib
 
 from .system import System
-from .input_schema import InputError, _ROOT, _SECTIONS, _integer, _positive
+from .input_schema import (
+    InputError, _ROOT, _SECTIONS, _integer, _positive, _unknown_fields,
+)
 from .input_options import validate_nonadiabatic, rate_pmf_options
 from .input_paths import _path, _plugin_paths, _initial_ensemble_spec
 from .input_runtime import (
@@ -49,7 +51,7 @@ class JobSpec:
             try:
                 data = tomllib.loads(path.read_text(encoding="utf-8"))
             except tomllib.TOMLDecodeError as e:
-                raise InputError(str(e)) from e
+                raise InputError(f"{path}: {e}") from e
             result = cls.from_mapping(data, base_directory=path.parent)
         elif path.suffix.lower() == ".py":
             # Python inputs are ordinary trusted code, not a sandbox.
@@ -61,7 +63,12 @@ class JobSpec:
             spec = importlib.util.spec_from_file_location(name, path)
             module = importlib.util.module_from_spec(spec)
             sys.modules[name] = module
-            spec.loader.exec_module(module)
+            try:
+                spec.loader.exec_module(module)
+            except SyntaxError as error:
+                raise InputError(
+                    f"{error.filename or path}:{error.lineno}:{error.offset}: {error.msg}"
+                ) from error
             if not callable(getattr(module, "build", None)):
                 raise InputError(
                     "Python input must define build() returning JobSpec or dict"
@@ -79,6 +86,13 @@ class JobSpec:
 
     def with_overrides(self, **overrides):
         d = deepcopy(self.data)
+
+        def table(name):
+            value = d.setdefault(name, {})
+            if not isinstance(value, Mapping):
+                raise InputError(f"{name} must be a table")
+            return value
+
         for key, value in overrides.items():
             if value is None:
                 continue
@@ -87,15 +101,15 @@ class JobSpec:
                     f"PCET supports only temperature/output overrides; {key} is not applicable to this serial model"
                 )
             if key == "pes":
-                d.setdefault("potential", {})["library"] = str(Path(value).resolve())
+                table("potential")["library"] = str(Path(value).resolve())
                 if d["potential"].get("provider") not in ("rpmdrate", "f2py"):
                     d["potential"]["provider"] = "cabi"
             elif key == "pes_manifest":
-                d.setdefault("potential", {})["manifest"] = str(Path(value).resolve())
+                table("potential")["manifest"] = str(Path(value).resolve())
             elif key == "output":
-                d.setdefault("output", {})["directory"] = str(Path(value).resolve())
+                table("output")["directory"] = str(Path(value).resolve())
             elif key == "workers":
-                p = d.setdefault("parallel", {})
+                p = table("parallel")
                 if "trajectory_groups" in p and p["trajectory_groups"] != value:
                     p.pop("trajectory_groups")
                 p["trajectory_workers"] = value
@@ -141,7 +155,7 @@ class JobSpec:
         d = deepcopy(self.data)
         unknown = set(d) - _ROOT
         if unknown:
-            raise InputError(f"Unknown top-level fields: {', '.join(sorted(unknown))}")
+            raise _unknown_fields(unknown, _ROOT, "top-level")
         for section, allowed in _SECTIONS.items():
             if section in d:
                 if section == "system" and isinstance(d[section], System):
@@ -150,9 +164,7 @@ class JobSpec:
                     raise InputError(f"{section} must be a table")
                 unknown = set(d[section]) - allowed
                 if unknown:
-                    raise InputError(
-                        f"Unknown {section} fields: {', '.join(sorted(unknown))}"
-                    )
+                    raise _unknown_fields(unknown, allowed, section)
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")

@@ -47,8 +47,9 @@ def build():
 | 命令行 `--pes`、`--pes-manifest`、`--output` | 运行命令的目录 |
 | `.o` 链接 manifest | manifest 所在目录 |
 
-例如，`examples/manual/quickstart.inp` 中的 `output.directory="runs/manual-quickstart"` 解析到该输入旁边，
-而命令行的 `--output runs/manual-first` 解析到当前目录。移动输入时，连同其引用的文件一起移动并保持原子顺序。
+例如，入门输入 `my-first-run/quickstart.inp` 中的 `output.directory="run"` 解析为 `my-first-run/run`，
+而命令行 `--output runs/custom` 从当前目录解析。`validate INPUT --output runs/custom` 显示解析后的输入与输出路径，
+不创建运行目录。移动输入时，连同其引用的文件一起移动并保持原子顺序。
 
 ## 通用字段
 
@@ -208,13 +209,18 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 
 | 命令 | 用途 | 常用选项 |
 | --- | --- | --- |
-| `pyrpmd validate INPUT` | 解析配置并检查任务 | `--check-pes`、`--write-resolved FILE` |
+| `pyrpmd init DIR` | 向新目录或空目录写入内置谐振子 FES 入门输入 | 打印输入路径和下一步命令 |
+| `pyrpmd validate INPUT` | 解析配置并检查任务 | `--check-pes`、`--output DIR`、`--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | 显示准备信息 | `--pilot` 执行数值准备；`--output FILE` 写出 JSON |
 | `pyrpmd run INPUT` | 开始运行，或按输入继续 | `--output DIR`、`--resume` |
 | `pyrpmd resume DIR` | 按保存的配置续跑 | `--workers N`、`--loop-backend auto`、`--block-steps N` |
 | `pyrpmd extend DIR` | 为已有 dRPMD 系综中未结束的轨迹提高总时间上限 | 必填 `--max-time '20 ps'`，从发射时刻计时 |
 | `pyrpmd state-check INPUT` | 无碰撞赋速演化已准备核初态，检查谐振模式稳定性 | `--time '100 fs'`、`--samples 8`、`--stride 10`、`--output report.json` |
 | `pyrpmd analyze DIR` | 读取结果或离线重分析 | `--recompute`、`--bins`、`--bootstrap`；扩散选项见下文 |
+| `pyrpmd report RUN [RUN ...]` | 从保存结果生成图形与 HTML 报告 | `--output DIR`、`--style`、`--formats`、`--overwrite`；见[自动报告](analysis-reports.md) |
+| `pyrpmd project DIR` | 对保存的 FES 积分消去未保留的 CV 轴 | 必填 `--axes` 与 `--output`；可选 `--selection` |
+| `pyrpmd rate-postprocess DIR` | 从保存的 PMF/FES 与带符号通量重新计算速率 | `--spec FILE`、`--output FILE`、`--bootstrap`；见[速率后处理](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
+| `pyrpmd study INPUT` | 规划或运行温度、同位素及数值收敛扫描 | `--plan`、`--output DIR`、`--resume`；见[速率研究](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | `pyrpmd checkpoint FILE` | 校验检查点容器 | `--require-integrity` 拒绝没有校验值的旧容器 |
 | `pyrpmd info` | 显示版本与原生能力 | |
 | `pyrpmd pes build/inspect/check` | 构建与测试 C ABI 势能 | 见[势能](potentials.md) |
@@ -224,6 +230,8 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 
 - `validate --check-pes` 与 `prepare --pilot` 执行同样的数值准备：构造 PES、TS 准备或 PCET 本征态求解。
   不加该选项时只检查输入。
+- `validate --output DIR` 选择验证报告中显示的目标路径，不创建运行。`prepare --output FILE` 则写出准备 JSON 文件；
+  `validate --write-resolved FILE` 显式写出解析后的配置。
 - `--workers N` 设置 `parallel.trajectory_workers`；非 MPI 输入在 N>1 时使用 `process` 后端。
 - `run` 不写入已有的非空输出目录。继续运行使用 `pyrpmd resume DIR` 或 `pyrpmd run INPUT --resume`。
 - `--bins` 与 `--bootstrap` 隐含 `--recompute`。离线重分析适用于 `fes`、`metadynamics`、`opes` 和 `diffusion`；
@@ -231,5 +239,20 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 
 扩散重分析接受 `--fit-range '10 fs' '100 fs'`、`--axes 0 1`、`--atoms 0` 和 `--max-lag N`，其中延迟以保存帧数计。
 拟合范围须在保存的时长之内，见[输出与分析](results.md)。
+
+### 终端输出与调试
+
+`python -m pyrpmd` 与 `pyrpmd` 可执行命令接受相同参数。`pyrpmd --help` 列出命令，`pyrpmd COMMAND --help`
+列出子命令选项。命令结果以 JSON 写到标准输出；预期的输入或运行错误写到标准错误，退出码为 2。
+命令执行成功时返回 0。退出码只表示执行状态；解读科学结果还需检查 `ready`、`warnings`、`converged` 与任务特有诊断。
+
+普通命令显示简洁的错误说明。报告意外故障时添加 `--debug` 保留 traceback，例如：
+
+```bash
+pyrpmd validate my-first-run/quickstart.inp --check-pes --debug
+pyrpmd info > environment.json
+```
+
+`--debug` 可以放在子命令之前或之后。请连同错误保留命令、输入与环境报告；恢复方法见[常见问题](troubleshooting.md)。
 
 完整的 section 参考见 [docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)。

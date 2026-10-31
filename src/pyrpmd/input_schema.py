@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from difflib import get_close_matches
 from functools import partial
 
 from .validation import checked_integer, finite_positive
@@ -9,6 +10,20 @@ from .validation import checked_integer, finite_positive
 
 class InputError(ValueError):
     """Actionable input error before any production simulation starts."""
+
+
+def _unknown_fields(unknown, allowed, section):
+    """Describe a misspelled field without silently accepting a different input."""
+    names = sorted(str(key) for key in unknown)
+    message = f"Unknown {section} fields: {', '.join(names)}"
+    suggestions = []
+    for name in names:
+        matches = get_close_matches(name, sorted(allowed), n=1, cutoff=0.7)
+        if matches:
+            suggestions.append(f"{name!r} → {matches[0]!r}")
+    if suggestions:
+        message += ". Did you mean " + "; ".join(suggestions) + "?"
+    return InputError(message)
 
 
 _ROOT = set(
