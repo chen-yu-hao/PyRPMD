@@ -19,6 +19,7 @@ from ..analysis.fes import (
     umbrella_integration,
     _block_resample,
     _bootstrap_block_plan,
+    _rate_bootstrap_statistics,
 )
 from ..analysis.recrossing import summarize_recrossing
 from ..constants import AU_RATE_TO_CM3_S, ATOMIC_TIME_S
@@ -416,38 +417,40 @@ def _child_task(task):
             "q": task["q"],
         },
     )
+    # A complete pair needs only its checked saved result. In particular, an
+    # all-cached scalar or batched replay must not initialize a PES or bead pool.
+    if checkpoint.exists():
+        with load_checkpoint(checkpoint) as saved:
+            if str(saved["fingerprint"]) != identity:
+                raise ValueError(f"child checkpoint physics differs: {checkpoint}")
+            if "xi_star" in saved and float(saved["xi_star"]) != task["xi_star"]:
+                raise ValueError("child checkpoint dividing surface differs")
+            if "pmf_method" in saved and str(saved["pmf_method"]) != method:
+                raise ValueError("child checkpoint PMF method differs")
+            return {
+                **dynamics_metadata,
+                "chain": chain,
+                "parent": parent,
+                "pair": pair,
+                "xi_star": task["xi_star"],
+                "pmf_method": method,
+                "numerator": saved["numerator"],
+                "propagation": json.loads(str(saved["propagation"])) if "propagation" in saved else {},
+                "denominator": float(saved["denominator"]),
+                "energy_drift": float(saved["energy_drift"]),
+                "endpoint_energy_error_hartree_per_bead": (
+                    float(saved["endpoint_energy_error_hartree_per_bead"])
+                    if "endpoint_energy_error_hartree_per_bead" in saved
+                    else None
+                ),
+                "endpoint_energy_error_kbt": (
+                    float(saved["endpoint_energy_error_kbt"])
+                    if "endpoint_energy_error_kbt" in saved
+                    else None
+                ),
+            }
     with task_potential(config["potential"], system,
                         reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
-        if checkpoint.exists():
-            with load_checkpoint(checkpoint) as saved:
-                if str(saved["fingerprint"]) != identity:
-                    raise ValueError(f"child checkpoint physics differs: {checkpoint}")
-                if "xi_star" in saved and float(saved["xi_star"]) != task["xi_star"]:
-                    raise ValueError("child checkpoint dividing surface differs")
-                if "pmf_method" in saved and str(saved["pmf_method"]) != method:
-                    raise ValueError("child checkpoint PMF method differs")
-                return {
-                    **dynamics_metadata,
-                    "chain": chain,
-                    "parent": parent,
-                    "pair": pair,
-                    "xi_star": task["xi_star"],
-                    "pmf_method": method,
-                    "numerator": saved["numerator"],
-                    "propagation": json.loads(str(saved["propagation"])) if "propagation" in saved else {},
-                    "denominator": float(saved["denominator"]),
-                    "energy_drift": float(saved["energy_drift"]),
-                    "endpoint_energy_error_hartree_per_bead": (
-                        float(saved["endpoint_energy_error_hartree_per_bead"])
-                        if "endpoint_energy_error_hartree_per_bead" in saved
-                        else None
-                    ),
-                    "endpoint_energy_error_kbt": (
-                        float(saved["endpoint_energy_error_kbt"])
-                        if "endpoint_energy_error_kbt" in saved
-                        else None
-                    ),
-                }
         from .surface_source import source_hamiltonian, parent_selector
         if not parent_selector(config, system)(task["q"]):
             raise ValueError("child initial configuration lies outside the source PMF channel domain")
@@ -685,14 +688,19 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
                     {key: value for key, value in record.items() if key != "valid"}
                 )
             records.append(record)
-    barrier_error = float(np.std(barriers, ddof=1)) if len(barriers) >= 2 else None
     standard_error = (
         np.std(curves, axis=0, ddof=1)
         if len(curves) >= 2
         else np.full_like(curve, np.nan)
     )
     if block_plan["status"] == "unavailable":
-        barrier_error = None
+        standard_error[:] = np.nan
+    supported_standard_error = standard_error.copy()
+    stats, supported_stats, uncertainty = _rate_bootstrap_statistics(
+        barriers, requested=options["bootstrap"], attempted=len(records),
+        block_status=block_plan["status"],
+    )
+    if failures:
         standard_error[:] = np.nan
     empirical = {
         "reference": _histogram_endpoint_support(sampled["data"], 0.0),
@@ -712,7 +720,9 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         )
     if failures:
         warnings.append(
-            "Some UI bootstrap draws failed; inspect the recorded reasons and valid fraction."
+            "Some UI bootstrap draws failed; primary PMF uncertainty is unavailable. "
+            "Supported-draw errors are conditional on a valid estimator fit; "
+            "inspect the recorded reasons and valid fraction."
         )
     if not connected:
         warnings.append(
@@ -724,12 +734,14 @@ def _ui_rate_pmf(sampled, config, centers, samples, stiffness, options):
         "xi_star": xi,
         "reference": 0.0,
         "free_energy_barrier_hartree": barrier if connected else None,
-        "barrier_standard_error_hartree": barrier_error,
-        "barrier_percentile_95_ci_hartree": (
-            np.quantile(barriers, [0.025, 0.975]).tolist()
-            if len(barriers) >= 2 and block_plan["status"] != "unavailable"
-            else None
-        ),
+        "barrier_standard_error_hartree": stats["standard_error_hartree"],
+        "barrier_percentile_95_ci_hartree": stats["percentile_95_ci_hartree"],
+        "barrier_uncertainty": uncertainty,
+        **({
+            "supported_draw_barrier_standard_error_hartree": supported_stats["standard_error_hartree"],
+            "supported_draw_barrier_percentile_95_ci_hartree": supported_stats["percentile_95_ci_hartree"],
+            "supported_draw_standard_error": supported_standard_error,
+        } if failures else {}),
         "pmf_bootstrap_barriers": barriers,
         "xi": grid,
         "free_energy": curve,
@@ -807,6 +819,10 @@ def _save_pmf_arrays(output, estimate, method):
     ):
         if key in estimate:
             arrays[key] = estimate[key]
+    if "supported_draw_standard_error" in estimate:
+        arrays["supported_draw_standard_error"] = np.where(
+            mask, np.nan, estimate["supported_draw_standard_error"]
+        )
     _atomic_npz(Path(output) / "rate_pmf.npz", **arrays)
     columns = [grid, curve]
     names = ["xi", "free_energy_hartree"]
@@ -935,28 +951,28 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         "ui_comparison",
         "effective_samples_per_stream",
         "weight_ess",
+        "barrier_uncertainty",
+        "supported_draw_barrier_standard_error_hartree",
+        "supported_draw_barrier_percentile_95_ci_hartree",
     ):
         if key in estimate:
             diagnostics[key] = estimate[key]
-    diagnostics["uncertainty"] = {
-        "available": estimate["barrier_standard_error_hartree"] is not None,
-        "block_status": estimate.get("bootstrap", {}).get("block_plan", {}).get("status"),
-        "reason": (
-            None
-            if estimate["barrier_standard_error_hartree"] is not None
-            else (
-                "bootstrap_disabled"
-                if pmf_options["bootstrap"] == 0
-                else (
+    if "adaptive_umbrella" in sampled["summary"]:
+        diagnostics["adaptive_umbrella"] = copy.deepcopy(sampled["summary"]["adaptive_umbrella"])
+    diagnostics["uncertainty"] = dict(estimate["barrier_uncertainty"])
+    # Retain the historical singular reason while exposing all support limits.
+    diagnostics["uncertainty"]["reason"] = (
+        None if diagnostics["uncertainty"]["available"] else (
+            "pmf_bootstrap_contains_unsupported_draws"
+            if diagnostics["uncertainty"]["bootstrap_rejected"] else (
+                "bootstrap_disabled" if pmf_options["bootstrap"] == 0 else (
                     "insufficient_correlated_blocks"
-                    if estimate.get("bootstrap", {}).get("block_plan", {}).get("status") == "unavailable"
+                    if diagnostics["uncertainty"]["block_status"] == "unavailable"
                     else "fewer_than_two_valid_bootstrap_draws"
                 )
             )
-        ),
-        "surface_held_fixed": True,
-        "selection_uncertainty_included": False,
-    }
+        )
+    )
     diagnostics = jsonable(diagnostics)
     write_json(Path(output) / "rate_pmf.json", diagnostics)
     if not estimate["ready"]:
@@ -1098,7 +1114,7 @@ def _aggregate(children, pmf, config, output, options):
         error = None
         supported_draw_error = None
     rejected_pmf_draws = max(0, pmf_bootstrap.get("attempted", 0) - pmf_bootstrap.get("valid", 0))
-    if is_surface and rejected_pmf_draws:
+    if rejected_pmf_draws:
         uncertainty_reasons.append("pmf_bootstrap_contains_unsupported_draws")
         # A confidence interval conditional on complete histogram support is
         # not an unconditional joint interval. Preserve it under an explicit
@@ -1262,19 +1278,22 @@ def _aggregate(children, pmf, config, output, options):
             result.pop(name, None)
     if is_surface:
         result["rate_quality"] = quality
-        result["rate_uncertainty"].update(
-            pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
-            pmf_bootstrap_attempted=pmf_bootstrap.get("attempted", 0),
-            pmf_bootstrap_rejected=rejected_pmf_draws,
-            independence_assumption="Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically.",
+    result["rate_uncertainty"].update(
+        pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
+        pmf_bootstrap_attempted=pmf_bootstrap.get("attempted", 0),
+        pmf_bootstrap_rejected=rejected_pmf_draws,
+        independence_assumption="Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically.",
+    )
+    if rejected_pmf_draws:
+        result["supported_draw_rate_standard_error_" + unit_key] = supported_draw_error
+        result["supported_draw_rate_percentile_95_ci_" + unit_key] = (
+            np.quantile(total_boot, [0.025, 0.975]).tolist()
+            if supported_draw_error is not None else None
         )
-        if rejected_pmf_draws:
-            result["supported_draw_rate_standard_error_s_inv"] = supported_draw_error
-            result["supported_draw_rate_percentile_95_ci_s_inv"] = (
-                np.quantile(total_boot, [0.025, 0.975]).tolist()
-                if supported_draw_error is not None else None
-            )
-            result["rate_uncertainty"]["supported_draw_condition"] = "conditional on the bootstrap draw having complete basin-to-surface support"
+        result["rate_uncertainty"]["supported_draw_condition"] = (
+            "conditional on the bootstrap draw having complete PMF support "
+            "and a valid estimator fit"
+        )
     write_json(Path(output) / "summary.json", result)
     return result
 

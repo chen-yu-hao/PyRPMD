@@ -3,22 +3,29 @@
 出现问题时，保留完整错误、输入、`pyrpmd info` 的输出、代码 commit 和运行目录。按以下层次排查：输入 → 模型 →
 积分与采样 → 统计分析 → 续跑。
 
+`pyrpmd info > environment.json` 保存安装版本与能力。简短错误说明不足以定位问题时，在失败命令后添加 `--debug`
+保留 traceback，例如 `pyrpmd validate job.inp --check-pes --debug`。退出码 2 表示命令错误；正常退出不代表科学结果收敛，
+还需阅读保存的任务诊断。
+
 ## 安装与命令
 
 | 现象 | 处理 |
 | --- | --- |
-| 找不到 `pyrpmd` | 激活安装时使用的环境；用 `python -m pip show PyRPMD` 核对 |
+| 找不到 `pyrpmd` | 激活安装时使用的环境；尝试 `python -m pyrpmd --version`，再用 `python -m pip show PyRPMD` 核对 |
+| 找不到 `examples/manual/quickstart.inp` | 仓库示例需要源码；在任意目录用 `pyrpmd init my-first-run` 创建随包提供的入门输入 |
+| `init` 目标目录非空 | 选择新目录；已有文件会受到保护 |
 | C++/OpenMP 编译失败 | 安装带 OpenMP 的 C++17 编译器，或在干净环境中用 `PYRPMD_NO_OPENMP=1` 或 `PYRPMD_NO_NATIVE=1` 构建 |
 | `pyrpmd info` 中缺少某个积分器 | 更新源码后重新安装，避免加载旧的 `.so` |
 | pytest 出现跳过项 | 缺少可选依赖（ASE、BKMP2、EAM 模型、PyMBAR、Torch、matplotlib 等）；安装后即可运行这些测试 |
 | `native="required"` 报错 | 扩展缺少所需积分器；重新构建，或在新任务中使用缺省的 `native=true` |
-| `loop_backend="native"` 被拒绝 | PES、CV、动态偏置或周期/固定原子需要 Python 循环；使用 `auto` |
+| `loop_backend="native"` 被拒绝 | 阅读错误中不支持的能力；缺省引擎可改用 `auto`，或检查独立的[原生 PIMD 限制](execution.md) |
 
 ## 输入与单位
 
 | 现象 | 处理 |
 | --- | --- |
 | `Output directory is not empty` | 新计算使用新的 `--output`；继续已有计算用 `pyrpmd resume DIR` 或 `run INPUT --resume` |
+| 找不到输入或运行目录 | 检查解析路径与当前工作目录；`validate INPUT --output DIR` 可预览运行目标 |
 | `... overrides; beads is not applicable` 等 | 该任务不接受这个覆盖；PCET 只接受 `--temperature` 和 `--output` |
 | 未知字段或任务组合无效 | 查看 `--help` 和[输入](input.md)中的 section 表 |
 | 找不到 XYZ、factory 或模型 | 输入中的路径相对于输入文件；命令行路径相对于当前目录 |
@@ -65,6 +72,12 @@
 
 重分析会覆盖派生结果，比较分箱或拟合方案前先保存原摘要和结果表。在并行文件系统上，检查点安全依赖原子 rename 和 fsync；
 保留完整的运行目录与环境记录。
+
+分析时发现运行 manifest 却没有完成摘要，可能是计算在写出摘要前中断。先检查原始错误，修复原因后用 `pyrpmd resume DIR`
+续跑；缺少摘要本身不代表没有保存检查点。
+
+如果 `run --report` 完成计算后生成报告失败，错误会给出保存的数值结果位置和 `pyrpmd report` 重试命令。
+安装缺少的绘图依赖（源码目录中使用 `.[plots]`）或修正报告目标后，重新对已保存数据生成报告，见[自动报告](analysis-reports.md)。
 
 ## 报告问题
 

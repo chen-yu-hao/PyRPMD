@@ -55,11 +55,15 @@ pyrpmd resume runs/manual-rate
 | `kappa`、`plateau_detected` | 末端传输系数及是否找到平台 |
 | `rate_estimate_cm3_s` | 有限时间速率估计 |
 | `rate_cm3_s` | 平台与能量诊断通过时的速率，否则为 `null` |
-| `rate_standard_error_cm3_s`、`rate_percentile_95_ci_cm3_s` | 由 PMF 与回穿得到的联合采样误差和百分位区间 |
+| `rate_standard_error_cm3_s`、`rate_percentile_95_ci_cm3_s` | PMF 与回穿的联合采样误差和百分位区间；任意 PMF draw 被拒绝或误差支持不足时为 `null` |
+| `supported_draw_rate_standard_error_cm3_s`、`supported_draw_rate_percentile_95_ci_cm3_s` | PMF draw 有拒绝时的条件诊断，条件为接受 draw 具有完整 PMF 支持且拟合有效；不是无条件置信区间 |
 | `conditional_rate_standard_error_cm3_s` | 固定 QTST 因子时的回穿误差 |
-| `rate_uncertainty` | 误差是否可用、有效 bootstrap 次数与限定说明 |
+| `rate_uncertainty` | 误差是否可用、bootstrap 请求/尝试/有效/拒绝次数与限定说明 |
+| `pmf.adaptive_umbrella` | 最终摘要中的 pilot 与独立生产诊断；`rate_pmf.json` 和 `umbrella/summary.json` 中也保留 `adaptive_umbrella` |
 
 速率单位为 `cm^3 molecule^-1 s^-1`。若 PMF 重叠不连通或分割面缺少采样支持，先增加窗口或采样，再读取速率。
+自适应运行需分别查看 `pmf.adaptive_umbrella.production_target_met` 与 `pilot_target_met`。
+速率非空或 pilot 成功，都不证明生产采样充分或物理收敛。见[验收流程](science.md#评估自适应伞抽样结果)。
 
 数学定义见[速率约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md)和
 [UI / MBAR 说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md)。
@@ -151,6 +155,20 @@ pyrpmd analyze runs/manual-fes --recompute --bins 20 20 --bootstrap 50
 
 `analyze --recompute` 从保存的窗口检查点重建分析，可更换 bin、计数门槛或 bootstrap 设置，不调用 PES。
 
+### PILE-L 与副本交换伞抽样
+
+FES 的默认恒温器仍是 Andersen。设置 `sampling.thermostat="pile-l"` 可使用 BCOCB/BAOAB 积分器。
+固定窗口可增加 `[replica_exchange]`，设置 `enabled=true` 与 `interval_steps=50`，在相同温度下交换完整的环构型和动量。
+
+此时 `sampling.replicas` 表示独立的交换系综数；每个系综中的窗口顺序推进，分析时同步重采样跨窗口的时间块，
+检查点保存和恢复整个系综。交换轨迹不是物理反应时间。REUS 不能与自适应插窗或 `rate_flux` 测度组合；
+完整输入与限制见[副本交换](../replica-exchange.md)。
+
+```bash
+pyrpmd run examples/fes/replica_exchange_2d.inp --output runs/manual-reus
+pyrpmd resume runs/manual-reus
+```
+
 ### 自适应伞抽样
 
 自适应工作流依据 pilot 的重叠和有效样本数插入窗口并延长 pilot，然后冻结窗口，用新的独立随机流运行生产段：
@@ -163,6 +181,11 @@ pyrpmd analyze runs/manual-adaptive --recompute --bins 30 --bootstrap 20
 
 `adaptive-plan.json` 记录每一轮的决定、窗口、随机种子与校验值。生产段只使用自己的样本。若 `max_rounds` 或
 `max_windows` 用尽时仍未达到目标，任务不启动生产段而停止，并在计划中记录 `failure_reason`。
+
+缺省预算为 8 轮、128 个窗口。有效样本不足会延长 pilot，最多到 `max_pilot_steps`；只调整位置时保留已有长度。
+预算耗尽后可提高限制继续，例如 `pyrpmd resume runs/manual-adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192`，
+已完成检查点继续复用。生产段 ESS 单独报告。Metadynamics 和已启用的自适应伞抽样在省略 production 时使用 1000 fs；
+增加预算或解释 FES 前先检查统计诊断。
 
 自适应伞抽样适用于 `fes`、表面 `fes` 和 `rate` PMF，在声明的区域内细化窗口；`surface_rate` 和 `site_rate`
 使用固定窗口。参数见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。

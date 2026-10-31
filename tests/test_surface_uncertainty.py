@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from pyrpmd.analysis.surface import surface_rate_pmf
+from pyrpmd.analysis.fes import mbar_rate_pmf
 from pyrpmd.workflows.rate import _aggregate
 
 
@@ -83,7 +84,7 @@ def test_too_few_supported_draws_do_not_create_any_joint_error(tmp_path, draws):
     assert result["rate_uncertainty"]["pmf_bootstrap_rejected"] == 6 - len(draws)
 
 
-def test_surface_support_policy_does_not_change_existing_gas_phase_uncertainty(tmp_path):
+def test_failed_pmf_draws_are_conditioned_for_gas_phase_rates_too(tmp_path):
     pmf = {
         "ready": True, "method": "mbar", "warnings": [],
         "k_qtst_cm3_s": 12.0, "free_energy_barrier_hartree": 0.2,
@@ -93,13 +94,16 @@ def test_surface_support_policy_does_not_change_existing_gas_phase_uncertainty(t
     unchanged = aggregate(pmf, tmp_path / "gas_supported", task="rate")
     pmf["bootstrap"].update(requested=6, attempted=6, valid=4)
     rejected_metadata = aggregate(pmf, tmp_path / "gas_metadata", task="rate")
-    for key in ("rate_estimate_cm3_s", "rate_standard_error_cm3_s", "rate_percentile_95_ci_cm3_s",
-                "conditional_rate_standard_error_cm3_s", "rate_uncertainty"):
+    for key in ("rate_estimate_cm3_s", "conditional_rate_standard_error_cm3_s"):
         assert unchanged[key] == rejected_metadata[key]
-    assert rejected_metadata["rate_uncertainty"]["available"] is True
-    assert rejected_metadata["rate_standard_error_cm3_s"] > 0
-    assert not any(key.startswith("supported_draw_") for key in rejected_metadata)
-    assert "pmf_bootstrap_contains_unsupported_draws" not in rejected_metadata["rate_uncertainty"]["reasons"]
+    assert rejected_metadata["rate_uncertainty"]["available"] is False
+    assert rejected_metadata["rate_standard_error_cm3_s"] is None
+    assert rejected_metadata["rate_percentile_95_ci_cm3_s"] is None
+    assert rejected_metadata["supported_draw_rate_standard_error_cm3_s"] == unchanged["rate_standard_error_cm3_s"]
+    assert rejected_metadata["supported_draw_rate_percentile_95_ci_cm3_s"] == unchanged["rate_percentile_95_ci_cm3_s"]
+    assert "pmf_bootstrap_contains_unsupported_draws" in rejected_metadata["rate_uncertainty"]["reasons"]
+    assert rejected_metadata["rate_uncertainty"]["pmf_bootstrap_rejected"] == 2
+    assert "conditional on" in rejected_metadata["rate_uncertainty"]["supported_draw_condition"]
 
 
 @pytest.mark.parametrize("block_status", ["finite_block_estimate", "limited_blocks", "unavailable"])
@@ -124,17 +128,15 @@ def test_block_support_gates_all_combined_errors_and_preserves_conditional_recro
         pmf["bootstrap"].update(requested=6, attempted=6)
     result = aggregate(pmf, tmp_path, task=task)
     supported_uncertainty = block_status != "unavailable"
-    joint_uncertainty = supported_uncertainty and not (
-        task == "surface_rate" and rejected_support
-    )
+    joint_uncertainty = supported_uncertainty and not rejected_support
     assert result["rate_uncertainty"]["available"] is joint_uncertainty
     assert (result["rate_standard_error_" + unit] is not None) is joint_uncertainty
     assert (result["rate_percentile_95_ci_" + unit] is not None) is joint_uncertainty
     assert result["rate_uncertainty"]["pmf_block_status"] == block_status
     assert result["conditional_rate_standard_error_" + unit] > 0
-    if task == "surface_rate" and rejected_support:
-        assert (result["supported_draw_rate_standard_error_s_inv"] is not None) is supported_uncertainty
-        assert (result["supported_draw_rate_percentile_95_ci_s_inv"] is not None) is supported_uncertainty
+    if rejected_support:
+        assert (result["supported_draw_rate_standard_error_" + unit] is not None) is supported_uncertainty
+        assert (result["supported_draw_rate_percentile_95_ci_" + unit] is not None) is supported_uncertainty
     if block_status != "finite_block_estimate":
         assert "pmf_bootstrap_" + block_status in result["rate_uncertainty"]["reasons"]
     if block_status == "limited_blocks" and joint_uncertainty:
@@ -252,6 +254,34 @@ def test_actual_surface_failed_support_draws_remain_explicit_and_conditioned(tmp
     assert summary["rate_percentile_95_ci_s_inv"] is None
     assert summary["supported_draw_rate_standard_error_s_inv"] > 0
     assert summary["supported_draw_rate_percentile_95_ci_s_inv"] is not None
+
+
+def test_actual_gas_pmf_failed_support_draws_remain_conditioned_in_the_final_rate(tmp_path):
+    sample = np.r_[np.full(120, .5), 1.5, np.full(120, 2.5)]
+    np.random.default_rng(7).shuffle(sample)
+    estimate = mbar_rate_pmf(
+        [sample], [1.5], 1e-12, 2., reference=.5, xi_star=2.5,
+        bins=[0., 1., 2., 3.], bootstrap=40, seed=52, min_count=1,
+    )
+    info = estimate["bootstrap"]
+    assert estimate["ready"] and info["block_plan"]["status"] == "finite_block_estimate"
+    assert 2 <= info["valid"] < info["attempted"] == 40
+    pmf = {key: estimate[key] for key in (
+        "ready", "warnings", "free_energy_barrier_hartree",
+        "pmf_bootstrap_barriers", "bootstrap", "barrier_uncertainty",
+    )}
+    pmf.update(method="mbar", k_qtst_cm3_s=12.)
+    summary = aggregate(pmf, tmp_path, task="rate")
+    assert summary["rate_estimate_cm3_s"] == pytest.approx(12 * summary["kappa"])
+    assert summary["rate_standard_error_cm3_s"] is None
+    assert summary["rate_percentile_95_ci_cm3_s"] is None
+    assert summary["supported_draw_rate_standard_error_cm3_s"] > 0
+    assert summary["supported_draw_rate_percentile_95_ci_cm3_s"] is not None
+    assert summary["conditional_rate_standard_error_cm3_s"] > 0
+    assert summary["rate_uncertainty"]["pmf_bootstrap_rejected"] == len(info["failures"])
+    public = json.loads((tmp_path / "summary.json").read_text())
+    assert public["rate_uncertainty"]["available"] is False
+    assert "conditional on" in public["rate_uncertainty"]["supported_draw_condition"]
 
 
 def quality_result(tmp_path, *, block_status="finite_block_estimate", draws=None,

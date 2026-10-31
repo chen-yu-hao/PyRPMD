@@ -10,13 +10,16 @@ from __future__ import annotations
 import argparse
 import base64
 import csv
+from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 import hashlib
 import html
 import json
 import math
+import os
 from pathlib import Path
+import tempfile
 
 import numpy as np
 from scipy.stats import beta as beta_distribution
@@ -48,10 +51,51 @@ COLORS = {"ne_paper_subset": "#55657c", "ne_uncut": "#c76b30",
           "ne_switch200": "#147d91", "qct_harmonic": "#55657c",
           "qct_action_collision": "#4e8a43", "qct_action_total": "#8558a5"}
 AUDIT_COLORS = dict(zip(AUDIT_LABELS, ("#55657c", "#c76b30", "#a68637", "#147d91")))
+NATIVE_HOLD_COLUMNS = frozenset(("primitive_internal_per_bead_hartree",
+    "kinetic_per_bead_hartree", "full_potential_per_bead_hartree",
+    "spring_per_bead_hartree", "centroid_harmonic_energy_hartree", "bond_spread_bohr"))
+AUDIT_WINDOWS = {"hold": "native_every_step_trapezoid",
+                 "hold_trace_check": "dense_trace_trapezoid", "final_50fs": "dense_trace_trapezoid"}
 
 
 def _sha(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for block in iter(lambda: stream.read(1024*1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
+
+
+def _strict_json(text, source):
+    """Reject ambiguous keys and every nonfinite JSON number, including 1e999."""
+    def number(value):
+        result = float(value)
+        if not math.isfinite(result):
+            raise ValueError(f"Nonfinite JSON number in {source}: {value}")
+        return result
+    def constant(value):
+        raise ValueError(f"Nonfinite JSON number in {source}: {value}")
+    def mapping(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError(f"Duplicate JSON key in {source}: {key}")
+            result[key] = value
+        return result
+    try:
+        return json.loads(text, parse_constant=constant, parse_float=number, object_pairs_hook=mapping)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"Invalid JSON in {source}: {exc}") from exc
+
+
+def _read_json(path):
+    return _strict_json(Path(path).read_bytes(), path)
+
+
+def _finite(value, context):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise ValueError(f"Missing or nonfinite numeric {context}")
+    return float(value)
 
 
 def _json(path, value):
@@ -60,6 +104,8 @@ def _json(path, value):
 
 def _csv(path, rows):
     if not rows:
+        # Empty current results must not leave a prior generation's statistics.
+        Path(path).write_text("")
         return
     columns = list(dict.fromkeys(key for row in rows for key in row))
     with Path(path).open("w", newline="") as stream:
@@ -67,6 +113,26 @@ def _csv(path, rows):
         writer.writeheader()
         writer.writerows({k: json.dumps(v, separators=(",", ":")) if isinstance(v, (dict, list)) else v
                          for k, v in row.items()} for row in rows)
+
+
+@contextmanager
+def _output_generation(output):
+    """Generate in isolation; failed validation/plotting leaves old results intact."""
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="preparation-analysis-", dir=output.parent) as temporary:
+        stage = Path(temporary)
+        (stage/"figures").mkdir()
+        yield stage
+        files = sorted((path for path in stage.rglob("*") if path.is_file()),
+                       key=lambda path: (path.name == "preparation_analysis.json", str(path)))
+        for path in files:
+            target = output/path.relative_to(stage)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            os.replace(path, target)
+        # This exact managed PDF belongs to the previous analysis. Custom
+        # user-named exports and all unrelated files are preserved.
+        (output/"pyrpmd_state_preparation_report.pdf").unlink(missing_ok=True)
 
 
 def clopper_pearson(k, n, alpha=.05):
@@ -169,34 +235,122 @@ class Case:
         return replace(self, variant=variant, rows={i: self.rows[i] for i in sorted(ids)})
 
 
+def _expected_preparation(variant):
+    if variant in ("ne_paper_full", "ne_paper_subset", "qct_harmonic"):
+        return None  # Historical baseline predates PreparationSpec.
+    if variant not in LABELS and variant not in AUDIT_LABELS:
+        raise ValueError(f"Unknown preparation variant: {variant}")
+    audit = variant in AUDIT_LABELS
+    switch = 50. if variant == "switch50-none" else 200. if variant in ("switch200-none", "ne_switch200") else 0.
+    action = variant in ("qct_action_collision", "qct_action_total")
+    return {"kind": "action_qct" if action else "switch" if switch else "direct",
+            "conditioning": "paper" if variant == "direct-paper" else "none",
+            "switch_time_fs": switch, "hold_time_fs": 100. if audit else 0.,
+            "preparation_dt_fs": .02, "trace_stride_fs": .2,
+            "energy_convention": "fixed_total" if variant == "qct_action_total" else "fixed_collision"}
+
+
+def _validate_preparation(case, preparation):
+    expected = _expected_preparation(case.variant)
+    if expected is None:
+        return
+    if preparation != expected or case.summary.get("preparation") != preparation:
+        raise ValueError(f"Preparation metadata does not match variant {case.variant}: {case.path}")
+    if "collision_energy_ev" in case.summary:
+        collision = _finite(case.summary["collision_energy_ev"], "summary collision energy")
+        harmonic = (case.config["v"]+.5)*_finite(case.summary.get("omega_au"), "summary omega")/EV_TO_AU
+        if collision <= 0:
+            raise ValueError(f"Nonpositive collision energy: {case.path}")
+        override = case.config.get("collision_energy_override_au")
+        if override is not None and not math.isclose(_finite(override, "collision override")/EV_TO_AU,
+                                                     collision, rel_tol=2e-12, abs_tol=1e-12):
+            raise ValueError(f"Collision override disagrees with summary: {case.path}")
+        if preparation["energy_convention"] == "fixed_collision" and not math.isclose(
+                collision+harmonic, case.config["total_energy_ev"], rel_tol=2e-12, abs_tol=1e-12):
+            raise ValueError(f"Fixed-collision energy convention mismatch: {case.path}")
+    for row in case.rows.values():
+        if row["status"] == "failed":
+            continue
+        study = row.get("preparation_study", {})
+        if any(study.get(key) != preparation[key] for key in ("kind", "conditioning", "energy_convention")):
+            raise ValueError(f"Successful row has inconsistent preparation metadata: {case.path}, ID {row['id']}")
+        row_collision = _finite(study.get("collision_energy_ev"), f"collision energy, ID {row['id']}")
+        if "collision_energy_ev" not in case.summary:
+            # Isolated-audit summaries omit scattering energies; the recorded
+            # native frequency defines their original harmonic launch label.
+            harmonic = (case.config["v"]+.5)*_finite(study.get("switch", {}).get("omega_au"), "audit native omega")/EV_TO_AU
+            collision = case.config["total_energy_ev"]-harmonic
+        if row_collision <= 0 or not math.isclose(row_collision, collision, rel_tol=2e-12, abs_tol=1e-12):
+            raise ValueError(f"Successful row collision energy disagrees with its configuration/summary: {case.path}, ID {row['id']}")
+        if not math.isclose(_finite(study.get("nominal_internal_label_ev"), "nominal internal label"), harmonic,
+                            rel_tol=2e-12, abs_tol=1e-12):
+            raise ValueError(f"Successful row harmonic energy label mismatch: {case.path}, ID {row['id']}")
+        for stage in ("before", "after"):
+            values = study.get(stage)
+            if not isinstance(values, dict) or not values:
+                raise ValueError(f"Successful row lacks {stage} diagnostics: {case.path}, ID {row['id']}")
+            for key, value in values.items():
+                _finite(value, f"{stage}.{key}, ID {row['id']}")
+        if preparation["switch_time_fs"] or preparation["hold_time_fs"]:
+            native = study.get("switch", {})
+            if native.get("status") != "completed" or any(
+                    native.get(key) != preparation[spec_key] for key, spec_key in
+                    (("switch_time_fs", "switch_time_fs"), ("hold_time_fs", "hold_time_fs"),
+                     ("dt_fs", "preparation_dt_fs"), ("trace_stride_fs", "trace_stride_fs"))):
+                raise ValueError(f"Successful row has incomplete/mismatched native preparation: {case.path}, ID {row['id']}")
+        if preparation["kind"] == "action_qct":
+            for key in ("orbit_energy_ev", "actual_asymptotic_total_energy_ev", "orbit_phase", "action_quantum_number"):
+                _finite(study.get(key), f"{key}, ID {row['id']}")
+            if (study["action_quantum_number"] != case.config["v"]+.5 or not 0 <= study["orbit_phase"] < 1 or
+                    not math.isclose(study["orbit_energy_ev"]+collision, study["actual_asymptotic_total_energy_ev"],
+                                     rel_tol=2e-12, abs_tol=1e-12)):
+                raise ValueError(f"Action state/energy metadata mismatch: {case.path}, ID {row['id']}")
+            if preparation["energy_convention"] == "fixed_total" and not math.isclose(
+                    study["actual_asymptotic_total_energy_ev"], case.config["total_energy_ev"], rel_tol=2e-12, abs_tol=1e-12):
+                raise ValueError(f"Fixed-total action energy mismatch: {case.path}, ID {row['id']}")
+
+
 def load_case(path, variant, *, audit=False):
     """A summary is the completion marker; in-flight ledgers are not analyzed."""
     path = Path(path)
     summary_path = path/"summary.json"
     if not summary_path.exists():
         return None
-    summary = json.loads(summary_path.read_text())
+    summary = _read_json(summary_path)
     config_path, ledger_path = path/"config.json", path/"trajectories.jsonl"
-    config = json.loads(config_path.read_text())
+    config = _read_json(config_path)
     if summary["config"] != config:
         raise ValueError(f"Summary/config mismatch: {path}")
+    for key, minimum in (("id_offset", 0), ("samples", 1), ("beads", 1)):
+        if type(config.get(key)) is not int or config[key] < minimum:
+            raise ValueError(f"Invalid {key} in completed case: {path}")
+    expected_method = "qct" if variant.startswith("qct_") else "ne_rpmd"
+    if config.get("method") != expected_method or config["beads"] != (1 if expected_method == "qct" else 32):
+        raise ValueError(f"Method/beads do not match variant {variant}: {path}")
     rows = {}
-    for line in ledger_path.read_text().splitlines():
-        row = json.loads(line)
-        i = row["id"]
-        if isinstance(i, bool) or not isinstance(i, int) or i in rows:
-            raise ValueError(f"Duplicate or invalid trajectory ID in {ledger_path}")
-        rows[i] = row
+    with ledger_path.open() as stream:
+        for number, line in enumerate(stream, 1):
+            if not line.strip():
+                continue
+            row = _strict_json(line, f"{ledger_path}, line {number}")
+            if not isinstance(row, dict):
+                raise ValueError(f"Ledger row is not an object: {ledger_path}, line {number}")
+            i = row.get("id")
+            if type(i) is not int or i in rows:
+                raise ValueError(f"Duplicate or invalid trajectory ID in {ledger_path}")
+            rows[i] = row
     expected = set(range(config["id_offset"], config["id_offset"]+config["samples"]))
     if set(rows) != expected:
         raise ValueError(f"Final ledger does not contain its exact declared ID range: {path}")
     if audit:
-        if len(rows) != summary["attempts"]:
-            raise ValueError(f"Audit count mismatch: {path}")
-        if any(r["status"] not in ("prepared", "failed") for r in rows.values()):
+        if any(r.get("status") not in ("prepared", "failed") for r in rows.values()):
             raise ValueError(f"Invalid audit status: {path}")
+        totals = {"attempts": len(rows), "prepared": sum(r["status"] == "prepared" for r in rows.values()),
+                  "failed": sum(r["status"] == "failed" for r in rows.values())}
+        if any(type(summary.get(key)) is not int or summary[key] != value for key, value in totals.items()):
+            raise ValueError(f"Audit count mismatch: {path}")
     else:
-        if any(r["status"] not in STATUSES for r in rows.values()):
+        if any(r.get("status") not in STATUSES for r in rows.values()):
             raise ValueError(f"Invalid collision status: {path}")
         counts = {s: sum(r["status"] == s for r in rows.values()) for s in STATUSES}
         if counts != summary["counts"] or len(rows) != summary["launched_attempts"]:
@@ -205,8 +359,18 @@ def load_case(path, variant, *, audit=False):
     for name in ("preparation.json", "provenance.json", "audit_time_averages.json"):
         if (path/name).exists():
             source_paths.append(path/name)
-    return Case(path, variant, config, summary, rows,
+    case = Case(path, variant, config, summary, rows,
                 [{"path": str(p.resolve()), "sha256": _sha(p)} for p in source_paths])
+    if _expected_preparation(variant) is not None:
+        preparation = _read_json(path/"preparation.json")
+        _validate_preparation(case, preparation)
+        provenance = _read_json(path/"provenance.json")
+        if provenance.get("study_spec") != preparation:
+            raise ValueError(f"Preparation/provenance mismatch: {path}")
+    if audit:
+        _validate_audit_case(case)
+        _validate_audit_reduction(case, _read_json(path/"audit_time_averages.json"))
+    return case
 
 
 def case_record(case):
@@ -226,6 +390,7 @@ def case_record(case):
             "action_internal_energy_ev": internal[0] if internal else None,
             "actual_asymptotic_total_energy_ev": actual_total[0] if actual_total else None,
             "energy_scope": ("constant full-PES semiclassical action orbit" if internal else
+                             "full-PES action preparation attempted; no orbit energy is available" if case.variant.startswith("qct_action_") else
                              "nominal harmonic label; not a constant full-PES internal energy"),
             "beads": config["beads"], "beta_au": case.summary["beta_au"],
             "id_min": min(case.rows), "id_max": max(case.rows),
@@ -239,12 +404,45 @@ def case_record(case):
             "path": str(case.path.resolve())}
 
 
+def _validate_pair_config(reference, variant, *, audit=False):
+    """Permit only the two differences explicitly present in this study design."""
+    configs = [dict(case.config) for case in (reference, variant)]
+    for config in configs:
+        # This optional field did not exist in the frozen baseline schema.
+        config.setdefault("collision_energy_override_au", None)
+    variants = {reference.variant, variant.variant}
+    ignored = set()
+    if not audit and variants == {"ne_paper_subset", "ne_uncut"}:
+        ignored.add("samples")  # subset() deliberately preserves full-run config.
+    retuned = not audit and variants == {"qct_action_collision", "qct_action_total"}
+    if retuned:
+        ignored.add("collision_energy_override_au")
+    if not audit:
+        for case, config in zip((reference, variant), configs):
+            override = config["collision_energy_override_au"]
+            if override is not None:
+                collision = _finite(case.summary.get("collision_energy_ev"), "paired collision energy")
+                if not math.isclose(_finite(override, "paired collision_energy_override_au"), collision*EV_TO_AU,
+                                    rel_tol=2e-12, abs_tol=1e-14):
+                    raise ValueError("Paired collision_energy_override_au disagrees with its declared collision energy")
+                if not retuned:
+                    # An explicit override equal to the nominal collision
+                    # energy has the same physical meaning as the default.
+                    config["collision_energy_override_au"] = None
+    for key in sorted((configs[0].keys() | configs[1].keys())-ignored):
+        if key not in configs[0] or key not in configs[1] or configs[0][key] != configs[1][key]:
+            raise ValueError(f"Paired physical/RNG configuration mismatch for {key}")
+    for key in ("omega_au", "beta_au"):
+        if reference.summary.get(key) != variant.summary.get(key):
+            raise ValueError(f"Paired derived physical configuration mismatch for {key}")
+    if not audit and not retuned and reference.summary["collision_energy_ev"] != variant.summary["collision_energy_ev"]:
+        raise ValueError("Paired collision energies differ outside the declared fixed-total control")
+
+
 def pair_cases(reference, variant, comparison, *, same_conditioning):
     if set(reference.rows) != set(variant.rows):
         raise ValueError("Paired comparison requires exactly equal ID sets, not sample-size matching")
-    for key in ("v", "total_energy_ev", "seed", "method", "beads", "bmin", "bmax"):
-        if reference.config[key] != variant.config[key]:
-            raise ValueError(f"Paired RNG/geometry mismatch for {key}")
+    _validate_pair_config(reference, variant)
     checks = {key: {"checked": 0, "missing": 0, "different": 0} for key in
               ("b_bohr", "initial_axial_bohr", "initial_bond_bohr", "incoming_A_ring_radius_bohr")}
     final_radius_max_difference = 0.
@@ -258,7 +456,12 @@ def pair_cases(reference, variant, comparison, *, same_conditioning):
                 a, b = first.get(key), second.get(key)
             if a is None or b is None:
                 checks[key]["missing"] += 1
+                if ((a is None and first["status"] != "failed") or
+                        (b is None and second["status"] != "failed")):
+                    raise ValueError(f"Successful launch lacks paired field {key}, ID {first['id']}")
                 continue
+            _finite(a, f"paired {key}")
+            _finite(b, f"paired {key}")
             checks[key]["checked"] += 1
             if a != b:
                 checks[key]["different"] += 1
@@ -284,11 +487,12 @@ def pair_cases(reference, variant, comparison, *, same_conditioning):
             "reference_unknown": a["unknown"], "variant_unknown": b["unknown"],
             "id_min": min(reference.rows), "id_max": max(reference.rows),
             "exact_ids_verified": True, "same_conditioning": same_conditioning,
+            "physical_configuration_verified": True,
             "serialized_launch_checks": checks,
             "post_preparation_A_radius_max_abs_difference_bohr": final_radius_max_difference,
             "post_preparation_A_radius_roundoff_tolerance_bohr": 5e-13,
             "full_A_qp_and_orientation_serialized": False,
-            "pairing_scope": ("Same launch RNG identity; measured b/axial separation/A radius/initial bond checked. "
+            "pairing_scope": ("Same launch RNG and physical configuration; measured b/axial separation/A radius/initial bond checked where preparation succeeded. "
                               "Full A q,p and orientation are not serialized. The frozen preparation source preserves A q,p."
                               if same_conditioning else
                               "Same IDs and launch RNG; measured b checked. Cutoff rejection redraws the whole initial state, "
@@ -356,9 +560,137 @@ def _display_unit(column):
     return "atomic units", 1.
 
 
+def _validate_audit_case(case):
+    """A successful preparation must contribute a complete comparable diagnostic."""
+    if any(row.get("status") not in ("prepared", "failed") for row in case.rows.values()):
+        raise ValueError(f"Invalid audit status: {case.path}")
+    accepted = [row for row in case.rows.values() if row["status"] == "prepared"]
+    columns = {}
+    expected = _expected_preparation(case.variant)
+    if case.variant not in AUDIT_LABELS:
+        raise ValueError(f"Not an isolated audit variant: {case.variant}")
+    start, duration = expected["switch_time_fs"], expected["hold_time_fs"]
+    for row in accepted:
+        context = f"{case.path}, ID {row['id']}"
+        study = row.get("preparation_study", {})
+        native = study.get("switch", {})
+        if native.get("status") != "completed":
+            raise ValueError(f"Successful audit lacks completed native preparation: {context}")
+        for key, value in (("switch_time_fs", start), ("hold_time_fs", duration),
+                           ("accepted_hold_duration_fs", duration), ("dt_fs", expected["preparation_dt_fs"])):
+            if not math.isclose(_finite(native.get(key), f"native {key}: {context}"), value,
+                                rel_tol=1e-12, abs_tol=1e-9):
+                raise ValueError(f"Mismatched native {key}: {context}")
+        averages = study.get("time_averages")
+        if not isinstance(averages, dict) or set(averages) != set(AUDIT_WINDOWS):
+            raise ValueError(f"Successful audit lacks complete time windows: {context}")
+        for name, source in AUDIT_WINDOWS.items():
+            window = averages[name]
+            window_start = start+duration-50. if name == "final_50fs" else start
+            window_duration = 50. if name == "final_50fs" else duration
+            if not isinstance(window, dict) or window.get("source") != source:
+                raise ValueError(f"Invalid {name} averaging source: {context}")
+            for key, value in (("start_fs", window_start), ("end_fs", start+duration),
+                               ("duration_fs", window_duration)):
+                if not math.isclose(_finite(window.get(key), f"{name}.{key}: {context}"), value,
+                                    rel_tol=1e-12, abs_tol=1e-9):
+                    raise ValueError(f"Mismatched {name} time window {key}: {context}")
+            values = window.get("values")
+            if not isinstance(values, dict) or not NATIVE_HOLD_COLUMNS <= values.keys():
+                raise ValueError(f"Successful audit lacks required {name} mean columns: {context}")
+            if name in columns and columns[name] != set(values):
+                raise ValueError(f"Successful audit mean columns differ for {name}: {context}")
+            columns[name] = set(values)
+            for key, value in values.items():
+                _finite(value, f"{name}.{key}: {context}")
+            if name == "hold":
+                if set(values) != NATIVE_HOLD_COLUMNS or values != native.get("hold_time_average"):
+                    raise ValueError(f"Hold means disagree with the native integral: {context}")
+                if (window.get("native_dt_fs") != native["dt_fs"] or
+                        type(window.get("native_steps")) is not int or
+                        window["native_steps"] != round(duration/native["dt_fs"])):
+                    raise ValueError(f"Invalid native hold timestep/count: {context}")
+        for stage in ("before", "after"):
+            values = study.get(stage)
+            if not isinstance(values, dict) or not values:
+                raise ValueError(f"Successful audit lacks {stage} diagnostics: {context}")
+            if stage in columns and columns[stage] != set(values):
+                raise ValueError(f"Successful audit {stage} diagnostic columns differ: {context}")
+            columns[stage] = set(values)
+            for key, value in values.items():
+                _finite(value, f"{stage}.{key}: {context}")
+    return accepted
+
+
+def audit_case_record(case):
+    accepted = _validate_audit_case(case)
+    expected = _expected_preparation(case.variant)
+    return {"variant": case.variant, "v": case.config["v"],
+            "nominal_total_label_ev": case.config["total_energy_ev"],
+            "attempts": len(case.rows), "prepared": len(accepted), "failed": len(case.rows)-len(accepted),
+            "id_min": min(case.rows), "id_max": max(case.rows),
+            "hold_time_fs": expected["hold_time_fs"], "native_dt_fs": expected["preparation_dt_fs"],
+            "statistics_scope": "Every attempted audit is counted; means and SEM are unavailable when no preparation succeeds"}
+
+
+def _validate_audit_reduction(case, reduction):
+    """Authenticate the separately archived reduction against the actual ledger."""
+    outcomes = audit_case_record(case)
+    if any(type(reduction.get(key)) is not int or reduction[key] != outcomes[key]
+           for key in ("attempts", "prepared", "failed")):
+        raise ValueError(f"Audit reduction outcome mismatch: {case.path}")
+    expected = {}
+    for row in audit_statistics(case):
+        if row["window"] in AUDIT_WINDOWS:
+            expected.setdefault(row["window"], {})[row["column"]] = row
+    windows = reduction.get("windows")
+    if not isinstance(windows, dict) or set(windows) != set(expected):
+        raise ValueError(f"Audit reduction window mismatch: {case.path}")
+    for name, columns in expected.items():
+        window = windows[name]
+        if set(window.get("values", {})) != set(columns):
+            raise ValueError(f"Audit reduction mean columns mismatch: {case.path}")
+        for column, row in columns.items():
+            values = window["values"][column]
+            if (window.get("source") != row["source"] or
+                    any(not math.isclose(_finite(window.get(key), f"reduction {key}"), row[key], abs_tol=1e-9)
+                        for key in ("start_fs", "end_fs")) or
+                    not math.isclose(_finite(window.get("duration_fs"), "reduction duration_fs"), row["end_fs"]-row["start_fs"],
+                                     rel_tol=1e-12, abs_tol=1e-9) or
+                    type(values.get("n")) is not int or values["n"] != outcomes["prepared"]):
+                raise ValueError(f"Audit reduction metadata/count mismatch: {case.path}")
+            for key, expected_key in (("mean", "mean_native_unit"), ("sem", "sem_native_unit")):
+                value, target = values.get(key), row[expected_key]
+                if target is None:
+                    if value is not None:
+                        raise ValueError(f"Audit reduction invents unavailable SEM: {case.path}")
+                elif not math.isclose(_finite(value, f"reduction {key}"), target, rel_tol=1e-10, abs_tol=1e-12):
+                    raise ValueError(f"Audit reduction {key} disagrees with ledger: {case.path}")
+    differences = {}
+    for row in case.rows.values():
+        if row["status"] == "prepared":
+            averages = row["preparation_study"]["time_averages"]
+            for column in NATIVE_HOLD_COLUMNS:
+                differences.setdefault(column, []).append(averages["hold"]["values"][column]-averages["hold_trace_check"]["values"][column])
+    recorded = reduction.get("native_minus_trace_hold")
+    if not isinstance(recorded, dict) or set(recorded) != set(differences):
+        raise ValueError(f"Audit native-minus-trace reduction columns mismatch: {case.path}")
+    for column, values in differences.items():
+        expected_stats = mean_sem(values)
+        observed = recorded[column]
+        if type(observed.get("n")) is not int or observed["n"] != expected_stats["n"]:
+            raise ValueError(f"Audit native-minus-trace reduction count mismatch: {case.path}")
+        for key in ("mean", "sem"):
+            target, value = expected_stats[key], observed.get(key)
+            if ((target is None and value is not None) or
+                    (target is not None and not math.isclose(_finite(value, f"native-minus-trace {key}"), target,
+                                                             rel_tol=1e-10, abs_tol=1e-12))):
+                raise ValueError(f"Audit native-minus-trace reduction {key} disagrees with ledger: {case.path}")
+
+
 def audit_statistics(case):
     """Every replicate is a trajectory mean; time points never inflate N."""
-    accepted = [r for r in case.rows.values() if r["status"] == "prepared"]
+    accepted = _validate_audit_case(case)
     grouped = {}
     units = {}
     for row in accepted:
@@ -369,9 +701,9 @@ def audit_statistics(case):
         study = row["preparation_study"]
         for window, data in study.get("time_averages", {}).items():
             for column, value in data.get("values", {}).items():
-                if value is not None and isinstance(value, (int, float)) and math.isfinite(value):
-                    key = (window, column, data["source"], data["start_fs"], data["end_fs"])
-                    grouped.setdefault(key, []).append(value)
+                # Validation above requires every successful ID in every mean.
+                key = (window, column, data["source"], round(data["start_fs"], 8), round(data["end_fs"], 8))
+                grouped.setdefault(key, []).append(value)
     rows = []
     for (window, column, source, start, end), values in sorted(grouped.items()):
         unit, factor = _display_unit(column)
@@ -417,6 +749,14 @@ def preparation_numerics(case, *, audit=False):
     summaries = [s for s in summaries if s is not None and s.get("status") == "completed"]
     if not summaries:
         return None
+    for summary in summaries:
+        for key in ("switch_time_fs", "hold_time_fs", "dt_fs", "minimum_bond_bohr", "maximum_bond_bohr",
+                    "maximum_absolute_energy_balance_residual_per_bead_hartree", "final_energy_balance_residual_per_bead_hartree"):
+            _finite(summary.get(key), f"completed native {key}: {case.path}")
+        if summary["hold_time_fs"] > 0:
+            _finite(summary.get("maximum_absolute_hold_energy_drift_per_bead_hartree"), f"completed native hold drift: {case.path}")
+        if any(summary[key] != summaries[0][key] for key in ("switch_time_fs", "hold_time_fs", "dt_fs")):
+            raise ValueError(f"Cannot pool native preparations with different windows/timesteps: {case.path}")
     def maximum(key):
         values = [abs(s[key]) for s in summaries if s.get(key) is not None]
         return max(values)/EV_TO_AU if values else None
@@ -443,13 +783,30 @@ def preparation_numerics(case, *, audit=False):
     return result
 
 
-def paired_audit_means(reference, variant, comparison):
-    """Paired SEM for native hold means, with failed-preparation counts visible."""
+def audit_pair_record(reference, variant, comparison):
+    """Outcome accounting exists even when no pair has two successful members."""
     if set(reference.rows) != set(variant.rows):
         raise ValueError("Audit pairing requires the same exact attempted IDs")
-    for key in ("v", "total_energy_ev", "seed", "method", "beads", "beta_override"):
-        if reference.config[key] != variant.config[key]:
-            raise ValueError("Audit pairing has a different physical/RNG configuration")
+    _validate_pair_config(reference, variant, audit=True)
+    for case in (reference, variant):
+        _validate_audit_case(case)
+    pairs = [(reference.rows[i], variant.rows[i]) for i in sorted(reference.rows)]
+    successful = sum(a["status"] == b["status"] == "prepared" for a, b in pairs)
+    return {"comparison": comparison, "reference_variant": reference.variant, "variant": variant.variant,
+            "v": variant.config["v"], "nominal_total_label_ev": variant.config["total_energy_ev"],
+            "attempted_pairs": len(pairs), "successful_pairs": successful,
+            "pairs_with_a_failure": len(pairs)-successful,
+            "reference_failed": sum(a["status"] == "failed" for a, _ in pairs),
+            "variant_failed": sum(b["status"] == "failed" for _, b in pairs),
+            "both_failed": sum(a["status"] == b["status"] == "failed" for a, b in pairs),
+            "exact_ids_verified": True, "physical_configuration_verified": True,
+            "hold_time_fs": 100.,
+            "scope": "All attempted pairs are counted; means require both preparations to succeed; matched native 100 fs hold windows"}
+
+
+def paired_audit_means(reference, variant, comparison):
+    """Paired SEM for native hold means, with failed-preparation counts visible."""
+    outcomes = audit_pair_record(reference, variant, comparison)
     pairs = [(reference.rows[i], variant.rows[i]) for i in sorted(reference.rows)
              if reference.rows[i]["status"] == variant.rows[i]["status"] == "prepared"]
     if not pairs:
@@ -466,11 +823,7 @@ def paired_audit_means(reference, variant, comparison):
     for column, values in sorted(differences.items()):
         unit, factor = _display_unit(column)
         stats = mean_sem(np.asarray(values)*factor)
-        rows.append({"comparison": comparison, "reference_variant": reference.variant,
-                     "variant": variant.variant, "v": variant.config["v"],
-                     "nominal_total_label_ev": variant.config["total_energy_ev"],
-                     "attempted_pairs": len(reference.rows), "successful_pairs": len(pairs),
-                     "pairs_with_a_failure": len(reference.rows)-len(pairs),
+        rows.append({**outcomes,
                      "column": column, "display_unit": unit,
                      "mean_difference": stats["mean"], "sem_difference": stats["sem"],
                      "scope": "Variant minus reference native 100 fs hold means; conditional on both preparations succeeding; finite-window diagnostic, not a pure-state or adiabatic-convergence test"})
@@ -559,8 +912,6 @@ def collision_plot(records, reference, output):
 
 def audit_plot(cases, quantum_levels, output):
     """Sparse frames visualize the hold; quantitative means use native integrals."""
-    if not cases:
-        return False
     from matplotlib.lines import Line2D
     plt = _plot_style()
     fig, axes = plt.subplots(1, 3, figsize=(12.7, 5.4))
@@ -569,9 +920,9 @@ def audit_plot(cases, quantum_levels, output):
     for ax, (v, energy) in zip(axes, POINTS):
         ax.set_title(f"v = {v}  |  nominal label {energy:.2f} eV", loc="left", fontweight="semibold")
         panel_plotted = False
-        for case in cases:
-            if (case.config["v"], case.config["total_energy_ev"]) != (v, energy):
-                continue
+        panel_cases = [case for case in cases if (case.config["v"], case.config["total_energy_ev"]) == (v, energy)]
+        for case in panel_cases:
+            _validate_audit_case(case)
             by_time = {}
             for row in case.rows.values():
                 if row["status"] != "prepared":
@@ -579,12 +930,23 @@ def audit_plot(cases, quantum_levels, output):
                 study = row["preparation_study"]
                 switch = study["switch"]["switch_time_fs"]
                 trace = study.get("trace", [])
+                if isinstance(trace, dict) and (len(set(trace.get("columns", []))) != len(trace.get("columns", [])) or
+                        any(len(record) != len(trace["columns"]) for record in trace.get("records", []))):
+                    raise ValueError(f"Invalid compact audit trace columns: {case.path}, ID {row['id']}")
                 frames = ([dict(zip(trace["columns"], record)) for record in trace["records"]]
                           if isinstance(trace, dict) else trace)
+                if not frames:
+                    raise ValueError(f"Successful audit lacks saved trace: {case.path}, ID {row['id']}")
+                times = [_finite(frame.get("time_fs"), "audit trace time") for frame in frames]
+                if any(b <= a for a, b in zip(times, times[1:])):
+                    raise ValueError(f"Audit trace times are not increasing: {case.path}, ID {row['id']}")
+                if not any(math.isclose(t, switch+100., abs_tol=1e-8) for t in times):
+                    raise ValueError(f"Successful audit trace lacks completed hold endpoint: {case.path}, ID {row['id']}")
                 for frame in frames:
                     t = round(frame["time_fs"]-switch, 7)
                     value = frame.get("primitive_internal_per_bead_hartree")
-                    if t >= -1e-7 and value is not None:
+                    if t >= -1e-7:
+                        _finite(value, "successful audit trace primitive diagnostic")
                         by_time.setdefault(t, []).append(value/EV_TO_AU)
             if not by_time:
                 continue
@@ -599,7 +961,9 @@ def audit_plot(cases, quantum_levels, output):
             plotted = True
             panel_plotted = True
         if not panel_plotted:
-            ax.text(.5, .45, "Audit pending", transform=ax.transAxes, ha="center", color="#97a0aa")
+            label = ("No successful preparations\n"+str(sum(len(case.rows) for case in panel_cases))+" attempted; all failed"
+                     if panel_cases else "Audit pending")
+            ax.text(.5, .45, label, transform=ax.transAxes, ha="center", color="#6b7885", fontsize=9)
         if v in quantum_levels:
             ax.axhline(quantum_levels[v], color="#283a4e", ls=(0, (4, 3)), lw=1)
         ax.grid(color="#e9edf2", linewidth=.8)
@@ -613,9 +977,10 @@ def audit_plot(cases, quantum_levels, output):
     fig.text(.075, .855, "Sparse 5 fs frames; shading is one SEM across independent trajectory IDs. Native every-step hold means are tabulated separately.", fontsize=10, color="#536176")
     fig.text(.075, .185, "Sparse frames do not resolve the fastest oscillations; they are not used to calculate any hold average.", fontsize=9, color="#536176")
     fig.text(.075, .155, "K + Vfull - Vmin - spring per bead is a primitive diagnostic, not the conserved ring Hamiltonian or a pure-state population.", fontsize=9, color="#536176")
-    if plotted:
-        for extension in ("png", "svg"):
-            fig.savefig(Path(output)/f"preparation_energy_hold.{extension}", dpi=300)
+    # Publish a current placeholder when no trajectory succeeded; never reuse
+    # an earlier generation's figure merely because its path still exists.
+    for extension in ("png", "svg"):
+        fig.savefig(Path(output)/f"preparation_energy_hold.{extension}", dpi=300)
     plt.close(fig)
     return plotted
 
@@ -641,8 +1006,13 @@ def html_report(report, output):
                   f'[{r["delta_sigma_identification_lower_angstrom2"]:.5f}, {r["delta_sigma_identification_upper_angstrom2"]:.5f}]',
                   f'[{r["delta_sigma_conservative_ci95_lower_angstrom2"]:.5f}, {r["delta_sigma_conservative_ci95_upper_angstrom2"]:.5f}]'] for r in pairs]
     primary_audit = [r for r in report["audit_statistics"] if r["window"] == "hold" and r["column"] == "primitive_internal_per_bead_hartree"]
-    audit_rows = [[r["v"], f'{r["nominal_total_label_ev"]:.2f}', AUDIT_LABELS[r["variant"]],
-                   r["attempts"], r["failed"], r["n_trajectory_means"], _number(r["mean"]), _number(r["sem"])] for r in primary_audit]
+    audit_index = {(r["variant"], r["v"], r["nominal_total_label_ev"]): r for r in primary_audit}
+    audit_rows = []
+    for case in report["audit_cases"]:
+        mean = audit_index.get((case["variant"], case["v"], case["nominal_total_label_ev"]), {})
+        audit_rows.append([case["v"], f'{case["nominal_total_label_ev"]:.2f}', AUDIT_LABELS[case["variant"]],
+                           case["attempts"], case["failed"], case["prepared"],
+                           _number(mean.get("mean")), _number(mean.get("sem"))])
     energy_rows = [[r["v"], _number(r["harmonic_internal_label_ev"], 7), _number(r["action_internal_energy_ev"], 7),
                     _number(r["exact_quantum_internal_energy_ev"], 7), _number(r["action_minus_exact_ev"], 7)] for r in report["internal_energy_references"]]
     status = ("COMPLETE" if report["complete"] else f"PARTIAL: {len(report['pending_cases'])} planned case(s) pending")
@@ -660,17 +1030,21 @@ def html_report(report, output):
         _table(["v", "Harmonic label / eV", "Full-PES action / eV", "Exact radial quantum / eV", "Action - quantum / eV"], energy_rows),
         "<p>The nominal total label is Ecol + (v+1/2)hbar*omega with omega = 4407 cm^-1. A harmonic phase draw propagated on BKMP2 does not have a constant actual full-PES internal energy. Full-PES QCT solves J(E) = (1/pi) integral sqrt(2 mu [E-V(r)]) dr = v+1/2 and samples the periodic orbit uniformly in time. Its energy is semiclassical, and differs from the independently converged radial Schrodinger eigenvalue. Both use the same isolated-H2 well minimum as zero. Fixed-collision action QCT keeps the original Ecol and changes actual asymptotic total energy. Fixed-total action QCT changes Ecol so its actual asymptotic total equals the displayed nominal label. These controls answer different questions.</p>",
         "<p>The NE primitive internal quantity K + Vfull - Vmin - spring (per bead) is an ensemble diagnostic, not a single-trajectory physical energy, a state population, or the conserved H_P/P. Smooth switching does not by itself prove excited-state preservation. An apparent match to a quantum energy reference is insufficient to establish the correct state-selected ensemble.</p>"]
-    if primary_audit:
+    if report["audit_cases"]:
         sections += ["<h2>Isolated preparation audit</h2>",
             _table(["v", "Nominal label / eV", "Preparation", "Attempts", "Failed", "Independent means", "100 fs hold mean / eV", "SEM / eV"], audit_rows),
             "<p>Primary means use the native trapezoidal integral at every accepted timestep during the full 100 fs hold. SEM is computed across independent per-trajectory means. The dense 0.2 fs trace integral and final-50-fs average are separate secondary checks in audit_statistics.csv. The high-variance initial and final single-frame statistics are separate rows, never substituted for the hold mean. Audit means are conditional on successful preparation; failures remain counted. Collision variants launch immediately after the ramp, with no extra hold; only these isolated diagnostics append the 100 fs NVE hold. Their time means therefore characterize subsequent isolated evolution, not the instantaneous collision launch values.</p>"]
         image = Path(output)/"figures/preparation_energy_hold.png"
         if image.exists():
             sections.append("<img src='data:image/png;base64,"+base64.b64encode(image.read_bytes()).decode()+"'>")
-        paired_energy_rows = [[r["v"], f'{r["nominal_total_label_ev"]:.2f}', r["comparison"],
-                               r["successful_pairs"], r["pairs_with_a_failure"],
-                               _number(r["mean_difference"], 6), _number(r["sem_difference"], 6)]
-                              for r in report["audit_paired_time_means"] if r["column"] == "primitive_internal_per_bead_hartree"]
+        paired_means = {(r["reference_variant"], r["variant"], r["v"], r["nominal_total_label_ev"]): r
+                        for r in report["audit_paired_time_means"] if r["column"] == "primitive_internal_per_bead_hartree"}
+        paired_energy_rows = []
+        for row in report["audit_paired_outcomes"]:
+            mean = paired_means.get((row["reference_variant"], row["variant"], row["v"], row["nominal_total_label_ev"]), {})
+            paired_energy_rows.append([row["v"], f'{row["nominal_total_label_ev"]:.2f}', row["comparison"],
+                                       row["successful_pairs"], row["pairs_with_a_failure"],
+                                       _number(mean.get("mean_difference"), 6), _number(mean.get("sem_difference"), 6)])
         sections += ["<h3>Paired native hold-mean differences</h3>",
                      _table(["v", "Nominal label / eV", "Contrast", "Paired N", "Pairs with failure", "Mean difference / eV", "Paired SEM / eV"], paired_energy_rows),
                      "<p>These differences use the exact shared audit IDs and subtract each trajectory's native hold mean before calculating SEM. They describe the finite 100 fs window and ramp-duration sensitivity; they are not state-population estimates or proof of an adiabatic limit. Any pair with a preparation failure is counted and the mean is explicitly conditional on both preparations succeeding.</p>"]
@@ -692,6 +1066,16 @@ def html_report(report, output):
     (Path(output)/"preparation_report.html").write_text("<!doctype html><html lang='en'><meta charset='utf-8'><title>BKMP2 preparation study</title><style>"+style+"</style><body>"+"\n".join(sections)+"</body></html>\n")
 
 
+def _check_design(case, v, energy, samples, offset):
+    expected = {"v": v, "total_energy_ev": energy, "samples": samples, "id_offset": offset,
+                "seed": 20261031, "bmin": 0., "bmax": 3.5 if v == 0 else 4., "dt_fs": .02,
+                "time_cap_fs": 250., "extended_cap_fs": 1000., "initial_axial_bohr": 10.,
+                "exit_bohr": 10., "bond_cutoff_bohr": 2.5, "persistence_fs": 1., "check_fs": .2,
+                "dmin_bohr": 1.078, "integrator": "normal-mode-bab", "beta_override": None}
+    if any(case.config.get(key) != value for key, value in expected.items()):
+        raise ValueError(f"Case does not match the registered production design: {case.path}")
+
+
 def analyze(baseline, study, output):
     baseline, study, output = map(Path, (baseline, study, output))
     output.mkdir(parents=True, exist_ok=True)
@@ -699,7 +1083,7 @@ def analyze(baseline, study, output):
     cases, pending, audits = [], [], []
     audit_manifest_path = study/"isolated_audit/audit_manifest.json"
     audit_manifest_bytes = audit_manifest_path.read_bytes() if audit_manifest_path.exists() else None
-    audit_manifest = json.loads(audit_manifest_bytes) if audit_manifest_bytes is not None else {}
+    audit_manifest = _strict_json(audit_manifest_bytes, audit_manifest_path) if audit_manifest_bytes is not None else {}
     completed_audits = set(audit_manifest.get("completed_cases", []))
     for v, energy in POINTS:
         for method, beads, variant in (("ne_rpmd", 32, "ne_paper_full"), ("qct", 1, "qct_harmonic")):
@@ -707,6 +1091,7 @@ def analyze(baseline, study, output):
             case = load_case(path, variant)
             if case is None:
                 raise FileNotFoundError(f"Required original case missing: {path}")
+            _check_design(case, v, energy, 4096, 10000 if method == "ne_rpmd" else 20000)
             cases.append(case)
             if method == "ne_rpmd":
                 ids = range(case.config["id_offset"], case.config["id_offset"]+1024)
@@ -716,6 +1101,9 @@ def analyze(baseline, study, output):
                               ("qct-action-fixed_total", "qct_action_total")):
             path = study/"collisions"/f"{name}-v{v}-Et{energy:.3f}"
             case = load_case(path, variant)
+            if case is not None:
+                _check_design(case, v, energy, 1024 if name.startswith("ne-") else 4096,
+                              10000 if name.startswith("ne-") else 20000)
             (cases if case is not None else pending).append(case if case is not None else str(path.resolve()))
         for variant in AUDIT_LABELS:
             # The standalone audit wrapper deliberately keeps a separate tree.
@@ -723,6 +1111,11 @@ def analyze(baseline, study, output):
             case_name = f"v{v}_E{energy:.2f}".replace(".", "p")+"_"+variant.replace("-", "_")
             path = study/"isolated_audit"/case_name
             case = load_case(path, variant, audit=True) if case_name in completed_audits else None
+            if case is not None:
+                _check_design(case, v, energy, 512, 910000)
+                declared = [row for row in audit_manifest.get("cases", []) if row.get("name") == case_name]
+                if len(declared) != 1 or declared[0].get("config") != case.config or declared[0].get("preparation") != case.summary["preparation"]:
+                    raise ValueError(f"Audit manifest/configuration mismatch: {path}")
             (audits if case is not None else pending).append(case if case is not None else str(path.resolve()))
     records = [case_record(case) for case in cases]
     index = {case.key: case for case in cases}
@@ -742,7 +1135,7 @@ def analyze(baseline, study, output):
                       "lower": float(r["digitization_only_lower_angstrom2"]),
                       "upper": float(r["digitization_only_upper_angstrom2"])} for r in csv.DictReader(stream)}
     h2_path = baseline/"h2_reference.json"
-    h2 = json.loads(h2_path.read_text())
+    h2 = _read_json(h2_path)
     quantum_levels = {r["v"]: r["energy_above_well_minimum_eV"] for r in h2["levels"]}
     energies = []
     for v in (0, 1):
@@ -753,14 +1146,16 @@ def analyze(baseline, study, output):
                              "action_internal_energy_ev": value["action_internal_energy_ev"],
                              "exact_quantum_internal_energy_ev": quantum_levels[v],
                              "action_minus_exact_ev": value["action_internal_energy_ev"]-quantum_levels[v]})
+    audit_cases = [audit_case_record(case) for case in audits]
     audit_rows = [row for case in audits for row in audit_statistics(case)]
     audit_index = {case.key: case for case in audits}
-    audit_pairs = []
+    audit_pairs, audit_outcomes = [], []
     for v, energy in POINTS:
         for first, second, label in (("direct-paper", "direct-none", "Remove centroid cutoff"),
                                      ("direct-none", "switch200-none", "Add 200 fs switch"),
                                      ("switch50-none", "switch200-none", "Increase switch from 50 to 200 fs")):
             if (first, v, energy) in audit_index and (second, v, energy) in audit_index:
+                audit_outcomes.append(audit_pair_record(audit_index[first, v, energy], audit_index[second, v, energy], label))
                 audit_pairs.extend(paired_audit_means(audit_index[first, v, energy], audit_index[second, v, energy], label))
     numeric_rows = [row for case in cases for row in [preparation_numerics(case)] if row is not None]
     numeric_rows += [row for case in audits for row in [preparation_numerics(case, audit=True)] if row is not None]
@@ -776,7 +1171,7 @@ def analyze(baseline, study, output):
     for case in cases+audits:
         path = case.path/"provenance.json"
         if path.exists():
-            for source in json.loads(path.read_text()).get("files", []):
+            for source in _read_json(path).get("files", []):
                 code_hashes.setdefault(source["path"], set()).add(source["sha256"])
     if "wrapper_source" in audit_manifest:
         source = audit_manifest["wrapper_source"]
@@ -787,6 +1182,7 @@ def analyze(baseline, study, output):
               "scope": "Preparation sensitivity; completed production cases only; no fitting or full-replication claim",
               "cross_sections": records, "paired_comparisons": pairs, "internal_energy_references": energies,
               "audit_statistics": audit_rows, "unresolved_endpoints": unknown,
+              "audit_cases": audit_cases, "audit_paired_outcomes": audit_outcomes,
               "audit_paired_time_means": audit_pairs,
               "audit_energy_definitions": audit_definitions,
               "preparation_numerics": numeric_rows,
@@ -795,25 +1191,28 @@ def analyze(baseline, study, output):
                              "paired": "Difference of simultaneous 97.5% CP discordance intervals; Bonferroni >=95% per contrast",
                              "audit": "SEM over independent trajectory time means; no temporal independence assumption"},
               "sources": list(sources.values())}
-    _json(output/"preparation_analysis.json", report)
-    _csv(output/"preparation_cross_sections.csv", records)
-    _csv(output/"preparation_paired_comparisons.csv", pairs)
-    _csv(output/"audit_statistics.csv", audit_rows)
-    _csv(output/"audit_paired_time_means.csv", audit_pairs)
-    _csv(output/"preparation_numerics.csv", numeric_rows)
-    _csv(output/"internal_energy_references.csv", energies)
-    _json(output/"unresolved_endpoint_diagnostics.json", {
-        "scope": "Diagnostic only; original unresolved statuses retained in every estimate and denominator",
-        "mass_au": MASS_AU, "velocity_definition": "centroid p / atomic mass; pair derivative = rhat dot (vj - vi)",
-        "energy_definitions": {
-            "initial_ring_hamiltonian_per_bead_ev": "Full collision H_P/P, with original BKMP2 zero at three separated H atoms; includes ring springs and relative translation; not primitive internal energy",
-            "internal_full_potential_ev": "BC mean full isolated potential minus its well minimum",
-            "internal_primitive_full_ev": "BC (K + Vfull - Vmin - spring)/P diagnostic",
-            "internal_ring_hamiltonian_relative_ev": "BC (K + Vfull - Vmin + spring)/P; not the primitive diagnostic"},
-        "trajectories": unknown})
-    collision_plot(records, reference, output/"figures")
-    audit_plot(audits, quantum_levels, output/"figures")
-    html_report(report, output)
+    with _output_generation(output) as generated:
+        _json(generated/"preparation_analysis.json", report)
+        _csv(generated/"preparation_cross_sections.csv", records)
+        _csv(generated/"preparation_paired_comparisons.csv", pairs)
+        _csv(generated/"audit_statistics.csv", audit_rows)
+        _csv(generated/"audit_cases.csv", audit_cases)
+        _csv(generated/"audit_paired_outcomes.csv", audit_outcomes)
+        _csv(generated/"audit_paired_time_means.csv", audit_pairs)
+        _csv(generated/"preparation_numerics.csv", numeric_rows)
+        _csv(generated/"internal_energy_references.csv", energies)
+        _json(generated/"unresolved_endpoint_diagnostics.json", {
+            "scope": "Diagnostic only; original unresolved statuses retained in every estimate and denominator",
+            "mass_au": MASS_AU, "velocity_definition": "centroid p / atomic mass; pair derivative = rhat dot (vj - vi)",
+            "energy_definitions": {
+                "initial_ring_hamiltonian_per_bead_ev": "Full collision H_P/P, with original BKMP2 zero at three separated H atoms; includes ring springs and relative translation; not primitive internal energy",
+                "internal_full_potential_ev": "BC mean full isolated potential minus its well minimum",
+                "internal_primitive_full_ev": "BC (K + Vfull - Vmin - spring)/P diagnostic",
+                "internal_ring_hamiltonian_relative_ev": "BC (K + Vfull - Vmin + spring)/P; not the primitive diagnostic"},
+            "trajectories": unknown})
+        collision_plot(records, reference, generated/"figures")
+        audit_plot(audits, quantum_levels, generated/"figures")
+        html_report(report, generated)
     print(json.dumps({"complete": report["complete"], "completed_collision_estimates": len(records),
                       "paired_contrasts": len(pairs), "completed_audits": len(audits),
                       "unresolved_endpoints": len(unknown), "pending": len(pending), "output": str(output)}))

@@ -1,0 +1,257 @@
+{
+  "baseline_full_suite": {
+    "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q --junitxml=pytest.xml",
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "fe6f3ce97cf62a3fe98d5142bad7037e64cc5b291c04727d28bfae6e8972d413",
+    "log_sha256": "628fca433b03d89d81bfe414d2fa726514d91d3b5fa67603936dad693c714de2",
+    "passed": 3804,
+    "seconds": 580.4,
+    "skip_reasons": [
+      {
+        "count": 28,
+        "reason": "build optional pinned BrHCl PES first"
+      },
+      {
+        "count": 18,
+        "reason": "build optional pinned BrHCl PES for actual-source cache checks"
+      },
+      {
+        "count": 11,
+        "reason": "could not import 'pyscf': No module named 'pyscf'"
+      },
+      {
+        "count": 9,
+        "reason": "optional real BKMP2 PES has not been built"
+      },
+      {
+        "count": 8,
+        "reason": "optional real JaxPIP environment"
+      },
+      {
+        "count": 7,
+        "reason": "optional pinned BrHCl_LEPS1 has not been built"
+      },
+      {
+        "count": 7,
+        "reason": "could not import 'torch': No module named 'torch'"
+      },
+      {
+        "count": 6,
+        "reason": "explicit pinned native Caracal build/source required"
+      },
+      {
+        "count": 5,
+        "reason": "Build verified BKMP2 for the real-PES switch checks"
+      },
+      {
+        "count": 4,
+        "reason": "Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks"
+      },
+      {
+        "count": 2,
+        "reason": "full MPI installation for original optimizer"
+      },
+      {
+        "count": 2,
+        "reason": "could not import 'tblite.interface': No module named 'tblite'"
+      },
+      {
+        "count": 2,
+        "reason": "optional PyTorch runtime not installed"
+      },
+      {
+        "count": 1,
+        "reason": "collection skipped"
+      },
+      {
+        "count": 1,
+        "reason": "optional real BKMP2 not built"
+      },
+      {
+        "count": 1,
+        "reason": "optional real PySCF"
+      },
+      {
+        "count": 1,
+        "reason": "Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check"
+      },
+      {
+        "count": 1,
+        "reason": "optional PLUMED Python wrapper unavailable"
+      },
+      {
+        "count": 1,
+        "reason": "independent optional reference solver"
+      }
+    ],
+    "skipped": 115,
+    "status": "passed",
+    "subtests_passed": 264,
+    "summary": "3804 passed, 115 skipped, 264 subtests passed in 580.40s (0:09:40)"
+  },
+  "baseline_note": "Original implementation; native extensions available, optional real BKMP2 not yet built.",
+  "bkmp2": {
+    "command": "PYTHONPATH=src python benchmarks/h3/build_pes.py",
+    "compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "library": "benchmarks/h3/build/libbkmp2.so",
+    "library_sha256": "02ea11a0f702a5262b0f05fe4a28e7b92a06b9d687f0b0ac212d138f27e70e11",
+    "redistributed": false,
+    "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237"
+  },
+  "date": "2026-10-31",
+  "distribution": {
+    "built_wheel_from_sdist": true,
+    "installed_outside_checkout": true,
+    "platform": "Linux x86_64 / CPython 3.12",
+    "receipt": "package-verification.json",
+    "receipt_only_docs_may_postdate_build": true,
+    "runtime_source_hashes_match_final_worktree": true,
+    "status": "passed"
+  },
+  "documentation_builds": [
+    {
+      "command": "PYTHONPATH=src python -m sphinx -W --keep-going -b html docs BUILD_DIR",
+      "log_sha256": "b09c1aeb1b41b9bfd09a708d7b8d3f53fd4848267848caa2174ddca46f197fd3",
+      "status": "passed"
+    },
+    {
+      "command": "PYTHONPATH=src python -m sphinx -W --keep-going -b html docs/zh BUILD_DIR",
+      "log_sha256": "4f8235a31e38e1a54993373545366d1b3a17279527a0fe053698bd8e3b41cab8",
+      "status": "passed"
+    },
+    {
+      "command": "PYTHONPATH=src python -m sphinx -W --keep-going -b singlehtml docs BUILD_DIR",
+      "log_sha256": "ee3a0984e03ce48ef94d6a2be624dcab80ac03445b26100f22c4af04654f4164",
+      "status": "passed"
+    },
+    {
+      "command": "PYTHONPATH=src python -m sphinx -W --keep-going -b singlehtml docs/zh BUILD_DIR",
+      "log_sha256": "0d67a6dcc32154dc06010359c53b2838a5fb8730e57c35afaa05cf32073ec799",
+      "status": "passed"
+    }
+  ],
+  "final_full_suite": {
+    "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q --junitxml=pytest.xml",
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "1ed1c2056f206dfed8e910630ae7b19d514c63094563e7293f3a63349106e3dc",
+    "log_sha256": "baf8bbc0e20eebe576d16cf3e8c52c74ddb1a994677568b1d090e3be210f1dcf",
+    "passed": 4056,
+    "seconds": 416.73,
+    "skip_reasons": [
+      {
+        "count": 28,
+        "reason": "build optional pinned BrHCl PES first"
+      },
+      {
+        "count": 18,
+        "reason": "build optional pinned BrHCl PES for actual-source cache checks"
+      },
+      {
+        "count": 11,
+        "reason": "could not import 'pyscf': No module named 'pyscf'"
+      },
+      {
+        "count": 8,
+        "reason": "optional real JaxPIP environment"
+      },
+      {
+        "count": 7,
+        "reason": "optional pinned BrHCl_LEPS1 has not been built"
+      },
+      {
+        "count": 7,
+        "reason": "could not import 'torch': No module named 'torch'"
+      },
+      {
+        "count": 6,
+        "reason": "explicit pinned native Caracal build/source required"
+      },
+      {
+        "count": 2,
+        "reason": "full MPI installation for original optimizer"
+      },
+      {
+        "count": 2,
+        "reason": "could not import 'tblite.interface': No module named 'tblite'"
+      },
+      {
+        "count": 2,
+        "reason": "optional PyTorch runtime not installed"
+      },
+      {
+        "count": 1,
+        "reason": "collection skipped"
+      },
+      {
+        "count": 1,
+        "reason": "optional real PySCF"
+      },
+      {
+        "count": 1,
+        "reason": "Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check"
+      },
+      {
+        "count": 1,
+        "reason": "optional PLUMED Python wrapper unavailable"
+      },
+      {
+        "count": 1,
+        "reason": "independent optional reference solver"
+      }
+    ],
+    "skipped": 96,
+    "status": "passed",
+    "subtests_passed": 272,
+    "summary": "4056 passed, 96 skipped, 272 subtests passed in 416.73s (0:06:56)"
+  },
+  "final_note": "Reviewed implementation; native extensions rebuilt and real source-pinned BKMP2 enabled.",
+  "guide_contracts": {
+    "cli_commands": 14,
+    "integrated_repository_markdown_checked": 173,
+    "missing_file_targets": 0,
+    "python_job_examples_parsed": 9,
+    "quickstart": [
+      "validate",
+      "run",
+      "resume",
+      "analyze --recompute",
+      "low-level API"
+    ],
+    "readme_docs_markdown_checked": 136,
+    "receipt": "docs-contract-checks.json",
+    "toml_job_examples_parsed": 29
+  },
+  "microbenchmark": {
+    "cases": 16,
+    "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python benchmarks/efficiency/free_ring_coefficients.py --steps 2000 --repeats 5 --output free-ring-coefficients.json",
+    "comparison": "exact elementwise q/p equality via numpy.testing.assert_array_equal",
+    "receipt": "free-ring-coefficients.json",
+    "scope": "NumPy free-ring kernel only; noisy timings, not whole-trajectory speedup",
+    "targeted_recheck": "free-ring-coefficients-outlier-check.json"
+  },
+  "reviewed_base_commit": "c4fa743f552c1d71db35fab791a2e63409bc1c3e",
+  "schema": "pyrpmd.implementation-guide-audit.v1",
+  "scope_boundaries": [
+    "MPI launcher and MPI integration were not available locally.",
+    "Optional BrHCl/Caracal, PySCF/tblite, PyTorch, real JaxPIP, real EAM, PLUMED and native ONNX checks remained skipped when their dependencies/data were unavailable.",
+    "Smoke runs do not establish physical convergence; example convergence flags were preserved.",
+    "H3 preparation PR #44 and QTST normalization PR #39 remain separate scientific reviews."
+  ],
+  "test_count_change_note": "Additional regression cases and enabled BKMP2 checks account for the count difference; suite wall times are not an end-to-end performance comparison.",
+  "tested_changed_runtime_sha256": {
+    "native/thermal.hpp": "54c704af9f277680c34c42cf4f1da24aaeebe0e5ed055a52b31bd8fbc4ac3702",
+    "src/pyrpmd/analysis/projection.py": "3be5f9e0b069fa48dc470220d40a7cad302afb94ab5b8707d38e4ed6f03178bc",
+    "src/pyrpmd/analysis/rate_io.py": "bdfc82bc3615ed4be998a04c1834b69067df02992790ab6575ac317b4f7cf771",
+    "src/pyrpmd/batched.py": "0f2366bacb745c32f7d5623eb2bc456a678f88a995488854828082e453e98790",
+    "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+    "src/pyrpmd/input.py": "6e2f42d668c9b458e489be0159bdc4c0ae49c26cf03fd57b4800d7bdb30355c5",
+    "src/pyrpmd/io.py": "f4cdd8a2bb3ffd3e65aa91f5b11fa7d0384fdf25e73d1e75c58db4512f58ccca",
+    "src/pyrpmd/native_ensemble.py": "e4ff5aaae29cb78be2acf70709e0ef6962023c29a0775df4b226817e4f167e56",
+    "src/pyrpmd/units.py": "cd4f490c2f17388e012fe769b6de1ca3e0ad737e5f8bd4b69b189d25036b9e20",
+    "src/pyrpmd/workflows/drpmd.py": "d2e49032f05cdb191db88ae00bc033035c3a71066b66f2a1fb43ed08c2f21235",
+    "src/pyrpmd/workflows/fes.py": "b711cea507581e80791e2c31133c7af632f20cd7fca5b59a8327d61c25c0ca13",
+    "src/pyrpmd/workflows/rate.py": "de1a588e38252bb6fbe6b7cd9d05132878072efeaec59bf5de5f963eb5625f1f"
+  }
+}

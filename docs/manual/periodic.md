@@ -11,8 +11,8 @@ checkpoint contracts; select the engine explicitly when using the native route.
 | --- | --- | --- | --- | --- |
 | `pimd` | Equilibrium quantum statistics; optional BZP NPT | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
 | `diffusion` | Continuous centroid trajectories and transport | Yes | Yes | MSD, VACF, D and diagnostics |
-| `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one smooth scalar centroid CV |
-| `fes` | 1D–3D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
+| `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one supported smooth scalar centroid CV |
+| `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
 | `surface_rate` | A directed exit on a surface, optionally with fixed layers | Yes, or a finite cluster | Yes | First-order rate with the mass metric of the mobile atoms |
 
 Fixed atoms are supported by `pimd`, `diffusion`, `fes`, `metadynamics` and `surface_rate`; they keep
@@ -67,7 +67,7 @@ and equilibration time for each isotope.
 `periodic_bond_difference` also accepts the alias `periodic_difference`. A nearest-image CV has a
 derivative branch where the nearest image switches; keep the biased range away from it.
 `site_rate` accepts its supported linear and smooth nonlinear scalar centroid CVs, with the
-constrained-parent metric weighting described in [general-coordinate rates](../general-coordinate-rates.md).
+constrained-parent mass-metric weighting described in [general-coordinate rates](../general-coordinate-rates.md).
 `surface_rate` also accepts unwrapped
 `distance` with its constant endpoint mass metric and full curved constraint. For
 `periodic_distance`, the dividing surface must be below half the smallest singular value
@@ -110,8 +110,8 @@ The [GPAW dipole-layer tutorial](https://gpaw.readthedocs.io/tutorialsexercises/
 illustrates distinct real-space and plane-wave boundary treatments. For a fully periodic slab,
 declare the surface normal explicitly and supply its area when requesting second-order normalization.
 
-The default materials and surface workflows use a Python time-step loop with compiled deterministic
-substeps for periodic/fixed-atom systems; use `loop_backend="auto"` or `"python"`. An explicit
+With the default workflow engine, periodic and fixed-atom systems use a Python time-step loop
+with compiled deterministic substeps; use `loop_backend="auto"` or `"python"`. An explicit
 `task="pimd"`, `sampling.engine="native"` selects a separate C++ trajectory engine with supported
 builtins or a compiled `native_periodic` evaluator. C ABI v2 batch evaluation does not by itself
 supply that evaluator. See the
@@ -119,6 +119,11 @@ supply that evaluator. See the
 for its potential ABI, thermostats and restart format.
 
 ## PIMD: equilibrium properties
+
+The controls below describe the default (`sampling.engine="legacy"`) workflow. The explicit
+`sampling.engine="native"` route uses a separate native thermostat/barostat engine and checkpoint
+format; its compatible potentials, inputs and examples are documented in the
+[native PIMD guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md).
 
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
@@ -160,6 +165,16 @@ under the [force-consistent energy convention](potentials.md); saved summaries r
 Correlation analysis still loads scalar or selected-atom histories; budget that memory separately. See
 [streaming and recovery](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md).
 For transport properties use the `diffusion` task.
+
+### Native PIMD engine
+
+`sampling.engine="native"` selects the separate C++ ensemble engine. It has explicit built-in
+and compiled PES requirements, additional thermostats, NVT support for fixed atoms, and BZP,
+MTTK, RGB or SCR barostats subject to their documented restrictions. It uses transactional
+`samples/native_pimd_NNNN/journal.json` files and immutable chunks instead of the default
+materials checkpoint layout. Engine selection changes the run identity. See the
+[native PIMD guide and examples](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)
+for the full input and output contract; the BZP table below belongs to the default engine.
 
 ### Constant-pressure PIMD
 

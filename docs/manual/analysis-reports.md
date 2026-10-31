@@ -3,11 +3,12 @@
 Generate a report from saved results with one command:
 
 ```bash
-python -m pip install -e '.[analysis]'
+python -m pip install -e '.[plots]'
 pyrpmd report runs/my-run --output reports/my-run
 ```
 
-The optional `analysis` dependencies include Matplotlib for plotting. Open
+The `plots` extra installs Matplotlib; `analysis` also includes it and adds PyMBAR
+for independent estimator cross-checks. Open
 `reports/my-run/index.html` in a browser. The report reads native PyRPMD result
 files and preserves the original run. It does not call the PES, restart dynamics,
 or execute a saved Python input.

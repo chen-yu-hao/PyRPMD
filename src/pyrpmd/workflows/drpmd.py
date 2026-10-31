@@ -21,7 +21,6 @@ import importlib
 import importlib.util
 import json
 import math
-import os
 from pathlib import Path
 import re
 import time
@@ -609,14 +608,11 @@ def _jsonable(value):
 
 
 def _atomic_json(path, value):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + f".{os.getpid()}.tmp")
-    with temporary.open("w", encoding="utf-8") as stream:
-        json.dump(_jsonable(value), stream, indent=2, sort_keys=True, allow_nan=False)
-        stream.flush()
-        os.fsync(stream.fileno())
-    os.replace(temporary, path)
+    from ..io import atomic_write_text
+
+    atomic_write_text(
+        path, json.dumps(_jsonable(value), indent=2, sort_keys=True, allow_nan=False)
+    )
 
 
 def _atomic_npz(path, metadata, **arrays):

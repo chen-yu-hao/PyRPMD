@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 
 from pyrpmd.dynamics import native_capabilities
+from pyrpmd.checkpoint import CheckpointError
 from pyrpmd.system import System
 from pyrpmd.workflows.batched_recrossing import _child_batch_task
 from pyrpmd.workflows.rate import _child_task
@@ -77,6 +78,39 @@ def test_mixed_cached_and_new_pairs_preserve_order_and_checkpoints(tmp_path):
         cached = _child_batch_task(tasks)
     for actual, expected in zip(cached, results):
         compare_pair(actual, expected)
+
+
+@pytest.mark.parametrize("batched", [False, True])
+def test_completed_children_replay_without_constructing_a_potential(tmp_path, batched):
+    tasks = make_tasks(tmp_path)
+    expected = _child_batch_task(tasks)
+    before = {path: path.read_bytes() for path in (tmp_path / "checkpoints").iterdir()}
+    with patch("pyrpmd.parallel.execution.make_task_potential",
+               side_effect=AssertionError("completed results must not initialize a PES")):
+        replay = _child_batch_task(tasks) if batched else [_child_task(task) for task in tasks]
+    for actual, original in zip(replay, expected):
+        compare_pair(actual, original)
+    assert {path: path.read_bytes() for path in before} == before
+
+
+@pytest.mark.parametrize("failure", ["physics", "integrity"])
+def test_invalid_child_checkpoint_is_rejected_before_potential_creation(tmp_path, failure):
+    tasks = make_tasks(tmp_path, pairs=1)
+    _child_task(tasks[0])
+    if failure == "physics":
+        tasks[0]["q"] = tasks[0]["q"] + .01
+        error, message = ValueError, "checkpoint physics differs"
+    else:
+        path = next((tmp_path / "checkpoints").iterdir())
+        with np.load(path, allow_pickle=False) as saved:
+            arrays = dict(saved.items())
+        arrays["numerator"][0] += 1.
+        np.savez(path, **arrays)
+        error, message = CheckpointError, "integrity check failed"
+    with patch("pyrpmd.parallel.execution.make_task_potential",
+               side_effect=AssertionError("invalid caches must fail before PES initialization")):
+        with pytest.raises(error, match=message):
+            _child_batch_task(tasks)
 
 
 def test_reordering_or_different_packing_does_not_change_pair_streams(tmp_path):

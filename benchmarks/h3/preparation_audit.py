@@ -313,6 +313,7 @@ def planned_cases(*, samples=512, id_offset=910000, points=None, variants=None):
                 samples=samples, id_offset=id_offset, bmax=3.5 if v == 0 else 4.0)
             spec = study.PreparationSpec(kind=kind, conditioning=conditioning, switch_time_fs=switch,
                 hold_time_fs=HOLD_TIME_FS, preparation_dt_fs=0.02, trace_stride_fs=DENSE_STRIDE_FS)
+            study.validate_request(config, spec, workers=1, audit=True)
             cases.append({"name": f"v{v}_E{energy:.2f}_{variant}".replace(".", "p"),
                           "point": point, "variant": variant, "config": asdict(config),
                           "preparation": asdict(spec)})
