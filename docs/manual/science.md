@@ -12,7 +12,7 @@ procedure for converging a result. The inputs and commands for each task are in 
 | Explicit collisions with product classification | `drpmd` | Thermal rate or fixed-energy cross section, set by the launch distribution |
 | Equilibrium free energy along chosen CVs | `fes` | Probability density per CV volume element, and its free energy |
 | Separate rates for several entrances and TSs | `network` | Rate matrix indexed by entrance, channel and TS |
-| History-dependent bias on 1D/2D CVs | `metadynamics` | Finite-time bias free-energy estimate and HILLS |
+| History-dependent bias on 1D/2D/3D CVs | `metadynamics` | Finite-time bias free-energy estimate and HILLS |
 | Equilibrium nuclear quantum statistics in a fixed cell | `pimd` | Physical energy estimators, ring radius of gyration |
 | Thermostat-free RPMD transport | `diffusion` | Centroid MSD, VACF, diffusion tensor and diagnostics |
 | A selected exit from a material site or surface basin | `site_rate` / `surface_rate` | Basin-normalized first-order rate in `s^-1` |
@@ -93,9 +93,9 @@ Converge every method in the time step. For Verlet the free ring is stable for
 $|\Delta t|\max\omega_k<2$; stiff bonds or biases tighten the limit. See the
 [integrator notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/integrators.md).
 
-Reaction and FES workflows use Andersen sampling matched to the integrator. Materials `pimd` /
-`diffusion` also offer PILE-L: `bcocb` with Cayley, `baoab` with the normal-mode integrator, and
-Andersen with Verlet. `native=true` enables compiled substeps; `loop_backend="native"` requires the
+Reaction and FES workflows default to Andersen sampling matched to the integrator. FES also
+offers PILE-L; materials `pimd` / `diffusion` default to PILE-L with `bcocb` for Cayley and `baoab`
+for the normal-mode integrator, and use Andersen with Verlet. `native=true` enables compiled substeps; `loop_backend="native"` requires the
 whole loop to run fused. The rules for periodic and fixed-atom systems are in the
 [periodic task guide](periodic.md).
 
@@ -149,6 +149,74 @@ Build a result up in five layers and keep the complete input and output of every
 Error bars give the statistical uncertainty of the sampled problem. Missing errors are reported as
 `null`, unsampled bins stay masked, and the bounds from unresolved dRPMD trajectories are reported
 separately from confidence intervals.
+
+### Assessing adaptive umbrella results
+
+The [input defaults](input.md#defaults) are short starting budgets. In particular, P=32, a
+0.1 fs time step, 1 ps adaptive production, ESS 20 and 20 bootstrap draws do not specify an
+accuracy for an unknown reaction or material. `preset="production"` does not establish
+convergence. Adaptive placement holds the umbrella stiffness fixed, refines the supplied domain,
+then discards the pilot data and starts separately equilibrated production with a new seed.
+It cannot discover unspecified basins or certify slow variables outside the selected CVs.
+
+In `RUN/results/summary.json`, read `adaptive_umbrella` for FES or `pmf.adaptive_umbrella`
+for gas-phase rates. Gas-phase runs also retain these diagnostics under `adaptive_umbrella`
+in `RUN/rate_pmf.json` and `RUN/umbrella/summary.json`. Read the result in three stages:
+
+1. **Pilot selection.** `adaptive_umbrella.pilot_target_met` means the requested local overlap,
+   ESS and optional coverage criteria passed in the pilot. The older `target_met` field is a
+   compatibility alias for this pilot result.
+2. **Production sampling.** `production_target_met` checks those criteria again on the independent
+   production streams. Inspect `production_overlap_connected_at_target`,
+   `production_effective_samples_target_met` and `production_coverage`; omitted coverage criteria
+   do not imply a completely sampled domain. A failed check is reported with warnings and does
+   not automatically add sampling or remove the computed point estimate.
+3. **Scientific convergence.** Compare independent seeds and initial states, longer equilibration
+   and production, P versus 2P, and the time step versus half the time step. Refine windows and
+   histogram bins, and check the reference-to-barrier interval, asymptotic separation and
+   recrossing plateau where applicable. Accept differences only within a declared error budget.
+
+For a gas-phase rate, the default `rate.pmf_method="ui"` fits Gaussian window distributions.
+Local skewness, multiple modes and unsupported Gaussian tails can bias its PMF even when its
+mean and variance appear stable. UI retains model estimates at endpoints without observed
+histogram support and records a warning; this is not measured support. With
+`rate.pmf_method="mbar"`, `compare_ui=true` (the default for MBAR) provides a paired comparison
+on the same production samples. Histogram MBAR checks supported bins throughout the interval
+from the reactant reference to the dividing surface, but also needs bin refinement and adequate
+sampling. Agreement between estimators on one trajectory cannot expose a shared unsampled basin.
+Generic `fes` uses MBAR with the CV-density measure; it is not interchangeable with the
+`rate_flux` PMF of the gas-phase rate workflow.
+
+Uncertainty is a separate check. Increase the number of independent samples and verify the
+stability of the block-bootstrap interval; merely increasing the number of bootstrap draws
+cannot repair insufficient sampling. Rate-PMF bootstrap draws that fail support or estimation
+are counted as rejected. If any draw is rejected, the primary barrier/rate error and confidence
+interval are unavailable (`null`, or NaN for curve arrays). `supported_draw_*` results describe
+only the accepted subset, conditional on support and a valid fit; they are not unconditional
+confidence intervals. Check requested, attempted, valid and rejected counts and block status.
+Generic FES applies the same distinction per bin: its primary `standard_error` is NaN unless
+all requested draws support that bin and correlated blocks are available.
+`supported_draw_standard_error` and `bootstrap_valid_per_bin` retain the conditional estimate
+and support count. The point-estimate mask and these uncertainty diagnostics answer different
+questions; a finite error bar still does not prove physical convergence.
+
+Choose an error target for the observable. For the static rate factor
+$k_{\rm QTST}\propto\exp(-\beta\Delta F)$, an error magnitude $|\delta F|$ permits a multiplicative
+rate deviation up to $\exp(\beta|\delta F|)$. Limiting that factor to 1.10 requires
+$|\delta F|\le k_BT\log(1.10)$, about **0.0568 kcal/mol at 300 K**. This example allocates all
+of a 10% rate budget to the barrier; transmission-coefficient, PES, time-step, bead and RPMD
+approximation errors still need their own assessment. A universal default cannot supply this
+budget for all systems.
+
+Method background: [Kästner and Thiel (2006)](https://doi.org/10.1063/1.2206775) explains the
+Gaussian UI approximation and correlated uncertainty propagation;
+[Shirts and Chodera (2008)](https://doi.org/10.1063/1.2978177) derives MBAR;
+[PyMBAR's timeseries guidance](https://pymbar.readthedocs.io/en/latest/timeseries.html) describes
+equilibration and correlation diagnostics. The
+[RPMDrate input examples](https://greengroup.mit.edu/rpmdrate-input/) are illustrative parameter
+sets, not universal precision guarantees. See also the
+[OpenMM RPMD guide](https://docs.openmm.org/latest/userguide/library/09_rpmd_plugin.html) for bead
+convergence and the distinction between equilibrium path integrals and approximate real-time RPMD.
 
 Summaries carry `converged` or `physical_converged`, which stay `false` for a single run; PCET also
 reports `numerical_convergence` and `physical_applicability_unverified`. The
