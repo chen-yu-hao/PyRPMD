@@ -93,7 +93,7 @@ def main():
                         for k in range(nsteps):
                             childdyn.step(child)
                             value,_=surface.centroid_value_gradient(child.q.mean(axis=0))
-                            numerator[idx,k,0]+=sign*velocity/fs*(value>0)
+                            numerator[idx,k,0]+=-sign*velocity/fs*(value<0)
                         energy_error=max(energy_error,abs(childdyn.energy(child)-initial)*beta/16)
                     diagnostics.append({"chain":chain,"parent":parent,"energy_error_kbt":energy_error,
                                         "starting_checkpoint":checkpoint,"normal_speed_au":float(fs)})
@@ -104,7 +104,7 @@ def main():
     head=int(0.75*len(flux))
     estimate=float(flux[head:].mean())
     np.savez_compressed(a.output/"bond_recrossing_pilot.npz",time_au=t,parent_numerator=numerator,
-                        parent_denominator=denominator,parent_ids=parent_ids,channel_names=np.array(["bond_diagonal_side"]),
+                        parent_denominator=denominator,parent_ids=parent_ids,channel_names=np.array(["bond_diagonal_product_side"]),
                         estimator="signed_flux_side",surface_kind="r01_minus_r12",
                         interpretation="FINITE-TIME SIDE CORRELATION ONLY; not product commitment")
     report={"schema":"pyrpmd.h3.bond-2d-recrossing-pilot.v1","temperature_K":1500,
