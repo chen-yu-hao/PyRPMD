@@ -3,10 +3,12 @@
 
 JAX/Equinox/jax2onnx are used only offline, not in the MD force loop. Input
 geometries are an .npy array [M,N,3], in the model's declared length unit.
+Run exports in separate processes, not concurrent threads in one interpreter.
 """
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import hashlib
 import importlib.metadata
 import json
@@ -20,6 +22,39 @@ import numpy as np
 def _digest(path: Path) -> str:
     with path.open("rb") as handle:
         return hashlib.file_digest(handle, "sha256").hexdigest()
+
+
+@contextmanager
+def _symbolic_pad_metadata_compat():
+    """Work around one pinned converter's metadata-only symbolic Pad bug.
+
+    jax2onnx 0.17.1 PadPlugin.lower passes JAX DimExpr directly to ir.Shape,
+    which calls int(B) and fails. Only that plugin's local `ir` reference is
+    wrapped, only for this export, and restored even if conversion fails.
+    The emitted ONNX Pad operation and its inputs are completely unchanged.
+    No installed dependency files or global onnx_ir classes are modified.
+    """
+    if importlib.metadata.version("jax2onnx") != "0.17.1":
+        yield []
+        return
+    from jax.export import is_symbolic_dim
+    from jax2onnx.plugins.jax.lax import pad
+    original = pad.ir
+
+    class PadIR:
+        def __getattr__(self, name):
+            return getattr(original, name)
+
+        @staticmethod
+        def Shape(dims, *args, **kwargs):
+            normalized = [str(d) if is_symbolic_dim(d) else d for d in dims]
+            return original.Shape(normalized, *args, **kwargs)
+
+    pad.ir = PadIR()
+    try:
+        yield ["jax2onnx-0.17.1-symbolic-pad-metadata"]
+    finally:
+        pad.ir = original
 
 
 def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Path,
@@ -102,7 +137,8 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
     import onnx
     import onnxruntime as ort
 
-    graph = jax2onnx.to_onnx(fn=export_fn, inputs=[("B", n, 3)], enable_double_precision=True)
+    with _symbolic_pad_metadata_compat() as workarounds:
+        graph = jax2onnx.to_onnx(fn=export_fn, inputs=[("B", n, 3)], enable_double_precision=True)
     if not isinstance(graph, onnx.ModelProto):
         raise TypeError("jax2onnx must return an ONNX ModelProto")
     io = list(graph.graph.input) + list(graph.graph.output)
@@ -124,6 +160,7 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
         "constants": {"bohr_angstrom": float(BOHR_ANGSTROM), "ev_to_hartree": float(EV_TO_AU)},
         "source_sha256": {"basis": _digest(basis), "checkpoint": _digest(checkpoint)},
         "export_strategy": "vmap-pretraced-single-energy-forces-jaxpr",
+        "export_workarounds": workarounds,
         "export_versions": {name: importlib.metadata.version(name)
                             for name in ("jaxpip", "jax", "equinox", "jax2onnx", "onnx", "onnxruntime", "onnx-ir")},
     }
