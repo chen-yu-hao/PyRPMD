@@ -15,7 +15,13 @@ class FreePotential(Potential):
 
     def evaluate(self, x, *, cell=None, pbc=None):
         x = coordinates(x)
-        return PESResult(np.zeros(len(x)), np.zeros_like(x))
+        return PESResult(np.zeros(len(x)), np.zeros_like(x), virial=np.zeros((len(x), 3, 3)))
+
+    def set_cell(self, cell):
+        """The free-particle energy is cell independent; retain a validated cell."""
+        self.cell, self.pbc = validate_cell_pbc(cell, [True, True, True])
+        if self.cell is None:
+            raise ValueError("variable-cell free particles require a finite cell")
 
 
 class PeriodicCosinePotential(Potential):

@@ -30,7 +30,9 @@ def config(task="diffusion", thermostat="pile-l"):
                      "thermostat": thermostat, "andersen_interval": 3},
         "dynamics": {"loop_backend": "python", "block_steps": 7},
         "diffusion": {"atom_indices": [0], "axes": [0, 1], "bootstrap": 0},
-        "output": {"checkpoint_steps": 4},
+        # Keep coverage of the legacy all-in-one checkpoint/export path.
+        # Bounded streaming and migration are covered in test_materials_extensions.
+        "output": {"checkpoint_steps": 4, "trajectory_storage": "memory"},
     }
 
 
@@ -346,6 +348,7 @@ def test_public_periodic_workflow_keeps_crossings_unwrapped_and_resumes(tmp_path
         "sampling": {"equilibration_steps": 4, "production_steps": 30, "sample_interval": 2,
                      "replicas": 2, "thermostat": "andersen", "andersen_interval": 2},
         "diffusion": {"axes": [0, 1, 2], "bootstrap": 0},
+        "output": {"trajectory_storage": "memory"},
     }
     assert prepare(raw, numerical=True)["ready"]
     result = run(raw, output=tmp_path / "run")

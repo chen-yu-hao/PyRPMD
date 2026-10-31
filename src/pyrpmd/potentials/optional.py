@@ -77,6 +77,14 @@ class ASEPotential(Potential):
                 virials.append(-self.atoms.get_stress(voigt=False) * self.atoms.get_volume() * EV_HARTREE)
         return validate_result(PESResult(es, fs, virial=virials), x.shape)
 
+    def set_cell(self, cell):
+        """Update the ASE cell in bohr, preserving unwrapped atom positions."""
+        new_cell, _ = validate_cell_pbc(cell, self.pbc)
+        if new_cell is None or not self.pbc.all():
+            raise PotentialError("variable-cell ASE PES requires full periodicity")
+        self.atoms.set_cell(new_cell * BOHR_ANGSTROM, scale_atoms=False)
+        self.cell = new_cell
+
     def close(self):
         close = getattr(self.atoms.calc, "close", None)
         if close:

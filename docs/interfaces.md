@@ -40,7 +40,7 @@ Command-line commands expose these same entry points, plus `validate`, `info`,
 | `fes` | Fixed-bias 1D/2D umbrella FES; optional pilot adaptation followed by independent production |
 | `network` | Entrance → channel label → TS matrix of independent complete rate calculations; no implicit sum |
 | `metadynamics` | Standard/WT bias history and finite-time 1D/2D bias FES estimates; no rate inferred from biased time |
-| `pimd` | Fixed-cell equilibrium sampling, quantum energy estimators and ring spread |
+| `pimd` | Fixed-cell or isotropic BZP NPT sampling, quantum energy estimators and ring spread; fixed atoms supported at fixed cell |
 | `diffusion` | Equilibrate then unthermostatted RPMD; unwrapped centroid MSD/tensor, VACF, uncertainty and finite-record diagnostics |
 | `site_rate` | Finite-basin QTST and paired recrossing for one constant-gradient centroid surface; rate in s⁻¹ |
 

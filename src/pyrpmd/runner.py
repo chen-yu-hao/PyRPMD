@@ -1,6 +1,8 @@
 """Public run/prepare/resume entry points shared by Python and the CLI."""
 
 from __future__ import annotations
+
+import numpy as np
 import copy
 import importlib.metadata
 import json
@@ -383,13 +385,16 @@ def prepare(job, *, numerical=False):
         result["ready"] = result["network_preparation"].get("ready", False)
         return result
     elif config["task"] in ("pimd", "diffusion"):
-        from .workflows.materials import validate_materials
+        from .workflows.materials import resolve_materials
 
-        validate_materials(config, system)
+        materials_options = resolve_materials(config, system)
         result["materials_preparation"] = {
             "cell_bohr": system.to_dict().get("cell"),
             "pbc": list(getattr(system, "pbc", (False, False, False))),
-            "ensemble": "fixed_cell",
+            "ensemble": "npt" if materials_options["barostat"] is not None else "fixed_cell",
+            "barostat": materials_options["barostat"],
+            "fixed_atoms": list(system.fixed_atoms),
+            "trajectory_storage": materials_options["storage"],
             "sampling_thermostat": config["sampling"]["thermostat"],
             "production_method": "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling",
             "sampling": config["sampling"],
@@ -423,6 +428,13 @@ def prepare(job, *, numerical=False):
                     "energy_hartree": evaluated.energy.tolist(),
                     "status": evaluated.status.tolist(),
                 }
+                if config["task"] == "pimd" and materials_options["barostat"] is not None:
+                    from .barostat import BZPBarostat
+                    from .dynamics import State
+                    piston = BZPBarostat(provider, system, config["beta"], config["beads"],
+                                        **materials_options["barostat"])
+                    q = np.repeat(x, config["beads"], axis=0)
+                    result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
         finally:
             provider.close()
     return result

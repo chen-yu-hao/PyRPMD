@@ -70,6 +70,8 @@ pyrpmd analyze runs/adaptive --recompute --bins 30 --bootstrap 20
 Use `task="metadynamics"`, ordinary CV specifications and an explicit hill
 height/width. One or two CV dimensions are supported, including custom Python
 CVs with declared positive periodicities and full ring-polymer Jacobians.
+Fixed substrate atoms and fixed periodic cells use the surface workflow's
+existing geometry/PES contracts; see [grid metadynamics](grid-metadynamics.md).
 
 ```toml
 [metadynamics]
@@ -126,10 +128,14 @@ energies and physical bias values are evaluated before a coincident deposition.
 
 History-dependent biases use the Python propagation loop, with a compiled
 free-ring substep when the selected integrator supports it. `loop_backend="native"`
-is rejected before simulation. An apparently fast frozen native bias must not
-silently replace an evolving history. This initial implementation evaluates
-the hill sum directly, so force cost grows with the number of hills; a grid
-acceleration is future work, not part of the performance claim.
+is rejected before simulation. By default, the hill sum is evaluated directly
+and force cost grows with the number of hills. Optional
+`metadynamics.grid.ranges` and `metadynamics.grid.bins` select a cubic/bicubic
+Hermite bias whose energy/force lookup costs a fixed number of interpolation
+terms. The force differentiates the interpolated energy, including across
+periodic seams. The default spacing is at most `sigma/5`; grid refinement is
+a separate numerical convergence check. Nonperiodic values outside the domain
+raise an error and roll back the step. See [grid settings and cost](grid-metadynamics.md).
 
 `sampling.replicas` creates independent metadynamics runs that can use ordinary
 task parallelism. They do not share hills. A checkpoint atomically saves q/p,
@@ -175,7 +181,7 @@ pyrpmd analyze runs/meta2 --recompute --bins 30 30
 ```
 
 Python users can call `run_metadynamics`, `reanalyze_metadynamics`,
-`MetadynamicsBias`, and `analysis.metadynamics.bias_fes` directly. The normal
+`MetadynamicsBias`, `GridMetadynamicsBias`, and `analysis.metadynamics.bias_fes` directly. The normal
 `pyrpmd.run` / `JobSpec` entry points remain available.
 
 ## Method references

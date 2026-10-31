@@ -65,6 +65,8 @@ def build():
 | `sampling` | 平衡、采样间隔、生产长度、恒温器、副本数或母链数 |
 | `parallel` | 进程/MPI 拓扑、珠子分块与线程 |
 | `output.checkpoint_steps` | 以步数计的检查点间隔；`checkpoint_interval` 接受时间 |
+| `output.trajectory_storage` / `chunk_frames` | 材料轨迹默认 `"stream"` 分块保存，256 帧缓冲；`"memory"` 保留旧格式 |
+| `barostat` | 三维完全周期、全部原子可动的 `pimd` 可设置 BZP 压力、时间常数与摩擦 |
 
 每个任务只接受自己的 section。PCET 使用独立的 `[pcet]` 模型，没有分子 `system` 或珠子，见 [PCET](pcet.md)。
 未知字段和无效组合会报错。
@@ -116,7 +118,8 @@ FES 中是两次保存样本之间的时间。
 | `[collision]`、`[outcomes]` | `drpmd` | 发射分布、`bmax`、总轨迹数、最大时间；产物分类 |
 | `[nonadiabatic]` | `drpmd`（实验性 NRPMD） | 见[非绝热 NRPMD](nonadiabatic.md) |
 | `[adaptive_umbrella]` | `fes`、`rate` | 见[气相与自由能](workflows.md) |
-| `[metadynamics]` | `metadynamics` | |
+| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` 可选偏置网格 |
+| `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |
 | `[network]` | `network` | 入口、通道、过渡态 |
 | `[pcet]` | `pcet` | PCET 只接受 `schema_version`、`task`、`preset`、`description`、`temperature`、`pcet`、`output` |

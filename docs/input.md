@@ -18,6 +18,7 @@
 | `output.directory` | 运行目录；新任务不覆盖已有非空目录 |
 | `output.checkpoint_interval` / `checkpoint_steps` | 时间间隔或正整数步数；步数优先 |
 | `output.trajectory_stride` | dRPMD 轨迹保存的正整数步数间隔 |
+| `output.trajectory_storage` / `chunk_frames` | 材料任务默认 `"stream"`、256 帧；`"memory"` 使用旧格式 |
 
 `production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，科学收敛仍需用户用系列计算确认。未知顶层和常用 section 字段会报错，不会自动忽略。
 
@@ -43,8 +44,9 @@ Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（
 `product_side` 为 `higher`（默认）或 `lower`。速率使用位置密度 PMF 和一阶盆地
 归一化，单位 s^-1，仅支持内置线性 centroid 坐标。已有气相 `rate`／`drpmd`／
 `network` 会拒绝周期／固定原子系统。表面 FES 可使用自适应伞抽样；当前
-`surface_rate` 不接受 `[adaptive_umbrella]`，`metadynamics` 尚不接受周期／固定
-原子系统。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
+`surface_rate` 不接受 `[adaptive_umbrella]`。`metadynamics` 支持固定周期晶胞和固定
+原子，偏置网格设置见 [网格 metadynamics](grid-metadynamics.md)。表面速率的
+完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
 
 ## 热化与持续母轨迹
 
@@ -64,7 +66,7 @@ parents = 8
 
 FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和 `diffusion` 生产段使用无温控传播。
 
-## 固定晶胞材料任务
+## 材料任务
 
 `pimd` 和 `diffusion` 使用上述 sampling 时间配置，不接受 reaction、umbrella 或
 metadynamics 偏置。`diffusion` 增加 `[diffusion]`：`atom_indices`、`axes`、
@@ -73,6 +75,12 @@ metadynamics 偏置。`diffusion` 增加 `[diffusion]`：`atom_indices`、`axes`
 均从零起始。`site_rate` 使用一个线性 centroid CV、固定 umbrella 和 `[recrossing]`，
 并显式设置 `[site_rate]` 的 `cv`、`basin`、`dividing_surface`、`direction`。
 三种任务的完整配置与结果解释见[材料计算](materials.md)。
+
+`pimd` 和 `diffusion` 可固定部分原子；扩散选择的测量原子必须可动，参考原子可固定。
+`pimd` 可添加 `[barostat]`：`method="bzp"`、`pressure="1 bar"`、
+`time_constant="1000 fs"`，可选 `friction`。它要求三维完全周期、全部原子可动、
+支持变晶胞及物理 virial 的 PES；各向同性压力不改变晶胞形状。详见 [NPT](materials-npt.md)。
+材料轨迹默认流式保存，见 [分块与续跑](streaming-trajectories.md)。
 
 ## dRPMD
 

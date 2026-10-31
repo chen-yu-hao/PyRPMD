@@ -247,7 +247,7 @@ def test_network_input_cannot_drop_surface_boundary_metadata(boundary):
 
 
 @pytest.mark.parametrize("boundary", ["fixed", "periodic"])
-def test_metadynamics_input_rejects_unvalidated_surface_combination(boundary):
+def test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell(boundary):
     job = cluster_job()
     job["task"] = "metadynamics"
     for key in ("surface", "umbrella", "recrossing"):
@@ -257,8 +257,10 @@ def test_metadynamics_input_rejects_unvalidated_surface_combination(boundary):
     if boundary == "periodic":
         job["system"].pop("fixed_atoms")
         job["system"].update(cell=np.diag([4.0, 4.0, 10.0]).tolist(), pbc=[True, True, False])
-    with pytest.raises(InputError, match="[Mm]etadynamics.*periodic|[Mm]etadynamics.*fixed"):
-        resolve_job(job)
+    config, system = resolve_job(job)
+    assert config["task"] == "metadynamics"
+    assert bool(system.fixed_atoms) == (boundary == "fixed")
+    assert any(system.pbc) == (boundary == "periodic")
 
 
 def test_adaptive_surface_fes_is_accepted_but_surface_rate_is_not():

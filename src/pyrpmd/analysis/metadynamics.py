@@ -17,7 +17,10 @@ import numpy as np
 def _cv_signature(cv):
     """Semantic identity for built-in CVs; plugin parameters remain user-owned."""
     from ..cv import (CVStack, Distance, BondDifference, Cartesian, Angle,
-                      COMDistance, RPMDrateCoordinate, RateSurface)
+                      COMDistance, RPMDrateCoordinate, RateSurface,
+                      PeriodicDistance, SurfaceHeight, SurfaceLateral)
+    from ..cv_periodic import (PeriodicBondDifference, PeriodicAngle,
+                               LinearProjection, FractionalCoordinate)
 
     kind = type(cv)
     if kind is CVStack:
@@ -37,11 +40,22 @@ def _cv_signature(cv):
                       tuple(cv.reference_difference), tuple(cv.paths))
     elif kind is RateSurface:
         parameters = (_cv_signature(cv.coordinate), cv.xi)
+    elif kind in (PeriodicDistance, PeriodicAngle, PeriodicBondDifference):
+        atoms = cv.bonds if kind is PeriodicBondDifference else cv.atoms
+        parameters = (tuple(atoms), tuple(cv.cell.ravel()), tuple(cv.pbc))
+    elif kind in (SurfaceHeight, SurfaceLateral, LinearProjection, FractionalCoordinate):
+        parameters = (tuple(cv._affine_gradient().ravel()), cv.origin)
     else:
         # A plugin may have arbitrary mutable parameters and external state.
         # Introspection cannot establish equality of its mathematical mapping.
         parameters = ()
     return common + (parameters,)
+
+
+def _grid_signature(bias):
+    if not hasattr(bias, "grid_algorithm"):
+        return None
+    return (bias.grid_algorithm, tuple(bias.grid_ranges.ravel()), tuple(bias.grid_bins))
 
 
 def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
@@ -64,6 +78,7 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
            b.bias_factor != biases[0].bias_factor or b.beta != biases[0].beta or
            tuple(b.cv.units) != tuple(biases[0].cv.units) or
            tuple(b.cv.periods) != tuple(biases[0].cv.periods) or
+           _grid_signature(b) != _grid_signature(biases[0]) or
            _cv_signature(b.cv) != _cv_signature(biases[0].cv)
            for b in biases):
         raise ValueError("metadynamics replicas must share their temperature, method and CVs")
@@ -80,6 +95,9 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
         raise ValueError("metadynamics bins must contain an integer >=2 per CV")
     if np.prod(bins, dtype=float) > 1_000_000:
         raise ValueError("metadynamics analysis grid exceeds one million points")
+    if ranges is None:
+        if hasattr(biases[0], "grid_ranges"):
+            ranges = biases[0].grid_ranges.tolist()
     if ranges is None:
         all_samples = np.concatenate(arrays)
         ranges = []
@@ -107,7 +125,8 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     # Bound temporary [grid,hill] allocations even for long HILLS histories.
     for bias in biases:
         chunks = []
-        chunk_size = max(1, min(1024, 1_000_000 // max(1, len(bias.hills))))
+        chunk_size = (1024 if hasattr(bias, "grid_algorithm") else
+                      max(1, min(1024, 1_000_000 // max(1, len(bias.hills)))))
         for start in range(0, len(flat), chunk_size):
             chunks.append(bias.physical_energy(flat[start:start + chunk_size]))
         values.append(np.concatenate(chunks).reshape(grid.shape[:-1]))

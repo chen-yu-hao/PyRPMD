@@ -111,6 +111,24 @@ class PythonPotential(Potential):
         if callable(bind):
             bind(system)
 
+    def set_cell(self, cell):
+        """Update a fully periodic cell without reinitializing the provider.
+
+        The keyword evaluation contract receives the new provider-unit cell
+        on its next call. An object bound through ``supports_pbc`` must also
+        implement an explicit canonical-AU ``set_cell(cell_bohr)`` callback;
+        rebinding the full System each step could reset stateful models.
+        """
+        new_cell, _ = validate_cell_pbc(cell, self.pbc)
+        if new_cell is None or not self.pbc.all():
+            raise PotentialError("variable-cell Python PES requires full periodicity")
+        if not self._periodic_kwargs:
+            setter = getattr(self.obj, "set_cell", None)
+            if not callable(setter):
+                raise PotentialError("bound Python PES must implement set_cell(cell_bohr) for NPT")
+            setter(new_cell.copy())
+        self.cell = new_cell
+
     def native_binding(self):
         from ..propagation import NativeUnavailableError
         if self.pbc.any():

@@ -1,23 +1,24 @@
 # Periodic materials, diffusion and surface reactions
 
-PyRPMD handles fixed-cell periodic systems and slabs with frozen layers. This chapter covers
+PyRPMD handles periodic systems and slabs with frozen layers, plus isotropic NPT PIMD. This chapter covers
 equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop rates.
 
 ## Tasks and boundary conditions
 
 | Task | Purpose | Periodic cell | `fixed_atoms` | Main result |
 | --- | --- | --- | --- | --- |
-| `pimd` | Equilibrium quantum statistics | Yes | No | Energy estimators, radius of gyration |
-| `diffusion` | Continuous centroid trajectories and transport | Yes | No | MSD, VACF, D and diagnostics |
+| `pimd` | Equilibrium quantum statistics; optional BZP NPT | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
+| `diffusion` | Continuous centroid trajectories and transport | Yes | Yes | MSD, VACF, D and diagnostics |
 | `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one constant-gradient CV |
 | `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
 | `surface_rate` | A directed exit on a surface, optionally with fixed layers | Yes, or a finite cluster | Yes | First-order rate with the mass metric of the mobile atoms |
 
-The `pimd`, `diffusion` and `site_rate` estimators require all atoms to be mobile; for frozen bottom
-layers use surface `fes` and `surface_rate`. Gas-phase `rate`, `drpmd`, `network` and `metadynamics`
+Fixed atoms are supported by `pimd`, `diffusion`, `fes`, `metadynamics` and `surface_rate`; they keep
+reference positions on every bead and zero momenta. Materials kinetic-energy estimators count only
+mobile atoms. `site_rate` still requires all atoms mobile. Gas-phase `rate`, `drpmd` and `network`
 take molecular systems without PBC or fixed atoms.
 
-All mobile atoms use the same bead number, and the cell is fixed (constant volume).
+All mobile atoms use the same bead number. Cells are fixed unless `pimd` explicitly uses `[barostat]`.
 
 ## Cells, coordinates and isotopes
 
@@ -120,9 +121,33 @@ estimators; the last is a propagation diagnostic. Each has a `mean` and a
 `standard_error_between_replicas`, which is `null` with a single replica.
 `radius_of_gyration_squared_bohr2` gives each atom's mean squared ring radius of gyration.
 
-`samples/materials_XXXX.npz` holds centroid `positions` and `velocities`, `times`, `observables` and
-`radii_gyration_squared`. `checkpoints/materials_XXXX.npz` holds the restart state. For transport
-properties use the `diffusion` task.
+`samples/materials_XXXX/manifest.json` describes immutable NPZ chunks containing centroid positions,
+velocities, sample steps, energy estimators and radii of gyration. `checkpoints/materials_XXXX.npz`
+holds the state and the authoritative committed prefix. `[output] trajectory_storage="stream"`
+is the default; `chunk_frames=256` bounds the staging buffer. `trajectory_storage="memory"` retains
+the earlier single-NPZ layout. Old completed runs can migrate without loading the PES. Correlation
+analysis still loads scalar or selected-atom histories; budget that memory separately. See
+[streaming and recovery](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md).
+For transport properties use the `diffusion` task.
+
+### Constant-pressure PIMD
+
+```toml
+[barostat]
+method = "bzp"
+pressure = "1 bar"
+time_constant = "1000 fs"
+```
+
+The isotropic Bussi–Zykova–Parrinello barostat scales centroids and the cell while preserving the
+internal ring modes. It requires a fully periodic 3D cell, all atoms mobile, and a variable-cell
+PES returning physical configurational virials. ASE, i-PI and compatible Python models are
+supported. Independent trajectory processes are supported; bead pools, MPI and GPU execution are
+not supported for NPT. Pressure accepts Pa, kPa, MPa, GPa, bar, atm and atomic pressure.
+The optional `friction` defaults to the inverse time constant. Samples include cells, pressures
+and volumes; checkpoint state includes the cell piston. See the
+[BZP method and example](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials-npt.md).
+RPMD diffusion production remains fixed-cell and thermostat-free.
 
 ## Diffusion: MSD and D from continuous trajectories
 

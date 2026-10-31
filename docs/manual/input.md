@@ -67,6 +67,8 @@ current directory. Move referenced files together with the input and keep the at
 | `sampling` | Equilibration, sampling interval, production length, thermostat, replicas or parents |
 | `parallel` | Process/MPI topology, bead splitting and threads |
 | `output.checkpoint_steps` | Checkpoint interval in steps; `checkpoint_interval` takes a time |
+| `output.trajectory_storage` / `chunk_frames` | Materials trajectory storage: `"stream"` (default) or `"memory"`; default chunk buffer 256 frames |
+| `barostat` | Optional BZP NPT settings for fully periodic, all-mobile `pimd`: pressure, time constant and friction |
 
 Each task accepts only its own sections. PCET uses a separate `[pcet]` model with no molecular
 `system` or beads; see [PCET](pcet.md). Unknown fields and invalid combinations raise an error.
@@ -121,7 +123,8 @@ default resolved.
 | `[collision]`, `[outcomes]` | `drpmd` | Launch distribution, `bmax`, total trajectories, maximum time; product classification |
 | `[nonadiabatic]` | `drpmd` (experimental NRPMD) | See [Nonadiabatic NRPMD](nonadiabatic.md) |
 | `[adaptive_umbrella]` | `fes`, `rate` | See [Gas phase and free energy](workflows.md) |
-| `[metadynamics]` | `metadynamics` | |
+| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` optionally select a bias grid |
+| `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
 | `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md) |
 | `[network]` | `network` | Entrances, channels, transition states |
 | `[pcet]` | `pcet` | PCET accepts only `schema_version`, `task`, `preset`, `description`, `temperature`, `pcet`, `output` |

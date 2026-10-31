@@ -207,8 +207,8 @@ Fluxes through different dividing surfaces can overlap, so PyRPMD reports each T
 ## Metadynamics
 
 `task="metadynamics"` supports standard and well-tempered modes on 1D/2D CVs, with several replicas
-that each build their own bias history. CVs may declare a period. The workflow runs on molecular
-systems without PBC or fixed atoms.
+that each build their own bias history. CVs may declare a period. Molecular and fixed-cell periodic
+systems are supported, including fixed substrate atoms with `system.fixed_atoms`.
 
 ```bash
 pyrpmd validate examples/metadynamics/well_tempered_2d.inp
@@ -225,6 +225,7 @@ pyrpmd resume runs/manual-meta
 | `height` | Hill height |
 | `pace` | Completed production steps between depositions |
 | `bias_factor` | $\gamma>1$ in WT mode; omitted in standard mode |
+| `grid.ranges`, `grid.bins` | Optional bounded bias domain and interval counts for 1D/2D Hermite grid acceleration |
 | `analysis.method` | `bias_estimate` |
 | `analysis.bootstrap` | 0 |
 
@@ -238,6 +239,8 @@ aligned on their common support and compared there; `replica_spread` measures th
 replicas.
 
 The history-dependent bias runs in a Python time-step loop with compiled substeps, so
-`loop_backend="native"` is rejected; the cost grows with the number of hills. Metadynamics outputs
-free-energy estimates only. Methods and restart timing are in the
+`loop_backend="native"` is rejected. Direct summation costs grow with the number of hills; the
+optional [grid backend](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)
+keeps lookup work independent of history length. Grid resolution introduces a numerical approximation
+that needs its own refinement check. Metadynamics outputs free-energy estimates only. Methods and restart timing are in the
 [enhanced-sampling specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md).

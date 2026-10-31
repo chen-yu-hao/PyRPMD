@@ -5,7 +5,7 @@
 [Python API](docs/zh/manual/api.md) · [English](README.md)
 
 **Python 环聚合物分子动力学。** PyRPMD 0.2.0 计算双分子 RPMD 速率、直接碰撞 dRPMD、多入口多过渡态的速率矩阵、
-带自适应伞抽样和 metadynamics 的一维/二维自由能面、固定晶胞 PIMD、RPMD 扩散、位点与表面跃迁速率，以及局域电化学
+带自适应伞抽样和 metadynamics 的一维/二维自由能面、固定晶胞或各向同性 NPT PIMD、RPMD 扩散、位点与表面跃迁速率，以及局域电化学
 PCET 速率。输入为普通 Python 或 TOML `.inp` 文件。C++17/OpenMP 内核实现 Cayley、精确正常模 BAB 和 velocity-Verlet
 积分器，并配有 NumPy 参考实现。
 
@@ -121,7 +121,8 @@ pyrpmd run examples/materials/site_rate.inp --output runs/materials-site
 ```
 
 [Ni–H EAM pilot](benchmarks/materials/README.md) 在固定来源的 EAM 模型上，以 1 和 4 个珠子运行 Ni(100) slab 上的 H 和 D。
-材料任务使用固定晶胞且全部原子可动；质子导体需要适合其组成、电荷与机理的周期势。输入、单位、周期 CV 与统计见
+PIMD 和扩散支持固定基底原子；PIMD 也支持三维完全周期、全部原子可动体系的各向同性 BZP 恒压采样。
+材料轨迹默认按带校验的分块流式保存。质子导体需要适合其组成、电荷与机理的周期势。输入与统计见
 [材料说明](docs/materials.md)，测试结果见[材料验证记录](docs/validation/materials-2026-10-30.md)。
 
 ## H + H₂ / BKMP2 验证
@@ -271,6 +272,7 @@ python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
 - [积分器](docs/integrators.md)、[多入口与多 TS](docs/reaction-networks.md)
 - [实验性 NRPMD 与态分辨碰撞](docs/nonadiabatic.md)
 - [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
+- [BZP 恒压 PIMD](docs/materials-npt.md) · [网格 metadynamics](docs/grid-metadynamics.md) · [流式轨迹](docs/streaming-trajectories.md)
 - [电化学 PCET 模型](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
 - [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)
 - [表面催化与周期 slab](docs/surface-catalysis.md)

@@ -31,6 +31,20 @@ class StepEvaluationCache:
     def __getattr__(self, name):
         return getattr(self._provider, name)
 
+    def set_cell(self, cell):
+        """Invalidate geometry-only reuse before a variable-cell PES update.
+
+        A cell change can alter energy and virial even at identical Cartesian
+        coordinates. Clear first so a failed provider update cannot leave a
+        stale successful evaluation available to a rollback or retry.
+        """
+        self._coordinates = self._result = None
+        setter = getattr(self._provider, "set_cell", None)
+        if not callable(setter):
+            from .base import PotentialError
+            raise PotentialError("PES does not support variable-cell set_cell(cell_bohr)")
+        setter(cell)
+
     @contextmanager
     def step(self):
         if self._active:

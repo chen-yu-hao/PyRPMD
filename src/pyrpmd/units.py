@@ -15,6 +15,7 @@ from .constants import (
     HARTREE_J,
     ATOMIC_TIME_S,
     ELECTRON_MASS_KG,
+    BOHR_M,
 )
 
 # Dimension order: length, energy, time, mass, temperature, angle.
@@ -30,6 +31,7 @@ DIMS = {
     "force": (-1, 1, 0, 0, 0, 0),
     "spring": (-2, 1, 0, 0, 0, 0),
     "frequency": (0, 0, -1, 0, 0, 0),
+    "pressure": (-3, 1, 0, 0, 0, 0),
 }
 _U = {
     "1": (1.0, ZERO),
@@ -58,6 +60,12 @@ _U = {
     "rad": (1.0, DIMS["angle"]),
     "radian": (1.0, DIMS["angle"]),
     "deg": (math.pi / 180.0, DIMS["angle"]),
+    "pa": (BOHR_M**3 / HARTREE_J, DIMS["pressure"]),
+    "kpa": (1e3 * BOHR_M**3 / HARTREE_J, DIMS["pressure"]),
+    "mpa": (1e6 * BOHR_M**3 / HARTREE_J, DIMS["pressure"]),
+    "gpa": (1e9 * BOHR_M**3 / HARTREE_J, DIMS["pressure"]),
+    "bar": (1e5 * BOHR_M**3 / HARTREE_J, DIMS["pressure"]),
+    "atm": (101325 * BOHR_M**3 / HARTREE_J, DIMS["pressure"]),
 }
 _NUMBER = re.compile(r"^\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)\s*(.*?)\s*$")
 _TOKEN = re.compile(r"([a-z][a-z0-9]*|1)(?:\^([+-]?\d+))?$")

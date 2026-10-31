@@ -16,26 +16,49 @@ from collections.abc import Mapping
 import numpy as np
 
 from ..analysis.metadynamics import bias_fes
-from ..bias import MetadynamicsBias
+from ..bias import MetadynamicsBias, GridMetadynamicsBias
 from ..cv import make_cvs
 from ..dynamics import Dynamics, State
 from ..checkpoint import load_checkpoint
 from ..parallel import run_tasks, make_task_potential, root_call
+from ..potentials import validate_periodic_spec
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
 from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
 
 
-METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor"}
+METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "grid"}
+
+
+def _grid_options(table, cv, scales, sigma):
+    if "grid" not in table:
+        return None
+    grid = table["grid"]
+    if not isinstance(grid, Mapping) or set(grid) - {"ranges", "ranges_au", "bins"}:
+        raise ValueError("metadynamics.grid must contain only ranges (or ranges_au) and bins")
+    if ("ranges" in grid) == ("ranges_au" in grid):
+        raise ValueError("metadynamics.grid requires exactly one of ranges and ranges_au")
+    bounds = grid.get("ranges_au", grid.get("ranges"))
+    if not isinstance(bounds, (list, tuple, np.ndarray)) or len(bounds) != cv.dimension:
+        raise ValueError("metadynamics.grid.ranges needs one [lower,upper] pair per CV")
+    ranges = []
+    for pair, unit, scale in zip(bounds, cv.units, scales):
+        if not isinstance(pair, (list, tuple, np.ndarray)) or len(pair) != 2:
+            raise ValueError("metadynamics.grid.ranges needs one [lower,upper] pair per CV")
+        ranges.append([parse_quantity(v, _dimension(unit)) *
+                       (scale if "ranges_au" not in grid and isinstance(v, (int, float, np.number)) else 1.0)
+                       for v in pair])
+    # All numerical and periodic-domain validation is shared with the API.
+    probe = GridMetadynamicsBias(cv, sigma, 1.0, 1.0, mode="standard",
+                                grid_ranges=ranges, grid_bins=grid.get("bins"))
+    return {"ranges": probe.grid_ranges.tolist(), "bins": probe.grid_bins.tolist()}
 
 
 def resolve_metadynamics(config, system):
     """Validate algorithm options and convert widths/height to canonical units."""
-    if any(system.pbc) or system.fixed_atoms:
-        raise ValueError(
-            "Metadynamics does not yet support periodic systems or fixed atoms; "
-            "use the surface FES umbrella workflow"
-        )
+    if not np.any(system.mobile_mask):
+        raise ValueError("Metadynamics requires at least one mobile atom")
+    validate_periodic_spec(config.get("potential", {}), system)
     table = config.get("metadynamics", {})
     if not isinstance(table, Mapping):
         raise ValueError("metadynamics must be a table")
@@ -89,6 +112,10 @@ def resolve_metadynamics(config, system):
     bias = MetadynamicsBias(cv, sigma, height, config["beta"], mode=options["mode"],
                             bias_factor=options["bias_factor"])
     options["bias_factor"] = bias.bias_factor
+    options["grid"] = _grid_options(table, cv, scales, sigma)
+    if options["grid"] is not None:
+        initial_bias = _new_bias(cv, options, config["beta"])
+        initial_bias.physical_energy(cv.value(np.repeat(system.geometry[None], config["beads"], axis=0)))
     if config.get("umbrella"):
         raise ValueError("the metadynamics workflow does not combine an umbrella bias")
     if config.get("dynamics", {}).get("loop_backend", "auto") == "native":
@@ -138,6 +165,13 @@ def resolve_metadynamics(config, system):
                 raise ValueError("a periodic metadynamics analysis range must span exactly one period")
             ranges.append([lo, hi])
         options["ranges"] = ranges
+    if options["grid"] is not None:
+        if options["ranges"] is None:
+            options["ranges"] = options["grid"]["ranges"]
+        else:
+            for bounds, domain, period in zip(options["ranges"], options["grid"]["ranges"], cv.periods):
+                if period is None and (bounds[0] < domain[0] or bounds[1] > domain[1]):
+                    raise ValueError("metadynamics analysis.ranges must lie inside the bias grid")
     options.update(neq=neq, nprod=nprod, interval=interval,
                    min_count=checked_integer(analysis.get("min_count", 1), "analysis.min_count"))
     return cv, selected, options
@@ -148,9 +182,15 @@ def validate_metadynamics(config, system):
     resolve_metadynamics(config, system)
 
 
-def _new_bias(cv, options, beta, hills=None):
-    return MetadynamicsBias(cv, options["sigma"], options["height"], beta,
-                           mode=options["mode"], bias_factor=options["bias_factor"], hills=hills)
+def _new_bias(cv, options, beta, hills=None, grid_state=None):
+    common = dict(mode=options["mode"], bias_factor=options["bias_factor"], hills=hills)
+    if options["grid"] is not None:
+        return GridMetadynamicsBias(cv, options["sigma"], options["height"], beta,
+                                    grid_ranges=options["grid"]["ranges"],
+                                    grid_bins=options["grid"]["bins"], grid_state=grid_state, **common)
+    if grid_state is not None:
+        raise ValueError("direct metadynamics checkpoint contains an unexpected grid")
+    return MetadynamicsBias(cv, options["sigma"], options["height"], beta, **common)
 
 
 def _hills_path(output, replica):
@@ -186,12 +226,21 @@ def _read_stream(config, system, output, replica, cv, options):
         if elapsed < 0 or elapsed > options["neq"] + options["nprod"] or int(data["step"]) != elapsed:
             raise ValueError("metadynamics checkpoint has an invalid sampling clock")
         hills = json.loads(str(data["hills"]))
-        bias = _new_bias(cv, options, config["beta"], hills)
+        cached_grid = None
+        if "grid_values" in data or "grid_metadata" in data:
+            if "grid_values" not in data or "grid_metadata" not in data or data.envelope["integrity"] != "verified":
+                raise ValueError("metadynamics grid checkpoint requires a complete integrity-verified cache")
+            cached_grid = {"values": data["grid_values"], "metadata": json.loads(str(data["grid_metadata"]))}
+        bias = _new_bias(cv, options, config["beta"], hills, cached_grid)
         expected_hills = max(0, elapsed - options["neq"]) // options["pace"]
         if len(hills) != expected_hills or any(
             h["step"] != options["neq"] + (i + 1) * options["pace"] for i, h in enumerate(hills)
         ):
             raise ValueError("metadynamics checkpoint hill history disagrees with its deposition clock")
+        sampling_dt = config["sampling"].get("dt_au", config["dt_au"])
+        if any(not np.isclose(h["time"], h["step"] * sampling_dt, rtol=1e-10, atol=1e-10)
+               for h in hills):
+            raise ValueError("metadynamics checkpoint hill time disagrees with its deposition clock")
         samples = data["samples"].copy()
         clocks = data["sample_steps"].copy()
         expected_samples = max(0, elapsed - options["neq"]) // options["interval"]
@@ -205,8 +254,28 @@ def _read_stream(config, system, output, replica, cv, options):
                   "sample_bias": data["sample_bias"].copy(), "sample_energies": data["sample_energies"].copy(),
                   "hills": bias.hills, "propagation": json.loads(str(data["propagation"])),
                   "checkpoint": str(checkpoint), "complete": elapsed == options["neq"] + options["nprod"]}
+        if isinstance(bias, GridMetadynamicsBias):
+            result["grid_state"] = bias.grid_state()
     if result["sample_bias"].shape != (expected_samples,) or result["sample_energies"].shape != (expected_samples,):
         raise ValueError("metadynamics checkpoint observable shapes disagree")
+    state = result["state"]
+    if state.q.shape != (config["beads"], system.natoms, 3):
+        raise ValueError("metadynamics checkpoint state shape disagrees with system")
+    expected_time = elapsed * config["sampling"].get("dt_au", config["dt_au"])
+    if not np.isclose(state.time, expected_time, rtol=1e-10, atol=1e-10):
+        raise ValueError("metadynamics checkpoint time disagrees with its sampling clock")
+    if system.fixed_atoms:
+        indices = np.asarray(system.fixed_atoms)
+        expected_positions = np.broadcast_to(system.geometry[indices], state.q[:, indices].shape)
+        if not np.array_equal(state.q[:, indices], expected_positions) or np.any(state.p[:, indices] != 0.0):
+            raise ValueError("fixed atoms must have reference positions on every bead and zero momenta")
+    if not np.isfinite(result["sample_bias"]).all() or not np.isfinite(result["sample_energies"]).all():
+        raise ValueError("metadynamics checkpoint observables must be finite")
+    if isinstance(bias, GridMetadynamicsBias):
+        # Also validate completed restart states; no next force evaluation is
+        # guaranteed to occur when only regenerating output files.
+        bias._coordinates(cv.value(state.q))
+        bias._coordinates(result["samples"])
     return result
 
 
@@ -221,6 +290,7 @@ def _sample_replica(task):
                             config["sampling"].get("dt_au", config["dt_au"]),
                             seed=np.random.SeedSequence([int(config.get("seed", 0)), 709, replica]),
                             native=config.get("native", config.get("dynamics", {}).get("native", True)),
+                            fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry,
                             threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
         bias = _new_bias(cv, options, config["beta"])
         samples, sample_steps, sample_bias, energies = [], [], [], []
@@ -230,7 +300,7 @@ def _sample_replica(task):
             state = saved["state"]
             dynamics.rng.bit_generator.state = saved["rng"]
             dynamics.propagation_stats = saved["propagation"]
-            bias = _new_bias(cv, options, config["beta"], saved["hills"])
+            bias = _new_bias(cv, options, config["beta"], saved["hills"], saved.get("grid_state"))
             samples, sample_steps = list(saved["samples"]), list(saved["sample_steps"])
             sample_bias, energies = list(saved["sample_bias"]), list(saved["sample_energies"])
             elapsed = saved["elapsed"]
@@ -238,6 +308,11 @@ def _sample_replica(task):
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
 
         def save():
+            grid_payload = {}
+            if isinstance(bias, GridMetadynamicsBias):
+                grid = bias.grid_state()
+                grid_payload = {"grid_values": grid["values"],
+                                "grid_metadata": json.dumps(grid["metadata"], allow_nan=False)}
             _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=elapsed,
                         q=state.q, p=state.p, step=state.step, time=state.time,
                         rng=json.dumps(dynamics.rng.bit_generator.state),
@@ -245,7 +320,7 @@ def _sample_replica(task):
                         samples=np.asarray(samples).reshape(-1, cv.dimension),
                         sample_steps=np.asarray(sample_steps, dtype=int),
                         sample_bias=np.asarray(sample_bias), sample_energies=np.asarray(energies),
-                        propagation=json.dumps(dynamics.propagation_stats))
+                        propagation=json.dumps(dynamics.propagation_stats), **grid_payload)
             _write_hills(_hills_path(output, replica), bias)
 
         # Reconstruct a stale/missing HILLS view even when the saved run is done.
@@ -274,11 +349,11 @@ def _sample_replica(task):
             except BaseException:
                 state = previous
                 dynamics.rng.bit_generator.state = old_rng
-                del bias.hills[nhills:]
+                bias.rollback_hills(nhills)
                 save()
                 raise
             elapsed += 1
-            dynamics.propagation_stats["python_steps"] += 1
+            dynamics._record_python_steps(1)
             reason = "history-dependent metadynamics bias"
             reasons = dynamics.propagation_stats.setdefault("fallback_reasons", {})
             reasons[reason] = reasons.get(reason, 0) + 1
@@ -298,7 +373,7 @@ def _sample_replica(task):
 
 def _analyze(streams, config, system, output, return_data):
     cv, _, options = resolve_metadynamics(config, system)
-    biases = [_new_bias(cv, options, config["beta"], s["hills"]) for s in streams]
+    biases = [_new_bias(cv, options, config["beta"], s["hills"], s.get("grid_state")) for s in streams]
     data = bias_fes(biases, [s["samples"] for s in streams], bins=options["bins"],
                     ranges=options["ranges"], min_count=options["min_count"])
     output = Path(output)
@@ -318,11 +393,15 @@ def _analyze(streams, config, system, output, return_data):
     ]
     if options["mode"] == "standard":
         warnings.append("Constant-height metadynamics continues depositing hills; -V can oscillate about the free energy and has finite-width/deposition error.")
+    if options["grid"] is not None:
+        warnings.append("The applied bias uses Hermite grid interpolation. Refine grid bins independently of FES analysis bins to assess interpolation error.")
     if not data["common_support"]:
         warnings.append("No common sampled bin between all replica histories; their relative gauges cannot be aligned and aggregate FES is masked.")
     summary = {
         "task": "metadynamics", "status": "bias_estimate" if all(s["complete"] for s in streams) else "partial_bias_estimate",
         "estimator": "bias_estimate", "mode": options["mode"], "bias_factor": options["bias_factor"],
+        "bias_backend": "grid" if options["grid"] is not None else "direct",
+        "bias_grid": options["grid"], "fixed_atoms": list(system.fixed_atoms),
         "fes_formula": "F=-V+C" if options["mode"] == "standard" else "F=-gamma/(gamma-1)*V+C",
         "fes_factor": data["fes_factor"], "measure": "cv_density", "energy_unit": "hartree",
         "dimension": cv.dimension, "units": cv.units, "replicas": len(streams),
@@ -359,6 +438,7 @@ def reanalyze_metadynamics(config, system, output, return_data=False):
         streams = [_read_stream(config, system, output, r, cv, options)
                    for r in range(config.get("sampling", {}).get("replicas", 1))]
         for stream in streams:
-            _write_hills(_hills_path(output, stream["replica"]), _new_bias(cv, options, config["beta"], stream["hills"]))
+            _write_hills(_hills_path(output, stream["replica"]),
+                         _new_bias(cv, options, config["beta"], stream["hills"], stream.get("grid_state")))
         return _analyze(streams, config, system, output, return_data)
     return root_call(analyze)

@@ -6,6 +6,9 @@ add_bias_potential/umbrella routines; see THIRD_PARTY_NOTICES.md.
 """
 
 from __future__ import annotations
+import hashlib
+import itertools
+import json
 import numpy as np
 
 
@@ -111,6 +114,7 @@ class MetadynamicsBias:
     """
 
     history_dependent = True
+    _signed_bias_before = False
 
     def __init__(self, cv, sigma, height, beta, *, mode="well_tempered",
                  bias_factor=None, hills=None):
@@ -207,7 +211,8 @@ class MetadynamicsBias:
         before = float(hill.get("bias_before", 0.0))
         if center.shape != (self.cv.dimension,) or not np.isfinite(center).all():
             raise ValueError("invalid metadynamics hill center")
-        if not np.isfinite([height, time, before]).all() or height < 0 or time < 0 or before < -1e-12:
+        if (not np.isfinite([height, time, before]).all() or height < 0 or time < 0
+                or (before < -1e-12 and not self._signed_bias_before)):
             raise ValueError("invalid metadynamics hill height/time/bias")
         if isinstance(step, (bool, np.bool_)) or not isinstance(step, (int, np.integer)) or step < 1:
             raise ValueError("metadynamics hill step must be a positive integer")
@@ -228,9 +233,206 @@ class MetadynamicsBias:
         hill = {"center": center, "height": height, "step": step,
                 "time": time, "bias_before": before}
         self._append(hill)
-        return dict(self.hills[-1])
+        record = dict(self.hills[-1])
+        record["center"] = record["center"].copy()
+        return record
+
+    def rollback_hills(self, count):
+        """Restore the accepted prefix after a failed deposition transaction."""
+        if isinstance(count, (bool, np.bool_)) or not isinstance(count, (int, np.integer)) or not 0 <= count <= len(self.hills):
+            raise ValueError("invalid metadynamics rollback prefix")
+        del self.hills[count:]
 
     @property
     def fes_factor(self):
         """Asymptotic F=-factor*V+C; finite-time bias is only an estimate."""
         return 1.0 if self.mode == "standard" else self.bias_factor / (self.bias_factor - 1.0)
+
+
+class GridMetadynamicsBias(MetadynamicsBias):
+    """Opt-in 1D/2D Hermite interpolation of the accumulated physical bias.
+
+    ``grid_bins`` counts intervals, with both boundary nodes retained for a
+    nonperiodic CV and one nonduplicated period for a periodic CV. Values and
+    first/mixed derivatives of every Gaussian are added to *all* nodes; no
+    Gaussian tail cutoff is introduced. Forces differentiate the interpolated
+    energy, giving a C1 bias across cell edges and periodic seams.
+
+    Lookup costs O(4**D), independent of hill count. Depositing one hill costs
+    O(number of nodes), and HILLS remains an audit history. A checkpoint may
+    retain a verified grid cache; without one, replay reconstructs exactly the
+    same floating-point sum. No mutable scratch is shared with callers.
+    """
+
+    grid_algorithm = "tensor_hermite_v1"
+    # Hermite interpolation need not preserve positivity between nodes. The
+    # actual signed interpolated V is the bias used by both forces and WT
+    # tempering; clipping it would change that algorithm and its derivatives.
+    _signed_bias_before = True
+
+    def __init__(self, cv, sigma, height, beta, *, grid_ranges, grid_bins=None,
+                 mode="well_tempered", bias_factor=None, hills=None, grid_state=None):
+        super().__init__(cv, sigma, height, beta, mode=mode, bias_factor=bias_factor)
+        if cv.dimension not in (1, 2):
+            raise ValueError("grid metadynamics supports one or two CV dimensions")
+        bounds = np.asarray(grid_ranges, dtype=float)
+        if bounds.shape != (cv.dimension, 2) or not np.isfinite(bounds).all() or np.any(bounds[:, 1] <= bounds[:, 0]):
+            raise ValueError("metadynamics grid ranges must be finite increasing [lower,upper] per CV")
+        with np.errstate(over="ignore", invalid="ignore"):
+            widths = bounds[:, 1] - bounds[:, 0]
+        if not np.isfinite(widths).all():
+            raise ValueError("metadynamics grid widths must be finite")
+        for j, period in enumerate(cv.periods):
+            if period is not None and not np.isclose(widths[j], period, rtol=1e-10, atol=1e-12):
+                raise ValueError("a periodic metadynamics grid must span exactly one period")
+        if grid_bins is None:
+            proposed = np.maximum(2.0, np.ceil(5.0 * widths / self.sigma))
+            if not np.isfinite(proposed).all() or np.prod(proposed) > 1_000_000:
+                raise ValueError("metadynamics grid exceeds one million nodes")
+            grid_bins = proposed.astype(np.int64)
+        if np.isscalar(grid_bins):
+            grid_bins = [grid_bins] * cv.dimension
+        raw = np.asarray(grid_bins)
+        if raw.shape != (cv.dimension,) or raw.dtype.kind not in "iu" or np.any(raw < 2):
+            raise ValueError("metadynamics grid bins must contain integer interval counts >=2")
+        nodes = [int(n) + (period is None) for n, period in zip(raw, cv.periods)]
+        if np.prod(nodes, dtype=float) > 1_000_000:
+            raise ValueError("metadynamics grid exceeds one million nodes")
+        self.grid_ranges = bounds.copy()
+        self.grid_bins = raw.astype(np.int64)
+        self.grid_spacing = widths / self.grid_bins
+        self.grid_axes = tuple(np.linspace(lo, hi, count, endpoint=period is None)
+                               for (lo, hi), count, period in zip(bounds, nodes, cv.periods))
+        for array in (self.grid_ranges, self.grid_bins, self.grid_spacing, *self.grid_axes):
+            array.flags.writeable = False
+        self._grid = np.zeros((1 << cv.dimension, *nodes))
+        self._grid.flags.writeable = False
+        if grid_state is None:
+            for hill in [] if hills is None else hills:
+                self._append(hill)
+        else:
+            # Validate every history record without summing it again. A cache
+            # is accepted only for this exact algorithm, geometry and history.
+            for hill in [] if hills is None else hills:
+                self._coordinates(np.asarray(hill["center"], dtype=float))
+                super()._append(hill)
+            values = np.asarray(grid_state.get("values"))
+            metadata = grid_state.get("metadata")
+            if (values.dtype.kind not in "fiu" or values.shape != self._grid.shape
+                    or not np.isfinite(values).all()):
+                raise ValueError("metadynamics grid cache has invalid coefficient values")
+            if metadata != self._grid_metadata(values):
+                raise ValueError("metadynamics grid cache disagrees with its settings or hill history")
+            self._grid = np.array(values, dtype=float, copy=True)
+            self._grid.flags.writeable = False
+
+    def _grid_metadata(self, values=None):
+        history = json.dumps(self.hills, sort_keys=True, separators=(",", ":"), allow_nan=False)
+        coefficients = self._grid if values is None else values
+        # Fixed little-endian float64/C ordering makes direct-API cache checks
+        # independent of the array layout and the machine's native byte order.
+        encoded = np.asarray(coefficients, dtype="<f8").tobytes(order="C")
+        return {"algorithm": self.grid_algorithm, "ranges": self.grid_ranges.tolist(),
+                "bins": self.grid_bins.tolist(), "sigma": self.sigma.tolist(),
+                "periods": list(self.cv.periods), "hills": len(self.hills),
+                "history_sha256": hashlib.sha256(history.encode("utf-8")).hexdigest(),
+                "values_sha256": hashlib.sha256(encoded).hexdigest()}
+
+    def grid_state(self):
+        """Read-only values and history-bound metadata for an atomic checkpoint."""
+        return {"values": self._grid, "metadata": self._grid_metadata()}
+
+    def _coordinates(self, values):
+        values = np.asarray(values, dtype=float)
+        if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
+            raise ValueError("metadynamics values must be finite [...,D]")
+        indices, fractions = [], []
+        for j, period in enumerate(self.cv.periods):
+            lo, hi = self.grid_ranges[j]
+            x = values[..., j]
+            if period is None:
+                if np.any(x < lo) or np.any(x > hi):
+                    raise ValueError(f"metadynamics CV {j} is outside its grid range [{lo}, {hi}]")
+                x = x - lo
+            else:
+                x = (x - lo) % period
+            scaled = x / self.grid_spacing[j]
+            left = np.minimum(np.floor(scaled).astype(np.int64), self.grid_bins[j] - 1)
+            indices.append(left)
+            fractions.append(scaled - left)
+        return values, indices, fractions
+
+    @staticmethod
+    def _basis(t, spacing):
+        t2, t3 = t * t, t * t * t
+        # Indices 0/1 multiply the left/right node value; 2/3 multiply
+        # the corresponding physical derivative, hence the spacing factors.
+        basis = (2*t3 - 3*t2 + 1, -2*t3 + 3*t2,
+                 (t3 - 2*t2 + t)*spacing, (t3 - t2)*spacing)
+        derivative = ((6*t2 - 6*t)/spacing, (-6*t2 + 6*t)/spacing,
+                      3*t2 - 4*t + 1, 3*t2 - 2*t)
+        return basis, derivative
+
+    def physical_energy_gradient(self, values):
+        values, left, fractions = self._coordinates(values)
+        bases = [self._basis(t, dx) for t, dx in zip(fractions, self.grid_spacing)]
+        energy = np.zeros(values.shape[:-1], dtype=float)
+        gradient = np.zeros_like(values)
+        for choices in itertools.product(range(4), repeat=self.cv.dimension):
+            mask = sum((choice // 2) << j for j, choice in enumerate(choices))
+            indices = tuple((left[j] + choice % 2) % len(self.grid_axes[j])
+                            if self.cv.periods[j] is not None else left[j] + choice % 2
+                            for j, choice in enumerate(choices))
+            coefficient = self._grid[(mask, *indices)]
+            term = coefficient
+            for j, choice in enumerate(choices):
+                term = term * bases[j][0][choice]
+            energy += term
+            for axis in range(self.cv.dimension):
+                term = coefficient
+                for j, choice in enumerate(choices):
+                    term = term * bases[j][int(j == axis)][choice]
+                gradient[..., axis] += term
+        if not np.isfinite(energy).all() or not np.isfinite(gradient).all():
+            raise FloatingPointError("nonfinite interpolated metadynamics bias")
+        return energy, gradient
+
+    def _hill_values(self, hill):
+        factors = [self._kernel(axis - center, sigma, period)
+                   for axis, center, sigma, period in
+                   zip(self.grid_axes, hill["center"], self.sigma, self.cv.periods)]
+        result = np.empty_like(self._grid)
+        for mask in range(1 << self.cv.dimension):
+            term = float(hill["height"])
+            for j in range(self.cv.dimension):
+                shape = [1] * self.cv.dimension
+                shape[j] = len(self.grid_axes[j])
+                term = term * factors[j][(mask >> j) & 1].reshape(shape)
+            result[mask] = term
+        return result
+
+    def _append(self, hill):
+        self._coordinates(np.asarray(hill["center"], dtype=float))
+        super()._append(hill)
+        try:
+            updated = self._grid + self._hill_values(self.hills[-1])
+            if not np.isfinite(updated).all():
+                raise FloatingPointError("nonfinite metadynamics grid deposition")
+            updated.flags.writeable = False
+        except BaseException:
+            self.hills.pop()
+            raise
+        self._grid = updated
+
+    def rollback_hills(self, count):
+        previous_count = len(self.hills)
+        super().rollback_hills(count)
+        if count == previous_count:
+            return
+        # Only an exceptional post-deposition failure reaches this replay.
+        # Subtraction would introduce roundoff and spoil exact resume.
+        restored = np.zeros_like(self._grid)
+        for hill in self.hills:
+            restored += self._hill_values(hill)
+        restored.flags.writeable = False
+        self._grid = restored

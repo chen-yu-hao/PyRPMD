@@ -67,6 +67,17 @@ class IPIPotential(Potential):
             out.extend(chunk)
         return bytes(out)
 
+    def set_cell(self, cell):
+        """Use a new fully periodic cell in every subsequent POSDATA request."""
+        new_cell, _ = validate_cell_pbc(cell, self.pbc)
+        if new_cell is None or not self.pbc.all():
+            raise PotentialError("variable-cell i-PI PES requires full periodicity")
+        wire_cell = new_cell.T.copy()
+        wire_inverse = np.linalg.inv(wire_cell)
+        self.cell = new_cell
+        self._wire_cell = wire_cell
+        self._wire_inverse = wire_inverse
+
     def _send_header(self, name):
         self.connection.sendall(name.encode().ljust(12, b" "))
 

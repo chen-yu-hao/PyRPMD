@@ -191,7 +191,8 @@ def test_unsupported_analysis_and_native_history_are_rejected_before_sampling():
     {"cell": np.diag([6.0, 6.0, 12.0]).tolist(), "pbc": [True, True, False]},
     {"fixed_atoms": [0]},
 ])
-def test_surface_metadynamics_is_rejected_before_any_trajectory(tmp_path, extra):
+def test_invalid_periodic_provider_and_fully_fixed_metadynamics_are_rejected(tmp_path, extra):
+    from pyrpmd.potentials import PotentialError
     slab = System.from_dict({**system().to_dict(), **extra})
     for operation in (
         lambda: resolve_metadynamics(config(), slab),
@@ -199,7 +200,7 @@ def test_surface_metadynamics_is_rejected_before_any_trajectory(tmp_path, extra)
         lambda: _sample_replica({"config": config(), "system": slab,
                                 "output": str(tmp_path), "replica": 0}),
     ):
-        with pytest.raises(ValueError, match="periodic systems or fixed atoms"):
+        with pytest.raises((ValueError, PotentialError), match="nonperiodic|mobile atom"):
             operation()
     assert not list(tmp_path.iterdir())
 

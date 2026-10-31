@@ -23,7 +23,7 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic barostat".split()
 )
 _SECTIONS = {
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
@@ -47,7 +47,7 @@ _SECTIONS = {
         "factory params channels exit_distance persistence persistence_steps check_interval bond_cutoffs".split()
     ),
     "output": set(
-        "directory checkpoint_interval checkpoint_steps trajectory_stride".split()
+        "directory checkpoint_interval checkpoint_steps trajectory_stride trajectory_storage chunk_frames".split()
     ),
     "reaction": set(
         "fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
@@ -66,8 +66,9 @@ _SECTIONS = {
     ),
     "surface": set("reactant_basin dividing_surface product_side".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor grid".split()
     ),
+    "barostat": set("method pressure time_constant friction".split()),
     "adaptive_umbrella": set(
         "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
     ),
@@ -415,6 +416,10 @@ class JobSpec:
         if task not in ("rate", "drpmd", "fes", "metadynamics", "pimd", "diffusion", "site_rate", "surface_rate"):
             raise InputError("task must be rate, drpmd, fes, metadynamics, network, pcet, pimd, diffusion, site_rate or surface_rate")
         materials = task in ("pimd", "diffusion")
+        if "barostat" in d and task != "pimd":
+            raise InputError("[barostat] requires task='pimd'; RPMD transport uses fixed-cell unthermostatted production")
+        if not materials and any(key in d.get("output", {}) for key in ("trajectory_storage", "chunk_frames")):
+            raise InputError("output.trajectory_storage/chunk_frames require task='pimd' or 'diffusion'")
         if "diffusion" in d and task != "diffusion":
             raise InputError("[diffusion] requires task='diffusion'")
         if "site_rate" in d and task != "site_rate":
@@ -548,11 +553,6 @@ class JobSpec:
             raise InputError(
                 "Gas-phase rate/drpmd normalization does not apply to periodic or fixed-atom systems; "
                 "use fes, surface_rate or site_rate for a fixed cell"
-            )
-        if task == "metadynamics" and (any(system.pbc) or system.fixed_atoms):
-            raise InputError(
-                "Metadynamics does not yet support periodic or fixed-atom systems; "
-                "use the surface FES workflow"
             )
         if task == "surface_rate":
             from .workflows.surface import surface_definition

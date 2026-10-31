@@ -1,0 +1,426 @@
+{
+  "bzp_ideal_gas_pilot": {
+    "task": "pimd",
+    "ensemble": "npt",
+    "samples_per_replica": [
+      401,
+      401
+    ],
+    "fixed_atoms": [],
+    "mobile_atoms": 2,
+    "trajectory_storage": [
+      "stream",
+      "stream"
+    ],
+    "physical_converged": false,
+    "estimators": {
+      "potential_energy": {
+        "mean": 0.0,
+        "standard_error_between_replicas": 0.0
+      },
+      "kinetic_primitive": {
+        "mean": 0.002824081239137884,
+        "standard_error_between_replicas": 0.00035526262469781693
+      },
+      "kinetic_centroid_virial": {
+        "mean": 0.0028501304071107633,
+        "standard_error_between_replicas": 0.0
+      },
+      "internal_energy_centroid_virial": {
+        "mean": 0.0028501304071107633,
+        "standard_error_between_replicas": 0.0
+      },
+      "ring_polymer_hamiltonian": {
+        "mean": 0.07894452544917827,
+        "standard_error_between_replicas": 0.0033430377429721973
+      }
+    },
+    "radius_of_gyration_squared_bohr2": [
+      0.1365499815176137,
+      0.13545765363800089
+    ],
+    "sampling_diagnostics": [
+      {
+        "replica": 0,
+        "observables": {
+          "potential_energy": {
+            "samples": 401,
+            "statistical_inefficiency": 401.0,
+            "effective_samples": 1.0,
+            "block_length_frames": 401,
+            "complete_blocks": 1,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "kinetic_primitive": {
+            "samples": 401,
+            "statistical_inefficiency": 16.134071140242774,
+            "effective_samples": 24.854235271083976,
+            "block_length_frames": 17,
+            "complete_blocks": 23,
+            "conditional_standard_error": 0.0005071435865656738,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          },
+          "kinetic_centroid_virial": {
+            "samples": 401,
+            "statistical_inefficiency": 401.0,
+            "effective_samples": 1.0,
+            "block_length_frames": 401,
+            "complete_blocks": 1,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "internal_energy_centroid_virial": {
+            "samples": 401,
+            "statistical_inefficiency": 401.0,
+            "effective_samples": 1.0,
+            "block_length_frames": 401,
+            "complete_blocks": 1,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "ring_polymer_hamiltonian": {
+            "samples": 401,
+            "statistical_inefficiency": 10.663935337499268,
+            "effective_samples": 37.603378800497865,
+            "block_length_frames": 11,
+            "complete_blocks": 36,
+            "conditional_standard_error": 0.001993585402302063,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          }
+        }
+      },
+      {
+        "replica": 1,
+        "observables": {
+          "potential_energy": {
+            "samples": 401,
+            "statistical_inefficiency": 401.0,
+            "effective_samples": 1.0,
+            "block_length_frames": 401,
+            "complete_blocks": 1,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "kinetic_primitive": {
+            "samples": 401,
+            "statistical_inefficiency": 6.87723625021963,
+            "effective_samples": 58.30830662349192,
+            "block_length_frames": 7,
+            "complete_blocks": 57,
+            "conditional_standard_error": 0.0002534227970382725,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          },
+          "kinetic_centroid_virial": {
+            "samples": 401,
+            "statistical_inefficiency": 401.0,
+            "effective_samples": 1.0,
+            "block_length_frames": 401,
+            "complete_blocks": 1,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "internal_energy_centroid_virial": {
+            "samples": 401,
+            "statistical_inefficiency": 401.0,
+            "effective_samples": 1.0,
+            "block_length_frames": 401,
+            "complete_blocks": 1,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "ring_polymer_hamiltonian": {
+            "samples": 401,
+            "statistical_inefficiency": 6.317442393784703,
+            "effective_samples": 63.47505446104523,
+            "block_length_frames": 7,
+            "complete_blocks": 57,
+            "conditional_standard_error": 0.0014241527682620455,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          }
+        }
+      }
+    ],
+    "barostat": {
+      "method": "bzp",
+      "pressure_au": 3.3989309148264005e-05,
+      "tau_au": 2067.068666758508,
+      "friction_au": null,
+      "target_pressure_bar": 10000.000000000002,
+      "final_cells_bohr": [
+        [
+          [
+            5.368025529836793,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            5.368025529836793,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            5.368025529836793
+          ]
+        ],
+        [
+          [
+            4.1548497106622975,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            4.1548497106622975,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            4.1548497106622975
+          ]
+        ]
+      ],
+      "mean_volume_bohr3": 76.67315668501563,
+      "mean_pressure_hartree_per_bohr3": 3.793479823185611e-05,
+      "volume_bohr3": [
+        {
+          "mean": 85.85364597727308,
+          "samples": 401,
+          "statistical_inefficiency": 37.235539861924124,
+          "effective_samples": 10.769281215929135,
+          "block_length_frames": 38,
+          "complete_blocks": 10,
+          "conditional_standard_error": 14.504406041039969,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": null
+        },
+        {
+          "mean": 67.49266739275818,
+          "samples": 401,
+          "statistical_inefficiency": 30.083413386038195,
+          "effective_samples": 13.329604418696228,
+          "block_length_frames": 31,
+          "complete_blocks": 12,
+          "conditional_standard_error": 8.504880486209832,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": null
+        }
+      ],
+      "pressure_hartree_per_bohr3": [
+        {
+          "mean": 3.3128871939247155e-05,
+          "samples": 401,
+          "statistical_inefficiency": 20.907723660753838,
+          "effective_samples": 19.179515020696506,
+          "block_length_frames": 21,
+          "complete_blocks": 19,
+          "conditional_standard_error": 6.5846859114216226e-06,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": null
+        },
+        {
+          "mean": 4.2740724524465055e-05,
+          "samples": 401,
+          "statistical_inefficiency": 19.471740635083506,
+          "effective_samples": 20.59394727544245,
+          "block_length_frames": 20,
+          "complete_blocks": 20,
+          "conditional_standard_error": 1.068289925654321e-05,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": null
+        }
+      ]
+    },
+    "checkpoint_sizes_bytes": [
+      4475,
+      4468
+    ],
+    "scope": "Analytic teaching model and finite software pilot; physical convergence is not certified."
+  },
+  "fixed_slab_pimd": {
+    "task": "pimd",
+    "ensemble": "fixed_cell",
+    "samples_per_replica": [
+      81,
+      81
+    ],
+    "fixed_atoms": [
+      0
+    ],
+    "mobile_atoms": 1,
+    "trajectory_storage": [
+      "stream",
+      "stream"
+    ],
+    "physical_converged": false,
+    "estimators": {
+      "potential_energy": {
+        "mean": 0.004005423863858316,
+        "standard_error_between_replicas": 0.0001515059799044199
+      },
+      "kinetic_primitive": {
+        "mean": 0.00097512885556895,
+        "standard_error_between_replicas": 0.0009790509151945746
+      },
+      "kinetic_centroid_virial": {
+        "mean": 0.0017500218549441,
+        "standard_error_between_replicas": 2.092857562672047e-05
+      },
+      "internal_energy_centroid_virial": {
+        "mean": 0.005755445718802417,
+        "standard_error_between_replicas": 0.00013057740427770048
+      },
+      "ring_polymer_hamiltonian": {
+        "mean": 0.059376704583947226,
+        "standard_error_between_replicas": 0.003684358917730626
+      }
+    },
+    "radius_of_gyration_squared_bohr2": [
+      0.0,
+      0.14676185755006838
+    ],
+    "sampling_diagnostics": [
+      {
+        "replica": 0,
+        "observables": {
+          "potential_energy": {
+            "samples": 81,
+            "statistical_inefficiency": 19.501020243217436,
+            "effective_samples": 4.153628835300156,
+            "block_length_frames": 20,
+            "complete_blocks": 4,
+            "conditional_standard_error": 0.0005261615382647231,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          },
+          "kinetic_primitive": {
+            "samples": 81,
+            "statistical_inefficiency": 30.455515832146006,
+            "effective_samples": 2.659616748782956,
+            "block_length_frames": 31,
+            "complete_blocks": 2,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "kinetic_centroid_virial": {
+            "samples": 81,
+            "statistical_inefficiency": 14.47751721858167,
+            "effective_samples": 5.594881966089996,
+            "block_length_frames": 15,
+            "complete_blocks": 5,
+            "conditional_standard_error": 0.00011254459688757421,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          },
+          "internal_energy_centroid_virial": {
+            "samples": 81,
+            "statistical_inefficiency": 18.10170944227341,
+            "effective_samples": 4.474715510063294,
+            "block_length_frames": 19,
+            "complete_blocks": 4,
+            "conditional_standard_error": 0.0004126618296061029,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          },
+          "ring_polymer_hamiltonian": {
+            "samples": 81,
+            "statistical_inefficiency": 24.44665240268421,
+            "effective_samples": 3.3133370845943024,
+            "block_length_frames": 25,
+            "complete_blocks": 3,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          }
+        }
+      },
+      {
+        "replica": 1,
+        "observables": {
+          "potential_energy": {
+            "samples": 81,
+            "statistical_inefficiency": 31.571598277587015,
+            "effective_samples": 2.5655970688535805,
+            "block_length_frames": 32,
+            "complete_blocks": 2,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "kinetic_primitive": {
+            "samples": 81,
+            "statistical_inefficiency": 20.510989928066483,
+            "effective_samples": 3.9491024218759225,
+            "block_length_frames": 21,
+            "complete_blocks": 3,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "kinetic_centroid_virial": {
+            "samples": 81,
+            "statistical_inefficiency": 12.851005074657795,
+            "effective_samples": 6.303008949839429,
+            "block_length_frames": 13,
+            "complete_blocks": 6,
+            "conditional_standard_error": 4.106755306298312e-05,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          },
+          "internal_energy_centroid_virial": {
+            "samples": 81,
+            "statistical_inefficiency": 32.17625204147481,
+            "effective_samples": 2.517384557268881,
+            "block_length_frames": 33,
+            "complete_blocks": 2,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "ring_polymer_hamiltonian": {
+            "samples": 81,
+            "statistical_inefficiency": 26.51966721917702,
+            "effective_samples": 3.054336969259815,
+            "block_length_frames": 27,
+            "complete_blocks": 3,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          }
+        }
+      }
+    ],
+    "checkpoint_sizes_bytes": [
+      3866,
+      3874
+    ],
+    "scope": "Analytic teaching model and finite software pilot; physical convergence is not certified."
+  },
+  "provenance": {
+    "base_commit": "76dd6ad24adc6c244f775857987cd2f0e119845f",
+    "python": "3.12.14",
+    "sources": {
+      "src/pyrpmd/barostat.py": "2b7b8584f1154c764f8ab6c5489d2a05bc3a51b7437ea3c8d856805b5e96d29e",
+      "src/pyrpmd/workflows/materials.py": "5b248c2a0dba9e32e9ee096dcef28b91ce39c595dda7b818c43bbe5b0b80f8a3",
+      "src/pyrpmd/trajectory.py": "2fb27eae9f4b7449a53d12c885f1a0f205ea0bb144f6311678638e48cfccb104"
+    },
+    "examples": [
+      "examples/materials/npt_free.inp",
+      "examples/materials/fixed_slab.inp"
+    ]
+  }
+}

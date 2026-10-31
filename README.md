@@ -6,7 +6,7 @@
 
 **Ring-polymer molecular dynamics in Python.** PyRPMD 0.2.0 computes bimolecular RPMD rates,
 direct-collision dRPMD, rate matrices over several entrances and transition states, 1D/2D free-energy
-surfaces with adaptive umbrella sampling and metadynamics, fixed-cell PIMD, RPMD diffusion, site and
+surfaces with adaptive umbrella sampling and metadynamics, fixed-cell or isotropic NPT PIMD, RPMD diffusion, site and
 surface hop rates, and local electrochemical PCET rates. Inputs are plain Python or TOML `.inp`
 files. C++17/OpenMP kernels implement the Cayley, exact normal-mode BAB and velocity-Verlet
 integrators, with a NumPy reference implementation alongside.
@@ -129,8 +129,9 @@ pyrpmd run examples/materials/site_rate.inp --output runs/materials-site
 ```
 
 The [Ni–H EAM pilot](benchmarks/materials/README.md) runs H and D on a Ni(100) slab with 1 and 4
-beads on a source-pinned EAM model. Materials tasks use a fixed cell with all atoms mobile; proton
-conductors need a periodic potential suited to their composition, charge and mechanism. Inputs,
+beads on a source-pinned EAM model. PIMD and diffusion support fixed substrate atoms. PIMD also supports isotropic BZP pressure control
+for fully periodic all-mobile cells. Materials trajectories stream to checked chunks by default.
+Proton conductors need a periodic potential suited to their composition, charge and mechanism. Inputs,
 units, periodic CVs and statistics are described in the [materials notes](docs/materials.md), and
 the test results in the [materials validation record](docs/validation/materials-2026-10-30.md).
 
@@ -303,6 +304,7 @@ Reference specifications (some in Chinese):
 - [Integrators](docs/integrators.md), [multiple entrances and TSs](docs/reaction-networks.md)
 - [Experimental NRPMD and state-resolved collisions](docs/nonadiabatic.md)
 - [Adaptive umbrella sampling and metadynamics](docs/enhanced-sampling.md)
+- [BZP constant-pressure PIMD](docs/materials-npt.md) · [Grid metadynamics](docs/grid-metadynamics.md) · [Streaming trajectories](docs/streaming-trajectories.md)
 - [Electrochemical PCET model](docs/pcet.md), [runnable PCET example](examples/pcet/README.md)
 - [Fixed cells, PIMD, materials diffusion and site rates](docs/materials.md)
 - [Surface catalysis and periodic slabs](docs/surface-catalysis.md)
