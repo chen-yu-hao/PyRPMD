@@ -12,7 +12,7 @@
 | `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、overlap、mask |
 | `surface_rate` | 可含固定层的表面局部出口 | 支持，也可使用有限簇 | 支持 | 活动自由度质量度量的一阶速率 |
 
-材料能量与输运估计器目前假定全部原子可动，因此合并后的程序明确拒绝在 `pimd`、`diffusion`、`site_rate` 中设置固定原子。需要固定底层时，选择表面 `fes` / `surface_rate`。气相 `rate`、`drpmd`、`network` 和当前 `metadynamics` 不接受周期或固定原子体系。
+材料能量与输运估计器目前假定全部原子可动，因此合并后的程序明确拒绝在 `pimd`、`diffusion`、`site_rate` 中设置固定原子。需要固定底层时，选择表面 `fes` / `surface_rate`。`metadynamics` 支持周期和固定原子体系，以及 1–3 个 CV；气相 `rate`、`drpmd`、`network` 不接受这些体系。
 
 所有活动原子使用同一珠子数，没有“吸附物多珠子、活动基底单珠子”的混合分辨率入口。当前没有 NPT/变胞、电子摩擦、非绝热跃迁、集体电导率或自动 kMC 构建。
 
@@ -47,7 +47,7 @@ H/D/T 在电子 PES 上都对应氢元素，区别在于核质量。可以使用
 | `surface_height` | 吸附原子组 COM 沿表面法向的投影 | 高度自由能、线性表面分割面 |
 | `surface_lateral` | 指定方向的连续展开 COM 投影 | 面内迁移自由能与选定出口 |
 
-`periodic_bond_difference` 也接受别名 `periodic_difference`。普通几何 CV 不会因任务类型或是否固定底层而隐式改变定义。最近像 CV 在像切换处可有导数分支，需检查所选范围是否适合平滑偏置和采样。`site_rate` / `surface_rate` 的恒定质量度量约束只接受各自明确支持的线性 centroid CV，不把任意周期距离或质子转移坐标当作已实现的约束速率。
+`periodic_bond_difference` 也接受别名 `periodic_difference`。普通几何 CV 不会因任务类型或是否固定底层而隐式改变定义。最近像 CV 在像切换处可有导数分支，需检查所选范围是否适合平滑偏置和采样。`site_rate` 接受其明确支持的线性 centroid CV；`surface_rate` 还支持连续展开的 `distance`，利用恒定端点质量度量和真实曲面约束。`periodic_distance` 的分割面须小于周期晶格基最小奇异值的一半，保证远离像切换边界。键差或变质量度量坐标不自动适用该公式。
 
 ## 周期势能接口
 
@@ -136,7 +136,7 @@ $$
 
 ## 位点与表面速率的共同物理定义
 
-两个局部速率工作流都对一个恒定质量度量的线性 centroid 坐标 s，使用同一位置密度的分割面值与盆地概率：
+两个局部速率工作流都对恒定质量度量的 centroid 坐标 s，使用同一位置密度的分割面值与盆地概率；`surface_rate` 也接受非线性的连续键长：
 
 $$
 k_{\mathrm{QTST}}=

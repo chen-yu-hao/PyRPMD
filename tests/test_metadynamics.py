@@ -187,20 +187,14 @@ def test_unsupported_analysis_and_native_history_are_rejected_before_sampling():
             validate_metadynamics(cfg, system())
 
 
-@pytest.mark.parametrize("extra", [
-    {"cell": np.diag([6.0, 6.0, 12.0]).tolist(), "pbc": [True, True, False]},
-    {"fixed_atoms": [0]},
-])
-def test_surface_metadynamics_is_rejected_before_any_trajectory(tmp_path, extra):
-    slab = System.from_dict({**system().to_dict(), **extra})
-    for operation in (
-        lambda: resolve_metadynamics(config(), slab),
-        lambda: run_metadynamics(config(), slab, tmp_path),
-        lambda: _sample_replica({"config": config(), "system": slab,
-                                "output": str(tmp_path), "replica": 0}),
-    ):
-        with pytest.raises(ValueError, match="periodic systems or fixed atoms"):
-            operation()
+def test_surface_metadynamics_accepts_periodicity_but_rejects_zero_mobile_dofs(tmp_path):
+    slab = System.from_dict({**system().to_dict(), "cell": np.diag([6., 6., 12.]).tolist(),
+                             "pbc": [True, True, False]})
+    cv, _, _ = resolve_metadynamics(config(), slab)
+    assert cv.dimension == 1
+    frozen = System.from_dict({**slab.to_dict(), "fixed_atoms": [0]})
+    with pytest.raises(ValueError, match="mobile atom"):
+        run_metadynamics(config(), frozen, tmp_path)
     assert not list(tmp_path.iterdir())
 
 

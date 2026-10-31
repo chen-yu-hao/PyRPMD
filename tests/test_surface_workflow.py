@@ -129,6 +129,22 @@ def test_affine_gradient_override_cannot_change_surface_mass_metric():
         surface_definition(config, system)
 
 
+def test_periodic_bond_surface_requires_a_provably_smooth_image_region():
+    job = cluster_job()
+    job["system"].update(cell=[[8., 0., 0.], [2., 8., 0.], [0., 0., 20.]], pbc=[True, True, False])
+    job["potential"] = {"provider": "free"}
+    job["cvs"] = [{"kind": "periodic_distance", "atoms": [0, 1]}]
+    job["surface"] = {"reactant_basin": [2.1, 3.], "dividing_surface": 2., "product_side": "lower"}
+    job["umbrella"]["centers"] = [1.5, 2., 2.5, 3., 4., 5.]
+    config, system = resolve_job(job)
+    definition = surface_definition(config, system)
+    expected = .5 * np.linalg.svd(system.cell[:2], compute_uv=False)[-1]
+    assert definition["periodic_safe_radius_bohr"] == pytest.approx(expected)
+    job["surface"].update(reactant_basin=[4.1, 5.], dividing_surface=4.)
+    with pytest.raises(InputError, match="image-switch"):
+        resolve_job(job)
+
+
 @pytest.mark.parametrize("integrator", ["cayley-bcb", "normal-mode-bab", "velocity-verlet"])
 @pytest.mark.parametrize("product_side", ["higher", "lower"])
 def test_linear_parent_constraints_keep_fixed_beads_and_do_not_constrain_child_flux(tmp_path, product_side, integrator):
@@ -247,7 +263,7 @@ def test_network_input_cannot_drop_surface_boundary_metadata(boundary):
 
 
 @pytest.mark.parametrize("boundary", ["fixed", "periodic"])
-def test_metadynamics_input_rejects_unvalidated_surface_combination(boundary):
+def test_metadynamics_input_accepts_fixed_and_periodic_surface(boundary):
     job = cluster_job()
     job["task"] = "metadynamics"
     for key in ("surface", "umbrella", "recrossing"):
@@ -257,8 +273,9 @@ def test_metadynamics_input_rejects_unvalidated_surface_combination(boundary):
     if boundary == "periodic":
         job["system"].pop("fixed_atoms")
         job["system"].update(cell=np.diag([4.0, 4.0, 10.0]).tolist(), pbc=[True, True, False])
-    with pytest.raises(InputError, match="[Mm]etadynamics.*periodic|[Mm]etadynamics.*fixed"):
-        resolve_job(job)
+    config, system = resolve_job(job)
+    assert config["task"] == "metadynamics"
+    assert system.fixed_atoms or any(system.pbc)
 
 
 def test_adaptive_surface_fes_is_accepted_but_surface_rate_is_not():

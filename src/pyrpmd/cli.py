@@ -73,6 +73,11 @@ def parser():
                    help="Diffusion Cartesian axes (0=x, 1=y, 2=z)")
     a.add_argument("--atoms", nargs="+", type=int, help="Diffusion atom indices")
     a.add_argument("--max-lag", type=int, help="Maximum diffusion lag in saved frames")
+    projection = commands.add_parser("project", help="Boltzmann-marginalize a saved CV-density FES")
+    projection.add_argument("directory")
+    projection.add_argument("--axes", type=int, nargs="+", required=True, help="Retained CV axes, zero based")
+    projection.add_argument("--selection", help="Boolean .npy channel mask with the complete source FES shape")
+    projection.add_argument("--output", required=True)
     commands.add_parser("info", help="Report version and compiled native capabilities")
     checkpoint = commands.add_parser("checkpoint", help="Verify a portable NPZ checkpoint")
     checkpoint.add_argument("path")
@@ -291,6 +296,10 @@ def main(argv=None):
                     }.items() if value is not None} or None,
                 )
             )
+        elif args.command == "project":
+            from .analysis.projection import project_run
+            from .parallel import root_call
+            _print(root_call(project_run, args.directory, axes=args.axes, output=args.output, selection_file=args.selection))
         elif args.command == "info":
             from .dynamics import native_capabilities
 

@@ -92,7 +92,9 @@ A CV provides its declared estimator's `value[D]` and complete
 `jacobian[D,P,N,3]`, canonical units and optional periods. Centroid and
 bead-average estimators keep distinct meanings. Bias forces apply the full
 Jacobian and the sum-beads Hamiltonian scaling. Metadynamics additionally
-requires one or two CV dimensions and a serializable hill history.
+supports one to three CV dimensions, fixed-cell slabs, static quadratic walls,
+and a serializable hill/thermostat history. `NoseHooverChain` wraps a `Dynamics`
+instance for sampling; its `state_dict()` must be restored together with q/p.
 
 Python factories must be importable in process/MPI workers. Paths resolve
 relative to the input file. For plugin examples and exact adapter protocols,

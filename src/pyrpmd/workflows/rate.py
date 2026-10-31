@@ -60,7 +60,7 @@ def rate_coordinate(config, system):
 
 def _pmf_method(config):
     if config.get("task") == "surface_rate":
-        return "mbar_surface_density"
+        return "projected_surface_density" if config.get("surface", {}).get("free_energy") else "mbar_surface_density"
     return rate_pmf_options(config)["method"]
 
 
@@ -233,8 +233,11 @@ def _parent_task(task):
         {"stage": "parent", "chain": chain, "xi": task["xi_star"], "options": options},
     )
     try:
+        from .surface_source import source_hamiltonian, parent_selector
+        hamiltonian = source_hamiltonian(provider, config, system)
+        accept_parent = parent_selector(config, system)
         dyn = Dynamics(
-            provider,
+            hamiltonian,
             system.masses,
             config["beta"],
             config["beads"],
@@ -260,6 +263,8 @@ def _parent_task(task):
                 snapshots = list(saved["snapshots"])
                 for snapshot in snapshots:
                     dyn._check_fixed(snapshot, np.zeros_like(snapshot))
+                    if not accept_parent(snapshot):
+                        raise ValueError("parent checkpoint snapshot lies outside the source PMF channel domain")
                 elapsed = int(saved["elapsed"])
                 if "propagation" in saved:
                     dyn.propagation_stats = json.loads(str(saved["propagation"]))
@@ -324,7 +329,7 @@ def _parent_task(task):
                 constraint_tolerance=options["constraint_tolerance"],
                 observe=observed, record_energy=False, record_states=True,
             )
-            snapshots.extend(block.q)
+            snapshots.extend(q for q in block.q if accept_parent(q))
             elapsed += block.completed
             if elapsed % checkpoint_steps == 0:
                 save()
@@ -406,8 +411,11 @@ def _child_task(task):
                         else None
                     ),
                 }
+        from .surface_source import source_hamiltonian, parent_selector
+        if not parent_selector(config, system)(task["q"]):
+            raise ValueError("child initial configuration lies outside the source PMF channel domain")
         dyn = Dynamics(
-            provider,
+            source_hamiltonian(provider, config, system),
             system.masses,
             config["beta"],
             config["beads"],

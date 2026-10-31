@@ -7,6 +7,7 @@ from .fes import (
     umbrella_integration,
     mbar_rate_pmf,
 )
+from .projection import marginalize_fes
 
 __all__ = [
     "solve_mbar",
@@ -14,4 +15,5 @@ __all__ = [
     "statistical_inefficiency",
     "umbrella_integration",
     "mbar_rate_pmf",
+    "marginalize_fes",
 ]

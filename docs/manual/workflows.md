@@ -139,7 +139,7 @@ PES 按全局→入口→TS 继承；更具体的 `potential` 表完整替换上
 
 ## Metadynamics
 
-`task="metadynamics"` 支持 standard 和 well-tempered 模式、1D/2D CV，以及独立偏置历史的多个副本。CV 本身可以具有声明的周期；这与原子系统的周期晶胞是不同概念。当前该工作流不接受带 PBC 或固定原子的 System。
+`task="metadynamics"` 支持 standard 和 well-tempered 模式、1D/2D/3D CV，以及独立偏置历史的多个副本。支持周期晶胞和固定原子；CV 本身的周期性与原子系统的周期边界分别声明。采样可选 Andersen、Nosé–Hoover 链或 PILE-L，支持附加长度 CV 的二次软墙。
 
 ```bash
 pyrpmd validate examples/metadynamics/well_tempered_2d.inp
@@ -150,7 +150,7 @@ pyrpmd resume runs/manual-meta
 
 | 参数 | 含义 |
 | --- | --- |
-| `metadynamics.cvs` | 一个或两个已声明 CV 的名称 |
+| `metadynamics.cvs` | 一至三个已声明 CV 的名称 |
 | `mode` | `standard` 或 `well_tempered` |
 | `sigma` | 各 CV 的 Gaussian 宽度，推荐显式单位 |
 | `height` | 物理 hill 高度 |

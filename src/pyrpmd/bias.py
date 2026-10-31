@@ -96,6 +96,39 @@ _BUILTIN_BIAS_METHODS = {
 }
 
 
+class WallBias:
+    """Scalar CV walls, W=kappa*max(lower-s,0)^2+kappa*max(s-upper,0)^2.
+
+    The convention matches PLUMED EXP=2, EPS=1, OFFSET=0 (no factor 1/2).
+    Bounds and kappa are canonical units. The full ring Jacobian gives forces
+    for centroid or bead-average CVs; the Hamiltonian receives P*W.
+    """
+
+    def __init__(self, cv, kappa, *, lower=None, upper=None):
+        self.cv = cv
+        self.kappa = float(kappa)
+        self.lower = None if lower is None else float(lower)
+        self.upper = None if upper is None else float(upper)
+        if cv.dimension != 1 or tuple(cv.periods) != (None,):
+            raise ValueError("walls require a scalar nonperiodic CV")
+        if not np.isfinite(self.kappa) or self.kappa <= 0:
+            raise ValueError("wall kappa must be positive and finite")
+        if lower is None and upper is None:
+            raise ValueError("wall requires lower or upper")
+        if any(x is not None and not np.isfinite(x) for x in (self.lower, self.upper)):
+            raise ValueError("wall bounds must be finite")
+        if lower is not None and upper is not None and self.lower >= self.upper:
+            raise ValueError("wall lower must be below upper")
+
+    def energy_force(self, q):
+        result = self.cv.value_and_jacobian(q)
+        value = float(result.value[0])
+        delta = (min(value - self.lower, 0.0) if self.lower is not None else 0.0)
+        delta += max(value - self.upper, 0.0) if self.upper is not None else 0.0
+        return (len(q) * self.kappa * delta**2,
+                -2.0 * len(q) * self.kappa * delta * result.jacobian[0])
+
+
 class MetadynamicsBias:
     """History-dependent standard or well-tempered metadynamics in CV space.
 

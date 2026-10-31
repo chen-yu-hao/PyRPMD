@@ -4,13 +4,13 @@
 [快速入门](docs/manual/quickstart.md) · [任务与示例](docs/manual/examples.md) ·
 [Python API](docs/manual/api.md)
 
-**Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维自由能面、自适应伞抽样和 metadynamics，并提供局域弱耦合电化学 PCET 速率模型。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
+**Python 可扩展的环聚合物分子动力学计算包。** PyRPMD 0.2.0 提供 RPMD 双分子速率、直接碰撞 dRPMD、多入口/多 TS 独立速率矩阵、一维/二维伞抽样自由能面、自适应伞抽样和一至三维 metadynamics，并提供局域弱耦合电化学 PCET 速率模型。输入使用普通 Python 或 TOML 语法的 `.inp` 文件；C++17/OpenMP 内核支持 Cayley、精确正常模 BAB 和 velocity-Verlet，并保留 NumPy 参考实现。
 
 当前开发版增加**固定晶胞材料计算**：独立 PIMD 平衡采样、无恒温 RPMD 氢扩散、
 MSD/VACF/扩散张量，以及有限盆地归一化的位点跃迁速率。方法与范围见
 [材料计算说明](docs/materials.md)。
 
-另提供固定晶胞表面的自由能与一阶 RPMD 速率工作流，见[表面计算说明](docs/surface-catalysis.md)。
+另提供固定晶胞表面的自由能与 RPMD 速率工作流，见[表面计算说明](docs/surface-catalysis.md)。真实 39 原子 CO/O/Pt(111) 的模型下载、三维短算及论文参数输入见[可复现实例](examples/surface/pt111/README.md)。
 
 本项目是初始科研实现。随附示例用于验证算法和程序连接；真实化学体系仍需要合适的势能面、通道定义及珠子数、步长、采样、远区距离和回穿时间等收敛检查。程序会分别报告有限采样估计、失败/未决轨迹和诊断，不把一次运行成功标成物理收敛。
 
@@ -26,7 +26,7 @@ MSD/VACF/扩散张量，以及有限盆地归一化的位点跃迁速率。方�
 | 并行 | 轨迹/窗口进程并行、持续珠子势能进程池、MPI `G × B` 分组、OpenMP、CUDA 多设备和每卡多轨迹进程 |
 | 2D FES | 二维 umbrella、完整 CV Jacobian、MBAR、窗口重叠图、相关块 bootstrap、未采样区域 mask、保存后重新分析 |
 | 速率 PMF | Gaussian UI 或 histogram MBAR；可固定分割面，同 draw UI/MBAR 配对对照，逐次保存 bootstrap 失败原因 |
-| 表面催化 | 倾斜晶胞／部分 PBC、固定底层、ASE 周期 PES、表面高度／迁移 CV、FES 和 `surface_rate` 一阶盆地归一化＋回穿；[范围与示例](docs/surface-catalysis.md) |
+| 表面催化 | 倾斜晶胞／部分 PBC、固定底层、ASE 周期 PES、表面高度／迁移／键长 CV、三维 MetaD、NHC 与软墙、`surface_rate` 盆地归一化＋回穿和显式面积／覆盖度换算；[范围与示例](docs/surface-catalysis.md) |
 | 等价交换通道 | 原子置换生成等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；显式区分 H + H₂ 两个交换出口 |
 | 多入口 / 多 TS | 同一原子与同位素系统的不同入口分区、独立 TS 参考结构与 PES；每条路径执行完整 PMF + recrossing，输出独立速率矩阵 |
 | 可选积分器 | `cayley-bcb`、`normal-mode-bab`、`velocity-verlet`；两套原生 block API、Andersen 母链、centroid RATTLE 均保留所选方法 |

@@ -28,6 +28,7 @@ jobs:
       - run: mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-workflows"
       - run: mpiexec -n 4 python tests/mpi_materials_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-materials"
       - run: mpiexec -n 4 python tests/mpi_surface_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface"
+      - run: mpiexec -n 4 python tests/mpi_surface_extensions_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface-extensions"
       - run: python -m pip install build && python -m build
   torch-cpu:
     runs-on: ubuntu-latest

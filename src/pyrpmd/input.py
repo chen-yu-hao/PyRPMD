@@ -53,7 +53,7 @@ _SECTIONS = {
         "fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
     ),
     "analysis": set(
-        "method measure bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count".split()
+        "method measure bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count max_grid_points".split()
     ),
     "umbrella": set(
         "cvs grid centers centers_au kappa stiffness stiffness_au start stop count".split()
@@ -64,9 +64,9 @@ _SECTIONS = {
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance".split()
     ),
-    "surface": set("reactant_basin dividing_surface product_side".split()),
+    "surface": set("reactant_basin dividing_surface product_side normalization free_energy".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration".split()
     ),
     "adaptive_umbrella": set(
         "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
@@ -442,9 +442,11 @@ class JobSpec:
         analysis = d.get("analysis", {})
         if analysis.get("measure", "cv_density") not in ("cv_density", "rate_flux"):
             raise InputError("analysis.measure must be cv_density or rate_flux")
-        if task in ("fes", "surface_rate") and analysis.get("method", "mbar") != "mbar":
+        source_pmf = task == "surface_rate" and bool(d.get("surface", {}).get("free_energy"))
+        expected_analysis = "source" if source_pmf else "mbar"
+        if task in ("fes", "surface_rate") and analysis.get("method", expected_analysis) != expected_analysis:
             raise InputError(
-                "The FES workflow uses MBAR; umbrella integration is part of the rate workflow"
+                f"This FES/surface workflow requires analysis.method='{expected_analysis}'"
             )
         if task == "rate" and analysis.get("measure", "rate_flux") != "rate_flux":
             raise InputError("Standard RPMD rates require analysis.measure='rate_flux'")
@@ -549,15 +551,13 @@ class JobSpec:
                 "Gas-phase rate/drpmd normalization does not apply to periodic or fixed-atom systems; "
                 "use fes, surface_rate or site_rate for a fixed cell"
             )
-        if task == "metadynamics" and (any(system.pbc) or system.fixed_atoms):
-            raise InputError(
-                "Metadynamics does not yet support periodic or fixed-atom systems; "
-                "use the surface FES workflow"
-            )
         if task == "surface_rate":
             from .workflows.surface import surface_definition
 
             try:
+                if source_pmf:
+                    from .workflows.surface_source import source_paths
+                    d["surface"]["free_energy"] = source_paths(d["surface"]["free_energy"], base)
                 surface_definition(d, system)
             except (ValueError, KeyError, TypeError) as e:
                 raise InputError(str(e)) from e
@@ -588,10 +588,22 @@ class JobSpec:
         sampling["dt_au"] = sampling_dt
         default_thermostat = "pile-l" if materials and integrator != "velocity-verlet" else "andersen"
         sampling["thermostat"] = sampling.get("thermostat", default_thermostat)
+        if not isinstance(sampling["thermostat"], str):
+            raise InputError("sampling.thermostat must be a name such as 'andersen', 'pile-l' or 'nose-hoover-chain'")
         sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
-        expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-andersen"
+        expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-" + sampling["thermostat"]
         sampling["integrator"] = sampling.get("integrator", expected_sampler)
-        if materials and sampling["thermostat"] == "pile-l":
+        if task == "metadynamics" and sampling["thermostat"] == "nose-hoover-chain":
+            from .thermostats import nhc_options
+            try:
+                nhc_options(sampling)
+            except (ValueError, TypeError) as error:
+                raise InputError(str(error)) from error
+            if sampling["integrator"] != expected_sampler:
+                raise InputError("NHC sampling.integrator must match dynamics.integrator + '-nose-hoover-chain'")
+            if "gamma_centroid" in sampling:
+                raise InputError("sampling.gamma_centroid requires PILE-L sampling")
+        elif (materials or task == "metadynamics") and sampling["thermostat"] == "pile-l":
             if sampler is None or sampling["integrator"] != sampler:
                 raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
             sampling["gamma_centroid"] = _positive(
@@ -855,6 +867,9 @@ class JobSpec:
                 from .workflows.metadynamics import validate_metadynamics
 
                 validate_metadynamics(resolved, system)
+            if source_pmf:
+                from .workflows.surface_source import source_context
+                source_context(resolved, system, verify=True)
             if "adaptive_umbrella" in d:
                 from .workflows.adaptive_umbrella import validate_adaptive_umbrella
 

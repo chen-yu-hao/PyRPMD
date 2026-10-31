@@ -1,0 +1,235 @@
+{
+  "task": "surface_rate",
+  "status": "basin_lower_outside_histogram_centers",
+  "converged": false,
+  "rate_s_inv": null,
+  "rate_estimate_s_inv": null,
+  "rate_standard_error_s_inv": null,
+  "kappa": null,
+  "pmf": {
+    "method": "projected_surface_density",
+    "measure": "cv_density",
+    "ready": false,
+    "status": "basin_lower_outside_histogram_centers",
+    "failure_reason": "basin_lower_outside_histogram_centers",
+    "xi_star": 3.7416577292974096,
+    "k_qtst_s_inv": null,
+    "k_qtst_au": null,
+    "normalization": null,
+    "surface": {
+      "cv_name": "r2",
+      "reactant_basin_bohr": [
+        3.8739385581109542,
+        10.960411530265139
+      ],
+      "dividing_surface_bohr": 3.7416577292974096,
+      "product_side": "lower",
+      "mass_metric_au": 8.001213761235195e-05,
+      "periodic_safe_radius_bohr": 5.6675202102415705,
+      "rate_unit": "s^-1",
+      "observable": "selected_surface_flux_side",
+      "rate_scope": "single_local_exit",
+      "product_indicator": "s < dividing_surface",
+      "normalization": "per reactant in the specified basin, through the selected dividing surface",
+      "concentration_normalization": {
+        "reaction_order": 2,
+        "path_multiplicity": 1,
+        "area_cm2": 6.231735889485263e-15,
+        "reference_adsorbates": 1,
+        "coverage": 0.04,
+        "site_count": 9
+      },
+      "boundary": {
+        "cell_bohr": [
+          [
+            16.03016789267926,
+            0.0,
+            0.0
+          ],
+          [
+            -8.01508394633963,
+            13.882532622007481,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            126.47219028555507
+          ]
+        ],
+        "pbc": [
+          true,
+          true,
+          true
+        ],
+        "fixed_atoms": [
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38
+        ]
+      }
+    },
+    "source": {
+      "directory": "/workspace/PyRPMD/runs/surface-features-validation/pt111-periodic",
+      "axis": 1,
+      "data_file": "/workspace/PyRPMD/runs/surface-features-validation/pt111-periodic/fes.npz",
+      "config_file": "/workspace/PyRPMD/runs/surface-features-validation/pt111-periodic/input/resolved.json",
+      "system_file": "/workspace/PyRPMD/runs/surface-features-validation/pt111-periodic/input/system.json",
+      "summary_file": "/workspace/PyRPMD/runs/surface-features-validation/pt111-periodic/summary.json",
+      "manifest_file": "/workspace/PyRPMD/runs/surface-features-validation/pt111-periodic/manifest.json"
+    },
+    "source_sha256": {
+      "data_file": "455fca8b680ab0621db2c0fe665bd597b8b6db37e5620a04ee78806a8734c2eb",
+      "config_file": "23fa2c1f49b46e40805f04a5fd07f2cc2cdc4129b7f3a74c0c27c3c99551150f",
+      "system_file": "b62f9ed7f33b40e93baa69bc93cec476d71dda7562ce357abc979e0a6285a059",
+      "summary_file": "457d6a5552abb85af8b47faad33e07574328dbef6fb8581fc7382b7c5aead800",
+      "manifest_file": "64350449f3585b909dace2ed8386f9625a19728cfec29c3d204aacd2c793e901"
+    },
+    "bootstrap": {
+      "block_plan": {
+        "status": "unavailable"
+      }
+    },
+    "warnings": [
+      "Projected finite-time FES; no calibrated PMF uncertainty is available.",
+      "Parent snapshots are conditioned on the same source-grid/channel domain as the PMF.",
+      "Static source walls act on parents and NVE children; MetaD hills and umbrella springs do not.",
+      "This is a selected flux-side exit; multiple chemical exits are not automatically added."
+    ],
+    "format_version": 2
+  },
+  "warnings": [
+    "Projected finite-time FES; no calibrated PMF uncertainty is available.",
+    "Parent snapshots are conditioned on the same source-grid/channel domain as the PMF.",
+    "Static source walls act on parents and NVE children; MetaD hills and umbrella springs do not.",
+    "This is a selected flux-side exit; multiple chemical exits are not automatically added."
+  ],
+  "source_parent_sampling": [],
+  "rate_unit": "s^-1",
+  "surface": {
+    "cv_name": "r2",
+    "reactant_basin_bohr": [
+      3.8739385581109542,
+      10.960411530265139
+    ],
+    "dividing_surface_bohr": 3.7416577292974096,
+    "product_side": "lower",
+    "mass_metric_au": 8.001213761235195e-05,
+    "periodic_safe_radius_bohr": 5.6675202102415705,
+    "rate_unit": "s^-1",
+    "observable": "selected_surface_flux_side",
+    "rate_scope": "single_local_exit",
+    "product_indicator": "s < dividing_surface",
+    "normalization": "per reactant in the specified basin, through the selected dividing surface",
+    "concentration_normalization": {
+      "reaction_order": 2,
+      "path_multiplicity": 1,
+      "area_cm2": 6.231735889485263e-15,
+      "reference_adsorbates": 1,
+      "coverage": 0.04,
+      "site_count": 9
+    },
+    "boundary": {
+      "cell_bohr": [
+        [
+          16.03016789267926,
+          0.0,
+          0.0
+        ],
+        [
+          -8.01508394633963,
+          13.882532622007481,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          126.47219028555507
+        ]
+      ],
+      "pbc": [
+        true,
+        true,
+        true
+      ],
+      "fixed_atoms": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38
+      ]
+    }
+  },
+  "normalized_rates": {
+    "settings": {
+      "reaction_order": 2,
+      "path_multiplicity": 1,
+      "area_cm2": 6.231735889485263e-15,
+      "reference_adsorbates": 1,
+      "coverage": 0.04,
+      "site_count": 9
+    },
+    "per_reactant": {
+      "unit": "s^-1",
+      "factor_from_cell_s_inv": 1,
+      "rate": null,
+      "rate_estimate": null,
+      "rate_standard_error": null,
+      "rate_percentile_95_ci": null,
+      "conditional_rate_standard_error": null
+    },
+    "second_order": {
+      "unit": "cm^2 s^-1",
+      "factor_from_cell_s_inv": 6.231735889485263e-15,
+      "rate": null,
+      "rate_estimate": null,
+      "rate_standard_error": null,
+      "rate_percentile_95_ci": null,
+      "conditional_rate_standard_error": null
+    },
+    "at_coverage": {
+      "unit": "s^-1",
+      "factor_from_cell_s_inv": 0.36,
+      "rate": null,
+      "rate_estimate": null,
+      "rate_standard_error": null,
+      "rate_percentile_95_ci": null,
+      "conditional_rate_standard_error": null
+    },
+    "assumption": "equivalent dilute partners; no finite-coverage interaction correction"
+  },
+  "software": "PyRPMD",
+  "version": "0.2.0",
+  "output": "/workspace/PyRPMD/runs/surface-features-validation/pt111-periodic-rate",
+  "preset": "pilot",
+  "input_warnings": []
+}

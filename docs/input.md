@@ -41,10 +41,12 @@ Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（
 `pbc=[true,true,false]` 和 `fixed_atoms=[...]`。这些字段参与恢复的科学指纹。
 `task="surface_rate"` 还要求 `[surface]` 的 `reactant_basin` 和 `dividing_surface`；
 `product_side` 为 `higher`（默认）或 `lower`。速率使用位置密度 PMF 和一阶盆地
-归一化，单位 s^-1，仅支持内置线性 centroid 坐标。已有气相 `rate`／`drpmd`／
+归一化，单位 s^-1，支持内置线性 centroid 坐标、连续展开的 `distance` 以及满足光滑分割面条件的 `periodic_distance`。
+`surface.normalization` 显式指定面积／覆盖度换算；`surface.free_energy` 可接入
+已保存的多维 FES，并沿用源体系的 CV、静态墙与通道区域。已有气相 `rate`／`drpmd`／
 `network` 会拒绝周期／固定原子系统。表面 FES 可使用自适应伞抽样；当前
-`surface_rate` 不接受 `[adaptive_umbrella]`，`metadynamics` 尚不接受周期／固定
-原子系统。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
+`surface_rate` 不接受 `[adaptive_umbrella]`。`metadynamics` 支持 1–3 个 CV、周期／固定
+原子系统、NHC/PILE-L/Andersen 和二次墙。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
 
 ## 热化与持续母轨迹
 

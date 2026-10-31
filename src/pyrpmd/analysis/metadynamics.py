@@ -17,14 +17,19 @@ import numpy as np
 def _cv_signature(cv):
     """Semantic identity for built-in CVs; plugin parameters remain user-owned."""
     from ..cv import (CVStack, Distance, BondDifference, Cartesian, Angle,
-                      COMDistance, RPMDrateCoordinate, RateSurface)
+                      COMDistance, RPMDrateCoordinate, RateSurface,
+                      PeriodicDistance, SurfaceHeight, SurfaceLateral)
 
     kind = type(cv)
     if kind is CVStack:
         return ("stack", tuple(_cv_signature(c) for c in cv.cvs))
     common = (kind.__module__, kind.__qualname__, getattr(cv, "estimator", None),
               tuple(cv.units), tuple(cv.periods))
-    if kind in (Distance, Angle):
+    if kind is PeriodicDistance:
+        parameters = (cv.atoms, tuple(cv.cell.ravel()), tuple(cv.pbc))
+    elif kind in (SurfaceHeight, SurfaceLateral):
+        parameters = (tuple(cv._affine_gradient().ravel()), cv.origin)
+    elif kind in (Distance, Angle):
         parameters = cv.atoms
     elif kind is BondDifference:
         parameters = cv.bonds
@@ -44,7 +49,7 @@ def _cv_signature(cv):
     return common + (parameters,)
 
 
-def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
+def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1, max_grid_points=10_000_000):
     """Estimate F from independently deposited biases on a common grid.
 
     Replica bias histories are evaluated separately, never merged. Estimates
@@ -58,8 +63,8 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     if not biases or len(biases) != len(samples):
         raise ValueError("one bias history and sample array per replica required")
     dimension = biases[0].cv.dimension
-    if dimension not in (1, 2):
-        raise ValueError("metadynamics FES supports one or two dimensions")
+    if dimension not in (1, 2, 3):
+        raise ValueError("metadynamics FES supports one, two or three dimensions")
     if any(b.cv.dimension != dimension or b.mode != biases[0].mode or
            b.bias_factor != biases[0].bias_factor or b.beta != biases[0].beta or
            tuple(b.cv.units) != tuple(biases[0].cv.units) or
@@ -78,8 +83,10 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     if len(bins) != dimension or any(isinstance(b, (bool, np.bool_)) or
             not isinstance(b, (int, np.integer)) or b < 2 for b in bins):
         raise ValueError("metadynamics bins must contain an integer >=2 per CV")
-    if np.prod(bins, dtype=float) > 1_000_000:
-        raise ValueError("metadynamics analysis grid exceeds one million points")
+    if isinstance(max_grid_points, (bool, np.bool_)) or not isinstance(max_grid_points, (int, np.integer)) or max_grid_points < 1:
+        raise ValueError("max_grid_points must be a positive integer")
+    if np.prod(bins, dtype=float) > max_grid_points:
+        raise ValueError("metadynamics analysis grid exceeds max_grid_points")
     if ranges is None:
         all_samples = np.concatenate(arrays)
         ranges = []

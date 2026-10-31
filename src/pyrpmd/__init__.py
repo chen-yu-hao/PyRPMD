@@ -16,6 +16,10 @@ def __getattr__(name):
         from . import dynamics
 
         return getattr(dynamics, name)
+    if name == "NoseHooverChain":
+        from .thermostats import NoseHooverChain
+
+        return NoseHooverChain
     if name in ("NRPMDState", "NRPMDDynamics", "DiabaticResult"):
         from . import nonadiabatic
         return getattr(nonadiabatic, name)
@@ -32,6 +36,6 @@ def __getattr__(name):
 
 __all__ = [
     "NRPMDState", "NRPMDDynamics", "DiabaticResult",
-    "JobSpec", "System", "State", "Dynamics", "run", "prepare",
+    "JobSpec", "System", "State", "Dynamics", "NoseHooverChain", "run", "prepare",
     "resume_run", "analyze_run", "analyze_diffusion", "__version__",
 ]

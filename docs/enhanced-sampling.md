@@ -68,8 +68,10 @@ pyrpmd analyze runs/adaptive --recompute --bins 30 --bootstrap 20
 ## Standard and well-tempered metadynamics
 
 Use `task="metadynamics"`, ordinary CV specifications and an explicit hill
-height/width. One or two CV dimensions are supported, including custom Python
+height/width. One, two or three CV dimensions are supported, including custom Python
 CVs with declared positive periodicities and full ring-polymer Jacobians.
+Fixed-cell periodic systems and fixed substrate atoms are supported. A cell-aware
+PES is required, and all dynamics coordinates stay continuously unwrapped.
 
 ```toml
 [metadynamics]
@@ -117,8 +119,11 @@ Hamiltonian P factors are independently checked against finite differences.
 
 ### Sampling and event semantics
 
-The ordinary `[sampling]` equilibration, production, save interval and Andersen
-settings apply. Initial equilibration uses zero hills. The first hill is
+The ordinary `[sampling]` equilibration, production and save intervals apply.
+Select `thermostat="andersen"`, `"nose-hoover-chain"` or `"pile-l"`.
+PILE-L uses BCOCB with Cayley or BAOAB with exact normal modes. The NHC wraps
+the selected deterministic map and supports velocity-Verlet as well. Initial
+equilibration uses zero hills. The first hill is
 deposited at production step `pace`, then at `2*pace`, and so on. Within each
 integration step, both force evaluations see exactly the same bias history.
 Only after the complete step succeeds is its hill committed. Saved sample
@@ -133,9 +138,46 @@ acceleration is future work, not part of the performance claim.
 
 `sampling.replicas` creates independent metadynamics runs that can use ordinary
 task parallelism. They do not share hills. A checkpoint atomically saves q/p,
-RNG, absolute and production clocks, accumulated hills, observations and
+RNG, NHC chain positions/momenta, absolute and production clocks, accumulated hills, observations and
 propagation counts, with the common checkpoint checksum envelope. Failed steps
-restore their previous q/p and RNG before saving the valid prefix.
+restore q/p, RNG and the entire thermostat before saving the valid prefix.
+
+```toml
+[sampling]
+thermostat = "nose-hoover-chain"
+thermostat_params = {tdamp="20 fs", chain_length=3, substeps=1, reset_after_equilibration=false}
+```
+
+The global chain samples `H_P` at `kT_P=P/beta`, with `3*P*N_mobile` degrees
+of freedom and no COM subtraction. Frozen momenta are zero, and frozen atoms
+contribute neither kinetic energy nor thermostat mass. `tdamp` is a time,
+`chain_length` and `substeps` are positive integers. The default chain has three
+members and uses a symmetric Suzuki–Yoshida composition. Optional
+`reset_after_equilibration=true` zeros the chain at the start of production,
+including when resuming exactly at that boundary. The physical state is retained.
+This thermostat is for canonical sampling; real-time child trajectories are NVE.
+
+Length-CV walls may constrain sampled domains, using the PLUMED quadratic
+convention `W=kappa*delta^2` (no factor 1/2). They are always included in the
+physical Hamiltonian as `P*W`. Declare wall CVs alongside the biased CVs; select
+only the biased names in `metadynamics.cvs`.
+
+```toml
+[metadynamics]
+cvs = ["r1", "r2", "height"]
+sigma = ["0.2 angstrom", "0.2 angstrom", "0.2 angstrom"]
+height = "0.020 eV"
+pace = 400
+bias_factor = 39
+walls_during_equilibration = false
+walls = [{cv="height", lower="0.5 angstrom", upper="7.2 angstrom", kappa="150 eV/angstrom^2"}]
+```
+
+Bare wall bounds and kappa are atomic units, independent of a CV's input unit.
+Walls are active in equilibration by default; `false` activates them at the
+first production step. Hill tempering uses only the MetaD bias. The reconstructed
+FES describes the wall-defined ensemble; walls on additional CVs cannot in
+general be removed by subtracting a function of the biased CVs.
 
 Each `replicas/0000/HILLS.csv` is a human-readable view regenerated from its
 authoritative `checkpoints/metadynamics_0000.npz`. A stale or missing CSV cannot
@@ -166,6 +208,19 @@ bootstrap are not applied to these evolving-bias samples. Time-dependent
 trajectory reweighting, well-tempered time-averaged estimators, automatic
 convergence certification and infrequent-metadynamics kinetics are not
 implemented. A periodic analysis range must span exactly one period.
+The default limit is ten million output grid bins; `analysis.max_grid_points`
+sets an explicit positive limit. Memory grows with the grid and replica count;
+the direct hill sum is chunked but is not a grid-accelerated dynamics engine.
+
+Use `pyrpmd project RUN --axes 2 --output NEW_DIRECTORY` to integrate a 3D
+CV-density FES to its third coordinate. `--selection channel.npy` accepts a
+Boolean domain mask of the source FES shape. Projection uses log-sum-exp with
+bin-width volume factors, accepts nonuniform grids, and withholds any slice
+with missing support. It does not add a radial Jacobian to a density PMF.
+See the [Pt(111) example](../examples/surface/pt111/README.md) for the distinction
+between conditional Boltzmann marginalization and the paper's hill-filtering
+procedure. Projected bias estimates are not automatically substituted for a
+statistically validated rate PMF.
 
 ```bash
 pyrpmd run examples/metadynamics/standard.inp --output runs/meta1

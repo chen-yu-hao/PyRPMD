@@ -16,32 +16,54 @@ from collections.abc import Mapping
 import numpy as np
 
 from ..analysis.metadynamics import bias_fes
-from ..bias import MetadynamicsBias
+from ..bias import MetadynamicsBias, CompositeBias, WallBias
 from ..cv import make_cvs
 from ..dynamics import Dynamics, State
 from ..checkpoint import load_checkpoint
 from ..parallel import run_tasks, make_task_potential, root_call
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
+from ..thermostats import NoseHooverChain, nhc_options
 from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
 
 
-METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor"}
+METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration"}
+
+
+def resolve_walls(config, system):
+    """Build scalar length-CV walls; bare bounds/kappa use atomic units."""
+    result = []
+    specs = config.get("cvs", [])
+    if isinstance(specs, dict):
+        specs = [dict(v, name=k) for k, v in specs.items()]
+    raw = config.get("metadynamics", {}).get("walls", [])
+    if not isinstance(raw, (list, tuple)):
+        raise ValueError("metadynamics.walls must be an array of tables")
+    for wall in raw:
+        if not isinstance(wall, Mapping) or set(wall) - {"cv", "lower", "upper", "kappa"}:
+            raise ValueError("wall accepts cv, lower, upper, kappa")
+        if not isinstance(wall.get("cv"), str) or "kappa" not in wall:
+            raise ValueError("wall requires a named cv and kappa")
+        cv = make_cvs(specs, system, [wall["cv"]])
+        if cv.units != ("bohr",):
+            raise ValueError("workflow walls currently require scalar length CVs")
+        result.append(WallBias(cv, parse_quantity(wall["kappa"], "spring"),
+                               **{k: parse_quantity(wall[k], "length") for k in ("lower", "upper") if k in wall}))
+    return CompositeBias(*result) if result else None
 
 
 def resolve_metadynamics(config, system):
     """Validate algorithm options and convert widths/height to canonical units."""
-    if any(system.pbc) or system.fixed_atoms:
-        raise ValueError(
-            "Metadynamics does not yet support periodic systems or fixed atoms; "
-            "use the surface FES umbrella workflow"
-        )
+    if not np.any(system.mobile_mask):
+        raise ValueError("metadynamics requires at least one mobile atom")
     table = config.get("metadynamics", {})
     if not isinstance(table, Mapping):
         raise ValueError("metadynamics must be a table")
     extra = set(table) - METADYNAMICS_FIELDS
     if extra:
         raise ValueError("Unknown metadynamics fields: " + ", ".join(sorted(extra)))
+    if not isinstance(table.get("walls_during_equilibration", True), bool):
+        raise ValueError("metadynamics.walls_during_equilibration must be boolean")
     specs = config.get("cvs", [])
     if isinstance(specs, dict):
         specs = [dict(v, name=k) for k, v in specs.items()]
@@ -50,8 +72,9 @@ def resolve_metadynamics(config, system):
         names = [names]
     cv = make_cvs(specs, system, names)
     selected = specs if names is None else [next(s for s in specs if s.get("name") == name) for name in names]
-    if cv.dimension not in (1, 2):
-        raise ValueError("metadynamics supports one or two CV dimensions")
+    if cv.dimension not in (1, 2, 3):
+        raise ValueError("metadynamics supports one, two or three CV dimensions")
+    resolve_walls(config, system)
     scales = []
     for spec, component in zip(selected, cv.cvs):
         units = spec.get("unit", spec.get("units", component.units)) if isinstance(spec, dict) else component.units
@@ -108,8 +131,17 @@ def resolve_metadynamics(config, system):
     checked_integer(sampling.get("andersen_interval", 10), "sampling.andersen_interval")
     checked_integer(sampling.get("replicas", 1), "sampling.replicas")
     checked_integer(config.get("output", {}).get("checkpoint_steps", 1000), "output.checkpoint_steps")
-    if sampling.get("thermostat", "andersen") != "andersen":
-        raise ValueError("metadynamics workflow sampling currently requires the Andersen thermostat")
+    thermostat = sampling.get("thermostat", "andersen")
+    if thermostat not in ("andersen", "nose-hoover-chain", "pile-l"):
+        raise ValueError("metadynamics thermostat must be andersen, nose-hoover-chain or pile-l")
+    if thermostat == "nose-hoover-chain":
+        nhc_options(sampling)
+    if thermostat == "pile-l":
+        if loop_options(config)["integrator"] == "velocity-verlet":
+            raise ValueError("PILE-L requires Cayley or normal-mode dynamics")
+        gamma = parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency")
+        if gamma <= 0:
+            raise ValueError("sampling.gamma_centroid must be positive")
     if not np.isfinite(sampling.get("dt_au", config["dt_au"])) or sampling.get("dt_au", config["dt_au"]) <= 0:
         raise ValueError("metadynamics timestep must be positive and finite")
     if min(nprod // interval, nprod // options["pace"]) < 1:
@@ -120,8 +152,9 @@ def resolve_metadynamics(config, system):
     if len(bins) != cv.dimension:
         raise ValueError("analysis.bins must contain one count per metadynamics CV")
     options["bins"] = [checked_integer(b, "analysis.bins", 2) for b in bins]
-    if np.prod(options["bins"], dtype=float) > 1_000_000:
-        raise ValueError("metadynamics analysis grid exceeds one million points")
+    options["max_grid_points"] = checked_integer(analysis.get("max_grid_points", 10_000_000), "analysis.max_grid_points")
+    if np.prod(options["bins"], dtype=float) > options["max_grid_points"]:
+        raise ValueError("metadynamics analysis grid exceeds analysis.max_grid_points")
     options["ranges"] = None
     if "ranges" in analysis:
         bounds = analysis["ranges"]
@@ -201,6 +234,7 @@ def _read_stream(config, system, output, replica, cv, options):
             raise ValueError("metadynamics checkpoint samples disagree with their sampling clock")
         result = {"replica": replica, "state": State(data["q"], data["p"], int(data["step"]), float(data["time"])),
                   "elapsed": elapsed, "rng": json.loads(str(data["rng"])),
+                  "thermostat_state": json.loads(str(data["thermostat_state"])) if "thermostat_state" in data else None,
                   "samples": samples, "sample_steps": clocks,
                   "sample_bias": data["sample_bias"].copy(), "sample_energies": data["sample_energies"].copy(),
                   "hills": bias.hills, "propagation": json.loads(str(data["propagation"])),
@@ -221,13 +255,21 @@ def _sample_replica(task):
                             config["sampling"].get("dt_au", config["dt_au"]),
                             seed=np.random.SeedSequence([int(config.get("seed", 0)), 709, replica]),
                             native=config.get("native", config.get("dynamics", {}).get("native", True)),
-                            threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
+                            threads=config.get("parallel", {}).get("threads_per_rank", 1),
+                            fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry, **loop_options(config))
+        thermostat = config["sampling"].get("thermostat", "andersen")
+        chain = NoseHooverChain(dynamics, **nhc_options(config["sampling"])) if thermostat == "nose-hoover-chain" else None
+        walls = resolve_walls(config, system)
         bias = _new_bias(cv, options, config["beta"])
         samples, sample_steps, sample_bias, energies = [], [], [], []
         elapsed = 0
         if checkpoint.exists():
             saved = _read_stream(config, system, output, replica, cv, options)
             state = saved["state"]
+            dynamics.integrator._check(state.q, state.p)
+            dynamics._check_fixed(state.q, state.p)
+            if chain is not None:
+                chain.load_state_dict(saved["thermostat_state"])
             dynamics.rng.bit_generator.state = saved["rng"]
             dynamics.propagation_stats = saved["propagation"]
             bias = _new_bias(cv, options, config["beta"], saved["hills"])
@@ -236,11 +278,13 @@ def _sample_replica(task):
             elapsed = saved["elapsed"]
         else:
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
+        total_bias = CompositeBias(bias, walls) if walls is not None else bias
 
         def save():
             _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=elapsed,
                         q=state.q, p=state.p, step=state.step, time=state.time,
                         rng=json.dumps(dynamics.rng.bit_generator.state),
+                        thermostat_state=json.dumps(chain.state_dict() if chain else None),
                         hills=json.dumps(bias.hills, allow_nan=False),
                         samples=np.asarray(samples).reshape(-1, cv.dimension),
                         sample_steps=np.asarray(sample_steps, dtype=int),
@@ -256,24 +300,36 @@ def _sample_replica(task):
         while elapsed < total:
             previous = state.copy()
             old_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
+            old_bath = chain.state_dict() if chain else None
             nhills = len(bias.hills)
             try:
-                if state.step % interval == 0:
+                if chain is not None and elapsed == options["neq"] and config["sampling"].get("thermostat_params", {}).get("reset_after_equilibration", False):
+                    chain = NoseHooverChain(dynamics, **nhc_options(config["sampling"]))
+                active_bias = total_bias if elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration", True) else bias
+                if thermostat == "andersen" and state.step % interval == 0:
                     state.p[:] = dynamics.sample_momenta()
                 # No propagation block can straddle a deposition. Both kicks
                 # use this unchanged history; the new hill affects the next step.
-                dynamics.step(state, bias)
+                if chain is not None:
+                    chain.step(state, active_bias)
+                elif thermostat == "pile-l":
+                    gamma = parse_quantity(config["sampling"].get("gamma_centroid", "0.01 fs^-1"), "frequency")
+                    dynamics.sample_step(state, active_bias, gamma_centroid=gamma)
+                else:
+                    dynamics.step(state, active_bias)
                 production = elapsed + 1 - options["neq"]
                 record = production > 0 and production % options["interval"] == 0
                 deposit = production > 0 and production % options["pace"] == 0
                 value = cv.value(state.q) if record or deposit else None
                 observed_bias = float(bias.physical_energy(value)) if record else None
-                energy = float(dynamics.energy(state, bias)) if record else None
+                energy = float(dynamics.energy(state, total_bias)) if record else None
                 if deposit:
                     bias.deposit(value, step=state.step, time=state.time)
             except BaseException:
                 state = previous
                 dynamics.rng.bit_generator.state = old_rng
+                if chain is not None:
+                    chain.load_state_dict(old_bath)
                 del bias.hills[nhills:]
                 save()
                 raise
@@ -300,7 +356,7 @@ def _analyze(streams, config, system, output, return_data):
     cv, _, options = resolve_metadynamics(config, system)
     biases = [_new_bias(cv, options, config["beta"], s["hills"]) for s in streams]
     data = bias_fes(biases, [s["samples"] for s in streams], bins=options["bins"],
-                    ranges=options["ranges"], min_count=options["min_count"])
+                    ranges=options["ranges"], min_count=options["min_count"], max_grid_points=options["max_grid_points"])
     output = Path(output)
     arrays = {k: v for k, v in data.items() if isinstance(v, np.ndarray)}
     arrays.update({f"edges_{j}": v for j, v in enumerate(data["edges"])})
@@ -326,11 +382,14 @@ def _analyze(streams, config, system, output, return_data):
         "fes_formula": "F=-V+C" if options["mode"] == "standard" else "F=-gamma/(gamma-1)*V+C",
         "fes_factor": data["fes_factor"], "measure": "cv_density", "energy_unit": "hartree",
         "dimension": cv.dimension, "units": cv.units, "replicas": len(streams),
+        "thermostat": config["sampling"].get("thermostat", "andersen"),
+        "fixed_atoms": list(system.fixed_atoms), "pbc": list(system.pbc),
+        "wall_ensemble": bool(config.get("metadynamics", {}).get("walls")),
         "hills_per_replica": [len(s["hills"]) for s in streams],
         "samples": sum(len(s["samples"]) for s in streams), "common_support": data["common_support"],
         "reference_bin": data["reference_bin"], "converged": False,
         "propagation": [s["propagation"] for s in streams], "warnings": warnings,
-        "sample_bias_convention": "physical V before deposition at the sampled step; energies include P*V",
+        "sample_bias_convention": "physical MetaD V before deposition; energies include P*(V+walls); FES includes the wall-defined ensemble",
         "files": {"data": str(output / "fes.npz"), "table": str(output / "fes.csv"),
                   "hills": [str(_hills_path(output, s["replica"])) for s in streams],
                   "checkpoints": [s["checkpoint"] for s in streams]},

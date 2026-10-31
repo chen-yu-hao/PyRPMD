@@ -2,7 +2,7 @@
 
 This is the single-dividing-surface, reactant-basin normalization of Li et al.,
 J. Chem. Phys. 163, 024105 (2025), doi:10.1063/5.0273941.  It is restricted to
-a linear centroid coordinate with constant mobile-atom mass metric.  The
+a centroid coordinate with constant mobile-atom mass metric.  The
 result is a rate per adsorbed reactant, not a gas-phase bimolecular rate or a
 two-dimensional concentration-based bimolecular rate coefficient.
 """
@@ -24,6 +24,79 @@ from .fes import (
     statistical_inefficiency,
     umbrella_reduced_potentials,
 )
+
+
+def surface_normalization(options, system):
+    """Explicit finite-cell -> concentration conversion, never inferred chemistry.
+
+    For a tagged reactant with n equivalent partners in area A, k2=k_cell*A/n.
+    At coverage theta and N_sites/A site density, k(theta)=k2*theta*N_sites/A.
+    This assumes dilute, equivalent partners; finite-size/coverage dependence
+    of the PES or PMF is not corrected by changing units.
+    """
+    from ..constants import BOHR_M
+    from ..units import parse_quantity
+    from collections.abc import Mapping
+
+    allowed = {"reaction_order", "area", "reference_adsorbates", "site_count", "coverage", "path_multiplicity"}
+    if not isinstance(options, Mapping) or set(options) - allowed:
+        raise ValueError("surface.normalization accepts reaction_order, area, reference_adsorbates, site_count, coverage, path_multiplicity")
+
+    def integer(name, default):
+        value = options.get(name, default)
+        if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
+            raise ValueError(f"surface.normalization.{name} must be a positive integer")
+        return int(value)
+
+    order = integer("reaction_order", 1)
+    if order not in (1, 2):
+        raise ValueError("surface reaction_order must be 1 or 2")
+    result = {"reaction_order": order, "path_multiplicity": integer("path_multiplicity", 1)}
+    if order == 1:
+        if set(options) & {"area", "reference_adsorbates", "site_count", "coverage"}:
+            raise ValueError("area/coverage normalization requires reaction_order=2")
+        return result
+    if "reference_adsorbates" not in options:
+        raise ValueError("second-order normalization requires explicit reference_adsorbates")
+    if "area" in options:
+        area = parse_quantity(options["area"], (2, 0, 0, 0, 0, 0))
+    elif system.cell is not None and all(system.pbc[:2]):
+        area = float(np.linalg.norm(np.cross(system.cell[0], system.cell[1])))
+    else:
+        raise ValueError("second-order normalization requires area or two periodic in-plane cell vectors")
+    if not np.isfinite(area) or area <= 0:
+        raise ValueError("surface normalization area must be finite and positive")
+    result.update(area_cm2=area * (BOHR_M * 100)**2,
+                  reference_adsorbates=integer("reference_adsorbates", 1))
+    if ("coverage" in options) != ("site_count" in options):
+        raise ValueError("coverage and site_count must be specified together")
+    if "coverage" in options:
+        theta = parse_quantity(options["coverage"], "dimensionless")
+        if not 0 <= theta <= 1:
+            raise ValueError("coverage must be between zero and one monolayer")
+        result.update(coverage=theta, site_count=integer("site_count", 1))
+    return result
+
+
+def normalize_surface_rates(result, normalization):
+    """Scale estimates, released rates and uncertainties with the same factor."""
+    def scaled(factor, unit):
+        output = {"unit": unit, "factor_from_cell_s_inv": factor}
+        for key in ("rate", "rate_estimate", "rate_standard_error", "rate_percentile_95_ci",
+                    "conditional_rate_standard_error"):
+            value = result.get(key + "_s_inv")
+            output[key] = None if value is None else (np.asarray(value) * factor).tolist()
+        return output
+    mult = normalization["path_multiplicity"]
+    output = {"settings": dict(normalization), "per_reactant": scaled(mult, "s^-1")}
+    if normalization["reaction_order"] == 2:
+        factor = mult * normalization["area_cm2"] / normalization["reference_adsorbates"]
+        output["second_order"] = scaled(factor, "cm^2 s^-1")
+        if "coverage" in normalization:
+            factor *= normalization["coverage"] * normalization["site_count"] / normalization["area_cm2"]
+            output["at_coverage"] = scaled(factor, "s^-1")
+        output["assumption"] = "equivalent dilute partners; no finite-coverage interaction correction"
+    return output
 
 
 class _UnsupportedPMF(ValueError):
@@ -173,7 +246,7 @@ def basin_qtst(
     """Return a first-order QTST rate in inverse atomic time.
 
     ``free_energy`` is -log(position density)/beta at the increasing ``grid``
-    points, in hartree with any common offset. For a linear centroid CV with
+    points, in hartree with any common offset. For a centroid CV with
     gradient ``a``, ``mass_metric`` is sum(|a_i|**2 / m_i) over *mobile* atoms.
     With the physical inverse temperature beta, no bead-count factor occurs.
 

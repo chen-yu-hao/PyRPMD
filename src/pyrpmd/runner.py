@@ -356,14 +356,19 @@ def prepare(job, *, numerical=False):
     elif config["task"] in ("fes", "surface_rate"):
         from .workflows.fes import resolve_umbrellas
 
-        cv, specs, centers, stiffness = resolve_umbrellas(config, system)
-        result["umbrella_preparation"] = {
-            "dimension": cv.dimension,
-            "windows": len(centers),
-            "cv_units": cv.units,
-            "centers_au": centers,
-            "stiffness_au": stiffness,
-        }
+        if config.get("surface", {}).get("free_energy"):
+            from .workflows.surface_source import source_context
+            context = source_context(config, system, verify=True)
+            result["source_preparation"] = context["paths"]
+        else:
+            cv, specs, centers, stiffness = resolve_umbrellas(config, system)
+            result["umbrella_preparation"] = {
+                "dimension": cv.dimension,
+                "windows": len(centers),
+                "cv_units": cv.units,
+                "centers_au": centers,
+                "stiffness_au": stiffness,
+            }
         if config["task"] == "surface_rate":
             from .workflows.surface import surface_definition
 
