@@ -107,6 +107,31 @@ pyrpmd resume runs/manual-scattering
 不写 `[collision]` 时，pilot 以 `max_time="100 fs"` 和 `bmax=R0/4` 运行 4 条 `thermal_flux` 轨迹，不报告热速率；
 缺省值见[输入](input.md#缺省值)。
 
+### 振动初态选择
+
+`initial_ensemble.method = "ne_rpmd"` 从谐振环聚合物分布出发，在质心正常模上加入随机相位的振动激发。
+`method = "qct"` 准备单珠子的准经典对照。两者都独立准备初态、采用固定碰撞能，并跳过热母链采样。
+这是实验性的入射振动态近似，首版只支持片段质心角动量为零；产物不自动获得严格的转振量子态标签。
+
+```bash
+pyrpmd validate examples/state_selected/ne_rpmd.inp
+pyrpmd state-check examples/state_selected/ne_rpmd.inp --time '10 fs' --samples 8 --output runs/state-check.json
+pyrpmd run examples/state_selected/ne_rpmd.inp --output runs/selected
+pyrpmd extend runs/selected --max-time '4 fs'
+```
+
+NE-RPMD 必须显式提供 `initial_ensemble.beta`，并省略顶层 `temperature`：这里的 beta 是初态分布和环弹簧参数，
+不代表选定振动态气体的真实温度。输入各片段 Hessian 或质量加权正常模、实际同位素质量和 `vibrational_quanta`。
+QCT 要求一个珠子，NE-RPMD 至少两个。仓库示例使用不发生交换反应的 Morse 教学势，只验证程序流程。
+
+`state-check` 不赋碰撞速度，在完整 PES 上传播分离反应物，并在稀疏观测帧进行正常模投影。
+`extend` 只提高轨迹从发射开始的总时间上限，保留未结束轨迹的完整 q/p 和分类持续性状态；
+已结束和数值失败轨迹不会重新发射。所有已发射轨迹始终留在截面分母中，未知结局上下界与满足条件的统计置信区间分别报告。
+原生 PES 的实际碰撞仍由现有 C++ 连续 block 传播。
+
+公式、文献与适用边界见[态选择方法说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/state-selected.md)，
+可运行配置及原生 PES 用法见[示例说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/state_selected/README.md)。
+
 ## 一维与二维自由能：`fes`
 
 `fes` 在一个或两个 CV 上做伞抽样，用 MBAR 去偏置，得到这些坐标上的概率密度自由能。

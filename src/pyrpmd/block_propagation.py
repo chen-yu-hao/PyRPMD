@@ -38,6 +38,7 @@ class BlockResult:
     previous_p: np.ndarray | None = None
     previous_step: int | None = None
     previous_time: float | None = None
+    diagnostics: dict[str, np.ndarray] | None = None
 
     @property
     def success(self):
@@ -231,11 +232,110 @@ def _outcome_result(spec, metadata):
     }
 
 
+ENERGY_PARTS = ("potential", "centroid_kinetic", "internal_kinetic", "spring")
+
+
+def _diagnostic_options(diagnostics, dynamics):
+    if diagnostics is None:
+        return {}
+    if not isinstance(diagnostics, dict) or set(diagnostics) - {"energy_parts", "ring_radii"}:
+        raise ValueError("diagnostics must contain only energy_parts and ring_radii flags")
+    if any(not isinstance(value, (bool, np.bool_)) for value in diagnostics.values()):
+        raise ValueError("diagnostic flags must be boolean")
+    selected = {name: True for name, value in diagnostics.items() if value}
+    if selected.get("energy_parts"):
+        from .dynamics import _BLOCK_DYNAMICS_METHODS
+        # Reuse the ordinary energy evaluation without bypassing user-defined
+        # energy semantics or silently assigning an energy offset to the PES.
+        if getattr(dynamics.energy, "__func__", None) is not _BLOCK_DYNAMICS_METHODS["energy"]:
+            raise ValueError("energy_parts diagnostics require the original Dynamics.energy method")
+    return selected
+
+
+def _nuclear_energy_terms(dynamics, state):
+    q, p = state.q, state.p
+    masses = dynamics.masses[None, :, None]
+    beads = dynamics.nbeads
+    kinetic = float(np.sum(p * p / (2 * masses)))
+    dq = q - np.roll(q, -1, axis=0)
+    spring = float(0.5 * (beads / dynamics.beta) ** 2 * np.sum(masses * dq * dq))
+    center = p.mean(axis=0, keepdims=True)
+    centroid = float(np.sum(center * center / (2 * masses)))
+    internal = float(np.sum((p - center) ** 2 / (2 * masses))) / beads
+    return kinetic, spring, centroid, internal
+
+
+def _ring_radii(q, center=None):
+    centered = q - (q.mean(axis=0) if center is None else center)
+    radii = np.sqrt(np.mean(np.sum(centered * centered, axis=2), axis=0))
+    if not np.isfinite(radii).all():
+        raise FloatingPointError("nonfinite ring radius diagnostics")
+    return radii
+
+
+def _python_energy_parts(dynamics, state, bias):
+    """The same PES call and total-energy convention as Dynamics.energy.
+
+    Internal here means noncentroid *bead* momenta, not molecular vibrations.
+    Bias energy belongs to the recorded total but not to these physical parts.
+    """
+    from .potentials.base import validate_result
+    q = state.q
+    beads = dynamics.nbeads
+    potential = float(np.sum(validate_result(dynamics.potential.evaluate(q), q.shape).energy))
+    kinetic, spring, centroid, internal = _nuclear_energy_terms(dynamics, state)
+    parts = np.array([potential / beads, centroid, internal, spring / beads])
+    energy = potential + kinetic + spring
+    if bias is not None:
+        energy += float(bias.energy_force(q)[0])
+    if not np.isfinite(parts).all() or not np.isfinite(energy):
+        raise FloatingPointError("nonfinite nuclear energy diagnostics")
+    return parts, energy
+
+
+def state_diagnostics(dynamics, state, diagnostics, *, energy_per_bead=None):
+    """Observe a single existing state using the block diagnostic conventions.
+
+    Each selected value has no leading frame axis: energy_parts is shape (4,)
+    and ring_radii is shape (natoms,). ``energy_per_bead``, when supplied, must
+    be the *unbiased* H_P/P of this exact state. The potential component is then
+    recovered by subtracting kinetic and spring energies, subject to floating
+    point cancellation, without evaluating the PES. Otherwise energy_parts
+    evaluates the PES once; ring_radii alone never evaluates it. This helper
+    does not propagate, resample momenta, or mutate the state or RNG.
+    """
+    spec = _diagnostic_options(diagnostics, dynamics)
+    dynamics._check_parameters()
+    dynamics.integrator._check(state.q, state.p)
+    dynamics._check_fixed(state.q, state.p)
+    if energy_per_bead is not None and (
+        isinstance(energy_per_bead, (bool, np.bool_))
+        or not isinstance(energy_per_bead, numbers.Real)
+        or not np.isfinite(energy_per_bead)
+    ):
+        raise ValueError("energy_per_bead must be a finite unbiased H_P/P")
+    result = {}
+    if spec.get("energy_parts"):
+        if energy_per_bead is None:
+            parts, _ = _python_energy_parts(dynamics, state, None)
+        else:
+            kinetic, spring, centroid, internal = _nuclear_energy_terms(dynamics, state)
+            beads = dynamics.nbeads
+            parts = np.array([float(energy_per_bead) - kinetic / beads - spring / beads,
+                              centroid, internal, spring / beads])
+            if not np.isfinite(parts).all():
+                raise FloatingPointError("nonfinite nuclear energy diagnostics")
+        result["energy_parts"] = parts
+    if spec.get("ring_radii"):
+        result["ring_radii"] = _ring_radii(state.q)
+    return result
+
+
 def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=None,
                     constraint_tolerance=1e-10, fragment_data=(), observe=None,
                     record_energy=True, record_states=False, backend=None, raise_on_error=True,
                     outcome=None, record_previous=False, reuse_forces=False,
-                    check_energy=False):
+                    check_energy=False, diagnostics=None):
     """Advance at most 4096 selected-integrator steps, observing in step order.
 
     ``observe`` is a length-steps boolean mask (default: all steps). A failure
@@ -259,6 +359,15 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     Its default is False, preserving the original PES evaluation schedule.
     Older native extensions without this capability fall back in auto mode
     and are rejected in strict native mode before propagation.
+    ``diagnostics`` optionally selects boolean ``energy_parts`` and
+    ``ring_radii`` flags. Results use the same observed frames as ``steps``.
+    Energy columns are ``ENERGY_PARTS``: physical potential/P, centroid kinetic,
+    noncentroid bead kinetic/P, and ring spring/P, in hartree. Their sum is the
+    unbiased ring Hamiltonian/P, not a quantum thermodynamic energy estimator.
+    They require the original Dynamics.energy method. Ring radii are per-atom
+    sqrt(mean_beads(|q-q_centroid|**2)), in bohr. These are bead diagnostics,
+    not molecular normal-mode populations. Native observations use existing
+    endpoint PES data, with no Python callback or extra unprojected PES call.
     Blocks must end at thermostat/Python-classifier/checkpoint boundaries.
     Sampling RNG remains in Python at those boundaries.
     """
@@ -272,6 +381,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         raise ValueError("record_previous and reuse_forces must be boolean")
     if not isinstance(check_energy, (bool, np.bool_)):
         raise ValueError("check_energy must be boolean")
+    diagnostic_spec = _diagnostic_options(diagnostics, dynamics)
     outcome_spec = None if outcome is None else _outcome_options(outcome, state, steps)
     if not np.isfinite(constraint_tolerance) or constraint_tolerance <= 0:
         raise ValueError("constraint tolerance must be positive and finite")
@@ -294,13 +404,18 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
             raise ValueError("observation dimension must be a positive integer")
         dimension = int(cv.dimension)
     width = 2 + 2 * nd + dimension
-    memory = (count * (width + (2 * state.q.size if record_states else 0))
+    diagnostic_width = 4 * diagnostic_spec.get("energy_parts", False) + natoms * diagnostic_spec.get("ring_radii", False)
+    memory = (count * (width + diagnostic_width + (2 * state.q.size if record_states else 0))
               + (2 * state.q.size if record_previous else 0)) * 8
     if memory > 256 * 1024 * 1024:
         raise ValueError("block observation buffers exceed 256 MiB; shorten the block")
     records = np.full((count, width), np.nan)
     snapshots = np.empty((count, 2, *state.q.shape)) if record_states else None
     previous_state = np.empty((2, *state.q.shape)) if record_previous else None
+    diagnostic_arrays = {
+        name: np.empty((count, 4 if name == "energy_parts" else natoms))
+        for name in diagnostic_spec
+    }
     start_step, start_time = state.step, state.time
     binding = options = None;reason = None
     if backend != "python":
@@ -315,6 +430,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
             if check_energy and getattr(dynamics.integrator._native, "BLOCK_ENERGY_CHECK_API", 0) < 1:
                 binding = None
                 raise NotNative("installed native extension lacks per-step energy checking; rebuild it")
+            if diagnostic_spec and getattr(dynamics.integrator._native, "BLOCK_DIAGNOSTICS_API", 0) < 1:
+                binding = None
+                raise NotNative("installed native extension lacks nuclear diagnostics; rebuild it")
         except (NotNative, NativeUnavailableError) as exc:
             reason = str(exc)
             if backend == "native":
@@ -331,6 +449,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         options.update(outcome=outcome_spec, previous=previous_state, reuse_forces=bool(reuse_forces))
         if check_energy:
             options["check_energy"] = True
+        if diagnostic_arrays:
+            options["diagnostics"] = diagnostic_arrays
         with binding.acquire() as descriptor, dynamics.integrator._lock:
             native_result = dynamics.integrator._native.advance(
                 dynamics.integrator._context, descriptor, state.q, state.p, options, mask, records, snapshots)
@@ -358,7 +478,10 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                     else:
                         dynamics.step(state, bias)
                 dynamics._check_fixed(state.q, state.p)
-                if check_energy or (record_energy and mask[i]):
+                if diagnostic_spec.get("energy_parts") and mask[i]:
+                    parts, energy = _python_energy_parts(dynamics, state, bias)
+                    diagnostic_arrays["energy_parts"][written] = parts
+                elif check_energy or (record_energy and mask[i]):
                     energy = dynamics.energy(state, bias)
                     if not np.isfinite(energy):
                         raise FloatingPointError("nonfinite total ring energy")
@@ -368,6 +491,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                         row[1] = energy
                     row[2:2+nd] = state.q.mean(axis=0).ravel()
                     row[2+nd:2+2*nd] = state.p.mean(axis=0).ravel()
+                    if diagnostic_spec.get("ring_radii"):
+                        diagnostic_arrays["ring_radii"][written] = _ring_radii(
+                            state.q, row[2:2+nd].reshape(natoms, 3))
                     if cv is not None:
                         value = np.asarray(cv.value(state.q), dtype=float)
                         if value.shape != (dimension,) or not np.isfinite(value).all():
@@ -391,7 +517,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                          records[:, 2+nd:2+2*nd].reshape(-1, natoms, 3), records[:, 2+2*nd:],
                          None if snapshots is None else snapshots[:, 0],
                          None if snapshots is None else snapshots[:, 1], error,
-                         outcome=None if outcome_spec is None else _outcome_result(outcome_spec, metadata))
+                          outcome=None if outcome_spec is None else _outcome_result(outcome_spec, metadata),
+                          diagnostics={name: values[:written] for name, values in diagnostic_arrays.items()}
+                          if diagnostic_arrays else None)
     if previous_time is not None:
         result.previous_q, result.previous_p = previous_state
         result.previous_step = start_step + completed - 1

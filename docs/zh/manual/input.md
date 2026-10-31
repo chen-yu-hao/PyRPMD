@@ -115,6 +115,7 @@ FES 中是两次保存样本之间的时间。
 | `[recrossing]` | `rate`、`network`、`site_rate`、`surface_rate` | 母链数、母链间隔、child pairs、child 时间、bootstrap |
 | `[collision]`、`[outcomes]` | `drpmd` | 发射分布、`bmax`、总轨迹数、最大时间；产物分类 |
 | `[nonadiabatic]` | `drpmd`（实验性 NRPMD） | 见[非绝热 NRPMD](nonadiabatic.md) |
+| `[initial_ensemble]` | `drpmd`（实验性核初态选择） | `method = "ne_rpmd"` 或 `"qct"`、NE 显式 `beta`、片段 Hessian/模式和 `vibrational_quanta`；见[直接碰撞](workflows.md) |
 | `[adaptive_umbrella]` | `fes`、`rate` | 见[气相与自由能](workflows.md) |
 | `[metadynamics]` | `metadynamics` | |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |
@@ -205,6 +206,8 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 | `pyrpmd prepare INPUT` | 显示准备信息 | `--pilot` 执行数值准备；`--output FILE` 写出 JSON |
 | `pyrpmd run INPUT` | 开始运行，或按输入继续 | `--output DIR`、`--resume` |
 | `pyrpmd resume DIR` | 按保存的配置续跑 | `--workers N`、`--loop-backend auto`、`--block-steps N` |
+| `pyrpmd extend DIR` | 为已有 dRPMD 系综中未结束的轨迹提高总时间上限 | 必填 `--max-time '20 ps'`，从发射时刻计时 |
+| `pyrpmd state-check INPUT` | 无碰撞赋速演化已准备核初态，检查谐振模式稳定性 | `--time '100 fs'`、`--samples 8`、`--stride 10`、`--output report.json` |
 | `pyrpmd analyze DIR` | 读取结果或离线重分析 | `--recompute`、`--bins`、`--bootstrap`；扩散选项见下文 |
 | `pyrpmd checkpoint FILE` | 校验检查点容器 | `--require-integrity` 拒绝没有校验值的旧容器 |
 | `pyrpmd info` | 显示版本与原生能力 | |

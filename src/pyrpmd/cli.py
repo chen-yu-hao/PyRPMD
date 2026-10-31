@@ -43,6 +43,14 @@ def parser():
     _input_options(q)
     q.add_argument("--pilot", action="store_true")
     q.add_argument("--output", help="Write preparation JSON")
+    state = commands.add_parser(
+        "state-check", help="Check prepared vibrational states on the full PES without a collision kick"
+    )
+    _input_options(state)
+    state.add_argument("--time", default="100 fs", help="NVE duration, e.g. '100 fs'")
+    state.add_argument("--samples", type=int, default=8, help="Independent initial states")
+    state.add_argument("--stride", type=int, default=10, help="Observe every N steps, plus initial/final frames")
+    state.add_argument("--output", help="JSON report file relative to the current working directory")
     c = commands.add_parser(
         "resume", help="Resume using a saved resolved input and exact physics identity"
     )
@@ -50,6 +58,12 @@ def parser():
     c.add_argument("--workers", type=int)
     c.add_argument("--loop-backend", choices=("auto", "native", "python"))
     c.add_argument("--block-steps", type=int)
+    extend = commands.add_parser(
+        "extend", help="Raise the total time budget of unresolved dRPMD trajectories"
+    )
+    extend.add_argument("directory")
+    extend.add_argument("--max-time", required=True,
+                        help="New total duration from launch, e.g. '20 ps' (not added time)")
     a = commands.add_parser(
         "analyze", help="Read results or reanalyze saved free-energy/transport data"
     )
@@ -233,6 +247,11 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            if config.get("initial_ensemble"):
+                result["temperature_K"] = None
+                result["beta_au"] = config["beta"]
+                result["temperature_interpretation"] = config["temperature_interpretation"]
+                result["initial_ensemble_method"] = config["initial_ensemble"]["method"]
             if args.write_resolved:
                 from .parallel import root_call
 
@@ -251,6 +270,15 @@ def main(argv=None):
 
                 root_call(write_json, args.output, result)
             _print(result)
+        elif args.command == "state-check":
+            from .parallel import root_call
+            from .workflows.state_selected import check_state_selected
+
+            result = root_call(
+                check_state_selected, _job(args), duration=args.time,
+                samples=args.samples, stride=args.stride, output=args.output,
+            )
+            _print(result)
         elif args.command == "resume":
             from .runner import resume_run
 
@@ -266,6 +294,12 @@ def main(argv=None):
                 }.items() if value is not None
             }
             result = resume_run(args.directory, parallel=override, execution=execution or None)
+            if result is not None:
+                _print(result)
+        elif args.command == "extend":
+            from .runner import extend_run
+
+            result = extend_run(args.directory, max_time=args.max_time)
             if result is not None:
                 _print(result)
         elif args.command == "analyze":
@@ -295,6 +329,7 @@ def main(argv=None):
                     "materials": {"cell": "fixed", "trajectory": "unwrapped_centroid", "pressure_ensemble": False},
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
                     "enhanced_sampling": ["adaptive_umbrella", "standard_metadynamics", "well_tempered_metadynamics"],
+                    "initial_ensembles": ["thermal_parent", "ne_rpmd", "qct"],
                     "input_schema_version": 1,
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,

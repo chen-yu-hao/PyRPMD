@@ -23,9 +23,10 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic initial_ensemble".split()
 )
 _SECTIONS = {
+    "initial_ensemble": set("method beta fragments".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
         "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
@@ -47,7 +48,7 @@ _SECTIONS = {
         "factory params channels exit_distance persistence persistence_steps check_interval bond_cutoffs".split()
     ),
     "output": set(
-        "directory checkpoint_interval checkpoint_steps trajectory_stride".split()
+        "directory checkpoint_interval checkpoint_steps trajectory_stride diagnostics".split()
     ),
     "reaction": set(
         "fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
@@ -295,6 +296,26 @@ def _steps(table, key, duration_key, default, dt, *, allow_zero=False):
     return time_steps(table.get(duration_key, default), dt, allow_zero=allow_zero)
 
 
+def _initial_ensemble_spec(section, base):
+    """Read references relative to the input and retain their canonical data."""
+    from .initial_states import normalize_initial_ensemble
+
+    section = deepcopy(section)
+    fragments = section.get("fragments", ())
+    if isinstance(fragments, (list, tuple)):
+        for fragment in fragments:
+            if isinstance(fragment, Mapping):
+                for key in ("hessian_file", "modes_file"):
+                    if key in fragment:
+                        if not isinstance(fragment[key], (str, Path)) or not str(fragment[key]):
+                            raise InputError(f"initial_ensemble {key} must be a file path")
+                        fragment[key] = _path(base, fragment[key])
+    try:
+        return normalize_initial_ensemble(section)
+    except (ValueError, TypeError, KeyError, OSError) as error:
+        raise InputError(str(error)) from error
+
+
 @dataclass
 class JobSpec:
     data: dict
@@ -373,6 +394,8 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        if "initial_ensemble" in self.data and self.data.get("task") != "drpmd":
+            raise InputError("initial_ensemble requires task='drpmd'")
         if self.data.get("task") == "pcet":
             from .pcet_input import resolve_pcet_job
 
@@ -414,6 +437,18 @@ class JobSpec:
         task = d.get("task")
         if task not in ("rate", "drpmd", "fes", "metadynamics", "pimd", "diffusion", "site_rate", "surface_rate"):
             raise InputError("task must be rate, drpmd, fes, metadynamics, network, pcet, pimd, diffusion, site_rate or surface_rate")
+        selected = "initial_ensemble" in d
+        initial_ensemble = None
+        base = Path(self.base_directory).resolve()
+        if selected:
+            if "temperature" in d:
+                raise InputError("State-selected initial_ensemble does not accept temperature; specify initial_ensemble.beta for NE-RPMD")
+            if "nonadiabatic" in d or d.get("potential", {}).get(
+                "provider", d.get("potential", {}).get("type")
+            ) == "diabatic_python":
+                raise InputError("initial_ensemble currently requires a single-surface potential; combining it with NRPMD is not implemented")
+            initial_ensemble = _initial_ensemble_spec(d["initial_ensemble"], base)
+            d["initial_ensemble"] = initial_ensemble
         materials = task in ("pimd", "diffusion")
         if "diffusion" in d and task != "diffusion":
             raise InputError("[diffusion] requires task='diffusion'")
@@ -482,15 +517,26 @@ class JobSpec:
             raise InputError("preset must be pilot or production")
         notes = []
         if preset == "production":
-            for k in ("temperature", "beads", "dynamics", "sampling"):
+            required = ("beads", "dynamics") if selected else ("temperature", "beads", "dynamics", "sampling")
+            for k in required:
                 if k not in d:
                     raise InputError(f"production requires explicit {k}")
-        if "temperature" not in d:
-            notes.append("Pilot default temperature: 300 K")
-        temperature = _positive(
-            parse_quantity(d.get("temperature", "300 K"), "temperature"), "temperature"
-        )
-        beads = d.get("beads", 32)
+        if selected:
+            # beta controls the NE-RPMD reference rings. At P=1 it is only a
+            # required positive integrator parameter and does not thermalize QCT.
+            beta = initial_ensemble.get("beta", 1.0)
+            temperature = _positive(1 / KB_AU / beta, "auxiliary inverse-beta scale")
+            notes.append("State-selected initial ensemble: temperature_K is an internal inverse-beta compatibility scale, not a thermal temperature")
+            if initial_ensemble["method"] == "qct" and "beta" not in initial_ensemble:
+                notes.append("QCT P=1 uses beta=1 hartree^-1 as an unused integrator compatibility parameter")
+        else:
+            if "temperature" not in d:
+                notes.append("Pilot default temperature: 300 K")
+            temperature = _positive(
+                parse_quantity(d.get("temperature", "300 K"), "temperature"), "temperature"
+            )
+            beta = 1 / (KB_AU * temperature)
+        beads = d.get("beads", 1 if selected and initial_ensemble["method"] == "qct" else 32)
         if beads == "auto":
             if preset == "production":
                 raise InputError(
@@ -501,6 +547,10 @@ class JobSpec:
                 "Auto bead pilot uses P=32; bead convergence has not been established"
             )
         beads = _integer(beads, "beads")
+        if selected and initial_ensemble["method"] == "qct" and beads != 1:
+            raise InputError("qct initial ensembles require beads=1")
+        if selected and initial_ensemble["method"] == "ne_rpmd" and beads < 2:
+            raise InputError("ne_rpmd initial ensembles require beads>=2; use qct for a classical quantum-number ensemble")
         seed = _integer(d.get("seed", 0), "seed", 0)
         dyn = dict(d.get("dynamics", {}))
         if dyn.get("loop_backend", "auto") not in ("auto", "native", "python"):
@@ -520,7 +570,6 @@ class JobSpec:
         # Preserve the identity of legacy inputs with an implicit default.
         if "integrator" in dyn:
             d["dynamics"]["integrator"] = integrator
-        base = Path(self.base_directory).resolve()
         _plugin_paths(d, base)
         sys_spec = deepcopy(d.get("system", {}))
         if isinstance(sys_spec, System):
@@ -549,6 +598,13 @@ class JobSpec:
                 "Gas-phase rate/drpmd normalization does not apply to periodic or fixed-atom systems; "
                 "use fes, surface_rate or site_rate for a fixed cell"
             )
+        if selected:
+            from .initial_states import prepare_initial_ensemble
+
+            try:
+                prepare_initial_ensemble(initial_ensemble, system, beads, beta)
+            except (ValueError, TypeError, KeyError) as error:
+                raise InputError(str(error)) from error
         if task == "metadynamics" and (any(system.pbc) or system.fixed_atoms):
             raise InputError(
                 "Metadynamics does not yet support periodic or fixed-atom systems; "
@@ -582,65 +638,69 @@ class JobSpec:
         except (ValueError, PotentialError) as error:
             raise InputError(str(error)) from error
         sampling = deepcopy(d.get("sampling", {}))
-        sampling_dt = _positive(
-            parse_quantity(sampling.get("timestep", dt), "time"), "sampling.timestep"
-        )
-        sampling["dt_au"] = sampling_dt
-        default_thermostat = "pile-l" if materials and integrator != "velocity-verlet" else "andersen"
-        sampling["thermostat"] = sampling.get("thermostat", default_thermostat)
-        sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
-        expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-andersen"
-        sampling["integrator"] = sampling.get("integrator", expected_sampler)
-        if materials and sampling["thermostat"] == "pile-l":
-            if sampler is None or sampling["integrator"] != sampler:
-                raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
-            sampling["gamma_centroid"] = _positive(
-                parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency"),
-                "sampling.gamma_centroid",
+        if selected:
+            if set(sampling) - {"parents"}:
+                raise InputError("State-selected initial_ensemble allows only sampling.parents; thermal equilibration and thermostat settings do not apply")
+        else:
+            sampling_dt = _positive(
+                parse_quantity(sampling.get("timestep", dt), "time"), "sampling.timestep"
             )
-            if dyn.get("loop_backend", "auto") == "native":
-                raise InputError("PILE-L sampling requires loop_backend='auto' or 'python'; its deterministic substeps may still be native")
-        elif sampling["integrator"] != integrator + "-andersen" or sampling["thermostat"] != "andersen":
-            raise InputError(
-                "Workflow sampling requires sampling.integrator='"
-                + integrator + "-andersen' and thermostat='andersen'; "
-                "sampling and production use the same selected ring-polymer integrator"
+            sampling["dt_au"] = sampling_dt
+            default_thermostat = "pile-l" if materials and integrator != "velocity-verlet" else "andersen"
+            sampling["thermostat"] = sampling.get("thermostat", default_thermostat)
+            sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
+            expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-andersen"
+            sampling["integrator"] = sampling.get("integrator", expected_sampler)
+            if materials and sampling["thermostat"] == "pile-l":
+                if sampler is None or sampling["integrator"] != sampler:
+                    raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
+                sampling["gamma_centroid"] = _positive(
+                    parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency"),
+                    "sampling.gamma_centroid",
+                )
+                if dyn.get("loop_backend", "auto") == "native":
+                    raise InputError("PILE-L sampling requires loop_backend='auto' or 'python'; its deterministic substeps may still be native")
+            elif sampling["integrator"] != integrator + "-andersen" or sampling["thermostat"] != "andersen":
+                raise InputError(
+                    "Workflow sampling requires sampling.integrator='"
+                    + integrator + "-andersen' and thermostat='andersen'; "
+                    "sampling and production use the same selected ring-polymer integrator"
+                )
+            elif "gamma_centroid" in sampling:
+                raise InputError("sampling.gamma_centroid requires PILE-L sampling")
+            if not math.isclose(sampling_dt, dt, rel_tol=1e-14):
+                raise InputError(
+                    "Workflow sampling and production time steps must match"
+                )
+            sampling["equilibration_steps"] = _steps(
+                sampling,
+                "equilibration_steps",
+                "equilibration",
+                "100 fs",
+                dt,
+                allow_zero=True,
             )
-        elif "gamma_centroid" in sampling:
-            raise InputError("sampling.gamma_centroid requires PILE-L sampling")
-        if not math.isclose(sampling_dt, dt, rel_tol=1e-14):
-            raise InputError(
-                "Workflow sampling and production time steps must match"
+            sampling["production_steps"] = _steps(
+                sampling, "production_steps", "production", "200 fs", dt
             )
-        sampling["equilibration_steps"] = _steps(
-            sampling,
-            "equilibration_steps",
-            "equilibration",
-            "100 fs",
-            dt,
-            allow_zero=True,
-        )
-        sampling["production_steps"] = _steps(
-            sampling, "production_steps", "production", "200 fs", dt
-        )
-        interval = sampling.get("interval_steps", sampling.get("sample_interval"))
-        if interval is None:
-            interval = time_steps(
-                sampling.get("interval", sampling.get("save_interval", "1 fs")), dt
+            interval = sampling.get("interval_steps", sampling.get("sample_interval"))
+            if interval is None:
+                interval = time_steps(
+                    sampling.get("interval", sampling.get("save_interval", "1 fs")), dt
+                )
+            sampling["interval_steps"] = sampling["sample_interval"] = _integer(
+                interval, "sampling.interval_steps"
             )
-        sampling["interval_steps"] = sampling["sample_interval"] = _integer(
-            interval, "sampling.interval_steps"
-        )
-        sampling["andersen_interval"] = _integer(
-            sampling.get(
-                "andersen_interval",
-                sampling.get("thermostat_params", {}).get("interval_steps", 10),
-            ),
-            "sampling.andersen_interval",
-        )
-        sampling["replicas"] = _integer(
-            sampling.get("replicas", 4 if task == "diffusion" else 1), "sampling.replicas"
-        )
+            sampling["andersen_interval"] = _integer(
+                sampling.get(
+                    "andersen_interval",
+                    sampling.get("thermostat_params", {}).get("interval_steps", 10),
+                ),
+                "sampling.andersen_interval",
+            )
+            sampling["replicas"] = _integer(
+                sampling.get("replicas", 4 if task == "diffusion" else 1), "sampling.replicas"
+            )
         if "parents" in sampling:
             sampling["parents"] = _integer(sampling["parents"], "sampling.parents")
         parallel = deepcopy(d.get("parallel", {}))
@@ -734,11 +794,13 @@ class JobSpec:
                 sys_spec["separation_au"] = float(np.linalg.norm(r1 - r0))
             r0 = _positive(sys_spec["separation_au"], "system.separation")
             collision["separation_au"] = r0
-            collision.setdefault("sampling", "thermal_flux")
+            collision.setdefault("sampling", "fixed_energy" if selected else "thermal_flux")
             collision.setdefault("impact_sampling", "uniform_area")
             collision.setdefault("orientation", "isotropic")
             if collision["sampling"] not in ("thermal_flux", "maxwell", "fixed_energy"):
                 raise InputError("Unknown collision sampling distribution")
+            if selected and collision["sampling"] != "fixed_energy":
+                raise InputError("State-selected initial_ensemble requires collision.sampling='fixed_energy' and an explicit collision.energy")
             if (
                 collision["impact_sampling"] != "uniform_area"
                 or collision["orientation"] != "isotropic"
@@ -807,12 +869,24 @@ class JobSpec:
             output["trajectory_stride"] = _integer(
                 output["trajectory_stride"], "output.trajectory_stride"
             )
+        if selected or "diagnostics" in output:
+            if task != "drpmd":
+                raise InputError("output.diagnostics currently requires task='drpmd'")
+            diagnostics = output.get("diagnostics", {})
+            if not isinstance(diagnostics, Mapping) or set(diagnostics) - {"energy_parts", "ring_radii"}:
+                raise InputError("output.diagnostics must be a table containing only energy_parts and ring_radii")
+            if any(not isinstance(value, (bool, np.bool_)) for value in diagnostics.values()):
+                raise InputError("output.diagnostics flags must be boolean")
+            output["diagnostics"] = {
+                name: bool(diagnostics.get(name, selected))
+                for name in ("energy_parts", "ring_radii")
+            }
         resolved = {
             **d,
             "schema_version": 1,
             "preset": preset,
             "temperature_K": temperature,
-            "beta": 1 / (KB_AU * temperature),
+            "beta": beta,
             "beads": beads,
             "seed": seed,
             "dt_au": dt,
@@ -829,6 +903,12 @@ class JobSpec:
             "_warnings": notes,
             "hamiltonian_convention": "sum_beads_beta_over_P",
         }
+        if selected:
+            resolved["temperature_interpretation"] = (
+                "auxiliary_ring_parameter_not_thermal_temperature"
+                if initial_ensemble["method"] == "ne_rpmd"
+                else "unused_classical_compatibility_parameter_not_thermal_temperature"
+            )
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         try:

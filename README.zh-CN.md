@@ -20,6 +20,7 @@ PCET 速率。输入为普通 Python 或 TOML `.inp` 文件。C++17/OpenMP 内�
 | TOML 输入 | 严格检查字段、单位、原子索引和相对路径；命令行可覆盖 PES、温度、珠子数和 worker 数 |
 | 从 TS 出发的 RPMD 速率 | TS 与 PES 启动数值 Hessian 和双向下降；识别出的双分子通道依次进行 PMF、受约束母链与成对回穿子轨迹 |
 | dRPMD | 两个反应物 XYZ、初始质心距离和 PES；常驻母链按设定间隔发射碰撞，总轨迹数按余数分配 |
+| 核初态选择 | 固定碰撞能下近似振动态选择 NE-RPMD / 单珠子 QCT，独立初态采样、碰撞前稳定性检查、未结束轨迹延长续跑 |
 | 势能 | Python、RPMDrate/f2py、版本化 C ABI `.so`、manifest 驱动的 `.o` 链接、ASE、Torch、i-PI socket |
 | 并行 | 轨迹/窗口进程、常驻珠子 PES 进程池、MPI `G × B` 分组、OpenMP、多 CUDA 设备及每卡多轨迹 |
 | 自由能面 | 一维/二维伞抽样、完整 CV Jacobian、MBAR、重叠图、相关块 bootstrap、未采样区域 mask、离线重分析 |
@@ -280,6 +281,10 @@ python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
 `fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条轨迹的初态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。
 
 ## 原生 C++17 传播
+
+态选择 dRPMD 复用现有 C++ 连续传播；在线记录势能、质心动能、内部 bead 动能、弹簧能和每原子环尺寸，
+不增加 PES 求值。`state-check` 在稀疏观测帧检查分子正常模，`extend` 保留原始状态提高未结束轨迹的总时间上限。
+输入与方法边界见[态选择说明](docs/state-selected.md)和[可运行示例](examples/state_selected/README.md)。
 
 `Dynamics.propagate()` 连续传播并以整块为单位原子提交。`Dynamics.propagate_block()` 逐步提交，提供观测 mask、完整 q/p 快照和
 原生质心 RATTLE，数值失败时保留成功的前缀。两种 API 都支持三种积分器。dRPMD 碰撞和受约束母链使用分段接口；原生 FES 及复用

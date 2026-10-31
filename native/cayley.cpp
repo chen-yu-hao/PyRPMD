@@ -361,6 +361,7 @@ PyMODINIT_FUNC PyInit__native(){
     if(!result)return nullptr;
     if(PyModule_AddIntConstant(result,"DRPMD_OUTCOMES_API",1)<0
             || PyModule_AddIntConstant(result,"BLOCK_ENERGY_CHECK_API",1)<0
+            || PyModule_AddIntConstant(result,"BLOCK_DIAGNOSTICS_API",1)<0
             || PyModule_AddIntConstant(result,"SAMPLING_FREE_API",1)<0){
         Py_DECREF(result);return nullptr;
     }

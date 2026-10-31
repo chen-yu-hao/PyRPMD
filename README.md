@@ -23,6 +23,7 @@ describes how to take a result from a pilot run to production.
 | TOML inputs | Strict checking of fields, units, atom indices and relative paths; command-line overrides for PES, temperature, beads and workers |
 | RPMD rates from a TS | A TS and a PES start a numerical Hessian and two-sided descent; the identified bimolecular channel runs through PMF, constrained parents and paired recrossing children |
 | dRPMD | Two reactant XYZ files, an initial COM distance and a PES; persistent parent chains launch collisions at a set interval, with remainder-aware trajectory allocation |
+| Selected nuclear initial states | Approximate vibrational NE-RPMD and P=1 QCT at fixed collision energy, independent initial-state draws, precollision stability checks and unresolved-trajectory extension |
 | Potentials | Python, RPMDrate/f2py, versioned C ABI `.so`, manifest-driven `.o` linking, ASE, Torch, i-PI socket |
 | Parallelism | Trajectory/window processes, persistent bead PES pools, MPI `G × B` groups, OpenMP, multiple CUDA devices with several trajectories per card |
 | Free-energy surfaces | 1D/2D umbrella sampling, full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions, offline reanalysis |
@@ -302,6 +303,7 @@ Reference specifications (some in Chinese):
 - [Native propagation](docs/native-propagation.md), [block API and failure handling](docs/block-propagation.md)
 - [Integrators](docs/integrators.md), [multiple entrances and TSs](docs/reaction-networks.md)
 - [Experimental NRPMD and state-resolved collisions](docs/nonadiabatic.md)
+- [Vibrational NE-RPMD / QCT initial states](docs/state-selected.md), [runnable examples](examples/state_selected/README.md)
 - [Adaptive umbrella sampling and metadynamics](docs/enhanced-sampling.md)
 - [Electrochemical PCET model](docs/pcet.md), [runnable PCET example](examples/pcet/README.md)
 - [Fixed cells, PIMD, materials diffusion and site rates](docs/materials.md)
@@ -327,6 +329,13 @@ C++ blocks at their original frequency, accumulate persistence and stop early; b
 fall back to the Python test. Native dRPMD reuses endpoint forces within a block and keeps a single
 rollback snapshot instead of a per-step q/p history. Defaults are `loop_backend="auto"` and
 `block_steps=256`.
+
+State-selected collisions use this same C++ production path. Optional native observations
+record potential, centroid kinetic, internal-bead kinetic and spring energy per bead, plus
+per-atom ring radii, without additional PES calls. `pyrpmd state-check` projects sparse saved
+states onto the molecular reference outside the production block. See the
+[state-selected guide](docs/state-selected.md) for the harmonic-preparation approximation,
+the auxiliary beta parameter and fixed-energy statistical eligibility rules.
 
 PILE-L in `auto` mode uses a fused C++ free-ring half-step–OU–half-step kernel for power-of-two and
 small bead numbers, with NumPy random numbers and the Python potential interface; fixed atoms stay
