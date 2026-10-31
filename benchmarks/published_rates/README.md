@@ -160,7 +160,7 @@ are unit-test fixtures, not added scientific results.
 
 ## Real H + H₂ pilot
 
-After building the checksum-pinned BKMP2 library with `benchmarks/h3/build.py`,
+After building the checksum-pinned BKMP2 library with `benchmarks/h3/build_pes.py`,
 the following runs the actual umbrella/recrossing workflow and writes a
 calculation manifest. It is a diagnostic calculation, not a converged rate:
 

@@ -73,7 +73,7 @@
     "MANIFEST.in": "5b8398dceb7bb657c0315885080b99ea831b52122f74b66e616a8a03f38d5116",
     "benchmarks/batched_dynamics.py": "ff5a985f3c048ae8dca2a2d7c0b225841bdc76c7140dd1f4d1aefb5258d58e7e",
     "benchmarks/h3/pes.py": "c1178e522cb32e73544f33adb48d0d0542bb23108549306d7d892b6306e4e892",
-    "benchmarks/published_rates/README.md": "355731b3667dc0df8c6a7815bc623a32b524e37f296b41b299c3b973c482ee02",
+    "benchmarks/published_rates/README.md": "c04b22f4e7e86b66495ef6478d5353683ed797c552bdb2dcd76b496b050b0fc7",
     "benchmarks/published_rates/compare.py": "76eb9e1fd858458c7d2dc6776f0ab124c591712ba73d6c662804c65002360c28",
     "benchmarks/published_rates/diagnose_pilot_pmf.py": "f9a66b5cfd3148d8b5b58e4ec7143a35eb011eeb9cb5902a334c0bce1459f96e",
     "benchmarks/published_rates/h3.py": "17a0181f229a372af99355cc65e36ffe5544483ae40d393a2f7b1c730bd96952",
@@ -118,5 +118,7 @@
   "merged_main_commit": "76dd6ad24adc6c244f775857987cd2f0e119845f",
   "merge_scope": "English-default bilingual documentation, packaging declarations and optional Matplotlib test skip; no production source/native changes.",
   "merged_documentation_record": "merged-docs-verification.json",
-  "remote_feature_checks": "ci-initial-feature.json"
+  "remote_feature_checks": "ci-initial-feature.json",
+  "fully_verified_runtime_commit": "f90a266b2d9d7e163752fe187c7b98d2e0806779",
+  "documentation_only_followup": "Corrected the published-rate README build-helper filename to benchmarks/h3/build_pes.py; production source, tests, benchmark drivers and runtime parameters are unchanged."
 }
