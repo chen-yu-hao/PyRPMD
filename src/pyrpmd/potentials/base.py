@@ -135,7 +135,9 @@ def check_potential(potential, q, epsilon=1e-5):
     q = coordinates(q)
     if not np.isfinite(epsilon) or epsilon <= 0:
         raise ValueError("epsilon must be positive")
-    r = validate_result(potential.evaluate(q), q.shape)
+    # Providers may reuse their result buffers at the next evaluation. Retain
+    # the unperturbed force and E(q+epsilon) before another PES call.
+    forces = validate_result(potential.evaluate(q), q.shape).forces.copy()
     numerical = np.empty_like(q)
     for a in range(q.shape[1]):
         for c in range(3):
@@ -143,10 +145,10 @@ def check_potential(potential, q, epsilon=1e-5):
             minus = q.copy()
             plus[:, a, c] += epsilon
             minus[:, a, c] -= epsilon
-            ep = validate_result(potential.evaluate(plus), q.shape).energy
+            ep = validate_result(potential.evaluate(plus), q.shape).energy.copy()
             em = validate_result(potential.evaluate(minus), q.shape).energy
             numerical[:, a, c] = -(ep - em) / (2 * epsilon)
-    delta = r.forces - numerical
+    delta = forces - numerical
     return {
         "max_absolute_force_error": float(np.max(np.abs(delta))),
         "rms_force_error": float(np.sqrt(np.mean(delta * delta))),

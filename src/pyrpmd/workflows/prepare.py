@@ -87,7 +87,10 @@ def _potential_values(provider, q):
         or not np.isfinite(r.forces).all()
     ):
         raise ValueError("PES failed during transition-state preparation")
-    return float(r.energy[0]), np.asarray(r.forces[0], float)
+    # Retain this evaluation across later PES calls. Compiled and Python
+    # providers may overwrite their force buffers when evaluating the next
+    # finite-difference displacement.
+    return float(r.energy[0]), np.array(r.forces[0], dtype=float, copy=True)
 
 
 def numerical_hessian(provider, geometry, step=1e-4):
