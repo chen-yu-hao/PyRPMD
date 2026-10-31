@@ -75,6 +75,7 @@ PCET <manual/pcet>
 非绝热 NRPMD <manual/nonadiabatic>
 势能与插件 <manual/potentials>
 势能生成 <manual/pes-generation>
+JaxPIP 拟合与原生执行 <manual/jaxpip-generation>
 执行与并行 <manual/execution>
 输出与分析 <manual/results>
 示例索引 <manual/examples>

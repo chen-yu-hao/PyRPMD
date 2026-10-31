@@ -86,6 +86,7 @@ Electrode models <manual/electrochemistry>
 Nonadiabatic NRPMD <manual/nonadiabatic>
 Potentials and plugins <manual/potentials>
 PES generation <manual/pes-generation>
+JaxPIP fitting and native execution <manual/jaxpip-generation>
 Execution <manual/execution>
 Expensive potentials <performance-dynamics>
 Trajectory batching <batched-dynamics>

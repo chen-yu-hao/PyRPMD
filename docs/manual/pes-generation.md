@@ -1,5 +1,9 @@
 # PySCF reference data and Caracal PES generation
 
+For explicit train/validation/test datasets and linear PIP or PIP-NN fitting,
+see [PySCF datasets, JaxPIP fitting and native dynamics](jaxpip-generation.md).
+That route uses the repository's ONNX exporter and does not require Caracal.
+
 `python -m pyrpmd.pesgen` implements an **optional offline molecular workflow**:
 
 ```text

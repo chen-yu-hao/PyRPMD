@@ -53,6 +53,7 @@ thermal::Config config(PyObject* dict){
     for(double x:fixed){require(x==0||x==1,"invalid fixed-atom mask");c.fixed.push_back(static_cast<uint8_t>(x));}
     auto thermostat=integer(dict,"thermostat"),barostat=integer(dict,"barostat");require(thermostat<=11&&barostat<=4,"unknown thermostat/barostat");
     c.thermostat=static_cast<thermal::Thermostat>(thermostat);c.barostat=static_cast<thermal::Barostat>(barostat);
+    c.fuse_modes=PyDict_GetItemString(dict,"fuse_modes")?boolean(dict,"fuse_modes"):true;
     c.cayley=boolean(dict,"cayley");c.initialize_momenta=boolean(dict,"initialize_momenta");c.has_cell=boolean(dict,"has_cell");
     c.gamma=num(dict,"gamma");c.gamma0=num(dict,"gamma0");c.pile_scale=num(dict,"pile_scale");c.tau=num(dict,"tau");
     c.interval=integer(dict,"interval");c.seed=integer(dict,"seed");c.gle_size=integer(dict,"gle_size");require(c.gle_size<=64,"GLE dimension exceeds 64");
@@ -73,10 +74,10 @@ PyObject* create(PyObject*,PyObject*args){
     }catch(...){return error();}
 }
 PyObject* run(PyObject*,PyObject*args){
-    PyObject *cap,*steps,*stride;int centroids;const char* path="";if(!PyArg_ParseTuple(args,"OOOp|s",&cap,&steps,&stride,&centroids,&path))return nullptr;
+    PyObject *cap,*steps,*stride;int centroids,moments=0;unsigned long long sample_start=0;const char* path="";if(!PyArg_ParseTuple(args,"OOOp|spK",&cap,&steps,&stride,&centroids,&path,&moments,&sample_start))return nullptr;
     PyObject* dict=nullptr;
     try{auto& h=handle(cap);Lock lock(h);uint64_t n=integer(steps),save=integer(stride);thermal::Output out;
-        unlocked([&]{out=h.engine->run(n,save,centroids!=0,path);});
+        unlocked([&]{out=h.engine->run(n,save,centroids!=0,path,moments!=0,sample_start);});
         dict=PyDict_New();if(!dict)throw std::bad_alloc();
         set(dict,"samples",bytes(out.samples));set(dict,"centroids",bytes(out.centroids));set(dict,"frames",PyLong_FromSize_t(out.frames));
         set(dict,"step",PyLong_FromUnsignedLongLong(h.engine->s.step));set(dict,"force_evaluations",PyLong_FromUnsignedLongLong(h.engine->s.evaluations));return dict;

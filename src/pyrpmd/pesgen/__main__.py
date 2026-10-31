@@ -16,6 +16,18 @@ def main(argv=None):
     run = sub.add_parser("run-job", help="run an existing PyRPMD job with the fitted PES")
     run.add_argument("directory"); run.add_argument("job"); run.add_argument("--output", required=True)
     run.add_argument("--allow-unvalidated", action="store_true"); run.add_argument("--resume", action="store_true")
+    for name in ("jaxpip-data", "jaxpip-fit"):
+        command = sub.add_parser(name, help="collect PySCF references" if name == "jaxpip-data" else "fit a JaxPIP model offline")
+        command.add_argument("input"); command.add_argument("--output", required=True)
+        command.add_argument("--resume", action="store_true")
+    export = sub.add_parser("jaxpip-export", help="export through the native ONNX bridge's trusted script")
+    export.add_argument("directory"); export.add_argument("--exporter", required=True)
+    export.add_argument("--output", required=True)
+    jrun = sub.add_parser("jaxpip-run", help="run an existing job with a fitted native JaxPIP model")
+    jrun.add_argument("directory"); jrun.add_argument("job")
+    jrun.add_argument("--library", required=True); jrun.add_argument("--output", required=True)
+    jrun.add_argument("--device", default="cpu")
+    jrun.add_argument("--allow-unvalidated", action="store_true"); jrun.add_argument("--resume", action="store_true")
     args = parser.parse_args(argv)
     if args.command == "build-native":
         from .build import build_native
@@ -23,6 +35,19 @@ def main(argv=None):
     elif args.command == "generate":
         from .workflow import generate
         print(json.dumps(generate(args.input, args.output, resume=args.resume), indent=2))
+    elif args.command == "jaxpip-data":
+        from .jaxpip_data import collect_dataset
+        print(json.dumps(collect_dataset(args.input, args.output, resume=args.resume), indent=2))
+    elif args.command == "jaxpip-fit":
+        from .jaxpip_fit import fit_jaxpip
+        print(json.dumps(fit_jaxpip(args.input, args.output, resume=args.resume), indent=2))
+    elif args.command == "jaxpip-export":
+        from .jaxpip_export import export_jaxpip
+        print(json.dumps(export_jaxpip(args.directory, args.exporter, args.output), indent=2))
+    elif args.command == "jaxpip-run":
+        from .jaxpip_export import run_jaxpip_job
+        print(json.dumps(run_jaxpip_job(args.directory, args.library, args.job, output=args.output,
+                         device=args.device, allow_unvalidated=args.allow_unvalidated, resume=args.resume), indent=2, default=str))
     else:
         from .workflow import run_generated_job
         print(json.dumps(run_generated_job(args.directory, args.job, output=args.output,

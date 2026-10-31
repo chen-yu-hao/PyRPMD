@@ -137,6 +137,7 @@ to a research calculation.
 | Equivalent channels | Equivalent TSs from atom permutations, combined as RPMDrate's `min_bond(max_TS(s1))`; the two H + H₂ exchange exits are distinguished |
 | Reaction networks | Separate entrances, TSs and PESs for one atom and isotope inventory; each path fills a rate matrix, reported per entrance, channel and TS |
 | dRPMD | Two reactant XYZ files and an initial COM distance; persistent parent chains launch collisions at a set interval |
+| Selected nuclear initial states | Approximate vibrational NE-RPMD and P=1 QCT at fixed collision energy, independent initial-state draws, precollision checks and unresolved-trajectory extension ([guide](docs/state-selected.md), [examples](examples/state_selected/README.md)) |
 | Free energy | 1D–3D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive 1D/2D window insertion from MBAR overlap, effective sample size and optional coverage targets |
 | Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories and finite-time bias FES |
 | Replica-exchange umbrellas | Same-temperature fixed-window REUS, PILE-L or Andersen, synchronized ensemble restart and joint window bootstrap ([guide](docs/replica-exchange.md)) |
@@ -309,6 +310,13 @@ thermostatted and large-bead runs. Defaults are `loop_backend="auto"` and `block
 Details: [native propagation](docs/native-propagation.md),
 [block API and failure handling](docs/block-propagation.md), [integrators](docs/integrators.md),
 [optimization record](docs/validation/audit-optimization-2026-10-30/README.md).
+
+State-selected collisions use the same C++ production path. Optional native observations
+record potential, centroid kinetic, internal-bead kinetic and spring energy per bead, plus
+per-atom ring radii, without additional PES calls. `pyrpmd state-check` projects sparse saved
+states onto the molecular reference outside the production block. See the
+[state-selected guide](docs/state-selected.md) for the harmonic-preparation approximation,
+the auxiliary beta parameter and fixed-energy statistical eligibility rules.
 
 ## Documentation
 

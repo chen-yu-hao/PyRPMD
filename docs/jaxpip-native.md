@@ -1,5 +1,9 @@
 # JaxPIP 原生批量势能路径
 
+从 PySCF 参考数据开始的完整离线流程见
+[数据集、线性/PIP-NN 拟合、导出与运行](zh/manual/jaxpip-generation.md)
+（[English](manual/jaxpip-generation.md)），其中说明数据划分、单位和显式精度门槛。
+
 本功能使用 `JaxPIP / Equinox → jax2onnx → ONNX Runtime C++ → PyRPMD PES C ABI v1
 → 现有 C++17 连续传播`。Python 只负责离线导出、初始化和任务调度，受支持的
 原生传播 block 内不逐步调用 Python PES。

@@ -56,6 +56,11 @@ def _indices(value, size, name, *, default=None):
 
 def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
+    if config.get("sampling", {}).get("engine", "legacy") == "native":
+        from .native_pimd import resolve_native_pimd
+        return resolve_native_pimd(config, system)
+    if config.get("sampling", {}).get("engine", "legacy") != "legacy":
+        raise ValueError("sampling.engine must be legacy or native")
     from ..electronic_friction import validate_electronic_friction
     friction_spec = validate_electronic_friction(config, system)
     if not np.any(system.mobile_mask):
@@ -742,6 +747,9 @@ def _analyze(streams, config, system, output, return_data=False):
 
 def run_materials(config, system, output, executor=None, return_data=False):
     """Execute independent replica streams via serial/process/MPI task groups."""
+    if config.get("sampling", {}).get("engine", "legacy") == "native":
+        from .native_pimd import run_native_pimd
+        return run_native_pimd(config, system, output, executor, return_data)
     options = resolve_materials(config, system)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica,
               "materialize": False}

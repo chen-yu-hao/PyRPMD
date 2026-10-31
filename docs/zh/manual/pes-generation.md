@@ -1,5 +1,9 @@
 # PySCF 参考数据与 Caracal 势能生成
 
+显式训练/验证/测试集、线性 PIP 与 PIP-NN 拟合请见
+[PySCF 数据集、JaxPIP 拟合与原生动力学](jaxpip-generation.md)。
+这条路线使用仓库内的 ONNX 导出器，不需要 Caracal。
+
 可选模块 `python -m pyrpmd.pesgen` 提供离线流程：端点与给定反应路径 → PySCF 能量、
 梯度、Hessian、Hirshfeld 电荷和 Mayer 键级 → 原版 Caracal QMDFF/dE-EVB/TREQ →
 原生势能包 → 现有 PyRPMD JobSpec。这里不是把简谐势或普通插值改名为 QMDFF/TREQ。

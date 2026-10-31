@@ -226,6 +226,21 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
         raise InputError("PCET resume does not accept trajectory parallelism or propagation overrides")
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
+    extension_path = path / "results" / "extensions.json"
+    if config["task"] == "drpmd" and extension_path.is_file():
+        ledger = json.loads(extension_path.read_text())
+        if ledger.get("format") != "PyRPMD.drpmd.extensions.v1":
+            raise InputError("Unknown unresolved-trajectory extension ledger")
+        requests = ledger.get("requests", [])
+        if requests and requests[-1].get("status") == "running":
+            if parallel is not None or execution is not None or adaptive_budget is not None:
+                raise InputError("Resume the pending extension without execution or adaptive-budget overrides")
+            target = requests[-1].get("max_steps")
+            if type(target) is not int or target <= config["collision"]["max_steps"]:
+                raise InputError("Invalid pending extension budget")
+            # extend_run authenticates the original input/manifest and every
+            # selected checkpoint before continuing the already authorized work.
+            return extend_run(path, max_time=target * config["dt_au"])
     if parallel is not None:
         config["parallel"].update(parallel)
     if execution is not None:
@@ -249,6 +264,17 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
         pilot_output = path / "umbrella" if config["task"] == "rate" else path
         root_call(extend_adaptive_budget, pilot_output, adaptive_budget)
     return run_resolved(config, system, output=path, resume=True)
+
+
+def extend_run(directory, *, max_time):
+    """Continue unresolved dRPMD launches to a larger total time limit.
+
+    The original input, manifest and thermal-parent checkpoints remain unchanged.
+    A separate extension ledger records the authorized budget and crash recovery.
+    """
+    from .workflows.extend import extend_drpmd
+
+    return extend_drpmd(directory, max_time=max_time)
 
 
 def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffusion=None):

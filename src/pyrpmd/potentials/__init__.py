@@ -141,6 +141,11 @@ def _make_potential(config, system=None):
         if model == "double_well":
             return DoubleWellPotential(**params)
         raise ValueError(f"unknown builtin PES {model}")
+    if kind == "native_periodic":
+        from ..native_ensemble import NativePeriodicPES
+        if params:
+            raise ValueError("native_periodic input does not accept opaque context parameters")
+        return NativePeriodicPES(spec["library"], spec.get("function", "evaluate"), len(get("masses")))
     if kind == "diabatic_python":
         from .diabatic import DiabaticPythonPotential
 

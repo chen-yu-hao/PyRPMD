@@ -338,15 +338,21 @@ def test_free_gas_samples_exact_npt_volume_distribution(beads):
 
 
 def test_ipi_cell_update_preserves_wire_orientation():
+    from unittest.mock import patch
     from pyrpmd.potentials.socket import IPIPotential
 
-    # No connection is opened: this tests the POSDATA cell payload contract.
-    provider = IPIPotential.__new__(IPIPotential)
-    provider.pbc = np.ones(3, dtype=bool)
+    # Exercise the public cell-update path with a fully initialized provider;
+    # the listener is mocked because this checks the POSDATA payload contract.
     cell = np.array([[4., 0, 0], [1., 5., 0], [.2, -.4, 6.]])
-    provider.set_cell(cell)
-    np.testing.assert_array_equal(provider._wire_cell, cell.T)
-    np.testing.assert_allclose(provider._wire_inverse @ provider._wire_cell, np.eye(3), atol=1e-14)
+    with patch("pyrpmd.potentials.socket.socket.socket"):
+        provider = IPIPotential(port=0, cell=np.eye(3), pbc=[True, True, True])
+        try:
+            provider.set_cell(cell)
+            payload = np.frombuffer(provider._cell_payload, dtype="=f8").reshape(2, 3, 3)
+            np.testing.assert_array_equal(payload[0], cell.T)
+            np.testing.assert_allclose(payload[1] @ payload[0], np.eye(3), atol=1e-14)
+        finally:
+            provider.close()
 
 
 @pytest.mark.skipif(importlib.util.find_spec("ase") is None, reason="optional ASE")

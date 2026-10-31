@@ -166,6 +166,39 @@ class NativePeriodicPES:
             yield ("thermal-v1", self.address, self.context, self.natoms)
 
 
+    def bind_system(self, system):
+        from .geometry import validate_cell_pbc
+        get = system.get if isinstance(system, dict) else lambda key, default=None: getattr(system, key, default)
+        with self.lock:
+            self.cell, flags = validate_cell_pbc(get("cell"), get("pbc"))
+            self.pbc = np.ascontiguousarray(flags, dtype=np.int32)
+        self.metadata = {"supports_pbc": True, "provider": "native_periodic",
+                         "thread_safety": "serialized", "execution_device": "cpu"}
+
+    def evaluate(self, q):
+        """Preflight/reference evaluation; not called from the native step loop."""
+        from .potentials.base import coordinates, PESResult, PotentialError, validate_result
+        x = coordinates(q)
+        if x.shape[1] != self.natoms:
+            raise PotentialError("native PES atom count mismatch")
+        if not hasattr(self, "pbc"):
+            raise PotentialError("bind_system must precede Python PES evaluation")
+        e, f, v = np.full(len(x), np.nan), np.full_like(x, np.nan), np.full((len(x), 3, 3), np.nan)
+        message = ctypes.create_string_buffer(512)
+        ptr = lambda a: a.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        with self.acquire():
+            cell = np.eye(3) if self.cell is None else self.cell
+            signature = ctypes.CFUNCTYPE(ctypes.c_int32, ctypes.c_void_p, ctypes.c_int64, ctypes.c_int64,
+                ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_int32),
+                ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double),
+                ctypes.c_void_p, ctypes.c_int64)
+            fn = signature(self.address)
+            status = fn(self.context, len(x), self.natoms, ptr(x), ptr(cell),
+                        self.pbc.ctypes.data_as(ctypes.POINTER(ctypes.c_int32)), ptr(e), ptr(f), ptr(v), message, 512)
+        if status:
+            raise PotentialError(f"native thermal PES failed: {message.value.decode(errors='replace')}")
+        return validate_result(PESResult(e, f, virial=v), x.shape)
+
 class NativeEnsemble:
     """A persistent C++ trajectory with immutable physics configuration.
 
@@ -178,7 +211,7 @@ class NativeEnsemble:
                  potential=None, potential_identity: str | None = None,
                  thermostat: str | dict = "pile-l", barostat: str | dict = "none",
                  integrator: str = "cayley-bcb", cell=None, pbc=None,
-                 fixed_atoms=(), seed: int = 0):
+                 fixed_atoms=(), seed: int = 0, fuse_modes: bool = True):
         try:
             from . import _thermal
         except ImportError as exc:
@@ -313,6 +346,9 @@ class NativeEnsemble:
                     raise ValueError("native provider requires potential_identity for safe restart")
                 self._potential_identity = {"kind": self._binding.kind, "model": potential_identity}
                 cfg["potential"] = {"cabi-v1": 4, "fortran-batch-v1": 5}[self._binding.kind]
+        if not isinstance(fuse_modes, bool):
+            raise ValueError("fuse_modes must be boolean")
+        cfg["fuse_modes"] = fuse_modes
         self._cfg = cfg
         with self._lease() as descriptor:
             if descriptor is not None:
@@ -336,7 +372,7 @@ class NativeEnsemble:
         return nullcontext(None) if self._binding is None else self._binding.acquire()
 
     def run(self, steps: int, *, stride: int = 1, record_centroids: bool = False,
-            trajectory: str | Path | None = None) -> dict:
+            trajectory: str | Path | None = None, record_moments: bool = False, sample_start: int = 0) -> dict:
         """Advance one complete C++ block; observation times use the absolute clock.
 
         A native/PES failure restores the complete pre-block state and RNG.
@@ -346,39 +382,64 @@ class NativeEnsemble:
         """
         steps = _integer(steps, "steps")
         stride = _integer(stride, "stride", 1)
+        sample_start = _integer(sample_start, "sample_start")
         if not isinstance(record_centroids, bool):
             raise ValueError("record_centroids must be boolean")
+        if not isinstance(record_moments, bool) or (record_moments and not record_centroids):
+            raise ValueError("record_moments requires record_centroids=True")
+        width = (7 if record_moments else 3) * self.natoms
         temporary = None
+        published = False
         path = None if trajectory is None else Path(trajectory)
-        if path is not None:
-            if path.exists():
-                raise FileExistsError(f"trajectory already exists: {path}")
-            path.parent.mkdir(parents=True, exist_ok=True)
-            fd, temporary = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
-            os.close(fd)
-        try:
-            with self._call_lock, self._lease():
-                result = self._native.run(self._handle, steps, stride, record_centroids, temporary or "")
-            frames = result["frames"]
-            if path is None:
-                samples = np.frombuffer(result["samples"], dtype=np.float64).reshape(frames, len(_COLUMNS))
-                centroids = (np.frombuffer(result["centroids"], dtype=np.float64).reshape(frames, self.natoms, 3)
+        # Hold both the engine and provider locks through publication/rollback.
+        # Otherwise another thread could advance this engine before an I/O
+        # failure restores its state. The extra snapshot is O(P*N), not O(steps).
+        with self._call_lock, self._lease():
+            before = None
+            try:
+                if path is not None:
+                    if path.exists():
+                        raise FileExistsError(f"trajectory already exists: {path}")
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    fd, temporary = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
+                    os.close(fd)
+                    before = self._native.state(self._handle)
+                result = self._native.run(self._handle, steps, stride, record_centroids,
+                                          temporary or "", record_moments, sample_start)
+                frames = result["frames"]
+                if path is None:
+                    samples = np.frombuffer(result["samples"], dtype=np.float64).reshape(frames, len(_COLUMNS))
+                    records = (np.frombuffer(result["centroids"], dtype=np.float64).reshape(frames, width)
+                               if record_centroids else None)
+                else:
+                    # Flush before publishing; link is exclusive (no overwrite).
+                    with open(temporary, "rb") as stream:
+                        os.fsync(stream.fileno())
+                    os.link(temporary, path)
+                    published = True
+                    data = np.load(path, mmap_mode="r" if frames else None, allow_pickle=False)
+                    samples, records = data[:, :len(_COLUMNS)], data[:, len(_COLUMNS):]
+                centroids = (records[:, :3*self.natoms].reshape(frames, self.natoms, 3)
                              if record_centroids else None)
-            else:
-                # The C++ loop writes NPY records directly, with O(P*N) state
-                # memory. This is a memory map, not a second trajectory copy.
-                # Exclusive publication avoids clobbering a file created by
-                # another process during a long trajectory.
-                os.link(temporary, path)
-                os.unlink(temporary)
-                temporary = None
-                data = np.load(path, mmap_mode="r" if frames else None, allow_pickle=False)
-                samples = data[:, :len(_COLUMNS)]
-                centroids = data[:, len(_COLUMNS):].reshape(frames, self.natoms, 3) if record_centroids else None
-        finally:
-            if temporary is not None and os.path.exists(temporary):
-                os.unlink(temporary)
+                velocities = (records[:, 3*self.natoms:6*self.natoms].reshape(frames, self.natoms, 3)
+                              if record_moments else None)
+                radii = records[:, 6*self.natoms:] if record_moments else None
+                if temporary is not None:
+                    os.unlink(temporary)
+                    temporary = None
+            except BaseException:
+                if before is not None:
+                    self._native.restore(self._handle, before)
+                # Only remove the hard link that WE created. Never delete an
+                # existing or concurrently replaced user's trajectory.
+                if published and temporary is not None and path.exists() and os.path.samefile(temporary, path):
+                    path.unlink()
+                raise
+            finally:
+                if temporary is not None and os.path.exists(temporary):
+                    os.unlink(temporary)
         return {"samples": samples, "columns": _COLUMNS, "centroids": centroids,
+                "velocities": velocities, "radii_gyration_squared": radii,
                 "step": result["step"], "force_evaluations": result["force_evaluations"],
                 "backend": "native-cxx17", "python_step_callbacks": 0,
                 "thermostat": self.thermostat, "barostat": self.barostat,
@@ -452,7 +513,8 @@ def _state_digest(state: dict) -> str:
     return digest.hexdigest()
 
 
-def ensemble_from_config(config: dict, *, base_directory: str | Path = ".") -> NativeEnsemble:
+def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
+                         potential_override=None, potential_identity: str | None = None) -> NativeEnsemble:
     """Build the explicit native driver from a unit-aware JSON/TOML mapping.
 
     This schema does not masquerade as a legacy ``task=pimd`` input. Unknown
@@ -518,8 +580,11 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".") -> N
             potential["k"] = parse_quantity(potential["k"], "spring")
         if "heights" in potential:
             potential["heights"] = [parse_quantity(value, "energy") for value in potential["heights"]]
+    if potential_override is not None:
+        potential = potential_override
     return NativeEnsemble(q, masses, beta, parse_quantity(spec["timestep"], "time"),
-                          p=spec.get("p"), potential=potential, thermostat=t, barostat=b,
+                          p=spec.get("p"), potential=potential, potential_identity=potential_identity,
+                          thermostat=t, barostat=b,
                           integrator=spec.get("integrator", "cayley-bcb"), cell=cell,
                           pbc=spec.get("pbc"), fixed_atoms=spec.get("fixed_atoms", ()), seed=spec.get("seed", 0))
 
@@ -563,7 +628,7 @@ def main(argv=None) -> int:
         result = engine.run(steps, stride=stride, record_centroids=run.get("record_centroids", False), trajectory=trajectory)
         checkpoint = output/"checkpoint.npz"
         engine.save(checkpoint)
-        summary = {key: value for key, value in result.items() if key not in {"samples", "centroids"}}
+        summary = {key: value for key, value in result.items() if key not in {"samples", "centroids", "velocities", "radii_gyration_squared"}}
         summary.update(frames=len(result["samples"]), fingerprint=engine.fingerprint,
                        checkpoint=str(checkpoint), physical_converged=False,
                        units={"length": "bohr", "time": "atomic", "energy": "hartree", "pressure": "hartree/bohr^3"})

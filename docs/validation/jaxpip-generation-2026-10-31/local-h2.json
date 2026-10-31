@@ -1,0 +1,89 @@
+{
+  "system": "H2 RHF/STO-3G",
+  "scope": "local bond scan; not a validated global PES or physical rate",
+  "train_validation_test_counts": [
+    16,
+    4,
+    4
+  ],
+  "physical_validation": false,
+  "models": {
+    "linear": {
+      "metrics": {
+        "test": {
+          "count": 4,
+          "energy_max_hartree": 5.326028142960126e-07,
+          "energy_rmse_hartree": 3.4835907640525133e-07,
+          "force_max_hartree_per_bohr": 7.183293056295392e-06,
+          "force_rmse_hartree_per_bohr": 2.6706386578741493e-06
+        },
+        "train": {
+          "count": 16,
+          "energy_max_hartree": 6.392875002703136e-07,
+          "energy_rmse_hartree": 3.2419359299352894e-07,
+          "force_max_hartree_per_bohr": 1.0441109738995591e-05,
+          "force_rmse_hartree_per_bohr": 2.8108398066393117e-06
+        },
+        "validation": {
+          "count": 4,
+          "energy_max_hartree": 4.504979880248783e-07,
+          "energy_rmse_hartree": 2.513737104944492e-07,
+          "force_max_hartree_per_bohr": 1.076005041394934e-05,
+          "force_rmse_hartree_per_bohr": 3.6428097279129036e-06
+        }
+      },
+      "optimizer": {
+        "features": 8,
+        "optimizer": "weighted augmented SVD least squares",
+        "rank": 8,
+        "regularization": 1e-14,
+        "singular_values": [
+          102.52066300162193,
+          17.42156586809739,
+          2.5123950703002893,
+          0.27193996874580334,
+          0.0252511021313818,
+          0.0019336042779227287,
+          0.00010744800411690951,
+          3.620545779583777e-06
+        ]
+      },
+      "source_report_sha256": "4b24dbf9356d1a4a5c4c6710e68d2b889c4ac76594c3e124ec2986b324d2c2fd"
+    },
+    "nn": {
+      "metrics": {
+        "test": {
+          "count": 4,
+          "energy_max_hartree": 1.5313760308943714e-05,
+          "energy_rmse_hartree": 8.271872341345815e-06,
+          "force_max_hartree_per_bohr": 0.00026217427573782537,
+          "force_rmse_hartree_per_bohr": 8.001336118470982e-05
+        },
+        "train": {
+          "count": 16,
+          "energy_max_hartree": 4.831012334660656e-05,
+          "energy_rmse_hartree": 1.3394025420004752e-05,
+          "force_max_hartree_per_bohr": 0.00011541633035794252,
+          "force_rmse_hartree_per_bohr": 3.359820331662297e-05
+        },
+        "validation": {
+          "count": 4,
+          "energy_max_hartree": 2.2641856532112925e-05,
+          "energy_rmse_hartree": 1.1563979406126698e-05,
+          "force_max_hartree_per_bohr": 0.001410141321492142,
+          "force_rmse_hartree_per_bohr": 0.0004086068103395428
+        }
+      },
+      "optimizer": {
+        "final_loss": 1.308239183056868e-05,
+        "gradient_max": 0.0012789751963913467,
+        "initial_loss": 128.51084491668576,
+        "iterations": 250,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "optimizer": "L-BFGS-B on layers only; frozen train-only scaler",
+        "success": false
+      },
+      "source_report_sha256": "d299431b6623e630016bc605c41b71dd29acd40b5e543a3f3e634ee8e5ad02c7"
+    }
+  }
+}

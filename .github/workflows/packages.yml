@@ -2,7 +2,7 @@ name: Installed source and platform wheel
 on:
   push:
     branches: [main, 'feat/**', 'integration/**']
-    paths: ['src/**', 'native/**', 'tests/**', 'examples/**', 'docs/**', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.github/workflows/packages.yml']
+    paths: ['src/**', 'native/**', 'tests/**', 'examples/**', 'docs/**', 'tools/export_jaxpip_onnx.py', 'tools/requirements-jaxpip-export.txt', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.github/workflows/packages.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -84,6 +84,13 @@ jobs:
               'src/pyrpmd/pesgen/_native/bridge.cpp',
               'src/pyrpmd/pesgen/_native/worker.f90',
               'src/pyrpmd/pesgen/_native/pes_api_v1.h',
+              'src/pyrpmd/pesgen/jaxpip_data.py',
+              'src/pyrpmd/pesgen/jaxpip_fit.py',
+              'src/pyrpmd/pesgen/jaxpip_export.py',
+              'examples/pesgen/jaxpip/h2_pipeline.py',
+              'docs/manual/jaxpip-generation.md',
+              'docs/zh/manual/jaxpip-generation.md',
+              'tests/test_jaxpip_pesgen.py', 'tests/test_jaxpip_export_link.py',
               'benchmarks/brhcl/build_pes.py', 'benchmarks/brhcl/source.json',
               'benchmarks/brhcl/SOURCE.md', 'benchmarks/brhcl/wrapper.cpp',
               'benchmarks/brhcl/wrapper.f90', 'benchmarks/brhcl/exports.map',
@@ -120,6 +127,8 @@ jobs:
                   assert any(n.endswith('/include/pyrpmd/' + header) for n in names), header
               for name in ('bridge.cpp', 'worker.f90', 'pes_api_v1.h'):
                   assert 'pyrpmd/pesgen/_native/' + name in names, name
+              for name in ('jaxpip_data.py', 'jaxpip_fit.py', 'jaxpip_export.py'):
+                  assert 'pyrpmd/pesgen/' + name in names, name
               for notice in ('LICENSE', 'THIRD_PARTY_NOTICES.md', 'native/thermal-NOTICE.md'):
                   assert any(n.endswith('.dist-info/licenses/' + notice) for n in names), notice
           assert not wheels[0].name.endswith('none-any.whl'), wheels[0]

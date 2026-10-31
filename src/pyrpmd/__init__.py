@@ -51,7 +51,7 @@ def __getattr__(name):
     if name in ("IsomorphicPotential", "IsomorphicResult", "IsomorphicEhrenfestState", "IsomorphicEhrenfestDynamics"):
         from . import isomorphic
         return getattr(isomorphic, name)
-    if name in ("run", "prepare", "resume_run", "analyze_run"):
+    if name in ("run", "prepare", "resume_run", "extend_run", "analyze_run"):
         from . import runner
 
         return getattr(runner, name)
@@ -88,6 +88,14 @@ def __getattr__(name):
         from . import quantum_statistics
 
         return getattr(quantum_statistics, name)
+    if name in ("normalize_initial_ensemble", "prepare_initial_ensemble"):
+        from . import initial_states
+
+        return getattr(initial_states, name)
+    if name == "check_state_selected":
+        from .workflows.state_selected import check_state_selected
+
+        return check_state_selected
     raise AttributeError(name)
 
 
@@ -103,7 +111,7 @@ __all__ = [
     "RingPolymerContraction", "SplitPotential", "DifferencePotential",
     "NRPMDState", "NRPMDDynamics", "DiabaticResult",
     "JobSpec", "System", "State", "Dynamics", "NoseHooverChain", "run", "prepare",
-    "resume_run", "analyze_run", "analyze_diffusion", "__version__",
+    "resume_run", "extend_run", "analyze_run", "analyze_diffusion", "__version__",
     "OPESBias", "PlumedBias", "PlumedBiasResult", "TransitionInterfaceSampler",
     "TISPath", "TISResult", "TISMove", "PathGenerationError",
     "estimate_effective_flux", "combine_tis_rate",
@@ -111,4 +119,5 @@ __all__ = [
     "optimize_instanton", "instanton_rate_1d", "instanton_seed", "crossover_temperature",
     "PathIntegralAction", "PathIntegralSamples", "OpenPathAction", "OpenPathSamples", "sample_path_integral", "sample_open_path",
     "energy_heat_capacity", "quantum_kinetic_energy", "isotope_substitution_free_energy", "isotope_fractionation", "fractionation_mass_integration", "momentum_distribution_from_open_paths",
+    "normalize_initial_ensemble", "prepare_initial_ensemble", "check_state_selected",
 ]

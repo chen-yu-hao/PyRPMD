@@ -111,6 +111,40 @@ def compare_trajectories(left, right):
                     np.testing.assert_array_equal(a[key], b[key])
 
 
+def check_selected_ensembles(directory):
+    """Independent preparations must bypass the thermal-parent queue/ledger."""
+    from test_state_selected_workflow import config as selected_config, system as selected_system
+
+    for method, beads in (("qct", 1), ("ne_rpmd", 8)):
+        c = selected_config(method, beads)
+        c["sampling"]["parents"] = 2
+        c["parallel"] = PARALLEL
+        dynamic_output = Path(directory) / (method + "-dynamic")
+        first = run_drpmd(c, selected_system(), dynamic_output)
+        assert first["initialization_mode"] == "independent"
+        assert first["parent_thermal_steps"] == {"0": 0, "1": 0}
+        assert first["counts"]["unresolved"] == c["collision"]["trajectories"]
+        c["resume"] = True
+        second = run_drpmd(c, selected_system(), dynamic_output)
+        assert second["records"] == first["records"]
+
+        static = copy.deepcopy(c)
+        static.pop("resume")
+        static["parallel"] = {"backend": "mpi", "trajectory_groups": 5, "bead_workers": 1}
+        static_output = Path(directory) / (method + "-static")
+        reference = run_drpmd(static, selected_system(), static_output)
+        keys = set(first["records"][0]) - {"wall_seconds"}
+        assert [{k: r[k] for k in keys} for r in first["records"]] == [
+            {k: r[k] for k in keys} for r in reference["records"]]
+        root_call(compare_trajectories, static_output, dynamic_output)
+        # Scheduling groups are not independent thermal parents and may change
+        # on restart without changing any prepared initial condition.
+        static["sampling"]["parents"] = 3
+        static["resume"] = True
+        switched = run_drpmd(static, selected_system(), dynamic_output)
+        assert switched["records"] == first["records"]
+
+
 def main():
     directory = root_call(tempfile.mkdtemp, prefix="pyrpmd-dynamic-mpi-")
     try:
@@ -162,9 +196,11 @@ def main():
         static["resume"] = True
         switched = run_drpmd(static, SYSTEM, Path(directory) / "dynamic")
         assert switched["records"] == first["records"]
+        check_selected_ensembles(directory)
         root_call(lambda: print("Dynamic MPI C=1 G=2 B=2: availability dispatch, ordered forces, "
                                 "failure drain/cleanup, empty/underfilled queues, serialization failure, "
-                                "mock GPU placement, exact dRPMD/static equivalence and resume passed", flush=True))
+                                "mock GPU placement, exact thermal/selected dRPMD static equivalence "
+                                "and resume passed", flush=True))
     finally:
         root_call(shutil.rmtree, directory)
 

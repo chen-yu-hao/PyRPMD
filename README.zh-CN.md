@@ -112,6 +112,7 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 | 等价通道 | 由原子置换得到等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；区分 H + H₂ 的两个交换出口 |
 | 反应网络 | 同一原子与同位素组成下的不同入口、TS 和 PES；每条路径填入速率矩阵，按入口、通道和 TS 分别报告 |
 | dRPMD | 两个反应物 XYZ 和初始质心距离；常驻母链按设定间隔发射碰撞 |
+| 核初态选择 | 固定碰撞能下近似振动态选择 NE-RPMD / 单珠子 QCT，独立初态采样、碰撞前检查与未决轨迹延长续跑（[方法](docs/state-selected.md)、[示例](examples/state_selected/README.md)） |
 | 自由能 | 带完整 CV Jacobian 的一至三维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；一维/二维可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
 | Metadynamics | Standard 与 well-tempered，1–3 维 CV、周期/固定层体系、NHC/PILE-L/Andersen、软墙、可选 1D/2D 偏置网格、独立历史与有限时间 FES |
 | 副本交换伞抽样 | 同温固定窗口 REUS、PILE-L 或 Andersen、同步集合续跑与跨窗口联合 bootstrap（[指南](docs/replica-exchange.md)） |
@@ -261,6 +262,10 @@ RATTLE，数值失败时保留成功的前缀。两者都支持三种积分器�
 `loop_backend="auto"`、`block_steps=256`。详见[原生传播](docs/native-propagation.md)、
 [分段 API 与故障处理](docs/block-propagation.md)、[积分器](docs/integrators.md)、
 [优化记录](docs/validation/audit-optimization-2026-10-30/README.md)。
+
+态选择碰撞复用同一 C++ 生产传播路径。可选原生观测记录每珠子势能、质心动能、内部 bead 动能、弹簧能和每原子环尺寸，
+不增加 PES 调用。`pyrpmd state-check` 在生产块外将稀疏保存的状态投影到分子参考模式；
+谐振初态近似、辅助 beta 与固定能量统计的适用条件见[态选择说明](docs/state-selected.md)。
 
 ## 文档
 

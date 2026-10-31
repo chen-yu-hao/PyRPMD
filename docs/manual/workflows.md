@@ -130,6 +130,41 @@ Without a `[collision]` section, a pilot runs 4 `thermal_flux` trajectories with
 `max_time="100 fs"` and `bmax=R0/4` and reports no thermal rate; see the defaults in
 [Input](input.md#defaults).
 
+### Selected vibrational initial states
+
+`initial_ensemble.method = "ne_rpmd"` prepares a harmonic ring-polymer ensemble
+with a random-phase centroid excitation. `method = "qct"` prepares a one-bead
+quasi-classical control. Both use independent initial conditions at a fixed
+collision energy and skip the thermal parent chain. This experimental method
+selects approximate incoming vibrational states with zero centroid angular
+momentum; it does not assign final quantum rovibrational states.
+
+```bash
+pyrpmd validate examples/state_selected/ne_rpmd.inp
+pyrpmd state-check examples/state_selected/ne_rpmd.inp --time '10 fs' --samples 8 --output runs/state-check.json
+pyrpmd run examples/state_selected/ne_rpmd.inp --output runs/selected
+pyrpmd extend runs/selected --max-time '4 fs'
+```
+
+For NE-RPMD, supply `initial_ensemble.beta` explicitly and omit top-level
+`temperature`: beta is an auxiliary preparation/ring parameter here. Provide
+fragment Hessians or explicit mass-weighted normal modes, actual isotope masses
+and `vibrational_quanta`. QCT requires one bead; NE-RPMD requires at least two.
+The examples use a nonreactive Morse model and demonstrate mechanics only.
+
+`state-check` propagates separated reactants on the full PES without collision
+velocity, then projects sparse observations onto the reference. `extend` changes
+only the allowed total propagation time, retaining saved q/p and classifier
+persistence for unresolved trajectories. Finished or failed trajectories are not
+relaunched. All launches stay in cross-section denominators; unknown-outcome
+bounds and eligible statistical intervals are reported separately. Native
+production uses the same C++ blocks as thermal dRPMD.
+
+The [state-selected method reference](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/state-selected.md)
+gives equations, approximation limits and literature; the
+[example notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/state_selected/README.md)
+explain configuration and native PES use.
+
 ## One- and two-dimensional free energies: `fes`
 
 `fes` runs umbrella sampling on one or two CVs and unbiases the samples with MBAR, giving the
