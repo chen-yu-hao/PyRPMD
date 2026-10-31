@@ -1,0 +1,189 @@
+{
+  "base_commit": "ffa2826162b952fecebd16184ca96a7fea9bd7a6",
+  "base_tree": "003b2b6509ae83e626c7baae970519811a162bf0",
+  "date": "2026-10-31",
+  "final_reporting_tests": {
+    "passed": 130,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 154.24
+  },
+  "repository_regression": {
+    "passed": 1721,
+    "failed": 0,
+    "skipped": 23,
+    "deselected_socket_tests": 2,
+    "subtests_passed": 153,
+    "seconds": 514.81,
+    "scope": "Started before the final isolated partial-archive fallback refinement; final reporting suite covers that refinement."
+  },
+  "local_socket_tests": {
+    "passed": 2,
+    "failed": 0,
+    "seconds": 1.29
+  },
+  "documentation": {
+    "english": "passed -n -W",
+    "chinese": "passed -n -W"
+  },
+  "packaging": {
+    "native_build": "passed",
+    "sdist": "passed",
+    "wheel": "passed",
+    "installed_wheel_report": "passed"
+  },
+  "artificial_workflow_validation": {
+    "schema": "pyrpmd.analysis-validation",
+    "schema_version": 1,
+    "passed": true,
+    "physical_convergence_claimed": false,
+    "scope": "Short deterministic artificial-potential workflow, file-integrity and numerical plot-data checks",
+    "source_files_unchanged": true,
+    "source_file_counts": {
+      "adaptive-1d": 25,
+      "fes-2d": 12,
+      "metadynamics-2d": 11,
+      "toy-rate": 29,
+      "adaptive-incomplete": 8
+    },
+    "figures": 54,
+    "formats": [
+      "png",
+      "pdf",
+      "svg"
+    ],
+    "style": "nature",
+    "cases": {
+      "adaptive-1d": {
+        "shape": [
+          6
+        ],
+        "supported_bins": 6,
+        "masked_bins": 0,
+        "csv_matches_archive": true,
+        "windows": 4,
+        "production_samples": 160,
+        "pilot_rounds": 3,
+        "pilot_samples_used_in_production": 0
+      },
+      "fes-2d": {
+        "shape": [
+          5,
+          7
+        ],
+        "supported_bins": 5,
+        "masked_bins": 30,
+        "csv_matches_archive": true
+      },
+      "metadynamics-2d": {
+        "shape": [
+          5,
+          7
+        ],
+        "supported_bins": 1,
+        "masked_bins": 34,
+        "csv_matches_archive": true,
+        "hills_per_replica": [
+          8,
+          8
+        ],
+        "biased_clock_matches_saved_hills": true
+      },
+      "toy-rate": {
+        "child_trajectories": 4,
+        "recrossing_csv_matches_archive": true,
+        "source_rate_acceptance_preserved": true
+      },
+      "adaptive-incomplete": {
+        "production_started": false,
+        "pilot_diagnostics_available": true,
+        "final_fes_not_fabricated": true
+      }
+    },
+    "elapsed_seconds": 118.9924316889992,
+    "python": "3.12.14"
+  },
+  "saved_bkmp2_replay": {
+    "figures": 29,
+    "formats": [
+      "png",
+      "pdf",
+      "svg"
+    ],
+    "dpi": 300,
+    "style": "nature",
+    "source_artifacts_verified": 14,
+    "runs": [
+      {
+        "label": "H + H₂: rate pilot",
+        "converged": false,
+        "metadata": {
+          "temperature_K": 300.0,
+          "beads": 128,
+          "dt_fs": 0.10000000000000002,
+          "samples": 44400,
+          "integrator": null,
+          "producer_version": "0.2.0",
+          "measure": "delta(xi-x) * sqrt(grad(xi) M^-1 grad(xi)/(2*pi*beta))",
+          "rinf_bohr": 30.0,
+          "bmax_bohr": null,
+          "sample_scope": "PMF umbrella production samples (not recrossing children)"
+        },
+        "metrics": {
+          "kappa": 0.6172200788712542,
+          "kappa_standard_error": 0.1027314130496951,
+          "plateau_detected": true,
+          "parent_configurations": 32,
+          "child_trajectories": 128,
+          "maximum_endpoint_energy_error_kbt": 0.11049133839818684,
+          "rate": null,
+          "rate_unit": "cm3 molecule^-1 s^-1",
+          "diagnostic_rate_estimate": 1.927575511516218e-20,
+          "rate_standard_error": 5.9425951176415114e-18,
+          "k_qtst": 3.122995471957565e-20,
+          "free_energy_barrier_hartree": 0.026014030385333054,
+          "barrier_standard_error_hartree": 0.0028299019917156477,
+          "xi_star": 0.9922500000000001,
+          "measure": "delta(xi-x) * sqrt(grad(xi) M^-1 grad(xi)/(2*pi*beta))",
+          "pmf_supported_points": 401,
+          "umbrella_supported_bins": 100,
+          "umbrella_total_bins": 100,
+          "umbrella_minimum_stream_ess": 2.934283029189093,
+          "umbrella_raw_streams": 222,
+          "umbrella_sampled_windows": 111
+        }
+      },
+      {
+        "label": "H + H₂: bond-distance FES",
+        "converged": false,
+        "metadata": {
+          "temperature_K": 1500.0,
+          "beads": 16,
+          "dt_fs": 0.10000000000000002,
+          "samples": 30000,
+          "integrator": null,
+          "producer_version": "0.2.0",
+          "measure": "cv_density",
+          "rinf_bohr": null,
+          "bmax_bohr": null
+        },
+        "metrics": {
+          "fes_supported_bins": 373,
+          "fes_total_bins": 625,
+          "fes_minimum_stream_ess": 7.673275370699829,
+          "sampling_raw_streams": 50,
+          "sampling_sampled_windows": 25
+        }
+      }
+    ]
+  },
+  "log_sha256": {
+    "focused": "1910cb8ad656e3735bc90a71e7556f8f962a83be8d14e654b9e7e8636301be54",
+    "repository": "5bb107b560bb00831996ea50c2796ce95f6fcdda8b256b8c2d1e74009fa92bd2",
+    "sockets": "ec7adf3e0637795acc788538b14d59301a7fda99307b9f5ab4e1a8b054528598",
+    "docs_en": "ce3a23271741a48e38459505e18614124319df1d512760ec5441ed2a3999a2f3",
+    "docs_zh": "3e390cb7cc58f762e02eb8551bcd5a559295a4d3f0c888c6bac8bf5ad118e8c5",
+    "wheel_smoke": "af6300d40cc75274108c555f76c82db5f23bb9e891f813c013ff610c2f5fb060"
+  },
+  "physical_convergence_claimed": false
+}

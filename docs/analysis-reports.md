@@ -95,6 +95,15 @@ elements; the default color PNG is 300 dpi, with `--dpi 600` available for dense
 exports. These settings provide a reproducible starting point. Authors still need
 to inspect the final panel size and the destination journal's requirements.
 
+The optional `--style nature` profile uses 89/183 mm widths, 6–7 pt text, 1 pt
+curves, accessible colors, separate legends and no background grid. Its sizes
+and editable PDF/SVG text follow the
+[Nature research figure guide](https://research-figure-guide.nature.com/figures/building-and-exporting-figure-panels/)
+and [graph specifications](https://research-figure-guide.nature.com/figures/preparing-figures-our-specifications/).
+Run/analyze shortcuts accept `--report --report-style nature`. The style changes
+presentation only; values, masks, source acceptance and uncertainty meanings are
+preserved. PNG is a preview; PDF/SVG retain editable artwork.
+
 ## Reproducibility and input protection
 
 The report saves the files actually read, SHA-256 digests and software versions,
