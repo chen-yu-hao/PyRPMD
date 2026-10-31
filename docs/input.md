@@ -18,6 +18,7 @@
 | `output.directory` | 运行目录；新任务不覆盖已有非空目录 |
 | `output.checkpoint_interval` / `checkpoint_steps` | 时间间隔或正整数步数；步数优先 |
 | `output.trajectory_stride` | dRPMD 轨迹保存的正整数步数间隔 |
+| `output.store_configurations` | MetaD每个生产采样时刻保存完整ring坐标；布尔值，默认false，续算时不能更改 |
 | `output.trajectory_storage` / `chunk_frames` | 材料任务默认 `"stream"`、256 帧；`"memory"` 使用旧格式 |
 
 `production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，

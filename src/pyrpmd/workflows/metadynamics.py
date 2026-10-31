@@ -207,7 +207,10 @@ def resolve_metadynamics(config, system):
             for bounds, domain, period in zip(options["ranges"], options["grid"]["ranges"], cv.periods):
                 if period is None and (bounds[0] < domain[0] or bounds[1] > domain[1]):
                     raise ValueError("metadynamics analysis.ranges must lie inside the bias grid")
-    options.update(neq=neq, nprod=nprod, interval=interval,
+    store_configurations = config.get("output", {}).get("store_configurations", False)
+    if not isinstance(store_configurations, bool):
+        raise ValueError("output.store_configurations must be boolean")
+    options.update(store_configurations=store_configurations, neq=neq, nprod=nprod, interval=interval,
                    min_count=checked_integer(analysis.get("min_count", 1), "analysis.min_count"))
     return cv, selected, options
 
@@ -283,7 +286,18 @@ def _read_stream(config, system, output, replica, cv, options):
             clocks, options["neq"] + np.arange(1, expected_samples + 1) * options["interval"]
         ) or not np.isfinite(samples).all():
             raise ValueError("metadynamics checkpoint samples disagree with their sampling clock")
-        result = {"replica": replica, "state": State(data["q"], data["p"], int(data["step"]), float(data["time"])),
+        configurations = {}
+        stored = "sample_configurations" in data.files
+        if stored != options["store_configurations"]:
+            raise ValueError("checkpoint configuration history differs from output.store_configurations; "
+                             "restore the original option or start a new run")
+        if stored:
+            positions = data["sample_configurations"].copy()
+            if (positions.shape != (expected_samples, config["beads"], len(system.masses), 3)
+                    or not np.isfinite(positions).all()):
+                raise ValueError("metadynamics checkpoint configurations disagree with the sampling clock")
+            configurations["sample_configurations"] = positions
+        result = {**configurations, "replica": replica, "state": State(data["q"], data["p"], int(data["step"]), float(data["time"])),
                   "elapsed": elapsed, "rng": json.loads(str(data["rng"])),
                   "thermostat_state": json.loads(str(data["thermostat_state"])) if "thermostat_state" in data else None,
                   "samples": samples, "sample_steps": clocks,
@@ -333,6 +347,7 @@ def _sample_replica(task):
         walls = resolve_walls(config, system)
         bias = _new_bias(cv, options, config["beta"])
         samples, sample_steps, sample_bias, energies = [], [], [], []
+        configurations = []
         elapsed = 0
         if checkpoint.exists():
             saved = _read_stream(config, system, output, replica, cv, options)
@@ -347,11 +362,17 @@ def _sample_replica(task):
             samples, sample_steps = list(saved["samples"]), list(saved["sample_steps"])
             sample_bias, energies = list(saved["sample_bias"]), list(saved["sample_energies"])
             elapsed = saved["elapsed"]
+            if options["store_configurations"]:
+                configurations = list(saved["sample_configurations"])
         else:
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
         total_bias = CompositeBias(bias, walls) if walls is not None else bias
 
         def save():
+            observations = {}
+            if options["store_configurations"]:
+                observations["sample_configurations"] = np.asarray(configurations).reshape(
+                    -1, config["beads"], len(system.masses), 3)
             grid_payload = {}
             if isinstance(bias, GridMetadynamicsBias):
                 grid = bias.grid_state()
@@ -365,7 +386,7 @@ def _sample_replica(task):
                         samples=np.asarray(samples).reshape(-1, cv.dimension),
                         sample_steps=np.asarray(sample_steps, dtype=int),
                         sample_bias=np.asarray(sample_bias), sample_energies=np.asarray(energies),
-                        propagation=json.dumps(dynamics.propagation_stats), **grid_payload)
+                        propagation=json.dumps(dynamics.propagation_stats), **grid_payload, **observations)
             _write_hills(_hills_path(output, replica), bias)
 
         # Reconstruct a stale/missing HILLS view even when the saved run is done.
@@ -419,6 +440,8 @@ def _sample_replica(task):
                 sample_steps.append(state.step)
                 sample_bias.append(observed_bias)
                 energies.append(energy)
+                if options["store_configurations"]:
+                    configurations.append(state.q.copy())
             if elapsed % checkpoint_steps == 0:
                 save()
         save()
@@ -494,6 +517,7 @@ def _analyze(streams, config, system, output, return_data):
             "coverage_note": "Grid coverage is not equilibration or FES convergence; automatically chosen ranges describe only the visited domain.",
         },
         "propagation": [s["propagation"] for s in streams], "warnings": warnings,
+        "stored_configurations": options["store_configurations"],
         "sample_bias_convention": "physical MetaD V before deposition; energies include P*(V+walls); FES includes the wall-defined ensemble",
         "files": {"data": str(output / "fes.npz"), "table": str(output / "fes.csv"),
                   "hills": [str(_hills_path(output, s["replica"])) for s in streams],

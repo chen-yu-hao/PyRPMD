@@ -212,8 +212,10 @@ def test_periodic_gaussians_are_smooth_and_match_finite_difference(width):
 
 @pytest.mark.parametrize("mode", ["standard", "well_tempered"])
 @pytest.mark.parametrize("failure_after", ["step", "deposit"])
-def test_failure_at_a_deposition_boundary_resumes_exactly_without_duplicate_hills(tmp_path, monkeypatch, mode, failure_after):
+@pytest.mark.parametrize("store_configurations", [False, True])
+def test_failure_at_a_deposition_boundary_resumes_exactly_without_duplicate_hills(tmp_path, monkeypatch, mode, failure_after, store_configurations):
     cfg = config(mode)
+    cfg["output"]["store_configurations"] = store_configurations
     ref = _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path / "full"), "replica": 0})
     target = Dynamics if failure_after == "step" else MetadynamicsBias
     original = getattr(target, failure_after)
@@ -238,6 +240,12 @@ def test_failure_at_a_deposition_boundary_resumes_exactly_without_duplicate_hill
         np.testing.assert_array_equal(getattr(ref["state"], attr), getattr(resumed["state"], attr))
     for key in ("samples", "sample_steps", "sample_bias", "sample_energies"):
         np.testing.assert_array_equal(ref[key], resumed[key])
+    if store_configurations:
+        np.testing.assert_array_equal(ref["sample_configurations"], resumed["sample_configurations"])
+        cv, _, _ = resolve_metadynamics(cfg, system())
+        np.testing.assert_allclose([cv.value(q) for q in resumed["sample_configurations"]], resumed["samples"])
+    else:
+        assert "sample_configurations" not in resumed
     assert ref["rng"] == resumed["rng"]
     assert ref["hills"] == resumed["hills"]
     assert ref["propagation"] == resumed["propagation"]
@@ -353,10 +361,82 @@ def test_frontend_resolves_width_units_and_rejects_bad_options():
            "sampling": {"equilibration_steps": 0, "production_steps": 20, "interval_steps": 2},
            "cvs": [{"name": "x", "kind": "cartesian", "atom": 0, "axis": "x", "unit": "angstrom"}],
            "metadynamics": {"sigma": [0.1], "height": "0.1 kcal/mol", "pace": 5}}
+    job["output"] = {"store_configurations": True}
     cfg, sys = JobSpec.from_mapping(job).resolve()
+    assert resolve_metadynamics(cfg, sys)[2]["store_configurations"] is True
     _, _, options = resolve_metadynamics(cfg, sys)
     assert options["sigma"][0] == pytest.approx(0.18897261246, rel=1e-8)
     assert options["height"] == pytest.approx(0.1 / 627.509474, rel=1e-7)
     job["metadynamics"]["bias_factor"] = 1
     with pytest.raises(InputError, match="bias_factor"):
+        JobSpec.from_mapping(job).resolve()
+
+
+def test_configurations_track_sample_clock_and_do_not_change_dynamics(tmp_path):
+    cfg = config(dimension=2)
+    original = _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path / "plain"), "replica": 0})
+    cfg["output"]["store_configurations"] = True
+    stored = run_metadynamics(cfg, system(), tmp_path / "stored", return_data=True)
+    stream = stored["streams"][0]
+    assert stored["summary"]["stored_configurations"] is True
+    assert stream["sample_configurations"].shape == (12, 3, 1, 3)
+    for name in ("samples", "sample_steps", "sample_bias", "sample_energies"):
+        np.testing.assert_array_equal(stream[name], original[name])
+    np.testing.assert_array_equal(stream["state"].q, original["state"].q)
+    assert stream["hills"] == original["hills"]
+    cv, _, _ = resolve_metadynamics(cfg, system())
+    np.testing.assert_allclose([cv.value(q) for q in stream["sample_configurations"]], stream["samples"])
+    again = reanalyze_metadynamics(cfg, system(), tmp_path / "stored", return_data=True)
+    np.testing.assert_array_equal(again["streams"][0]["sample_configurations"], stream["sample_configurations"])
+    assert stream["sample_steps"][-1] == 27
+    np.testing.assert_array_equal(stream["sample_configurations"][-1], stream["state"].q)
+    assert not np.shares_memory(stream["sample_configurations"][0], stream["sample_configurations"][-1])
+
+
+@pytest.mark.parametrize("stored", [False, True])
+def test_configuration_storage_cannot_be_toggled_on_resume(tmp_path, stored):
+    cfg = config()
+    cfg["output"]["store_configurations"] = stored
+    _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path), "replica": 0})
+    cfg["output"]["store_configurations"] = not stored
+    with pytest.raises(ValueError, match="configuration history differs"):
+        _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path), "replica": 0})
+    with pytest.raises(RuntimeError, match="configuration history differs"):
+        reanalyze_metadynamics(cfg, system(), tmp_path)
+
+
+@pytest.mark.parametrize("invalid", [1, "true", None])
+def test_configuration_storage_requires_boolean(invalid):
+    cfg = config()
+    cfg["output"]["store_configurations"] = invalid
+    with pytest.raises(ValueError, match="must be boolean"):
+        validate_metadynamics(cfg, system())
+
+
+@pytest.mark.parametrize("malformed", ["short", "nonfinite"])
+def test_invalid_configuration_history_is_rejected(tmp_path, malformed):
+    from pyrpmd.workflows.fes import _atomic_npz
+    cfg = config()
+    cfg["output"]["store_configurations"] = True
+    stream = _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path), "replica": 0})
+    path = Path(stream["checkpoint"])
+    with load_checkpoint(path) as data:
+        arrays = {key: data[key] for key in data.files}
+    if malformed == "short":
+        arrays["sample_configurations"] = arrays["sample_configurations"][:-1]
+    else:
+        arrays["sample_configurations"][0, 0, 0, 0] = np.nan
+    _atomic_npz(path, **arrays)
+    with pytest.raises(RuntimeError, match="configurations disagree"):
+        reanalyze_metadynamics(cfg, system(), tmp_path)
+
+
+def test_configuration_storage_is_rejected_for_other_workflows():
+    from pyrpmd.input import InputError, JobSpec
+    job = {"task": "pimd", "temperature": "300 K", "beads": 2,
+           "system": {"symbols": ["H"], "geometry": [[0, 0, 0]]},
+           "potential": {"provider": "builtin", "name": "harmonic"},
+           "sampling": {"production_steps": 20},
+           "output": {"store_configurations": True}}
+    with pytest.raises(InputError, match="only for metadynamics"):
         JobSpec.from_mapping(job).resolve()

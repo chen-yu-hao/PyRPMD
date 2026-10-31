@@ -320,6 +320,16 @@ first production step. Hill tempering uses only the MetaD bias. The reconstructe
 FES describes the wall-defined ensemble; walls on additional CVs cannot in
 general be removed by subtracting a function of the biased CVs.
 
+Set `output.store_configurations = true` to retain the full ring positions
+at every saved production sample. Checkpoints and returned streams then include
+`sample_configurations[sample, bead, atom, xyz]` in bohr, aligned with
+`sample_steps` and `samples`. This enables structural diagnostics and selection
+of configurations for subsequent, independently equilibrated umbrella runs.
+The default is false; storage grows as samples × beads × atoms × 3 float64
+values. The option must remain unchanged when resuming, since missing history
+cannot be recovered from the final state. These configurations are biased
+samples and are not fixed-umbrella MBAR data.
+
 Each `replicas/0000/HILLS.csv` is a human-readable view regenerated from its
 authoritative `checkpoints/metadynamics_0000.npz`. A stale or missing CSV cannot
 cause a duplicated hill during resume. HILLS files from different replicas
