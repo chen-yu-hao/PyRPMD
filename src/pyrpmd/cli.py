@@ -20,6 +20,12 @@ def _input_options(p):
     p.add_argument("--workers", type=int, help="Concurrent trajectory/window workers")
 
 
+def _report_shortcut_options(p):
+    p.add_argument("--report", action="store_true", help="Generate saved-result figures and an HTML/JSON report (requires the plots extra)")
+    p.add_argument("--report-output", help="Report directory (default: RUN/analysis-report)")
+    p.add_argument("--report-overwrite", action="store_true", help="Replace an existing generated report, preserving source results")
+
+
 def parser():
     p = argparse.ArgumentParser(
         prog="pyrpmd",
@@ -31,6 +37,7 @@ def parser():
     _input_options(r)
     r.add_argument("--output")
     r.add_argument("--resume", action="store_true")
+    _report_shortcut_options(r)
     v = commands.add_parser(
         "validate", help="Resolve input, units, system and resources"
     )
@@ -103,6 +110,22 @@ def parser():
     projection.add_argument("--axes", type=int, nargs="+", required=True, help="Retained CV axes, zero based")
     projection.add_argument("--selection", help="Boolean .npy channel mask with the complete source FES shape")
     projection.add_argument("--output", required=True)
+    _report_shortcut_options(a)
+    report = commands.add_parser("report", help="Automatically analyze saved results and produce scientific figures and reports")
+    report.add_argument("directories", nargs="+", metavar="RUN")
+    report.add_argument("--output", "-o", help="Report destination; required for multiple runs")
+    report.add_argument("--formats", nargs="+", choices=("png", "pdf", "svg"), default=["png", "pdf"])
+    report.add_argument("--dpi", type=int, default=300, help="Raster DPI (default: 300 for color figures)")
+    report.add_argument("--energy-unit", choices=("kcal/mol", "kJ/mol", "eV", "hartree"), default="kcal/mol")
+    report.add_argument("--length-unit", choices=("angstrom", "bohr", "nm"), default="angstrom")
+    report.add_argument("--labels", nargs="+", help="One display label per run")
+    report.add_argument("--series", nargs="+", help="One comparison group per run (same group may occur several times)")
+    report.add_argument("--reference", help="CSV with series,temperature_K,rate,rate_unit,source and optional standard_error")
+    report.add_argument("--include-estimates", action="store_true", help="Also show explicitly labelled withheld diagnostic rate estimates")
+    report.add_argument("--fit-arrhenius", action="store_true", help="Opt-in descriptive log-rate fits, with >=3 distinct temperatures")
+    report.add_argument("--kie", nargs=2, metavar=("NUMERATOR_SERIES", "DENOMINATOR_SERIES"))
+    report.add_argument("--convergence", choices=("beads", "dt_fs", "rinf_bohr", "bmax_bohr", "samples"))
+    report.add_argument("--overwrite", action="store_true", help="Replace only an owned report with an intact generated-file inventory")
     commands.add_parser("info", help="Report version and compiled native capabilities")
     study = commands.add_parser("study", help="Run temperature/isotope and numerical-convergence rate scans")
     study.add_argument("input", help="Study JSON or TOML file referencing an existing rate job")
@@ -182,6 +205,38 @@ def _rate_postprocess_summary(result):
     return summary
 
 
+def _report_summary(report):
+    return {"output": report["output"], "html": str(Path(report["output"]) / "index.html"),
+            "json": str(Path(report["output"]) / "report.json"), "figures": len(report["figures"]),
+            "findings": len(report["findings"]), "skipped": report["skipped"]}
+
+
+def _report_after_result(args, result, directory):
+    if not args.report and (args.report_output or args.report_overwrite):
+        raise InputError("--report-output and --report-overwrite require --report")
+    from .parallel import is_root
+    if args.report and is_root() and result is not None:
+        try:
+            from .analysis.reporting import generate_report
+            report = generate_report(directory, output=args.report_output, overwrite=args.report_overwrite)
+        except (ValueError, RuntimeError, OSError, ImportError, KeyError) as error:
+            import shlex
+
+            command = ["pyrpmd", "report", str(directory)]
+            if args.report_output:
+                command.extend(["--output", args.report_output])
+            if args.report_overwrite:
+                command.append("--overwrite")
+            stage = "Simulation" if args.command == "run" else "Analysis"
+            raise RuntimeError(
+                f"{stage} completed; numerical results are saved in {directory}. "
+                f"Report generation failed: {error}. Fix the reporting issue, "
+                f"then retry only the saved-data report: {shlex.join(command)}"
+            ) from error
+        return {**result, "analysis_report": _report_summary(report)}
+    return result
+
+
 def _pes(args):
     from .potentials import make_potential
     from .system import read_xyz
@@ -247,10 +302,14 @@ def _pes(args):
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
+        if args.command in ("run", "analyze") and not args.report and (args.report_output or args.report_overwrite):
+            raise InputError("--report-output and --report-overwrite require --report")
         if args.command == "run":
             from .runner import run
 
             result = run(_job(args), resume=args.resume)
+            if result is not None:
+                result = _report_after_result(args, result, result["output"])
             if result is not None:
                 _print(result)
         elif args.command == "validate":
@@ -352,8 +411,7 @@ def main(argv=None):
         elif args.command == "analyze":
             from .runner import analyze_run
 
-            _print(
-                analyze_run(
+            result = analyze_run(
                     args.directory,
                     recompute=args.recompute,
                     bins=args.bins,
@@ -363,7 +421,7 @@ def main(argv=None):
                         "atom_indices": args.atoms, "max_lag": args.max_lag,
                     }.items() if value is not None} or None,
                 )
-            )
+            _print(_report_after_result(args, result, args.directory))
         elif args.command == "rate-postprocess":
             from .analysis.rate_io import postprocess_rate
             from .parallel import root_call
@@ -378,6 +436,16 @@ def main(argv=None):
             from .analysis.projection import project_run
             from .parallel import root_call
             _print(root_call(project_run, args.directory, axes=args.axes, output=args.output, selection_file=args.selection))
+        elif args.command == "report":
+            from .analysis.reporting import generate_report
+            from .parallel import root_call
+            report = root_call(generate_report, args.directories, output=args.output,
+                formats=args.formats, dpi=args.dpi, energy_unit=args.energy_unit, length_unit=args.length_unit,
+                labels=args.labels, series=args.series, reference=args.reference,
+                include_estimates=args.include_estimates, arrhenius_fit=args.fit_arrhenius,
+                kie=args.kie, convergence=args.convergence, overwrite=args.overwrite)
+            if report is not None:
+                _print(_report_summary(report))
         elif args.command == "info":
             from .dynamics import native_capabilities
 

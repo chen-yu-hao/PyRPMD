@@ -94,6 +94,7 @@ RPC/MTS <rpc-mts>
 TRPMD and spectra <trpmd-spectroscopy>
 Output and analysis <manual/results>
 rate-postprocessing
+Automatic analysis and figures <manual/analysis-reports>
 Examples <manual/examples>
 General-coordinate rates <general-coordinate-rates>
 Rate studies <rate-studies>

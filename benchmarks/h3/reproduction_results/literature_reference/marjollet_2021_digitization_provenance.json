@@ -1,0 +1,236 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-10-31T11:09:55.466366+00:00",
+  "citation": {
+    "authors": [
+      "Adrien Marjollet",
+      "Ralph Welsch"
+    ],
+    "title": "State-selective cross sections from ring polymer molecular dynamics",
+    "journal": "International Journal of Quantum Chemistry",
+    "year": 2021,
+    "volume": 121,
+    "article": "e26447",
+    "doi": "10.1002/qua.26447"
+  },
+  "primary_article_url": "https://onlinelibrary.wiley.com/doi/full/10.1002/qua.26447",
+  "publisher_mirror_landing_url": "https://www.researchgate.net/publication/345412369_State-selective_cross_sections_from_ring_polymer_molecular_dynamics",
+  "publisher_mirror_status": "Landing page explicitly states that access to the full text is provided by Wiley; CC BY 4.0 is displayed.",
+  "downloaded_pdf_url": "https://www.researchgate.net/journal/International-Journal-of-Quantum-Chemistry-1097-461X/publication/345412369_State-selective_cross_sections_from_ring_polymer_molecular_dynamics/links/68315e048a76251f22e687fe/State-selective-cross-sections-from-ring-polymer-molecular-dynamics.pdf",
+  "pdf_sha256": "5661409bc56d9a846f61727f18a6f7b98bb8ea87fc714a8f37d9d81f184b3b78",
+  "pdf_bytes": 3786783,
+  "source_material_redistributed": false,
+  "reference_data_status": "Digitized published figure markers. Not original machine-readable simulation data, not exact quantum reference values.",
+  "system": {
+    "reaction": "H + H2 -> H2 + H (exchange)",
+    "pes": "BKMP2",
+    "initial_j": 0,
+    "vibrational_states": [
+      0,
+      1
+    ]
+  },
+  "axes": {
+    "x": "total energy E_tot (eV), linear",
+    "y": "integral cross section (angstrom squared), linear",
+    "pixel_origin": "top-left, x rightwards, y downwards; integer pixel coordinates denote pixel centers"
+  },
+  "energy_conversion": {
+    "harmonic_frequency_cm_inverse": 4407,
+    "ev_per_wavenumber_cm_inverse": 0.00012398419843320026,
+    "harmonic_vibrational_quantum_ev": 0.5463983624951135,
+    "definition": "E_col = E_tot - (v + 1/2) h c (4407 cm^-1). This is the paper harmonic energy convention, not a measurement of full-PES trajectory energy.",
+    "ground_internal_energy_ev": 0.27319918124755677,
+    "v1_internal_energy_ev": 0.8195975437426704
+  },
+  "area_conversion": {
+    "bohr_in_angstrom": 0.529177210903,
+    "angstrom2_per_bohr2": 0.2800285205390781
+  },
+  "method": {
+    "type": "Raster marker digitization with fitted circle centers and affine tick calibration; PDF contains embedded raster figures, not vector curves.",
+    "images": "Extract image objects 79 (Fig 5) and 87 (Fig 6) with PyMuPDF extract_image; preserve original JPEG bytes.",
+    "axis_calibration": "Identify labeled B-panel tick marks visually and by dark neutral pixels; least-squares linear fits using every listed anchor.",
+    "magenta_mask": {
+      "red_gt": 130,
+      "blue_gt": 110,
+      "green_lt": 110,
+      "red_gt_green_times": 1.8,
+      "blue_gt_green_times": 1.8
+    },
+    "roi": "Keep x >=1154; remove y<250 and x<1280 to exclude legend; keep y<=806 (Fig5), y<=792 (Fig6).",
+    "marker_grouping": "Group occupied pixel columns separated by <=4 pixels; discard groups with fewer than 8 occupied columns.",
+    "circle_fit": "Take the convex hull of magenta pixel coordinates in each x cluster. Fit 2*x*cx + 2*y*cy + c = x^2+y^2 by least squares after centering coordinates; derive center and radius.",
+    "sensitivity_checks": "Refit within +/-18 pixels of each center with stricter RGB threshold (r>150,b>130,g<80,r>2g,b>2g) and looser threshold (r>110,b>100,g<130,r>1.6g,b>1.6g); compare centers. Also report bounding-box-center difference.",
+    "visual_review": "Original full-resolution figures inspected; marker-center/outline overlays are temporary analysis files and are not redistributed."
+  },
+  "uncertainty": {
+    "digitization": "Per-marker horizontal tolerances are +/-0.003 eV (Fig5B) and +/-0.002 eV (Fig6B); vertical tolerance +/-0.01 angstrom^2. These conservative graph-reading tolerances are not statistical confidence intervals. They cover axis pixel rounding, JPEG/color-threshold variation, line occlusion, and circle-center fitting at this resolution.",
+    "interpolation": "Requested-energy CSV uses piecewise linear interpolation between neighboring digitized markers. These are derived estimates, not points explicitly reported by the authors. The interpolation model error between markers is NOT quantified.",
+    "digitization_only_interpolation_band": "Evaluate the piecewise-linear interpolant at E +/- the horizontal tolerance, then expand vertically by +/-0.01 angstrom^2, clipping the lower edge at zero. This band propagates graph-reading tolerance only; it is not a confidence interval and does not include interpolation model error or simulation sampling error.",
+    "adjacent_marker_envelope": "The requested-energy CSV also reports the minimum and maximum of the adjacent marker y-values, expanded by +/-0.01 angstrom^2. It describes the local plotted marker range; it bounds an intervening underlying curve only under an additional monotonicity assumption, and is not a confidence interval.",
+    "published_sampling": "The paper states 40,000 trajectories per collision energy, but per-point N_reactive, b_max, and confidence intervals were not available. No published sampling uncertainty is reconstructed.",
+    "zero_cross_section": "Small digitized values within +/-0.01 angstrom^2 of zero cannot establish nonzero reactivity or an exact threshold.",
+    "comparison": "Compare total-energy conventions consistently. Different v at equal E_tot does not mean equal collision energy. Compare new simulation confidence intervals, unresolved bounds, convergence uncertainties, and reference graph-reading/interpolation limits separately."
+  },
+  "panels": [
+    {
+      "figure": 5,
+      "panel": "B",
+      "v": 0,
+      "j": 0,
+      "pdf_page_1_based": 11,
+      "pdf_image_xref": 79,
+      "embedded_image_width_px": 2073,
+      "embedded_image_height_px": 916,
+      "embedded_image_sha256": "ee87362a5d8ba3eab3b38ee88b7104f86695335ec116084fd8ac8bd1297d2cb3",
+      "embedded_image_encoding": "JPEG extracted losslessly from publisher PDF; no resizing before digitization",
+      "x_tick_anchors": [
+        {
+          "pixel_x": 1230.5,
+          "total_energy_ev": 0.6
+        },
+        {
+          "pixel_x": 1433.5,
+          "total_energy_ev": 0.8
+        },
+        {
+          "pixel_x": 1636.5,
+          "total_energy_ev": 1.0
+        },
+        {
+          "pixel_x": 1839.5,
+          "total_energy_ev": 1.2
+        },
+        {
+          "pixel_x": 2042.5,
+          "total_energy_ev": 1.4
+        }
+      ],
+      "y_tick_anchors": [
+        {
+          "pixel_y": 792.5,
+          "cross_section_angstrom2": 0
+        },
+        {
+          "pixel_y": 683,
+          "cross_section_angstrom2": 0.25
+        },
+        {
+          "pixel_y": 573.5,
+          "cross_section_angstrom2": 0.5
+        },
+        {
+          "pixel_y": 464.5,
+          "cross_section_angstrom2": 0.75
+        },
+        {
+          "pixel_y": 355,
+          "cross_section_angstrom2": 1
+        },
+        {
+          "pixel_y": 245.5,
+          "cross_section_angstrom2": 1.25
+        },
+        {
+          "pixel_y": 136.5,
+          "cross_section_angstrom2": 1.5
+        },
+        {
+          "pixel_y": 27,
+          "cross_section_angstrom2": 1.75
+        }
+      ],
+      "x_affine_energy_ev_per_px": 0.0009852216748768474,
+      "x_affine_intercept_ev": -0.6123152709359609,
+      "y_affine_angstrom2_per_px": -0.0022864602753199883,
+      "y_affine_intercept_angstrom2": 1.8117341940451586,
+      "max_x_anchor_residual_px": 2.2537527399890675e-13,
+      "max_y_anchor_residual_px": 0.19647231749192018,
+      "max_center_threshold_sensitivity_px": 0.5706968603995436,
+      "number_of_markers": 21,
+      "energy_digitization_tolerance_ev": 0.003,
+      "cross_section_digitization_tolerance_angstrom2": 0.01,
+      "visual_overlay_review_status": "passed: all extracted B-panel circle centers/outlines and all tick anchors visually checked against the original full-resolution figure; no omitted/extra data markers or axis-scale mismatch observed"
+    },
+    {
+      "figure": 6,
+      "panel": "B",
+      "v": 1,
+      "j": 0,
+      "pdf_page_1_based": 12,
+      "pdf_image_xref": 87,
+      "embedded_image_width_px": 2073,
+      "embedded_image_height_px": 900,
+      "embedded_image_sha256": "bdcf35cbca4a5078bf7926aa222b6204a65641b8523d642db4e8f91e07af2e9a",
+      "embedded_image_encoding": "JPEG extracted losslessly from publisher PDF; no resizing before digitization",
+      "x_tick_anchors": [
+        {
+          "pixel_x": 1233,
+          "total_energy_ev": 0.9
+        },
+        {
+          "pixel_x": 1393.5,
+          "total_energy_ev": 1
+        },
+        {
+          "pixel_x": 1554.5,
+          "total_energy_ev": 1.1
+        },
+        {
+          "pixel_x": 1715,
+          "total_energy_ev": 1.2
+        },
+        {
+          "pixel_x": 1876,
+          "total_energy_ev": 1.3
+        },
+        {
+          "pixel_x": 2036.5,
+          "total_energy_ev": 1.4
+        }
+      ],
+      "y_tick_anchors": [
+        {
+          "pixel_y": 777,
+          "cross_section_angstrom2": 0
+        },
+        {
+          "pixel_y": 606,
+          "cross_section_angstrom2": 0.5
+        },
+        {
+          "pixel_y": 434.5,
+          "cross_section_angstrom2": 1
+        },
+        {
+          "pixel_y": 263,
+          "cross_section_angstrom2": 1.5
+        },
+        {
+          "pixel_y": 92,
+          "cross_section_angstrom2": 2
+        }
+      ],
+      "x_affine_energy_ev_per_px": 0.0006221668005358452,
+      "x_affine_intercept_ev": 0.13291282282402694,
+      "y_affine_angstrom2_per_px": -0.00291885481381012,
+      "y_affine_intercept_angstrom2": 2.2682424166004966,
+      "max_x_anchor_residual_px": 0.1570971469202834,
+      "max_y_anchor_residual_px": 0.19994162288396586,
+      "max_center_threshold_sensitivity_px": 0.5504949404725965,
+      "number_of_markers": 13,
+      "energy_digitization_tolerance_ev": 0.002,
+      "cross_section_digitization_tolerance_angstrom2": 0.01,
+      "visual_overlay_review_status": "passed: all extracted B-panel circle centers/outlines and all tick anchors visually checked against the original full-resolution figure; no omitted/extra data markers or axis-scale mismatch observed"
+    }
+  ],
+  "files": {
+    "marker_csv": "marjollet_2021_rpmd_fig5b_fig6b_digitized.csv",
+    "requested_energy_interpolation_csv": "marjollet_2021_requested_energy_interpolation.csv"
+  },
+  "files_sha256": {
+    "marjollet_2021_rpmd_fig5b_fig6b_digitized.csv": "eed95735b0f6b308c0ec7f0e12041ebd7de7bc15e1b78c2648f6b5b0e6b9a5fd",
+    "marjollet_2021_requested_energy_interpolation.csv": "02c923452e6394645a538cef09dc2cdeddc952d81b6ac23912499647b7911167"
+  }
+}

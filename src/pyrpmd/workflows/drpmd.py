@@ -60,6 +60,29 @@ def _integer(value, name, minimum=1):
     return int(value)
 
 
+def _checkpoint_clock_matches(elapsed, steps, dt):
+    """Allow the roundoff of a binary64 clock advanced once per accepted step.
+
+    Repeated ``time += dt`` need not equal one multiplication ``steps * dt``.
+    With unit roundoff u=2**-53, gamma(n)=n*u/(1-n*u) bounds the relative
+    forward error of n floating-point operations.  The extra operation covers
+    the reference multiplication; retaining the former tolerance floor also
+    accepts existing checkpoints with short clocks.  Step counts are checked
+    separately and exactly by both readers.
+    """
+    try:
+        expected = steps * dt
+        roundoff = (steps + 1) * 2.0**-53
+    except OverflowError:
+        return False
+    if (not math.isfinite(elapsed) or not math.isfinite(expected)
+            or roundoff >= 1):
+        return False
+    relative_bound = roundoff / (1 - roundoff)
+    return math.isclose(elapsed, expected,
+                        rel_tol=max(1e-11, relative_bound), abs_tol=1e-12)
+
+
 def validate_fragments(fragments, natoms):
     if len(fragments) != 2 or any(len(f) == 0 for f in fragments):
         raise ValueError("dRPMD requires exactly two nonempty reactant fragments")
@@ -807,8 +830,8 @@ def _nrpmd_trajectory(dynamics, state, classifier, config, out, trajectory_id,
         trace_energy = arrays["trace_energy"].tolist()
         trace_population = list(arrays["trace_populations"])
         _integer(done, "checkpoint.done", 0)
-        if done > max_steps or state.step != done or not math.isclose(
-                state.time, done * config["dt_au"], rel_tol=1e-11, abs_tol=1e-12):
+        if done > max_steps or state.step != done or not _checkpoint_clock_matches(
+                state.time, done, config["dt_au"]):
             raise ValueError("NRPMD checkpoint has inconsistent trajectory clock")
         length = len(trace_steps)
         if (arrays["trace_centroid"].shape != (length, *state.q.shape[1:])
@@ -1005,8 +1028,7 @@ def _trajectory(
         _integer(done, "checkpoint.done", 0)
         length = len(trace_steps)
         if (done > max_steps or state.step != done
-                or not math.isclose(state.time, done * config["dt_au"],
-                                    rel_tol=1e-11, abs_tol=1e-12)
+                or not _checkpoint_clock_matches(state.time, done, config["dt_au"])
                 or state.q.shape != (config["beads"], len(dynamics.masses), 3)
                 or state.p.shape != state.q.shape
                 or arrays["trace_centroid"].shape != (length, *state.q.shape[1:])

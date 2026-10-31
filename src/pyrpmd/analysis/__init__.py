@@ -14,6 +14,7 @@ from .rate_postprocess import (
     channel_rates,
 )
 from .projection import marginalize_fes
+from .reporting import generate_report
 
 __all__ = [
     "solve_mbar",
@@ -26,4 +27,5 @@ __all__ = [
     "flux_slice_rate_2d",
     "channel_rates",
     "marginalize_fes",
+    "generate_report",
 ]
