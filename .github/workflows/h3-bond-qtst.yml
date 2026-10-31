@@ -1,0 +1,64 @@
+name: H3 physical 2D vs 1D rate audit and bond recrossing pilot
+on:
+  push:
+    branches: ['feat/h3-bond-qtst-recrossing-20261031']
+    paths:
+      - '.github/workflows/h3-bond-qtst.yml'
+      - 'src/pyrpmd/analysis/bond_*.py'
+      - 'tests/test_bond_*.py'
+      - 'benchmarks/h3/bond_*.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+env:
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  GH_TOKEN: ${{ github.token }}
+  PYTHONUNBUFFERED: '1'
+jobs:
+  h3-bond:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PyRPMD and Fortran
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gfortran
+          python -m pip install -e '.[test]'
+      - name: Strict new numerical regression tests
+        run: |
+          python -m pytest -q tests/test_bond_flux_metric.py tests/test_bond_rate_physics.py
+      - name: Obtain actual independent 2D and 1D data
+        run: |
+          mkdir -p validation/2d validation/1d validation/report
+          gh run download 41192380353 --repo chen-yu-hao/PyRPMD --name h3-r01-r12-expanded-16bead -D validation/2d
+          gh run download 41175919954 --repo chen-yu-hao/PyRPMD --name h3-rate -D validation/1d
+          (cd validation/2d && zip -qr ../report/h3-2d-source.zip validation)
+          (cd validation/1d && zip -qr ../report/h3-1d-source.zip rate)
+      - name: Independent 1D-vs-2D physical audit (null where unavailable)
+        run: |
+          python benchmarks/h3/bond_rate_physical_audit.py --fes2d validation/report/h3-2d-source.zip --rate1d validation/report/h3-1d-source.zip --output validation/report/physical-audit.json
+      - name: Build checksum-pinned real BKMP2 and verify forces
+        run: |
+          python benchmarks/h3/build_pes.py
+          python benchmarks/h3/pes.py --check --output validation/report/pes-check.json
+      - name: Actual constrained bond-diagonal parents and signed child propagation
+        run: |
+          python benchmarks/h3/bond_recrossing_pilot.py --fes-run validation/2d/validation/h3-bond-extended/run --output validation/report/bond-pilot --parents-per-chain 4 --child-fs 40
+      - name: Preserve all derived diagnostics, source hashes, and new signed trajectories
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h3-bond-qtst-signed-recrossing-audit
+          path: |
+            validation/report/physical-audit.json
+            validation/report/pes-check.json
+            validation/report/bond-pilot/
+          if-no-files-found: warn
+          retention-days: 30
