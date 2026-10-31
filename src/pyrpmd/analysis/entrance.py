@@ -163,6 +163,7 @@ def entrance_flux_ratio(reference_coordinate, target_coordinates, weights,
         "rate_each_cm3_s":(rates*AU_RATE_TO_CM3_S).tolist(),
         "total_qtst_au":float(rates.sum()),
         "total_qtst_cm3_s":float(rates.sum()*AU_RATE_TO_CM3_S),
+        "normal_direction":"sigma_i=r0i-r12; sigma_i<0 is product; reactive signed dynamics use -dot(sigma_i)",
         "physical_scope":"candidate with common canonical flux weights; needs shell-width, chain, topology and physical convergence",
     }
 
