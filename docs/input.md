@@ -20,7 +20,9 @@
 | `output.trajectory_stride` | dRPMD 轨迹保存的正整数步数间隔 |
 | `output.trajectory_storage` / `chunk_frames` | 材料任务默认 `"stream"`、256 帧；`"memory"` 使用旧格式 |
 
-`production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，科学收敛仍需用户用系列计算确认。未知顶层和常用 section 字段会报错，不会自动忽略。
+`production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，
+不会切换为更高精度参数；dynamics/sampling 内省略的子项仍取默认值。科学收敛仍需用系列计算确认。
+未知顶层和常用 section 字段会报错，不会自动忽略。完整默认表见[中文手册](zh/manual/input.md#缺省值)。
 
 `pcet` 使用下述独立模型输入，不使用分子系统、PES、珠子数、传播与采样
 预设；其 `temperature` 也接受温度列表以运行扫描。
@@ -66,7 +68,12 @@ parents = 8
 
 `equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
 
-FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置采样温控器的质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和默认的 `diffusion` 生产段使用无温控传播。
+FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。
+FES、气相和位点速率工作流默认使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，
+显式选择 Andersen 时须为所选 canonical 名称加 `-andersen`。FES 也可选择 PILE-L，`pimd`/`diffusion` 在
+Cayley 下默认使用 BCOCB/PILE-L、正常模下默认使用 BAOAB/PILE-L；Verlet 对应 Andersen。
+`sampling.gamma_centroid` 设置 PILE-L 的质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和默认的
+`diffusion` 生产段使用无温控传播。
 
 `diffusion` 可额外配置 `[electronic_friction]`，在生产段启用物理电子浴的 Markovian 质心 EF-RPMD。该 section 接受 `method = "centroid"` 与 `provider = "constant"` 或 `"python"`：常量 provider 必须在松弛率 `gamma` 和物理摩擦张量 `tensor` 中二选一；Python provider 使用 `factory` 和 `params`。数值 `gamma` 使用原子时间的倒数，也可写为 `"0.01 fs^-1"`；`tensor` 使用电子质量/原子时间，维度为 `[3*N,3*N]`。固定基底原子可保留，摩擦只作用于移动自由度。此时生产轨迹与电子浴交换能量，不进行 NVE 能量漂移判定。其他任务、显式 `loop_backend = "native"` 以及混合 mapping 势均拒绝该配置。完整接口、相关噪声、模型限制和示例见[电子摩擦](electronic-friction.md)。
 
@@ -151,6 +158,8 @@ electronic_weight = 1.0
 ### 速率 PMF 后端与分割面
 
 默认 `rate.pmf_method = "ui"` 保留 Gaussian umbrella integration。
+它假设每窗分布接近高斯；偏斜、多峰及尾部外推可能产生统计误差条之外的偏差。
+UI 在实测端点缺少支持时仍可保留模型值并警告，不能据此认定端点已有可靠采样。
 选择 histogram MBAR 并固定分割面可写：
 
 ```toml
@@ -172,6 +181,9 @@ MBAR 下 `compare_ui` 默认开启，UI 使用相同样本与相同 block-bootst
 可以计算配对差值，且不重复运行 MBAR 重采样。
 `bootstrap = 0` 可用于单纯曲线诊断；不能据此报告完整速率误差。
 `bootstrap = 1` 不足以估计方差，会在输入阶段报错。
+若任意速率 PMF bootstrap draw 因支持或估计失败被拒绝，主势垒及最终速率误差/置信区间不可用；
+`supported_draw_*` 仅描述支持完整且拟合有效的接受子集，不能作为无条件误差。
+应同时查看请求数、尝试数、有效数、拒绝数和 block 状态。增加 bootstrap 次数不能替代增加独立生产样本。
 
 省略 `dividing_surface` 或写 `"auto"` 时自动选峰，
 可用 `rate.pmf_search_range = [0.8, 1.1]` 限定搜索区间。
@@ -218,6 +230,9 @@ min_count = 5
 内置 CV 包括 distance、bond_difference、angle、cartesian、com_distance、rpmdrate_xi、surface_height、surface_lateral、periodic_distance 和 python。内置几何 CV 可选择 `centroid` 或 `bead_average`；自定义 CV 返回自己定义的完整 estimator 和导数。`stiffness` 可为标量、对角数组或对称正定矩阵。数值 centers 使用声明的 CV 输入单位；`centers_au` 与数值 stiffness 使用原子单位，带单位字符串按量纲验证。
 
 输出 FES 是相对于所选 CV 测度的密度：例如距离 CV 的自由能自然包含径向熵，不自动把它变成去除 Jacobian 的两体势。没有样本或连通重叠支持的区域 mask，不外推。`analyze --recompute --bins ... --bootstrap ...` 使用保存的样本重新估计而不调用 PES。
+逐 bin 的主 `standard_error` 仅在所有请求的 bootstrap draw 都支持该 bin、且相关性分块可用时报告；
+否则为 NaN，保留 `supported_draw_standard_error` 与 `bootstrap_valid_per_bin` 供诊断接受子集。
+点估计有支持不代表其统计误差已经可估计，条件误差也不能代替无条件置信区间。
 
 ## 多入口与不同 TS
 
@@ -239,7 +254,7 @@ min_count = 5
 [adaptive_umbrella]
 enabled = true
 pilot_steps = 1000
-pilot_equilibration_steps = 200
+# 省略 pilot_equilibration_steps 时继承 sampling.equilibration_steps。
 max_rounds = 8
 max_windows = 128
 max_pilot_steps = 16000
@@ -253,6 +268,12 @@ overlap 与有效样本数插窗、延长 pilot。窗口冻结后使用独立种
 采集 production；pilot 不进入最终 FES/PMF。预算耗尽明确失败，不静默跳过
 重叠要求。参数单位、阶段恢复及适用边界见[增强采样](enhanced-sampling.md)。
 
+新 schema-3 计划的重叠分数为 `sqrt(O_ij * O_ji / (O_ii * O_jj))`，
+记录为 `normalized_mbar_cosine`。完全相同的窗口分布得分为 1，避免旧分数随窗口数增加而被稀释。
+这不是副本交换接受率；默认 0.03 只是启发式筛选阈值，不能证明全局混合。
+旧 schema-1/2 计划保留 `sqrt(O_ij * O_ji)`（`mbar_symmetric_transition`）与已提交的决策。
+新旧阈值不可直接数值类比；要采用新指标重新选窗，使用新的输出目录。
+
 二维面建议显式启用空间覆盖检查，在同一表中增加：
 
 ```toml
@@ -265,7 +286,13 @@ target_coverage = 0.95
 上述范围仅为示例，应按实际 CV 修改。两项网格参数必须一起指定，默认不启用。
 检查使用 MBAR 权重与轨迹相关性修正后的局部有效样本数，在薄弱格中心补窗；
 它与最终分析分箱相互独立。全局窗口 ESS 还检查坐标二阶矩，防止快速振荡掩盖
-振幅分布的慢收敛。所有阈值通过后仍需检查生产轨迹的覆盖率和独立重复结果。
+振幅分布的慢收敛。生产数据会独立重验相同的 overlap/ESS/可选 coverage 判据：
+`pilot_target_met` 与 `production_target_met` 分别报告两阶段结果，旧 `target_met` 仅为 pilot 的兼容别名。
+FES 在 `RUN/results/summary.json` 的 `adaptive_umbrella` 中报告这些字段；气相速率可直接读取同一最终摘要的
+`pmf.adaptive_umbrella`，`RUN/rate_pmf.json` 和 `RUN/umbrella/summary.json` 仍保留 `adaptive_umbrella`。
+查看 `production_overlap_connected_at_target`、`production_effective_samples_target_met`，以及分开的
+`pilot_coverage` / `production_coverage`（旧 `coverage` 是 pilot 别名）。未要求覆盖检查不能视为全域已有支持。
+生产检查失败会警告，但不会自动延长采样或删除点估计；仍需独立重复与物理收敛验证。
 
 窗口 ESS 不足，或覆盖不足且无法继续插窗时，将下一轮 pilot 加倍；单纯插窗不增加每窗长度。
 `max_pilot_steps` 默认是 `16 * pilot_steps`。未显式指定生产长度时，启用
@@ -273,6 +300,12 @@ target_coverage = 0.95
 200 fs。显式长度不变，生产 ESS 和覆盖率仍须单独检查。预算耗尽后可用
 `pyrpmd resume RUN --adaptive-max-rounds 12 --adaptive-max-windows 192`
 增加上限，已完成的 pilot 不重算；不能用这个接口降低统计门槛或重开冻结的窗口。
+
+默认 0.1 fs 步长下，首轮 1000 步仅为 100 fs、最多 16000 步为每窗每副本 1.6 ps；
+pilot 平衡默认继承生产设置的 100 fs（1000 步），保存间隔默认 1 fs，默认每窗一个副本。
+ESS 20 是选窗筛选要求，默认 20 次 bootstrap 是较短的分析预算，两者都不是物理精度保证。
+气相速率默认仍使用 UI，自适应阶段的 MBAR 重叠检查不会把最终估计器自动改成 MBAR。
+可靠性验收及目标误差预算见[科学收敛指南](zh/manual/science.md#评估自适应伞抽样结果)。
 
 ## Metadynamics
 
@@ -295,7 +328,7 @@ bootstrap = 0
 
 `mode="standard"` 使用固定 hill 高度并省略 `bias_factor`。`sigma_au`、
 `height_au` 可指定原子单位，但不得与对应未带 `_au` 的字段重复。
-`pace` 是生产步数间隔；1D/2D、周期 CV 与独立 replicas 均支持。
+`pace` 是生产步数间隔；1–3 维 CV、周期 CV 与独立 replicas 均支持；可选偏置网格限于 1D/2D。
 `loop_backend="native"` 会预先报错，因为偏置历史随时间改变；`auto` 的
 兼容传播仍能使用所选积分器的编译子步。有限时间 FES 估计及 HILLS/恢复
 时序见[增强采样规范](enhanced-sampling.md)。

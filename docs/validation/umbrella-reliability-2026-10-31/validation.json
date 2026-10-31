@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-10-31",
+  "baseline_commit": "c4fa743f552c1d71db35fab791a2e63409bc1c3e",
+  "branch": "fix/adaptive-umbrella-reliability-audit",
+  "scope": "Implementation regression, numerical counterexamples, build and integration validation; not a target-system physical convergence study.",
+  "environment": {
+    "platform": "Linux x86_64",
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.18.1",
+    "h5py": "3.16.0",
+    "pytest": "9.2.0",
+    "pymbar": "4.0.3",
+    "sphinx": "8.2.3",
+    "myst_parser": "4.0.1",
+    "pydata_sphinx_theme": "0.16.1",
+    "openblas_threads": 1,
+    "omp_threads": 1,
+    "native_extensions_built": true,
+    "fortran_compiler": "GNU Fortran 13.3.0"
+  },
+  "full_suite": {
+    "command": "python -m pytest -q",
+    "passed": 3829,
+    "skipped": 95,
+    "failed": 14,
+    "warnings": 14,
+    "subtests_passed": 272,
+    "seconds": 550.27,
+    "failure_cause": "The sandbox disallowed local socket creation: PermissionError [Errno 1] Operation not permitted. All 14 affected tests passed when their three files were rerun with local communication permitted.",
+    "failed_tests": [
+      "tests/test_ipi_clients.py::test_multiple_clients_are_concurrent_ordered_and_persistent",
+      "tests/test_ipi_clients.py::test_fast_client_takes_more_work_than_slow_client",
+      "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[header]",
+      "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[disconnect]",
+      "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[truncate]",
+      "tests/test_ipi_clients.py::test_missing_clients_timeout_and_close_listener",
+      "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+      "tests/test_ipi_clients.py::test_close_while_accept_completes_does_not_leak_the_new_connection",
+      "tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[bind_system]",
+      "tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[set_cell]",
+      "tests/test_ipi_clients.py::test_evaluate_rechecks_close_after_coordinate_preparation",
+      "tests/test_ipi_clients.py::test_accept_oserror_closes_provider_and_uses_potential_error",
+      "tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire",
+      "tests/test_potentials.py::SocketTests::test_ipi_protocol"
+    ],
+    "skip_scope": "Unconfigured optional integrations, including BrHCl LEPS, JaxPIP/PySCF, EAM, Caracal, PLUMED, tblite, PyTorch and native ONNX. These were not treated as passing.",
+    "warnings_scope": "Existing Matplotlib colormap set_bad PendingDeprecationWarning in report_render.py."
+  },
+  "local_socket_rerun": {
+    "command": "python -m pytest -q tests/test_ipi_clients.py tests/test_periodic_materials.py tests/test_potentials.py",
+    "environment_change": "Permit local TCP and Unix sockets; no source-code workaround.",
+    "passed": 36,
+    "skipped": 2,
+    "failed": 0,
+    "subtests_passed": 12,
+    "seconds": 5.88,
+    "all_original_failures_passed": true
+  },
+  "combined_full_suite_result": {
+    "unique_tests_passed": 3843,
+    "skipped": 95,
+    "unresolved_failures": 0,
+    "note": "Combined result of the full restricted run and the affected-file rerun, not a claim that a single full-suite command passed without failures. Rerun tests already counted in the first run are not added again."
+  },
+  "final_focused_regression": {
+    "command": "python -m pytest -q tests/test_adaptive_umbrella.py tests/test_fes_bootstrap_support.py tests/test_mbar_rate_analysis.py tests/test_rate_mbar_backend.py tests/test_surface_uncertainty.py tests/test_report_sampling_validation.py tests/test_pmf_1d_accuracy.py tests/test_pmf_2d_accuracy.py tests/test_exchange_bootstrap.py",
+    "passed": 197,
+    "failed": 0,
+    "subtests_passed": 15,
+    "seconds": 65.57
+  },
+  "mpi_adaptive": {
+    "command": "mpiexec -n 4 python tests/mpi_adaptive_smoke.py /fresh/shared/output",
+    "status": "passed",
+    "ranks": 4,
+    "groups": 2,
+    "beads_per_group": 2,
+    "checks": [
+      "Fresh adaptive sampling",
+      "Independent production overlap, ESS and coverage diagnostics",
+      "Summary-only response does not include trajectory arrays",
+      "Consistent summaries on all ranks",
+      "Exact saved-data reanalysis"
+    ],
+    "environment": {
+      "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+      "MPIR_CVAR_CH4_IPC_CMA_P2P_THRESHOLD": "2147483647",
+      "UCX_TLS": "tcp,self"
+    },
+    "environment_note": "MPICH shared-memory process_vm_readv is unavailable in this environment. CMA was disabled and local socket communication permitted for the test."
+  },
+  "adaptive_cli_example": {
+    "command": "python -m pyrpmd run examples/fes/adaptive_harmonic.inp --output /fresh/shared/output",
+    "status": "passed",
+    "pilot_rounds": 2,
+    "frozen_windows": 3,
+    "production_samples": 600,
+    "pilot_samples_used_in_production": 0,
+    "production_target_met": true,
+    "converged": false,
+    "note": "The example explicitly overrides several budgets and diagnostic thresholds; it does not validate universal default-parameter accuracy."
+  },
+  "bkmp2": {
+    "build_command": "python benchmarks/h3/build_pes.py",
+    "build_status": "passed",
+    "pinned_source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+    "built_library_sha256": "dab795cabf55f84863d177ea699d72b718e7b302e0dc3d4ba27b02b148b1f366",
+    "test_command": "python -m pytest -q tests/test_h3_pes.py tests/test_integrator_workflows.py tests/test_h3_convergence.py tests/test_h3_pmf_diagnostics.py tests/test_native_sampling.py",
+    "passed": 155,
+    "failed": 0,
+    "subtests_passed": 5,
+    "seconds": 2.88
+  },
+  "documentation": [
+    {
+      "command": "python -m sphinx -b html -W --keep-going docs /tmp/pyrpmd-docs/en",
+      "status": "passed"
+    },
+    {
+      "command": "python -m sphinx -b html -W --keep-going docs/zh /tmp/pyrpmd-docs/zh",
+      "status": "passed"
+    }
+  ],
+  "wheel": {
+    "command": "python -m pip wheel --no-deps --no-build-isolation --wheel-dir /tmp/pyrpmd-wheels .",
+    "status": "passed",
+    "filename": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+    "sha256": "26401aa15de10073d90d1999cff230be4653ef9f125dc98458ac4cfbc671398f"
+  },
+  "source_sha256": {
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "d9faeb92991e73ff38d45d2ad657e6c72759454dde0171a443a8f65054ceb18d",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "src/pyrpmd/workflows/rate.py": "e7f04ba3af8b9d41ac42291e1b983de53b34c8a467160b6234fd759056beac5a",
+    "src/pyrpmd/workflows/fes.py": "1d87f6812f76e46e3e5585593bf2eeab23c633aae8a04258d8f05d4eea4499f6",
+    "src/pyrpmd/analysis/report_sampling.py": "9549a720185614a3dbcd7ebfe826c58dcab75cf721f57a5a85af49d9b44ef637"
+  },
+  "local_log_sha256": {
+    "full-tests.log": "e6e6b25c028279945631bbacea13885d111d74651dfe246b48e495dba142e3eb",
+    "socket-tests.log": "58baf9b997adc4014298b3a6d717d2dc2abe3acb5c8eb9b79dbafccff6e686b6",
+    "final-focused-tests.log": "9c45965154125cbd1cfb4c0c33850e204566fd31503410df4dd9f5fb3744c13f",
+    "mpi-adaptive.log": "a7283f3964e345f50588fceae921c26d29f5fe52f16c486b50a47baeb26732c4",
+    "docs-en.log": "96f799bdd1b81f518205218fa23dd2e2d7136364596c58f20e9b4368c3395231",
+    "docs-zh.log": "88abda4a06c7e2b430eece31521a01fedf02fab080e28294e8b480032ccbf5a7",
+    "h3-tests.log": "f79e90ad6368585fd553bb1b225c79e7e113f15151bc44cdd4ac86579d0f01b6",
+    "wheel-build.log": "f3ec0cdd1dbad075e285eb25825ef30fbf9cbb7545220b03f0aa81cc2c7d995f"
+  },
+  "remaining_limits": [
+    "No new long-trajectory target-reaction convergence study or independent-seed physical reference series was performed.",
+    "Production diagnostic targets are heuristic checks, not a precision certificate or automatic production extension.",
+    "The compatible default Gaussian UI estimator can retain model extrapolation when empirical endpoint support is absent; warnings and support diagnostics must be inspected.",
+    "The new normalized overlap score has a different numerical interpretation from legacy scores; user-selected thresholds need reassessment.",
+    "Bootstrap uncertainty does not include hidden unsampled modes, PES error, bead/time-step bias or dividing-surface selection uncertainty.",
+    "Optional external integrations listed as skipped remain unvalidated in this environment."
+  ]
+}

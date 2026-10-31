@@ -64,6 +64,7 @@ jobs:
           assert len(roots) == 1, roots
           required = [
               'src/pyrpmd/reactions.py', 'src/pyrpmd/checkpoint.py',
+              'src/pyrpmd/scaffold.py', 'src/pyrpmd/templates/quickstart.inp',
               'src/pyrpmd/workflows/network.py',
               'src/pyrpmd/workflows/adaptive_umbrella.py',
               'src/pyrpmd/workflows/metadynamics.py',
@@ -185,6 +186,7 @@ jobs:
               assert (roots[0] / name).is_file(), name
           with zipfile.ZipFile(wheels[0]) as archive:
               names = archive.namelist()
+              assert 'pyrpmd/templates/quickstart.inp' in names
               for module in ('_native', '_thermal'):
                   assert any(n.startswith('pyrpmd/' + module) and n.endswith(('.so', '.pyd'))
                              for n in names), module
@@ -208,14 +210,14 @@ jobs:
               stream.write(f'PACKAGE_SDIST={sdists[0].resolve()}\n')
               stream.write(f'PACKAGE_WHEEL={wheels[0].resolve()}\n')
           PY
-      - name: Independently install and exercise the wheel
+      - name: Independently install and exercise the wheel, including init quickstart
         run: |
           python -m venv "$RUNNER_TEMP/wheel-env"
           "$RUNNER_TEMP/wheel-env/bin/python" -m pip install "$PACKAGE_WHEEL"
           cd "$RUNNER_TEMP"
           PYTHONPATH= "$RUNNER_TEMP/wheel-env/bin/python" "$PACKAGE_SOURCE/tests/package_smoke.py" \
             --source-root "$PACKAGE_SOURCE" --output "$RUNNER_TEMP/pyrpmd-wheel-smoke"
-      - name: Independently rebuild, install and exercise the source distribution
+      - name: Independently rebuild and exercise the source distribution, including init quickstart
         run: |
           python -m venv "$RUNNER_TEMP/sdist-env"
           "$RUNNER_TEMP/sdist-env/bin/python" -m pip install "$PACKAGE_SDIST"

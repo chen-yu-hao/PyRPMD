@@ -1,0 +1,277 @@
+{
+  "artifacts": {
+    "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl": {
+      "bytes": 1875237,
+      "sha256": "e23bae6c73755156d6dc6ef7b9301b87f336631f117b9210ebeb6bd17f10a1ae"
+    },
+    "pyrpmd-0.2.0.tar.gz": {
+      "bytes": 8097816,
+      "sha256": "aaa05b5c5064927563dbf22fd6720e3ac82c9d1296b8f2841c2578ba841a3a21"
+    }
+  },
+  "base_commit_before_local_changes": "c4fa743f552c1d71db35fab791a2e63409bc1c3e",
+  "commands": [
+    "cd /workspace/scratch/b770cc518060/PyRPMD-optimized && OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../.venv/bin/python -m build --no-isolation --outdir ../audit-evidence/packages",
+    "/workspace/scratch/b770cc518060/.venv/bin/python -m venv --system-site-packages /workspace/scratch/b770cc518060/.wheel-audit-env",
+    "PYTHONPATH= /workspace/scratch/b770cc518060/.wheel-audit-env/bin/python -m pip install --no-deps /workspace/scratch/b770cc518060/audit-evidence/packages/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl h5py==3.16.0",
+    "cd /workspace/scratch/b770cc518060/audit-evidence && PYTHONPATH= OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 ../.wheel-audit-env/bin/python package-source/pyrpmd-0.2.0/tests/package_smoke.py --source-root package-source/pyrpmd-0.2.0 --output wheel-smoke"
+  ],
+  "dependencies": {
+    "h5py": "3.16.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "threadpoolctl": "3.6.0"
+  },
+  "drpmd_workflows": {
+    "normal-mode-bab": {
+      "beads": 3,
+      "child_native_steps": [
+        0,
+        0
+      ],
+      "child_python_steps": [
+        72,
+        39
+      ],
+      "driver": "auto",
+      "native_substeps": "required",
+      "parent_thermal_steps": {
+        "0": 8
+      },
+      "resume_identical": true,
+      "trajectories": 2
+    },
+    "velocity-verlet": {
+      "beads": 3,
+      "child_native_steps": [
+        0,
+        0
+      ],
+      "child_python_steps": [
+        72,
+        39
+      ],
+      "driver": "auto",
+      "native_substeps": "required",
+      "parent_thermal_steps": {
+        "0": 8
+      },
+      "resume_identical": true,
+      "trajectories": 2
+    }
+  },
+  "examples": {
+    "adaptive": {
+      "converged": false,
+      "resume_identical": true,
+      "status": "sampled",
+      "task": "fes"
+    },
+    "meta_standard": {
+      "converged": false,
+      "resume_identical": true,
+      "status": "bias_estimate",
+      "task": "metadynamics"
+    },
+    "meta_well_tempered": {
+      "converged": false,
+      "resume_identical": true,
+      "status": "bias_estimate",
+      "task": "metadynamics"
+    },
+    "network": {
+      "converged": false,
+      "resume_identical": true,
+      "status": "completed",
+      "task": "network"
+    },
+    "pcet": {
+      "converged": false,
+      "resume_identical": true,
+      "status": "model_rates_computed",
+      "task": "pcet"
+    }
+  },
+  "generated_at": "2026-10-31T14:21:16.062702+00:00",
+  "installed_package": "/workspace/scratch/b770cc518060/.wheel-audit-env/lib/python3.12/site-packages/pyrpmd/__init__.py",
+  "installed_prefix": "/workspace/scratch/b770cc518060/.wheel-audit-env",
+  "integrator_max_abs_errors": {
+    "cayley-bcb": 3.3306690738754696e-16,
+    "normal-mode-bab": 3.0531133177191805e-16,
+    "velocity-verlet": 2.7755575615628914e-17
+  },
+  "large_ring_max_abs_errors": {
+    "p": 1.3766765505351941e-14,
+    "q": 3.3306690738754696e-16
+  },
+  "logs": [
+    "package-build.log",
+    "package-install.log",
+    "package-smoke.log",
+    "wheel-smoke/report.json"
+  ],
+  "logs_note": "Raw logs were retained in the local validation workspace; this receipt records commands, artifact hashes and all runtime source hashes.",
+  "native_release_max_abs_errors": {
+    "fft-256": 1.7408297026122455e-13,
+    "fft-32": 1.9095836023552692e-14,
+    "pile-cayley-bcb-256": 1.4956924587750109e-12,
+    "pile-cayley-bcb-32": 5.029310301551959e-14,
+    "pile-cayley-bcb-5": 7.771561172376096e-16,
+    "pile-normal-mode-bab-256": 1.5099033134902129e-12,
+    "pile-normal-mode-bab-32": 4.9432680171435095e-14,
+    "pile-normal-mode-bab-5": 1.5543122344752192e-15
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "sampling_max_abs_errors": {
+    "cayley-bcb": {
+      "clock_equal": true,
+      "p": 6.783462680459706e-14,
+      "q": 6.661338147750939e-16,
+      "rng_equal": true
+    },
+    "normal-mode-bab": {
+      "clock_equal": true,
+      "p": 6.927791673660977e-14,
+      "q": 6.661338147750939e-16,
+      "rng_equal": true
+    }
+  },
+  "schema": "pyrpmd.audit.package-verification.v1",
+  "scope": "Linux x86_64 CPython 3.12 native wheel built from the source distribution; independent installed-wheel smoke. No cross-platform or physical-convergence claim.",
+  "sdist_contains_prebuilt_native_libraries": false,
+  "sdist_member_count": 1217,
+  "sdist_runtime_source_files_verified": 123,
+  "source_sha256": {
+    "native/cayley.cpp": "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124",
+    "native/examples/harmonic_pes.c": "811eea56274b3d3013a3bca49a9f2f0b389708c202e83a7f73efcbd5884e0aeb",
+    "native/examples/periodic_cosine_pes.c": "bf5e4025550f81724746e46fea5855ba6dd7054940d662e708ddbf36781b53dc",
+    "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "native/include/pyrpmd/thermal_pes.h": "40d1cbeec480eaf828499db46c20db4644c7d72c1e17d3132f13f5dea012a961",
+    "native/onnx/context_test.cpp": "ff69cbea4ec453441a543dd09adba1a62c9a42ccb87a30274fffc0a92a17e1fe",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "native/propagation.h": "ba2ac0eb4789e9cffb947c50789807f7aba27ae8ad91a51785cbface2f2e68bd",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/thermal.cpp": "a28d75d4a460bf70003ca8f8bee03c83679df57c21df7ac22b4a7dce7c897caf",
+    "native/thermal.hpp": "54c704af9f277680c34c42cf4f1da24aaeebe0e5ed055a52b31bd8fbc4ac3702",
+    "src/pyrpmd/__init__.py": "42c55aa8d676ca5087b1f526b70128c023bf0b29f6d5acbc10db03ef6284b033",
+    "src/pyrpmd/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/pyrpmd/_matrix_path.py": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777",
+    "src/pyrpmd/analysis/__init__.py": "f2a84808471d40e6146cea7ce4882a8531b946cecb507d820302d465966624a8",
+    "src/pyrpmd/analysis/diagnostics.py": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/analysis/fes.py": "62716e9e37460cea002915cc8ec99066b39de54622609a95fe4285d1347d0398",
+    "src/pyrpmd/analysis/metadynamics.py": "bde084ed41a2022a0e69f3086fdfbb324fa577add73fdc2db5f0ac1ffa08ef00",
+    "src/pyrpmd/analysis/projection.py": "3be5f9e0b069fa48dc470220d40a7cad302afb94ab5b8707d38e4ed6f03178bc",
+    "src/pyrpmd/analysis/rate_io.py": "bdfc82bc3615ed4be998a04c1834b69067df02992790ab6575ac317b4f7cf771",
+    "src/pyrpmd/analysis/rate_postprocess.py": "bbf77026592d1d512c6f91818726b86ced71f8d0af42f99534a4f2370e92e5a3",
+    "src/pyrpmd/analysis/recrossing.py": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45",
+    "src/pyrpmd/analysis/report_compare.py": "731516c31b8a9c22cbd883712618df47a363bd76c9032a09d2d0b2df53cb74e7",
+    "src/pyrpmd/analysis/report_observables.py": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b",
+    "src/pyrpmd/analysis/report_render.py": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656",
+    "src/pyrpmd/analysis/report_sampling.py": "54a3444911d4b4608673ecbff3acf2ee081b34a8088e72bc9f09f419db73653d",
+    "src/pyrpmd/analysis/reporting.py": "7e5b87026e76f04cca05a81df191dbb94bd3ed0a50431e32a776b01aa18388b8",
+    "src/pyrpmd/analysis/scattering.py": "32f3caa24e2007a8b908417c612b1fa37ae6c898374e0f3e5c50c94e20a68776",
+    "src/pyrpmd/analysis/spectroscopy.py": "7ddcc583588d08e588c938cddcc6d4d8e32067d0ef47e9163d526ff2f34d734f",
+    "src/pyrpmd/analysis/surface.py": "c150d5aeefdd0b7e7eb6de6544fa6abe19c443a2be0abbd2f3abb6e5b51f9062",
+    "src/pyrpmd/barostat.py": "2b7b8584f1154c764f8ab6c5489d2a05bc3a51b7437ea3c8d856805b5e96d29e",
+    "src/pyrpmd/batched.py": "0f2366bacb745c32f7d5623eb2bc456a678f88a995488854828082e453e98790",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/block_propagation.py": "be33731535b3d75d0adf7603b36bb62d789e7b06bd669f9d0803394cef5cd6fa",
+    "src/pyrpmd/checkpoint.py": "1e4464c9dda78031dc8cb32323a47e743122c1ec38300881f531fcc8723f4c44",
+    "src/pyrpmd/cli.py": "67d2e8c7670b286136c68fa3e583f80d8de0f45a2f87d5d6f52384023b50ebab",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/cv_periodic.py": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2",
+    "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+    "src/pyrpmd/electrochemistry/__init__.py": "8793377b911aa8da402211f04e986d56c77fc00a0bb8b8bd4a1d7389cab3460c",
+    "src/pyrpmd/electrochemistry/kinetics.py": "cd2502a570790e4a57e3e97675be20ece276e2728efd031e7962571254c82095",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/reservoir.py": "c2092e405d6d880e21afa512597c37858daeed067f351ac134ddb5c5b5379be3",
+    "src/pyrpmd/electrochemistry/sampling.py": "873d1ed5f4e9e4c4a2a1c10ea35578e084bbe5dc4fa875bbfe8eb7b479b085aa",
+    "src/pyrpmd/electronic_friction.py": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005",
+    "src/pyrpmd/geometry.py": "195a532b7b2694837d124784841b87e638d419500f3aedc690dad434dbe3fd03",
+    "src/pyrpmd/initial_states.py": "19af0668ddb0259cf4d4afa2b2f99d71341cc60f8df73e9ac9bdd39f2b803742",
+    "src/pyrpmd/input.py": "6e2f42d668c9b458e489be0159bdc4c0ae49c26cf03fd57b4800d7bdb30355c5",
+    "src/pyrpmd/instanton.py": "504bbf5d46ebc05dbb875ef01de47a3df9dc2271ee30b2dbdeee5c4897b3e005",
+    "src/pyrpmd/io.py": "f4cdd8a2bb3ffd3e65aa91f5b11fa7d0384fdf25e73d1e75c58db4512f58ccca",
+    "src/pyrpmd/isomorphic.py": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5",
+    "src/pyrpmd/kc_rpmd.py": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2",
+    "src/pyrpmd/multitime.py": "b6e89becaf5fd6edbc13a0a3af6e64a173ed95499e1c68842a231a8a9051d9db",
+    "src/pyrpmd/mv_rpmd.py": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f",
+    "src/pyrpmd/native_ensemble.py": "e4ff5aaae29cb78be2acf70709e0ef6962023c29a0775df4b226817e4f167e56",
+    "src/pyrpmd/nonadiabatic.py": "68bc1c565ee795a640bcada4f21baff4083472594ad4b8eb620f62d85e9a94a6",
+    "src/pyrpmd/opes.py": "e976e83492000c75221915531b7449fb031f9966eee21c70f6d1af7f9fee0bed",
+    "src/pyrpmd/parallel/__init__.py": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5",
+    "src/pyrpmd/parallel/execution.py": "66daba0cbba95992a6ed3b300381b85ed9d5b1e1129820baad72e27859f8d044",
+    "src/pyrpmd/path_integral.py": "72d85927c1f2230d24938eb1ae0e210f61e7bd6654d484e46f6f5a726506fd5c",
+    "src/pyrpmd/pcet.py": "0e7901c8ef104b37c9e08fbd09ce0c96097ecf72b846b60177986b0a1bdc074c",
+    "src/pyrpmd/pcet_input.py": "697a786e16e6904f5e82535a76077ccdaa20b92f63caf381e428381d768f490b",
+    "src/pyrpmd/pesgen/__init__.py": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907",
+    "src/pyrpmd/pesgen/__main__.py": "68215945ac4766cdb44195a9cbe5a96ae750e67be9d4ca71913d9e3e78843bb7",
+    "src/pyrpmd/pesgen/_native/bridge.cpp": "74338290dff58c0def2fa84ed57a90942e9d8f54f784f596b49c8b7d2b8b5b6c",
+    "src/pyrpmd/pesgen/_native/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "src/pyrpmd/pesgen/_native/worker.f90": "44c71a89637c6d583b773245ffd663f599d29235bfef31500fd7aaab91b7668c",
+    "src/pyrpmd/pesgen/build.py": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06",
+    "src/pyrpmd/pesgen/formats.py": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7",
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "01302208546121eb5a1c5ca896f1a5ca18d6808bce1c2d14fb93a1f44647dc52",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "0d1f33baf73012c541708c327602c92cbb2546cceeee36a6202e6b7254f69661",
+    "src/pyrpmd/pesgen/reference.py": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b",
+    "src/pyrpmd/pesgen/workflow.py": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a",
+    "src/pyrpmd/plumed.py": "4999b605608d750e95b1e1f7ffd8b3216ac2db5b557fb9c29c51066a6dbf2570",
+    "src/pyrpmd/potentials/__init__.py": "575b06dc3b72aa686884904cbebe7bfa80b7f43ed5208c6735d56ff2c7ab9de9",
+    "src/pyrpmd/potentials/adapters.py": "bc6662a4a3e936b894457446ec6a080d66c0c51c24deae89cd82973f6b7d03bd",
+    "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+    "src/pyrpmd/potentials/builtin.py": "2a99e5d93c11e40f9919a5fa101c7360fbc22cf263ff7c263bef5bf6b0dfee6b",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/cache.py": "f2e6aa04854499a12d255371e626d689a907ca89bdb242426c89fa8cd7ffc7d6",
+    "src/pyrpmd/potentials/contraction.py": "4ac12b5251361344ebea1eb5407f2951b4a06b3bcdc015b90fe8c267bf6a49db",
+    "src/pyrpmd/potentials/diabatic.py": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec",
+    "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+    "src/pyrpmd/potentials/optional.py": "0ada475af322be90a8c4338b86a94e06e3e6552c3dfca47fdcabb772f96bb852",
+    "src/pyrpmd/potentials/python.py": "3f23de9da3ba7106fc0ccb1a564ff3b3ee60243e3d7c39112cfc638cb5f871f9",
+    "src/pyrpmd/potentials/socket.py": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08",
+    "src/pyrpmd/propagation.py": "f97ff6e6c8a2b95447397bab84cf596718d6dcc28f1b476fac1600efc633103e",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/reactions.py": "7f0b157c118681a81d4de4844370abae10725d8f716a5474d3654936a2b44624",
+    "src/pyrpmd/runner.py": "fada5146cc79bdc93ca05148b60fe9baecd5af6a7fa13f171f4b531f5cd038c2",
+    "src/pyrpmd/studies.py": "022349efbd744ab624df36b7f54dd5d98d2e4e32e2124089c65dd88629030843",
+    "src/pyrpmd/surface_hopping.py": "e28617a2ff7cfd75fbc25895f59d7a1d5a4372e0824b18609de2de3db6f1447b",
+    "src/pyrpmd/system.py": "3c409e5e5d05f76bab4f1aa26d4fd0cbdd120f4bc33b60ecfd3ee28770d54b1d",
+    "src/pyrpmd/thermal_nrpmd.py": "4056f73013326c671b991b8dc5f3ca2e0844dd2cce5c102707099bb0ea345c8b",
+    "src/pyrpmd/thermostats.py": "589089d255c1041b50af408ed350f25a780f52809c11f9ce3d8f25df88fac88b",
+    "src/pyrpmd/trajectory.py": "2fb27eae9f4b7449a53d12c885f1a0f205ea0bb144f6311678638e48cfccb104",
+    "src/pyrpmd/transition_interface.py": "7949ceddcc4aeb1dd70c03354bdff305ed3492cbd221d4024ef7902556833183",
+    "src/pyrpmd/units.py": "cd4f490c2f17388e012fe769b6de1ca3e0ad737e5f8bd4b69b189d25036b9e20",
+    "src/pyrpmd/workflows/__init__.py": "33d30d77b7bc86a538af3e6352ed3daf2358596c90cb3a0dd197eb21bf4b7e3a",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "8545373f068b11af3791f8e64b68ca0ee27a63723fd6b45d2f2bd5e721cfc069",
+    "src/pyrpmd/workflows/batched_recrossing.py": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa",
+    "src/pyrpmd/workflows/drpmd.py": "d2e49032f05cdb191db88ae00bc033035c3a71066b66f2a1fb43ed08c2f21235",
+    "src/pyrpmd/workflows/extend.py": "7d3e564e819cf135ac755170c6f5fcc32bc47add1b38f9dd16f3a26190655cd1",
+    "src/pyrpmd/workflows/fes.py": "b711cea507581e80791e2c31133c7af632f20cd7fca5b59a8327d61c25c0ca13",
+    "src/pyrpmd/workflows/materials.py": "7d1a12eb9377f105a69befa6eb73ab068e606d3aa0f27a75e3e75a2ce0f6adcd",
+    "src/pyrpmd/workflows/metadynamics.py": "516153caaeded170ad379fcef3db52b58e989a8bc13f3c7771e3ecdfdbaba4ab",
+    "src/pyrpmd/workflows/native_pimd.py": "6d381fa9b9db1db40eff4715f3d02b884b533bc42e073f7701c89dd258b3f90b",
+    "src/pyrpmd/workflows/network.py": "0f9e9fce53caec3d45a0014807905600c7f436ab0d193ae4db500abcf168ebbf",
+    "src/pyrpmd/workflows/opes.py": "6b9440e3c4f385f4c2891775d309d60ca86e8350e7cdb02efd8b59e2c8a61db5",
+    "src/pyrpmd/workflows/pcet.py": "1c5cfbcbb87bf3b24f520aef23c305027eda34d04349bc77afbb88dbcca92aea",
+    "src/pyrpmd/workflows/prepare.py": "f88a4942d91c4332ac27b7fc7dd5721151c3148be2da6260358148fa0d9314e1",
+    "src/pyrpmd/workflows/rate.py": "de1a588e38252bb6fbe6b7cd9d05132878072efeaec59bf5de5f963eb5625f1f",
+    "src/pyrpmd/workflows/replica_exchange.py": "928b2eae63eaca12109d6a436a5ac07bb7f544cac5f620b4efe05d78ed655cb4",
+    "src/pyrpmd/workflows/sampling.py": "1abf7efbf558e0b76c2dc16ed3ad49d6826eac94e1b1b88c4d4c20b76a8e14af",
+    "src/pyrpmd/workflows/site_rate.py": "2b61175d0a61dae4cb5c384c6aa46f2585998ff32501cfc9d82c37a7f345c88b",
+    "src/pyrpmd/workflows/state_selected.py": "c885c1d46c6c16f342ff3e56d52a60fedee63e8b3a5690b5880a1f1bf58de478",
+    "src/pyrpmd/workflows/surface.py": "20cb068485f1887115af60876a2ec1ee775e2cce6963315294ee459260d80854",
+    "src/pyrpmd/workflows/surface_source.py": "ac8d6d8791dbe9e344475ff1b0691d622b68b1ab4eed89c14b540372dfbb3eaf"
+  },
+  "source_tree_note": "Runtime and native source file hashes below identify the tested worktree; final audit receipt-only documentation edits may follow this build.",
+  "status": "passed",
+  "wheel_native_extensions": [
+    "pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+    "pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so"
+  ],
+  "wheel_runtime_source_files_verified": 110
+}

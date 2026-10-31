@@ -65,9 +65,31 @@ def _integer(value, name, minimum):
     return int(value)
 
 
+def _real_array(value, name, *, error=ValueError):
+    """Validate real numerical data before a cast can discard information."""
+    try:
+        raw = np.asarray(value)
+    except (TypeError, ValueError) as exc:
+        raise error(f"{name} must contain finite real numbers") from exc
+    if raw.dtype.kind not in "iuf":
+        raise error(f"{name} must contain finite real numbers")
+    with np.errstate(over="ignore", invalid="ignore"):
+        result = np.asarray(raw, dtype=float)
+    if not np.isfinite(result).all():
+        raise error(f"{name} must contain finite real numbers")
+    return result
+
+
+def _real_scalar(value, name, *, error=ValueError):
+    value = _real_array(value, name, error=error)
+    if value.ndim != 0:
+        raise error(f"{name} must be a finite real scalar")
+    return float(value)
+
+
 def _positive(value, name):
-    value = float(value)
-    if not np.isfinite(value) or value <= 0:
+    value = _real_scalar(value, name)
+    if value <= 0:
         raise ValueError(f"{name} must be positive and finite")
     return value
 
@@ -152,14 +174,14 @@ class DiatomicOrbit:
         reduced mass as this orbit; omitted masses mean equal atoms of mass
         2*mu. Whole-fragment orientation and the collision launch are external.
         """
-        masses = np.asarray((2 * self.reduced_mass,) * 2 if masses is None else masses, dtype=float)
-        axis = np.asarray(axis, dtype=float)
-        if masses.shape != (2,) or not np.isfinite(masses).all() or np.any(masses <= 0):
+        masses = _real_array((2 * self.reduced_mass,) * 2 if masses is None else masses, "masses")
+        axis = _real_array(axis, "axis")
+        if masses.shape != (2,) or np.any(masses <= 0):
             raise ValueError("masses must contain two positive finite atomic masses")
         mu = float(masses[0] * masses[1] / masses.sum())
         if not np.isclose(mu, self.reduced_mass, rtol=1e-12, atol=0):
             raise ValueError("Cartesian masses do not match the orbit reduced mass")
-        if axis.shape != (3,) or not np.isfinite(axis).all():
+        if axis.shape != (3,):
             raise ValueError("axis must be a finite nonzero three-vector")
         scale = np.max(np.abs(axis))
         if scale == 0:
@@ -201,11 +223,13 @@ class DiatomicAction:
             raise TypeError("potential and gradient must be scalar radial callables")
         self._potential, self._gradient = potential, gradient
         self.reduced_mass = _positive(reduced_mass, "reduced_mass")
-        self.domain = tuple(float(x) for x in domain)
-        if len(self.domain) != 2 or not np.isfinite(self.domain).all() or not 0 < self.domain[0] < self.domain[1]:
+        domain = _real_array(domain, "domain", error=ActionDomainError)
+        if domain.shape != (2,) or not 0 < domain[0] < domain[1]:
             raise ActionDomainError("domain must be a finite positive interval (r_min,r_max)")
-        bracket = self.domain if equilibrium_bracket is None else tuple(float(x) for x in equilibrium_bracket)
-        if len(bracket) != 2 or not np.isfinite(bracket).all() or not self.domain[0] <= bracket[0] < bracket[1] <= self.domain[1]:
+        self.domain = tuple(float(x) for x in domain)
+        bracket = _real_array(self.domain if equilibrium_bracket is None else equilibrium_bracket,
+                              "equilibrium bracket", error=ActionDomainError)
+        if bracket.shape != (2,) or not self.domain[0] <= bracket[0] < bracket[1] <= self.domain[1]:
             raise ActionDomainError("equilibrium bracket must lie inside the radial domain")
         self.quadrature_order = _integer(quadrature_order, "quadrature_order", 8)
         self.max_quadrature_order = _integer(max_quadrature_order, "max_quadrature_order", 2 * self.quadrature_order)
@@ -215,7 +239,7 @@ class DiatomicAction:
         self.max_time_cells = _integer(max_time_cells, "max_time_cells", 2 * self.time_cells)
         self.time_tolerance = _positive(time_tolerance, "time_tolerance")
         self.provenance = dict(provenance or {})
-        minimum = minimize_scalar(lambda r: float(self._potential(r)), bounds=bracket,
+        minimum = minimize_scalar(lambda r: self._evaluate(self._potential, r), bounds=bracket,
                                   method="bounded", options={"xatol": 1e-13})
         if not minimum.success or not np.isfinite(minimum.fun) or not bracket[0] < minimum.x < bracket[1]:
             raise ActionDomainError("Could not locate an interior well minimum")
@@ -232,8 +256,8 @@ class DiatomicAction:
         step = min(1e-4 * max(1.0, self.equilibrium_bohr),
                    0.1 * (self.equilibrium_bohr - self.domain[0]),
                    0.1 * (self.domain[1] - self.equilibrium_bohr))
-        curvature = (float(self._gradient(self.equilibrium_bohr + step))
-                     - float(self._gradient(self.equilibrium_bohr - step))) / (2 * step)
+        curvature = (self.gradients(self.equilibrium_bohr + step)
+                     - self.gradients(self.equilibrium_bohr - step)) / (2 * step)
         if not np.isfinite(curvature) or curvature <= 0:
             raise ActionDomainError("Well minimum must have positive finite curvature")
         self.harmonic_omega = float(np.sqrt(curvature / self.reduced_mass))
@@ -245,7 +269,8 @@ class DiatomicAction:
         from benchmarks.h3.pes import BKMP2Potential, SOURCE
         if potential is not None and library is not None:
             raise ValueError("Supply a potential or a library, not both")
-        if len(domain) != 2 or not 0.2 <= domain[0] < domain[1] < 198.0:
+        domain = _real_array(domain, "BKMP2 domain", error=ActionDomainError)
+        if domain.shape != (2,) or not 0.2 <= domain[0] < domain[1] < 198.0:
             raise ActionDomainError("BKMP2 domain requires 0.2 <= r_min < r_max < 198 bohr")
         potential = BKMP2Potential(library) if potential is None else potential
         provenance = {"model": "BKMP2 isolated H2", "spectator_pair_distances_bohr": [99.0, 99.0],
@@ -272,12 +297,12 @@ class DiatomicAction:
                 "provenance": self.provenance}
 
     def _evaluate(self, function, r):
-        r = np.asarray(r, dtype=float)
-        if not np.isfinite(r).all() or np.any((r < self.domain[0]) | (r > self.domain[1])):
+        r = _real_array(r, "radial coordinates", error=ActionDomainError)
+        if np.any((r < self.domain[0]) | (r > self.domain[1])):
             raise ActionDomainError("Radial evaluation would leave the supplied potential domain")
-        values = np.fromiter((float(function(float(x))) for x in r.ravel()), dtype=float, count=r.size).reshape(r.shape)
-        if not np.isfinite(values).all():
-            raise ActionDomainError("Radial potential or derivative returned a nonfinite value")
+        values = np.fromiter((_real_scalar(function(float(x)), "radial potential or derivative",
+                                          error=ActionDomainError) for x in r.ravel()),
+                             dtype=float, count=r.size).reshape(r.shape)
         return float(values) if r.ndim == 0 else values
 
     def values(self, r):
@@ -364,7 +389,8 @@ class DiatomicAction:
 
     def action(self, energy):
         """Return J=integral(p_r dr)/pi, in units where hbar=1."""
-        if float(energy) == 0:
+        energy = _real_scalar(energy, "energy above the minimum")
+        if energy == 0:
             return 0.0
         return self._integrals(energy)[0]
 

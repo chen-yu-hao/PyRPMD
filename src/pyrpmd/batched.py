@@ -110,6 +110,8 @@ class BatchedState:
     time: object = 0.0
 
     def __post_init__(self):
+        if any(np.asarray(value).dtype.kind not in "fiu" for value in (self.q, self.p)):
+            raise ValueError("batched q,p must be real numerical arrays")
         self.q = np.array(self.q, dtype=np.float64, order="C", copy=True)
         self.p = np.array(self.p, dtype=np.float64, order="C", copy=True)
         if (self.q.ndim != 4 or self.q.shape[-1] != 3 or min(self.q.shape) < 1

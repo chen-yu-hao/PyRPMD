@@ -80,10 +80,26 @@ def _sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def _real_array(value, name):
+    """Reject complex, boolean and non-numeric data before float conversion."""
+    try:
+        raw = np.asarray(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{name} must contain finite real numbers") from exc
+    if raw.dtype.kind not in "iuf":
+        raise ValueError(f"{name} must contain finite real numbers")
+    with np.errstate(over="ignore", invalid="ignore"):
+        result = np.asarray(raw, dtype=np.float64)
+    if not np.isfinite(result).all():
+        raise ValueError(f"{name} must contain finite real numbers")
+    return result
+
+
 def _finite(value, name, *, positive=False, nonnegative=False):
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(f"{name} must be a finite number")
-    number = float(value)
+    raw = _real_array(value, name)
+    if raw.ndim != 0:
+        raise ValueError(f"{name} must be a finite real scalar")
+    number = float(raw)
     if not math.isfinite(number) or (positive and number <= 0) or (nonnegative and number < 0):
         raise ValueError(f"Invalid {name}: {value!r}")
     return number
@@ -172,7 +188,7 @@ class DiatomicSwitcher:
     def __init__(self, potential, *, mass, omega, equilibrium, asymptote_bohr=99.,
                  target_omega=None, target_equilibrium=None, target_offset=0.,
                  energy_zero_hartree=0.):
-        masses = np.asarray(mass, dtype=float)
+        masses = _real_array(mass, "mass")
         if masses.ndim == 0:
             masses = np.repeat(masses, 2)
         if masses.shape != (2,) or not np.isfinite(masses).all() or np.any(masses <= 0):
@@ -265,8 +281,8 @@ class DiatomicSwitcher:
         Ensemble uncertainty must be computed across trajectory means, not
         by treating correlated time points as independent samples.
         """
-        r = np.array(r, dtype=np.float64, order="C", copy=True)
-        p = np.array(p, dtype=np.float64, order="C", copy=True)
+        r = np.array(_real_array(r, "r"), dtype=np.float64, order="C", copy=True)
+        p = np.array(_real_array(p, "p"), dtype=np.float64, order="C", copy=True)
         if r.ndim != 1 or not 1 <= len(r) <= 1000000 or p.shape != r.shape:
             raise ValueError("r and p must be matching nonempty one-dimensional phase arrays")
         if not np.isfinite(r).all() or not np.isfinite(p).all():
@@ -299,7 +315,7 @@ class DiatomicSwitcher:
             row["time_fs"] /= FS_TO_AU
             trace.append(row)
         clean = lambda value: float(value) if math.isfinite(value) else None
-        hold_average = {name: float(value/output.hold_duration) if output.hold_duration > 0 else None
+        hold_average = {name: clean(value/output.hold_duration) if output.hold_duration > 0 else None
                         for name, value in zip(_HOLD_FIELDS, output.hold_integrals)}
         summary = {"schema": "pyrpmd.experimental.diatomic-switch.v1",
             "status": "completed" if status == 0 else "failed", "native_status": status,

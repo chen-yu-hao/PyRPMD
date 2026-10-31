@@ -157,9 +157,13 @@ def test_incomplete_pilot_plan_has_progress_without_production_or_raw_pilot_read
     assert run["sampling_diagnostics"]["sampling"]["adaptive"]["scope"] == "discarded_adaptation_pilots"
 
 
-def test_schema_two_frozen_centers_are_usable_without_hdf5(tmp_path):
+@pytest.mark.parametrize("schema", [2, 3])
+def test_frozen_centers_are_usable_without_hdf5(tmp_path, schema):
     plan = _plan()
     plan["status"] = "frozen"
+    plan["schema_version"] = schema
+    if schema == 3:
+        plan["overlap_metric"] = "normalized_mbar_cosine"
     _write_plan(tmp_path, plan)
     (tmp_path / "checkpoints").mkdir()
     np.savez(tmp_path / "checkpoints/window_00001_replica_0000.npz", values=[[.9, .9], [1.1, 1.1]])
@@ -237,6 +241,31 @@ def test_cached_incomplete_plan_keeps_each_callers_frozen_requirement(tmp_path, 
 
     read_json.assert_called_once_with(run, path)
     checksum.assert_called_once()
+
+
+def test_schema_three_report_names_the_normalized_overlap_metric(tmp_path):
+    plan = _plan()
+    plan.update(schema_version=3, overlap_metric="normalized_mbar_cosine")
+    _write_plan(tmp_path, plan)
+    run = _run(tmp_path)
+    report_sampling.collect_adaptive_progress(run, tmp_path)
+    overlap = next(plot for plot in run["_plots"] if plot["id"].endswith("-adaptive-overlap"))
+    assert "normalized MBAR cosine".lower() in overlap["ylabel"].lower()
+    assert "not directly comparable" in overlap["caption"]
+    assert run["sampling_diagnostics"]["sampling"]["adaptive"]["overlap_metric"] == "normalized_mbar_cosine"
+
+
+@pytest.mark.parametrize("metric", [None, "mbar_symmetric_transition", "unknown"])
+def test_schema_three_report_rejects_an_ambiguous_overlap_metric(tmp_path, metric):
+    plan = _plan()
+    plan["schema_version"] = 3
+    if metric is not None:
+        plan["overlap_metric"] = metric
+    _write_plan(tmp_path, plan)
+    run = _run(tmp_path)
+    report_sampling.collect_adaptive_progress(run, tmp_path)
+    assert not run["_plots"]
+    assert any("overlap metric" in item["reason"] for item in run["skipped"])
 
 
 def test_legacy_plan_without_saved_schedule_does_not_invent_steps_or_coverage(tmp_path):

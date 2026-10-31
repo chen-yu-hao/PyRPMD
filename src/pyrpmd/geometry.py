@@ -70,12 +70,53 @@ def _readonly(value):
     return np.frombuffer(value.tobytes(), dtype=value.dtype).reshape(value.shape)
 
 
+def _reduce_periodic_basis(basis):
+    """Shorten a lattice basis using integer row operations only.
+
+    Size reduction and the Lovasz condition (delta=3/4) keep the exact
+    closest-vector search from depending on an arbitrary, very sheared
+    representation of the same lattice. This is a search preconditioner,
+    not a minimum-image approximation: the QR sphere search below still
+    certifies the nearest image. Only periodic vectors enter this routine.
+    """
+    reduced = np.array(basis, dtype=float, copy=True)
+    level = 1
+    for _ in range(256):
+        if level >= len(reduced):
+            break
+        for previous in range(level - 1, -1, -1):
+            triangular = np.linalg.qr(reduced.T, mode="reduced")[1]
+            coefficient = triangular[previous, level] / triangular[previous, previous]
+            if not np.isfinite(coefficient) or abs(coefficient) > 2 ** 52:
+                # Do not introduce an unreliable integer operation. The
+                # original bounded search retains its explicit failure mode.
+                return np.array(basis, dtype=float, copy=True)
+            multiple = int(np.rint(coefficient))
+            if multiple:
+                reduced[level] -= multiple * reduced[previous]
+                if not np.isfinite(reduced).all():
+                    return np.array(basis, dtype=float, copy=True)
+        triangular = np.linalg.qr(reduced.T, mode="reduced")[1]
+        coefficient = triangular[level - 1, level] / triangular[level - 1, level - 1]
+        ratio = abs(triangular[level, level] / triangular[level - 1, level - 1])
+        # Compare a dimensionless ratio instead of squaring cell lengths.
+        if ratio >= 1 or ratio ** 2 >= 0.75 - coefficient ** 2:
+            level += 1
+        else:
+            reduced[[level - 1, level]] = reduced[[level, level - 1]]
+            level = max(1, level - 1)
+    # Even if a floating-point boundary prevents termination, every completed
+    # row operation preserves the lattice; the bounded exact search remains
+    # the authority. The cap bounds construction work, not image accuracy.
+    return reduced
+
+
 @dataclass(frozen=True, eq=False, init=False)
 class FixedCellGeometry:
     """Validated, immutable nearest-image geometry for a fixed cell.
 
-    Prepare this once for repeated CV/PES geometry calls. The lattice basis,
-    orthogonality decision and QR decomposition do not depend on positions.
+    Prepare this once for repeated CV/PES geometry calls. The reduced lattice
+    basis, orthogonality decision and QR decomposition do not depend on positions.
     Arrays own immutable snapshots, so mutating a caller's cell or flags
     cannot invalidate the cached decomposition. The free ``minimum_image``
     function retains its one-shot array API.
@@ -97,7 +138,12 @@ class FixedCellGeometry:
         if len(basis):
             normalized_gram = gram / np.sqrt(np.outer(diagonal, diagonal))
             if not np.allclose(normalized_gram, np.eye(len(basis)), rtol=0, atol=1e-14):
-                orthogonal, triangular = np.linalg.qr(basis.T, mode="reduced")
+                basis = _reduce_periodic_basis(basis)
+                gram = basis @ basis.T
+                diagonal = np.diag(gram)
+                normalized_gram = gram / np.sqrt(np.outer(diagonal, diagonal))
+                if not np.allclose(normalized_gram, np.eye(len(basis)), rtol=0, atol=1e-14):
+                    orthogonal, triangular = np.linalg.qr(basis.T, mode="reduced")
         for name, value in (
             ("cell", cell), ("pbc", flags), ("basis", basis),
             ("squared_lengths", diagonal), ("orthogonal", orthogonal),
@@ -126,8 +172,9 @@ def minimum_image(displacements, cell, pbc=None):
 
     Fractional-coordinate rounding alone is incorrect in a skew cell. A QR
     closest-lattice-vector search enumerates the bounded sphere in at most
-    three dimensions. The orthogonal-cell path is vectorized. Pathological
-    searches fail explicitly instead of returning an unverified image.
+    three dimensions after integer reduction of the periodic lattice basis.
+    The orthogonal-cell path is vectorized. Pathological searches fail explicitly
+    instead of returning an unverified image.
     Repeated evaluations can prepare a ``FixedCellGeometry`` once instead.
     """
     d = _vectors(displacements)

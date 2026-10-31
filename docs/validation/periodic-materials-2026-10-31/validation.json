@@ -1,0 +1,113 @@
+{
+  "schema": "pyrpmd.periodic-materials-audit.validation.v1",
+  "generated_utc": "2026-10-31T14:28:29.076855+00:00",
+  "base_revision": "c4fa743f552c1d71db35fab791a2e63409bc1c3e",
+  "branch": "fix/periodic-materials-audit",
+  "source_state": "Pre-commit modified working tree; hashes identify the tested files, not the unchanged base revision.",
+  "tested_changed_source_and_new_test_sha256": {
+    "src/pyrpmd/analysis/surface.py": "001f0c5f33bcd59893bc32ab3fd574332a9c505f7684cb4d46422ac7500aeb9e",
+    "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+    "src/pyrpmd/io.py": "27e45bea8193a7b823b1828d00fa52a3c1b5d95ed52362f64ec1d72296f00938",
+    "src/pyrpmd/potentials/__init__.py": "f057d6b939b255814c7e844130712d30c690417f17bb61c19abab60d2684719c",
+    "src/pyrpmd/potentials/optional.py": "e83a0544d32dd9d58ebecedff9fd1bc0d6ccd624ab9797e97e3e71e702107fd4",
+    "src/pyrpmd/potentials/python.py": "cdfe785ba02940188e02d65720cf7666ec016a703c8a8dba602be9d01c43b95f",
+    "src/pyrpmd/reactions.py": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1",
+    "src/pyrpmd/runner.py": "f9ab313b47bc670bc98bcb4dd81a3ce91b65a2b7812648e66f68e88a18b965e1",
+    "src/pyrpmd/workflows/fes.py": "55ae57db2cfb6b918de00e1554e66a35205b46b5428be915fde054be156a8084",
+    "tests/test_ase_force_consistency.py": "754ef7c04bd142724258b00cb55842ad63f874f36418641d619b050fc0fb28e7",
+    "tests/test_native_pimd_preflight.py": "10ccb65ae4b7bfa6207558b403fd0f03e527d8a7a593a9f7574e422672e04a4f",
+    "tests/test_periodic_basis_reduction.py": "7932ce5e0ab28b44d613a7f963cf8111d689a8144f9853d2e5e3c76c635fd1c8",
+    "tests/test_potential_energy_identity.py": "a664b96d3088f9dd133691de0676685af7c9a420b53b3f5bd6c86bad436b8261",
+    "tests/test_python_potential_rebinding.py": "386717a47fda2408320a80f12d67c523b53ca15c0b875383efc9ef0fdf6f88e7",
+    "tests/test_surface_area_normalization.py": "d927c2fa1c8953daa8ff89842f7ec3519c9e88856dccbe7e85421b60b518448d"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux",
+    "machine": "x86_64",
+    "native_extensions_built": true,
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "packages": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "ase": "3.29.0",
+      "h5py": "3.16.0",
+      "pytest": "9.2.0",
+      "sphinx": "8.2.3"
+    }
+  },
+  "full_pytest": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYRPMD_NIALH_POTENTIAL=<verified-model-path> python -m pytest -q",
+    "exit_code": 0,
+    "passed": 3885,
+    "skipped": 114,
+    "subtests_passed": 264,
+    "seconds": 471.94,
+    "log": "pytest-final.txt",
+    "skip_reasons": "See the complete SKIPPED summary in pytest-final.txt; skipped checks are not counted as passed."
+  },
+  "new_regression_tests": {
+    "total": 80,
+    "files": {
+      "tests/test_periodic_basis_reduction.py": 14,
+      "tests/test_ase_force_consistency.py": 7,
+      "tests/test_potential_energy_identity.py": 28,
+      "tests/test_python_potential_rebinding.py": 3,
+      "tests/test_surface_area_normalization.py": 13,
+      "tests/test_native_pimd_preflight.py": 15
+    },
+    "included_in_full_pytest": true
+  },
+  "documentation": [
+    {
+      "language": "en",
+      "builder": "html",
+      "command": "python -m sphinx -W --keep-going -b html docs <output-directory>",
+      "exit_code": 0,
+      "warnings": 0
+    },
+    {
+      "language": "en",
+      "builder": "singlehtml",
+      "command": "python -m sphinx -W --keep-going -b singlehtml docs <output-directory>",
+      "exit_code": 0,
+      "warnings": 0
+    },
+    {
+      "language": "zh",
+      "builder": "html",
+      "command": "python -m sphinx -W --keep-going -b html docs/zh <output-directory>",
+      "exit_code": 0,
+      "warnings": 0
+    },
+    {
+      "language": "zh",
+      "builder": "singlehtml",
+      "command": "python -m sphinx -W --keep-going -b singlehtml docs/zh <output-directory>",
+      "exit_code": 0,
+      "warnings": 0
+    }
+  ],
+  "real_pes": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python benchmarks/materials/ni_h_eam.py --model <verified-model-path> --output <new-output-directory>",
+    "exit_code": 0,
+    "report": "eam-validation.json",
+    "cases": 4,
+    "implementation_checks_passed": true,
+    "source_files_changed_during_run": [],
+    "physical_converged": false,
+    "equilibration_converged": false,
+    "all_diffusion_analysis_status": "ballistic_or_drifting"
+  },
+  "artifact_sha256": {
+    "pytest-final.txt": "f361eece0ee86c45335144fa37609d9dc7dd7369d8e412f7391e9e26e7a2003b",
+    "eam-validation.json": "7a579c5c2e9b6c053363a5d4847d7893a8594848dab7ff2275558f72bd54bd81"
+  },
+  "limitations": [
+    "Optional electronic-structure/PyTorch/PLUMED/external-PES/MPI checks require dependencies or configured sources not available in this local environment.",
+    "No GPU or multi-node validation was performed.",
+    "The four short EAM trajectories do not establish converged diffusion, isotope effects, catalytic rates or PES physical accuracy.",
+    "CO/O/Pt(111) production runs and GPAW/real-metal DFT were not rerun."
+  ]
+}

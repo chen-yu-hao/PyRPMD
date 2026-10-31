@@ -14,6 +14,7 @@ import h5py
 import numpy as np
 
 from pyrpmd.input import InputError, JobSpec, rate_pmf_options
+from pyrpmd.analysis.fes import reconstruct_fes
 from pyrpmd.io import fingerprint
 from pyrpmd.runner import run_resolved
 from pyrpmd.workflows.rate import (
@@ -24,6 +25,8 @@ from pyrpmd.workflows.rate import (
     _pmf_and_parent_tasks,
     _prepare,
     _recrossing_options,
+    _save_pmf_arrays,
+    _ui_rate_pmf,
     rate_coordinate,
 )
 
@@ -60,6 +63,44 @@ class RatePMFInputTests(unittest.TestCase):
         ):
             with self.subTest(invalid=invalid), self.assertRaises(InputError):
                 rate_pmf_options(invalid)
+
+
+class RateUIUncertaintyTests(unittest.TestCase):
+    def test_failed_gaussian_fits_do_not_create_an_unconditional_interval(self):
+        # Resampling either four-frame stream can eliminate its only fluctuation.
+        # Keep the valid fits as diagnostics without silently conditioning the
+        # primary error estimate on nonzero sample variance.
+        samples = [np.array([0., 0., 0., .2]), np.array([.8, 1., 1., 1.])]
+        centers, stiffness = np.array([0., 1.]), np.array([1e-12, 1e-12])
+        data = reconstruct_fes(
+            [a[:, None] for a in samples], centers[:, None], stiffness[:, None, None],
+            1., bins=3, ranges=[[-.5, 1.5]], bootstrap=0,
+        )
+        options = rate_pmf_options({
+            "rate": {"dividing_surface": 1.},
+            "analysis": {"bootstrap": 40, "seed": 18},
+        })
+        result = _ui_rate_pmf(
+            {"data": data}, {"beta": 1.}, centers, samples, stiffness, options,
+        )
+        self.assertTrue(result["ready"])
+        bootstrap = result["bootstrap"]
+        self.assertGreaterEqual(bootstrap["valid"], 2)
+        self.assertLess(bootstrap["valid"], bootstrap["attempted"])
+        self.assertEqual(set(bootstrap["failure_counts"]), {"ui_fit_failed"})
+        self.assertIsNone(result["barrier_standard_error_hartree"])
+        self.assertIsNone(result["barrier_percentile_95_ci_hartree"])
+        self.assertGreater(result["supported_draw_barrier_standard_error_hartree"], 0)
+        self.assertFalse(result["barrier_uncertainty"]["available"])
+        with tempfile.TemporaryDirectory() as directory:
+            _save_pmf_arrays(directory, result, "ui")
+            with np.load(Path(directory) / "rate_pmf.npz", allow_pickle=False) as saved:
+                self.assertTrue(np.isnan(saved["standard_error"]).all())
+                self.assertTrue(saved["standard_error_mask"].all())
+                np.testing.assert_array_equal(
+                    saved["supported_draw_standard_error"], result["supported_draw_standard_error"],
+                )
+                self.assertTrue(np.isfinite(saved["free_energy"]).all())
 
 
 class RateMBARIntegrationTests(unittest.TestCase):
@@ -211,6 +252,27 @@ class RateMBARIntegrationTests(unittest.TestCase):
             self.assertEqual(result["status"], "unsupported_pmf")
             self.assertIsNone(result["rate_estimate_cm3_s"])
             self.assertFalse((Path(output) / "recrossing.npz").exists())
+
+    def test_adaptive_production_diagnostics_reach_the_top_level_rate(self):
+        sampled = self.sampled()
+        adaptive = {"pilot_target_met": True, "production_target_met": False,
+                    "production": {"effective_samples_target_met": False}}
+        sampled["summary"]["adaptive_umbrella"] = adaptive
+        config = copy.deepcopy(self.prepared)
+        config["analysis"]["bootstrap"] = 0
+        with tempfile.TemporaryDirectory() as output:
+            pmf, _ = _pmf_and_parent_tasks(
+                sampled, config, self.system, output, self.options,
+            )
+            self.assertEqual(pmf["adaptive_umbrella"], adaptive)
+            self.assertIsNot(pmf["adaptive_umbrella"], adaptive)
+            result = _aggregate([], pmf, config, output, self.options)
+            self.assertEqual(result["pmf"]["adaptive_umbrella"], adaptive)
+            for name in ("rate_pmf.json", "summary.json"):
+                public = json.loads((Path(output) / name).read_text())
+                if name == "summary.json":
+                    public = public["pmf"]
+                self.assertEqual(public["adaptive_umbrella"], adaptive)
 
     def test_auto_surface_is_actual_supported_center_and_has_its_own_dynamics(self):
         config = copy.deepcopy(self.prepared)

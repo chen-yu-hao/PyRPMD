@@ -111,6 +111,18 @@ finally:
 
 For electronic calculations, D and T are passed as hydrogen and keep their nuclear masses.
 
+ASE-backed adapters request the energy consistent with the forces
+(`get_potential_energy(force_consistent=True)`). With electronic smearing this is usually the
+calculator's electronic free energy, not its zero-temperature extrapolated energy and not
+a nuclear PMF. The adapter falls back only when the calculator does not advertise `free_energy`
+and ASE raises `PropertyNotImplementedError`; a failure of an advertised property remains an
+error. Keep electronic and nuclear temperatures explicit. The energy convention is part of
+the run identity: older ASE-backed runs cannot be resumed or recomputed with this adapter,
+even if a classical calculator's two energies happen to coincide. Their saved summary remains
+readable. Use a new output directory; new-convention checkpoints resume normally. Do not combine
+old extrapolated energies or free-energy weights with the corrected ones. See the
+[ASE energy contract](https://docs.ase-lib.org/ase/atoms.html#ase.Atoms.get_potential_energy).
+
 The Torch adapter evaluates the model on its device and transfers coordinates and forces each call;
 each trajectory process loads its own copy of the model.
 

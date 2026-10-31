@@ -141,6 +141,38 @@ class AnalyticDiatomicActionTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             orbit.sample(817)
 
+    def test_real_inputs_are_validated_before_float_conversion(self):
+        orbit = self.orbits[0]
+        for energy in (np.complex128(.01+1j), np.complex128(0+1j), True, "0.01"):
+            for method in (self.model.action, self.model.turning_points, self.model.orbit_at_energy):
+                with self.subTest(energy=energy, method=method.__name__), self.assertRaises(ValueError):
+                    method(energy)
+        for coordinates in (np.array([R0+1j]), np.array([R0], dtype=object), [True]):
+            for method in (self.model.values, self.model.gradients):
+                with self.subTest(coordinates=coordinates, method=method.__name__), self.assertRaises(ActionDomainError):
+                    method(coordinates)
+        with self.assertRaises(ValueError):
+            orbit.cartesian_at_phase(.2, masses=np.array([2*MU+1j, 2*MU]))
+        with self.assertRaises(ValueError):
+            orbit.cartesian_at_phase(.2, axis=np.array([1+1j, 0, 0]))
+        for kwargs in ({"domain": np.array([.2+1j, 12.])},
+                       {"equilibrium_bracket": np.array([1.2+1j, 1.6])}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ActionDomainError):
+                DiatomicAction(lambda r: (r-R0)**2, MU,
+                                gradient=lambda r: 2*(r-R0), **kwargs)
+        for mass in (np.complex128(MU+1j), True, str(MU)):
+            with self.subTest(mass=mass), self.assertRaises(ValueError):
+                DiatomicAction(lambda r: (r-2)**2, mass, gradient=lambda r: 2*(r-2))
+
+    def test_complex_potential_or_gradient_cannot_be_silently_projected_to_real(self):
+        functions = (
+            (lambda r: np.complex128((r-2)**2+1j), lambda r: 2*(r-2)),
+            (lambda r: (r-2)**2, lambda r: np.complex128(2*(r-2)+1j)),
+        )
+        for potential, gradient in functions:
+            with self.subTest(potential=potential, gradient=gradient), self.assertRaises(ActionDomainError):
+                DiatomicAction(potential, 1., gradient=gradient)
+
     def test_bounded_domain_failures_do_not_extrapolate_potential(self):
         for r in (0.199, 12.001, np.nan):
             with self.subTest(r=r), self.assertRaises(ActionDomainError):

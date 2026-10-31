@@ -73,6 +73,10 @@ python benchmarks/h3/convergence_report.py runs --output runs/PMF-CONVERGENCE.md
 
 验收保留有效样本数、真实子轨迹、父链约束、重叠、能量误差、
 样本/checkpoint 一致性等门槛；完整记录全部 bootstrap draw。
+当前输出只在全部请求的 PMF draw 均成功且相关性分块支持充分时报告主势垒误差与置信区间；
+若存在拒绝 draw，主字段为 `null`，曲线主误差为 NaN，接受子集的统计只放在 `supported_draw_*` 中。
+最终速率使用同一规则；条件统计不代表无条件置信区间。应一起检查请求、尝试、有效和拒绝次数。
+本页与历史记录中的条件区间保留其原始限定，不应改称当前实现的无条件主误差。
 报告区分同流 bootstrap 误差、独立 seed 差异和 bin 宽敏感性。
 即使所有工程门槛通过，`converged` 仍为 `false`：只有两个独立种子，
 也未改变温度、珠子数、步长、R∞，不足以给出正式收敛速率。
