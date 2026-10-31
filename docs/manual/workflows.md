@@ -167,7 +167,7 @@ explain configuration and native PES use.
 
 ## One- and two-dimensional free energies: `fes`
 
-`fes` runs umbrella sampling on one or two CVs and unbiases the samples with MBAR, giving the
+`fes` with `method="umbrella"` runs umbrella sampling on one to three CV dimensions and unbiases the samples with MBAR, giving the
 probability-density free energy of those coordinates.
 
 ```bash
@@ -268,7 +268,11 @@ Fluxes through different dividing surfaces can overlap, so PyRPMD reports each T
 
 ## Metadynamics
 
-`task="metadynamics"` supports standard and well-tempered modes on one to three CVs, with
+The old `task="metadynamics"` is a deprecated alias. Shared-bias multiple walkers,
+common result files and checkpoint compatibility are described in the
+[unified enhanced-sampling guide](../enhanced-sampling.md).
+
+`task="fes"` with `[fes] method="metadynamics"` supports standard and well-tempered modes on one to three CVs, with
 several replicas that each build their own bias history. Periodic cells and fixed atoms
 are supported; CV periodicity and atomic PBC are declared separately. Sampling uses
 Andersen, Nosé–Hoover chains or PILE-L, with optional quadratic walls on length CVs.

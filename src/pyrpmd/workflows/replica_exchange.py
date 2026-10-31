@@ -18,8 +18,8 @@ from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
-from .fes import (_analyze_streams, _fingerprint, checked_integer,
-                  resolve_umbrellas, steer_to_center, write_json)
+from .fes import _analyze_streams, resolve_umbrellas, steer_to_center
+from .common import _fingerprint, checked_integer, write_json, fingerprint_matches
 from .sampling import checkpoint_cv_config, fes_sampler
 
 CHECKPOINT_KIND = "PyRPMD.replica_exchange.v1"
@@ -173,7 +173,10 @@ def _read(config, system, options, output, replica, *, complete=False):
     path = _path(output, replica)
     with load_checkpoint(path, expected_kind=CHECKPOINT_KIND, require_integrity=True) as archive:
         data = {name: archive[name] for name in archive.files}
-    if str(data["fingerprint"]) != _identity(config, system, options, replica):
+    identity = {"kind": CHECKPOINT_KIND, "replica": replica,
+                "centers": options["centers"], "stiffness": options["stiffness"],
+                "pairs": options["pairs"]}
+    if not fingerprint_matches(data["fingerprint"], checkpoint_cv_config(config), system, identity):
         raise ValueError(f"checkpoint physics differs: {path}")
     if (data["payload_version"].shape != () or data["payload_version"].dtype.kind not in "iu"
             or data["payload_version"] != 1):

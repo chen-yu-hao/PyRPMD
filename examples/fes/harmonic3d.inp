@@ -1,0 +1,69 @@
+# Three-dimensional umbrella MBAR with the common FES input namespace.
+# Short analytic regression/example; sampling convergence is not established.
+task = "fes"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 73
+
+[fes]
+method = "umbrella"
+
+[system]
+symbols = ["H"]
+masses = [1837.152647]
+geometry = [[0.0, 0.0, 0.0]]
+
+[potential]
+provider = "builtin"
+name = "harmonic"
+params = {k = 0.002}
+
+[dynamics]
+timestep = "0.1 fs"
+
+[fes.sampling]
+equilibration = "10 fs"
+production = "40 fs"
+interval = "0.2 fs"
+andersen_interval = 40
+replicas = 2
+
+[[fes.cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+unit = "bohr"
+
+[[fes.cvs]]
+name = "y"
+kind = "cartesian"
+atom = 0
+axis = "y"
+estimator = "centroid"
+unit = "bohr"
+
+[[fes.cvs]]
+name = "z"
+kind = "cartesian"
+atom = 0
+axis = "z"
+estimator = "centroid"
+unit = "bohr"
+
+[fes.umbrella]
+cvs = ["x", "y", "z"]
+grid = [{start = -1.0, stop = 1.0, count = 2}, {start = -1.0, stop = 1.0, count = 2}, {start = -1.0, stop = 1.0, count = 2}]
+stiffness = ["0.01 hartree/bohr^2", "0.01 hartree/bohr^2", "0.01 hartree/bohr^2"]
+
+[fes.analysis]
+bins = [6, 6, 6]
+ranges = [[-2.0, 2.0], [-2.0, 2.0], [-2.0, 2.0]]
+bootstrap = 10
+min_count = 2
+
+[output]
+directory = "runs/harmonic3d"
+checkpoint_interval = "10 fs"

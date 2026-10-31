@@ -289,7 +289,9 @@ def test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell(boundary):
         job["system"].pop("fixed_atoms")
         job["system"].update(cell=np.diag([4.0, 4.0, 10.0]).tolist(), pbc=[True, True, False])
     config, system = resolve_job(job)
-    assert config["task"] == "metadynamics"
+    assert config["task"] == "fes"
+    assert config["fes"]["method"] == "metadynamics"
+    assert any("deprecated" in warning for warning in config["_warnings"])
     assert bool(system.fixed_atoms) == (boundary == "fixed")
     assert any(system.pbc) == (boundary == "periodic")
 

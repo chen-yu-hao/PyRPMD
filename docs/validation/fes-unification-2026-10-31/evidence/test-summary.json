@@ -1,0 +1,45 @@
+{
+  "full_suite": {
+    "passed": 3851,
+    "skipped": 132,
+    "initial_failures": 23,
+    "subtests_passed": 264,
+    "seconds": 630.68,
+    "failure_resolution": {
+      "14_local_socket_permissions": "Passed all 19 iPI client tests plus 2 real socket tests in an approved localhost-capable execution context; unchanged baseline reproduced the sandbox permission failure.",
+      "8_old_contract_assertions": "Updated expectations to canonical task/method, method-bearing fingerprints and unified diagnostics. Corrected regression suite passed.",
+      "1_flux_axis_serialization": "Restored legacy NPZ flux_axis scalar; H3 postprocess and corrected regression suite passed."
+    }
+  },
+  "final_fes_suite": {
+    "passed": 804,
+    "subtests_passed": 10,
+    "seconds": 146.01,
+    "failed": 0
+  },
+  "corrected_regressions": {
+    "passed": 78,
+    "seconds": 13.35,
+    "failed": 0
+  },
+  "socket_reruns": {
+    "ipi_clients_passed": 19,
+    "other_real_socket_cases_passed": 2,
+    "failed": 0
+  },
+  "baseline_focused": {
+    "passed": 181,
+    "subtests_passed": 14,
+    "seconds": 25.84
+  },
+  "native_fixed_sampling": {
+    "passed": 116,
+    "seconds": 28.63
+  },
+  "mpi_executed_locally": false,
+  "notes": [
+    "The targeted suites overlap and their pass counts must not be summed.",
+    "Optional real PES / ONNX / Torch / ASE checks account for skips; shared-walker MPI was not run locally.",
+    "All 23 initial full-suite failures have passing targeted reruns on the final implementation."
+  ]
+}

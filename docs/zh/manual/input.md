@@ -120,8 +120,9 @@ FES 中是两次保存样本之间的时间。
 | `[electronic_friction]` | `diffusion` | `method = "centroid"`、`provider`、`gamma` 或 `tensor`，或 Python `factory` 与 `params`；见[电子摩擦](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
 | `[initial_ensemble]` | `drpmd`（实验性核初态选择） | `method = "ne_rpmd"` 或 `"qct"`、NE 显式 `beta`、片段 Hessian/模式和 `vibrational_quanta`；见[直接碰撞](workflows.md) |
 | `[adaptive_umbrella]` | `fes`、`rate` | 见[气相与自由能](workflows.md) |
-| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` 可选偏置网格 |
-| `[opes]` | `opes` | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
+| `[fes]`、`[fes.sampling]`、`[fes.analysis]`、`[fes.<method>]` | `fes` | 选择 umbrella / metadynamics / opes；公共与方法参数分层，见[统一增强采样](../enhanced-sampling.md) |
+| `[metadynamics]` | `fes.method="metadynamics"` 或旧别名 | `grid.ranges` / `grid.bins` 可选偏置网格 |
+| `[opes]` | `fes.method="opes"` 或旧别名 | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
 | `[replica_exchange]` | `fes` | 同温固定窗口的交换间隔与可选连通图，见[副本交换](../replica-exchange.md) |
 | `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |

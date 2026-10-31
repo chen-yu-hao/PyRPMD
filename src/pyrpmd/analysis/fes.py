@@ -15,6 +15,7 @@ from scipy.special import logsumexp
 from scipy.optimize import minimize
 from scipy.sparse.csgraph import connected_components
 from ..bias import displacement
+from .fes_result import estimate_fes_uncertainty
 
 
 def statistical_inefficiency(series):
@@ -522,7 +523,7 @@ def reconstruct_fes(
     *,
     bootstrap_groups=None,
 ):
-    """Reconstruct 1D/2D density w.r.t. ds1...dsD, not bin probability mass.
+    """Reconstruct 1D/2D/3D density w.r.t. ds1...dsD, not bin probability mass.
 
     Bootstrap resamples contiguous circular time blocks independently inside
     each window/replica by default. With bootstrap_groups, equally spaced and
@@ -550,10 +551,10 @@ def reconstruct_fes(
     if not arrays or any(a.ndim != 2 or not len(a) for a in arrays):
         raise ValueError("samples must contain nonempty [Ns,D] arrays")
     d = arrays[0].shape[1]
-    if d not in (1, 2) or any(
+    if d not in (1, 2, 3) or any(
         a.shape[1] != d or not np.isfinite(a).all() for a in arrays
     ):
-        raise ValueError("FES supports finite one- or two-dimensional samples")
+        raise ValueError("FES supports finite one-, two- or three-dimensional samples")
     extra = None
     if correlation_observables is not None:
         try:
@@ -718,15 +719,7 @@ def reconstruct_fes(
             b = np.asarray(boots)
             valid = np.isfinite(b).sum(axis=0)
         if len(boots) >= 2:
-            means = np.divide(
-                np.nansum(b, axis=0), valid, out=np.zeros_like(f), where=valid > 0
-            )
-            square = np.nansum((b - means) ** 2, axis=0)
-            np.sqrt(
-                np.divide(square, valid - 1, out=se, where=valid > 1),
-                out=se,
-                where=valid > 1,
-            )
+            se = estimate_fes_uncertainty(b, kind="block_bootstrap", mask=mask)
     # Resampling can promote an originally undersampled bin past min_count.
     # Such a conditional error is not evidence supporting the masked estimate.
     se[mask] = np.nan

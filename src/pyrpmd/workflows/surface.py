@@ -16,7 +16,8 @@ import numpy as np
 from ..cv import Cartesian, CollectiveVariable, SurfaceHeight, SurfaceLateral, Distance, PeriodicDistance
 from ..parallel import root_call, run_tasks
 from ..units import parse_quantity
-from .fes import resolve_umbrellas, run_fes, write_json, _atomic_npz, jsonable
+from .fes import resolve_umbrellas, run_fes
+from .common import write_json, _atomic_npz, jsonable
 
 
 class _AffineSurface(CollectiveVariable):

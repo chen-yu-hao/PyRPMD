@@ -328,9 +328,9 @@ def main(argv=None):
                 from .parallel import execution_plan
 
                 if config["task"] == "fes":
-                    from .workflows.fes import resolve_umbrellas
+                    from .workflows.fes_dispatch import validate_fes
 
-                    resolve_umbrellas(config, system)
+                    validate_fes(config, system)
                 if config["task"] == "pcet":
                     from .workflows.pcet import prepare_pcet
 
@@ -350,6 +350,10 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            if config["task"] == "fes":
+                from .input import fes_method
+
+                result["method"] = fes_method(config)
             if config.get("initial_ensemble"):
                 result["temperature_K"] = None
                 result["beta_au"] = config["beta"]

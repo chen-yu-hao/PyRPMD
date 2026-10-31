@@ -20,7 +20,7 @@ from ..io import file_sha256, jsonable, referenced_files, write_json
 from ..native_ensemble import NativeEnsemble, NativePeriodicPES, ensemble_from_config, _COLUMNS, _THERMOSTATS
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
-from .fes import _fingerprint, checked_integer
+from .common import _fingerprint, checked_integer
 
 _SCHEMA = "pyrpmd.native-pimd-journal.v1"
 _NAMES = ("potential_energy", "kinetic_primitive", "kinetic_centroid_virial",

@@ -275,6 +275,7 @@ def _import_channels(root, spec, static, *, bootstrap, seed):
 
 def _fes_rate(root, spec, *, bootstrap, seed):
     from .rate_postprocess import surface_rate_2d, flux_slice_rate_2d
+    from .fes_result import FESResult
 
     unknown = set(spec) - _SPEC_FIELDS
     if unknown:
@@ -306,8 +307,12 @@ def _fes_rate(root, spec, *, bootstrap, seed):
     for measure_key in ("sampling_measure", "measure"):
         if measure_key in data and _scalar(data[measure_key], measure_key) != measure:
             raise ValueError("NPZ and summary sampling measures disagree")
-    args = (data["free_energy"], [data["edges_0"], data["edges_1"]])
-    common = {"beta": beta, "mask": data["mask"], "measure": measure}
+    if ("flux_axis" in data and summary.get("flux_axis") is not None
+            and _scalar(data["flux_axis"], "flux_axis") != summary["flux_axis"]):
+        raise ValueError("NPZ and summary flux_axis disagree")
+    surface = FESResult.from_arrays(data, metadata=summary)
+    args = (surface.free_energy, surface.edges)
+    common = {"beta": beta, "mask": surface.mask, "measure": surface.measure}
     method = spec.get("method")
     if method == "flux_slice_2d":
         if any(key in spec for key in (
@@ -320,8 +325,6 @@ def _fes_rate(root, spec, *, bootstrap, seed):
         saved_axis = summary.get("flux_axis")
         if saved_axis is None or saved_axis != axis:
             raise ValueError("An explicit matching flux_axis in the saved FES metadata is required")
-        if "flux_axis" in data and _scalar(data["flux_axis"], "flux_axis") != saved_axis:
-            raise ValueError("NPZ and summary flux_axis disagree")
         if not isinstance(spec.get("reference_definition"), str) or not spec["reference_definition"].strip():
             raise ValueError("Explain the physical reference normalization in reference_definition")
         static = flux_slice_rate_2d(

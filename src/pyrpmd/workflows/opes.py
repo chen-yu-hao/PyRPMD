@@ -2,20 +2,21 @@
 
 from __future__ import annotations
 
-import copy
 import json
 from pathlib import Path
 from collections.abc import Mapping
 import numpy as np
 
 from ..checkpoint import load_checkpoint
-from ..cv import make_cvs
 from ..dynamics import Dynamics, State
 from ..opes import OPESBias, normalized_weights
-from ..parallel import run_tasks, make_task_potential, root_call
+from ..parallel import make_task_potential, root_call
 from ..propagation import loop_options
-from ..units import parse_quantity, unit_factor
-from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
+from ..units import parse_quantity
+from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
+                     fingerprint_matches, resolve_cvs)
+from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas
+from ..analysis.fes_result import FESResult, write_fes_result, estimate_fes_uncertainty
 from .sampling import fes_sampler, checkpoint_cv_config
 
 
@@ -38,26 +39,8 @@ def resolve_opes(config, system):
         raise ValueError("Unknown opes fields: " + ", ".join(sorted(set(table) - OPES_FIELDS)))
     if config.get("umbrella") or config.get("metadynamics") or config.get("plumed") or config.get("replica_exchange", {}).get("enabled"):
         raise ValueError("OPES workflow does not combine another sampling bias or replica exchange")
-    specs = config.get("cvs", [])
-    if isinstance(specs, dict):
-        specs = [dict(value, name=key) for key, value in specs.items()]
     checkpoint_cv_config(config)  # Validate direct object identity before loading a potential.
-    names = table.get("cvs")
-    if isinstance(names, str):
-        names = [names]
-    cv = make_cvs(specs, system, names)
-    selected = specs if names is None else [next(s for s in specs if s.get("name") == name) for name in names]
-    if cv.dimension not in (1, 2):
-        raise ValueError("OPES supports one or two CV dimensions")
-    scales = []
-    for spec, component in zip(selected, cv.cvs):
-        units = spec.get("unit", spec.get("units", component.units)) if isinstance(spec, Mapping) else component.units
-        if isinstance(units, str):
-            units = [units] * component.dimension
-        if len(units) != component.dimension:
-            raise ValueError("CV input units dimension mismatch")
-        scales.extend([1.0 if unit == "dimensionless" else unit_factor(unit, _dimension(canonical))
-                       for unit, canonical in zip(units, component.units)])
+    cv, selected, scales = resolve_cvs(config, system, "opes")
     if "sigma" in table and "sigma_au" in table:
         raise ValueError("specify opes.sigma or sigma_au, not both")
     widths = table.get("sigma_au", table.get("sigma"))
@@ -145,6 +128,26 @@ def _new_bias(cv, options, beta, state=None):
                     bias_factor=options["bias_factor"], state=state)
 
 
+class _OPESUpdate:
+    """Probability adaptation/freeze policy; propagation is shared."""
+
+    def __init__(self, bias, cv, options, beta):
+        self.bias, self.cv, self.options, self.beta = bias, cv, options, beta
+
+    def due(self, production):
+        return (production % self.options["pace"] == 0
+                and (self.options["freeze"] is None or production <= self.options["freeze"]))
+
+    def snapshot(self):
+        return self.bias.state_dict()
+
+    def apply(self, value, state):
+        self.bias.update(value, step=state.step, time=state.time)
+
+    def restore(self, snapshot):
+        self.bias = _new_bias(self.cv, self.options, self.beta, snapshot)
+
+
 def _checkpoint_path(output, replica):
     return Path(output) / "checkpoints" / f"opes_{replica:04d}.npz"
 
@@ -160,7 +163,7 @@ def _checkpoint_clock(data, key):
 def _read_stream(config, system, output, replica, cv, options):
     checkpoint = _checkpoint_path(output, replica)
     with load_checkpoint(checkpoint) as data:
-        if str(data["fingerprint"]) != _stream_fingerprint(config, system, replica):
+        if not fingerprint_matches(data["fingerprint"], checkpoint_cv_config(config), system, {"opes_replica": replica}):
             raise ValueError(f"checkpoint physics differs: {checkpoint}")
         elapsed = _checkpoint_clock(data, "elapsed")
         if elapsed > options["neq"] + options["nprod"] or _checkpoint_clock(data, "step") != elapsed:
@@ -224,58 +227,23 @@ def _sample_replica(task):
             samples, clocks = list(saved["samples"]), list(saved["sample_steps"])
             biases, energies = list(saved["sample_bias"]), list(saved["sample_energies"])
 
-        def save():
-            _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=elapsed,
-                q=state.q, p=state.p, step=state.step, time=state.time,
-                rng=json.dumps(dynamics.rng.bit_generator.state),
-                bias_state=json.dumps(bias.state_dict(), allow_nan=False),
-                samples=np.asarray(samples).reshape(-1, cv.dimension),
-                sample_steps=np.asarray(clocks, dtype=int), sample_bias=np.asarray(biases),
-                sample_energies=np.asarray(energies), propagation=json.dumps(dynamics.propagation_stats))
+        runtime = SamplingRuntime(state, elapsed, samples, clocks, biases, energies)
+        update = _OPESUpdate(bias, cv, options, config["beta"])
 
-        save()
-        interval = config["sampling"].get("andersen_interval", 10)
-        checkpoint_steps = config.get("output", {}).get("checkpoint_steps", 1000)
-        while elapsed < options["neq"] + options["nprod"]:
-            previous, old_rng = state.copy(), copy.deepcopy(dynamics.rng.bit_generator.state)
-            old_stats = copy.deepcopy(dynamics.propagation_stats)
-            production = elapsed + 1 - options["neq"]
-            record = production > 0 and production % options["interval"] == 0
-            update = (production > 0 and production % options["pace"] == 0
-                      and (options["freeze"] is None or production <= options["freeze"]))
-            old_bias = bias.state_dict() if update else None
-            try:
-                if state.step % interval == 0:
-                    state.p[:] = dynamics.sample_momenta()
-                dynamics.step(state, bias)
-                value = cv.value(state.q) if record or update else None
-                observed = float(bias.physical_energy(value)) if record else None
-                energy = float(dynamics.energy(state, bias)) if record else None
-                if record and not np.isfinite([observed, energy]).all():
-                    raise ValueError("OPES sampled observables are not finite")
-                if update:
-                    bias.update(value, step=state.step, time=state.time)
-            except BaseException:
-                state = previous
-                dynamics.rng.bit_generator.state = old_rng
-                dynamics.propagation_stats = old_stats
-                if old_bias is not None:
-                    bias = _new_bias(cv, options, config["beta"], old_bias)
-                save()
-                raise
-            elapsed += 1
-            dynamics.propagation_stats["python_steps"] += 1
-            reasons = dynamics.propagation_stats.setdefault("fallback_reasons", {})
-            reason = "OPES probability updates require the Python workflow"
-            reasons[reason] = reasons.get(reason, 0) + 1
-            if record:
-                samples.append(value.copy())
-                clocks.append(state.step)
-                biases.append(observed)
-                energies.append(energy)
-            if elapsed % checkpoint_steps == 0:
-                save()
-        save()
+        def save(current):
+            _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=current.elapsed,
+                q=current.state.q, p=current.state.p, step=current.state.step, time=current.state.time,
+                rng=json.dumps(dynamics.rng.bit_generator.state),
+                bias_state=json.dumps(update.bias.state_dict(), allow_nan=False),
+                samples=np.asarray(current.values).reshape(-1, cv.dimension),
+                sample_steps=np.asarray(current.clocks, dtype=int), sample_bias=np.asarray(current.biases),
+                sample_energies=np.asarray(current.energies), propagation=json.dumps(dynamics.propagation_stats))
+
+        run_biased_sampling(runtime, dynamics, cv, neq=options["neq"], nprod=options["nprod"],
+                            interval=options["interval"], sampling=config["sampling"],
+                            checkpoint_steps=config.get("output", {}).get("checkpoint_steps", 1000),
+                            update=update, save=save,
+                            fallback_reason="OPES probability updates require the Python workflow")
         return _read_stream(config, system, output, replica, cv, options)
     finally:
         if hasattr(provider, "close"):
@@ -336,8 +304,7 @@ def _analyze(streams, config, system, output, return_data):
         reference = np.unravel_index(np.argmin(np.where(common, raw.mean(axis=0), np.inf)), common.shape)
         shifted = raw - raw[(slice(None),) + reference].reshape((-1,) + (1,) * cv.dimension)
         free[common] = shifted[:, common].mean(axis=0)
-        if len(streams) > 1:
-            spread[common] = shifted[:, common].std(axis=0, ddof=1)
+        spread = estimate_fes_uncertainty(shifted, kind="replica_spread", mask=~common)
     else:
         shifted = raw.copy()
         for i in range(len(streams)):
@@ -349,12 +316,6 @@ def _analyze(streams, config, system, output, return_data):
             "mask": ~common, "mask_per_replica": mask, "raw_count": counts.sum(axis=0),
             "raw_count_per_replica": counts, "edges": edges}
     output = Path(output)
-    _atomic_npz(output / "fes.npz", **{key: value for key, value in data.items() if isinstance(value, np.ndarray)},
-                **{f"edges_{j}": edge for j, edge in enumerate(edges)})
-    np.savetxt(output / "fes.csv", np.column_stack([grid[..., j].ravel() for j in range(cv.dimension)] +
-        [free.ravel(), spread.ravel(), (~common).ravel(), counts.sum(axis=0).ravel()]), delimiter=",", comments="",
-        header=",".join([f"cv{j}_{unit}" for j, unit in enumerate(cv.units)] +
-                        ["free_energy_hartree", "replica_spread_hartree", "masked", "raw_count"]))
     warnings = list(config.get("_warnings", [])) + [
         "Fixed-bandwidth, uncompressed OPES: cost grows with kernel count; no PLUMED numerical parity is claimed.",
         "No reaction rate follows from biased trajectory time. CV adequacy, equilibrium, bead and timestep convergence remain unverified.",
@@ -364,7 +325,7 @@ def _analyze(streams, config, system, output, return_data):
         "Only frozen-bias samples after the requested relaxation are reweighted; adequate equilibration is the user's responsibility.")
     if not common.any():
         warnings.append("Independent histories have no common sampled bin; their aggregate FES is masked.")
-    summary = {"task": "opes", "status": "finite_time_estimate" if all(stream.get("complete", True) for stream in streams) else "partial_finite_time_estimate", "method": OPESBias.method,
+    summary = {"task": "opes", "beta": config["beta"], "status": "finite_time_estimate" if all(stream.get("complete", True) for stream in streams) else "partial_finite_time_estimate", "method": "opes", "algorithm": OPESBias.method,
         "estimator": options["method"], "measure": "cv_density", "energy_unit": "hartree",
         "dimension": cv.dimension, "units": cv.units, "replicas": len(streams),
         "samples": sum(len(values) for values in arrays), "kernels_per_replica": [len(bias) for bias in biases],
@@ -375,17 +336,15 @@ def _analyze(streams, config, system, output, return_data):
         "sample_bias_convention": "physical V before the probability update; H_P contains P*V; log weights are beta*V",
         "files": {"data": str(output / "fes.npz"), "table": str(output / "fes.csv"),
                   "checkpoints": [stream["checkpoint"] for stream in streams]}}
-    write_json(output / "summary.json", summary)
+    result = FESResult.from_data(data, method="opes", cv_units=cv.units, metadata=summary)
+    summary = write_fes_result(output, result, summary)
     return {"summary": summary, "data": data, "streams": streams} if return_data else summary
 
 
 def run_opes(config, system, output, executor=None, return_data=False):
     """Run independent OPES histories through the existing task scheduler."""
     validate_opes(config, system)
-    tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica}
-             for replica in range(config.get("sampling", {}).get("replicas", 1))]
-    streams = (executor.map(_sample_replica, tasks) if executor is not None else
-               run_tasks(_sample_replica, tasks, config.get("parallel", {})))
+    streams = dispatch_replicas(config, system, output, _sample_replica, executor)
     return root_call(_analyze, streams, config, system, str(output), return_data)
 
 

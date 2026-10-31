@@ -104,9 +104,9 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Bimolecular RPMD rate from a TS | `rate` | `pyrpmd prepare examples/rate/pilot.inp --pilot` then `pyrpmd run examples/rate/pilot.inp` | ~15 s |
 | Direct collisions (dRPMD) | `drpmd` | `examples/drpmd/free_scattering.inp` | ~2 s |
 | Rate matrix over several entrances and TSs | `network` | `examples/network/two_entrances.py` | ~25 s |
-| 1D/2D free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
+| 1D–3D umbrella free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
 | Adaptive umbrella windows | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
-| Standard or well-tempered metadynamics | `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
+| Standard or well-tempered metadynamics | `fes`, method `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
 | Fixed-cell PIMD and energy estimators | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | Directed site-to-site hop in a material | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
@@ -138,8 +138,8 @@ to a research calculation.
 | Reaction networks | Separate entrances, TSs and PESs for one atom and isotope inventory; each path fills a rate matrix, reported per entrance, channel and TS |
 | dRPMD | Two reactant XYZ files and an initial COM distance; persistent parent chains launch collisions at a set interval |
 | Selected nuclear initial states | Approximate vibrational NE-RPMD and P=1 QCT at fixed collision energy, independent initial-state draws, precollision checks and unresolved-trajectory extension ([guide](docs/state-selected.md), [examples](examples/state_selected/README.md)) |
-| Free energy | 1D–3D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive 1D/2D window insertion from MBAR overlap, effective sample size and optional coverage targets |
-| Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories and finite-time bias FES |
+| Free energy | 1D–3D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive 1D–3D window insertion from MBAR overlap, effective sample size and optional coverage targets |
+| Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories or synchronized shared-bias multiple walkers; common FESResult and finite-time bias FES |
 | Replica-exchange umbrellas | Same-temperature fixed-window REUS, PILE-L or Andersen, synchronized ensemble restart and joint window bootstrap ([guide](docs/replica-exchange.md)) |
 | OPES | Fixed-bandwidth weighted probability estimation, optional frozen-bias reweighting and restartable independent histories ([guide](docs/opes.md)) |
 | PLUMED and path sampling | Optional centroid-bias PLUMED bridge; unbiased two-way shooting transition-interface ensembles with separate flux normalization ([PLUMED](docs/plumed.md), [TIS](docs/transition-interface-sampling.md)) |
@@ -356,7 +356,7 @@ Reference specifications (some in Chinese):
 - [Electronic friction](docs/electronic-friction.md), [thermal NRPMD](docs/thermal-nrpmd.md), [KC/MV/isomorphic methods](docs/nonadiabatic-methods.md), [SOC and RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP constant-pressure PIMD](docs/materials-npt.md), [grid metadynamics](docs/grid-metadynamics.md), [streaming trajectories](docs/streaming-trajectories.md)
 - [Constant-potential electrode models and HER postprocessing](docs/electrochemistry.md)
-- [Adaptive umbrella sampling and metadynamics](docs/enhanced-sampling.md)
+- [Unified FES, adaptive umbrellas and shared-bias metadynamics](docs/enhanced-sampling.md)
 - [Electrochemical PCET model](docs/pcet.md), [runnable PCET example](examples/pcet/README.md)
 - [Fixed cells, PIMD, materials diffusion and site rates](docs/materials.md)
 - [Surface catalysis and periodic slabs](docs/surface-catalysis.md)

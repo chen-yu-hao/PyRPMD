@@ -125,8 +125,9 @@ default resolved.
 | `[electronic_friction]` | `diffusion` | `method = "centroid"`, `provider`, `gamma` or `tensor`, or Python `factory` and `params`; see [electronic friction](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
 | `[initial_ensemble]` | `drpmd` (experimental nuclear state selection) | `method = "ne_rpmd"` or `"qct"`, explicit NE `beta`, fragment Hessians/modes and `vibrational_quanta`; see [Direct collisions](workflows.md) |
 | `[adaptive_umbrella]` | `fes`, `rate` | See [Gas phase and free energy](workflows.md) |
-| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` optionally select a bias grid |
-| `[opes]` | `opes` | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
+| `[fes]`, `[fes.sampling]`, `[fes.analysis]`, `[fes.<method>]` | `fes` | Select umbrella / metadynamics / opes; common vs method parameters, [migration guide](../enhanced-sampling.md) |
+| `[metadynamics]` | `fes.method="metadynamics"` or legacy alias | `grid.ranges` / `grid.bins` optionally select a bias grid |
+| `[opes]` | `fes.method="opes"` or legacy alias | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
 | `[replica_exchange]` | `fes` | Fixed-window same-temperature exchange interval and optional graph; [REUS guide](../replica-exchange.md) |
 | `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
 | `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md) |

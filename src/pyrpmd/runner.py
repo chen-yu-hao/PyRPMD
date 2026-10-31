@@ -11,7 +11,7 @@ from pathlib import Path
 import shutil
 import sys
 from . import __version__
-from .input import JobSpec, InputError
+from .input import JobSpec, InputError, fes_method, normalize_fes_task
 from .io import write_json, referenced_files, fingerprint, jsonable
 from .system import System
 
@@ -61,12 +61,20 @@ def _initialize_output(config, system, output, resume=False):
             if fingerprint(stored_config, stored_system) != old_digest:
                 raise InputError("Legacy saved input does not match its run manifest")
             old_digest = fingerprint(scientific_config(stored_config), stored_system)
+        migrated_fes = False
         if old_digest != digest:
-            raise InputError("Cannot resume with changed scientific settings or system")
+            stored_config = json.loads((path / "input" / "resolved.json").read_text())
+            stored_system = _read_identity(stored_config, path)
+            authenticated = fingerprint(scientific_config(stored_config), stored_system) == old_digest
+            if authenticated and stored_config.get("task") in ("fes", "metadynamics", "opes"):
+                normalized = normalize_fes_task(copy.deepcopy(stored_config), warn=False)
+                migrated_fes = fingerprint(scientific_config(normalized), stored_system) == digest
+            if not migrated_fes:
+                raise InputError("Cannot resume with changed scientific settings or system")
         for file, sha in old.get("files", {}).items():
             if hashes.get(file) != sha:
                 raise InputError(f"Input/model file changed or is missing: {file}")
-        if schema == 1:
+        if schema == 1 or migrated_fes:
             write_json(manifest_path, {
                 **old,
                 "schema": "pyrpmd.run",
@@ -77,6 +85,8 @@ def _initialize_output(config, system, output, resume=False):
                 "physics_identity": "execution-independent-v2",
                 "migrated_by_version": __version__,
             })
+            if migrated_fes:
+                write_json(path / "input" / "resolved.json", config)
         return
     if path.exists() and any(path.iterdir()):
         raise InputError(
@@ -147,7 +157,11 @@ def run(job, *, output=None, resume=False):
 
 
 def run_resolved(config, system, *, output=None, resume=False):
-    config = copy.deepcopy(config)
+    config = normalize_fes_task(copy.deepcopy(config))
+    if config.get("task") == "rate" and config.get("rate", {}).get("pmf_source") not in (None, "umbrella"):
+        from .workflows.rate_source import source_paths
+
+        config["rate"]["pmf_source"] = source_paths(config["rate"]["pmf_source"], config.get("_base_directory"))
     if "electronic_friction" in config:
         from .electronic_friction import validate_electronic_friction
         validate_electronic_friction(config, system)
@@ -160,6 +174,10 @@ def run_resolved(config, system, *, output=None, resume=False):
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
 
+    if config["task"] == "fes":
+        from .workflows.fes_dispatch import validate_fes
+
+        root_call(validate_fes, config, system)
     root_call(_initialize_output, config, system, target, resume)
     if config["task"] == "pcet":
         from .workflows.pcet import run_pcet
@@ -170,7 +188,7 @@ def run_resolved(config, system, *, output=None, resume=False):
 
         result = run_drpmd(config, system, Path(target))
     elif config["task"] == "fes":
-        from .workflows.fes import run_fes
+        from .workflows.fes_dispatch import run_fes
 
         result = run_fes(config, system, Path(target))
     elif config["task"] == "rate":
@@ -181,14 +199,6 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.surface import run_surface_rate
 
         result = run_surface_rate(config, system, Path(target))
-    elif config["task"] == "metadynamics":
-        from .workflows.metadynamics import run_metadynamics
-
-        result = run_metadynamics(config, system, Path(target))
-    elif config["task"] == "opes":
-        from .workflows.opes import run_opes
-
-        result = run_opes(config, system, Path(target))
     elif config["task"] == "network":
         from .workflows.network import run_network
 
@@ -284,7 +294,13 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         summary = path / "results" / "summary.json"
         if not summary.is_file():
             summary = path / "summary.json"
-        return json.loads(summary.read_text())
+        result = json.loads(summary.read_text())
+        if result.get("task") in ("fes", "metadynamics", "opes"):
+            from .analysis.fes_result import FESResult
+
+            if (path / "fes.npz").is_file():
+                return FESResult.read(path, summary=result).summary()
+        return result
     config = json.loads((path / "input" / "resolved.json").read_text())
     if config["task"] not in ("fes", "metadynamics", "opes", "diffusion"):
         raise InputError(
@@ -341,18 +357,13 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         ):
             raise InputError("Bootstrap replicate count must be an integer >= 0")
         analysis["bootstrap"] = bootstrap
-    if config["task"] == "metadynamics":
-        from .workflows.metadynamics import reanalyze_metadynamics
+    from .workflows.fes_dispatch import reanalyze_fes
+    from .analysis.fes_result import FESResult
 
-        result = reanalyze_metadynamics(config, system, path)
-    elif config["task"] == "opes":
-        from .workflows.opes import reanalyze_opes
-
-        result = reanalyze_opes(config, system, path)
-    else:
-        from .workflows.fes import reanalyze_fes
-
-        result = reanalyze_fes(config, system, path)
+    result = reanalyze_fes(config, system, path)
+    if result is None:
+        return None
+    result = FESResult.read(path, summary=result).summary()
     from .parallel import root_call
 
     result = {
@@ -386,6 +397,8 @@ def prepare(job, *, numerical=False):
         "diagnostics": config.get("_warnings", []),
         "ready": True,
     }
+    if config["task"] == "fes":
+        result["method"] = fes_method(config)
     if config["task"] == "rate":
         from .workflows.prepare import prepare_rate
 
@@ -402,7 +415,7 @@ def prepare(job, *, numerical=False):
             result["diagnostics"].append(
                 "Pilot simulations are available; production estimation requires a converged bmax and an explicit validated outcome classifier"
             )
-    elif config["task"] in ("fes", "surface_rate"):
+    elif config["task"] == "surface_rate" or (config["task"] == "fes" and fes_method(config) == "umbrella"):
         from .workflows.fes import resolve_umbrellas
 
         if config.get("surface", {}).get("free_energy"):
@@ -425,12 +438,12 @@ def prepare(job, *, numerical=False):
             result["surface_preparation"] = {
                 key: value for key, value in definition.items() if key != "coordinate"
             }
-    elif config["task"] == "metadynamics":
+    elif config["task"] == "fes" and fes_method(config) == "metadynamics":
         from .workflows.metadynamics import validate_metadynamics
 
         validate_metadynamics(config, system)
         result["metadynamics_preparation"] = config["metadynamics"]
-    elif config["task"] == "opes":
+    elif config["task"] == "fes" and fes_method(config) == "opes":
         from .workflows.opes import validate_opes
 
         validate_opes(config, system)

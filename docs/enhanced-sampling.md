@@ -1,4 +1,134 @@
-# Adaptive umbrellas and metadynamics
+# Free-energy surfaces and enhanced sampling
+
+## One FES entry point
+
+Select the sampler with `task="fes"` and `[fes] method="umbrella"`,
+`"metadynamics"` or `"opes"`. Omitting `fes.method` preserves the historical
+umbrella default. The common CV definitions, sampling controls and analysis
+settings may live in `[fes.cvs]` / `[[fes.cvs]]`, `[fes.sampling]` and
+`[fes.analysis]`; their existing top-level forms remain accepted. Put bias
+parameters in the selected method's subtable:
+
+```toml
+task = "fes"
+
+[fes]
+method = "metadynamics"
+
+[fes.sampling]
+equilibration_steps = 100
+production_steps = 600
+sample_interval = 5
+replicas = 2
+
+[fes.metadynamics]
+cvs = ["x", "y"]
+mode = "well_tempered"
+sigma = ["0.25 bohr", "0.25 bohr"]
+height = "0.02 kcal/mol"
+pace = 20
+bias_factor = 8.0
+
+[fes.analysis]
+method = "bias_estimate"
+bins = [24, 24]
+bootstrap = 0
+```
+
+The system, potential, temperature, beads, dynamics, output and parallel
+sections retain their existing meanings. Define `x` and `y` with ordinary CV
+specifications. The complete examples below supply those definitions.
+Specifying both top-level and nested versions of a section is an error.
+An inactive method's table is rejected, even if empty; fields from another
+method are not silently accepted. For example, umbrella `stiffness` does not
+belong in `[fes.metadynamics]`, and `[fes.opes]` cannot accompany
+`method="umbrella"`. Adaptive-umbrella and replica-exchange controls apply to
+the umbrella method only.
+
+| Method | Supported CV dimensions | Reconstruction | `uncertainty_kind` |
+| --- | --- | --- | --- |
+| `umbrella` | 1–3 | MBAR with bin-volume correction | `block_bootstrap` |
+| `metadynamics` | 1–3 | Standard or well-tempered bias estimate | `replica_spread` |
+| `opes` | 1–2 | KDE or frozen-bias reweighted histogram | `replica_spread` |
+
+All three use the same CV selection/unit validation, propagation and sampling
+clock, atomic checkpoint boundaries, and replica dispatcher. The bias-update
+policy and reconstruction remain specific to the algorithm. This preserves
+the existing seed identities, thermostat scheduling, native fixed-bias block
+path, and pre-deposition observation semantics.
+
+### Compatibility and continuation
+
+`task="metadynamics"` and `task="opes"` still work as deprecated aliases and
+emit a `FutureWarning` with the replacement syntax. Their old top-level bias
+tables remain supported. Existing examples retain some of these spellings to
+exercise compatibility. New checkpoint identities include the method and
+normalize the two aliases; changing the method cannot reuse a checkpoint.
+The compatibility reader also checks the exact historical fingerprint, so
+old independent umbrella, MetaD and OPES checkpoints can continue with their
+saved coordinates, momenta, random-generator state and bias history. Resume
+authenticates an old run manifest before migrating the saved entry spelling.
+It does not relax checks on physical parameters, CVs or seeds.
+
+### A common result contract
+
+Every method writes the following layout:
+
+| File | Contents |
+| --- | --- |
+| `fes.npz` | Authoritative, integrity-checked `FESResult`, including its metadata |
+| `fes.csv` | Common grid/free-energy/uncertainty/mask table |
+| `fes.json` | Schema, method, units and method-specific provenance |
+| `summary.json` | Human-readable run diagnostics and file references |
+| `results/summary.json` | CLI runner summary, including software/run metadata |
+
+Umbrella `fes.h5` and method-specific sampling histories remain supplementary
+diagnostics. The core contract contains `edges_0`, …, `grid` (cell centers),
+`free_energy`, `uncertainty`, `mask`, `uncertainty_mask`, `cv_units`,
+`energy_unit`, `method` and `uncertainty_kind`. Energies are in hartree; CV
+units are canonical length, angle or dimensionless units. Unsupported bins
+are masked. Unavailable uncertainty is NaN with an uncertainty mask, not zero.
+Historical `standard_error` and `replica_spread` arrays remain compatibility
+extras; new consumers use `uncertainty` and inspect its kind.
+
+```python
+from pyrpmd.analysis import FESResult
+
+surface = FESResult.read("runs/my-fes")
+supported = ~surface.mask
+print(surface.method, surface.uncertainty_kind, surface.cv_units)
+```
+
+`analyze`, reports, comparison and projection use this contract; legacy file
+formats are adapted in its reader. `analyze --recompute` still reconstructs
+from authoritative sampling checkpoints and can change analysis settings
+without propagating dynamics. Reports display orthogonal slices of 3D grids.
+Cross-method comparisons can overlay surfaces when the physical system, CVs,
+measure and static walls match. Each curve retains its method and uncertainty
+meaning; samples and errors from different algorithms are not pooled.
+
+Umbrella errors come from the existing correlated block bootstrap, including
+synchronized resampling within replica-exchange ladders. MetaD/OPES errors
+are the sample standard deviation of independent replica estimates after
+gauge alignment on supported bins. They are descriptive spread, not a
+standard error of the mean or a calibrated confidence interval. A single
+history has unavailable spread. Shared MetaD walkers form one correlated
+history and do not supply independent replica errors.
+
+### Three-dimensional umbrella sampling
+
+Use three selected scalar CVs (or a CV stack totaling three components),
+three grid axes, and a scalar, three-component diagonal, or 3×3 positive
+definite stiffness matrix in `[fes.umbrella]`. Analysis bins and ranges must
+have three entries. The MBAR estimator and bootstrap use the complete 3D
+histogram and bin volumes; no 2D projection is substituted during sampling.
+The special `rate_flux` measure retains its existing scalar/2D rate-coordinate
+restrictions. See [`harmonic3d.inp`](../examples/fes/harmonic3d.inp):
+
+```bash
+pyrpmd run examples/fes/harmonic3d.inp --output runs/umbrella3d
+pyrpmd analyze runs/umbrella3d --recompute --bins 6 6 6 --bootstrap 10
+```
 
 For FES PILE-L and fixed-window replica exchange, see the
 [replica-exchange guide](replica-exchange.md).
@@ -13,7 +143,7 @@ workflow with its prescribed PMF measure and unbiased recrossing dynamics.
 
 ## Adaptive umbrella placement
 
-Add `[adaptive_umbrella]` to a one- or two-dimensional `task="fes"` job, or to
+Add `[adaptive_umbrella]` to a one-, two- or three-dimensional `task="fes"` job, or to
 a `task="rate"` PMF job:
 
 ```toml
@@ -144,7 +274,7 @@ pyrpmd analyze runs/adaptive --recompute --bins 30 --bootstrap 20
 
 ## Standard and well-tempered metadynamics
 
-Use `task="metadynamics"`, ordinary CV specifications and an explicit hill
+Use `task="fes"`, `[fes] method="metadynamics"`, ordinary CV specifications and an explicit hill
 height/width. One, two or three CV dimensions are supported, including custom Python
 CVs with declared positive periodicities and full ring-polymer Jacobians.
 Fixed-cell periodic systems and fixed substrate atoms are supported. A cell-aware
@@ -152,7 +282,7 @@ PES is required, and all dynamics coordinates stay continuously unwrapped.
 Optional one- and two-dimensional bias grids are described in [grid metadynamics](grid-metadynamics.md).
 
 ```toml
-[metadynamics]
+[fes.metadynamics]
 cvs = ["x", "y"]
 mode = "well_tempered"  # or "standard"
 sigma = ["0.2 bohr", "0.2 bohr"]
@@ -278,6 +408,50 @@ performs the full Gaussian sum without a grid approximation or cutoff.
 append and `truncate_hills(count)` to roll back; editing a returned dictionary
 or list does not change the live bias. Checkpoint JSON/HILLS formats are unchanged.
 
+### Shared-bias multiple walkers
+
+Opt in with `multiple_walkers=true` in `[fes.metadynamics]`. The walker count
+is `sampling.replicas` (or `fes.sampling.replicas`). `block_steps` is the
+positive number of integration steps between synchronizations and defaults
+to `pace`. It is a scientific bias-sharing parameter and is included in the
+fingerprint, unlike the dynamics backend's performance-only block size.
+
+```toml
+[fes.metadynamics]
+mode = "well_tempered"
+sigma = ["0.25 bohr", "0.25 bohr"]
+height = "0.02 kcal/mol"
+pace = 20
+bias_factor = 8.0
+multiple_walkers = true
+block_steps = 100
+```
+
+At each absolute block boundary, every walker has completed the same number
+of steps. During a block each walker sees the previous global history plus
+its own new hills. The coordinator merges new hills in `(step, walker)`
+order and distributes the resulting common bias before the next block.
+Well-tempered heights retain the local pre-deposition bias used when they
+were deposited; merging never recalculates them. The last block may be
+shorter. Integration, sample, hill and synchronization clocks need not be
+multiples of one another.
+
+`checkpoints/metadynamics_walkers.npz` atomically stores one global hill
+history and every walker's state, RNG, thermostat, samples and clocks.
+`HILLS.csv` in the run root is its regenerable view and includes a `walker`
+column. Shared checkpoint commits occur at synchronization boundaries;
+`output.checkpoint_steps` does not create inconsistent per-walker histories.
+If any walker fails, the next resume restarts the complete ensemble from
+the last committed block. Serial and process scheduling use the same stream
+identities. The full example is
+[`multiple_walkers.inp`](../examples/metadynamics/multiple_walkers.inp).
+
+The final bias is reconstructed once, using pooled walker coverage. Summary
+metadata records `independent_histories=1`; `uncertainty` is unavailable for
+this one shared ensemble. Run independent ensembles to assess spread. This
+mode is separate from combining independently generated HILLS files, which
+does not reproduce shared-bias sampling.
+
 ### Free-energy estimate and limits
 
 `analysis.method="bias_estimate"` exports `fes.npz` and `fes.csv`:
@@ -309,9 +483,10 @@ reaction corridor. Unconfined H + H₂ metadynamics can escape the corridor or
 dissociate rather than explore the desired barrier. Simply extending time or
 increasing hill height is not a remedy for an unsuitable CV/domain. Use an
 appropriate nonsingular CV and a physically defined confined model for such
-exploration. This implementation has no metadynamics wall option. The current
-metadynamics estimator uses `cv_density`, so it cannot replace a `rate_flux`
-umbrella PMF or supply a rate from biased trajectory times.
+exploration. The length-CV wall options above can define such a model, but
+change its ensemble. The current metadynamics estimator uses `cv_density`,
+so its raw bias estimate cannot replace a `rate_flux` umbrella PMF or supply
+a rate from biased trajectory times.
 
 `analysis.bootstrap` must be zero; fixed-umbrella MBAR and ordinary equilibrium
 bootstrap are not applied to these evolving-bias samples. Time-dependent
@@ -342,6 +517,51 @@ pyrpmd analyze runs/meta2 --recompute --bins 30 30
 Python users can call `run_metadynamics`, `reanalyze_metadynamics`,
 `MetadynamicsBias`, `GridMetadynamicsBias`, and `analysis.metadynamics.bias_fes` directly. The normal
 `pyrpmd.run` / `JobSpec` entry points remain available.
+
+## Choosing a PMF source for `rate`
+
+Omitting `rate.pmf_source` (or setting it to `"umbrella"`) keeps the existing
+umbrella-sampling rate workflow. To reuse a saved surface:
+
+```toml
+[rate.pmf_source]
+directory = "runs/umbrella-rate-flux"
+```
+
+The default accepts only an umbrella `FESResult` with `measure="rate_flux"`,
+one dimensionless centroid RPMDrate coordinate, and hartree energies. The
+source must include its run manifest, resolved input and system description.
+Temperature, beads, PES, system and reaction-coordinate identity must match
+the destination calculation. Source files are hashed into the destination
+manifest and checked again on resume. Parent and unbiased child dynamics
+still run normally; the saved PMF replaces only biased PMF sampling.
+
+Selecting MetaD/OPES requires both explicit
+`allow_non_umbrella=true` and source metadata `reweighted=true`, in addition
+to the same `rate_flux` and provenance checks. A raw `-V` or WT-scaled bias
+surface is rejected with a message explaining that the PMF must be
+reweighted. This selector does not implement time-dependent MetaD
+reweighting; the current MetaD workflow does not produce a ready-to-use gas
+rate PMF. OPES's frozen-bias CV-density reconstruction likewise does not
+automatically acquire the rate-flux measure.
+
+A stored pointwise uncertainty grid alone does not identify the covariance
+between reference and barrier bins. External-source rate runs therefore
+report unavailable PMF-barrier and total-rate uncertainty instead of
+inventing an error from two independent endpoint errors.
+
+## Refactoring regression evidence
+
+[`unification_regression.py`](../benchmarks/fes_methods/unification_regression.py)
+runs the existing 2D umbrella, adaptive, replica-exchange, standard/WT/grid
+MetaD and OPES examples in a baseline checkout and the current checkout.
+It compares numerical FES arrays, trajectories, RNG state and bias histories
+exactly, ignoring only migrated fingerprints, integrity envelopes and
+producer metadata. It also creates real interrupted checkpoints with the
+old code and continues them with the new code. Focused tests additionally
+cover 3D analytic Gaussian cell integrals, cross-method validation, common
+result readers, rate-source safeguards and shared-walker restart behavior.
+These are implementation regressions, not claims of physical convergence.
 
 ## Method references
 

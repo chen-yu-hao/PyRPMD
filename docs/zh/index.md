@@ -13,11 +13,11 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | --- | --- | --- |
 | 气相双分子 RPMD 速率 | `rate` | [气相与自由能](manual/workflows.md) |
 | 直接碰撞与产物通道 | `drpmd` | [气相](manual/workflows.md)；[NRPMD](manual/nonadiabatic.md) |
-| 一维/二维自由能面 | `fes` | [快速入门](manual/quickstart.md)、[气相与自由能](manual/workflows.md) |
+| 一维至三维伞形自由能面 | `fes` | [统一增强采样](enhanced-sampling.md)、[气相与自由能](manual/workflows.md) |
 | 多入口、多过渡态的速率矩阵 | `network` | [气相与自由能](manual/workflows.md) |
-| Standard 或 well-tempered metadynamics | `metadynamics` | [气相与自由能](manual/workflows.md) |
+| Standard / WT metadynamics、共享 walkers | `fes` + `method="metadynamics"` | [统一增强采样](enhanced-sampling.md) |
 | 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
-| OPES 概率增强采样 | `opes` | [OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
+| OPES 概率增强采样 | `fes` + `method="opes"` | [统一增强采样](enhanced-sampling.md)、[OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
 | PLUMED 质心偏置、过渡界面路径采样 | Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
 | RPMD 自扩散、MSD、VACF | `diffusion` | [材料与表面](manual/periodic.md) |
@@ -69,6 +69,7 @@ pyrpmd resume runs/job                  # 从检查点续跑，科学设置保�
 :hidden:
 
 气相与自由能 <manual/workflows>
+统一增强采样 <enhanced-sampling>
 材料与表面 <manual/periodic>
 PCET <manual/pcet>
 电极模型 <manual/electrochemistry>
