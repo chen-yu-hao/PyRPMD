@@ -26,7 +26,10 @@ extensions = [
 ]
 source_suffix = {".md": "markdown"}
 root_doc = "index"
-include_patterns = ["index.md", "manual/*.md"]
+include_patterns = [
+    "index.md", "manual/*.md", "replica-exchange.md", "opes.md",
+    "plumed.md", "transition-interface-sampling.md",
+]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 myst_enable_extensions = ["dollarmath", "colon_fence"]
 myst_heading_anchors = 4
@@ -53,6 +56,9 @@ html_context = {
     "github_repo": "PyRPMD",
     "github_version": "main",
     "doc_path": "docs",
+    "translated_pages": ["index", "replica-exchange"] + [
+        "manual/" + path.stem for path in (ROOT / "docs" / "zh" / "manual").glob("*.md")
+    ],
 }
 html_show_sourcelink = True
 

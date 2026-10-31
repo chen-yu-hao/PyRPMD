@@ -1,5 +1,11 @@
 # Adaptive umbrellas and metadynamics
 
+For FES PILE-L and fixed-window replica exchange, see the
+[replica-exchange guide](replica-exchange.md).
+Probability-based [OPES](opes.md), the optional [PLUMED bridge](plumed.md),
+and [transition-interface path sampling](transition-interface-sampling.md)
+have separate guides, examples and estimator contracts.
+
 These workflows sample ring-polymer configuration distributions. Biased
 trajectory time is not a reaction rate, and no infrequent-metadynamics rate
 estimator is provided. Production rate coefficients still use the rate

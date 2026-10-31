@@ -442,3 +442,36 @@ def test_python_failed_observation_is_rolled_back_before_saving_samples(tmp_path
     complete = fes._sample_window(_task(tmp_path / "complete", backend="python"))
     for name in ("samples", "energies", "last_q", "last_p"):
         np.testing.assert_array_equal(resumed[name], complete[name])
+
+
+@pytest.mark.parametrize("scheme", ["cayley-bcb", "normal-mode-bab"])
+@pytest.mark.parametrize("thermostat", ["andersen", "pile-l"])
+def test_reus_cabi_native_matches_numpy(tmp_path, cabi_library, cabi_controls, scheme, thermostat):
+    cfg = {
+        "task": "fes", "beta": 1.7, "beads": 4, "dt_au": .03, "seed": 67,
+        "native": False, "dynamics": {"integrator": scheme, "loop_backend": "python"},
+        "potential": {"provider": "cabi", "library": str(cabi_library)},
+        "sampling": {"thermostat": thermostat, "equilibration_steps": 8,
+                     "production_steps": 40, "sample_interval": 2, "replicas": 1,
+                     "andersen_interval": 7},
+        "cvs": [{"kind": "cartesian", "atom": 0, "axis": a} for a in ("x", "y")],
+        "umbrella": {"centers": [[-.2, -.2], [-.2, .2], [.2, -.2], [.2, .2]],
+                     "stiffness": [[1., .2], [.2, .8]]},
+        "replica_exchange": {"enabled": True, "interval_steps": 9},
+        "analysis": {"bins": [4, 5], "bootstrap": 0}, "output": {"checkpoint_steps": 11},
+    }
+    if thermostat == "pile-l":
+        cfg["sampling"]["gamma_centroid"] = .5
+    system = System(("H",), np.array([2.3]), np.zeros((1, 3)))
+    fes.run_fes(cfg, system, tmp_path / "numpy")
+    cfg["native"] = True
+    cfg["dynamics"]["loop_backend"] = "native" if thermostat == "andersen" else "auto"
+    fes.run_fes(cfg, system, tmp_path / "native")
+    with load_checkpoint(tmp_path / "numpy/checkpoints/exchange_0000.npz") as a, \
+         load_checkpoint(tmp_path / "native/checkpoints/exchange_0000.npz") as b:
+        for key in ("q", "p", "samples", "energies"):
+            np.testing.assert_allclose(a[key], b[key], rtol=3e-12, atol=3e-13, err_msg=key)
+        for key in ("decisions", "walker_history", "walker_ids", "attempts", "accepts", "rngs", "exchange_rng"):
+            np.testing.assert_array_equal(a[key], b[key], err_msg=key)
+        if thermostat == "andersen":
+            assert all(s["native_steps"] == 48 for s in json.loads(str(b["propagation"])))

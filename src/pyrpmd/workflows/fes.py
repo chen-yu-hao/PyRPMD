@@ -24,6 +24,7 @@ from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..parallel import run_tasks, make_task_potential, root_call
 from ..units import parse_quantity, unit_factor, DIMS
+from .sampling import fes_sampler
 
 
 def jsonable(value):
@@ -357,6 +358,7 @@ def _sample_window(task):
     stiffness = np.asarray(task["stiffness"])
     window, replica = task["window"], task["replica"]
     sampling = config["sampling"]
+    sampler = fes_sampler(config)
     neq = checked_integer(
         sampling["equilibration_steps"], "sampling.equilibration_steps", 0
     )
@@ -475,11 +477,11 @@ def _sample_window(task):
             )
             saved_elapsed = elapsed
 
-        fused_loop = dynamics.can_fuse(bias=bias, observe=cv)
+        fused_loop = sampler.thermostat == "andersen" and dynamics.can_fuse(bias=bias, observe=cv)
         while elapsed < neq + nprod:
             initial_elapsed = elapsed
             thermostat_p = thermostat_rng = None
-            if state.step % andersen == 0:
+            if sampler.thermostat == "andersen" and state.step % andersen == 0:
                 thermostat_p = state.p.copy()
                 thermostat_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
                 state.p[:] = dynamics.sample_momenta()
@@ -509,7 +511,7 @@ def _sample_window(task):
                     previous = state.copy()
                     previous_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
                     try:
-                        dynamics.step(state, bias)
+                        sampler.step(dynamics, state, bias)
                         production = elapsed + 1 - neq
                         if production > 0 and production % interval == 0:
                             value = np.asarray(cv.value(state.q), dtype=float)
@@ -588,6 +590,9 @@ def _write_fes(output, data, streams, cv, config):
                 g.attrs["window"] = stream["window"]
                 g.attrs["replica"] = stream["replica"]
                 g.attrs["propagation"] = json.dumps(stream.get("propagation", {}))
+                if "exchange_group" in stream:
+                    g.attrs["exchange_group"] = stream["exchange_group"]
+                    g.create_dataset("walker_ids", data=stream["walker_ids"])
         os.replace(tmp, path / "fes.h5")
     mid = [0.5 * (e[1:] + e[:-1]) for e in data["edges"]]
     mesh = np.meshgrid(*mid, indexing="ij")
@@ -722,6 +727,8 @@ def _analyze_streams(streams, config, system, output, return_data):
         min_count=checked_integer(options.get("min_count", 1), "analysis.min_count"),
         overlap_threshold=float(options.get("overlap_threshold", 1e-6)),
         return_reweighting=return_data and config.get("task") == "surface_rate",
+        bootstrap_groups=([s["exchange_group"] for s in streams]
+                          if all("exchange_group" in s for s in streams) else None),
     )
     data["measure"] = options.get("measure", "cv_density")
     summary = _write_fes(output, data, streams, cv, config)
@@ -731,6 +738,12 @@ def _analyze_streams(streams, config, system, output, return_data):
 
 
 def run_fes(config, system, output, executor=None, return_data=False):
+    fes_sampler(config)
+    if config.get("replica_exchange"):
+        from .replica_exchange import exchange_options, run_replica_exchange_fes
+        if exchange_options(config, system)["enabled"]:
+            return run_replica_exchange_fes(config, system, output, executor=executor,
+                                            return_data=return_data)
     if config.get("adaptive_umbrella"):
         from .adaptive_umbrella import adaptive_options, run_adaptive_fes
         if adaptive_options(config)["enabled"]:
@@ -777,6 +790,10 @@ def reanalyze_fes(config, system, output, return_data=False):
     All MPI ranks may call this; only the coordinator reads/writes files.
     """
 
+    if config.get("replica_exchange"):
+        from .replica_exchange import exchange_options, reanalyze_replica_exchange_fes
+        if exchange_options(config, system)["enabled"]:
+            return reanalyze_replica_exchange_fes(config, system, output, return_data=return_data)
     if config.get("adaptive_umbrella"):
         from .adaptive_umbrella import adaptive_options, reanalyze_adaptive_fes
         if adaptive_options(config)["enabled"]:

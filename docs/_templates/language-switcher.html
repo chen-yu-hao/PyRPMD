@@ -4,6 +4,7 @@
 <a class="nav-link pyrpmd-language-switcher" href="{{ pathto('../' + pagename + '.html', 1) }}"
    hreflang="en" lang="en" title="Switch to the English edition">English</a>
 {%- else %}
-<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('zh/' + pagename + '.html', 1) }}"
+{%- set translated_page = pagename if pagename in translated_pages else 'index' %}
+<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('zh/' + translated_page + '.html', 1) }}"
    hreflang="zh-CN" lang="zh-CN" title="切换到中文版">中文</a>
 {%- endif %}

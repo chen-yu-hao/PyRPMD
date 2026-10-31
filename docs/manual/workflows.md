@@ -154,6 +154,26 @@ size of each time series and the weighted ESS. Cells without support are masked 
 `analyze --recompute` rebuilds the analysis from the saved window checkpoints with new bins, count
 thresholds or bootstrap settings, without calling the PES.
 
+### PILE-L and replica-exchange umbrellas
+
+FES keeps Andersen as its default thermostat. Set `sampling.thermostat="pile-l"`
+to use the existing BCOCB/BAOAB integrator. For fixed windows, add
+`[replica_exchange]`, `enabled=true`, and `interval_steps=50` to exchange
+complete ring configurations and momenta at the same temperature.
+
+Here, `sampling.replicas` counts independent exchange ensembles. Windows in
+one ensemble propagate sequentially, and analysis resamples their time blocks
+synchronously. Checkpoints save and restore the whole ensemble together.
+Exchange trajectories do not represent physical reaction times. Adaptive
+window insertion and the `rate_flux` measure cannot be combined with REUS.
+See [replica exchange](../replica-exchange.md) for the accepted input and
+method limits.
+
+```bash
+pyrpmd run examples/fes/replica_exchange_2d.inp --output runs/manual-reus
+pyrpmd resume runs/manual-reus
+```
+
 ### Adaptive umbrella sampling
 
 The adaptive workflow inserts windows and lengthens pilots according to the pilot overlap and

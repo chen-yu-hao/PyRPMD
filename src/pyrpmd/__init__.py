@@ -27,6 +27,19 @@ def __getattr__(name):
         from .analysis.diffusion import analyze_diffusion
 
         return analyze_diffusion
+    if name == "OPESBias":
+        from .opes import OPESBias
+
+        return OPESBias
+    if name in ("PlumedBias", "PlumedBiasResult"):
+        from . import plumed
+
+        return getattr(plumed, name)
+    if name in ("TransitionInterfaceSampler", "TISPath", "TISResult", "TISMove",
+                "PathGenerationError", "estimate_effective_flux", "combine_tis_rate"):
+        from . import transition_interface
+
+        return getattr(transition_interface, name)
     raise AttributeError(name)
 
 
@@ -34,4 +47,7 @@ __all__ = [
     "NRPMDState", "NRPMDDynamics", "DiabaticResult",
     "JobSpec", "System", "State", "Dynamics", "run", "prepare",
     "resume_run", "analyze_run", "analyze_diffusion", "__version__",
+    "OPESBias", "PlumedBias", "PlumedBiasResult", "TransitionInterfaceSampler",
+    "TISPath", "TISResult", "TISMove", "PathGenerationError",
+    "estimate_effective_flux", "combine_tis_rate",
 ]

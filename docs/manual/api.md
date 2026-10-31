@@ -162,6 +162,32 @@ symmetric in the electronic indices.
 :members: step, energy, populations, asymptotic_coupling
 ```
 
+## Enhanced sampling APIs
+
+```python
+from pyrpmd import (
+    OPESBias, PlumedBias, TransitionInterfaceSampler, TISPath,
+    estimate_effective_flux, combine_tis_rate,
+)
+```
+
+`task="opes"` uses the standard run/prepare/resume/analyze entry points.
+`OPESBias` also supports direct integration through explicit `update()` events;
+force evaluations do not change the probability estimate.
+See [OPES](../opes.md) for fixed-bandwidth and frozen-production conventions.
+
+`PlumedBias.step(dynamics, state)` owns the PLUMED update clock and calls the
+existing integrator. `evaluate()` returns read-only diagnostics without a
+history update. The optional PLUMED runtime is loaded only when constructing
+the bridge. See [PLUMED](../plumed.md) for units and its external restart files.
+
+`TransitionInterfaceSampler` generates and samples unbiased path ensembles
+using a scalar CV or callable. `TISPath` owns each q/p path; the optional sample
+callback can stream retained paths, including rejected-move repeats.
+`estimate_effective_flux` consumes a separate unbiased trace, and
+`combine_tis_rate` returns a candidate first-order rate with its normalization
+and convergence status explicit. See [TIS](../transition-interface-sampling.md).
+
 ## Versioning
 
 The package, input schema, run manifest, checkpoint container and PES ABI each carry their own

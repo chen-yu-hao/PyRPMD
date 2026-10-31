@@ -98,7 +98,7 @@ and `[sampling]`.
 | `output.directory` | `runs/<task>` | Relative to the input file |
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | 40 for FES; 100 for the rate PMF | |
-| `analysis.bootstrap` | 20 | 0 for metadynamics; 1 is rejected |
+| `analysis.bootstrap` | 20 | 0 for metadynamics and OPES; 1 is rejected |
 | `analysis.min_count` | 1 | Bins with fewer samples are masked |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | `drpmd` only |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | With `auto`, no thermal rate is reported |
@@ -114,7 +114,7 @@ default resolved.
 | `[system]` | All except `pcet` | `geometry`, `transition_state`, `reactants`, `separation`, `symbols`, `masses`, `masses_amu`, `isotopes`, `geometry_unit`, `fragments`, `charge`, `multiplicity`, `cell`, `cell_unit`, `pbc`, `fixed_atoms` |
 | `[potential]` | All except `pcet` | `provider`, `factory`, `library`, `manifest`, `params`, `units`, `derivative`, `device`, …; see [Potentials](potentials.md) |
 | `[dynamics]`, `[sampling]`, `[parallel]` | All except `pcet` | See above and [Execution and parallelism](execution.md) |
-| `[[cvs]]`, `[umbrella]`, `[analysis]` | `fes`, `rate`, `network`, `site_rate`, `surface_rate`; `metadynamics` uses `cvs` and `analysis` | See below |
+| `[[cvs]]`, `[umbrella]`, `[analysis]` | `fes`, `rate`, `network`, `site_rate`, `surface_rate`; `metadynamics` and `opes` use `cvs` and `analysis` | See below |
 | `[reaction]` | `rate` (`drpmd` may use `electronic_weight`) | `fragments`, `forming_bonds`, `breaking_bonds`, `rinf`, `symmetry_factor`, `equivalent_paths` |
 | `[rate]` | `rate` | `pmf_method`, `dividing_surface`, `pmf_search_range`, `compare_ui` |
 | `[recrossing]` | `rate`, `network`, `site_rate`, `surface_rate` | Parent count, parent interval, child pairs, child time, bootstrap |
@@ -122,6 +122,8 @@ default resolved.
 | `[nonadiabatic]` | `drpmd` (experimental NRPMD) | See [Nonadiabatic NRPMD](nonadiabatic.md) |
 | `[adaptive_umbrella]` | `fes`, `rate` | See [Gas phase and free energy](workflows.md) |
 | `[metadynamics]` | `metadynamics` | |
+| `[opes]` | `opes` | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
+| `[replica_exchange]` | `fes` | Fixed-window same-temperature exchange interval and optional graph; [REUS guide](../replica-exchange.md) |
 | `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md) |
 | `[network]` | `network` | Entrances, channels, transition states |
 | `[pcet]` | `pcet` | PCET accepts only `schema_version`, `task`, `preset`, `description`, `temperature`, `pcet`, `output` |
@@ -236,7 +238,7 @@ different dimensions, write each entry as a string with units.
 - `run` refuses an existing non-empty output directory. Continue a run with `pyrpmd resume DIR`
   or with `pyrpmd run INPUT --resume`.
 - `--bins` and `--bootstrap` imply `--recompute`. Offline reanalysis is available for `fes`,
-  `metadynamics` and `diffusion`; for other tasks, `analyze` reads the saved summary.
+  `metadynamics`, `opes` and `diffusion`; for other tasks, `analyze` reads the saved summary.
 
 Diffusion reanalysis accepts `--fit-range '10 fs' '100 fs'`, `--axes 0 1`, `--atoms 0` and
 `--max-lag N`, where the lag counts saved frames. The fit range must lie within the saved duration;

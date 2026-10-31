@@ -16,6 +16,9 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 一维/二维自由能面 | `fes` | [快速入门](manual/quickstart.md)、[气相与自由能](manual/workflows.md) |
 | 多入口、多过渡态的速率矩阵 | `network` | [气相与自由能](manual/workflows.md) |
 | Standard 或 well-tempered metadynamics | `metadynamics` | [气相与自由能](manual/workflows.md) |
+| 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
+| OPES 概率增强采样 | `opes` | [OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
+| PLUMED 质心偏置、过渡界面路径采样 | Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
 | RPMD 自扩散、MSD、VACF | `diffusion` | [材料与表面](manual/periodic.md) |
 | 材料中的有向位点跃迁 | `site_rate` | [材料与表面](manual/periodic.md) |
@@ -71,6 +74,7 @@ PCET <manual/pcet>
 执行与并行 <manual/execution>
 输出与分析 <manual/results>
 示例索引 <manual/examples>
+副本交换伞形采样 <replica-exchange>
 ```
 
 ```{toctree}

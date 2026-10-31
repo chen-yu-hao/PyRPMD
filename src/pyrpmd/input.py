@@ -23,7 +23,7 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange".split()
 )
 _SECTIONS = {
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
@@ -68,6 +68,10 @@ _SECTIONS = {
     "metadynamics": set(
         "cvs mode sigma sigma_au height height_au pace bias_factor".split()
     ),
+    "opes": set(
+        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps".split()
+    ),
+    "replica_exchange": set("enabled interval_steps pairs".split()),
     "adaptive_umbrella": set(
         "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
     ),
@@ -412,8 +416,8 @@ class JobSpec:
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")
-        if task not in ("rate", "drpmd", "fes", "metadynamics", "pimd", "diffusion", "site_rate", "surface_rate"):
-            raise InputError("task must be rate, drpmd, fes, metadynamics, network, pcet, pimd, diffusion, site_rate or surface_rate")
+        if task not in ("rate", "drpmd", "fes", "metadynamics", "opes", "pimd", "diffusion", "site_rate", "surface_rate"):
+            raise InputError("task must be rate, drpmd, fes, metadynamics, opes, network, pcet, pimd, diffusion, site_rate or surface_rate")
         materials = task in ("pimd", "diffusion")
         if "diffusion" in d and task != "diffusion":
             raise InputError("[diffusion] requires task='diffusion'")
@@ -431,11 +435,19 @@ class JobSpec:
             raise InputError("[network] requires task='network'")
         if "metadynamics" in d and task != "metadynamics":
             raise InputError("[metadynamics] requires task='metadynamics'")
+        if "opes" in d and task != "opes":
+            raise InputError("[opes] requires task='opes'")
+        if task == "opes" and any(
+            key in d for key in ("umbrella", "reaction", "rate", "recrossing", "collision", "outcomes")
+        ):
+            raise InputError("OPES uses its own probability bias; umbrella and reaction/rate settings do not apply")
         if "adaptive_umbrella" in d and task not in ("fes", "rate"):
             raise InputError("Adaptive umbrellas require task='fes' or task='rate'")
-        if task == "metadynamics":
+        if "replica_exchange" in d and task != "fes":
+            raise InputError("[replica_exchange] requires task='fes'")
+        if task in ("metadynamics", "opes"):
             analysis = d.setdefault("analysis", {})
-            analysis.setdefault("method", "bias_estimate")
+            analysis.setdefault("method", "kde" if task == "opes" else "bias_estimate")
             analysis.setdefault("measure", "cv_density")
             if not any(key in analysis for key in ("bootstrap", "bootstrap_replicates", "bootstrap_samples")):
                 analysis["bootstrap"] = 0
@@ -591,7 +603,7 @@ class JobSpec:
         sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
         expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-andersen"
         sampling["integrator"] = sampling.get("integrator", expected_sampler)
-        if materials and sampling["thermostat"] == "pile-l":
+        if (materials or task == "fes") and sampling["thermostat"] == "pile-l":
             if sampler is None or sampling["integrator"] != sampler:
                 raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
             sampling["gamma_centroid"] = _positive(
@@ -855,6 +867,14 @@ class JobSpec:
                 from .workflows.metadynamics import validate_metadynamics
 
                 validate_metadynamics(resolved, system)
+            if task == "opes":
+                from .workflows.opes import validate_opes
+
+                validate_opes(resolved, system)
+            if "replica_exchange" in d:
+                from .workflows.replica_exchange import exchange_options
+
+                exchange_options(resolved, system)
             if "adaptive_umbrella" in d:
                 from .workflows.adaptive_umbrella import validate_adaptive_umbrella
 

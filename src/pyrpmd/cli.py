@@ -57,7 +57,7 @@ def parser():
     a.add_argument(
         "--recompute",
         action="store_true",
-        help="Reanalyze saved umbrella, metadynamics or diffusion data without new dynamics",
+        help="Reanalyze saved umbrella, metadynamics, OPES or diffusion data without new dynamics",
     )
     a.add_argument(
         "--bins", nargs="+", type=int, help="FES bins per CV (implies --recompute)"
@@ -299,10 +299,11 @@ def main(argv=None):
                     "name": "PyRPMD",
                     "version": __version__,
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "pcet", "pimd", "diffusion", "site_rate", "surface_rate"],
+                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate"],
                     "materials": {"cell": "fixed", "trajectory": "unwrapped_centroid", "pressure_ensemble": False},
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
-                    "enhanced_sampling": ["adaptive_umbrella", "standard_metadynamics", "well_tempered_metadynamics"],
+                    "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "opes"],
+                    "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling"],
                     "input_schema_version": 1,
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,

@@ -180,6 +180,10 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.metadynamics import run_metadynamics
 
         result = run_metadynamics(config, system, Path(target))
+    elif config["task"] == "opes":
+        from .workflows.opes import run_opes
+
+        result = run_opes(config, system, Path(target))
     elif config["task"] == "network":
         from .workflows.network import run_network
 
@@ -241,9 +245,9 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             summary = path / "summary.json"
         return json.loads(summary.read_text())
     config = json.loads((path / "input" / "resolved.json").read_text())
-    if config["task"] not in ("fes", "metadynamics", "diffusion"):
+    if config["task"] not in ("fes", "metadynamics", "opes", "diffusion"):
         raise InputError(
-            "Recomputing analysis supports FES, metadynamics and diffusion; omit --recompute to read other results"
+            "Recomputing analysis supports FES, metadynamics, OPES and diffusion; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
@@ -300,6 +304,10 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         from .workflows.metadynamics import reanalyze_metadynamics
 
         result = reanalyze_metadynamics(config, system, path)
+    elif config["task"] == "opes":
+        from .workflows.opes import reanalyze_opes
+
+        result = reanalyze_opes(config, system, path)
     else:
         from .workflows.fes import reanalyze_fes
 
@@ -376,6 +384,11 @@ def prepare(job, *, numerical=False):
 
         validate_metadynamics(config, system)
         result["metadynamics_preparation"] = config["metadynamics"]
+    elif config["task"] == "opes":
+        from .workflows.opes import validate_opes
+
+        validate_opes(config, system)
+        result["opes_preparation"] = config["opes"]
     elif config["task"] == "network":
         from .workflows.network import prepare_network
 

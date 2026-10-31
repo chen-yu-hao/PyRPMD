@@ -101,3 +101,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+    from mpi_exchange_smoke import run_mpi_exchange
+    run_mpi_exchange(Path(sys.argv[1]) / "replica-exchange")

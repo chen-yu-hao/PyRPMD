@@ -19,6 +19,10 @@ go straight to your task:
 | 1D/2D free-energy surface | `fes` | [Quickstart](manual/quickstart.md), [Gas phase and free energy](manual/workflows.md) |
 | Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
 | Standard or well-tempered metadynamics | `metadynamics` | [Gas phase and free energy](manual/workflows.md) |
+| OPES probability-based sampling | `opes` | [OPES](opes.md) |
+| Replica-exchange umbrellas | `fes` + `[replica_exchange]` | [Replica exchange](replica-exchange.md) |
+| Optional PLUMED centroid biases | Python API | [PLUMED bridge](plumed.md) |
+| Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
 | Equilibrium nuclear quantum statistics and energy estimators | `pimd` | [Materials and surfaces](manual/periodic.md) |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | [Materials and surfaces](manual/periodic.md) |
 | Directed site-to-site hop in a material | `site_rate` | [Materials and surfaces](manual/periodic.md) |
@@ -76,6 +80,17 @@ Potentials and plugins <manual/potentials>
 Execution <manual/execution>
 Output and analysis <manual/results>
 Examples <manual/examples>
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Enhanced sampling
+:hidden:
+
+Replica exchange <replica-exchange>
+OPES <opes>
+PLUMED bridge <plumed>
+Transition-interface sampling <transition-interface-sampling>
 ```
 
 ```{toctree}

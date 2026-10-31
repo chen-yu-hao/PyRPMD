@@ -1,0 +1,54 @@
+{
+  "base_main": "76dd6ad24adc6c244f775857987cd2f0e119845f",
+  "reused_reus_commit": "afb04de875c40eec56b204df9b26a93dbd079c4e",
+  "python": "3.12.14",
+  "dependencies": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "h5py": "3.16.0",
+    "pytest": "9.2.0",
+    "ase": "3.29.0"
+  },
+  "local_full_integration": {
+    "passed": 1738,
+    "skipped": 14,
+    "subtests_passed": 153,
+    "restricted_socket_failures": 2,
+    "timing_seconds": 224.82,
+    "scope": "Before final targeted guard additions; no production-runtime failures"
+  },
+  "loopback_socket_retry": {
+    "passed": 2,
+    "failed": 0,
+    "timing_seconds": 0.67
+  },
+  "final_sampling_tests": {
+    "passed": 243,
+    "skipped": 1,
+    "skip": "No local PLUMED wrapper/kernel",
+    "timing_seconds": 60.85
+  },
+  "docs": {
+    "strict_builds": [
+      "en/html",
+      "zh/html",
+      "en/singlehtml",
+      "zh/singlehtml"
+    ],
+    "language_links_checked": 86,
+    "missing_language_targets": 0
+  },
+  "local_mpi": false,
+  "local_live_plumed": false,
+  "plumed_ci_source": "52da2bb76d37dbad0d19f59c6fe0b2ab939e3ded",
+  "log_sha256": {
+    "sampling-full-tests.log": "1b411f3c03f0c45ead47e4e0bdb0e7bf99b5e9b50fcc40ac4016f39c2703a146",
+    "sampling-socket-tests.log": "a65a2e135668904da5355e90568a4d7e06f5ac7b4e108ec7fe1b6ab82d6a1587",
+    "sampling-final-focused.log": "0437af5ce37343dfb003d4f9dce59ca6c58a23666c70fbeac69c1e1e86700e49",
+    "sampling-docs-en.log": "b1d4e8a8b6d8f5308e9d555880802b124f8a365006a01ca24090676fd650b960",
+    "sampling-docs-zh.log": "7aecb5826766da4ccd521cef70fcf07e672657bce54c5e879ed58b8e0ce2c128",
+    "sampling-docs-single-en.log": "b789bcd8c7818c9659c43cdbb756fb98f177f949894ceea2151211690be0ba37",
+    "sampling-docs-single-zh.log": "422e7e0074c5b8732f8180d59ca3879c80c58fd4d830be1aaae44aa9c09dab7e",
+    "sampling-sdist.log": "7a2e82617002eb9e3a450afd2c577b237e092fdfae84f61a49bb11083da0cea8"
+  }
+}

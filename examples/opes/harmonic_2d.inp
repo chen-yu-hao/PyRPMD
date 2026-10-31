@@ -1,0 +1,57 @@
+# Short numerical example, not a converged molecular free-energy calculation.
+task = "opes"
+temperature = "300 K"
+beads = 4
+seed = 811
+
+[system]
+symbols = ["H"]
+geometry = [[0.0, 0.0, 0.0]]
+
+[potential]
+provider = "builtin"
+name = "harmonic"
+params = {k = 0.002}
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 100
+production_steps = 1000
+sample_interval = 5
+andersen_interval = 40
+replicas = 2
+
+[[cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+
+[[cvs]]
+name = "y"
+kind = "cartesian"
+atom = 0
+axis = "y"
+estimator = "centroid"
+
+[opes]
+cvs = ["x", "y"]
+sigma = ["0.3 bohr", "0.3 bohr"]
+barrier = "2 kcal/mol"
+bias_factor = 8.0
+pace = 20
+freeze_after_steps = 400
+freeze_equilibration_steps = 100
+
+[analysis]
+method = "reweighted_histogram"
+bins = [12, 12]
+ranges = [[-2.0, 2.0], [-2.0, 2.0]]
+bootstrap = 0
+
+[output]
+directory = "runs/opes_harmonic_2d"
+checkpoint_steps = 100

@@ -32,6 +32,10 @@ describes how to take a result from a pilot run to production.
 | Integrators | `cayley-bcb`, `normal-mode-bab`, `velocity-verlet`, each through both native block APIs, Andersen parents and centroid RATTLE |
 | Adaptive umbrella sampling | 1D/2D pilots insert windows and extend sampling from MBAR overlap and effective sample size, then freeze for independent production; works for FES and the rate PMF |
 | Metadynamics | Standard and well-tempered, 1D/2D and periodic CVs, full Jacobians, independent replicas, HILLS and finite-time bias FES |
+| Replica-exchange umbrellas | Same-temperature fixed-window REUS, PILE-L or Andersen, synchronized ensemble restart and joint window bootstrap ([guide](docs/replica-exchange.md)) |
+| OPES | Fixed-bandwidth weighted probability estimation in 1D/2D, explicit bias updates, optional frozen-bias histogram reweighting and independent restartable histories ([guide](docs/opes.md)) |
+| PLUMED bridge | Optional Python/kernel integration for coordinate-dependent centroid biases, physical unit conversion and one update per completed step ([guide](docs/plumed.md)) |
+| Transition-interface sampling | Unbiased two-way shooting path ensembles, rejection-aware crossing statistics, separate effective-flux normalization and streaming callbacks ([guide](docs/transition-interface-sampling.md)) |
 | Electrochemical PCET | Golden-rule forward/reverse rates (s⁻¹) for a local complex with one proton, a wide-band metal and a classical Gaussian environment; potential/temperature scans, H/D KIE, vibronic contributions, numerical diagnostics |
 | Fixed cells and PBC | Orthogonal and skewed cells, partially periodic slabs, continuous unwrapped coordinates; periodic contracts for ASE, Python and i-PI potentials |
 | PIMD | PILE-L or Andersen sampling matched to the integrator; primitive and centroid-virial energy estimators, radii of gyration |
@@ -93,6 +97,15 @@ pyrpmd run examples/network/two_entrances.py --output runs/network
 pyrpmd run examples/fes/adaptive_harmonic.inp --output runs/adaptive
 pyrpmd run examples/metadynamics/well_tempered_2d.inp --output runs/meta
 pyrpmd analyze runs/meta --recompute --bins 30 30
+
+# Replica-exchange umbrellas and OPES with frozen-bias production.
+pyrpmd run examples/fes/replica_exchange_2d.inp --output runs/reus
+pyrpmd run examples/opes/harmonic_2d.inp --output runs/opes
+pyrpmd analyze runs/opes --recompute --bins 10 10 --bootstrap 0
+
+# Interface paths on a confined model; PLUMED is a separate optional runtime.
+python examples/sampling/transition_interface.py
+python examples/plumed/centroid_metadynamics.py
 
 # PCET model: temperature and potential scan for H/D, local first-order rates.
 pyrpmd run examples/pcet/harmonic_scan.inp --output runs/pcet-harmonic
