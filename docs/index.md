@@ -74,6 +74,7 @@ PCET <manual/pcet>
 Nonadiabatic NRPMD <manual/nonadiabatic>
 Potentials and plugins <manual/potentials>
 PES generation <manual/pes-generation>
+JaxPIP generation <manual/jaxpip-generation>
 Execution <manual/execution>
 Output and analysis <manual/results>
 Examples <manual/examples>
