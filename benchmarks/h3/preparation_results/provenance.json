@@ -1,0 +1,824 @@
+{
+  "schema": "pyrpmd.h3.preparation-publication.v1",
+  "date": "2026-10-31",
+  "system": "H + H2(v=0,1,j=0) on BKMP2",
+  "calculation_source_commit": "bddb98103e98ec6f5cbd6ed1f84dd126e33d82b3",
+  "calculation_source_url": "https://github.com/chen-yu-hao/PyRPMD/tree/bddb98103e98ec6f5cbd6ed1f84dd126e33d82b3",
+  "historical_baseline_source_commit": "0860a079950e09e1e97c001acd23a436ce273ec1",
+  "collision_attempts": 30720,
+  "collision_counts": {
+    "product": 836,
+    "nonreactive": 29878,
+    "unresolved": 6,
+    "failed": 0
+  },
+  "collision_native_steps": 179301510,
+  "collision_python_steps": 0,
+  "isolated_audit_attempts": 6144,
+  "isolated_audit_failed": 0,
+  "isolated_audit_native_steps": 49920000,
+  "paired_collision_contrasts": 12,
+  "audit_manifest_status": "completed",
+  "audit_wrapper_unchanged": true,
+  "validation": {
+    "result": "........................... [ 35%]\n..................................................                       [100%]\n77 passed, 45 subtests passed in 10.81s",
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 PYTHONPATH=src:. python -m pytest -q tests/test_h3_diatomic_action.py tests/test_h3_diatomic_switch.py tests/test_h3_preparation_study.py tests/test_h3_preparation_audit.py tests/test_h3_preparation_analysis.py tests/test_drpmd_propagation_resume.py tests/test_state_selected_workflow.py tests/test_nrpmd_workflow.py",
+    "runtime_note": "The runner added /tmp/pyrpmd-testdeps after the normal sys.path for pytest only; runtime NumPy/SciPy were unchanged."
+  },
+  "recorded_run_code_hashes": [
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/build/h3_bkmp2.f",
+      "sha256_values": [
+        "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/build/libbkmp2.build.json",
+      "sha256_values": [
+        "7faf5a2e483ac0731acd1912eef3a2ec24830583fe10c949766f1199b22e5c90"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/build/libbkmp2.so",
+      "sha256_values": [
+        "81be9f5fff31e500da9687022d74a8c6fecf2f2357fe03a8dd03e3760aa04625"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/build/libdiatomic_switch_ee11bb8b7038dc2444d6.so",
+      "sha256_values": [
+        "756e078e6c3f13007a5c67a46f6f9403282ab7844a25dda53905ec125cbe11b6"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/diatomic_action.py",
+      "sha256_values": [
+        "e8ad5507d421bdc2607bc700445ca808661a7d492328347d042b819225c6c26c"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/diatomic_switch.cpp",
+      "sha256_values": [
+        "122ddbeb5f2d2b4e270458b32e49dac225fcc36c62805de8196c820f639b3d82"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/diatomic_switch.py",
+      "sha256_values": [
+        "656de071de8e73e551fc519480ab2873755e8d7698a8b57c7cab46fbc44f49d5"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/drpmd.py",
+      "sha256_values": [
+        "e6c0525e9936a4cb99a55692ad4532b6b54a0c852d25c0c197629ee679b19af4"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/pes.py",
+      "sha256_values": [
+        "89a50cfa49d2ea459e3b864694f3ed08855ff67e6628ec5523cac829d0f80f72"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/preparation_audit.py",
+      "sha256_values": [
+        "79a473f7d9dade037d413bb9310782beae01fa1da5c6e20dd099c2881ac156e5"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/source.json",
+      "sha256_values": [
+        "0bd8e0a692d91386c8ac1b48a949f933165f1a5c9f7c887c5ceac0e81f1408f8"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/state_preparation_study.py",
+      "sha256_values": [
+        "56a84b6cf6de449b6b350688c003d1b43050796747158ac85b8550bf7be08c96"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/state_selected_reproduction.py",
+      "sha256_values": [
+        "97b1ed0e6611aec7159c579fe3aca84c390294b6ad0be2f622d80e1a7567ac10"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/state_selected_sensitivity.py",
+      "sha256_values": [
+        "8bf2c9f64c3068133071d50eaf57d5502abcd3e431bd310f96450048de470aef"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/wrapper.f90",
+      "sha256_values": [
+        "57ce0ff2acdcc657f51693d9c7fbca5e7bed26e60ee2b446cd2c51eb4250d3a9"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/native/cayley.cpp",
+      "sha256_values": [
+        "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/native/fused.hpp",
+      "sha256_values": [
+        "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/native/include/pyrpmd/pes_api_v1.h",
+      "sha256_values": [
+        "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/native/propagation.h",
+      "sha256_values": [
+        "ba2ac0eb4789e9cffb947c50789807f7aba27ae8ad91a51785cbface2f2e68bd"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/native/ring_fft.h",
+      "sha256_values": [
+        "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256_values": [
+        "5af72f662e8adf4f584e8cc960b62be25a61c5c14624dfe422d9af31f2b94e47"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/src/pyrpmd/constants.py",
+      "sha256_values": [
+        "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/src/pyrpmd/dynamics.py",
+      "sha256_values": [
+        "9cfb93584418650fa81745f21329bf11d79812f7b9efbf381c68f6c409a9c625"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/src/pyrpmd/initial_states.py",
+      "sha256_values": [
+        "19af0668ddb0259cf4d4afa2b2f99d71341cc60f8df73e9ac9bdd39f2b803742"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/src/pyrpmd/propagation.py",
+      "sha256_values": [
+        "e5637c67954bae432c799a48100671e9cbab869e6ab10a4bba3333425458014f"
+      ]
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/src/pyrpmd/workflows/drpmd.py",
+      "sha256_values": [
+        "fe37a5d063aa885cfc6ca4c9970e06a56f2687a5001cf85af80e0b5263ee055c"
+      ]
+    }
+  ],
+  "analysis_source_sha256": "a44356d38744d56a263be60a4a44fe1c383169c6763ee0500560bbeb6d0f2a68",
+  "full_analysis_sha256": "39bc617b2720bc99d2834a21e8cb2325d75f1ae93ddcd595ec4fb844b86c2c32",
+  "input_sha256": [
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v0-Et0.550-P32/summary.json",
+      "sha256": "eabe17211e0b791180ecb76174dca2fb1fac4393a7e8b515c73bd22d7d2f32f4"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v0-Et0.550-P32/config.json",
+      "sha256": "40941edf15e96311a3dc7aaa3a941b48a61c36429eee8f01171e9cddc33f5356"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v0-Et0.550-P32/trajectories.jsonl",
+      "sha256": "293c3fcb9ea7946e2f638ce4ce17805e1fc7c13e6c00706a71e1f415f7707065"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v0-Et0.550-P1/summary.json",
+      "sha256": "509b39d628248f1cbf92a0eec9a00f7339c16b89516cab8f5d62ad925e4c409c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v0-Et0.550-P1/config.json",
+      "sha256": "4a685d1780718d53ebc439c78a8fbd8e44ae68bc3773947f1ccec5289c8862d0"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v0-Et0.550-P1/trajectories.jsonl",
+      "sha256": "3499763ffc7d84d76df917df7236df108c0b9409f6e27032bb6525b7b66cc4db"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v0-Et0.550/summary.json",
+      "sha256": "631703a831b7a2d25e3383e13e312a643ba78217057af13503d8b3ab578e3388"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v0-Et0.550/config.json",
+      "sha256": "07c999628c65b08b39231855238ee247541d2e7c08509c4ad6e8bcc69fd3bbda"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v0-Et0.550/trajectories.jsonl",
+      "sha256": "db50357a0a33541b7add2e3f56b775cd50575cf3627f7b988708903b99b7a1b0"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v0-Et0.550/preparation.json",
+      "sha256": "873d13cc4b82c42085eb3ea7927475bed791f6f7fb801d36fec4e4fa70ce8150"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v0-Et0.550/provenance.json",
+      "sha256": "b0120f9e625d8f48e77ef430caf285c76f958b7b73868553930f211fe42948c1"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v0-Et0.550/summary.json",
+      "sha256": "ab0f3a363e7a6d063845f680907add4fb64801bac463806b0bd74f8d8bb0ec06"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v0-Et0.550/config.json",
+      "sha256": "07c999628c65b08b39231855238ee247541d2e7c08509c4ad6e8bcc69fd3bbda"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v0-Et0.550/trajectories.jsonl",
+      "sha256": "d9e491d9aeb9d837cf1ed1397cec15c4ce9342386b5b1128e62ad6d598350c3c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v0-Et0.550/preparation.json",
+      "sha256": "32a208c1c7bc3de9b37c7b8d7b4f909b15480a6288c72cb57a214cab34348299"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v0-Et0.550/provenance.json",
+      "sha256": "bef70887acdac35c4a3d1ce1df6fef1699a61eaf8d56c0e26baefc82e9bd7bb8"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v0-Et0.550/summary.json",
+      "sha256": "8dfb1e5b360fb5da953031082366b05efc584a16a456bd0da75ffc440b8a0b75"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v0-Et0.550/config.json",
+      "sha256": "e1e805bf94fbdd692adcafda9c9a3eed982953ae7216d33afa535d697ba1e2d4"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v0-Et0.550/trajectories.jsonl",
+      "sha256": "50c65522b32086699ca68ea14b8c744861e89036aab49710064d2f90c3605d95"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v0-Et0.550/preparation.json",
+      "sha256": "45ae237fd7624b21c36615c885976d5d0999e78417d165b4752068846e865064"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v0-Et0.550/provenance.json",
+      "sha256": "45aff8919999edf1cc23483a83093f45df110710efb95c7dc3f0fb270fc5c696"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v0-Et0.550/summary.json",
+      "sha256": "a1a8a859d9fd5c2556c389994c4a0b5b7d0fd8a8fe91153b255083aeb2d3f61b"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v0-Et0.550/config.json",
+      "sha256": "bfb94daf74e554258611e2f68b6916f9a68bf1302c60aa5e1c9983e59b8623f9"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v0-Et0.550/trajectories.jsonl",
+      "sha256": "432cb68fcb1648a46f84fffed1250fea19c376f16745059d79407c3ba90133dd"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v0-Et0.550/preparation.json",
+      "sha256": "443fa8fcc7561e3adade85a3db229976c0b109dd6646590a15db31de1cba2cb6"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v0-Et0.550/provenance.json",
+      "sha256": "7792d0233f89e940c822e7079132ab773206bf7b9aa05649af6e386e91275892"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v1-Et0.900-P32/summary.json",
+      "sha256": "55f2dbf473c0a767cc2f70c623aabdace7a9337f70df65ecea153d33fc87ab2d"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v1-Et0.900-P32/config.json",
+      "sha256": "93bbf762b8c54b6e01ac82eed85b48d6bfdd4ec7cc14c15725aedbe67bd63155"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v1-Et0.900-P32/trajectories.jsonl",
+      "sha256": "a74a0b205c0afbd165c4488aa6601edfeeaee0c858c994565429f6b91701779e"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v1-Et0.900-P1/summary.json",
+      "sha256": "4fdda3d497a8cf05820f4aefcaa94718db5240cb5a85ed1c78683159895ad63a"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v1-Et0.900-P1/config.json",
+      "sha256": "0b59ac16608bab6dcca6a6d6db2884a990a00a75036943088ab64401c74bc0db"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v1-Et0.900-P1/trajectories.jsonl",
+      "sha256": "d514218385f2673cd90057571b33ddc32e11440b0f915a1697a86f402c0c817c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et0.900/summary.json",
+      "sha256": "cb0cc9b9625003fe02b16c35035796c550bb851f59881f2fc36cb1930ffdd578"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et0.900/config.json",
+      "sha256": "8942dd8f412fb6686aa28f8058006a789427ab092cf870b4466599c419323c15"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et0.900/trajectories.jsonl",
+      "sha256": "62e1dc3aac2a253b1f5d42cc29c9cb5a630a82cfb7b1272a32752ca64be53cb8"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et0.900/preparation.json",
+      "sha256": "873d13cc4b82c42085eb3ea7927475bed791f6f7fb801d36fec4e4fa70ce8150"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et0.900/provenance.json",
+      "sha256": "42234d7c7099a3ed4f65599c3368c85b5e0b6d13711ef22fa9a54d1b2ca75825"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et0.900/summary.json",
+      "sha256": "63be27a69e986231aaf7cfc6367a25edcd144aba6e8b8208f04e9962c66979eb"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et0.900/config.json",
+      "sha256": "8942dd8f412fb6686aa28f8058006a789427ab092cf870b4466599c419323c15"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et0.900/trajectories.jsonl",
+      "sha256": "08b9a7f5b433bc4a5140868038a4b0b7cfb150550abf577a52a5c82fb8520568"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et0.900/preparation.json",
+      "sha256": "32a208c1c7bc3de9b37c7b8d7b4f909b15480a6288c72cb57a214cab34348299"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et0.900/provenance.json",
+      "sha256": "9a350754434ef3d4762d0df2dbf1bbed214b61793f2499e5b5ad21ec43b62ea2"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et0.900/summary.json",
+      "sha256": "6d8ac538df23c3d990ca027e96610783c828ae744bbc39512d09f6a5be34425d"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et0.900/config.json",
+      "sha256": "257e037f484b2415c36a060b106123d4ace21a392994910bc612268ed2836569"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et0.900/trajectories.jsonl",
+      "sha256": "99e77b052a5db93220a857836af3d5a30f1aada153ef8aa31980fcccff2d062f"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et0.900/preparation.json",
+      "sha256": "45ae237fd7624b21c36615c885976d5d0999e78417d165b4752068846e865064"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et0.900/provenance.json",
+      "sha256": "eab48a2849f4b172a3247b36bf6fce4ba2785831c64c39fbae24c7c40a20f28c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et0.900/summary.json",
+      "sha256": "e039815e90f1da084c2698313e19af9fb504135e6952e46bd58d0313a3e8581f"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et0.900/config.json",
+      "sha256": "8ac8706bf0f480256fc1e5e9cb4cfa975e26e3ec802c03f707afad3efc7d917c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et0.900/trajectories.jsonl",
+      "sha256": "72ffe76825844293da856c4c4737f27da21bba105313c3dbd93b9c1fceca6035"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et0.900/preparation.json",
+      "sha256": "443fa8fcc7561e3adade85a3db229976c0b109dd6646590a15db31de1cba2cb6"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et0.900/provenance.json",
+      "sha256": "c2f00e11e7af345296d3c9ab7f0f5a4e0a39c638ecf29cb2569c8cf3e7b265a2"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v1-Et1.100-P32/summary.json",
+      "sha256": "c13356348919fb153de2b5552f6055c5937bf1dabb8cb1426a28e62c5107666a"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v1-Et1.100-P32/config.json",
+      "sha256": "707cdd109605c53685c296f48c029606a529b8a2c6375cce88aa788c8f83ef41"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/ne_rpmd-v1-Et1.100-P32/trajectories.jsonl",
+      "sha256": "393806a29b20127e47e57f92bb09c5935f8643f4362a492ec70c47ec70f55787"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v1-Et1.100-P1/summary.json",
+      "sha256": "b760d3dc1c7869ac4530fc465435582bd5a57f2fe33ec965164b03d0ebcdf5d4"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v1-Et1.100-P1/config.json",
+      "sha256": "d59c9b2c4f2fca77fcbbbfc6a338fbe05ebe98f1d0dd06814894570f52927915"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/main/qct-v1-Et1.100-P1/trajectories.jsonl",
+      "sha256": "085feb05493f7951e64ebedd384d5cf706cba523e9b285b7102e5a0f2f174166"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et1.100/summary.json",
+      "sha256": "6ddfb53de91efd6639a44b423d3bc7fa76f182242b97974821afb2d7a536e375"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et1.100/config.json",
+      "sha256": "91352c5cf29a6b816418c2b338ef8354e709271d9221d5248d1a700c8f9d1f8c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et1.100/trajectories.jsonl",
+      "sha256": "b5d2959d399b3cd3395031a72bfe4e9ddfedde3fffa048a321662e284c023b44"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et1.100/preparation.json",
+      "sha256": "873d13cc4b82c42085eb3ea7927475bed791f6f7fb801d36fec4e4fa70ce8150"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-direct-none-v1-Et1.100/provenance.json",
+      "sha256": "6be02fd142ebf86a600c33658c716eb7e36b711bb4c04ac0b2805f0a75613b27"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et1.100/summary.json",
+      "sha256": "449b895f57705d4cabfbc006d61beef28038ef4b2dedaac984fc9e462ec9b26f"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et1.100/config.json",
+      "sha256": "91352c5cf29a6b816418c2b338ef8354e709271d9221d5248d1a700c8f9d1f8c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et1.100/trajectories.jsonl",
+      "sha256": "e7d27fadcd43285a2d15ec7fdbcff0d36c3919ccb5d9a3aaff476a0732418703"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et1.100/preparation.json",
+      "sha256": "32a208c1c7bc3de9b37c7b8d7b4f909b15480a6288c72cb57a214cab34348299"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/ne-switch200-none-v1-Et1.100/provenance.json",
+      "sha256": "99e8a590b01d2997eeedf9c5bc25e1614f67a97e287eb55145e90f9982692c05"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et1.100/summary.json",
+      "sha256": "f7f4e1c3d338623b74440db33529b5fda311065de23c8ed73add2428ccc5fea0"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et1.100/config.json",
+      "sha256": "ba7e7ed1539df1324b78a711d2b53bb4380c0277d37d7593c1dba5fbb9013eb0"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et1.100/trajectories.jsonl",
+      "sha256": "4027d3517463d6220cc69b317e7d609bd6c28d6efea8210bbd9d600728a80c87"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et1.100/preparation.json",
+      "sha256": "45ae237fd7624b21c36615c885976d5d0999e78417d165b4752068846e865064"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_collision-v1-Et1.100/provenance.json",
+      "sha256": "6d0850afbc8c4cc7f6f5fdab75e5e4ca78c44aafef32ec278f0e8d1a0f04900a"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et1.100/summary.json",
+      "sha256": "5d7fe9494de92dc5397686891e1722a681889734274ed06a986faabbfbdb7d7e"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et1.100/config.json",
+      "sha256": "dfa369361e51fd9a1f4acec73338980497a572aeba32664ce9ea64ba74dc98b1"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et1.100/trajectories.jsonl",
+      "sha256": "b95d519abce6a4255c563f2d0ac1e0d7294ce888ce09edd9a391e30e7f744371"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et1.100/preparation.json",
+      "sha256": "443fa8fcc7561e3adade85a3db229976c0b109dd6646590a15db31de1cba2cb6"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/collisions/qct-action-fixed_total-v1-Et1.100/provenance.json",
+      "sha256": "6cc67ae453490f056063f3d540637fdc968822ad09e75d050fcceb8f39bb79c7"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_paper/summary.json",
+      "sha256": "a975a73d39ba82f244e44ad248df88c7519550f27cc1b2f42e1f7816d36a3880"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_paper/config.json",
+      "sha256": "2849f655fdfbda5f324f2d76ac0ed5aa1d11aad638ae876b0d1ee7db53fded8d"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_paper/trajectories.jsonl",
+      "sha256": "4c0ccbe2798d5351fc6d431fe5935397c440a262a44724a74b62b7dd67487382"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_paper/preparation.json",
+      "sha256": "61d68e6514d44a67ac7232b998dd7f2ec89eab4580600cc725b2603f52057328"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_paper/provenance.json",
+      "sha256": "6ca6ac03a7a4b7cf2b012d92b337d16ee1276f4a44d2f440b06d47e4e95b0adc"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_paper/audit_time_averages.json",
+      "sha256": "3d342881be32b99164b46fed35653c647d56b0ab7e1665be88876910cd40891e"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_none/summary.json",
+      "sha256": "15b4dd279f65b0a34954db01ae586f9e027f47b2b2f48ae69fb0fc478247031d"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_none/config.json",
+      "sha256": "2849f655fdfbda5f324f2d76ac0ed5aa1d11aad638ae876b0d1ee7db53fded8d"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_none/trajectories.jsonl",
+      "sha256": "f2cdaa98f1a253668a929bac39eeb8798bcbbe6d99bd6af77f6a0f260b91175c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_none/preparation.json",
+      "sha256": "ba848222f772ee2f2ba71e73a874a487480b394e5c8e439beb68a940cebf0f1c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_none/provenance.json",
+      "sha256": "55179d8bbfd62e6b0d986bc29a60ecb0e96ab8787a3944f75db7bb8b9dc74989"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_direct_none/audit_time_averages.json",
+      "sha256": "5565cb10c4aec64bd8fd9be914787a7e1f3f1eade14daa014df04133117eb7a3"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch50_none/summary.json",
+      "sha256": "65475873ecece3e0b555c37e59716a614c0ff7275562daf261f0116ab8444339"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch50_none/config.json",
+      "sha256": "2849f655fdfbda5f324f2d76ac0ed5aa1d11aad638ae876b0d1ee7db53fded8d"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch50_none/trajectories.jsonl",
+      "sha256": "a3315df830538ef5e18de062311c44ce8e1aeea22bfc641fd0a1515dd5f84aa1"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch50_none/preparation.json",
+      "sha256": "e538afcf862f81166bda3f7d938ea3596b303ac646ac388b665b16e6d3ccd231"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch50_none/provenance.json",
+      "sha256": "e45cc2615cef9d94035c0a8008560e48881f506cc03efee2f0c574813938d5f4"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch50_none/audit_time_averages.json",
+      "sha256": "aef928b9a1a823952b59647bbf016836741c34c3e33246f53be6af633c7f3f9f"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch200_none/summary.json",
+      "sha256": "1f2fe74b91eeb214f16fbd10b7cf2f4b9cdc53f238daf4bb69c254d4da327702"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch200_none/config.json",
+      "sha256": "2849f655fdfbda5f324f2d76ac0ed5aa1d11aad638ae876b0d1ee7db53fded8d"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch200_none/trajectories.jsonl",
+      "sha256": "908dd63c9cb44f20fee2d510be09413964d5e8921cb254cb8d615cf175890c91"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch200_none/preparation.json",
+      "sha256": "e4bd37ab46a3136e28f953347f542ed0976dec86a51f221478489fabf25e6040"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch200_none/provenance.json",
+      "sha256": "2c977dfc551732caa0bed03f606aab66bbe3d76e30474f23c00be836fcecc59e"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v0_E0p55_switch200_none/audit_time_averages.json",
+      "sha256": "c8919509dcd19376a805b98c711197bceb9a486a2924d09b1596f45f89576da3"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_paper/summary.json",
+      "sha256": "7bd7a273c6b536b218ba2b7ad55780e711f5cebe0bb505f76de4eef78e3230c5"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_paper/config.json",
+      "sha256": "3b4bc0118724c4baee304460937e2ae5714bed87e21008507f46fb727c6fcca8"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_paper/trajectories.jsonl",
+      "sha256": "bfad118399a1b06e15ecd6646985b5f90d6cd990a671d3f5b3bed7c3ccad0cbe"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_paper/preparation.json",
+      "sha256": "61d68e6514d44a67ac7232b998dd7f2ec89eab4580600cc725b2603f52057328"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_paper/provenance.json",
+      "sha256": "4cf037e088aebe1496ef977c0eec845a641dc69b1da1aa56583d3ceb34637952"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_paper/audit_time_averages.json",
+      "sha256": "3e47c956af0cd6e6431095750c4f4b80d75c105b872b4164dcc839f170764166"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_none/summary.json",
+      "sha256": "48b234cdb576593b08ad110ed35a39f25b606ae06c4954ab4921cacc2c4004ea"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_none/config.json",
+      "sha256": "3b4bc0118724c4baee304460937e2ae5714bed87e21008507f46fb727c6fcca8"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_none/trajectories.jsonl",
+      "sha256": "b61cfc92b805fbf4b7d8bf6b252f4d6db476e20778c85fb3047758f773371023"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_none/preparation.json",
+      "sha256": "ba848222f772ee2f2ba71e73a874a487480b394e5c8e439beb68a940cebf0f1c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_none/provenance.json",
+      "sha256": "7ac811a9167a20cdd42bd23cffb1bdf83fbe618473a06ea96b6ebcb1d47cb2ad"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_direct_none/audit_time_averages.json",
+      "sha256": "f5e67976b7014dd6b6432fd2152187169c435b8c3d50334b4f9672259eb67d3b"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch50_none/summary.json",
+      "sha256": "65bad999ecf1493c737096b7a2270d7412e3da466ed589e30c4a65953a9f73f1"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch50_none/config.json",
+      "sha256": "3b4bc0118724c4baee304460937e2ae5714bed87e21008507f46fb727c6fcca8"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch50_none/trajectories.jsonl",
+      "sha256": "eef02ca1e19cfa56cfcaa99274e9486bf1b3bb4d66e381043e5108d08f5edf2a"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch50_none/preparation.json",
+      "sha256": "e538afcf862f81166bda3f7d938ea3596b303ac646ac388b665b16e6d3ccd231"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch50_none/provenance.json",
+      "sha256": "a5d2a61aa94a0528e381ecdc2610c6578f2dca609592be5c68f2b24f91077e51"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch50_none/audit_time_averages.json",
+      "sha256": "5c7a07e7aa801ab61ca36352a4022e6bcc5b891f99b03f24c6d645e394e0e635"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch200_none/summary.json",
+      "sha256": "fc7eea3670d6e6b4cfe803fb69db8d6378cb376c68107cfad21da8be56bf9366"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch200_none/config.json",
+      "sha256": "3b4bc0118724c4baee304460937e2ae5714bed87e21008507f46fb727c6fcca8"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch200_none/trajectories.jsonl",
+      "sha256": "a23dd1f0a2eb68778a6c353d9c1ced695a811763295e75af77f963157b384abe"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch200_none/preparation.json",
+      "sha256": "e4bd37ab46a3136e28f953347f542ed0976dec86a51f221478489fabf25e6040"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch200_none/provenance.json",
+      "sha256": "4b6a8c72864055fec508cadbd2fbf5d5a6fb7632cffb8a9d0a1def6bcbca4a12"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E0p90_switch200_none/audit_time_averages.json",
+      "sha256": "7a8587b329081a3113daeda5fa8527925eef4afbd3489ce941727673893a3ac6"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_paper/summary.json",
+      "sha256": "26fbfe2de87fbffa9f61bda90316a9ba2d5ed03be1e3294c72f5551bdb7d05af"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_paper/config.json",
+      "sha256": "59daf3c764106b12267bc7524e545dbb19fcb7587c279748c272998427d6a8e5"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_paper/trajectories.jsonl",
+      "sha256": "ed84b56c31f44a73b34128b1944a0f92272c906376ec284789529a4daa9e13f0"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_paper/preparation.json",
+      "sha256": "61d68e6514d44a67ac7232b998dd7f2ec89eab4580600cc725b2603f52057328"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_paper/provenance.json",
+      "sha256": "5dd119e88239b5f8b4c41c66a0f90a951a43b70f8d021ec119131cf5f76649f9"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_paper/audit_time_averages.json",
+      "sha256": "a2841d37a53ed77939bf9acc160f7d5d5f5958d3b8a9417f0f80a0e94062eb88"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_none/summary.json",
+      "sha256": "989703d998082b6fa4280a27238807ee6467158cba8eb0f6113aaa37510a901b"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_none/config.json",
+      "sha256": "59daf3c764106b12267bc7524e545dbb19fcb7587c279748c272998427d6a8e5"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_none/trajectories.jsonl",
+      "sha256": "a1a59d9e59ac21aa7b1f0595042be31d59d35def46b1169a6a13c6848c80f7ae"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_none/preparation.json",
+      "sha256": "ba848222f772ee2f2ba71e73a874a487480b394e5c8e439beb68a940cebf0f1c"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_none/provenance.json",
+      "sha256": "18380f121a8eb2b76d4237a2a58a15735c6a1bc9381a2c9229a617d7be5025c4"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_direct_none/audit_time_averages.json",
+      "sha256": "92a2c8530a8230364c1558addcfe511f5bcf0f8eb18a0e53250843d17c3635c5"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch50_none/summary.json",
+      "sha256": "92a1db0b6dd521cf570f4aaf2a0ec9f71824be10c060a67723f277cefdc7e8ae"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch50_none/config.json",
+      "sha256": "59daf3c764106b12267bc7524e545dbb19fcb7587c279748c272998427d6a8e5"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch50_none/trajectories.jsonl",
+      "sha256": "d82ce14dc43beb4365189d4968188474f4b7a6293f68542a4238fb4a572cc981"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch50_none/preparation.json",
+      "sha256": "e538afcf862f81166bda3f7d938ea3596b303ac646ac388b665b16e6d3ccd231"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch50_none/provenance.json",
+      "sha256": "19b264d0c4ff44dd375527b4e8326e765526e14e31b935a575c3ccfe63c577b7"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch50_none/audit_time_averages.json",
+      "sha256": "364ac8bf123e79e48324fa4369ac270974a5491440209dcbe48eb40086e6817f"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch200_none/summary.json",
+      "sha256": "5bc90f41b7c7cdea90b7fcb609a4d68f54fd52e456d8518f13d90ffc1b2d0e88"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch200_none/config.json",
+      "sha256": "59daf3c764106b12267bc7524e545dbb19fcb7587c279748c272998427d6a8e5"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch200_none/trajectories.jsonl",
+      "sha256": "6431d89b2a002b3904a652589e54f1e003965d241283971c46facb794f1c4b9f"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch200_none/preparation.json",
+      "sha256": "e4bd37ab46a3136e28f953347f542ed0976dec86a51f221478489fabf25e6040"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch200_none/provenance.json",
+      "sha256": "000c761123c558d235b04cbb30a9c241af77e50da43f719ab6cdd22c4a635e7b"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/v1_E1p10_switch200_none/audit_time_averages.json",
+      "sha256": "88643c72681a8124497640cb82e6b0c3043f3f816365b84e96e79e871dbf99ce"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/literature_reference/marjollet_2021_requested_energy_interpolation.csv",
+      "sha256": "02c923452e6394645a538cef09dc2cdeddc952d81b6ac23912499647b7911167"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_selected_reproduction/h2_reference.json",
+      "sha256": "322d5b484173dcaa20ba402b6671aaf9ab8fcb617a737c7088ee8c2789e52a3b"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/benchmarks/h3/analyze_preparation_study.py",
+      "sha256": "a44356d38744d56a263be60a4a44fe1c383169c6763ee0500560bbeb6d0f2a68"
+    },
+    {
+      "path": "/workspace/scratch/f44f60e95b17/pyrpmd_state_selected/runs/state_preparation_study/isolated_audit/audit_manifest.json",
+      "sha256": "73ab48d9a1d9590c86551e416a311d2d08a544a17b838efe242676e05fca5175"
+    }
+  ],
+  "statistics": {
+    "cross_sections": "Exact two-sided 95% Clopper-Pearson, including unknown identification bounds",
+    "paired": "Difference of simultaneous 97.5% CP discordance intervals; Bonferroni >=95% per contrast",
+    "audit": "SEM over independent trajectory time means; no temporal independence assumption"
+  },
+  "scope": "Initial-state sensitivity controls; no claim of complete published-curve reproduction or a pure-state smooth NE ensemble.",
+  "raw_archive_policy": "Whitelisted original ledgers and provenance packaged separately by package_preparation_study.py; third-party PES source/binaries and publisher files excluded.",
+  "published_file_sha256": {
+    "audit_hold_statistics.csv": "3be9fa0162463ad95325b357b0808645df30ef82484504615f29d0392dba7e66",
+    "audit_paired_time_means.csv": "cb801dbfbf5b4aac19bb8b6899b6040d64290dd91869c7d88cf8d05f51b37125",
+    "internal_energy_references.csv": "18a6b86ad2c6675e6d2d0edafd7609f49366495570a11dd265eea97e24c26be3",
+    "preparation_cross_sections.csv": "f443f18d4a93c204ae959f9ae70bdf2e364b8c45b332ed9dbb0556abb1c5075c",
+    "preparation_energy_hold.svg": "ae192a2529587dc7fc1bd7a178fc8f35392d46c639ec33057061236a7ca4d4fb",
+    "preparation_numerics.csv": "5d344a16706ddef4b30d352036b00a52944bc940a40df232d1aebe45ea53fd58",
+    "preparation_paired_comparisons.csv": "cda153f3b3046c0ffbb8a084f5be27fed35c274a4b4f6ff7bb560a3997e41f4b",
+    "preparation_scattering.svg": "37ad730f4c748612a09381c313d814143ecaee6f3984069ad0e825f9ed360e3b",
+    "unresolved_endpoint_diagnostics.json": "1efcb8056ccf0473d82cfd6ec2f09670ddd41c693f831956d75e7acf3905f458"
+  }
+}

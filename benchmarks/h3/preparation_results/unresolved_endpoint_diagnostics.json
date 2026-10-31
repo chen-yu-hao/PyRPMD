@@ -1,0 +1,481 @@
+{
+  "scope": "Diagnostic only; original unresolved statuses retained in every estimate and denominator",
+  "mass_au": 1837.1526474396187,
+  "velocity_definition": "centroid p / atomic mass; pair derivative = rhat dot (vj - vi)",
+  "energy_definitions": {
+    "initial_ring_hamiltonian_per_bead_ev": "Full collision H_P/P, with original BKMP2 zero at three separated H atoms; includes ring springs and relative translation; not primitive internal energy",
+    "internal_full_potential_ev": "BC mean full isolated potential minus its well minimum",
+    "internal_primitive_full_ev": "BC (K + Vfull - Vmin - spring)/P diagnostic",
+    "internal_ring_hamiltonian_relative_ev": "BC (K + Vfull - Vmin + spring)/P; not the primitive diagnostic"
+  },
+  "trajectories": [
+    {
+      "variant": "ne_uncut",
+      "v": 1,
+      "nominal_total_label_ev": 0.9,
+      "id": 10541,
+      "original_status": "unresolved",
+      "original_reason": "time_budget",
+      "time_fs": 1000.0000000000681,
+      "b_bohr": 1.7901326166464235,
+      "initial_centroid_bond_bohr": 0.8088323691281927,
+      "initial_ring_hamiltonian_per_bead_ev": 9.128296621093781,
+      "max_observed_energy_drift_ev": 0.0031527719166397116,
+      "initial_internal_diagnostics": {
+        "kinetic_ev": 2.2402039157099245,
+        "spring_ev": 2.9285924762829048,
+        "harmonic_potential_ev": 1.8720151236602245,
+        "full_potential_ev": 5.014624770062421,
+        "primitive_full_ev": 4.32623620948944,
+        "primitive_harmonic_ev": 1.1836265630872436,
+        "ring_hamiltonian_relative_ev": 10.18342116205525,
+        "centroid_bond_bohr": 0.8088323691281926,
+        "minimum_bead_bond_bohr": 0.5449456300900026,
+        "maximum_bead_bond_bohr": 1.0873842218409435,
+        "bond_spread_bohr": 0.14239339081324165
+      },
+      "post_preparation_internal_diagnostics": {
+        "kinetic_ev": 2.2402039157099245,
+        "spring_ev": 2.9285924762829048,
+        "harmonic_potential_ev": 1.8720151236602245,
+        "full_potential_ev": 5.014624770062421,
+        "primitive_full_ev": 4.32623620948944,
+        "primitive_harmonic_ev": 1.1836265630872436,
+        "ring_hamiltonian_relative_ev": 10.18342116205525,
+        "centroid_bond_bohr": 0.8088323691281926,
+        "minimum_bead_bond_bohr": 0.5449456300900026,
+        "maximum_bead_bond_bohr": 1.0873842218409435,
+        "bond_spread_bohr": 0.14239339081324165
+      },
+      "original_classifier_diagnostics": {
+        "pair": null,
+        "separation_bohr": null,
+        "radial_velocity_au": null
+      },
+      "status_changed": false,
+      "endpoint_saved": true,
+      "centroid_pairs": [
+        {
+          "atoms": [
+            0,
+            1
+          ],
+          "centroid_distance_bohr": 134.31232393692426,
+          "separation_derivative_bohr_per_atomic_time": 0.003377079052248134,
+          "separation_derivative_bohr_per_fs": 0.1396130858813727
+        },
+        {
+          "atoms": [
+            0,
+            2
+          ],
+          "centroid_distance_bohr": 120.86157615201152,
+          "separation_derivative_bohr_per_atomic_time": 0.0031393078392006517,
+          "separation_derivative_bohr_per_fs": 0.12978329739442046
+        },
+        {
+          "atoms": [
+            1,
+            2
+          ],
+          "centroid_distance_bohr": 158.92953010368527,
+          "separation_derivative_bohr_per_atomic_time": 0.003734440373165588,
+          "separation_derivative_bohr_per_fs": 0.15438689366497071
+        }
+      ],
+      "all_centroid_pairs_beyond_bond_cutoff": true,
+      "all_centroid_pair_distances_increasing": true,
+      "interpretation_scope": "Endpoint geometry/velocity diagnostic only. Large increasing distances may be consistent with three-fragment separation, but do not redefine the original 2+1 classifier or resolve this attempt."
+    },
+    {
+      "variant": "ne_uncut",
+      "v": 1,
+      "nominal_total_label_ev": 0.9,
+      "id": 10606,
+      "original_status": "unresolved",
+      "original_reason": "time_budget",
+      "time_fs": 1000.0000000000681,
+      "b_bohr": 1.6321284866202452,
+      "initial_centroid_bond_bohr": 0.8048191428541299,
+      "initial_ring_hamiltonian_per_bead_ev": 8.450244390938211,
+      "max_observed_energy_drift_ev": 0.0012968330828928545,
+      "initial_internal_diagnostics": {
+        "kinetic_ev": 2.6939628129887554,
+        "spring_ev": 2.1397101757896886,
+        "harmonic_potential_ev": 1.845208034161664,
+        "full_potential_ev": 4.592441995736079,
+        "primitive_full_ev": 5.146694632935146,
+        "primitive_harmonic_ev": 2.3994606713607305,
+        "ring_hamiltonian_relative_ev": 9.426114984514523,
+        "centroid_bond_bohr": 0.8048191428541298,
+        "minimum_bead_bond_bohr": 0.5994121664895817,
+        "maximum_bead_bond_bohr": 1.0126736920242059,
+        "bond_spread_bohr": 0.10091167366378478
+      },
+      "post_preparation_internal_diagnostics": {
+        "kinetic_ev": 2.6939628129887554,
+        "spring_ev": 2.1397101757896886,
+        "harmonic_potential_ev": 1.845208034161664,
+        "full_potential_ev": 4.592441995736079,
+        "primitive_full_ev": 5.146694632935146,
+        "primitive_harmonic_ev": 2.3994606713607305,
+        "ring_hamiltonian_relative_ev": 9.426114984514523,
+        "centroid_bond_bohr": 0.8048191428541298,
+        "minimum_bead_bond_bohr": 0.5994121664895817,
+        "maximum_bead_bond_bohr": 1.0126736920242059,
+        "bond_spread_bohr": 0.10091167366378478
+      },
+      "original_classifier_diagnostics": {
+        "pair": null,
+        "separation_bohr": null,
+        "radial_velocity_au": null
+      },
+      "status_changed": false,
+      "endpoint_saved": true,
+      "centroid_pairs": [
+        {
+          "atoms": [
+            0,
+            1
+          ],
+          "centroid_distance_bohr": 166.30674760396346,
+          "separation_derivative_bohr_per_atomic_time": 0.004178803343684398,
+          "separation_derivative_bohr_per_fs": 0.17275746912551404
+        },
+        {
+          "atoms": [
+            0,
+            2
+          ],
+          "centroid_distance_bohr": 145.28651710959414,
+          "separation_derivative_bohr_per_atomic_time": 0.003561260044169859,
+          "separation_derivative_bohr_per_fs": 0.1472273810296507
+        },
+        {
+          "atoms": [
+            1,
+            2
+          ],
+          "centroid_distance_bohr": 262.09243472669993,
+          "separation_derivative_bohr_per_atomic_time": 0.006269625676624512,
+          "separation_derivative_bohr_per_fs": 0.25919493576910274
+        }
+      ],
+      "all_centroid_pairs_beyond_bond_cutoff": true,
+      "all_centroid_pair_distances_increasing": true,
+      "interpretation_scope": "Endpoint geometry/velocity diagnostic only. Large increasing distances may be consistent with three-fragment separation, but do not redefine the original 2+1 classifier or resolve this attempt."
+    },
+    {
+      "variant": "ne_uncut",
+      "v": 1,
+      "nominal_total_label_ev": 0.9,
+      "id": 10616,
+      "original_status": "unresolved",
+      "original_reason": "time_budget",
+      "time_fs": 1000.0000000000681,
+      "b_bohr": 2.5567249553269478,
+      "initial_centroid_bond_bohr": 0.8151373462416157,
+      "initial_ring_hamiltonian_per_bead_ev": 10.57121253071659,
+      "max_observed_energy_drift_ev": 0.0022737930418591894,
+      "initial_internal_diagnostics": {
+        "kinetic_ev": 3.51397061652165,
+        "spring_ev": 1.9501061672045432,
+        "harmonic_potential_ev": 1.845658979179877,
+        "full_potential_ev": 5.110084738729918,
+        "primitive_full_ev": 6.6739491880470245,
+        "primitive_harmonic_ev": 3.4095234284969846,
+        "ring_hamiltonian_relative_ev": 10.57416152245611,
+        "centroid_bond_bohr": 0.8151373462416156,
+        "minimum_bead_bond_bohr": 0.47822027250621635,
+        "maximum_bead_bond_bohr": 1.0268033743835074,
+        "bond_spread_bohr": 0.14992985105393658
+      },
+      "post_preparation_internal_diagnostics": {
+        "kinetic_ev": 3.51397061652165,
+        "spring_ev": 1.9501061672045432,
+        "harmonic_potential_ev": 1.845658979179877,
+        "full_potential_ev": 5.110084738729918,
+        "primitive_full_ev": 6.6739491880470245,
+        "primitive_harmonic_ev": 3.4095234284969846,
+        "ring_hamiltonian_relative_ev": 10.57416152245611,
+        "centroid_bond_bohr": 0.8151373462416156,
+        "minimum_bead_bond_bohr": 0.47822027250621635,
+        "maximum_bead_bond_bohr": 1.0268033743835074,
+        "bond_spread_bohr": 0.14992985105393658
+      },
+      "original_classifier_diagnostics": {
+        "pair": null,
+        "separation_bohr": null,
+        "radial_velocity_au": null
+      },
+      "status_changed": false,
+      "endpoint_saved": true,
+      "centroid_pairs": [
+        {
+          "atoms": [
+            0,
+            1
+          ],
+          "centroid_distance_bohr": 124.48208726907458,
+          "separation_derivative_bohr_per_atomic_time": 0.0031535538445689707,
+          "separation_derivative_bohr_per_fs": 0.13037224682088697
+        },
+        {
+          "atoms": [
+            0,
+            2
+          ],
+          "centroid_distance_bohr": 133.07322747481697,
+          "separation_derivative_bohr_per_atomic_time": 0.0033322106715071302,
+          "separation_derivative_bohr_per_fs": 0.1377581654022143
+        },
+        {
+          "atoms": [
+            1,
+            2
+          ],
+          "centroid_distance_bohr": 198.09150958806433,
+          "separation_derivative_bohr_per_atomic_time": 0.004712680649239661,
+          "separation_derivative_bohr_per_fs": 0.19482869012964887
+        }
+      ],
+      "all_centroid_pairs_beyond_bond_cutoff": true,
+      "all_centroid_pair_distances_increasing": true,
+      "interpretation_scope": "Endpoint geometry/velocity diagnostic only. Large increasing distances may be consistent with three-fragment separation, but do not redefine the original 2+1 classifier or resolve this attempt."
+    },
+    {
+      "variant": "ne_uncut",
+      "v": 1,
+      "nominal_total_label_ev": 1.1,
+      "id": 10100,
+      "original_status": "unresolved",
+      "original_reason": "time_budget",
+      "time_fs": 1000.0000000000681,
+      "b_bohr": 2.1927634651310792,
+      "initial_centroid_bond_bohr": 0.7971098125730429,
+      "initial_ring_hamiltonian_per_bead_ev": 8.105834500112476,
+      "max_observed_energy_drift_ev": 0.0011573258286891393,
+      "initial_internal_diagnostics": {
+        "kinetic_ev": 2.0570375386906297,
+        "spring_ev": 1.842211734544617,
+        "harmonic_potential_ev": 1.8581597140918786,
+        "full_potential_ev": 4.434907292421765,
+        "primitive_full_ev": 4.649733096567779,
+        "primitive_harmonic_ev": 2.0729855182378913,
+        "ring_hamiltonian_relative_ev": 8.334156565657011,
+        "centroid_bond_bohr": 0.7971098125730429,
+        "minimum_bead_bond_bohr": 0.6305409778450819,
+        "maximum_bead_bond_bohr": 0.93399631643718,
+        "bond_spread_bohr": 0.05911327311098233
+      },
+      "post_preparation_internal_diagnostics": {
+        "kinetic_ev": 2.0570375386906297,
+        "spring_ev": 1.842211734544617,
+        "harmonic_potential_ev": 1.8581597140918786,
+        "full_potential_ev": 4.434907292421765,
+        "primitive_full_ev": 4.649733096567779,
+        "primitive_harmonic_ev": 2.0729855182378913,
+        "ring_hamiltonian_relative_ev": 8.334156565657011,
+        "centroid_bond_bohr": 0.7971098125730429,
+        "minimum_bead_bond_bohr": 0.6305409778450819,
+        "maximum_bead_bond_bohr": 0.93399631643718,
+        "bond_spread_bohr": 0.05911327311098233
+      },
+      "original_classifier_diagnostics": {
+        "pair": null,
+        "separation_bohr": null,
+        "radial_velocity_au": null
+      },
+      "status_changed": false,
+      "endpoint_saved": true,
+      "centroid_pairs": [
+        {
+          "atoms": [
+            0,
+            1
+          ],
+          "centroid_distance_bohr": 173.71183221357973,
+          "separation_derivative_bohr_per_atomic_time": 0.004294108651419764,
+          "separation_derivative_bohr_per_fs": 0.1775243489001285
+        },
+        {
+          "atoms": [
+            0,
+            2
+          ],
+          "centroid_distance_bohr": 121.67122452129135,
+          "separation_derivative_bohr_per_atomic_time": 0.003053488713018452,
+          "separation_derivative_bohr_per_fs": 0.12623541685962406
+        },
+        {
+          "atoms": [
+            1,
+            2
+          ],
+          "centroid_distance_bohr": 60.304017533657735,
+          "separation_derivative_bohr_per_atomic_time": 0.0014151396260123608,
+          "separation_derivative_bohr_per_fs": 0.058503815600370074
+        }
+      ],
+      "all_centroid_pairs_beyond_bond_cutoff": true,
+      "all_centroid_pair_distances_increasing": true,
+      "interpretation_scope": "Endpoint geometry/velocity diagnostic only. Large increasing distances may be consistent with three-fragment separation, but do not redefine the original 2+1 classifier or resolve this attempt."
+    },
+    {
+      "variant": "ne_uncut",
+      "v": 1,
+      "nominal_total_label_ev": 1.1,
+      "id": 10926,
+      "original_status": "unresolved",
+      "original_reason": "time_budget",
+      "time_fs": 1000.0000000000681,
+      "b_bohr": 1.8715300837510291,
+      "initial_centroid_bond_bohr": 0.7653035319446305,
+      "initial_ring_hamiltonian_per_bead_ev": 9.27319368763818,
+      "max_observed_energy_drift_ev": 0.001997387474325721,
+      "initial_internal_diagnostics": {
+        "kinetic_ev": 2.025195219863674,
+        "spring_ev": 2.3496688500062035,
+        "harmonic_potential_ev": 2.1227641564299247,
+        "full_potential_ev": 5.925774572170599,
+        "primitive_full_ev": 5.60130094202807,
+        "primitive_harmonic_ev": 1.7982905262873947,
+        "ring_hamiltonian_relative_ev": 10.300638642040475,
+        "centroid_bond_bohr": 0.7653035319446306,
+        "minimum_bead_bond_bohr": 0.5194684086930398,
+        "maximum_bead_bond_bohr": 1.0289274681224727,
+        "bond_spread_bohr": 0.1286387423151854
+      },
+      "post_preparation_internal_diagnostics": {
+        "kinetic_ev": 2.025195219863674,
+        "spring_ev": 2.3496688500062035,
+        "harmonic_potential_ev": 2.1227641564299247,
+        "full_potential_ev": 5.925774572170599,
+        "primitive_full_ev": 5.60130094202807,
+        "primitive_harmonic_ev": 1.7982905262873947,
+        "ring_hamiltonian_relative_ev": 10.300638642040475,
+        "centroid_bond_bohr": 0.7653035319446306,
+        "minimum_bead_bond_bohr": 0.5194684086930398,
+        "maximum_bead_bond_bohr": 1.0289274681224727,
+        "bond_spread_bohr": 0.1286387423151854
+      },
+      "original_classifier_diagnostics": {
+        "pair": null,
+        "separation_bohr": null,
+        "radial_velocity_au": null
+      },
+      "status_changed": false,
+      "endpoint_saved": true,
+      "centroid_pairs": [
+        {
+          "atoms": [
+            0,
+            1
+          ],
+          "centroid_distance_bohr": 334.93764449029914,
+          "separation_derivative_bohr_per_atomic_time": 0.008421745723590657,
+          "separation_derivative_bohr_per_fs": 0.3481665340928341
+        },
+        {
+          "atoms": [
+            0,
+            2
+          ],
+          "centroid_distance_bohr": 320.861039310883,
+          "separation_derivative_bohr_per_atomic_time": 0.00787471542946888,
+          "separation_derivative_bohr_per_fs": 0.32555155047789774
+        },
+        {
+          "atoms": [
+            1,
+            2
+          ],
+          "centroid_distance_bohr": 254.76980030341414,
+          "separation_derivative_bohr_per_atomic_time": 0.006021878561649725,
+          "separation_derivative_bohr_per_fs": 0.2489527297962187
+        }
+      ],
+      "all_centroid_pairs_beyond_bond_cutoff": true,
+      "all_centroid_pair_distances_increasing": true,
+      "interpretation_scope": "Endpoint geometry/velocity diagnostic only. Large increasing distances may be consistent with three-fragment separation, but do not redefine the original 2+1 classifier or resolve this attempt."
+    },
+    {
+      "variant": "ne_uncut",
+      "v": 1,
+      "nominal_total_label_ev": 1.1,
+      "id": 10970,
+      "original_status": "unresolved",
+      "original_reason": "time_budget",
+      "time_fs": 1000.0000000000681,
+      "b_bohr": 3.434359544254735,
+      "initial_centroid_bond_bohr": 0.7903098038637831,
+      "initial_ring_hamiltonian_per_bead_ev": 8.334091049354907,
+      "max_observed_energy_drift_ev": 0.0012656483279489788,
+      "initial_internal_diagnostics": {
+        "kinetic_ev": 2.17419329086822,
+        "spring_ev": 2.113953028255434,
+        "harmonic_potential_ev": 1.907292595080524,
+        "full_potential_ev": 4.669005010711786,
+        "primitive_full_ev": 4.7292452733245725,
+        "primitive_harmonic_ev": 1.9675328576933107,
+        "ring_hamiltonian_relative_ev": 8.957151329835439,
+        "centroid_bond_bohr": 0.7903098038637831,
+        "minimum_bead_bond_bohr": 0.6285698859704125,
+        "maximum_bead_bond_bohr": 0.9254507838138292,
+        "bond_spread_bohr": 0.07056290070551594
+      },
+      "post_preparation_internal_diagnostics": {
+        "kinetic_ev": 2.17419329086822,
+        "spring_ev": 2.113953028255434,
+        "harmonic_potential_ev": 1.907292595080524,
+        "full_potential_ev": 4.669005010711786,
+        "primitive_full_ev": 4.7292452733245725,
+        "primitive_harmonic_ev": 1.9675328576933107,
+        "ring_hamiltonian_relative_ev": 8.957151329835439,
+        "centroid_bond_bohr": 0.7903098038637831,
+        "minimum_bead_bond_bohr": 0.6285698859704125,
+        "maximum_bead_bond_bohr": 0.9254507838138292,
+        "bond_spread_bohr": 0.07056290070551594
+      },
+      "original_classifier_diagnostics": {
+        "pair": null,
+        "separation_bohr": null,
+        "radial_velocity_au": null
+      },
+      "status_changed": false,
+      "endpoint_saved": true,
+      "centroid_pairs": [
+        {
+          "atoms": [
+            0,
+            1
+          ],
+          "centroid_distance_bohr": 75.6849795789499,
+          "separation_derivative_bohr_per_atomic_time": 0.001883807525124324,
+          "separation_derivative_bohr_per_fs": 0.07787919018776761
+        },
+        {
+          "atoms": [
+            0,
+            2
+          ],
+          "centroid_distance_bohr": 163.89431877167462,
+          "separation_derivative_bohr_per_atomic_time": 0.004036848490478823,
+          "separation_derivative_bohr_per_fs": 0.16688886054240312
+        },
+        {
+          "atoms": [
+            1,
+            2
+          ],
+          "centroid_distance_bohr": 147.87207396279325,
+          "separation_derivative_bohr_per_atomic_time": 0.0036591819899389243,
+          "separation_derivative_bohr_per_fs": 0.1512756087473959
+        }
+      ],
+      "all_centroid_pairs_beyond_bond_cutoff": true,
+      "all_centroid_pair_distances_increasing": true,
+      "interpretation_scope": "Endpoint geometry/velocity diagnostic only. Large increasing distances may be consistent with three-fragment separation, but do not redefine the original 2+1 classifier or resolve this attempt."
+    }
+  ]
+}
