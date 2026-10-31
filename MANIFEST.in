@@ -1,8 +1,8 @@
-include README.md LICENSE THIRD_PARTY_NOTICES.md
+include README.md README.zh-CN.md LICENSE THIRD_PARTY_NOTICES.md
 include pyproject.toml setup.py
 include native/CMakeLists.txt native/README.md native/ABI.md
 recursive-include native *.cpp *.h *.hpp *.c
-recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt
+recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html
 exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm

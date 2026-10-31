@@ -1,0 +1,88 @@
+Running Sphinx v8.2.3
+loading translations [en]... done
+making output directory... done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'dollarmath', 'colon_fence'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output...
+building [html]: targets for 22 source files that are out of date
+updating environment: [new config] 22 added, 0 changed, 0 removed
+reading sources... [  5%] batched-dynamics
+reading sources... [  9%] index
+reading sources... [ 14%] manual/api
+reading sources... [ 18%] manual/development
+reading sources... [ 23%] manual/examples
+reading sources... [ 27%] manual/execution
+reading sources... [ 32%] manual/input
+reading sources... [ 36%] manual/installation
+reading sources... [ 41%] manual/nonadiabatic
+reading sources... [ 45%] manual/pcet
+reading sources... [ 50%] manual/periodic
+reading sources... [ 55%] manual/potentials
+reading sources... [ 59%] manual/quickstart
+reading sources... [ 64%] manual/results
+reading sources... [ 68%] manual/science
+reading sources... [ 73%] manual/troubleshooting
+reading sources... [ 77%] manual/workflows
+reading sources... [ 82%] performance-dynamics
+reading sources... [ 86%] rpc-mts
+reading sources... [ 91%] trpmd-spectroscopy
+reading sources... [ 95%] validation/tier1-2026-10-31/README
+reading sources... [100%] validation/tier1-2026-10-31/pmf-replay
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets...
+copying downloadable files... [  8%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [ 17%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 25%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 33%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 42%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 50%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 58%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 67%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 75%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 83%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 92%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files...
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-html/_static/basic.css
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-html/_static/documentation_options.js
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-html/_static/language_data.js
+copying static files: done
+copying extra files...
+copying extra files: done
+copying assets: done
+writing output... [  5%] batched-dynamics
+writing output... [  9%] index
+writing output... [ 14%] manual/api
+writing output... [ 18%] manual/development
+writing output... [ 23%] manual/examples
+writing output... [ 27%] manual/execution
+writing output... [ 32%] manual/input
+writing output... [ 36%] manual/installation
+writing output... [ 41%] manual/nonadiabatic
+writing output... [ 45%] manual/pcet
+writing output... [ 50%] manual/periodic
+writing output... [ 55%] manual/potentials
+writing output... [ 59%] manual/quickstart
+writing output... [ 64%] manual/results
+writing output... [ 68%] manual/science
+writing output... [ 73%] manual/troubleshooting
+writing output... [ 77%] manual/workflows
+writing output... [ 82%] performance-dynamics
+writing output... [ 86%] rpc-mts
+writing output... [ 91%] trpmd-spectroscopy
+writing output... [ 95%] validation/tier1-2026-10-31/README
+writing output... [100%] validation/tier1-2026-10-31/pmf-replay
+
+generating indices... genindex done
+highlighting module code...
+writing additional pages... search done
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build succeeded.
+
+The HTML pages are in ../../../../tmp/pyrpmd-merged-docs-html.

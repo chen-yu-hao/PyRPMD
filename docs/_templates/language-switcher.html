@@ -1,0 +1,20 @@
+{#- Link translated core pages to their counterpart. Guides available in only
+    one language return to the other manual's contents without inventing a
+    translated page. Output directories are <out>/ and <out>/zh/. -#}
+{%- if language.startswith("zh") %}
+  {%- if pagename in bilingual_pages %}
+<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('../' + pagename + '.html', 1) }}"
+   hreflang="en" lang="en" title="Switch to the English edition">English</a>
+  {%- else %}
+<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('../index.html', 1) }}"
+   hreflang="en" lang="en" title="Open the English manual contents">English contents</a>
+  {%- endif %}
+{%- else %}
+  {%- if pagename in bilingual_pages %}
+<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('zh/' + pagename + '.html', 1) }}"
+   hreflang="zh-CN" lang="zh-CN" title="切换到中文版">中文</a>
+  {%- else %}
+<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('zh/index.html', 1) }}"
+   hreflang="zh-CN" lang="zh-CN" title="打开中文手册目录">中文目录</a>
+  {%- endif %}
+{%- endif %}

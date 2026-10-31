@@ -33,10 +33,16 @@ resource reuse is the only default execution change.
 - Strict Sphinx build (`-W --keep-going`) passed; [build output](sphinx-strict.txt).
 - Source distribution creation passed. The new modules and benchmark registry
   are included. Whitespace validation (`git diff --check`) passed.
-- Local MPI was unavailable. The existing GitHub Actions CPU matrix runs the
-  extended MPI integration and workflow tests; consult the PR checks for those
-  results. Local skips cover optional ASE/PyTorch and independent-reference
-  packages, not successful tests of those unavailable dependencies.
+- Local MPI was unavailable. The [initial feature CI record](ci-initial-feature.json)
+  confirms **1,840 passed, 14 skipped, 153 subtests passed** on each of Python
+  3.11 and 3.12, followed by all four actual four-rank MPI scripts. Torch CPU
+  and independent Linux/macOS package installation checks also passed.
+  Local skips cover optional dependencies; they are not successful local tests
+  of those unavailable packages. Consult PR #26 checks for the final merge head.
+- The subsequent documentation-only integration with main preserves the new
+  bilingual manual. [All four strict builds](merged-docs-verification.json)
+  (EN/ZH HTML and singlehtml) passed, with 88 language-switcher targets checked
+  and no missing targets. Numerical production code was unchanged by that merge.
 
 The machine-readable [verification record](verification.json) includes commands
 and a source-file digest inventory. Benchmark files retain their own original
