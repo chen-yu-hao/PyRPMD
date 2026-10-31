@@ -17,6 +17,7 @@ def fixture():
         target_coordinates=np.r_[np.full((200,1),5.),np.zeros((200,1))],
         weights=np.ones(n),reference_speed=np.ones(n),
         target_speed=np.ones((n,1)),target_topology=np.ones((n,1),bool),
+        reference_reactant_mask=np.ones(n,bool),
         reference_radius=10.,reference_width=.2,target_width=.1,
         canonical_identity=IDENTITY,measure="joint_unbiased_canonical",
         connected=True,masses_au=[M]*3,beta=BETA,min_effective=20)
@@ -116,3 +117,14 @@ def test_bridge_anchors_within_same_fes_without_box_volume():
             curve=diagonal,positive_speed=.001,
             anchor_curve=[[0,1],[1,1]],anchor_positive_speed=.001,
             bridge=bridge,canonical_identity=IDENTITY)
+
+
+def test_reactant_identity_is_required_for_reference_shell():
+    kw=fixture()
+    kw["reference_reactant_mask"][:]=False
+    with pytest.raises(ValueError,match="missing entrance"):
+        entrance_flux_ratio(**kw)
+    kw=fixture()
+    kw["reference_reactant_mask"]=None
+    with pytest.raises(ValueError,match="reference_reactant_mask"):
+        entrance_flux_ratio(**kw)
