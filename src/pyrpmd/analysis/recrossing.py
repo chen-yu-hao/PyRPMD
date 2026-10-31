@@ -12,6 +12,54 @@ import numpy as np
 from .fes import _block_resample, statistical_inefficiency
 
 
+def _plateau_diagnostics(curve, start, estimate, drift, drift_error,
+                         boot_curves, uncertainty_available, tolerance):
+    """Require resolved small variation, including oscillations, in the tail.
+
+    Center each bootstrap curve on its own tail mean: uncertainty in the
+    plateau's *height* must not be confused with uncertainty in its shape.
+    The 95th percentile of the maximum centered bootstrap error supplies a
+    simultaneous finite-sample envelope over the saved tail times. Neither
+    a large error bar nor a zero half-tail drift can establish a plateau.
+    This is conditional on the parent-block bootstrap describing mixing.
+    """
+    tail = curve[start:]
+    centered = tail - estimate
+    deviation = float(np.max(np.abs(centered)))
+    limit = tolerance * abs(estimate)
+    radius = drift_bound = deviation_bound = None
+    reasons = []
+    if len(tail) < 10:
+        reasons.append("fewer_than_ten_tail_samples")
+    if estimate <= 0:
+        reasons.append("nonpositive_transmission")
+    if not uncertainty_available:
+        reasons.append("recrossing_uncertainty_unavailable")
+    else:
+        tails = boot_curves[:, start:]
+        centered_boot = tails - tails.mean(axis=1, keepdims=True)
+        radius = float(np.quantile(np.max(np.abs(centered_boot - centered), axis=1), .95))
+        deviation_bound = deviation + radius
+        drift_bound = abs(drift) + 2 * drift_error
+        # Allow only floating-point roundoff at the comparison boundary.
+        rounding = 32 * np.finfo(float).eps * max(abs(estimate), deviation, np.finfo(float).tiny)
+        if drift_bound > limit + rounding:
+            reasons.append("tail_drift_exceeds_tolerance")
+        if deviation_bound > limit + rounding:
+            reasons.append("tail_variation_exceeds_tolerance")
+    return {
+        "passed": not reasons, "reasons": reasons,
+        "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+        "scope": "selected_finite_time_tail", "tail_samples": len(tail),
+        "relative_tolerance": tolerance, "absolute_tolerance": limit,
+        "maximum_tail_deviation": deviation,
+        "bootstrap_95_envelope_radius": radius,
+        "maximum_tail_deviation_bound": deviation_bound,
+        "absolute_drift_plus_two_standard_errors": drift_bound,
+        "uncertainty_available": uncertainty_available,
+    }
+
+
 def summarize_recrossing(
     children, *, child_steps, plateau_fraction, plateau_tolerance, bootstrap, rng
 ):
@@ -28,6 +76,8 @@ def summarize_recrossing(
         raise ValueError("recrossing.child_steps must be at least 2")
     if not np.isfinite(plateau_tolerance) or plateau_tolerance <= 0:
         raise ValueError("recrossing.plateau_tolerance must be positive and finite")
+    if not np.isfinite(plateau_fraction) or not 0 < plateau_fraction <= 1:
+        raise ValueError("recrossing.plateau_fraction must be in (0,1]")
     grouped, identities = {}, set()
     for child in children:
         identity = (child["chain"], child["parent"], child["pair"])
@@ -111,14 +161,18 @@ def summarize_recrossing(
         float((boot_curves[:, middle:].mean(axis=1) - boot_curves[:, start:middle].mean(axis=1)).std(ddof=1))
         if available else None
     )
-    threshold = max(plateau_tolerance * abs(estimate), 2 * (drift_error or 0.0))
-    plateau = bool(tail >= 10 and abs(drift) <= threshold and estimate > 0)
+    plateau_diagnostics = _plateau_diagnostics(
+        curve, start, estimate, drift, drift_error, boot_curves,
+        available, plateau_tolerance,
+    )
+    plateau = plateau_diagnostics["passed"]
     return {
         "parent_ids": keys, "parent_numerator": num, "parent_denominator": den,
         "curve": curve, "start": start, "kappa": estimate, "drift": drift,
         "bootstrap_curves": boot_curves, "bootstrap_kappa": draws,
         "standard_error": error, "curve_standard_error": curve_error,
         "drift_standard_error": drift_error, "plateau_detected": plateau,
+        "plateau_diagnostics": plateau_diagnostics,
         "parent_chains": len(chain_indices),
         # Public diagnostics must survive JSON checkpoint/summary round trips
         # without changing mapping keys. Internal RNG indexing stays integer.

@@ -239,6 +239,12 @@ def test_actual_surface_failed_support_draws_remain_explicit_and_conditioned(tmp
     assert sum(info["failure_counts"].values()) == len(info["failures"])
     assert all(failure["reason"] for failure in info["failures"])
     assert info["log_density_integral_pairs"].shape == (info["valid"], 2)
+    assert pmf["qtst_standard_error_s_inv"] is None
+    assert pmf["qtst_percentile_95_ci_s_inv"] is None
+    assert pmf["supported_draw_qtst_standard_error_s_inv"] > 0
+    assert pmf["supported_draw_qtst_percentile_95_ci_s_inv"] is not None
+    assert not pmf["qtst_uncertainty"]["available"]
+    assert "conditional on" in pmf["qtst_uncertainty"]["supported_draw_condition"]
     summary = aggregate(pmf, tmp_path)
     assert summary["rate_uncertainty"]["available"] is False
     assert "pmf_bootstrap_contains_unsupported_draws" in summary["rate_uncertainty"]["reasons"]
@@ -246,3 +252,59 @@ def test_actual_surface_failed_support_draws_remain_explicit_and_conditioned(tmp
     assert summary["rate_percentile_95_ci_s_inv"] is None
     assert summary["supported_draw_rate_standard_error_s_inv"] > 0
     assert summary["supported_draw_rate_percentile_95_ci_s_inv"] is not None
+
+
+def quality_result(tmp_path, *, block_status="finite_block_estimate", draws=None,
+                   parents=40, chains=4, target=.2):
+    from test_recrossing_statistics import child
+    children = [child(i % chains, i // chains, 0, remains_product=i % 3 != 0)
+                for i in range(parents)]
+    pmf = pmf_surface()
+    pmf["bootstrap"]["block_plan"] = {"status": block_status}
+    pmf["pmf_bootstrap_qtst"] = [11.9, 12., 12.1, 12.2] if draws is None else draws
+    config = {"task": "surface_rate", "seed": 18, "beta": 2., "dt_au": .05,
+              "surface": {"max_relative_standard_error": target}}
+    options = {"child_steps": 40, "plateau_fraction": .5,
+               "plateau_tolerance": .1, "bootstrap": 200}
+    return _aggregate(children, pmf, config, tmp_path, options)
+
+
+def test_surface_rate_is_reported_when_statistical_prerequisites_pass(tmp_path):
+    result = quality_result(tmp_path)
+    assert result["rate_quality"]["passed"]
+    assert result["rate_quality"]["reasons"] == []
+    assert result["rate_s_inv"] == result["rate_estimate_s_inv"] > 0
+    assert result["rate_quality"]["relative_standard_error"] <= .2
+    assert not result["converged"]
+    assert not result["rate_quality"]["physical_convergence_established"]
+
+
+@pytest.mark.parametrize("status", ["limited_blocks", "unavailable", None])
+def test_a_flat_surface_transmission_does_not_override_missing_pmf_block_support(tmp_path, status):
+    result = quality_result(tmp_path, block_status=status)
+    assert result["plateau_detected"]
+    assert result["rate_estimate_s_inv"] > 0
+    assert result["rate_s_inv"] is None
+    assert result["status"] == "pilot_requires_convergence"
+    assert "pmf_correlation_blocks_not_resolved" in result["rate_quality"]["reasons"]
+
+
+def test_user_precision_target_gates_reporting_without_changing_sampling_estimates(tmp_path):
+    loose = quality_result(tmp_path / "loose", draws=[1., 5., 30., 100.], target=10.)
+    strict = quality_result(tmp_path / "strict", draws=[1., 5., 30., 100.], target=.2)
+    assert loose["rate_quality"]["passed"]
+    assert strict["rate_estimate_s_inv"] == loose["rate_estimate_s_inv"]
+    assert strict["rate_standard_error_s_inv"] == loose["rate_standard_error_s_inv"]
+    assert strict["rate_s_inv"] is None
+    assert "relative_standard_error_exceeds_target" in strict["rate_quality"]["reasons"]
+
+
+@pytest.mark.parametrize("parents,chains,reason", [
+    (12, 4, "fewer_than_twenty_nonzero_flux_parent_configurations"),
+    (80, 1, "fewer_than_two_independent_parent_chains"),
+])
+def test_surface_reporting_requires_independent_parent_support(tmp_path, parents, chains, reason):
+    result = quality_result(tmp_path, parents=parents, chains=chains)
+    assert result["rate_estimate_s_inv"] > 0
+    assert result["rate_s_inv"] is None
+    assert reason in result["rate_quality"]["reasons"]

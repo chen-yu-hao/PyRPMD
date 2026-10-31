@@ -65,11 +65,13 @@ def surface_definition(config, system):
     recommended. The finite basin defines the population being normalized.
     """
     raw = config.get("surface", {})
-    unknown = set(raw) - {"reactant_basin", "dividing_surface", "product_side"}
+    unknown = set(raw) - {"reactant_basin", "dividing_surface", "product_side", "max_relative_standard_error"}
     if unknown:
         raise ValueError("unknown surface options: " + ", ".join(sorted(unknown)))
     if "reactant_basin" not in raw or "dividing_surface" not in raw:
         raise ValueError("surface_rate requires surface.reactant_basin and surface.dividing_surface")
+    from ..analysis.surface import surface_rate_error_target
+    error_target = surface_rate_error_target(raw.get("max_relative_standard_error", .2))
     if config.get("analysis", {}).get("measure", "cv_density") != "cv_density":
         raise ValueError("surface_rate requires the cv_density sampling measure")
     if config.get("analysis", {}).get("method", "mbar") != "mbar":
@@ -113,6 +115,7 @@ def surface_definition(config, system):
         "dividing_surface_bohr": float(dividing),
         "product_side": side,
         "mass_metric_au": coordinate.mass_metric,
+        "max_relative_standard_error": error_target,
         "rate_unit": "s^-1",
         "observable": "selected_surface_flux_side",
         "rate_scope": "single_local_exit",

@@ -635,8 +635,7 @@ def _aggregate(children, pmf, config, output):
     curve_error = statistics["curve_standard_error"] if recrossing_complete else np.full_like(curve, np.nan)
     kappa_error = statistics["standard_error"] if recrossing_complete else None
     drift_error = statistics["drift_standard_error"] if recrossing_complete else None
-    threshold = max(options["plateau_tolerance"] * abs(kappa), 2 * (drift_error or 0))
-    plateau = bool(len(curve) - start >= 10 and abs(drift) <= threshold and kappa > 0)
+    plateau = statistics["plateau_detected"]
     candidate = pmf["k_qtst_s"] * kappa
     complete = recrossing_complete and pmf["pmf_uncertainty"]["available"]
     rate_draws = np.array([])
@@ -684,6 +683,7 @@ def _aggregate(children, pmf, config, output):
             "recrossing_support": recrossing_uncertainty,
         },
         "plateau_detected": plateau, "plateau_start_au": float(times[start]),
+        "plateau_diagnostics": statistics["plateau_diagnostics"],
         "plateau_drift": drift, "plateau_drift_standard_error": drift_error,
         "child_time_fs": float(times[-1] * ATOMIC_TIME_S / 1e-15),
         "parent_chains": statistics["parent_chains"], "parent_configurations": len(keys),

@@ -11,4 +11,5 @@ recursive-include benchmarks/h3/convergence_inputs *.inp
 recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 recursive-include benchmarks/materials *.py *.md *.json
 recursive-include benchmarks/efficiency *.py *.md
+recursive-include benchmarks/surface *.py *.md
 global-exclude __pycache__ *.py[cod] *.so *.o

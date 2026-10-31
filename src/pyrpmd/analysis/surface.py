@@ -399,7 +399,15 @@ def surface_rate_pmf(
     if failures:
         warnings.append("Inspect the failed bootstrap draws and their valid fraction.")
     point_rate = normalization["k_qtst_au"] if ready else None
-    uncertainty_available = len(rates) >= 2 and block_plan["status"] != "unavailable"
+    supported_error_available = len(rates) >= 2 and block_plan["status"] != "unavailable"
+    uncertainty_available = supported_error_available and not failures
+    uncertainty_reasons = []
+    if len(rates) < 2:
+        uncertainty_reasons.append("fewer_than_two_valid_pmf_bootstrap_draws")
+    if block_plan["status"] != "finite_block_estimate":
+        uncertainty_reasons.append("pmf_bootstrap_" + block_plan["status"])
+    if failures:
+        uncertainty_reasons.append("pmf_bootstrap_contains_unsupported_draws")
     return {
         "ready": ready,
         "status": "ready" if ready else reason,
@@ -420,6 +428,21 @@ def surface_rate_pmf(
         "pmf_bootstrap_qtst": rates,
         "qtst_standard_error_s_inv": float(np.std(rates, ddof=1)) if uncertainty_available else None,
         "qtst_percentile_95_ci_s_inv": np.quantile(rates, [0.025, 0.975]).tolist() if uncertainty_available else None,
+        "supported_draw_qtst_standard_error_s_inv": (
+            float(np.std(rates, ddof=1)) if failures and supported_error_available else None
+        ),
+        "supported_draw_qtst_percentile_95_ci_s_inv": (
+            np.quantile(rates, [0.025, 0.975]).tolist() if failures and supported_error_available else None
+        ),
+        "qtst_uncertainty": {
+            "available": uncertainty_available,
+            "block_support_resolved": uncertainty_available and block_plan["status"] == "finite_block_estimate",
+            "reasons": uncertainty_reasons,
+            "supported_draw_condition": (
+                "conditional on the bootstrap draw having complete basin-to-surface support"
+                if failures else None
+            ),
+        },
         "normalization": normalization,
         "support": {
             "basin": limits.tolist(),
@@ -459,4 +482,57 @@ def surface_rate_pmf(
         "energy_unit": "hartree",
         "rate_unit": "s^-1",
         "converged": False,
+    }
+
+
+def surface_rate_error_target(value=0.2):
+    """Dimensionless reporting target; it does not change the Hamiltonian."""
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, float, np.integer, np.floating)):
+        raise ValueError("surface.max_relative_standard_error must be positive and finite")
+    value = float(value)
+    if not np.isfinite(value) or value <= 0:
+        raise ValueError("surface.max_relative_standard_error must be positive and finite")
+    return value
+
+
+def surface_rate_quality(pmf, statistics, rate, error, energy_error_kbt, *, target=0.2):
+    """Reporting prerequisites, separate from physical convergence.
+
+    Point estimates and supported finite-sample errors remain available when
+    these prerequisites fail. Unknown correlation-block support is not a pass.
+    """
+    target = surface_rate_error_target(target)
+    reasons = []
+    if not pmf.get("ready", False):
+        reasons.append("pmf_not_ready")
+    if not statistics.get("plateau_detected", False):
+        reasons.append("recrossing_plateau_not_established")
+    if energy_error_kbt is None or not np.isfinite(energy_error_kbt):
+        reasons.append("child_energy_diagnostics_unavailable")
+    elif energy_error_kbt > .1:
+        reasons.append("child_endpoint_energy_error_exceeds_tolerance")
+    block_status = pmf.get("bootstrap", {}).get("block_plan", {}).get("status")
+    if block_status != "finite_block_estimate":
+        reasons.append("pmf_correlation_blocks_not_resolved")
+    support = statistics.get("uncertainty", {})
+    if support.get("independent_parent_chains", 0) < 2:
+        reasons.append("fewer_than_two_independent_parent_chains")
+    if support.get("nonzero_flux_parent_configurations", 0) < 20:
+        reasons.append("fewer_than_twenty_nonzero_flux_parent_configurations")
+    relative = None
+    if rate is None or not np.isfinite(rate) or rate <= 0:
+        reasons.append("nonpositive_or_unavailable_rate_estimate")
+    if error is None or not np.isfinite(error) or error < 0:
+        reasons.append("joint_rate_uncertainty_unavailable")
+    elif rate is not None and np.isfinite(rate) and rate > 0:
+        relative = float(error / rate)
+        if relative > target:
+            reasons.append("relative_standard_error_exceeds_target")
+    return {
+        "passed": not reasons, "reasons": reasons,
+        "relative_standard_error": relative, "max_relative_standard_error": target,
+        "pmf_block_status": block_status,
+        "minimum_nonzero_flux_parent_configurations": 20,
+        "minimum_independent_parent_chains": 2,
+        "physical_convergence_established": False,
     }

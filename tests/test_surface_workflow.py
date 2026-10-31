@@ -56,6 +56,21 @@ def resolve_job(job=None):
     return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
 
 
+@pytest.mark.parametrize("target", [0., -1., float("nan"), float("inf"), True, "0.2"])
+def test_surface_precision_target_rejects_invalid_values(target):
+    job = cluster_job()
+    job["surface"]["max_relative_standard_error"] = target
+    with pytest.raises(InputError, match="max_relative_standard_error"):
+        resolve_job(job)
+
+
+def test_surface_precision_target_is_preserved_in_definition():
+    job = cluster_job()
+    job["surface"]["max_relative_standard_error"] = .15
+    config, system = resolve_job(job)
+    assert surface_definition(config, system)["max_relative_standard_error"] == .15
+
+
 @pytest.mark.parametrize("change", [
     {"surface": {"reactant_basin": [-0.8, -0.2]}},
     {"surface": {"reactant_basin": [-0.8, 0.2], "dividing_surface": 0.0}},

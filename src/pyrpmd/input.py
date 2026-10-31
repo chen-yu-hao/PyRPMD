@@ -64,7 +64,7 @@ _SECTIONS = {
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance".split()
     ),
-    "surface": set("reactant_basin dividing_surface product_side".split()),
+    "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error".split()),
     "metadynamics": set(
         "cvs mode sigma sigma_au height height_au pace bias_factor".split()
     ),

@@ -981,6 +981,12 @@ def _aggregate(children, pmf, config, output, options):
             "pmf": {k: v for k, v in pmf.items() if k not in private_pmf},
             "warnings": pmf["warnings"],
         }
+        if is_surface:
+            from ..analysis.surface import surface_rate_quality
+            result["rate_quality"] = surface_rate_quality(
+                pmf, {}, None, None, None,
+                target=config.get("surface", {}).get("max_relative_standard_error", .2),
+            )
         write_json(Path(output) / "summary.json", result)
         return result
     for child in children:
@@ -1111,6 +1117,19 @@ def _aggregate(children, pmf, config, output, options):
         and energy_diagnostics_complete
         and endpoint_error * config["beta"] <= 0.1
     )
+    quality = None
+    if is_surface:
+        from ..analysis.surface import surface_rate_quality
+        quality = surface_rate_quality(
+            pmf, statistics, candidate, error,
+            endpoint_error * config["beta"] if energy_diagnostics_complete else None,
+            target=config.get("surface", {}).get("max_relative_standard_error", .2),
+        )
+        valid = quality["passed"]
+        if not valid:
+            warnings.append("Surface rate reporting prerequisites not met: "
+                            + "; ".join(quality["reasons"])
+                            + ". The finite-time point estimate is retained in rate_estimate_s_inv.")
     public_pmf = {k: v for k, v in pmf.items() if k not in private_pmf}
     result = {
         "task": task_name,
@@ -1139,6 +1158,7 @@ def _aggregate(children, pmf, config, output, options):
         "kappa": estimate,
         "kappa_standard_error": stderr,
         "plateau_detected": plateau,
+        "plateau_diagnostics": statistics["plateau_diagnostics"],
         "plateau_start_au": float(times[start]),
         "plateau_drift": drift,
         "plateau_drift_standard_error": drift_error,
@@ -1165,6 +1185,7 @@ def _aggregate(children, pmf, config, output, options):
         },
     }
     if is_surface:
+        result["rate_quality"] = quality
         result["rate_uncertainty"].update(
             pmf_bootstrap_requested=pmf_bootstrap.get("requested", 0),
             pmf_bootstrap_attempted=pmf_bootstrap.get("attempted", 0),

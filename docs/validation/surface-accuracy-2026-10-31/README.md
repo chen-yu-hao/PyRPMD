@@ -1,0 +1,115 @@
+# Surface accuracy and reporting — 2026-10-31
+
+Audited base: `347facf9b57d281ba7b3c78bc6a06dcc0c138149` (PyRPMD 0.2.0).
+This follow-up changes statistical diagnostics and rate reporting. It leaves
+the Hamiltonian, umbrella sampling, MBAR weights, basin normalization and
+paired-flux point estimates unchanged. Physical convergence remains a separate
+study; `converged` is always false for these runs.
+
+## Reproduced accuracy problem
+
+The shipped `examples/surface/diffusion.inp` was run completely on the audited
+base, followed by two complete runs with these changes:
+
+| Setting | Shipped pilot | Longer sampling |
+| --- | --- | --- |
+| Sampling equilibration steps | 500 | 2000 |
+| Sampling production steps | 2500 | 10000 |
+| Andersen interval steps | 25 | 100 |
+| Analysis bootstrap draws | 20 | 100 |
+| Seed | 417 | 417 and 913 |
+
+All three use 300 K, 8 beads, dt=0.1 fs, 15 windows, two streams/window,
+40 bins, 16 parent configurations and 64 child trajectories of 40 fs.
+The thermostat interval also applies to the parent chains; these are combined
+sampling experiments, not an isolated test of one tuning parameter.
+
+| Run | QTST / s^-1 | Relative joint rate SE | Independent CV samples/stream, min–max |
+| --- | ---: | ---: | ---: |
+| Original pilot | 1.3880235179e10 | 111.2% | 3.10–15.57 |
+| Longer, seed 417 | 2.0793531956e11 | 66.6% | 8.97–53.28 |
+| Longer, seed 913 | 4.1627698380e11 | 36.3% | 9.85–43.62 |
+
+All three have `limited_blocks`; their errors are finite-sample diagnostics,
+not reliable coverage claims. Their observed 40 fs transmission is kappa=1,
+so their finite-time rate estimates equal their QTST factors. The independent
+finite-P=8 reference is **2.5178904932e11 s^-1**. This reference concerns QTST,
+not the dynamical transmission coefficient or an exact quantum rate.
+
+The original pilot's 20/40/80/160-bin estimates are
+1.9686e10 / 1.3880e10 / 1.1442e10 / 1.1769e10 s^-1. Separately analyzed replicas
+give 4.0991e10 and 4.3587e9 s^-1. More saved frames and connected overlap do
+not by themselves demonstrate adequate mixing.
+
+Additional independent checks on the base:
+
+- Same-sample PyMBAR normalized weights differ by at most 1.84e-18 absolute,
+  with L1 difference 5.03e-15.
+- P=2 deterministic Gaussian quadrature agrees with the independent QMC
+  reference within 2.45e-7 relative.
+- Independently constructed P=8 equilibrium quantile quadrature, passed to
+  package MBAR/normalization, gives 2.5290942705e11 s^-1 at 80 bins (+0.45%).
+  The deterministic quantiles are an integration control, not a time series
+  supporting confidence intervals. A separate 150,000-point iid control gives
+  2.7154684527e11 s^-1 (+7.85%); both results are retained here.
+- P=8 to P=64 changes reference QTST by only 0.097% for this separable toy
+  model. That observation does not generalize to real catalytic systems.
+
+## Changes verified
+
+The old tail-halves test accepted a persistent transmission oscillation from
+0.1 to 0.9 with mean 0.5 and exactly zero half-tail drift. The new shared
+diagnostic rejects it. It also rejects opposite unresolved parent-chain
+trends that cancel in the ensemble mean. Flat curves with uncertain plateau
+heights still pass the shape test: each bootstrap tail is centered separately.
+
+The surface reporting gate requires resolved PMF blocks, independent parent
+support, a complete joint error and the requested relative-error target,
+in addition to the plateau and energy checks. The original and both longer
+runs were reaggregated from their saved PMF draws and integrity-checked child
+records without new propagation. Their rate estimates and standard errors
+are **exactly preserved**. All three now have `rate_s_inv=null` and
+`status=pilot_requires_convergence`, with these explicit reasons:
+
+- `pmf_correlation_blocks_not_resolved`
+- `fewer_than_twenty_nonzero_flux_parent_configurations`
+- `relative_standard_error_exceeds_target`
+
+Low-level QTST bootstrap errors with rejected support draws are now explicitly
+conditional (`supported_draw_qtst_*`), matching the existing joint-rate policy.
+
+## Executed validation
+
+- Full suite: **1577 passed, 13 skipped, 153 subtests passed** in 119.32 s.
+  Ten skips require the optional real BKMP2 build, one the source-pinned EAM
+  potential, and two PyTorch. The 103 warnings concern ASE/NumPy deprecations.
+- Targeted rate/surface suite: **146 passed**.
+- Four actual local MPI ranks, G=2 x B=2: **27 array/checkpoint files exactly
+  match serial**; fixed substrate and completed resumes pass. The comparison
+  also checks the new `rate_quality` and `plateau_diagnostics` fields.
+- Source distribution and native wheel build successfully. The new surface
+  benchmark is included in the source distribution; implementation sources
+  in the wheel match the reviewed tree.
+- Independent finite-P reference and oscillatory negative control:
+  [reference.json](reference.json), generated by
+  [the checked-in benchmark](../../../benchmarks/surface/accuracy.py).
+- Saved-run reporting changes: [quality-replay.json](quality-replay.json).
+- Source hashes, environment versions and validation provenance:
+  [results.json](results.json).
+
+## Reproduction
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 \
+  python benchmarks/surface/accuracy.py --output runs/surface-accuracy/reference.json
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 UCX_TLS=tcp,self \
+  MPIR_CVAR_CH4_CMA_ENABLE=0 \
+  mpiexec -n 4 python tests/mpi_surface_smoke.py runs/surface-accuracy/mpi
+pyrpmd run examples/surface/diffusion.inp --output runs/surface-accuracy/pilot
+```
+
+Use fresh output directories. See [surface documentation](../../surface-catalysis.md)
+for the reporting-target option and physical convergence requirements. These
+changes make inadequate evidence visible; they do not turn the teaching
+potential into a validated surface chemistry model.

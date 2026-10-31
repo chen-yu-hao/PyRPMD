@@ -150,6 +150,8 @@ task = "surface_rate"
 reactant_basin = ["-3 bohr", "3 bohr"]
 dividing_surface = "3 bohr"
 product_side = "higher"
+# Reporting target for the joint relative standard error; default 0.2.
+max_relative_standard_error = 0.2
 ```
 
 `higher` 指 `s>s‡` 为产物侧，`lower` 指 `s<s‡`。盆地必须完全位于相反侧；
@@ -177,25 +179,27 @@ umbrella 中心须覆盖完整盆地到分割面，实际样本还须覆盖相�
 再对母链及链内相关块 bootstrap。PMF 每个 bootstrap draw 同时重算分割面
 密度和盆地积分；最终联合区间组合独立 PMF 与回穿抽样分布。
 这个独立性假定要求约束母轨迹的初始热化足以消除它与 umbrella 起始末态的相关性，
-程序不会自动证明这一点。若 PMF bootstrap 有缺支撑／失败 draw，主联合误差与
-区间留空；`supported_draw_rate_*` 只报告条件于有效支撑 draw 的分布，不能把它
-解释为完整的 95% 联合置信区间。
+程序不会自动证明这一点。若 PMF bootstrap 有缺支撑／失败 draw，主 QTST 和
+联合速率的误差与区间留空；`supported_draw_qtst_*`、`supported_draw_rate_*`
+只报告条件于有效支撑 draw 的分布，不能把它解释为完整的 QTST 或联合速率
+95% 置信区间。
 
 PMF 相关块长度采用与一般 FES、气相 PMF 相同的策略：请求 `ceil(5*g)`，
 在每条流内按可用样本数限制，并在 `bootstrap.block_plan` 中报告块长度、
 状态与警告。流过短或没有可解析的独立变化时，状态为 `unavailable`，
 QTST 和主联合速率的标准误与置信区间留空；点估计、逐 draw 记录以及
 密度–盆地积分的配对协方差诊断仍可保留，但不代表误差已经可用。
-`limited_blocks` 表示只能提供受有限块数限制的估计。与旧版表面 PMF
-采用的 `ceil(g)` 不同，本次修复会有意改变 bootstrap draw 和误差结果；
-它不改变 PMF/QTST 点估计，也不把有限数据标记为物理收敛。
+`limited_blocks` 表示只能提供受有限块数限制的估计。当前统一的 `ceil(5*g)`
+策略与早期表面 PMF 的 `ceil(g)` 会给出不同 bootstrap draw 和误差；本次报告
+门槛修复沿用当前策略，不改变其抽样序列或 PMF/QTST 点估计。
 
 回穿统计与气相及 site-rate 共用母构型/相关块实现。单母构型不能通过增加
 bootstrap draw 数量获得误差支持；零通量母构型也不增加有效样本数。
 `rate_uncertainty.recrossing_scope` 区分独立母链与
 `conditional_on_single_chain_mixing`。后者至少需要两个有效相关块，且条件于
 单链相关时间估计足以描述混合；surface-rate 保留允许该条件误差的既有政策，
-不会把它解释为独立母链之间已经一致。零通量 draw 被拒绝时主误差留空。
+不会把它解释为独立母链之间已经一致，且此时不填充 `rate_s_inv`。
+零通量 draw 被拒绝时主误差留空。
 
 surface-rate 复用前置 FES 的 MBAR 点估计权重，避免相同数据的第二次求解。
 复用前校验有序 reduced-potential 矩阵、stream counts 和 overlap threshold；
@@ -207,6 +211,39 @@ bootstrap 也仍逐次重新求解。不将不同 binning 的 FES 直接当作�
 示例中左右两个出口只统计右侧。位点简并、二维双分子面积、覆盖度、压力和
 微观动力学 TOF 需要明确的额外物理模型，程序不会隐式补上。
 
+### 平台与速率报告门槛
+
+`plateau_diagnostics` 明确给出选定尾段的失败原因。共享的气相、site-rate 和
+surface-rate 判据同时要求：尾段至少 10 帧、正的 κ、可用的母构型相关块误差，
+以及以下两项均小于 `recrossing.plateau_tolerance * abs(kappa)`：
+
+1. 尾段两半均值差的绝对值，加两倍该差的 bootstrap 标准误；
+2. 尾段相对其均值的最大绝对偏离，加中心化 bootstrap 误差的 95% 最大偏离半径。
+
+每个 bootstrap 曲线先减去自己的尾段均值，因此 κ 高度的不确定度不会被误当成
+尾段形状的不确定度。半径由整条相关尾段的最大偏离计算，未把相邻时间帧当成
+独立样本。这是有限样本诊断，条件于母链 bootstrap 能描述混合；仍需改变子轨迹
+时长和尾段来排除延迟回穿。关闭 bootstrap 时保留 κ 点估计，但不认证平台。
+误差很大不会放宽允许漂移，两个半段均值相等也不会掩盖持续振荡。
+
+surface-rate 另外在 `rate_quality` 中要求完整 PMF 区间、
+`pmf.bootstrap.block_plan.status="finite_block_estimate"`、至少两条非零通量
+独立母链和 20 个非零通量母构型、完整的联合标准误，以及该标准误／正速率
+不超过 `surface.max_relative_standard_error`（默认 0.2，必须为有限正数）。
+还必须通过平台与每珠子 0.1 kBT 的端点能量误差检查。
+
+这些是报告前提，不是物理收敛证明；`converged` 仍为 false。前提未通过时
+`rate_s_inv=null`、`status="pilot_requires_convergence"`，
+`rate_estimate_s_inv` 和可用的有限样本误差保留。`rate_quality.reasons` 可用于
+决定继续增加采样还是检查积分器/回穿。旧版只根据平台和端点能量填充
+`rate_s_inv`，下游脚本应使用新质量字段，并明确区分有限时间估计。
+
+提高有效采样应优先于增加 bootstrap 次数：逐窗检查相关块、独立 replica 与
+时间前后半段的一致性，比较 Andersen 间隔的有效样本／计算成本，必要时先在
+FES 入口进行自适应 pilot、冻结窗口后再独立生产。随后分别收敛 bins、dt、P、
+slab、盆地和回穿时长。教学势的独立有限 P QTST 基准见
+[表面精度 benchmark](../benchmarks/surface/README.md)。
+
 ## 输出与恢复
 
 - `surface_pmf.csv/.npz`：位置密度 PMF 和 mask；NPZ 包含 QTST bootstrap draws
@@ -214,8 +251,9 @@ bootstrap 也仍逐次重新求解。不将不同 binning 的 FES 直接当作�
 - `surface_pmf.json`：盆地、质量度量、归一化、样本支持及逐 draw 失败原因；
   `format_version=2`，不再内嵌逐样本权重数组。
 - `recrossing.csv/.npz`：κ(t)、母构型通量、误差及 bootstrap。
-- `results/summary.json`：`rate_estimate_s_inv` 为有限时间估计；通过平台与能量
-  检查时 `rate_s_inv` 才有值。`converged` 仍为 false，必须另做物理收敛研究。
+- `results/summary.json`：`rate_estimate_s_inv` 为有限时间估计；通过上述
+  `rate_quality` 门槛时 `rate_s_inv` 才有值。`plateau_diagnostics` 给出尾段检验。
+  `converged` 仍为 false，必须另做物理收敛研究。
 - `umbrella/` 与 `checkpoints/`：窗口样本、约束母轨迹和已完成子轨迹结果。
 
 **权重读取迁移：** 旧脚本中的 `pmf["weights"]` 应改为
