@@ -198,3 +198,54 @@ def test_ready_json_cannot_hide_an_invalid_pmf_array(tmp_path, change):
 def test_invalid_bootstrap_is_rejected_before_reading_files(tmp_path, bootstrap):
     with pytest.raises(ValueError, match="bootstrap"):
         postprocess_rate(tmp_path, bootstrap=bootstrap)
+
+
+@pytest.mark.parametrize("electronic,barrier,reason", [
+    (0.0, 0.015, "zero_electronic_weight"),
+    (1.0, 10.0, "floating_point_underflow"),
+])
+@pytest.mark.parametrize("with_recrossing", [False, True])
+def test_saved_zero_qtst_is_preserved_as_a_diagnostic(
+    tmp_path, electronic, barrier, reason, with_recrossing,
+):
+    # These are supported by the existing gas-rate producer. A finite zero
+    # must not be confused with a corrupt negative/nonfinite static rate.
+    _saved_rate(tmp_path, published=True)
+    pmf_path = tmp_path / "rate_pmf.json"
+    pmf = json.loads(pmf_path.read_text())
+    pmf.update(electronic_weight=electronic,
+               free_energy_barrier_hartree=barrier, k_qtst_au=0.0)
+    _dump(pmf_path, pmf)
+    with np.load(tmp_path / "rate_pmf.npz") as data:
+        arrays = dict(data)
+    arrays["free_energy"] = np.array([0., barrier])
+    np.savez(tmp_path / "rate_pmf.npz", **arrays)
+    summary = json.loads((tmp_path / "summary.json").read_text())
+    summary.update(pmf=pmf, rate_estimate_cm3_s=0.0, rate_cm3_s=0.0)
+    _dump(tmp_path / "summary.json", summary)
+    if not with_recrossing:
+        (tmp_path / "recrossing.npz").unlink()
+    result = postprocess_rate(tmp_path, bootstrap=0)
+    assert result["static"]["k_tst_au"] == 0.0
+    assert result["static"]["k_tst_cm3_s"] == 0.0
+    assert result["static"]["zero_rate_reason"] == reason
+    assert result["static"]["underflow"] is (electronic > 0)
+    assert result["converged"] is False
+    assert result["rate_cm3_s"] is None
+    if with_recrossing:
+        assert result["rate_estimate_cm3_s"] == 0.0
+        assert "zero_static_rate" in result["channels"]["reasons"]
+        assert result["channels"]["branching_fractions"] is None
+    else:
+        assert result["status"] == "static_only"
+        assert result["channels"] is None
+
+
+def test_zero_saved_qtst_does_not_hide_inconsistent_positive_pmf(tmp_path):
+    _saved_rate(tmp_path)
+    path = tmp_path / "rate_pmf.json"
+    pmf = json.loads(path.read_text())
+    pmf["k_qtst_au"] = 0.0
+    _dump(path, pmf)
+    with pytest.raises(ValueError, match="Recomputed QTST"):
+        postprocess_rate(tmp_path, bootstrap=0)

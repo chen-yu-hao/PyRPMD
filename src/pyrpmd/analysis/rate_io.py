@@ -162,14 +162,22 @@ def _legacy_rate(root, *, bootstrap, seed):
     if not np.isfinite(electronic) or electronic < 0:
         raise ValueError("electronic_weight must be finite and nonnegative")
     qtst = float(prefactor * np.exp(-beta * barrier) * electronic * symmetry)
-    if not np.isfinite(qtst) or qtst <= 0:
-        raise ValueError("QTST must be positive and representable; inspect the barrier and statistical weights")
+    # The producer permits zero electronic weight and Boltzmann underflow.
+    # Preserve those finite zeros; channel_rates reports zero_static_rate and
+    # does not promote them to a validated kinetic rate or branching fraction.
+    if not np.isfinite(qtst) or qtst < 0:
+        raise ValueError("QTST must be finite and nonnegative; inspect the barrier and statistical weights")
     if not np.isclose(qtst, pmf["k_qtst_au"], rtol=1e-10, atol=0):
         raise ValueError("Recomputed QTST disagrees with saved PMF normalization")
     static = {
         "k_tst_au": qtst, "k_tst_cm3_s": qtst * AU_RATE_TO_CM3_S,
         "reference_rate_au": prefactor, "free_energy_barrier_hartree": barrier,
         "xi_star": xi, "electronic_weight": electronic, "symmetry_factor": symmetry,
+        "underflow": bool(qtst == 0 and electronic > 0),
+        "zero_rate_reason": (
+            "zero_electronic_weight" if electronic == 0 else
+            "floating_point_underflow" if qtst == 0 else None
+        ),
         "measure": "rate_flux", "converged": False,
     }
     recrossing_path = root / "recrossing.npz"

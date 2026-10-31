@@ -471,7 +471,10 @@ def _sample_window(task):
                     dynamics.propagation_stats = json.loads(str(saved["propagation"]))
         else:
             geometry = system.geometry
-            if isinstance(cv.cvs[0], RPMDrateCoordinate):
+            # Rigid fragment translations and equivalent-path permutations
+            # assume every atom is mobile. With any fixed atoms, retain the
+            # reference geometry and use the fixed-aware steering below.
+            if isinstance(cv.cvs[0], RPMDrateCoordinate) and not dynamics.fixed_atoms:
                 coordinate = cv.cvs[0]
                 permutations = coordinate.permutations
                 permutation = permutations[replica % len(permutations)]
