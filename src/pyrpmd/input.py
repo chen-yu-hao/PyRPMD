@@ -23,16 +23,17 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic barostat".split()
 )
 _SECTIONS = {
+    "barostat": set("mode pressure tau gamma compressibility cell_mask reference_cell reference_cell_unit stress".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
         "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
     ),
     "dynamics": set("timestep integrator native loop_backend block_steps".split()),
     "sampling": set(
-        "integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval thermostat_params gamma_centroid replicas parents".split()
+        "engine integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval thermostat_params gamma_centroid replicas parents".split()
     ),
     "potential": set(
         "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params".split()
@@ -373,6 +374,15 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        # Network and PCET have dedicated early-return resolvers; do not let
+        # those routes silently ignore native PIMD-only ensemble controls.
+        raw_sampling = self.data.get("sampling", {})
+        if not isinstance(raw_sampling, Mapping):
+            raise InputError("sampling must be a table")
+        if self.data.get("task") != "pimd" and (
+            "barostat" in self.data or raw_sampling.get("engine") == "native"
+        ):
+            raise InputError("native sampling/barostat controls currently require task='pimd'")
         if self.data.get("task") == "pcet":
             from .pcet_input import resolve_pcet_job
 
@@ -415,6 +425,14 @@ class JobSpec:
         if task not in ("rate", "drpmd", "fes", "metadynamics", "pimd", "diffusion", "site_rate", "surface_rate"):
             raise InputError("task must be rate, drpmd, fes, metadynamics, network, pcet, pimd, diffusion, site_rate or surface_rate")
         materials = task in ("pimd", "diffusion")
+        engine = d.get("sampling", {}).get("engine", "legacy")
+        if engine not in ("legacy", "native"):
+            raise InputError("sampling.engine must be legacy or native")
+        native_pimd = engine == "native"
+        if native_pimd and task != "pimd":
+            raise InputError("sampling.engine='native' currently requires task='pimd'")
+        if "barostat" in d and not native_pimd:
+            raise InputError("[barostat] requires task='pimd' and sampling.engine='native'")
         if "diffusion" in d and task != "diffusion":
             raise InputError("[diffusion] requires task='diffusion'")
         if "site_rate" in d and task != "site_rate":
@@ -589,9 +607,19 @@ class JobSpec:
         default_thermostat = "pile-l" if materials and integrator != "velocity-verlet" else "andersen"
         sampling["thermostat"] = sampling.get("thermostat", default_thermostat)
         sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
-        expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-andersen"
+        expected_sampler = sampler if native_pimd or sampling["thermostat"] == "pile-l" else integrator + "-andersen"
         sampling["integrator"] = sampling.get("integrator", expected_sampler)
-        if materials and sampling["thermostat"] == "pile-l":
+        if native_pimd:
+            from .native_ensemble import _THERMOSTATS
+            if sampling["thermostat"] not in _THERMOSTATS or sampling["thermostat"] in ("none", "trpmd"):
+                raise InputError("native PIMD requires an equilibrium sampling thermostat")
+            if sampler is None or sampling["integrator"] != sampler:
+                raise InputError("Native PIMD requires matching BCOCB/BAOAB sampling")
+            if "gamma_centroid" in sampling:
+                if sampling["thermostat"] != "pile-l":
+                    raise InputError("sampling.gamma_centroid requires PILE-L")
+                sampling["gamma_centroid"] = _positive(parse_quantity(sampling["gamma_centroid"], "frequency"), "gamma_centroid")
+        elif materials and sampling["thermostat"] == "pile-l":
             if sampler is None or sampling["integrator"] != sampler:
                 raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
             sampling["gamma_centroid"] = _positive(

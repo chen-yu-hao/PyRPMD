@@ -52,6 +52,11 @@ def _indices(value, size, name, *, default=None):
 
 def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
+    if config.get("sampling", {}).get("engine", "legacy") == "native":
+        from .native_pimd import resolve_native_pimd
+        return resolve_native_pimd(config, system)
+    if config.get("sampling", {}).get("engine", "legacy") != "legacy" or config.get("barostat"):
+        raise ValueError("barostat requires the native PIMD engine")
     if system.fixed_atoms:
         raise ValueError("pimd/diffusion require all atoms mobile; fixed layers are supported by fes/surface_rate")
     task = config.get("task")
@@ -440,6 +445,9 @@ def _analyze(streams, config, system, output, return_data=False):
 
 def run_materials(config, system, output, executor=None, return_data=False):
     """Execute independent replica streams via serial/process/MPI task groups."""
+    if config.get("sampling", {}).get("engine", "legacy") == "native":
+        from .native_pimd import run_native_pimd
+        return run_native_pimd(config, system, output, executor, return_data)
     options = resolve_materials(config, system)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica}
              for replica in range(options["replicas"])]

@@ -1,0 +1,39 @@
+# Analytic harmonic numerical control, not a real material.
+task = "pimd"
+preset = "pilot"
+temperature = "300 K"
+beads = 8
+seed = 51
+
+[system]
+symbols = ["H", "H"]
+geometry = [[0.0, 0.0, 0.0], [0.1, 0.2, 0.3]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "builtin"
+name = "harmonic"
+params = {k = 0.01}
+
+[dynamics]
+integrator = "cayley-bcb"
+loop_backend = "native"
+timestep = "0.1 fs"
+
+[sampling]
+engine = "native"
+thermostat = "pile-g"
+thermostat_params = {tau = "100 fs"}
+equilibration = "100 fs"
+production = "500 fs"
+interval = "1 fs"
+replicas = 2
+
+[parallel]
+backend = "process"
+mode = "serial"
+trajectory_workers = 2
+
+[output]
+directory = "runs/pimd-native"
+checkpoint_interval = "100 fs"

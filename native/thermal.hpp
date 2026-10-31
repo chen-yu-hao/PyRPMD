@@ -59,7 +59,7 @@ struct Config {
     size_t atoms=0,beads=0; double beta=1,dt=.01;
     Vec masses; std::vector<uint8_t> fixed;
     Thermostat thermostat=Thermostat::PileL; Barostat barostat=Barostat::None;
-    bool cayley=true,initialize_momenta=true,has_cell=false;
+    bool cayley=true,initialize_momenta=true,has_cell=false,fuse_modes=true;
     double gamma=1,gamma0=1,pile_scale=1,tau=1;
     uint64_t interval=10,seed=0;
     size_t gle_size=0; Vec gle_T,gle_S,gle_Croot;
@@ -125,15 +125,28 @@ private:
             for(size_t k=0;k<c.beads;++k)out[k*d+j]=xr[k];
         }
     }
-    void free_ring(bool half,bool internal_only=false){
-        to_modes(s.q,qn);to_modes(s.p,pn);
+    void free_modes(bool half,bool internal_only=false){
         const Vec& aa=half?ah:a;const Vec& bb=half?bh:b;const Vec& cl=half?ch:cc;
         for(size_t k=internal_only?1:0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
             size_t i=k*d+j;double x=qn[i],p=pn[i],m=c.masses[j/3];qn[i]=aa[k]*x+bb[k]*p/m;pn[i]=aa[k]*p-cl[k]*m*x;
         }
-        from_modes(qn,s.q);from_modes(pn,s.p);
+    }
+    void pin(){
         // FFT roundoff must never move a pinned atom.
         for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(!active(j)){s.q[k*d+j]=fixed_q[j];s.p[k*d+j]=0.;}
+    }
+    void free_ring(bool half,bool internal_only=false){
+        to_modes(s.q,qn);to_modes(s.p,pn);
+        free_modes(half,internal_only);
+        from_modes(qn,s.q);from_modes(pn,s.p);pin();
+    }
+    // Keep q and p in the SAME real, orthonormal basis across C-O-C/A-O-A.
+    // Normal-mode baths need four transforms instead of ten, with the same map.
+    // RNG draw ordering is shared with the unfused reference implementation.
+    void free_bath_free(){
+        to_modes(s.q,qn);to_modes(s.p,pn);
+        free_modes(true);bath(c.dt,true);free_modes(true);
+        from_modes(qn,s.q);from_modes(pn,s.p);pin();
     }
     Vec fixed_q;
     void refresh(){
@@ -201,9 +214,9 @@ private:
         if(rate==0)return;
         for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=decay*p[i]+amplitude*std::sqrt(theta*c.masses[(i%d)/3])*g();
     }
-    void bath(double h){
+    void bath(double h,bool modes_ready=false){
         auto kind=c.thermostat;if(kind==Thermostat::None)return;
-        bool nm=normal_thermostat();Vec& p=nm?pn:s.p;if(nm)to_modes(s.p,pn);
+        bool nm=normal_thermostat();Vec& p=nm?pn:s.p;if(nm&&!modes_ready)to_modes(s.p,pn);
         if(kind==Thermostat::Andersen){
             if(s.step%c.interval==0)for(size_t i=0;i<l;++i)if(active(i%d))p[i]=std::sqrt(theta*c.masses[(i%d)/3])*g();
         }else if(kind==Thermostat::SVR)svr(p,0,l,h);
@@ -233,8 +246,8 @@ private:
             else if(kind!=Thermostat::TRPMD)ou(p,0,d,c.gamma0,h);
             for(size_t k=1;k<c.beads;++k)ou(p,k*d,(k+1)*d,2*c.pile_scale*omega[k],h);
         }
-        if(nm)from_modes(pn,s.p);
-        for(size_t i=0;i<l;++i)if(!active(i%d))s.p[i]=0.;
+        if(nm&&!modes_ready)from_modes(pn,s.p);
+        if(!modes_ready)for(size_t i=0;i<l;++i)if(!active(i%d))s.p[i]=0.;
     }
     Mat stress_volume(){
         means();Mat v{};
@@ -302,7 +315,10 @@ private:
     void one_step(){
         if(!s.force_valid)refresh();
         if(c.barostat==Barostat::None){
-            kick(.5*c.dt);free_ring(true);bath(c.dt);free_ring(true);refresh();kick(.5*c.dt);
+            kick(.5*c.dt);
+            if(c.fuse_modes&&(normal_thermostat()||c.thermostat==Thermostat::None))free_bath_free();
+            else {free_ring(true);bath(c.dt);free_ring(true);}
+            refresh();kick(.5*c.dt);
         }else{
             // Andersen redraws once at the full-step boundary, not twice.
             if(c.thermostat==Thermostat::Andersen)bath(c.dt);else bath(.5*c.dt);
@@ -316,7 +332,7 @@ private:
         for(double x:s.cell_p)require(std::isfinite(x),"nonfinite cell momentum");
         ++s.step;
     }
-    void observe(double* row,double* cq){
+    void observe(double* row,double* cq,bool moments=false){
         means();double spring=0,kinetic=0,cv=1.5*mobile/c.beta,U=std::accumulate(s.energy.begin(),s.energy.end(),0.);
         double wn=c.beads/c.beta;
         for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
@@ -329,7 +345,17 @@ private:
         row[7]=std::numeric_limits<double>::quiet_NaN();
         if(c.has_cell){Mat stress=stress_volume();row[7]=(stress[0]+stress[4]+stress[8])/(3*c.beads*row[6]);}
         std::copy(s.cell.begin(),s.cell.end(),row+8);row[17]=kinetic;
-        if(cq)std::copy(centroid_q.begin(),centroid_q.end(),cq);
+        if(cq){
+            std::copy(centroid_q.begin(),centroid_q.end(),cq);
+            if(moments){
+                for(size_t j=0;j<d;++j)cq[d+j]=centroid_p[j]/c.masses[j/3];
+                std::fill(cq+2*d,cq+2*d+c.atoms,0.);
+                for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j){
+                    const double delta=s.q[k*d+j]-centroid_q[j];
+                    cq[2*d+j/3]+=delta*delta/c.beads;
+                }
+            }
+        }
     }
 public:
     Engine(Config config,Vec q,Vec p,Mat cell):c(std::move(config)),d(3*c.atoms),l(d*c.beads),mobile(c.atoms),theta(c.beads/c.beta),baro_mass((c.barostat==Barostat::BZP?3.:1.)*c.atoms*theta*c.baro_tau*c.baro_tau),fft(c.beads),xr(c.beads),xi(c.beads),tmp(2*c.beads),qn(l),pn(l),centroid_q(d),centroid_p(d),centroid_f(d),omega(c.beads),a(c.beads),b(c.beads),cc(c.beads),ah(c.beads),bh(c.beads),ch(c.beads),y(c.gle_size),z(c.gle_size),noise(c.gle_size),status(c.beads),reference_inverse(inverse(transpose(c.reference_cell))),reference_volume(det(c.reference_cell)),fixed_q(d){
@@ -392,17 +418,21 @@ public:
         }
         refresh();
     }
-    Output run(uint64_t steps,uint64_t stride,bool centroids,const std::string& path=""){
+    Output run(uint64_t steps,uint64_t stride,bool centroids,const std::string& path="",bool moments=false,uint64_t sample_start=0){
+        require(!moments||centroids,"record_moments requires centroid records");
+        const size_t width=moments?2*d+c.atoms:d;
+        require(width<=static_cast<size_t>(std::numeric_limits<std::streamsize>::max())/sizeof(double),"record width overflow");
         require(stride>0,"stride must be positive");require(steps<=UINT64_MAX-s.step,"step counter overflow");
         // Absolute observation clock. Splitting a run never inserts extra frames.
-        uint64_t count=(s.step+steps)/stride-s.step/stride;
+        auto observations=[&](uint64_t step){return step>sample_start?(step-sample_start)/stride:uint64_t(0);};
+        uint64_t count=observations(s.step+steps)-observations(s.step);
         require(count<=std::numeric_limits<size_t>::max()/ncolumns,"output size overflow");
-        if(centroids)require(count<=std::numeric_limits<size_t>::max()/d,"centroid output size overflow");
+        if(centroids)require(count<=std::numeric_limits<size_t>::max()/width,"centroid output size overflow");
         Output out;out.frames=static_cast<size_t>(count);
         std::ofstream stream;
-        std::array<double,ncolumns> row{};Vec coordinate(centroids?d:0);
+        std::array<double,ncolumns> row{};Vec coordinate(centroids?width:0);
         if(path.empty()){
-            out.samples.resize(out.frames*ncolumns);if(centroids)out.centroids.resize(out.frames*d);
+            out.samples.resize(out.frames*ncolumns);if(centroids)out.centroids.resize(out.frames*width);
         }else{
             stream.exceptions(std::ios::badbit|std::ios::failbit);
             #ifdef _WIN32
@@ -414,7 +444,7 @@ public:
 #endif
             const uint16_t endian=1;
             // NPY v1 header; records are native-endian IEEE binary64.
-            std::string header="{'descr': '"+std::string(*reinterpret_cast<const uint8_t*>(&endian)?"<f8":">f8")+"', 'fortran_order': False, 'shape': ("+std::to_string(count)+", "+std::to_string(ncolumns+(centroids?d:0))+"), }";
+            std::string header="{'descr': '"+std::string(*reinterpret_cast<const uint8_t*>(&endian)?"<f8":">f8")+"', 'fortran_order': False, 'shape': ("+std::to_string(count)+", "+std::to_string(ncolumns+(centroids?width:0))+"), }";
             while((10+header.size()+1)%64)header+=' ';
             header+='\n';require(header.size()<65536,"NPY header too large");
             const char magic[8]={char(0x93),'N','U','M','P','Y',1,0};
@@ -426,9 +456,9 @@ public:
             size_t frame=0;
             for(uint64_t k=0;k<steps;++k){
                 one_step();
-                if(s.step%stride==0){
-                    if(path.empty())observe(out.samples.data()+frame*ncolumns,centroids?out.centroids.data()+frame*d:nullptr);
-                    else {observe(row.data(),centroids?coordinate.data():nullptr);stream.write(reinterpret_cast<const char*>(row.data()),sizeof(double)*ncolumns);if(centroids)stream.write(reinterpret_cast<const char*>(coordinate.data()),static_cast<std::streamsize>(sizeof(double)*d));}
+                if(s.step>sample_start&&(s.step-sample_start)%stride==0){
+                    if(path.empty())observe(out.samples.data()+frame*ncolumns,centroids?out.centroids.data()+frame*width:nullptr,moments);
+                    else {observe(row.data(),centroids?coordinate.data():nullptr,moments);stream.write(reinterpret_cast<const char*>(row.data()),sizeof(double)*ncolumns);if(centroids)stream.write(reinterpret_cast<const char*>(coordinate.data()),static_cast<std::streamsize>(sizeof(double)*width));}
                     ++frame;
                 }
             }

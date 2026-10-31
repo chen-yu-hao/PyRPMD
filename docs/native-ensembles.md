@@ -11,11 +11,12 @@ Gaussian draw. Python prepares configuration, launches trajectories and writes
 checkpoints at block boundaries. It does not run the integrator or generate
 per-step noise.
 
-This driver does **not** silently replace the existing `pyrpmd run` materials,
-PMF, metadynamics, constrained-parent or reactive-child workflows. Those retain
-their current integrators, checkpoint formats and dispatch. Migrating their
-biases, constraints and product classifiers is separate work. In particular,
-thermostatted sampling must not be relabeled as ordinary RPMD real-time dynamics.
+The standard `pyrpmd run` PIMD workflow can explicitly select this driver with
+`sampling.engine="native"`; see [native PIMD](native-pimd-workflow.md). Historical
+inputs retain their integrators, checkpoints and dispatch. Diffusion, PMF,
+metadynamics, constrained-parent and reactive-child workflows are not migrated
+by this change. Thermostatted sampling must not be relabeled as ordinary RPMD
+real-time dynamics.
 
 ## Build and run
 
@@ -204,11 +205,13 @@ not claim every PyRPMD potential can execute without Python.
 state/workspace storage rather than retaining all output frames. The returned
 array is memory-mapped. Omitting `trajectory` returns an in-memory array whose
 size grows with requested frames. Observations follow absolute step multiples of
-`stride`; there is no extra off-clock final sample. A native/PES/I/O failure
+`stride` relative to optional `sample_start`; there is no extra off-clock final
+sample. `record_moments=True` with `record_centroids=True` additionally records
+centroid velocities and per-atom squared radii of gyration in C++. A native/PES/I/O failure
 rolls back the entire block, including RNG, force cache, auxiliaries and cell.
-After a successful native block, failure to publish the final output filename
-(e.g. a filesystem race) does not undo the completed trajectory. Existing output
-files are never overwritten by `run`.
+A failure to publish or read the final output file also restores the pre-block
+state. Publication is exclusive and never overwrites an existing output. A
+concurrent writer's file is not removed during rollback.
 
 `save/load` uses checksummed, atomic NPZ checkpoints without pickle. Changing
 integrator, matrices, potential identity, fixed positions or other physics is
@@ -255,3 +258,8 @@ Relevant original works include PILE (DOI 10.1063/1.3489925), stochastic velocit
 rescaling (10.1063/1.2408420), BZP (10.1063/1.3073889), constant-pressure PIMD
 (10.1063/1.478193), RGB (10.1088/0953-8984/23/33/334213), stochastic cell rescaling
 (10.1063/5.0020514), and TRPMD (10.1063/1.4883861).
+
+## Standard PIMD workflow
+
+For the opt-in `task="pimd"` route, streaming checkpoint journals and native
+normal-mode fusion, see [Native PIMD workflow](native-pimd-workflow.md).

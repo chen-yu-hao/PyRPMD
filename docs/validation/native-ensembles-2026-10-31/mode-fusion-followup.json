@@ -1,0 +1,129 @@
+{
+  "purpose": "Mode-fusion microbenchmark on a cheap harmonic PES, not a chemistry speedup",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.13.5 (main, Jul 15 2026, 20:25:40) [GCC 14.2.0]",
+  "numpy": "2.3.5",
+  "source_sha256": {
+    "native/thermal.hpp": "0b48c04dc911ac5b6e3ceba95ddfd950a225067d26646ce34d94a99d5778aba7",
+    "native/thermal.cpp": "a28d75d4a460bf70003ca8f8bee03c83679df57c21df7ac22b4a7dce7c897caf",
+    "src/pyrpmd/native_ensemble.py": "fc14bef886ab874898acb0e902235ec0595a46847c0112250897e9184dcc2923"
+  },
+  "cases": [
+    {
+      "beads": 1,
+      "atoms": 2,
+      "steps": 5000,
+      "repeats": 3,
+      "seconds": {
+        "unfused": [
+          0.0018517009998504363,
+          0.0016383200002110243,
+          0.0019347089998973388
+        ],
+        "fused": [
+          0.0017051560000709287,
+          0.0015753159998439514,
+          0.0019628259999535658
+        ]
+      },
+      "median_seconds": {
+        "unfused": 0.0018517009998504363,
+        "fused": 0.0017051560000709287
+      },
+      "speedup": 1.0859422831538064,
+      "max_absolute_difference": {
+        "q": 0.0,
+        "p": 0.0
+      },
+      "rng_identical": true,
+      "force_evaluations": 5001
+    },
+    {
+      "beads": 8,
+      "atoms": 2,
+      "steps": 5000,
+      "repeats": 3,
+      "seconds": {
+        "unfused": [
+          0.026563311000018075,
+          0.027192785000124786,
+          0.025894932000028348
+        ],
+        "fused": [
+          0.015907542000149988,
+          0.016894031999981962,
+          0.01642138400006843
+        ]
+      },
+      "median_seconds": {
+        "unfused": 0.026563311000018075,
+        "fused": 0.01642138400006843
+      },
+      "speedup": 1.6176048864034471,
+      "max_absolute_difference": {
+        "q": 2.0872192862952943e-14,
+        "p": 2.1316282072803006e-14
+      },
+      "rng_identical": true,
+      "force_evaluations": 5001
+    },
+    {
+      "beads": 32,
+      "atoms": 2,
+      "steps": 5000,
+      "repeats": 3,
+      "seconds": {
+        "unfused": [
+          0.12368788000003406,
+          0.12066307200007031,
+          0.12061658599986913
+        ],
+        "fused": [
+          0.07103382500008593,
+          0.07152225100003307,
+          0.0780470150000383
+        ]
+      },
+      "median_seconds": {
+        "unfused": 0.12066307200007031,
+        "fused": 0.07152225100003307
+      },
+      "speedup": 1.6870703915626835,
+      "max_absolute_difference": {
+        "q": 2.220446049250313e-14,
+        "p": 2.6201263381153694e-14
+      },
+      "rng_identical": true,
+      "force_evaluations": 5001
+    },
+    {
+      "beads": 31,
+      "atoms": 2,
+      "steps": 5000,
+      "repeats": 3,
+      "seconds": {
+        "unfused": [
+          1.9143765090000215,
+          1.8025102070000685,
+          1.7944747980000102
+        ],
+        "fused": [
+          0.7418406439999217,
+          0.7640355140001702,
+          0.7443190839999261
+        ]
+      },
+      "median_seconds": {
+        "unfused": 1.8025102070000685,
+        "fused": 0.7443190839999261
+      },
+      "speedup": 2.4216901672243667,
+      "max_absolute_difference": {
+        "q": 3.4638958368304884e-14,
+        "p": 2.7000623958883807e-13
+      },
+      "rng_identical": true,
+      "force_evaluations": 5001
+    }
+  ]
+}
