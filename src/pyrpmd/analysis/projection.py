@@ -90,6 +90,7 @@ def project_run(directory, *, axes, output, selection_file=None):
         free = data["free_energy"]
         edges = [data[f"edges_{i}"] for i in range(free.ndim)]
         result = marginalize_fes(free, edges, config["beta"], axes=axes, mask=data["mask"], selection=selection)
+    axes = result["axes"]
     target = Path(output)
     if target.exists() and any(target.iterdir()):
         raise ValueError("projection output must be a new or empty directory")

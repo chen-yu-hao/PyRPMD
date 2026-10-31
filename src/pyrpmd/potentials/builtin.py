@@ -20,8 +20,6 @@ class FreePotential(Potential):
     def set_cell(self, cell):
         """The free-particle energy is cell independent; retain a validated cell."""
         self.cell, self.pbc = validate_cell_pbc(cell, [True, True, True])
-        if self.cell is None:
-            raise ValueError("variable-cell free particles require a finite cell")
 
 
 class PeriodicCosinePotential(Potential):

@@ -1,6 +1,6 @@
 # 材料中的氢扩散、PIMD 与位点跃迁
 
-此开发分支增加三个独立任务：`pimd`、`diffusion` 和 `site_rate`。
+材料计算提供三个独立任务：`pimd`、`diffusion` 和 `site_rate`。
 它们使用真实原子质量和连续未包装坐标；材料的相互作用仍由用户提供的
 势能模型决定。`periodic_cosine` 与 `free` 是算法验证模型，不能预测特定金属或质子导体。
 
@@ -16,10 +16,14 @@
 
 `pimd`、`diffusion` 和 `metadynamics` 支持 `system.fixed_atoms`；固定原子在所有珠子上
 保持参考位置与零动量，量子动能估计量只计入可动原子。`site_rate` 仍要求全部原子可动。
-各向同性 BZP 恒压采样限于三维完全周期、全部原子可动的 `pimd`；`diffusion` 的生产段
+默认引擎的各向同性 BZP 恒压采样限于三维完全周期、全部原子可动的 `pimd`；`diffusion` 的生产段
 保持固定晶胞，默认无恒温器，或显式选择质心电子摩擦模型。所有可动原子使用同一个珠子数。
 光滑非线性质心坐标的 `site_rate` 已提供质量度量修正，见[通用坐标速率](general-coordinate-rates.md)。
 尚未提供模型训练、任意全环坐标约束速率、长时 kMC 网络或集体电导率。
+显式 `sampling.engine="native"` 的独立 PIMD 路径还支持 MTTK/RGB 柔性晶胞及 P=1 SCR，
+这些 NPT 模式仍要求全三维周期且无固定原子，使用不同的 barostat 参数、编译 PES 契约和检查点格式。
+原生固定晶胞 NVT 支持 `fixed_atoms`。
+详见[原生 PIMD 工作流](native-pimd-workflow.md)。本页以下采样及存储说明默认指 `legacy` 引擎。
 周期 Torch 须显式开启 cell/PBC 契约，C ABI v2 支持晶胞批处理和 virial；C ABI v1/f2py
 仍拒绝周期请求。命名势能的边界条件限制见[适配器指南](potential-adapters.md)。旧的气相 `rate`/`drpmd` 也拒绝周期系统。
 
@@ -97,7 +101,7 @@ pyrpmd run examples/materials/pimd.inp --output runs/materials-pimd
 PILE-L 的 `auto` 路径对 `P<=8` 或二次幂珠数使用 C++ `sample_free`，融合
 自由环半步、OU 热浴与第二个半步；Python 保留两次势能力调用和原 NumPy
 随机数序列。较大非二次幂珠数保留 NumPy 路径。它仍不是完整原生长块循环，
-因此拒绝强制 `loop_backend="native"`；`native=false` 或 `loop_backend="python"`
+因此默认材料引擎拒绝强制 `loop_backend="native"`；`native=false` 或 `loop_backend="python"`
 可选择参考采样路径。固定原子保持精确固定。
 材料任务暂要求采样和生产步长一致。
 
@@ -133,7 +137,8 @@ PES 必须实现动态 `set_cell(cell_bohr)` 并返回物理构型 virial。支�
 相应契约的 Python 模型及验证用自由粒子；不使用 `q·F` 猜测周期应力。可用独立副本
 进程并行，暂不支持珠子进程池、MPI 或 GPU 模式。`friction` 可显式设置，缺省为
 时间常数的倒数。压力支持 Pa/kPa/MPa/GPa/bar/atm 或 hartree/bohr³，裸数为原子单位。
-各向异性晶胞、固定原子 NPT 和恒压 RPMD 输运不在此接口范围。
+各向异性晶胞、固定原子 NPT 和恒压 RPMD 输运不在此默认 BZP 接口范围；
+已存在的原生柔性晶胞路径也不支持固定层或部分周期 slab。
 
 算法、势能契约和可运行示例见 [恒压说明](materials-npt.md)。
 
@@ -267,8 +272,10 @@ k(t)=k_{\mathrm{QTST}}\,\kappa(t).
 支持 `cartesian`、`projection` 和连续 `fractional` 的 centroid 坐标。
 `projection` 支持质量加权晶格参考组；`fractional` 使用 `r @ inv(cell)`
 的一个分量。fractional 坐标**不取模**，没有周期 bias period，确保能够
-区分相邻单胞和一次有向跳跃。最小镜像 `periodic_distance`、`periodic_bond_difference`、
-`periodic_angle` 可以用于 FES，但不是本版本 site-rate 的恒定梯度约束。
+区分相邻单胞和一次有向跳跃。光滑距离、键差、角度和兼容 Python 质心 CV 使用
+[非线性质量度量路径](general-coordinate-rates.md)。最小镜像 `periodic_distance`、
+`periodic_bond_difference`、`periodic_angle` 可以用于 FES；用于约束速率时还必须满足所选
+路径的光滑性检查，不能把镜像切换处当成普通可微坐标。
 原 `distance`、`bond_difference`、`angle` 始终使用展开几何，不会因 System 有晶胞而自动切换。
 
 ```toml
@@ -314,8 +321,8 @@ pyrpmd run examples/materials/site_rate.inp --output runs/materials-site
 ```
 
 氧化物质子导体可以在合适周期 PES 上做 PIMD、直接 RPMD 和几何 FES，
-但 O–H 重取向、质子转移与掺杂捕获常需要多坐标机制分析；本版本不把
-任意质子转移 CV 视作已经实现了完整约束速率，也不从 self-D 自动生成
+但 O–H 重取向、质子转移与掺杂捕获常需要多坐标机制分析；标量光滑质心 CV 的
+非线性速率实现不能自动覆盖多维分割面或任意全环 CV，也不从 self-D 自动生成
 集体电导率或 Haven 比。[6]
 
 ## 保存、并行与验证
@@ -333,7 +340,8 @@ checkpoint_steps = 1000
 ```
 
 传播进程只缓冲有限数量的帧。`trajectory_storage="memory"` 保留旧的全历史 NPZ 布局。
-旧检查点可在续跑时迁移；已完成任务的迁移不构建 PES、不消耗随机数。修改分块大小
+科学身份仍兼容的旧检查点可在续跑时迁移；已完成任务的迁移不构建 PES、不消耗随机数。
+旧 ASE-backed 运行须按[力一致能量约定](potential-adapters.md) 使用新输出目录，已存摘要仍可读取。修改分块大小
 不会改变科学指纹。完整性校验沿用 checkpoint v2 容器，流式类型为
 `PyRPMD.materials-stream.v1`。详见 [流式轨迹说明](streaming-trajectories.md)。
 离线相关分析仍需要标量历史；扩散分析加载所选原子及参考原子的历史，内存随帧数增加。

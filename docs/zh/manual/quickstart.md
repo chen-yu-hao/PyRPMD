@@ -5,21 +5,27 @@
 
 ## 1. 运行第一个任务
 
-在仓库根目录执行：
+完成[安装](installation.md)后，在自己的工作目录中打开终端。入门输入随 PyRPMD 打包，wheel 安装与源码安装均可使用：
 
 ```bash
-pyrpmd validate examples/manual/quickstart.inp --check-pes
-pyrpmd run examples/manual/quickstart.inp --output runs/manual-first
-pyrpmd analyze runs/manual-first
+pyrpmd init my-first-run
+pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run
+pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
+pyrpmd analyze my-first-run/run
 ```
+
+`init` 在新目录或空目录中写入 `quickstart.inp` 并打印下一步命令；非空目录会被拒绝，开始另一个例子时请换一个名字。
+若 shell 找不到 `pyrpmd`，可使用 `python -m pyrpmd` 加相同参数。
 
 `validate` 检查输入、单位、任务限制和资源设置；`--check-pes` 还会构造势能并完成数值准备。`run`
 执行计算、打印 JSON 摘要并写出运行目录。`analyze` 读取保存的摘要。
+验证结果给出解析后的 `input`、`output` 和 `preset`；`validate --output` 预览运行目标路径，不创建目录。
+入门输入中的 `output.directory="run"` 相对于输入文件解析，因此上面显式指定的 `--output my-first-run/run` 指向同一位置。
 
 运行目录结构如下：
 
 ```text
-runs/manual-first/
+my-first-run/run/
 ├── manifest.json          # 软件、依赖、原生能力与科学指纹
 ├── input/                 # original.inp、resolved.json（解析后配置）、system.json
 ├── checkpoints/           # window_00000_replica_0000.npz …（每窗口每副本一个）
@@ -36,11 +42,11 @@ runs/manual-first/
 这个例子计算三维谐势中一个 H 核的 **x 方向质心概率密度**。三个伞窗口各运行两个独立副本：先平衡 20 步，
 再生产 100 步、每 5 步保存一个样本，使用 4 个珠子和 0.1 fs 步长。
 
-```{literalinclude} ../../../examples/manual/quickstart.inp
+```{literalinclude} ../../../src/pyrpmd/templates/quickstart.inp
 :language: toml
 ```
 
-源文件：[quickstart.inp](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/manual/quickstart.inp)。
+源文件：[随包提供的 quickstart.inp](https://github.com/chen-yu-hao/PyRPMD/blob/main/src/pyrpmd/templates/quickstart.inp)。
 
 | 字段 | 含义 |
 | --- | --- |
@@ -60,7 +66,7 @@ runs/manual-first/
 import json
 from pathlib import Path
 
-run_dir = Path("runs/manual-first")
+run_dir = Path("my-first-run/run")
 summary = json.loads((run_dir / "results/summary.json").read_text())
 for key in ("task", "dimension", "windows", "streams", "samples",
             "overlap_connected", "converged", "warnings", "files"):
@@ -77,8 +83,8 @@ for key in ("task", "dimension", "windows", "streams", "samples",
 ## 4. 续跑与重新分析
 
 ```bash
-pyrpmd resume runs/manual-first
-pyrpmd analyze runs/manual-first --recompute --bins 8 --bootstrap 10
+pyrpmd resume my-first-run/run
+pyrpmd analyze my-first-run/run --recompute --bins 8 --bootstrap 10
 ```
 
 `resume` 让中断的运行从最后提交的状态继续；已完成的运行保持不变。`--recompute` 用新的分箱或 bootstrap
@@ -89,20 +95,20 @@ pyrpmd analyze runs/manual-first --recompute --bins 8 --bootstrap 10
 
 ## 5. 同一任务的 Python 写法
 
-保存为仓库根目录下的 `my_first_run.py`：
+保存为包含 `my-first-run/` 的工作目录下的 `my_first_run.py`：
 
 ```python
 from pyrpmd import JobSpec, prepare, run, analyze_run, resume_run
 
 
 def main():
-    spec = JobSpec.from_file("examples/manual/quickstart.inp")
+    spec = JobSpec.from_file("my-first-run/quickstart.inp")
     report = prepare(spec, numerical=True)
     print("ready:", report["ready"])
-    summary = run(spec, output="runs/manual-python")
+    summary = run(spec, output="my-first-run/python-run")
     print(summary["samples"])
-    resume_run("runs/manual-python")
-    print(analyze_run("runs/manual-python")["task"])
+    resume_run("my-first-run/python-run")
+    print(analyze_run("my-first-run/python-run")["task"])
 
 
 if __name__ == "__main__":

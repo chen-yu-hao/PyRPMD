@@ -536,7 +536,11 @@ def reconstruct_fes(
     adding an integer number of periods cannot change the surface. A periodic
     axis defaults to [-period/2, period/2] and may cover at most one period.
     The error is relative to the original minimum bin, which is held fixed in
-    every bootstrap draw. Per-bin valid-draw counts expose missing support.
+    every bootstrap draw. A primary bin error requires support in every
+    requested draw, including a converged, connected MBAR fit and the fixed
+    reference. ``supported_draw_standard_error`` retains an explicitly
+    conditional diagnostic from surviving draws; per-bin valid counts expose
+    the selection. Neither error is available for unresolved correlation blocks.
 
     ``correlation_observables`` optionally supplies one finite real [Ns,M]
     array per stream, with the same M >= 1 across streams. Its observations
@@ -739,12 +743,23 @@ def reconstruct_fes(
         f[:] = np.nan
         mask[:] = True
         se[:] = np.nan
+    supported_se = se.copy()
+    # Missing fits, reference bins or local histogram support select a subset
+    # of draws. Its spread is useful only with an explicit conditional label.
+    # Point estimates and their original support mask remain unchanged.
+    se[valid < bootstrap] = np.nan
     ess = 1 / float(np.sum(mbar.weights**2))
     result = {
         "free_energy": f,
         "probability_mass": mass,
         "density": density,
         "standard_error": se,
+        "supported_draw_standard_error": supported_se,
+        "standard_error_scope": "all requested draws support the original bin and fixed reference",
+        "supported_draw_condition": (
+            "conditional on a converged, connected MBAR fit and histogram "
+            "support for this bin and the fixed reference in the bootstrap draw"
+        ),
         "mask": mask,
         "raw_count": count,
         "edges": edges,
@@ -819,6 +834,49 @@ def _rate_draw_statistics(values):
     }
 
 
+def _rate_bootstrap_statistics(values, *, requested, attempted, block_status):
+    """Separate complete-draw uncertainty from a selected subset of draws.
+
+    A failed PMF fit or a missing histogram bin is part of the bootstrap
+    experiment. Discarding that draw cannot establish an unconditional error
+    bar. Keep the surviving distribution for explicitly conditional diagnostics.
+    """
+    supported = _rate_draw_statistics(values)
+    rejected = max(0, attempted - supported["valid"])
+    reasons = []
+    if not requested:
+        reasons.append("bootstrap_disabled")
+    elif supported["valid"] < 2:
+        reasons.append("fewer_than_two_valid_bootstrap_draws")
+    if block_status in ("limited_blocks", "unavailable"):
+        reasons.append("pmf_bootstrap_" + block_status)
+    if block_status == "unavailable":
+        supported["standard_error_hartree"] = None
+        supported["percentile_95_ci_hartree"] = None
+    primary = dict(supported)
+    if rejected:
+        reasons.append("pmf_bootstrap_contains_unsupported_draws")
+        primary["standard_error_hartree"] = None
+        primary["percentile_95_ci_hartree"] = None
+    diagnostics = {
+        "available": primary["standard_error_hartree"] is not None,
+        "block_status": block_status,
+        "reasons": reasons,
+        "bootstrap_requested": int(requested),
+        "bootstrap_attempted": int(attempted),
+        "bootstrap_valid": supported["valid"],
+        "bootstrap_rejected": rejected,
+        "surface_held_fixed": True,
+        "selection_uncertainty_included": False,
+    }
+    if rejected:
+        diagnostics["supported_draw_condition"] = (
+            "conditional on the bootstrap draw having complete PMF support "
+            "and a valid estimator fit"
+        )
+    return primary, supported, diagnostics
+
+
 def mbar_rate_pmf(
     samples,
     centers,
@@ -854,7 +912,9 @@ def mbar_rate_pmf(
     entire search interval to be supported. Each bootstrap keeps that surface
     fixed; its uncertainty is conditional on this selection, not peak-location
     uncertainty. Unsupported point estimates return ready=False; invalid input
-    raises ValueError. Missing uncertainties remain None/NaN, never zero.
+    raises ValueError. Missing uncertainties remain None/NaN, never zero. If
+    any bootstrap draw fails, primary errors are unavailable; surviving-draw
+    errors are retained only under explicit supported_draw labels.
 
     compare_ui adds a cheap Gaussian-UI calculation on the *same* bootstrap
     draws, exposing paired estimator differences without a second MBAR solve.
@@ -1191,9 +1251,10 @@ def mbar_rate_pmf(
                 )
     curve_se = np.full_like(free, np.nan)
     curve_valid = np.zeros(len(grid), int)
-    if len(curves) >= 2:
+    if curves:
         bcurves = np.asarray(curves)
         curve_valid = np.isfinite(bcurves).sum(axis=0)
+    if len(curves) >= 2:
         mean = np.divide(
             np.nansum(bcurves, axis=0),
             curve_valid,
@@ -1208,11 +1269,19 @@ def mbar_rate_pmf(
             where=curve_valid > 1,
         )
         curve_se = np.sqrt(variance)
-    stats = _rate_draw_statistics(draws)
+    # A bootstrap can promote an originally masked bin above min_count. It
+    # must not turn that unsupported point estimate into a reported error bar.
+    curve_se[mask] = np.nan
+    curve_valid[mask] = 0
     if block_plan["status"] == "unavailable":
-        stats["standard_error_hartree"] = None
-        stats["percentile_95_ci_hartree"] = None
         curve_se[:] = np.nan
+    supported_curve_se = curve_se.copy()
+    stats, supported_stats, uncertainty = _rate_bootstrap_statistics(
+        draws, requested=bootstrap, attempted=len(records),
+        block_status=block_plan["status"],
+    )
+    incomplete_curve_support = (~mask) & (curve_valid < bootstrap)
+    curve_se[incomplete_curve_support] = np.nan
     failure_counts = {}
     for failure in failures:
         failure_counts[failure["reason"]] = failure_counts.get(failure["reason"], 0) + 1
@@ -1224,7 +1293,15 @@ def mbar_rate_pmf(
         )
     if failures:
         warnings.append(
-            "Some bootstrap draws failed; inspect each recorded reason and the valid fraction."
+            "Some bootstrap draws failed; primary PMF uncertainty is unavailable. "
+            "Supported-draw errors are conditional on complete PMF support and a "
+            "valid estimator fit; inspect each recorded reason and the valid fraction."
+        )
+    elif np.any(incomplete_curve_support):
+        warnings.append(
+            "Some PMF curve bins lack support in every requested bootstrap draw; "
+            "their primary errors are unavailable. Supported-draw errors are "
+            "conditional on bin support."
         )
     if np.any(counts / gs < 20):
         warnings.append(
@@ -1241,10 +1318,17 @@ def mbar_rate_pmf(
         ui_barrier_statistics=_rate_draw_statistics(ui_draws),
         failures=ui_failures,
     )
-    if block_plan["status"] == "unavailable":
-        for key in ("paired_difference_statistics", "ui_barrier_statistics"):
-            ui[key]["standard_error_hartree"] = None
-            ui[key]["percentile_95_ci_hartree"] = None
+    if ui["ready"]:
+        for key, values in (("paired_difference_statistics", differences),
+                            ("ui_barrier_statistics", ui_draws)):
+            primary, supported, paired_uncertainty = _rate_bootstrap_statistics(
+                values, requested=bootstrap, attempted=len(records),
+                block_status=block_plan["status"],
+            )
+            ui[key] = primary
+            if paired_uncertainty["bootstrap_rejected"]:
+                ui["supported_draw_" + key] = supported
+        ui["uncertainty"] = paired_uncertainty
     return {
         "ready": ready,
         "status": "ready" if ready else reason,
@@ -1253,6 +1337,13 @@ def mbar_rate_pmf(
         "free_energy_barrier_hartree": barrier,
         "barrier_standard_error_hartree": stats["standard_error_hartree"],
         "barrier_percentile_95_ci_hartree": stats["percentile_95_ci_hartree"],
+        "barrier_uncertainty": uncertainty,
+        **({
+            "supported_draw_barrier_standard_error_hartree": supported_stats["standard_error_hartree"],
+            "supported_draw_barrier_percentile_95_ci_hartree": supported_stats["percentile_95_ci_hartree"],
+        } if failures else {}),
+        **({"supported_draw_standard_error": supported_curve_se}
+           if np.any(incomplete_curve_support) else {}),
         "pmf_bootstrap_barriers": draws,
         "xi": grid,
         "free_energy": free,

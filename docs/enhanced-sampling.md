@@ -20,7 +20,7 @@ a `task="rate"` PMF job:
 [adaptive_umbrella]
 enabled = true
 pilot_steps = 1000
-pilot_equilibration_steps = 200
+# Omit pilot_equilibration_steps to inherit sampling.equilibration_steps.
 max_rounds = 8
 max_windows = 128
 max_pilot_steps = 16000
@@ -32,7 +32,15 @@ min_spacing = 0.000001
 The initial `[umbrella]` specification defines the domain and positive definite
 stiffness matrix. Each pilot round independently equilibrates every window,
 then samples its fixed bias. The pilot-only MBAR calculation constructs an
-overlap graph with an edge when `sqrt(O_ij * O_ji) >= target_overlap`. Replicas
+overlap graph. New schema-3 plans use the normalized score
+`sqrt(O_ij * O_ji / (O_ii * O_jj))`, recorded as `normalized_mbar_cosine`, with
+an edge when the score is at least `target_overlap`. The score lies in [0, 1];
+identical window distributions score 1 even when there are many windows.
+This avoids the `1 / number_of_windows` dilution of the former transition
+score for identical windows. It is neither a replica-exchange acceptance
+probability nor a guarantee of global mixing. `target_overlap=0.03` remains a
+heuristic screening threshold that should be checked against independent
+results for the system. Replicas
 at the same center are pooled for the *overlap solver*, while each trajectory
 retains its own autocorrelation diagnostic. Window effective sample counts
 sum `N/g` across independent replicas. The slowest coordinate or centered
@@ -87,6 +95,10 @@ seeds. `adaptation/round_*/checkpoints/` contains the pilot states;
 the current pilot or the frozen production without redesigning an already
 committed stage. Changing analysis bins/bootstrap does not resample pilots.
 Existing version-1 plans retain their saved defaults and geometric schedule.
+Version-1 and version-2 plans retain the legacy `mbar_symmetric_transition`
+score `sqrt(O_ij * O_ji)` and their committed decisions. The same numerical
+threshold has a different meaning under the two metrics; use a new output
+directory to assess a fresh plan with normalized overlap.
 
 Exhausting `max_rounds`, or finding no admissible midpoint while the overlap
 graph is disconnected, stops with `adaptation_incomplete`; production is not
@@ -120,15 +132,56 @@ When production duration is omitted, enabled adaptive jobs and metadynamics
 now start with **1000 fs**, rather than the ordinary pilot's 200 fs. Explicit
 `sampling.production`/`production_steps` always take precedence. This is only
 a starting budget: an accepted pilot can still be longer than production or
-have better mixing. The adaptive summary reports production ESS per window,
-`production_effective_samples_target_met`, final pilot length, and production
-length separately, and warns about insufficient or shorter production.
+have better mixing. The adaptive summary rechecks overlap at the pilot target,
+ESS and any explicitly requested coverage grid on the independent production
+streams. Read `adaptive_umbrella` in `RUN/results/summary.json` for FES or
+`pmf.adaptive_umbrella` in the same final-summary file for gas-phase rates.
+Gas-phase runs also retain `adaptive_umbrella` in `RUN/rate_pmf.json` and
+`RUN/umbrella/summary.json`. Its fields distinguish the stages:
+
+| `adaptive_umbrella` field | Interpretation |
+| --- | --- |
+| `pilot_target_met` | The pilot passed the requested selection criteria |
+| `target_met` | Compatibility alias for `pilot_target_met` |
+| `overlap_metric` | Normalized schema-3 metric or the saved legacy metric |
+| `production_target_met` | Production independently passed all enabled local criteria |
+| `production_overlap_connected_at_target` / `production_spanning_overlap` | Production connectivity and weakest score in the strongest spanning tree |
+| `production_effective_samples_target_met` | Every production window passed the requested ESS |
+| `pilot_coverage` / `production_coverage` | Separate diagnostics for an explicitly requested coverage grid |
+| `coverage` | Compatibility alias for pilot coverage |
+
+Final pilot and production lengths are reported separately. A failed production
+check produces warnings; it does not automatically extend trajectories, delete
+the estimate or establish `physical_converged`. A non-null FES or rate is not a
+substitute for these checks.
 Increase production in a fresh run and compare independent replicas and PMFs;
 more windows alone do not increase each trajectory's independent sample count.
+
+At the default 0.1 fs time step, `pilot_steps=1000` is only **100 fs**, and the
+default `max_pilot_steps=16000` is 1.6 ps per window and replica. Pilot
+equilibration inherits `sampling.equilibration_steps` unless supplied explicitly:
+with otherwise default input it is 1000 steps, or 100 fs. The default save
+interval is 1 fs and there is one replica per window. ESS 20 is a pilot screening
+criterion; 20 default bootstrap draws are a short analysis budget. Neither
+defines an accuracy for the PMF or rate. See the
+[complete default table](manual/input.md#defaults) and
+[scientific acceptance procedure](manual/science.md#assessing-adaptive-umbrella-results)
+before choosing production settings.
 
 The rate workflow retains its `rate_flux` metric bias during both stages;
 the downstream PMF and recrossing preparation use the actual frozen window
 centers from the sampled streams. Generic FES retains `cv_density`.
+Rate PMFs default to Gaussian UI; adaptive MBAR overlap diagnostics do not change
+that estimator or validate its Gaussian approximation. For a diagnostic comparison,
+set `rate.pmf_method="mbar"` and keep `rate.compare_ui=true`. UI model tails can
+extend beyond observed endpoint support; their warning must be addressed before
+treating a rate as reliable. Histogram MBAR requires connected, sampled support
+from the reference to the dividing surface and still needs bin convergence.
+Rejected rate-PMF bootstrap draws make the primary barrier/rate uncertainty
+unavailable; `supported_draw_*` diagnostics describe only the accepted subset.
+Generic FES likewise withholds a bin's primary `standard_error` if any requested
+bootstrap draw lacks support there, retaining `supported_draw_standard_error`
+and `bootstrap_valid_per_bin` as conditional diagnostics.
 
 For real H + H₂ settings, a reproducible fixed-96/adaptive comparison and an
 unconfined ξ metadynamics diagnostic are provided in
@@ -319,7 +372,8 @@ reaction corridor. Unconfined H + H₂ metadynamics can escape the corridor or
 dissociate rather than explore the desired barrier. Simply extending time or
 increasing hill height is not a remedy for an unsuitable CV/domain. Use an
 appropriate nonsingular CV and a physically defined confined model for such
-exploration. This implementation has no metadynamics wall option. The current
+exploration. Length-CV walls are available as described above; they change the
+sampled ensemble and do not remove a pole in a different CV. The current
 metadynamics estimator uses `cv_density`, so it cannot replace a `rate_flux`
 umbrella PMF or supply a rate from biased trajectory times.
 
@@ -355,6 +409,13 @@ Python users can call `run_metadynamics`, `reanalyze_metadynamics`,
 
 ## Method references
 
+- J. Kästner and W. Thiel, *Analysis of the statistical error in umbrella sampling
+  simulations by umbrella integration*, JCP **124**, 234106 (2006),
+  [doi:10.1063/1.2206775](https://doi.org/10.1063/1.2206775).
+- S. Park and W. Im, *Theory of Adaptive Optimization for Umbrella Sampling*,
+  JCTC **10**, 2719–2728 (2014),
+  [doi:10.1021/ct500504g](https://doi.org/10.1021/ct500504g). Its exchange-acceptance
+  criteria are specific to replica exchange and are not the overlap score used here.
 - A. Laio and M. Parrinello, *Escaping free-energy minima*, PNAS **99**, 12562–12566
   (2002), [doi:10.1073/pnas.202427399](https://doi.org/10.1073/pnas.202427399).
 - A. Barducci, G. Bussi and M. Parrinello, *Well-Tempered Metadynamics: A Smoothly

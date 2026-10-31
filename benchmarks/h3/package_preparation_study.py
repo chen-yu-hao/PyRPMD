@@ -16,6 +16,7 @@ from collections import Counter
 from dataclasses import dataclass
 import hashlib
 import json
+import math
 import os
 from pathlib import Path, PurePosixPath
 import re
@@ -37,7 +38,7 @@ LITERATURE_FILES = ("marjollet_2021_rpmd_fig5b_fig6b_digitized.csv",
     "marjollet_2021_digitization_provenance.json")
 ANALYSIS_FILES = ("preparation_analysis.json", "preparation_cross_sections.csv",
     "preparation_paired_comparisons.csv", "audit_statistics.csv",
-    "audit_paired_time_means.csv", "preparation_numerics.csv",
+    "audit_cases.csv", "audit_paired_outcomes.csv", "audit_paired_time_means.csv", "preparation_numerics.csv",
     "internal_energy_references.csv", "unresolved_endpoint_diagnostics.json",
     "preparation_report.html", "figures/preparation_scattering.png",
     "figures/preparation_scattering.svg", "figures/preparation_energy_hold.png",
@@ -64,12 +65,29 @@ def _json_bytes(value):
     return (json.dumps(value, indent=2, sort_keys=True, allow_nan=False)+"\n").encode()
 
 
-def _read_json(path):
+def _decode_json(text, path):
     def invalid(value):
         raise ArchiveError(f"Nonfinite JSON value in {path}: {value}")
+    def number(value):
+        result = float(value)
+        return result if math.isfinite(result) else invalid(value)
+    def mapping(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ArchiveError(f"Duplicate JSON key in {path}: {key}")
+            result[key] = value
+        return result
     try:
-        return json.loads(Path(path).read_text(), parse_constant=invalid)
-    except (OSError, json.JSONDecodeError) as exc:
+        return json.loads(text, parse_constant=invalid, parse_float=number, object_pairs_hook=mapping)
+    except json.JSONDecodeError as exc:
+        raise ArchiveError(f"Cannot read required JSON {path}: {exc}") from exc
+
+
+def _read_json(path):
+    try:
+        return _decode_json(Path(path).read_text(), path)
+    except OSError as exc:
         raise ArchiveError(f"Cannot read required JSON {path}: {exc}") from exc
 
 
@@ -89,6 +107,73 @@ def _hash_string(value):
     if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
         raise ArchiveError(f"Invalid recorded SHA256: {value!r}")
     return value
+
+
+def _number(value, context):
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+        raise ArchiveError(f"Missing/nonfinite numeric audit diagnostic: {context}")
+    return value
+
+
+def _accumulate_audit(row, preparation, windows, differences, path):
+    """Keep only the small time-mean arrays while streaming the full ledger."""
+    study = row.get("preparation_study", {})
+    native = study.get("switch", {})
+    averages = study.get("time_averages", {})
+    columns = {"primitive_internal_per_bead_hartree", "kinetic_per_bead_hartree",
+               "full_potential_per_bead_hartree", "spring_per_bead_hartree",
+               "centroid_harmonic_energy_hartree", "bond_spread_bohr"}
+    sources = {"hold": "native_every_step_trapezoid", "hold_trace_check": "dense_trace_trapezoid",
+               "final_50fs": "dense_trace_trapezoid"}
+    if (native.get("status") != "completed" or set(averages) != set(sources) or
+            any(study.get(key) != preparation[key] for key in ("kind", "conditioning", "energy_convention"))):
+        raise ArchiveError(f"Invalid successful audit diagnostics: {path}, ID {row['id']}")
+    start, duration = preparation["switch_time_fs"], preparation["hold_time_fs"]
+    for key, expected in (("switch_time_fs", start), ("hold_time_fs", duration),
+                           ("accepted_hold_duration_fs", duration), ("dt_fs", preparation["preparation_dt_fs"])):
+        if not math.isclose(_number(native.get(key), key), expected, rel_tol=1e-12, abs_tol=1e-9):
+            raise ArchiveError(f"Native audit timing mismatch: {path}, ID {row['id']}")
+    for name, source in sources.items():
+        window = averages[name]
+        expected = {"start_fs": start+duration-50. if name == "final_50fs" else start,
+                    "end_fs": start+duration, "duration_fs": 50. if name == "final_50fs" else duration}
+        values = window.get("values", {})
+        if (window.get("source") != source or not columns <= values.keys() or
+                any(not math.isclose(_number(window.get(key), key), value, rel_tol=1e-12, abs_tol=1e-9)
+                    for key, value in expected.items())):
+            raise ArchiveError(f"Audit averaging window/columns mismatch: {path}, ID {row['id']}")
+        if name == "hold" and (set(values) != columns or values != native.get("hold_time_average")):
+            raise ArchiveError(f"Audit hold values disagree with native integral: {path}, ID {row['id']}")
+        if name == "hold" and (window.get("native_dt_fs") != native["dt_fs"] or
+                type(window.get("native_steps")) is not int or window["native_steps"] != round(duration/native["dt_fs"])):
+            raise ArchiveError(f"Invalid native hold timestep/count: {path}, ID {row['id']}")
+        if name not in windows:
+            windows[name] = {"source": source, **expected, "values": {key: [] for key in values}}
+        target = windows[name]["values"]
+        if set(target) != set(values):
+            raise ArchiveError(f"Audit successful mean columns changed: {path}, ID {row['id']}")
+        for key, value in values.items():
+            target[key].append(_number(value, f"{name}.{key}"))
+    for key in columns:
+        differences.setdefault(key, []).append(averages["hold"]["values"][key]-averages["hold_trace_check"]["values"][key])
+
+
+def _check_reduced_values(recorded, observations, path):
+    if not isinstance(recorded, dict) or set(recorded) != set(observations):
+        raise ArchiveError(f"Audit reduction columns differ from ledger: {path}")
+    for key, values in observations.items():
+        result = recorded[key]
+        n = len(values)
+        mean = math.fsum(values)/n
+        sem = math.sqrt(math.fsum((value-mean)**2 for value in values)/(n-1)/n) if n > 1 else None
+        if type(result.get("n")) is not int or result["n"] != n:
+            raise ArchiveError(f"Audit reduction count differs from ledger: {path}, {key}")
+        for name, expected in (("mean", mean), ("sem", sem)):
+            value = result.get(name)
+            if ((expected is None and value is not None) or
+                    (expected is not None and not math.isclose(_number(value, f"{key}.{name}"), expected,
+                                                              rel_tol=1e-10, abs_tol=1e-12))):
+                raise ArchiveError(f"Audit reduction {name} differs from ledger: {path}, {key}")
 
 
 @dataclass(frozen=True)
@@ -191,36 +276,53 @@ def _validate_case(plan, path, *, v, energy, method, beads, samples, offset, aud
     for name in files:
         plan.add(path/name, root, prefix, analysis_input=True)
     config, summary = _read_json(path/"config.json"), _read_json(path/"summary.json")
+    preparation = _read_json(path/"preparation.json") if not baseline else None
     expected = dict(v=v, total_energy_ev=energy, method=method, beads=beads,
                     samples=samples, id_offset=offset, seed=20261031, bmin=0.,
                     bmax=3.5 if v == 0 else 4., dt_fs=.02,
                     time_cap_fs=250., extended_cap_fs=1000.)
-    if any(config.get(key) != value for key, value in expected.items()) or summary.get("config") != config:
+    if (any(config.get(key) != value for key, value in expected.items()) or summary.get("config") != config or
+            any(type(config.get(key)) is not int for key in ("v", "beads", "samples", "id_offset", "seed"))):
         raise ArchiveError(f"Case configuration does not match the fixed study: {path}")
+    if not baseline and summary.get("preparation") != preparation:
+        raise ArchiveError(f"Summary/preparation mismatch: {path}")
     seen, counts = set(), Counter()
+    windows, differences = {}, {}
     statuses = {"prepared", "failed"} if audit else {"product", "nonreactive", "unresolved", "failed"}
     with (path/"trajectories.jsonl").open() as stream:
         for number, line in enumerate(stream, 1):
             if not line.strip():
                 continue
-            try:
-                row = json.loads(line)
-            except json.JSONDecodeError as exc:
-                raise ArchiveError(f"Incomplete/invalid ledger {path}, line {number}") from exc
+            row = _decode_json(line, f"{path}/trajectories.jsonl, line {number}")
+            if not isinstance(row, dict):
+                raise ArchiveError(f"Ledger row is not an object: {path}, line {number}")
             identity, status = row.get("id"), row.get("status")
             if type(identity) is not int or identity in seen or status not in statuses:
                 raise ArchiveError(f"Invalid or duplicate ID/status in {path}, line {number}")
             seen.add(identity); counts[status] += 1
+            if audit and status == "prepared":
+                _accumulate_audit(row, preparation, windows, differences, path)
     if seen != set(range(offset, offset+samples)):
         raise ArchiveError(f"Ledger does not contain the exact declared ID range: {path}")
     if audit:
         totals = {"attempts": samples, "prepared": counts["prepared"], "failed": counts["failed"]}
         means = _read_json(path/"audit_time_averages.json")
-        if any(summary.get(key) != value or means.get(key) != value for key, value in totals.items()):
+        if any(type(summary.get(key)) is not int or type(means.get(key)) is not int or
+               summary[key] != value or means[key] != value for key, value in totals.items()):
             raise ArchiveError(f"Audit summary/reduction count mismatch: {path}")
-        if counts["prepared"] and not {"hold", "hold_trace_check", "final_50fs"} <= means.get("windows", {}).keys():
-            raise ArchiveError(f"Incomplete audit time reductions: {path}")
-    elif summary.get("launched_attempts") != samples or summary.get("counts") != {s: counts[s] for s in statuses}:
+        if not isinstance(means.get("windows"), dict) or set(means["windows"]) != set(windows):
+            raise ArchiveError(f"Audit reduction windows differ from ledger: {path}")
+        for name, expected_window in windows.items():
+            window = means["windows"][name]
+            if (window.get("source") != expected_window["source"] or any(
+                    not math.isclose(_number(window.get(key), key), expected_window[key], rel_tol=1e-12, abs_tol=1e-9)
+                    for key in ("start_fs", "end_fs", "duration_fs"))):
+                raise ArchiveError(f"Audit reduction window metadata differs from ledger: {path}")
+            _check_reduced_values(window.get("values"), expected_window["values"], path)
+        _check_reduced_values(means.get("native_minus_trace_hold"), differences, path)
+    elif (type(summary.get("launched_attempts")) is not int or summary["launched_attempts"] != samples or
+          summary.get("counts") != {s: counts[s] for s in statuses} or
+          any(type(value) is not int for value in summary.get("counts", {}).values())):
         raise ArchiveError(f"Collision summary/ledger count mismatch: {path}")
     if baseline:
         # The old run's Git HEAD can precede its eventual exact-source archive.
@@ -234,14 +336,14 @@ def _validate_case(plan, path, *, v, energy, method, beads, samples, offset, aud
                 plan.add(path/optional, root, prefix, analysis_input=True)
     else:
         provenance = _read_json(path/"provenance.json")
-        if provenance.get("study_spec") != _read_json(path/"preparation.json"):
+        if provenance.get("study_spec") != preparation:
             raise ArchiveError(f"Preparation/provenance mismatch: {path}")
         records = provenance.get("files")
         if not isinstance(records, list) or not records:
             raise ArchiveError(f"Missing current-run source snapshots: {path}")
         for entry in records:
             plan.verify_record(entry, source_snapshot=True)
-    return config, _read_json(path/"preparation.json") if not baseline else None
+    return config, preparation
 
 
 def prepare_plan(baseline, study, code_commit):
@@ -256,6 +358,8 @@ def prepare_plan(baseline, study, code_commit):
         raise ArchiveError("Analysis predates the completed isolated audit manifest")
     if len(analysis.get("cross_sections", [])) != 21 or len(analysis.get("paired_comparisons", [])) != 12:
         raise ArchiveError("Final analysis lacks the planned 21 estimates or 12 paired contrasts")
+    if len(analysis.get("audit_cases", [])) != 12 or len(analysis.get("audit_paired_outcomes", [])) != 9:
+        raise ArchiveError("Final analysis lacks complete audit attempt/pair accounting; regenerate it")
     plan.watch(Path(__file__), code=True)
     expected_audits = {}
     for v, energy in POINTS:
@@ -372,7 +476,11 @@ under `data/` shown above. Use a fresh reanalysis output to preserve this copy.
 The `data/state_preparation_study/analysis/` directory holds JSON/CSV reports,
 standalone HTML, PNG/SVG figures and the generated PDF when it existed at
 packaging time. The isolated audit manifest and per-case time-mean files are
-included. The baseline also supplies the independent H2 radial-level reference
+included. `audit_cases.csv` and `audit_paired_outcomes.csv` retain completed
+cases and pair counts even when no preparation succeeds. Corresponding means
+and SEM are unavailable in that case; empty statistics CSVs contain no old
+results and the energy figure labels the absence of successful preparations.
+The baseline also supplies the independent H2 radial-level reference
 and the digitized 2021 figure points/interpolation/provenance. Those approximate
 figure-reading tolerances are distinct from Monte Carlo confidence intervals.
 

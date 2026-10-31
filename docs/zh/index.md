@@ -14,6 +14,7 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 气相双分子 RPMD 速率 | `rate` | [气相与自由能](manual/workflows.md) |
 | 直接碰撞与产物通道 | `drpmd` | [气相](manual/workflows.md)；[NRPMD](manual/nonadiabatic.md) |
 | 一维/二维自由能面 | `fes` | [快速入门](manual/quickstart.md)、[气相与自由能](manual/workflows.md) |
+| 对已保存的 PMF/FES 计算速率与分支 | `rate-postprocess` 命令 | [速率后处理英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
 | 多入口、多过渡态的速率矩阵 | `network` | [气相与自由能](manual/workflows.md) |
 | Standard 或 well-tempered metadynamics | `metadynamics` | [气相与自由能](manual/workflows.md) |
 | 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
@@ -25,21 +26,28 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 固定基底上的有向逃逸 | `surface_rate` | [材料与表面](manual/periodic.md) |
 | 弱振电耦合极限下的电化学 PCET | `pcet` | [PCET](manual/pcet.md) |
 | 恒电位有效势、电子数平衡采样与 HER 电流 | `fes` / Python API | [电极模型](manual/electrochemistry.md) |
+| 光滑非线性质心逃逸坐标 | `site_rate` | [广义坐标速率英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md) |
+| 温度、同位素与数值收敛扫描 | `pyrpmd study` | [速率研究英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
+| Instanton 路径与一维低温速率 | Python API | [Instanton 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
+| 高阶平衡采样与量子估计量 | Python API | [量子统计英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-statistics.md) |
 
 示例使用解析模型势，几秒内即可完成。进行正式研究前，请按[科学约定与收敛](manual/science.md)完成收敛流程。
 
 ## 基本循环
 
 所有任务使用同样四条命令，每个新计算使用独立的输出目录。
+需要先创建可运行输入时，使用 `pyrpmd init my-first-run` 并按[快速入门](manual/quickstart.md)操作。
+下面的 `job.inp` 是你自己的输入文件占位符。
 
 ```bash
 pyrpmd validate job.inp --check-pes     # 检查输入与单位，构造势能
 pyrpmd run job.inp --output runs/job    # 运行；结果位于 runs/job/results/summary.json
-pyrpmd analyze runs/job                 # 读取摘要；FES、metadynamics、扩散支持 --recompute
+pyrpmd analyze runs/job                 # 读取摘要；FES、metadynamics、OPES、扩散支持 --recompute
 pyrpmd resume runs/job                  # 从检查点续跑，科学设置保持不变
 ```
 
-全部选项见[输入与命令行](manual/input.md#命令行参考)。对应的 Python 入口是 `prepare`、`run`、
+命令索引与常用选项见[输入与命令行](manual/input.md#命令行参考)；`pyrpmd COMMAND --help` 列出当前安装版本的全部选项。
+对应的 Python 入口是 `prepare`、`run`、
 `analyze_run` 和 `resume_run`，见[快速入门](manual/quickstart.md)。
 
 ## 章节

@@ -203,6 +203,27 @@ def main():
     executable = Path(sys.executable).parent / ("pyrpmd.exe" if os.name == "nt" else "pyrpmd")
     console_version = command("console-version", [str(executable), "--version"]).strip()
     info = json.loads(command("info", [sys.executable, "-m", "pyrpmd", "info"]))
+    # A wheel user must be able to start without a source checkout or separately
+    # downloaded example. Exercise the packaged template from an unrelated cwd.
+    starter = output / "first-project"
+    command("init", [sys.executable, "-m", "pyrpmd", "init", str(starter)])
+    starter_input = starter / "quickstart.inp"
+    command("init-validate", [sys.executable, "-m", "pyrpmd", "validate",
+                              str(starter_input), "--check-pes"])
+    command("init-run", [sys.executable, "-m", "pyrpmd", "run", str(starter_input)])
+    starter_run = starter / "run"
+    starter_summary = json.loads(command(
+        "init-analyze", [sys.executable, "-m", "pyrpmd", "analyze", str(starter_run)]))
+    for key, expected in (("task", "fes"), ("samples", 120), ("streams", 6), ("windows", 3)):
+        if starter_summary.get(key) != expected:
+            raise AssertionError(f"Installed starter has unexpected {key}: {starter_summary.get(key)!r}")
+    command("init-resume", [sys.executable, "-m", "pyrpmd", "resume", str(starter_run)])
+    starter_resumed = json.loads((starter_run / "results/summary.json").read_text())
+    if starter_summary != starter_resumed:
+        raise AssertionError("Installed starter changed its completed result on resume")
+    starter_result = {"task": starter_summary["task"], "samples": starter_summary["samples"],
+                      "streams": starter_summary["streams"], "windows": starter_summary["windows"],
+                      "resume_identical": True}
     example_paths = {
         "network": "examples/network/two_entrances.py",
         "adaptive": "examples/fes/adaptive_harmonic.inp",
@@ -303,6 +324,7 @@ def main():
         "native_api": native_api, "sampling_max_abs_errors": sampling_errors,
         "large_ring_max_abs_errors": large_ring_errors,
         "native_release_max_abs_errors": native_release,
+        "starter_project": starter_result,
         "examples": examples, "drpmd_workflows": drpmd_workflows,
         "scope": "Installed-distribution and finite-sampling workflow validation, not physical convergence or universal wheel compatibility.",
     }

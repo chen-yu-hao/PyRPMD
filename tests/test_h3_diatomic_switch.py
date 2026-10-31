@@ -175,6 +175,70 @@ class AnalyticDiatomicSwitchTests(unittest.TestCase):
             with self.subTest(r=r, p=p), self.assertRaises(ValueError):
                 self.same.run(r, p, beta=600.)
 
+    def test_real_inputs_are_validated_before_float_conversion(self):
+        for r, p in ((np.array([REQ+1j]), [0.]), ([REQ], np.array([2j])),
+                     ([True], [0.]), ([REQ], np.array([0.], dtype=object)),
+                     ([str(REQ)], [0.])):
+            with self.subTest(r=r, p=p), self.assertRaises(ValueError):
+                self.same.run(r, p, beta=600., switch_time_fs=0., hold_time_fs=0.)
+        for value in (np.complex128(600+1j), True, "600"):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.same.run([REQ], [0.], beta=value, switch_time_fs=0., hold_time_fs=0.)
+        for mass in (np.complex128(2*MU+1j), np.array([2*MU+1j, 2*MU]), True, str(2*MU)):
+            with self.subTest(mass=mass), self.assertRaises(ValueError):
+                DiatomicSwitcher(None, mass=mass, omega=OMEGA, equilibrium=REQ, target_omega=OMEGA)
+        with self.assertRaises(ValueError):
+            harmonic(target_omega=np.complex128(OMEGA+1j))
+
+    def test_overflowing_initial_reference_fails_before_accepting_a_trace_point(self):
+        # The target energy is finite, but K + Vharm overflows. The second
+        # observation must not be ignored after constructing this reference.
+        model = DiatomicSwitcher(None, mass=.2, omega=.01, equilibrium=2., target_omega=.01,
+                                  energy_zero_hartree=1e308, target_offset=-1e308)
+        r, p = np.array([2.]), np.array([np.sqrt(2e307)])
+        kwargs = dict(beta=600., switch_time_fs=0., hold_time_fs=0.)
+        result = model.run(r, p, raise_on_error=False, **kwargs)
+        self.assertEqual(result.summary["status"], "failed")
+        self.assertEqual(result.summary["native_status"], 2)
+        self.assertEqual(result.summary["completed_steps"], 0)
+        self.assertEqual(result.trace, [])
+        np.testing.assert_array_equal(result.r, r)
+        np.testing.assert_array_equal(result.p, p)
+        json.dumps(result.summary, allow_nan=False)
+        with self.assertRaisesRegex(DiatomicSwitchError, "initial diatomic energy reference"):
+            model.run(r, p, **kwargs)
+
+    def test_hold_trapezoid_avoids_intermediate_overflow_and_rejects_accumulator_overflow(self):
+        model = DiatomicSwitcher(None, mass=2., omega=.01, equilibrium=2., target_omega=.01,
+                                  energy_zero_hartree=1e308)
+        r, p = np.array([2.01]), np.array([.2])
+        kwargs = dict(beta=600., dt_fs=.02, switch_time_fs=0., trace_stride_fs=.2)
+        # The endpoint sum 1e308 + 1e308 overflows, although these first two
+        # integrals and their time averages are representable.
+        accepted = model.run(r, p, hold_time_fs=.04, **kwargs)
+        self.assertEqual(accepted.summary["status"], "completed")
+        self.assertEqual(accepted.summary["completed_steps"], 2)
+        self.assertAlmostEqual(accepted.summary["hold_time_average"]["full_potential_per_bead_hartree"]/1e308, 1.)
+        self.assertFalse(np.array_equal(accepted.r, r))
+        # The third accumulated integral truly exceeds float64. Reject its
+        # phase point and every partial aggregate, retaining the second step.
+        failed = model.run(r, p, hold_time_fs=.06, raise_on_error=False, **kwargs)
+        self.assertEqual(failed.summary["status"], "failed")
+        self.assertEqual(failed.summary["native_status"], 2)
+        self.assertIn("hold time integral", failed.summary["error"])
+        self.assertEqual(failed.summary["completed_steps"], 2)
+        self.assertEqual(failed.summary["accepted_hold_duration_fs"], .04)
+        self.assertEqual(failed.summary["hold_time_average"], accepted.summary["hold_time_average"])
+        self.assertEqual(failed.trace, accepted.trace)
+        np.testing.assert_array_equal(failed.r, accepted.r)
+        np.testing.assert_array_equal(failed.p, accepted.p)
+        for result in (accepted, failed):
+            json.dumps(result.summary, allow_nan=False)
+            json.dumps(result.trace, allow_nan=False)
+        with self.assertRaisesRegex(DiatomicSwitchError, "hold time integral") as caught:
+            model.run(r, p, hold_time_fs=.06, **kwargs)
+        np.testing.assert_array_equal(caught.exception.result.r, accepted.r)
+
     def test_binary_provenance_is_exposed_before_any_trajectory(self):
         self.assertTrue(self.same.library_path.is_file())
         self.assertEqual(hashlib.sha256(self.same.library_path.read_bytes()).hexdigest(),

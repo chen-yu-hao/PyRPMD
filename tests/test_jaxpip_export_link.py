@@ -88,3 +88,78 @@ def test_missing_exporter_and_overlapping_output(tmp_path):
     fit=fixture_fit(tmp_path)
     with pytest.raises(ValueError): export_jaxpip(fit,tmp_path/'missing',tmp_path/'out')
     with pytest.raises(ValueError): export_jaxpip(fit,fixture_exporter(tmp_path),fit)
+
+
+def stubbed_export(tmp_path, monkeypatch):
+    """Exercise manifest comparisons without computing additional digests."""
+    from collections import Counter
+    from pyrpmd.pesgen import jaxpip_data, jaxpip_export, jaxpip_fit
+
+    root = tmp_path / "checked-export"
+    root.mkdir()
+    names = ("basis.json", "model.eqx", "probe.npy", "metrics.json",
+             "model.onnx", "export-report.json")
+    for name in names:
+        (root / name).write_text("fixture:" + name)
+    monkeypatch.setattr(jaxpip_data, "canonical_hash", lambda value: "envelope-fixture")
+    fitted = {
+        "schema": "pyrpmd.jaxpip-fit/1", "basis": "basis.json",
+        "contract": {"atomic_numbers": [1, 1]},
+        "artifacts": {name: (root / name).read_text() for name in names[:4]},
+    }
+    write_checked(root / "model.json", fitted)
+    exported = {
+        "schema": "pyrpmd.jaxpip-export/1", "contract": fitted["contract"],
+        "fit_manifest_sha256": (root / "model.json").read_text(),
+        "artifacts": {name: (root / name).read_text() for name in (*names, "model.json")},
+    }
+    write_checked(root / "export.json", exported)
+    reads = Counter()
+
+    def counted_contents(path):
+        path = Path(path).resolve()
+        reads[path.name] += 1
+        return path.read_text()
+
+    monkeypatch.setattr(jaxpip_export, "file_hash", counted_contents)
+    monkeypatch.setattr(jaxpip_fit, "file_hash", counted_contents)
+    return root, exported, fitted, reads
+
+
+def test_export_load_reads_shared_artifacts_once(tmp_path, monkeypatch):
+    root, exported, fitted, reads = stubbed_export(tmp_path, monkeypatch)
+    # Different manifest spellings still refer to one file.
+    exported["artifacts"]["./model.eqx"] = exported["artifacts"]["model.eqx"]
+    write_checked(root / "export.json", exported)
+    assert load_export(root) == (exported, fitted)
+    assert reads == {Path(name).name: 1 for name in exported["artifacts"]}
+
+
+@pytest.mark.parametrize("mismatch", ["fitted_artifact", "fit_manifest", "contract"])
+def test_export_load_keeps_both_manifest_contracts(tmp_path, monkeypatch, mismatch):
+    root, exported, fitted, reads = stubbed_export(tmp_path, monkeypatch)
+    if mismatch == "fitted_artifact":
+        fitted["artifacts"]["model.eqx"] = "different fitted expectation"
+        write_checked(root / "model.json", fitted)
+        exported["artifacts"]["model.json"] = (root / "model.json").read_text()
+        exported["fit_manifest_sha256"] = exported["artifacts"]["model.json"]
+    elif mismatch == "fit_manifest":
+        exported["fit_manifest_sha256"] = "different manifest expectation"
+    else:
+        exported["contract"] = {"atomic_numbers": [2, 2]}
+    write_checked(root / "export.json", exported)
+    with pytest.raises(ValueError, match="fitted artifact checksum|contracts disagree"):
+        load_export(root)
+    assert reads["model.eqx"] == 1
+
+
+def test_export_load_checks_fit_only_files_and_refreshes_each_call(tmp_path, monkeypatch):
+    root, exported, fitted, reads = stubbed_export(tmp_path, monkeypatch)
+    del exported["artifacts"]["model.eqx"]
+    write_checked(root / "export.json", exported)
+    assert load_export(root) == (exported, fitted)
+    assert reads["model.eqx"] == 1
+    (root / "model.eqx").write_text("changed after the first load")
+    with pytest.raises(ValueError, match="fitted artifact checksum"):
+        load_export(root)
+    assert reads["model.eqx"] == 2

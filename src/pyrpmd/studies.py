@@ -464,9 +464,7 @@ def run_rate_study(study, *, output, resume=False, base_directory=None):
     target = Path(output).resolve()
     public = {key: value for key, value in plan.items() if key != "cases"}
     public["cases"] = [case.to_dict() for case in plan["cases"]]
-    files = {}
-    for case in plan["cases"]:
-        files.update(referenced_files(case.config))
+    files = referenced_files([case.config for case in plan["cases"]])
     identity = _digest({"plan": public, "files": files})
     manifest = target / "study.json"
     if resume:

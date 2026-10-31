@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 from html import escape
 import json
+import math
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -48,10 +49,103 @@ def number(value, digits=4):
     return "未定义" if value is None else f"{value:.{digits}f}"
 
 
+def _case_key(row):
+    return row["variant"], row["v"], row["nominal_total_label_ev"]
+
+
+def audit_case_counts(report):
+    """Use attempt-level outcomes, including cases with no usable mean.
+
+    Older completed reports can be rendered when their statistics contain all
+    twelve audit cases with consistent counts. A missing legacy case cannot be
+    distinguished from a case whose every preparation failed: require reanalysis
+    rather than inferring zero attempts from an empty statistics table.
+    """
+    explicit = "audit_cases" in report
+    source = report["audit_cases"] if explicit else report["audit_statistics"]
+    cases = {}
+    for row in source:
+        key = _case_key(row)
+        counts = {name: row[name] for name in ("attempts", "prepared", "failed")}
+        if any(isinstance(value, bool) or not isinstance(value, int) or value < 0
+               for value in counts.values()):
+            raise ValueError(f"Invalid audit attempt counts: {key}")
+        if counts["attempts"] < 1 or counts["prepared"] + counts["failed"] != counts["attempts"]:
+            raise ValueError(f"Inconsistent audit attempt counts: {key}")
+        if key in cases:
+            if explicit or any(cases[key][name] != value for name, value in counts.items()):
+                raise ValueError(f"Duplicate or inconsistent audit case: {key}")
+        else:
+            cases[key] = {name: row[name] for name in
+                          ("variant", "v", "nominal_total_label_ev", *counts)}
+    expected = {(variant, v, energy) for variant in AUDIT_VARIANTS for v, energy in POINTS}
+    if report["complete"] and set(cases) != expected:
+        raise ValueError("Complete audit outcome counts are unavailable; reanalyze the study to populate audit_cases")
+    return list(cases.values())
+
+
+def audit_table_rows(report, cases):
+    """Left-join means to every attempted case, never the reverse."""
+    means = {}
+    for row in report["audit_statistics"]:
+        if row["window"] != "hold" or row["column"] != "primitive_internal_per_bead_hartree":
+            continue
+        key = _case_key(row)
+        if key in means:
+            raise ValueError(f"Duplicate primary audit mean: {key}")
+        means[key] = row
+    if not set(means).issubset({_case_key(case) for case in cases}):
+        raise ValueError("Audit means have no matching attempt-level case")
+    result = []
+    for case in cases:
+        key = _case_key(case)
+        mean = means.get(key)
+        if case["prepared"]:
+            if mean is None or mean["n_trajectory_means"] != case["prepared"]:
+                raise ValueError(f"Successful audit preparations have missing means: {key}")
+            value = mean["mean"]
+            sem = mean["sem"]
+            if value is None or not math.isfinite(value) or (sem is not None and not math.isfinite(sem)):
+                raise ValueError(f"Invalid primary audit mean: {key}")
+            if (case["prepared"] == 1) != (sem is None):
+                raise ValueError(f"Audit SEM does not match its independent sample count: {key}")
+            estimate = f"{number(value, 5)} ± {number(sem, 5)}"
+        else:
+            if mean is not None:
+                raise ValueError(f"An all-failed audit case cannot have a successful mean: {key}")
+            estimate = "无成功制备样本"
+        result.append([f"{case['v']} / {case['nominal_total_label_ev']:.2f}",
+                       AUDIT_VARIANTS.get(case["variant"], case["variant"]),
+                       f"{case['attempts']} / {case['prepared']} / {case['failed']}", estimate])
+    return result
+
+
+def finite_maximum(rows, name):
+    """Absence of a numerical diagnostic is not a zero error."""
+    values = [row[name] for row in rows if row.get(name) is not None]
+    if any(not math.isfinite(value) for value in values):
+        raise ValueError(f"Non-finite preparation diagnostic: {name}")
+    return max(values, default=None)
+
+
+def _json_float(token):
+    value = float(token)
+    if not math.isfinite(value):
+        raise ValueError(f"Non-finite JSON number: {token}")
+    return value
+
+
+def _json_constant(token):
+    raise ValueError(f"Non-finite JSON number: {token}")
+
+
 def render(source, output, font, code_commit=None, review_url=None):
-    report = json.loads((source/"preparation_analysis.json").read_text())
+    report = json.loads((source/"preparation_analysis.json").read_text(),
+                        parse_float=_json_float, parse_constant=_json_constant)
     if not report["complete"]:
         raise ValueError("Refusing to render an incomplete study as the final report")
+    audit_cases = audit_case_counts(report)
+    audit_rows = audit_table_rows(report, audit_cases)
     pdfmetrics.registerFont(TTFont("PreparationCJK", str(font), subfontIndex=0))
     pdfmetrics.registerFontFamily("PreparationCJK", normal="PreparationCJK", bold="PreparationCJK")
     body = ParagraphStyle("Body", fontName="PreparationCJK", fontSize=9.4,
@@ -102,10 +196,11 @@ def render(source, output, font, code_commit=None, review_url=None):
     pairs = report["paired_comparisons"]
     new = [r for r in records if r["variant"] in
            ("ne_uncut", "ne_switch200", "qct_action_collision", "qct_action_total")]
-    means = [r for r in report["audit_statistics"] if r["window"] == "hold"
-             and r["column"] == "primitive_internal_per_bead_hartree"]
-    unknowns = sum(r["unknown"] for r in new)
+    unresolved = sum(r["unresolved"] for r in new)
     failures = sum(r["failed"] for r in new)
+    audit_attempts = sum(r["attempts"] for r in audit_cases)
+    audit_prepared = sum(r["prepared"] for r in audit_cases)
+    audit_failed = sum(r["failed"] for r in audit_cases)
 
     paragraph("H + H₂ 态选择散射\n初态制备敏感性研究", title)
     paragraph("PyRPMD · BKMP2 势能面 · NE-RPMD / QCT · 2026-10-31", subhead)
@@ -114,11 +209,13 @@ def render(source, output, font, code_commit=None, review_url=None):
               "所有动力学数据来自实际计算；没有按论文曲线调参数，也没有将未决轨迹删除。"
               "这是一项初态敏感性研究，不能据此宣称已完成论文的定量复现。")
     paragraph(f"新增 {sum(r['samples'] for r in new):,} 条碰撞轨迹及 "
-              f"{sum(r['attempts'] for r in means):,} 个独立孤立 H₂ 初态测试。"
-              f"新增碰撞中 {failures} 条计算失败、{unknowns} 条末态未决。"
-              "NE 对照每点使用相同的 1,024 个轨迹 ID；QCT 对照每点使用相同的 4,096 个 ID。")
-    paragraph("已经能回答的问题", subhead)
-    paragraph("1. 质心键长筛选确实写在 2021 年论文中。删除它改变了激发态初态系综，并显著增加低能反应；不能把删除筛选直接称为纠错。")
+              f"{audit_attempts:,} 个独立孤立 H₂ 初态测试。"
+              f"新增碰撞中 {failures} 条计算失败、{unresolved} 条末态未决。"
+              f"孤立初态测试中 {audit_prepared:,} 个成功、{audit_failed:,} 个失败。"
+              "各对照按完全相同的轨迹 ID 配对；失败与未决尝试均保留在计数中。")
+    paragraph("研究问题与方法边界", subhead)
+    paragraph("1. 质心键长筛选确实写在 2021 年论文中。删除它会改变激发态初态系综，"
+              "其影响由配对截面及区间评估；不能把删除筛选直接称为纠错。")
     paragraph("2. 全 BKMP2 势上的半经典作用量 QCT 可避免用谐振轨道直接初始化非谐势的误差。固定碰撞能与固定实际总能是两项不同实验，结果和实际碰撞能均分开列出。")
     paragraph("3. 200 fs 平滑切换是实验性扩展。切换后平均能量接近某个量子能级，并不证明获得了该振动态，也不证明多珠子激发态得到了绝热保持。")
     table(["对照", "目的", "固定内容"], [
@@ -133,19 +230,19 @@ def render(source, output, font, code_commit=None, review_url=None):
     flow.append(PageBreak())
     paragraph("1 / 碰撞截面：初态效应有多大", heading)
     figure("preparation_scattering.png")
-    paragraph("图中 NE 的论文筛选基线是原始 4,096 条数据中精确配对的 1,024 条子集。"
+    paragraph("图中 NE 的论文筛选基线是原始数据中按轨迹 ID 精确配对的子集，样本数 N 随表列出。"
               "虚线为论文 NE 曲线的数字化插值，色带是数字化容差；它不是论文的统计置信区间。QCT 图仅比较本项目计算。", small)
     ne_rows = []
     for v, energy in POINTS:
         for variant in ("ne_paper_subset", "ne_uncut", "ne_switch200"):
             r = lookup[variant, v, energy]
             ne_rows.append([f"{v} / {energy:.2f}", VARIANTS[variant],
-                            f"{r['product']} / {r['unknown']}",
+                            f"{r['product']} / {r['unknown']} / {r['samples']}",
                             number(r["sigma_confirmed_angstrom2"]),
                             f"[{number(r['sigma_ci95_including_unknown_lower_angstrom2'])}, "
                             f"{number(r['sigma_ci95_including_unknown_upper_angstrom2'])}]"])
-    table(["v / 总能标记 eV", "NE 初态", "反应 / 未决", "截面 Å²", "95% 区间 Å²"],
-          ne_rows, [.14, .30, .13, .13, .30])
+    table(["v / 总能标记 eV", "NE 初态", "反应 / 未知 / N", "截面 Å²", "95% 区间 Å²"],
+          ne_rows, [.13, .27, .18, .12, .30])
     paragraph("截面 = πbmax² × 确认反应数 / 全部尝试数。未决或失败样本保留在分母；"
               "区间从最小可能反应数与最大可能反应数扩展 Clopper-Pearson 端点。"
               "零次观测反应只给出截面的统计上界，不能证明真实截面严格为零。", small)
@@ -164,7 +261,7 @@ def render(source, output, font, code_commit=None, review_url=None):
     table(["v / 标记 eV", "对照：新值 - 参考值", "Δ截面 Å²", "保守 95% 区间 Å²"],
           pair_rows, [.13, .40, .20, .27])
     paragraph("每个对照通过新增反应与丢失反应的两个 97.5% Clopper-Pearson 区间，构造至少 95% 覆盖率的差值区间。"
-              "未决配对扩展为确定/可能事件数，不丢弃样本。该覆盖率针对单个对照，未对全部 12 个对照校正。", small)
+              f"未决配对扩展为确定/可能事件数，不丢弃样本。该覆盖率针对单个对照，未对全部 {len(pairs)} 个对照校正。", small)
     table(["v", "谐振标记 eV", "作用量能量 eV", "独立量子能级 eV", "作用量 - 量子 eV"],
           [[r["v"], number(r["harmonic_internal_label_ev"], 6),
             number(r["action_internal_energy_ev"], 6), number(r["exact_quantum_internal_energy_ev"], 6),
@@ -181,13 +278,13 @@ def render(source, output, font, code_commit=None, review_url=None):
         for variant in ("qct_harmonic", "qct_action_collision", "qct_action_total"):
             r = lookup[variant, v, energy]
             qct_rows.append([f"{v} / {energy:.2f}", VARIANTS[variant],
-                             number(r["collision_energy_ev"], 5), r["product"],
+                             number(r["collision_energy_ev"], 5), f"{r['product']} / {r['samples']}",
                              number(r["sigma_confirmed_angstrom2"]),
                              f"[{number(r['sigma_ci95_including_unknown_lower_angstrom2'])}, "
                              f"{number(r['sigma_ci95_including_unknown_upper_angstrom2'])}]"])
-    table(["v / 标记 eV", "QCT 初态与能量约定", "Ecol eV", "反应数", "截面 Å²", "95% 区间 Å²"],
-          qct_rows, [.11, .28, .14, .10, .11, .26])
-    paragraph("每行 N=4,096。谐振 QCT 的内部能量只是初始谐振标记，切到全势后不再是固定的实际内能；"
+    table(["v / 标记 eV", "QCT 初态与能量约定", "Ecol eV", "反应 / N", "截面 Å²", "95% 区间 Å²"],
+          qct_rows, [.11, .28, .12, .15, .10, .24])
+    paragraph("谐振 QCT 的内部能量只是初始谐振标记，切到全势后不再是固定的实际内能；"
               "因此其总能标记不能与作用量轨道的实际总能混为一谈。固定碰撞能对照更适合隔离初态方法变化。")
     paragraph("末态未决样本的含义", subhead)
     paragraph("未决是现有 2+1 分子通道分类器在最大传播时间内未给出产品或非反应标签。"
@@ -201,15 +298,11 @@ def render(source, output, font, code_commit=None, review_url=None):
     flow.append(PageBreak())
     paragraph("4 / 孤立 H₂：切换后能量测试", heading)
     figure("preparation_energy_hold.png")
-    audit_rows = []
-    for r in means:
-        audit_rows.append([f"{r['v']} / {r['nominal_total_label_ev']:.2f}",
-                           AUDIT_VARIANTS.get(r["variant"], r["variant"]),
-                           r["n_trajectory_means"], f"{number(r['mean'], 5)} ± {number(r['sem'], 5)}"])
-    table(["v / 标记 eV", "制备方案", "独立轨迹数", "100 fs 均值 ± SEM / eV"],
-          audit_rows, [.17, .32, .16, .35])
+    table(["v / 标记 eV", "制备方案", "尝试 / 成功 / 失败", "100 fs 均值 ± SEM / eV"],
+          audit_rows, [.16, .29, .23, .32])
     paragraph("定量均值使用原生积分器在每个 0.02 fs 步长上的梯形积分，再对独立轨迹平均；"
-              "SEM 也在轨迹之间计算。图中的 5 fs 稀疏帧只展示变化，不用于计算均值。", small)
+              "SEM 也在轨迹之间计算。统计量以成功制备为条件，全部尝试和失败数另外保留；"
+              "只有一个成功样本时 SEM 未定义，全失败时不提供均值。图中的 5 fs 稀疏帧只展示变化，不用于计算均值。", small)
     paragraph("碰撞实验在 200 fs 切换结束后立即发射，没有额外 hold；本页的独立初态测试才追加 100 fs 无热浴传播。"
               "因此此处均值不能作为碰撞发射瞬间的能量。", small)
     paragraph("这里的 primitive 内能估计量为每珠子的 K + Vfull - Vmin - S。"
@@ -229,14 +322,17 @@ def render(source, output, font, code_commit=None, review_url=None):
               "解析谐振正则模和步长减半结果比较。测试覆盖配对相位、A/BC 质心保持、"
               "失败样本计数以及未决事件区间。原生每步平均还与 0.2 fs 密集轨迹积分交叉核对。")
     numerics = report["preparation_numerics"]
-    balance = max(r["max_absolute_work_balance_residual_ev"] for r in numerics)
-    drift = max(r["max_absolute_hold_energy_drift_ev"] for r in numerics
-                if r["max_absolute_hold_energy_drift_ev"] is not None)
-    largest_centroid = max(r["final_centroid_bond_max_bohr"] for r in numerics)
-    paragraph(f"本批次全体制备的最大做功平衡残差为 {balance*1000:.4f} meV，"
-              f"最大 hold 漂移为 {drift*1000:.4f} meV。尽管误差较小，"
-              f"无筛选初态的最大最终质心键长仍达到 {largest_centroid:.4f} bohr，"
-              "因此数值完成和能量守恒不能代替束缚态稳定性验证。")
+    balance = finite_maximum(numerics, "max_absolute_work_balance_residual_ev")
+    drift = finite_maximum(numerics, "max_absolute_hold_energy_drift_ev")
+    largest_centroid = finite_maximum(numerics, "final_centroid_bond_max_bohr")
+    if all(value is None for value in (balance, drift, largest_centroid)):
+        paragraph("本批次没有可用的成功制备数值诊断，不能给出做功平衡残差、hold 漂移或最终键长的最大值。"
+                  "缺失诊断不表示误差为零，也不能作为数值稳定性的证据。")
+    else:
+        paragraph(f"可用制备记录中的最大做功平衡残差为 {number(None if balance is None else balance*1000)} meV，"
+                  f"最大 hold 漂移为 {number(None if drift is None else drift*1000)} meV，"
+                  f"最大最终质心键长为 {number(largest_centroid)} bohr。"
+                  "未定义项表示没有可用观测；数值完成和能量守恒不能代替束缚态稳定性验证。")
     paragraph("核心 dRPMD 检查点的时间一致性检查改为随累计步数增长的浮点舍入误差界。"
               "这使长期重复加法得到的合法时间能恢复，同时保留整数步数及明显错误时间的拒绝。"
               "该修改不改变动力学积分方程。具体测试记录与源文件 SHA256 随结果保存。")
@@ -273,7 +369,8 @@ def render(source, output, font, code_commit=None, review_url=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     doc.build(flow, onFirstPage=footer, onLaterPages=footer)
     print(json.dumps({"pdf": str(output), "collision_samples": sum(r["samples"] for r in new),
-                      "audit_samples": sum(r["attempts"] for r in means)}, ensure_ascii=False))
+                      "audit_samples": audit_attempts, "audit_prepared": audit_prepared,
+                      "audit_failed": audit_failed}, ensure_ascii=False, allow_nan=False))
 
 
 def main():

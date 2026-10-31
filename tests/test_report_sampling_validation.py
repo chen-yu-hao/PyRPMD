@@ -1,7 +1,9 @@
 """Independent saved-data contract checks for automatic sampling reports."""
 
+from copy import deepcopy
 import hashlib
 import json
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
@@ -155,9 +157,13 @@ def test_incomplete_pilot_plan_has_progress_without_production_or_raw_pilot_read
     assert run["sampling_diagnostics"]["sampling"]["adaptive"]["scope"] == "discarded_adaptation_pilots"
 
 
-def test_schema_two_frozen_centers_are_usable_without_hdf5(tmp_path):
+@pytest.mark.parametrize("schema", [2, 3])
+def test_frozen_centers_are_usable_without_hdf5(tmp_path, schema):
     plan = _plan()
     plan["status"] = "frozen"
+    plan["schema_version"] = schema
+    if schema == 3:
+        plan["overlap_metric"] = "normalized_mbar_cosine"
     _write_plan(tmp_path, plan)
     (tmp_path / "checkpoints").mkdir()
     np.savez(tmp_path / "checkpoints/window_00001_replica_0000.npz", values=[[.9, .9], [1.1, 1.1]])
@@ -167,6 +173,99 @@ def test_schema_two_frozen_centers_are_usable_without_hdf5(tmp_path):
     row = run["sampling_diagnostics"]["sampling"]["windows"][0]
     assert row["center_atomic"] == [1., 1.]
     assert row["stiffness_atomic"] == [[2., 0.], [0., 2.]]
+
+
+def test_adaptive_plan_consumers_reuse_one_validated_snapshot(tmp_path, monkeypatch):
+    plan = {**_plan(), "status": "frozen", "checksum": "verified"}
+    original = deepcopy(plan)
+    path = tmp_path / "adaptive-plan.json"
+    path.touch()
+    read_json = Mock(return_value=plan)
+    checksum = Mock()
+    checksum.return_value.hexdigest.return_value = "verified"
+    monkeypatch.setattr(report_sampling, "_json", read_json)
+    monkeypatch.setattr(hashlib, "sha256", checksum)
+    run = _run(tmp_path, {"adaptive_umbrella": {"enabled": True}})
+
+    centers, stiffness = report_sampling._checkpoint_metadata(run, tmp_path, {}, 2)
+    report_sampling.collect_adaptive_progress(run, tmp_path)
+
+    read_json.assert_called_once_with(run, path)
+    checksum.assert_called_once()
+    np.testing.assert_array_equal(centers, original["centers"])
+    np.testing.assert_array_equal(stiffness, original["stiffness"])
+    assert run["sampling_diagnostics"]["sampling"]["adaptive"]["status"] == "frozen"
+    assert run["_sampling_plan_cache"][str(path.resolve())] is plan
+    assert plan == original
+
+
+@pytest.mark.parametrize("field,value,message", [
+    ("checksum", None, "lacks the checksum"),
+    ("checksum", "incorrect", "checksum mismatch"),
+    ("schema_version", 999, "Unsupported adaptive plan schema"),
+    ("status", "unsupported", "Unsupported adaptive plan status"),
+])
+def test_invalid_adaptive_plan_is_not_cached(tmp_path, monkeypatch, field, value, message):
+    plan = {**_plan(), "checksum": "verified"}
+    if value is None:
+        plan.pop(field)
+    else:
+        plan[field] = value
+    checksum = Mock()
+    checksum.return_value.hexdigest.return_value = "verified"
+    monkeypatch.setattr(report_sampling, "_json", Mock(return_value=plan))
+    monkeypatch.setattr(hashlib, "sha256", checksum)
+    run = _run(tmp_path)
+
+    with pytest.raises(ValueError, match=message):
+        report_sampling._read_adaptive_plan(run, tmp_path / "adaptive-plan.json")
+
+    assert run["_sampling_plan_cache"] == {}
+
+
+def test_cached_incomplete_plan_keeps_each_callers_frozen_requirement(tmp_path, monkeypatch):
+    plan = {**_plan(), "checksum": "verified"}
+    read_json = Mock(return_value=plan)
+    checksum = Mock()
+    checksum.return_value.hexdigest.return_value = "verified"
+    monkeypatch.setattr(report_sampling, "_json", read_json)
+    monkeypatch.setattr(hashlib, "sha256", checksum)
+    run = _run(tmp_path)
+    path = tmp_path / "adaptive-plan.json"
+
+    with pytest.raises(ValueError, match="require a supported frozen plan"):
+        report_sampling._read_adaptive_plan(run, path, require_frozen=True)
+    assert report_sampling._read_adaptive_plan(run, path) is plan
+    with pytest.raises(ValueError, match="require a supported frozen plan"):
+        report_sampling._read_adaptive_plan(run, path, require_frozen=True)
+
+    read_json.assert_called_once_with(run, path)
+    checksum.assert_called_once()
+
+
+def test_schema_three_report_names_the_normalized_overlap_metric(tmp_path):
+    plan = _plan()
+    plan.update(schema_version=3, overlap_metric="normalized_mbar_cosine")
+    _write_plan(tmp_path, plan)
+    run = _run(tmp_path)
+    report_sampling.collect_adaptive_progress(run, tmp_path)
+    overlap = next(plot for plot in run["_plots"] if plot["id"].endswith("-adaptive-overlap"))
+    assert "normalized MBAR cosine".lower() in overlap["ylabel"].lower()
+    assert "not directly comparable" in overlap["caption"]
+    assert run["sampling_diagnostics"]["sampling"]["adaptive"]["overlap_metric"] == "normalized_mbar_cosine"
+
+
+@pytest.mark.parametrize("metric", [None, "mbar_symmetric_transition", "unknown"])
+def test_schema_three_report_rejects_an_ambiguous_overlap_metric(tmp_path, metric):
+    plan = _plan()
+    plan["schema_version"] = 3
+    if metric is not None:
+        plan["overlap_metric"] = metric
+    _write_plan(tmp_path, plan)
+    run = _run(tmp_path)
+    report_sampling.collect_adaptive_progress(run, tmp_path)
+    assert not run["_plots"]
+    assert any("overlap metric" in item["reason"] for item in run["skipped"])
 
 
 def test_legacy_plan_without_saved_schedule_does_not_invent_steps_or_coverage(tmp_path):

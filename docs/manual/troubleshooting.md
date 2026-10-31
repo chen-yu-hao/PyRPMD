@@ -4,22 +4,30 @@ When something fails, keep the full error, the input, the output of `pyrpmd info
 and the run directory. Work through the layers in order: input → model → integration and sampling →
 statistical analysis → restart.
 
+`pyrpmd info > environment.json` records the installed version and capabilities. Add `--debug` to
+the failing command to include a traceback when a short error message is not enough; for example,
+`pyrpmd validate job.inp --check-pes --debug`. Exit code 2 indicates a command error. A successful
+exit does not establish convergence; read the saved task diagnostics as well.
+
 ## Installation and commands
 
 | Symptom | Fix |
 | --- | --- |
-| `pyrpmd` not found | Activate the environment it was installed into; check `python -m pip show PyRPMD` |
+| `pyrpmd` not found | Activate the environment it was installed into; try `python -m pyrpmd --version` and check `python -m pip show PyRPMD` |
+| `examples/manual/quickstart.inp` not found | Repository examples need a source checkout; use `pyrpmd init my-first-run` for a bundled starter from any directory |
+| `init` destination is not empty | Choose a new directory; existing files are protected |
 | C++/OpenMP build fails | Install a C++17 compiler with OpenMP, or build in a clean environment with `PYRPMD_NO_OPENMP=1` or `PYRPMD_NO_NATIVE=1` |
 | An integrator is missing from `pyrpmd info` | Reinstall after updating the source so no old `.so` is loaded |
 | pytest reports skipped tests | Optional dependencies (ASE, BKMP2, an EAM model, PyMBAR, Torch, matplotlib, …) are missing; install them to run those tests |
 | `native="required"` fails | The extension lacks the requested integrator; rebuild it, or use the default `native=true` in a new task |
-| `loop_backend="native"` is rejected | The PES, CVs, dynamic bias or periodic/fixed atoms need the Python loop; use `auto` |
+| `loop_backend="native"` is rejected | Read the unsupported capability in the error; use `auto` for the default engine, or check the separate [native PIMD restrictions](execution.md) |
 
 ## Input and units
 
 | Symptom | Fix |
 | --- | --- |
 | `Output directory is not empty` | Use a new `--output` for a new calculation; continue an existing one with `pyrpmd resume DIR` or `run INPUT --resume` |
+| Input or run directory not found | Check the resolved path and current working directory; `validate INPUT --output DIR` previews the run destination |
 | `... overrides; beads is not applicable` and similar | The task does not take that override; PCET accepts only `--temperature` and `--output` |
 | Unknown field or invalid task combination | Check `--help` and the section table in [Input](input.md) |
 | XYZ, factory or model not found | Paths inside an input are relative to the input file; CLI paths are relative to the current directory |
@@ -72,6 +80,15 @@ explicit CV.
 Reanalysis overwrites derived results, so save the original summary and tables before comparing
 binning or fitting schemes. On parallel file systems, checkpoint safety depends on atomic rename and
 fsync; keep the complete run directory and environment record.
+
+If analysis finds a run manifest but no completed summary, the calculation may have stopped before
+the summary was written. Inspect the original error and use `pyrpmd resume DIR` after fixing its
+cause; a missing summary alone is not evidence that there are no saved checkpoints.
+
+If `run --report` completes the calculation but report generation fails, the error identifies the
+saved numerical results and a `pyrpmd report` retry command. Install the missing plotting dependency
+(`.[plots]` from the source checkout) or correct the report destination, then retry the saved-data
+report. See [Automatic reports](analysis-reports.md).
 
 ## Reporting an issue
 
