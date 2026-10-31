@@ -10,6 +10,8 @@ from pathlib import Path
 import numpy as np
 from scipy.constants import R
 
+from .reporting import _selected_cv_names
+
 
 RATE_UNITS = {"cm3 molecule^-1 s^-1", "s^-1"}
 SCAN_LABELS = {"beads": "Number of beads", "dt_fs": "Time step (fs)",
@@ -54,6 +56,7 @@ def _identity(run, *, isotope=False, varying=None):
                 "reaction": reaction, "site_rate": config.get("site_rate"), "surface": config.get("surface"),
                 "cvs": config.get("cvs"), "umbrella_cvs": config.get("umbrella", {}).get("cvs"),
                 "metadynamics_cvs": config.get("metadynamics", {}).get("cvs"),
+                "selected_cvs": _selected_cv_names(config, run["task"]),
                 "static_walls": config.get("metadynamics", {}).get("walls"),
                 "measure": run.get("_measure", run.get("metadata", {}).get("measure"))}
     return json.dumps(identity, sort_keys=True, ensure_ascii=False)

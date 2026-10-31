@@ -136,6 +136,68 @@ def test_different_static_confinement_is_not_one_metadynamics_ensemble():
     assert len(result["metrics"]["series_members"]) == 2
 
 
+def selected_fes_run(path, *, task="opes", selected=None, order=("x", "y"),
+                     mapping=True, summary_task=True):
+    definitions = {name: {"kind": "cartesian", "atom": 0, "axis": "xyz".index(name)} for name in order}
+    config = {"task": task, "potential": {"provider": "harmonic"}, "cvs": definitions}
+    if not mapping:
+        config["cvs"] = [dict(spec, name=name) for name, spec in definitions.items()]
+    section = task if task in ("opes", "metadynamics") else "umbrella"
+    if selected is not None:
+        config[section] = {"cvs": selected}
+    dimension = len(order) if selected is None else 1 if isinstance(selected, str) else len(selected)
+    (path / "input").mkdir(parents=True)
+    (path / "input/resolved.json").write_text(json.dumps(config))
+    (path / "input/system.json").write_text(json.dumps({"symbols": ["H"], "masses": [1837.]}))
+    summary = {"measure": "cv_density", "units": ["bohr"] * dimension}
+    if summary_task:
+        summary["task"] = task
+    (path / "summary.json").write_text(json.dumps(summary))
+    shape = (2,) * dimension
+    atomic_savez(path / "fes.npz", free_energy=np.arange(2 ** dimension).reshape(shape) * .1,
+                 mask=np.zeros(shape, dtype=bool), measure="cv_density", cv_units=["bohr"] * dimension,
+                 **{f"edges_{axis}": [0., 1., 2.] for axis in range(dimension)})
+    return collect_run(path)
+
+
+@pytest.mark.parametrize("selection_type", [str, lambda name: [name]])
+def test_opes_selected_observables_with_same_units_are_not_combined(tmp_path, selection_type):
+    runs = [selected_fes_run(tmp_path / name, selected=selection_type(name)) for name in ("x", "y")]
+    for run, name in zip(runs, ("x", "y")):
+        plot = next(plot for plot in run["_plots"] if plot["id"].endswith("-fes"))
+        assert plot["xlabel"] == f"{name} (angstrom)"
+        np.testing.assert_allclose(plot["series"][0]["x"], np.array([.5, 1.5]) * BOHR_ANGSTROM)
+    comparison = collect_comparisons(runs)
+    assert len(comparison["metrics"]["series_members"]) == 2
+    assert not any(plot["id"].startswith("comparison-pmf") for plot in comparison["plots"])
+    with pytest.raises(ValueError, match="incompatible"):
+        collect_comparisons(runs, series=["same", "same"])
+
+    same = selected_fes_run(tmp_path / "same-x", selected=selection_type("x"))
+    comparison = collect_comparisons([runs[0], same])
+    assert len(comparison["metrics"]["series_members"]) == 1
+    assert len([plot for plot in comparison["plots"] if plot["id"].startswith("comparison-pmf")]) == 1
+
+
+def test_opes_axis_order_and_missing_summary_task_use_saved_selection(tmp_path):
+    run = selected_fes_run(tmp_path, selected=["y", "x"], summary_task=False)
+    plot = next(plot for plot in run["_plots"] if plot["id"].endswith("-fes"))
+    assert (plot["xlabel"], plot["ylabel"]) == ("y (angstrom)", "x (angstrom)")
+
+
+@pytest.mark.parametrize("task", ["fes", "metadynamics", "opes"])
+@pytest.mark.parametrize("mapping", [True, False])
+def test_default_cv_selection_retains_definition_order(tmp_path, task, mapping):
+    runs = [selected_fes_run(tmp_path / "".join(order), task=task, order=order, mapping=mapping)
+            for order in (("x", "y"), ("y", "x"))]
+    for run, names in zip(runs, (("x", "y"), ("y", "x"))):
+        plot = next(plot for plot in run["_plots"] if plot["id"].endswith("-fes"))
+        assert (plot["xlabel"], plot["ylabel"]) == tuple(f"{name} (angstrom)" for name in names)
+    assert len(collect_comparisons(runs)["metrics"]["series_members"]) == 2
+    with pytest.raises(ValueError, match="incompatible"):
+        collect_comparisons(runs, series=["same", "same"])
+
+
 def fes_measure_run(path, *, saved_measure="cv_density", summary_measure=None,
                     saved_units=("bohr",), summary_units=None):
     (path / "input").mkdir(parents=True)

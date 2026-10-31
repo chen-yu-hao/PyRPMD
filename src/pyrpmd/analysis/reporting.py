@@ -104,12 +104,21 @@ def _line(run, suffix, title, xlabel, ylabel, series, caption, **extra):
     return plot
 
 
+def _selected_cv_names(config, task):
+    """Resolve the saved sampling selection in the producer's axis order."""
+    section = task if task in ("metadynamics", "opes") else "umbrella"
+    selected = config.get(section, {}).get("cvs")
+    if selected is not None:
+        return [selected] if isinstance(selected, str) else list(selected)
+    specifications = config.get("cvs", [])
+    if isinstance(specifications, dict):
+        return list(specifications)
+    return [spec.get("name", f"CV {index + 1}") for index, spec in enumerate(specifications)]
+
+
 def _cv_axes(run, summary, dimension, length_unit, data=None):
     config = run["_config"]
-    table = config.get("metadynamics" if summary.get("task") == "metadynamics" else "umbrella", {})
-    selected = table.get("cvs", [])
-    if isinstance(selected, str):
-        selected = [selected]
+    selected = _selected_cv_names(config, summary.get("task", run["task"]))
     specifications = config.get("cvs", [])
     if isinstance(specifications, dict):
         specifications = [dict(value, name=name) for name, value in specifications.items()]
