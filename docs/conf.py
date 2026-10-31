@@ -1,7 +1,7 @@
-"""Build the Chinese user manual; historical validation stays in the repository.
+"""Build the English user manual; historical validation stays in the repository.
 
-The English edition in ``docs/en`` reuses these settings through ``docs/en/conf.py``.
-Build it into ``<outdir>/en`` so the navbar language switcher can link both editions.
+The Chinese edition in ``docs/zh`` reuses these settings through ``docs/zh/conf.py``.
+Build it into ``<outdir>/zh`` so the navbar language switcher can link both editions.
 """
 
 from pathlib import Path
@@ -16,7 +16,7 @@ author = "PyRPMD contributors"
 copyright = "2026, PyRPMD contributors"
 release = __version__
 version = release
-language = "zh_CN"
+language = "en"
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
@@ -34,7 +34,7 @@ autodoc_member_order = "bysource"
 autodoc_typehints = "none"
 autodoc_class_signature = "separated"
 html_theme = "pydata_sphinx_theme"
-html_title = f"PyRPMD {release} 使用手册"
+html_title = f"PyRPMD {release} User Manual"
 html_static_path = ["_static"]
 html_css_files = ["manual.css"]
 templates_path = ["_templates"]

@@ -1,80 +1,81 @@
-# 常见问题与诊断
+# Troubleshooting and diagnostics
 
-遇到失败，先保留完整错误、输入、`pyrpmd info`、代码 commit 和运行目录。
-按问题发生的层次定位：输入 → 模型 → 积分/采样 → 统计分析 → 恢复。
+When something fails, keep the full error, the input, the output of `pyrpmd info`, the code commit
+and the run directory. Work through the layers in order: input → model → integration and sampling →
+statistical analysis → restart.
 
-## 安装与命令
+## Installation and commands
 
-| 现象 | 检查与处理 |
+| Symptom | Fix |
 | --- | --- |
-| 找不到 `pyrpmd` | 确认已激活安装所在虚拟环境；核对 `python -m pip show PyRPMD` |
-| C++/OpenMP 编译失败 | 检查 C++17 编译器和 OpenMP；必要时用干净环境构建 `PYRPMD_NO_OPENMP=1` 或 `PYRPMD_NO_NATIVE=1` |
-| 安装成功但某积分器不可用 | 查看 `pyrpmd info`；更新源码后重新编译，排除旧 `.so` |
-| pytest 出现跳过项 | 可选依赖（ASE、BKMP2、EAM 模型、PyMBAR、Torch、matplotlib 等）缺失时相应测试跳过；跳过不等于该路径已验证 |
-| `native="required"` 报错 | 当前扩展未提供要求的积分能力；若只是需要兼容路径，可用默认设置重新创建任务 |
-| `loop_backend="native"` 被拒绝 | 检查 PES、CV、动态偏置、周期/固定原子等是否支持融合路径；通常用 `auto` |
+| `pyrpmd` not found | Activate the environment it was installed into; check `python -m pip show PyRPMD` |
+| C++/OpenMP build fails | Install a C++17 compiler with OpenMP, or build in a clean environment with `PYRPMD_NO_OPENMP=1` or `PYRPMD_NO_NATIVE=1` |
+| An integrator is missing from `pyrpmd info` | Reinstall after updating the source so no old `.so` is loaded |
+| pytest reports skipped tests | Optional dependencies (ASE, BKMP2, an EAM model, PyMBAR, Torch, matplotlib, …) are missing; install them to run those tests |
+| `native="required"` fails | The extension lacks the requested integrator; rebuild it, or use the default `native=true` in a new task |
+| `loop_backend="native"` is rejected | The PES, CVs, dynamic bias or periodic/fixed atoms need the Python loop; use `auto` |
 
-## 输入与单位
+## Input and units
 
-| 现象 | 检查与处理 |
+| Symptom | Fix |
 | --- | --- |
-| `Output directory is not empty` | 新计算换一个 `--output`；继续同一计算用 `pyrpmd resume DIR` 或 `run INPUT --resume` |
-| `... overrides; beads is not applicable` 等覆盖错误 | 该任务不接受这个命令行覆盖；PCET 只接受 `--temperature` 与 `--output` |
-| 未知字段或任务组合错误 | 读取当前 `--help` 与[输入规范](input.md)的 section 一览，不要删掉报错而保留原先物理假设 |
-| 找不到 XYZ、factory 或模型 | 输入内路径相对输入文件；CLI 覆盖相对启动目录 |
-| 时间不是步长整数倍 | 使用实际整数步数，或选择能整除目标时间的步长 |
-| 初始结构巨大/过近 | 确认内联 bohr、XYZ angstrom 以及显式 `geometry_unit` / `cell_unit` |
-| 原子索引越界 | 所有索引从 0 开始；坐标、质量、分类器和模型元素顺序必须一致 |
-| 周期 provider 被拒绝 | 使用支持 cell/PBC 的接口；仅添加一个 cell 不会使分子势成为周期势 |
-| 材料任务固定原子被拒绝 | `pimd` / `diffusion` / `site_rate` 当前要求全体可动；固定层使用适用的表面/FES 工作流 |
+| `Output directory is not empty` | Use a new `--output` for a new calculation; continue an existing one with `pyrpmd resume DIR` or `run INPUT --resume` |
+| `... overrides; beads is not applicable` and similar | The task does not take that override; PCET accepts only `--temperature` and `--output` |
+| Unknown field or invalid task combination | Check `--help` and the section table in [Input](input.md) |
+| XYZ, factory or model not found | Paths inside an input are relative to the input file; CLI paths are relative to the current directory |
+| Time is not a multiple of the step | Give step counts, or choose a step that divides the time |
+| Atoms far apart or overlapping | Check inline bohr against XYZ angstrom, and `geometry_unit` / `cell_unit` |
+| Atom index out of range | Indices start at 0; coordinates, masses, classifiers and the model must use one atom order |
+| Periodic provider rejected | Use a provider that supports cell/PBC (ASE, periodic Python plugin, i-PI) |
+| Fixed atoms rejected in `pimd` / `diffusion` / `site_rate` | These tasks need all atoms mobile; use surface `fes` or `surface_rate` for fixed layers |
 
-输入错误应在创建正式输出前解决。对于带外部程序的 `--check-pes`，要先启动所需 driver 或
-准备 calculator 的模型文件；单独 `validate` 不保证该外部程序可用。
+For `--check-pes` with an external program, start the i-PI driver or prepare the calculator's model
+files first.
 
-## 势能与动力学
+## Potentials and dynamics
 
-| 现象 | 检查与处理 |
+| Symptom | Fix |
 | --- | --- |
-| 力有限差分不通过 | 优先检查负梯度符号、Å/bohr 与 eV/hartree、原子顺序、模型是否平滑 |
-| `NaN/Inf` 或 provider 非零状态 | 查看失败构型是否超出模型定义域；不要以零能量/零力继续 |
-| 能量漂移或环振动不稳定 | 缩短时间步，检查力/约束/偏置；velocity-Verlet 还受自由环最高频稳定性约束 |
-| 更换积分器结果不同 | 积分器是科学设置，分别做步长收敛；它不是单纯性能开关 |
-| 固定原子在初始检查点中偏离位置 | 核对输入体系和保存状态，避免将不同 slab 身份的检查点交叉使用 |
+| Force finite-difference check fails | Check the force sign, Å/bohr and eV/hartree, atom order and smoothness of the model |
+| `NaN`/`Inf` or a non-zero provider status | Check whether the failing configuration is inside the model's domain |
+| Energy drift or unstable ring oscillations | Shorten the time step and check forces, constraints and bias; velocity-Verlet is limited by the highest free-ring frequency |
+| Results change with the integrator | Each integrator has its own time-step error; converge each in the time step |
+| Fixed atoms move in the initial checkpoint | Check that the input system and the checkpoint belong to the same slab |
 
-PIMD 恒温能量随时间涨落是采样的一部分。RPMD 无恒温生产的数值稳定检查、
-PIMD 的物理能量估计量以及环 Hamiltonian 应分别判断。
+Thermostatted PIMD energies fluctuate as part of sampling. Check the stability of thermostat-free
+RPMD, the PIMD energy estimators and the ring Hamiltonian separately.
 
-## 自由能、速率与扩散
+## Free energies, rates and diffusion
 
-| 现象 | 解释与下一步 |
+| Symptom | Next step |
 | --- | --- |
-| FES `disconnected_overlap` | 窗口无法确定一个全局归一化；增加桥接窗口、调整刚度或延长采样 |
-| 很多 mask 或空网格 | 保存样本不支持这些区域；减少不必要网格分辨率或补采样，保留 mask |
-| bootstrap 区间缺失 | 查看逐 draw 失败及样本不足信息，不以零误差代替 |
-| 回穿系数没有平台 | 增加独立母样本、子轨迹长度并审查分割面；有限时间点不自动成为平台 |
-| dRPMD 不给正式热速率 | 检查 bmax、分类规则、未决/失败轨迹与输入诊断 |
-| 扩散系数为 `null` | 可能仍在弹道区或没有可信线性拟合区；先读诊断并延长物理生产时间 |
-| PCET 普通速率显示 0 | 查看 log-rate，可能为数值下溢；仍需相对数值收敛检查 |
-| metadynamics 不能重算 bootstrap | 当前偏置估计接口不支持非零 bootstrap；不从有偏时间推速率 |
+| FES `disconnected_overlap` | Add bridging windows, adjust the stiffness or sample longer |
+| Many masked or empty cells | Reduce the grid resolution or sample more |
+| No bootstrap interval | Read the per-draw failures and sample-size messages in the bootstrap diagnostics |
+| No recrossing plateau | Add independent parents, lengthen the children and review the dividing surface |
+| dRPMD reports no thermal rate | Set an explicit `bmax` and classification rules, and check unresolved/failed trajectories |
+| Diffusion coefficient is `null` | Read `analysis_status`; extend production into the diffusive regime |
+| PCET rate shows 0 | Read the log rate; the rate underflowed |
+| Metadynamics rejects a bootstrap | Metadynamics reanalysis takes `--bootstrap 0` |
 
-不要为了让诊断变绿而仅放宽阈值。先理解对应的采样假设与数据是否足够，见[科学约定](science.md)。
+## Restart and files
 
-## 恢复与文件
+`run` never overwrites a non-empty directory. Use `resume DIR` to continue and a new directory for
+new scientific settings. A physics-fingerprint mismatch means the system, method or dependencies
+changed; a container verification failure means the saved state is damaged.
 
-新的 `run` 不覆盖已有非空目录。需要恢复时使用 `resume DIR`；需要新科学条件时使用新目录。
-科学指纹不匹配意味着体系、方法或依赖发生变化；容器校验失败意味着状态不可信。
-两者都不能通过手改哈希绕过。
+Ordinary geometric CVs (`distance`, `angle`, `bond_difference`) use unwrapped geometry; minimum
+images need the explicit `periodic_*` kinds. Runs from the earlier materials branch, where ordinary
+CVs used minimum images, cannot be resumed under this convention; restart them with the matching
+explicit CV.
 
-旧材料分支曾对普通几何 CV 隐式使用最小镜像；整合版要求显式 `periodic_*`。
-这种存在语义歧义的旧周期 CV 运行不能在新约定下直接续跑。
-根据原物理定义选择显式 CV，并创建新运行；旧主线分子与已明确的周期坐标不因此更名。
+Reanalysis overwrites derived results, so save the original summary and tables before comparing
+binning or fitting schemes. On parallel file systems, checkpoint safety depends on atomic rename and
+fsync; keep the complete run directory and environment record.
 
-重分析会更新派生结果。比较分箱或拟合方案时，先保存原摘要与相应结果表。
-在并行文件系统上，检查点保证仍依赖原子 rename/fsync 的实际语义；保存完整目录和环境记录。
+## Reporting an issue
 
-## 提交一个可定位的问题
-
-提供最小输入、可共享的势能或教学替代模型、精确命令、错误 traceback、
-Python/PyRPMD/原生能力、CPU/GPU/MPI 拓扑、首次失败的阶段以及可复现的 commit。
-不要只提交最终图像而省略 masked 区域或诊断。源码入口与测试方法见[开发者指南](development.md)。
-
+Include a minimal input, a shareable potential or a model substitute, the exact command, the
+traceback, the output of `pyrpmd info`, the CPU/GPU/MPI layout, the stage where the run failed and
+the commit. Figures should show masked regions and diagnostics. Source layout and testing are in the
+[Developer guide](development.md).

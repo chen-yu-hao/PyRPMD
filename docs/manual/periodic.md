@@ -1,24 +1,27 @@
-# 周期材料、扩散与表面反应
+# Periodic materials, diffusion and surface reactions
 
-周期结构描述几何边界，势能模型决定材料相互作用，工作流定义要估计的物理量。固定晶胞并不自动意味着可以测得扩散；一个表面自由能势垒也不直接给出扩散系数或催化速率。本章分别介绍平衡 PIMD、无恒温 RPMD 输运，以及盆地归一化的局部速率。
+PyRPMD handles fixed-cell periodic systems and slabs with frozen layers. This chapter covers
+equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop rates.
 
-## 先选择任务和边界
+## Tasks and boundary conditions
 
-| 任务 | 目的 | 周期晶胞 | `fixed_atoms` | 核心结果 |
+| Task | Purpose | Periodic cell | `fixed_atoms` | Main result |
 | --- | --- | --- | --- | --- |
-| `pimd` | 平衡量子统计 | 支持 | 当前拒绝 | 能量估计器、回转半径 |
-| `diffusion` | 连续质心轨迹与输运分析 | 支持 | 当前拒绝 | MSD、VACF、D 与诊断 |
-| `site_rate` | 全原子可动材料中的选定局部出口 | 支持 | 当前拒绝 | 一个恒定梯度 CV 的盆地速率 |
-| `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、overlap、mask |
-| `surface_rate` | 可含固定层的表面局部出口 | 支持，也可使用有限簇 | 支持 | 活动自由度质量度量的一阶速率 |
+| `pimd` | Equilibrium quantum statistics | Yes | No | Energy estimators, radius of gyration |
+| `diffusion` | Continuous centroid trajectories and transport | Yes | No | MSD, VACF, D and diagnostics |
+| `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one constant-gradient CV |
+| `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
+| `surface_rate` | A directed exit on a surface, optionally with fixed layers | Yes, or a finite cluster | Yes | First-order rate with the mass metric of the mobile atoms |
 
-材料能量与输运估计器目前假定全部原子可动，因此合并后的程序明确拒绝在 `pimd`、`diffusion`、`site_rate` 中设置固定原子。需要固定底层时，选择表面 `fes` / `surface_rate`。气相 `rate`、`drpmd`、`network` 和当前 `metadynamics` 不接受周期或固定原子体系。
+The `pimd`, `diffusion` and `site_rate` estimators require all atoms to be mobile; for frozen bottom
+layers use surface `fes` and `surface_rate`. Gas-phase `rate`, `drpmd`, `network` and `metadynamics`
+take molecular systems without PBC or fixed atoms.
 
-所有活动原子使用同一珠子数，没有“吸附物多珠子、活动基底单珠子”的混合分辨率入口。当前没有 NPT/变胞、电子摩擦、非绝热跃迁、集体电导率或自动 kMC 构建。
+All mobile atoms use the same bead number, and the cell is fixed (constant volume).
 
-## 晶胞、连续坐标与同位素
+## Cells, coordinates and isotopes
 
-下面是一个结构表的写法示意；`slab.xyz` 应替换为目标体系的实际文件：
+A slab with a skewed cell:
 
 ```toml
 [system]
@@ -29,42 +32,64 @@ cell_unit = "angstrom"
 pbc = [true, true, false]
 ```
 
-晶胞每一行是一个晶格矢量，笛卡尔位置满足 `r = s @ cell`。矩阵应有限、可逆且条件良好；slab 的非周期真空方向也必须有非零矢量。PBC 标志对应晶格矢量，而不一定是笛卡尔 x/y/z 轴。提供 cell 而省略 pbc 时缺省为三个方向周期，建议总是显式声明。
+Each cell row is a lattice vector and Cartesian positions satisfy `r = s @ cell`. The matrix must be
+finite, invertible and well conditioned; the vacuum direction of a slab also needs a non-zero
+vector. PBC flags refer to lattice vectors. A cell without `pbc` is periodic in all three directions,
+so declare `pbc` explicitly.
 
-`cell_unit` 缺省继承几何输入使用的单位：内联数组缺省 bohr，XYZ 缺省 angstrom。明确给出 `geometry_unit` 和 `cell_unit` 可以使输入在改换几何来源后仍保持原意。
+`cell_unit` defaults to the geometry unit: bohr for inline arrays, angstrom for XYZ files. Setting
+`geometry_unit` and `cell_unit` explicitly keeps an input unambiguous when its geometry source
+changes.
 
-传播中的 `q[P,N,3]` 和导出的质心轨迹保持连续、未包装的坐标。不要在每步后将每个珠子独立 wrap 到晶胞：这会改变环弹簧、质心和 MSD。周期势能及显式周期 CV 负责镜像处理；倾斜晶胞的最近像不应简单等同于逐分数坐标四舍五入。此路径积分表示使用局域核的闭合环，不采样核交换或非零绕胞拓扑。
+Propagated coordinates `q[P,N,3]` and exported centroid trajectories stay unwrapped, which keeps
+ring springs, centroids and MSD continuous. Periodic potentials and periodic CVs apply the minimum
+image themselves; in a skewed cell that is not the same as rounding each fractional coordinate.
+Nuclei are distinguishable closed rings; exchange and winding are not sampled.
 
-H/D/T 在电子 PES 上都对应氢元素，区别在于核质量。可以使用 `symbols=["D"]` 或显式 `isotopes` / `masses_amu`。替换质量无需重新定义同一 Born–Oppenheimer PES，但珠子数、平衡时间和结果的收敛必须分别检查。
+H, D and T map to hydrogen on the electronic PES and differ in nuclear mass. Use `symbols=["D"]`,
+`isotopes` or `masses_amu`. An isotope keeps the same Born–Oppenheimer PES; converge the bead number
+and equilibration time for each isotope.
 
-### 显式选择周期 CV
+### Periodic CVs
 
-| CV 名称 | 几何含义 | 适合的用途 |
+| CV kind | Geometry | Use for |
 | --- | --- | --- |
-| `distance`、`bond_difference`、`angle` | 连续展开坐标上的普通几何，不自动做最小镜像 | 原有分子定义、明确展开的几何 |
-| `periodic_distance`、`periodic_bond_difference`、`periodic_angle` | 按系统 cell/PBC 求最近像几何 | 周期键长、角度与 FES |
-| `projection`、`fractional` | 连续 centroid 投影或分数坐标，不取模 | 区分相邻晶胞的定向位点跃迁 |
-| `surface_height` | 吸附原子组 COM 沿表面法向的投影 | 高度自由能、线性表面分割面 |
-| `surface_lateral` | 指定方向的连续展开 COM 投影 | 面内迁移自由能与选定出口 |
+| `distance`, `bond_difference`, `angle` | Unwrapped coordinates, no minimum image | Molecular definitions, explicitly unwrapped geometry |
+| `periodic_distance`, `periodic_bond_difference`, `periodic_angle` | Nearest image using the system cell and PBC | Periodic bond lengths, angles and FES |
+| `projection`, `fractional` | Continuous centroid projection or fractional coordinate | Directed site hops that distinguish neighboring cells |
+| `surface_height` | Adsorbate-group COM along the surface normal | Height free energies, planar dividing surfaces |
+| `surface_lateral` | Unwrapped COM along an in-plane direction | Surface migration free energies and directed exits |
 
-`periodic_bond_difference` 也接受别名 `periodic_difference`。普通几何 CV 不会因任务类型或是否固定底层而隐式改变定义。最近像 CV 在像切换处可有导数分支，需检查所选范围是否适合平滑偏置和采样。`site_rate` / `surface_rate` 的恒定质量度量约束只接受各自明确支持的线性 centroid CV，不把任意周期距离或质子转移坐标当作已实现的约束速率。
+`periodic_bond_difference` also accepts the alias `periodic_difference`. A nearest-image CV has a
+derivative branch where the nearest image switches; keep the biased range away from it.
+`site_rate` and `surface_rate` accept only the linear centroid CVs listed in their sections below.
 
-## 周期势能接口
+## Periodic potentials
 
-ASE 会收到真实 cell、PBC 和每珠子坐标，并按 calculator 的单位转换。若 calculator 支持 stress，适配器可返回构型 virial `-volume * stress`，单位转为 hartree。`PESResult.virial[B,3,3]` 不含动量或环弹簧项，也不自动等于量子压力估计器。分块执行保留这一可选输出。
+ASE receives the true cell, PBC and per-bead coordinates and converts units through the calculator.
+If the calculator provides stress, the adapter returns the configurational virial `-volume * stress`
+in hartree as `PESResult.virial[B,3,3]` (no kinetic or spring terms); chunked execution keeps it.
 
-Python 周期插件支持两种明确契约：
+Python periodic plugins use one of two contracts:
 
-- 声明 `metadata["periodic"] = True`，以 `evaluate(q, *, cell, pbc)` 接收当前晶胞；坐标和 cell 使用 provider 声明的长度单位。
-- 声明 `metadata["supports_pbc"] = True`，实现 `bind_system(system)` 绑定几何后再执行 `evaluate(q)`。绑定得到的 System 使用原子单位；若 evaluate 使用 angstrom/eV，插件应自行转换保存的晶胞。
+- Declare `metadata["periodic"] = True` and accept the current cell in
+  `evaluate(q, *, cell, pbc)`; coordinates and cell use the provider's declared length unit.
+- Declare `metadata["supports_pbc"] = True` and implement `bind_system(system)`, called before
+  `evaluate(q)`. The bound System is in atomic units, so a plugin working in angstrom/eV converts the
+  stored cell itself.
 
-已经绑定的周期模型仍须与当前 System 一致。仅写一个能力标志而忽略 cell/PBC 不满足物理契约。对任一新 calculator，先运行 `validate --check-pes`，再做独立的力与周期平移检查。
+Run `validate --check-pes` on a new calculator, then check forces and periodic translations
+independently.
 
-i-PI 在 POSDATA 发送真实晶胞和逆矩阵，使用协议的列向量约定。POSDATA 不单独传部分 PBC；slab 需要 `potential.params.init.pbc` 与系统匹配，且服务端实现这一 INIT 约定。大真空层本身不能替代部分 PBC 语义。周期 C ABI v1、RPMDrate/f2py 和 Torch 入口当前不支持晶胞契约，应通过适合的 ASE/Python/i-PI 接口连接模型。
+i-PI sends the true cell and its inverse in POSDATA, using the protocol's column-vector convention.
+POSDATA carries no PBC flags, so a slab sets `potential.params.init.pbc` to match the system and the
+server must honor this INIT field. For periodic models, use the ASE, Python or i-PI interfaces; the
+C ABI v1, RPMDrate/f2py and Torch adapters take molecular systems.
 
-周期/固定原子体系使用兼容的 Python 时间步循环，并可利用编译的确定性积分子步；使用 `loop_backend="auto"` 或 `"python"`。不能据此宣称整个周期传播已在原生融合循环或 GPU 上常驻执行。
+Periodic and fixed-atom systems run in a Python time-step loop with compiled deterministic
+substeps; use `loop_backend="auto"` or `"python"`.
 
-## PIMD：平衡物理量
+## PIMD: equilibrium properties
 
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
@@ -73,23 +98,37 @@ pyrpmd analyze runs/manual-pimd
 pyrpmd resume runs/manual-pimd
 ```
 
-[输入](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/pimd.inp)使用周期余弦解析势。`sampling.equilibration` 是首次平衡时间，`production` 是随后的平衡采样时间，`interval` 控制保存间隔，`replicas` 生成独立随机流。
+The [input](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/pimd.inp) uses a
+periodic cosine potential. `sampling.equilibration` is the initial equilibration time, `production`
+the sampling time, `interval` the save interval and `replicas` the number of independent streams.
 
-| `dynamics.integrator` | PILE-L 的 `sampling.integrator` | Andersen 的显式名称 |
+| `dynamics.integrator` | `sampling.integrator` with PILE-L | Andersen name |
 | --- | --- | --- |
 | `cayley-bcb` | `bcocb` | `cayley-bcb-andersen` |
 | `normal-mode-bab` | `baoab` | `normal-mode-bab-andersen` |
-| `velocity-verlet` | 不支持 | `velocity-verlet-andersen` |
+| `velocity-verlet` | (PILE-L unavailable) | `velocity-verlet-andersen` |
 
-选择 `sampling.thermostat="pile-l"` 时，可用 `gamma_centroid="0.01 fs^-1"` 设置质心摩擦；内部模按正常模热化。材料任务采样和确定性生产步长必须一致。PILE-L 的 `auto` 对 `P<=8` 或二次幂珠数使用 C++ 自由环半步–OU–半步核，Python 保留势能力调用与 NumPy 随机数；较大非二次幂珠数保留 NumPy 参考路径。它不接受强制 `loop_backend="native"` 的完整原生循环请求。
+With `sampling.thermostat="pile-l"`, `gamma_centroid="0.01 fs^-1"` sets the centroid friction and the
+internal modes are thermalized per normal mode. Sampling and production use the same time step.
+With `loop_backend="auto"`, PILE-L uses a C++ free-ring half-step–OU–half-step kernel for `P<=8` and
+power-of-two bead numbers, with potential calls and NumPy random numbers in Python; other bead
+numbers use the NumPy implementation. PILE-L requires `loop_backend="auto"` or `"python"`.
 
-摘要的 `estimators` 包括 `potential_energy`、`kinetic_primitive`、`kinetic_centroid_virial`、`internal_energy_centroid_virial` 和 `ring_polymer_hamiltonian`。前四项描述物理能量估计，最后一项用于环传播诊断。每项有 `mean` 和 `standard_error_between_replicas`；只有一个副本时，副本间误差是 `null`。`radius_of_gyration_squared_bohr2` 给出每个原子的平均环回转半径平方。
+The summary's `estimators` are `potential_energy`, `kinetic_primitive`, `kinetic_centroid_virial`,
+`internal_energy_centroid_virial` and `ring_polymer_hamiltonian`. The first four are physical energy
+estimators; the last is a propagation diagnostic. Each has a `mean` and a
+`standard_error_between_replicas`, which is `null` with a single replica.
+`radius_of_gyration_squared_bohr2` gives each atom's mean squared ring radius of gyration.
 
-`samples/materials_XXXX.npz` 导出 `positions`、`velocities`、`times`、`observables` 和 `radii_gyration_squared`，其中位置/速度是连续质心量。`checkpoints/materials_XXXX.npz` 是恢复状态的权威来源。PIMD 采样时间不应直接用于计算扩散或反应寿命。
+`samples/materials_XXXX.npz` holds centroid `positions` and `velocities`, `times`, `observables` and
+`radii_gyration_squared`. `checkpoints/materials_XXXX.npz` holds the restart state. For transport
+properties use the `diffusion` task.
 
-## 扩散：从连续轨迹到 MSD 和 D
+## Diffusion: MSD and D from continuous trajectories
 
-`task="diffusion"` 在热化后保存 t=0，再进行没有恒温器、umbrella 或 metadynamics 的 RPMD 生产传播。它保存所有原子的质心坐标和速度，以便离线改变被测原子、参考系和拟合设置。
+`task="diffusion"` saves t=0 after thermalization and then propagates RPMD without thermostat,
+umbrella or metadynamics. It saves the centroid positions and velocities of every atom, so the
+measured atoms, reference frame and fit can be changed afterwards.
 
 ```bash
 pyrpmd run examples/materials/diffusion.inp --output runs/manual-diffusion
@@ -98,45 +137,51 @@ pyrpmd analyze runs/manual-diffusion --recompute --axes 0 1 \
 pyrpmd resume runs/manual-diffusion
 ```
 
-这个[自由粒子负对照](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/diffusion.inp)应识别弹道运动，并保留 `diffusion_m2_s=null`。成功执行但不发布 D，正是这一例子的预期行为。
+The [example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/diffusion.inp) is a
+free particle, a ballistic test case: the analysis reports `analysis_status="ballistic_or_drifting"`
+and `diffusion_m2_s=null`.
 
-| `diffusion` 字段 | 含义与单位 |
+| `diffusion` field | Meaning and unit |
 | --- | --- |
-| `atom_indices` | 被测原子的 0-based 索引；省略时选择 H/D/T |
-| `axes` | 被测笛卡尔分量，如 `[0,1]` 是 xy；不是分数晶格轴 |
-| `reference_atoms` | 每帧扣除其质量加权 COM 位置/速度；不得与被测原子重叠 |
-| `max_lag` | 最大延迟，以保存帧间隔数计 |
-| `fit_range` | 拟合的物理延迟时间范围，须在实际保存范围内 |
-| `bootstrap` | 独立副本重采样次数；0 表示不估计该误差 |
-| `block_length` | 单副本分块时的保存帧数；至少 `4*max_lag`，且需足够独立块 |
+| `atom_indices` | 0-based indices of the measured atoms; H/D/T if omitted |
+| `axes` | Measured Cartesian components, e.g. `[0,1]` for xy |
+| `reference_atoms` | Atoms whose mass-weighted COM is subtracted every frame; disjoint from the measured atoms |
+| `max_lag` | Maximum lag in saved frames |
+| `fit_range` | Lag-time range of the fit, within the saved range |
+| `bootstrap` | Resamplings over independent replicas; 0 disables it |
+| `block_length` | Saved frames per block for a single replica; at least `4*max_lag` |
 
-对 d 个分析分量，位移张量和扩散张量满足
+For d analyzed components, the displacement and diffusion tensors are
 
 $$
 M_{\alpha\beta}(t)=\langle\Delta\bar r_\alpha(t)\Delta\bar r_\beta(t)\rangle,
 \qquad D_{\alpha\beta}=\frac12\frac{dM_{\alpha\beta}}{dt},
-\qquad D=\frac{\operatorname{tr}D_{\alpha\beta}}d.
+\qquad D=\frac{\operatorname{tr}D_{\alpha\beta}}d,
 $$
 
-因此二维面内 MSD 斜率除以 4，三维除以 6。程序同时保存对称 VACF 张量和有限时间积分供比较；它不自动认证 VACF 积分平台。固定材料参考系可消除晶格整体漂移，但不能通过单独扣掉每个扩散原子的拟合漂移来制造线性扩散。
+so the in-plane MSD slope is divided by 4 and the 3D slope by 6. PyRPMD also stores the symmetric
+VACF tensor and its running integral. Use `reference_atoms` to remove lattice drift.
 
-先查看 `analysis_status` 和 `results/diffusion.json`：
+`analysis_status` and `results/diffusion.json` report the outcome of the fit:
 
-| 状态 | 应如何理解 |
+| Status | Meaning |
 | --- | --- |
-| `insufficient_data` | 帧数、拟合点或时间起点不足 |
-| `no_observed_motion` | 当前记录看不到运动，不证明真实 D 为零 |
-| `ballistic_or_drifting` | 仍处于弹道区或有漂移 |
-| `non_diffusive_window` | 拟合区间不是近似线性扩散区 |
-| `indefinite_diffusion_tensor` | 拟合张量未达到半正定要求 |
-| `unstable_fit_window` | 拟合前后两半的斜率不稳定 |
-| `diffusive_regime_candidate` | 通过有限记录的启发式筛选，仍需物理收敛研究 |
+| `insufficient_data` | Too few frames, fit points or time origins |
+| `no_observed_motion` | No motion in the recorded window |
+| `ballistic_or_drifting` | Ballistic motion or drift |
+| `non_diffusive_window` | The fit window is not linear |
+| `indefinite_diffusion_tensor` | The fitted tensor is not positive semidefinite |
+| `unstable_fit_window` | The two halves of the window give different slopes |
+| `diffusive_regime_candidate` | Linear diffusive regime; D and the tensor are reported |
 
-非候选状态仍保存 `raw_fit`、MSD 和 VACF，顶层接受的 D/tensor 保持 `null`。一个副本的许多重叠时间起点不是许多独立实验；拟合 OLS 残差也不替代采样误差。改变拟合时间、增加生产长度、独立副本和体系尺寸后，应比较结果的稳定性。
+For every status, `raw_fit`, MSD and VACF are saved; D and the tensor are filled in only for
+`diffusive_regime_candidate`. Errors come from bootstrapping independent replicas or blocks of one
+replica. Confirm D against the fit window, production length, number of replicas and system size.
 
-## 位点与表面速率的共同物理定义
+## Site and surface rates
 
-两个局部速率工作流都对一个恒定质量度量的线性 centroid 坐标 s，使用同一位置密度的分割面值与盆地概率：
+Both local-rate workflows use a linear centroid coordinate s with a constant mass metric, and take
+the dividing-surface value and basin probability from the same position density:
 
 $$
 k_{\mathrm{QTST}}=
@@ -145,11 +190,15 @@ k_{\mathrm{QTST}}=
 \qquad k(t)=k_{\mathrm{QTST}}\kappa(t).
 $$
 
-g 是坐标对原子质心的梯度，A 是显式反应物盆地。`surface_rate` 在质量度量中剔除固定原子的分量。完整盆地及分割面都需要连通、未 mask 的采样支持；密度和盆地积分必须在每个 bootstrap draw 内一起计算，以保留协方差。
+g is the gradient of the coordinate with respect to the atomic centroids and A the explicit reactant
+basin. `surface_rate` removes fixed atoms from the mass metric. The basin and the dividing surface
+need connected, unmasked sampling, and each bootstrap draw computes the density and the basin
+integral together to keep their covariance.
 
-两者输出都是所选有向出口的一阶速率，单位 `s^-1`，不含气相体积、表面积、压力、覆盖度或位点简并因子。一个出口速率不是自动汇总的总逃逸率，也不自动换算成宏观 D；后者还需要跳距、邻居数和连续跳跃相关性。
+Both give the first-order rate in `s^-1` for one directed exit. Total escape rates and macroscopic
+diffusion coefficients combine several exits with hop lengths, site counts and hop correlations.
 
-### `site_rate`：材料位点
+### `site_rate`: material sites
 
 ```bash
 pyrpmd prepare examples/materials/site_rate.inp --pilot
@@ -157,11 +206,19 @@ pyrpmd run examples/materials/site_rate.inp --output runs/manual-site-rate
 pyrpmd analyze runs/manual-site-rate
 ```
 
-[示例](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)使用未包装的 `fractional` centroid 坐标。支持的 CV 是 `cartesian`、`projection` 或 `fractional`；后两者可参考指定晶格原子组。`site_rate.cv` 指定同一个 umbrella CV，`basin=[lo,hi]` 定义有限盆地，`direction=1` 要求分割面为 hi，`direction=-1` 要求分割面为 lo。
+The [example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)
+uses an unwrapped `fractional` centroid coordinate. Supported CVs are `cartesian`, `projection` and
+`fractional`, the last two optionally relative to a group of lattice atoms. `site_rate.cv` names the
+umbrella CV, `basin=[lo,hi]` defines a finite basin, and `direction=1` places the dividing surface
+at hi, `direction=-1` at lo.
 
-窗口与分析范围需覆盖整个盆地，并在出口另一侧提供所需支持。窗口/受约束母链用 Andersen，±p 子轨迹不恒温；负的有限样本 κ 不会被裁为零。结果含 `site_qtst.json` / `.npz`、`pmf/fes.csv`、`recrossing.csv`，摘要字段是 `k_qtst_s`、`kappa`、`rate_s`、`rate_estimate_s`、`rate_standard_error_s`、`rate_percentile_95_ci_s` 及 `rate_uncertainty`。
+Windows and the analysis range cover the whole basin and extend past the exit. Windows and
+constrained parents use Andersen thermostats; ±p children run without one. Finite-sample κ keeps
+its sign. Outputs are `site_qtst.json` / `.npz`, `pmf/fes.csv` and `recrossing.csv`; the summary
+fields are `k_qtst_s`, `kappa`, `rate_s`, `rate_estimate_s`, `rate_standard_error_s`,
+`rate_percentile_95_ci_s` and `rate_uncertainty`.
 
-### `surface_rate`：带固定层的表面
+### `surface_rate`: surfaces with fixed layers
 
 ```bash
 pyrpmd validate examples/surface/diffusion.inp --check-pes
@@ -172,13 +229,23 @@ pyrpmd run examples/surface/fes2d.inp --output runs/manual-surface-fes
 pyrpmd analyze runs/manual-surface-fes --recompute --bins 24 12 --bootstrap 40
 ```
 
-虽然示例名为 `diffusion.inp`，其任务是 **`surface_rate`**，计算一个局部井的右侧出口；不要将它与 MSD 的 `diffusion` 任务混淆。解析势是可分离教学模型，不能验证真实热化位点跳跃或材料扩散系数。这两个表面例子比快速入门昂贵：单线程下 `surface_rate` 约需 1–2 分钟，二维表面 FES 约 1 分钟。
+The first example, `diffusion.inp`, runs **`surface_rate`** (not the MSD `diffusion` task): the rate
+of leaving one local well to the right on a separable analytic surface. It takes about 1–2 minutes
+on one core; the 2D surface FES takes about 1 minute.
 
-使用 `system.fixed_atoms` 固定底层的所有珠子，动量保持为零；这些原子仍进入真实 PES，作用于活动原子。支持一个 centroid `cartesian`、`surface_height` 或 `surface_lateral` 坐标。`surface.reactant_basin`、`surface.dividing_surface` 和 `surface.product_side="higher"/"lower"` 指定归一化区域和产品侧；整个盆地须在分割面的反应物侧。这里的长度推荐写带单位字符串。
+`system.fixed_atoms` freezes every bead of the listed atoms with zero momentum; they still enter the
+PES and act on the mobile atoms. The rate coordinate is one centroid `cartesian`, `surface_height`
+or `surface_lateral` CV. `surface.reactant_basin`, `surface.dividing_surface` and
+`surface.product_side="higher"/"lower"` define the basin and the product side; the whole basin lies
+on the reactant side. Give these lengths with units.
 
-表面输出为 `surface_pmf.csv` / `.npz` / `.json`、`recrossing.csv`、`umbrella/` 和摘要。表面速率字段使用 `rate_s_inv`、`rate_estimate_s_inv`、`rate_standard_error_s_inv`、`rate_percentile_95_ci_s_inv`，与 `site_rate` 的字段名称不同，但物理单位相同。若 bootstrap 中盆地支持失败，主联合区间可能被保留为空；仅对成功 draw 的条件统计不能冒充完整误差。
+Outputs are `surface_pmf.csv` / `.npz` / `.json`, `recrossing.csv`, `umbrella/` and the summary,
+with the rate in `rate_s_inv`, `rate_estimate_s_inv`, `rate_standard_error_s_inv` and
+`rate_percentile_95_ci_s_inv` (same unit as `site_rate`, different field names). If basin support
+fails in some bootstrap draws, the joint interval is left empty.
 
-表面 `fes` 支持自适应 umbrella；`surface_rate` 当前要求固定声明的窗口。若要检验实际 ASE 连接，可安装 ASE 后运行：
+Surface `fes` supports adaptive umbrellas; `surface_rate` uses fixed windows. To run a real ASE
+calculator, install ASE:
 
 ```bash
 python -m pip install -e '.[ase]'
@@ -186,4 +253,8 @@ pyrpmd validate examples/surface/ase_emt.py --check-pes
 pyrpmd run examples/surface/ase_emt.py --output runs/manual-surface-emt
 ```
 
-该输入使用 Cu(111) / Cu adatom 与 ASE EMT，验证 calculator、倾斜晶胞及固定层连接；它不证明 EMT 适用于任意催化反应。更详细的模型和来源见[材料说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials.md)、[表面说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md)和 [Ni–H 材料 pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md)。
+This input runs a Cu adatom on Cu(111) with ASE EMT, exercising the calculator, a skewed cell and
+fixed layers. Models and sources are described in the
+[materials notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials.md) *(Chinese)*,
+the [surface notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md) *(Chinese)*
+and the [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md).

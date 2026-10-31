@@ -1,27 +1,29 @@
-# Python API 参考
+# Python API reference
 
-本页的函数签名从当前源码自动生成。高层 API 负责严格输入、运行身份、并行调度与恢复；
-低层 API 适合方法开发，调用者需自己管理采样方案、结果与生命周期。
+Signatures on this page are generated from the current source. The high-level API handles input
+validation, run identity, parallel scheduling and restart. The low-level API gives direct control of
+the integrator for method development; the caller manages sampling, results and object lifetimes.
 
-## 高层工作流入口
+## High-level entry points
 
 ```python
 from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 ```
 
-| 对象/函数 | 输入与返回值 |
+| Object/function | Input and return value |
 | --- | --- |
-| `JobSpec.from_file(path)` | 读取 TOML/Python 输入，记录相对路径基准 |
-| `JobSpec.from_mapping(mapping, base_directory=...)` | 构造一个独立配置副本 |
-| `JobSpec.with_overrides(...)` | 返回带覆盖的新配置，不就地修改原输入 |
-| `JobSpec.resolve()` | 返回 `(config, identity)`；通常 identity 为 `System`，PCET 为其模型身份 |
-| `prepare(job, numerical=False)` | 返回准备信息；数值模式会调用模型准备/PES |
-| `run(job, output=None, resume=False)` | 执行任务并返回 root 的 JSON-compatible 摘要 |
-| `resume_run(directory, parallel=None, execution=None)` | 读取保存输入与检查点；execution 仅接受块大小与后端 |
-| `analyze_run(directory, ...)` | 默认读取摘要；支持的任务可离线重分析 |
+| `JobSpec.from_file(path)` | Read a TOML or Python input and record the base for relative paths |
+| `JobSpec.from_mapping(mapping, base_directory=...)` | Build a configuration from a copy of a mapping |
+| `JobSpec.with_overrides(...)` | Return a new configuration with overrides applied |
+| `JobSpec.resolve()` | Return `(config, identity)`; the identity is a `System`, or the PCET model |
+| `prepare(job, numerical=False)` | Return preparation information; `numerical=True` runs the model preparation and PES |
+| `run(job, output=None, resume=False)` | Run the task and return the JSON-compatible summary on the root rank |
+| `resume_run(directory, parallel=None, execution=None)` | Continue from the saved input and checkpoints; `execution` accepts block size and backend |
+| `analyze_run(directory, ...)` | Read the summary, or reanalyze offline for supported tasks |
 
-`job` 可以是 `JobSpec`、字典或输入文件路径。MPI worker 可能返回 `None`，
-因此仅在 root 处理聚合返回值。要改变科学参数，请创建新任务；`resume_run` 没有强行绕过身份校验的选项。
+`job` is a `JobSpec`, a dictionary or an input file path. Non-root MPI ranks return `None`, so handle
+the return value on the root. `resume_run` keeps the saved run identity; a new scientific setting
+needs a new task.
 
 ```{autoclass} pyrpmd.input.JobSpec
 :members: from_file, from_mapping, with_overrides, resolve
@@ -39,14 +41,16 @@ from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 ```{autofunction} pyrpmd.runner.analyze_run
 ```
 
-## System 与 State
+## System and State
 
-`System` 记录原子、核质量、初始几何、片段、电子态以及可选 cell/PBC/固定原子。
-直接构造时使用原子单位：geometry/cell 为 bohr，masses 为电子质量。
-`System.from_dict()` 读取保存的原子单位系统；用户带单位配置应经 `JobSpec` 解析。
+`System` holds the atoms, nuclear masses, initial geometry, fragments, electronic state and optional
+cell, PBC and fixed atoms. Its constructor takes atomic units: geometry and cell in bohr, masses in
+electron masses. `System.from_dict()` reads a saved atomic-unit system; inputs with units go through
+`JobSpec`.
 
-`State.q` 和 `State.p` 的形状为 `[P,N,3]`。`p` 是动量；需要速度时除以每个原子的质量。
-`step` 为非负步数，`time` 为原子时间。构造器复制数组，`copy()` 创建独立状态。
+`State.q` and `State.p` have shape `[P,N,3]`. `p` is the momentum, so divide by the atomic mass for
+velocities. `step` counts steps and `time` is in atomic time. The constructor copies its arrays, and
+`copy()` returns an independent state.
 
 ```{autoclass} pyrpmd.system.System
 :members: natoms, atomic_numbers, to_dict, from_dict
@@ -56,23 +60,23 @@ from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 :members: copy
 ```
 
-## 一个完整低层动力学程序
+## A low-level dynamics program
 
 ```{literalinclude} ../../examples/manual/low_level.py
 :language: python
 ```
 
-运行：
+Run it with:
 
 ```bash
 python examples/manual/low_level.py
 ```
 
-这段示例使用零初始动量，演示确定性传播与环 Hamiltonian 变化。没有热化和生产采样，
-不能从它估计 300 K 的量子热力学能量。变量 `beta` 的单位是 `hartree^-1`，
-`dt` 是原子时间；高级输入中的 `temperature="300 K"` 会代为转换这些量。
-最后一行打印 `loop_stats`：这里使用的 Python `HarmonicPotential` 没有原生 PES 绑定，
-因此全部步骤走 Python 路径，回退原因中会写明这一点。
+The program propagates deterministically from zero momenta and prints the change of the ring
+Hamiltonian; for thermal averages use the `pimd` task or `sample_step()`. `beta` is in `hartree^-1`
+and `dt` in atomic time; in an input, `temperature="300 K"` and `timestep="0.1 fs"` are converted for
+you. The last line prints `loop_stats`: the Python `HarmonicPotential` has no native PES binding, so
+every step runs in Python and the fallback reason says so.
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
 :members: step, energy, sample_momenta, propagate, propagate_block, sample_step, loop_stats
@@ -81,11 +85,11 @@ python examples/manual/low_level.py
 ```{autofunction} pyrpmd.dynamics.native_capabilities
 ```
 
-`step()` 是一次无恒温确定性步骤。`sample_step()` 需要匹配积分器与采样方法。
-`energy()` 返回 sum-beads 环 Hamiltonian，不是物理量子能量估计器。
-`propagate()` 与 `propagate_block()` 的失败提交边界不同，见[执行与续跑](execution.md)。
+`step()` takes one thermostat-free deterministic step. `sample_step()` takes one sampling step with
+the matching thermostat. `energy()` returns the summed-bead ring Hamiltonian. `propagate()` and
+`propagate_block()` differ in what they commit on failure; see [Execution and restart](execution.md).
 
-## 势能接口
+## Potentials
 
 ```{autoclass} pyrpmd.potentials.base.PESResult
 ```
@@ -99,10 +103,10 @@ python examples/manual/low_level.py
 ```{autofunction} pyrpmd.potentials.base.check_potential
 ```
 
-适配器自身负责进程内模型与 `close()` 生命周期。使用[势能章节](potentials.md)约定的
-形状、符号、单位、周期绑定与可选 virial，不能把一个不支持 PBC 的 provider 接到周期任务后继续忽略 cell。
+Adapters own their models and release them in `close()`. Shapes, signs, units, periodic binding and
+the optional virial are specified in the [potential chapter](potentials.md).
 
-## 单位与检查点
+## Units and checkpoints
 
 ```{autofunction} pyrpmd.units.parse_quantity
 ```
@@ -119,15 +123,15 @@ python examples/manual/low_level.py
 ```{autofunction} pyrpmd.checkpoint.inspect_checkpoint
 ```
 
-`load_checkpoint()` 用作 context manager，在暴露数据前校验容器。
-不读取 pickle/object array。用户自定义 payload 的 `kind` 与业务 schema 由调用者负责，
-不能因为 NPZ 容器版本相同而忽略 payload 的物理意义。
+`load_checkpoint()` is a context manager that verifies the container before exposing the data, and
+never reads pickles or object arrays. The `kind` and schema of a custom payload are defined by the
+caller.
 
-## PCET 数值核
+## PCET kernels
 
-PCET 是独立的局域量子模型，主要用户入口仍是 `JobSpec` 和 `run`。
-下列核函数用于模型开发与独立验证；网格、势能、质量和谱数组都采用原子单位。
-电极能量零点、log-rate 与截断诊断见 [PCET 教程](pcet.md)。
+The usual way to run PCET is through `JobSpec` and `run`. The kernels below serve model development
+and independent checks; grids, potentials, masses and spectra are in atomic units. The energy zero,
+log rates and truncation diagnostics are described in the [PCET tutorial](pcet.md).
 
 ```{autofunction} pyrpmd.pcet.solve_proton
 ```
@@ -138,14 +142,14 @@ PCET 是独立的局域量子模型，主要用户入口仍是 `JobSpec` 和 `ru
 ```{autofunction} pyrpmd.pcet.golden_rule_rates
 ```
 
-## 实验性 NRPMD 对象
+## NRPMD objects (experimental)
 
-以下对象也可从 `pyrpmd` 导入。它们服务于指定入射 diabatic 电子态的直接碰撞，
-不构造电子热平衡 PMF；实验性接口与物理范围见[非绝热指南](nonadiabatic.md)。
+These objects are also importable from `pyrpmd` and serve collisions from a selected incoming
+diabatic state; see the [nonadiabatic guide](nonadiabatic.md).
 
-`NRPMDState` 在核 `q/p[P,N,3]` 之外保存 `mapping_q/mapping_p[P,K]`。
-`DiabaticResult` 接收能量矩阵 `[B,K,K]` 及正梯度 `[B,K,K,N,3]`。
-所有矩阵元及其导数必须为实数、有限，并在电子指标上对称。
+`NRPMDState` stores `mapping_q/mapping_p[P,K]` next to the nuclear `q/p[P,N,3]`. `DiabaticResult`
+takes the energy matrix `[B,K,K]` and its positive gradient `[B,K,K,N,3]`, both real, finite and
+symmetric in the electronic indices.
 
 ```{autoclass} pyrpmd.nonadiabatic.DiabaticResult
 ```
@@ -158,11 +162,9 @@ PCET 是独立的局域量子模型，主要用户入口仍是 `JobSpec` 和 `ru
 :members: step, energy, populations, asymptotic_coupling
 ```
 
-## 接口稳定性
+## Versioning
 
-包版本、输入 schema、run manifest、checkpoint 容器和 PES ABI 各自版本化。
-当前包版本 0.2.0 不意味着 PES ABI 升级为 v2。以下划线开头的辅助函数为内部实现，
-不应作为用户扩展的长期接口。
-更完整的接口与能力协商说明见
-[公共接口约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md)。
-
+The package, input schema, run manifest, checkpoint container and PES ABI each carry their own
+version; package 0.2.0 uses PES ABI v1. Names that start with an underscore are internal. Interface
+and capability negotiation are described in the
+[public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md).

@@ -1,26 +1,25 @@
-# 示例索引与学习路线
+# Example index and learning path
 
-所有命令从源码仓库根目录执行。先运行 `pyrpmd validate INPUT`，再用新的 `--output`
-目录运行；想检查实际 PES 时添加 `--check-pes`。外部模型、MPI 和 GPU 的环境要求
-见[安装](installation.md)。表中的输入属于演示或有限验证，不是自动收敛的生产配方。
+Run every command from the repository root: `pyrpmd validate INPUT` first (add `--check-pes` to
+construct the PES), then `pyrpmd run` with a new `--output` directory. External models, MPI and GPU
+need the dependencies listed in [Installation](installation.md).
 
-## 无需外部模型的起点
+## Examples without external models
 
-“耗时”是单个 CPU 核心、`OMP_NUM_THREADS=1` 下 `run` 的实测量级，仅用于安排练习时间；
-实际耗时随硬件与并行设置改变。
+"Time" is the wall time of `run` on one CPU core with `OMP_NUM_THREADS=1`.
 
-| 输入/程序 | 内容 | 耗时 | 推荐阅读 |
+| Input/program | Content | Time | Chapter |
 | --- | --- | --- | --- |
-| `examples/manual/quickstart.inp` | 三个伞窗口的一维谐势 FES，6 条独立流 | 约 2 s | [快速入门](quickstart.md) |
-| `examples/manual/low_level.py` | `Dynamics` / `State` 的完整 100 步程序 | <1 s | [API](api.md) |
-| `examples/fes/harmonic2d.inp` | 两个质心 CV、二维 MBAR 与 mask | 约 6 s | [气相与自由能](workflows.md) |
-| `examples/fes/custom_input.py` | 自定义完整二维 CV Jacobian | 约 7 s | [势能与插件](potentials.md) |
-| `examples/fes/adaptive_harmonic.inp` | pilot 插窗后冻结独立 production | 约 4 s | [气相与自由能](workflows.md) |
-| `examples/drpmd/free_scattering.inp` | 两条持续母链分配共 5 次直接碰撞 | 约 2 s | [气相与自由能](workflows.md) |
-| `examples/nonadiabatic/exchange.inp` | 实验性指定入射电子态、带耦合的人工矩阵势散射 | 约 15 s | [非绝热 NRPMD](nonadiabatic.md) |
-| `examples/rate/pilot.inp` | 教学反应势的 TS 准备、PMF 与回穿 | 约 15 s | [气相与自由能](workflows.md) |
-| `examples/network/two_entrances.py` | 两入口、四个独立 TS/PES 路径 | 约 25 s | [气相与自由能](workflows.md) |
-| `examples/metadynamics/well_tempered_2d.inp` | 二维 well-tempered 历史偏置 | 约 2 s | [气相与自由能](workflows.md) |
+| `examples/manual/quickstart.inp` | 1D harmonic FES with three umbrella windows and 6 streams | ~2 s | [Quickstart](quickstart.md) |
+| `examples/manual/low_level.py` | 100-step program with `Dynamics` / `State` | <1 s | [API](api.md) |
+| `examples/fes/harmonic2d.inp` | Two centroid CVs, 2D MBAR and masks | ~6 s | [Gas phase and free energy](workflows.md) |
+| `examples/fes/custom_input.py` | Custom 2D CV with a full Jacobian | ~7 s | [Potentials and plugins](potentials.md) |
+| `examples/fes/adaptive_harmonic.inp` | Pilot window insertion, then frozen production | ~4 s | [Gas phase and free energy](workflows.md) |
+| `examples/drpmd/free_scattering.inp` | Two parent chains sharing 5 collisions on V=0 | ~2 s | [Gas phase and free energy](workflows.md) |
+| `examples/nonadiabatic/exchange.inp` | NRPMD scattering from a selected state on a coupled two-state model | ~15 s | [Nonadiabatic NRPMD](nonadiabatic.md) |
+| `examples/rate/pilot.inp` | TS preparation, PMF and recrossing on an analytic reaction potential | ~15 s | [Gas phase and free energy](workflows.md) |
+| `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
+| `examples/metadynamics/well_tempered_2d.inp` | 2D well-tempered metadynamics | ~2 s | [Gas phase and free energy](workflows.md) |
 
 ```bash
 pyrpmd validate examples/fes/harmonic2d.inp
@@ -28,19 +27,19 @@ pyrpmd run examples/fes/harmonic2d.inp --output runs/tutorial-fes2d
 pyrpmd analyze runs/tutorial-fes2d --recompute --bins 20 20 --bootstrap 50
 ```
 
-自由散射例子使用零势能；它验证发射、分类、输出和恢复机制，不代表 H + H₂ 的化学反应。
-`minimal.inp` 中出现的外部势能库路径是用户需要提供的依赖；完整入门优先选上表可独立运行的例子。
+`examples/rate/minimal.inp` (TS only) and `examples/drpmd/minimal.inp` (two reactants and a
+separation) show the smallest valid inputs, with every other setting at its pilot default.
 
-## 材料、表面与 PCET
+## Materials, surfaces and PCET
 
-| 输入 | 实际 `task` | 模型与结果定位 | 耗时 |
+| Input | `task` | Content | Time |
 | --- | --- | --- | --- |
-| `examples/materials/pimd.inp` | `pimd` | 有限 P 谐振子平衡能量与环尺寸 | 约 2 s |
-| `examples/materials/diffusion.inp` | `diffusion` | 自由粒子弹道区反例，不接受为收敛扩散系数 | 约 3 s |
-| `examples/materials/site_rate.inp` | `site_rate` | 周期教学势、显式盆地和单一有向出口 | 约 25 s |
-| `examples/surface/fes2d.inp` | `fes` | 固定基底的二维表面 CV | 约 1 min |
-| `examples/surface/diffusion.inp` | `surface_rate` | 单一有向表面跃迁率；不是 MSD diffusion 工作流 | 约 1.5 min |
-| `examples/pcet/harmonic_scan.inp` | `pcet` | 局域谐势井的 18 条件电势/温度/同位素扫描 | 约 2 s |
+| `examples/materials/pimd.inp` | `pimd` | Equilibrium energies and ring size in a periodic model | ~2 s |
+| `examples/materials/diffusion.inp` | `diffusion` | Free particle; the analysis flags ballistic motion | ~3 s |
+| `examples/materials/site_rate.inp` | `site_rate` | Periodic model, explicit basin and one directed exit | ~25 s |
+| `examples/surface/fes2d.inp` | `fes` | 2D surface CVs on a fixed substrate | ~1 min |
+| `examples/surface/diffusion.inp` | `surface_rate` | One directed surface hop rate | ~1.5 min |
+| `examples/pcet/harmonic_scan.inp` | `pcet` | 18-condition potential/temperature/isotope scan | ~2 s |
 
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
@@ -52,33 +51,38 @@ pyrpmd run examples/pcet/harmonic_scan.inp --output runs/tutorial-pcet
 pyrpmd resume runs/tutorial-pcet
 ```
 
-表面与 site-rate 例子包含伞抽样、受约束母链和回穿，耗时明显长于快速入门。
-以[周期任务指南](periodic.md)与 [PCET 指南](pcet.md)解释输出。
+The surface and site-rate examples run umbrella sampling, constrained parents and recrossing, which
+is why they take longer. Their output is described in [Materials and surfaces](periodic.md) and
+[PCET](pcet.md).
 
-## 外部模型与真实体系基准
+## Benchmarks with real models
 
-[H + H₂ / BKMP2 基准](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md)
-包含势能来源固定与 SHA256、能量/梯度参考检查、dRPMD、FES、PMF/recrossing。
-构建需要 GNU Fortran；下载第三方源码后应阅读其许可与来源说明。
+The [H + H₂ / BKMP2 benchmark](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md) *(partly Chinese)*
+runs dRPMD, FES and PMF/recrossing on the published BKMP2 surface, with a pinned source, SHA256 and
+energy/gradient reference checks. Building it needs GNU Fortran; the build downloads the third-party
+source, whose license and provenance are listed in the benchmark README.
 
-[Ni–H 材料 pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md)
-固定实际 EAM 模型来源与校验值，比较 H/D、P=1/4 的短轨迹。
-模型表不随仓库分发，需要显式下载。短 NVE 能量检查不代表长时扩散已形成。
+The [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md)
+runs H and D in nickel with P=1 and 4 on a pinned, checksummed EAM model, which is downloaded
+separately.
 
-[ASE 表面例子](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/surface/README.md)
-说明 Cu(111)/Cu adatom 的 EMT 接入。这里验证的是特定 calculator 与短工作流，
-不能推广为所有 ASE 机器学习模型均已验证。
+The [ASE surface example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/surface/README.md) *(partly Chinese)*
+connects ASE EMT for a Cu adatom on Cu(111).
 
-[PCET 独立比较](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/pcet-model-2026-10-30/README.md)
-与固定外部 pyPCET 提交比较同一局域模型，不等于真实电极实验复现。
+The [PCET comparison](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/pcet-model-2026-10-30/README.md)
+matches a pinned pyPCET commit to within 0.062% on the harmonic model.
 
-## 一次正式研究怎样从示例开始
+## From an example to a research calculation
 
-1. 复制最贴近问题的输入到自己的项目目录，明确任务、坐标和归一化。
-2. 用真实势能替换教学模型，先检查单位、原子顺序、力和适用范围。
-3. 运行小型 pilot，查看失败、mask、overlap、弹道区或回穿平台等诊断。
-4. 分别增加珠子数、缩小步长、延长平衡/生产、增加独立副本并检查定义域。
-5. 固定最终方案后运行独立 production，并保存完整来源和不确定度信息。
+1. Copy the closest input into your project and set the task, coordinates and normalization.
+2. Replace the model potential with yours; check units, atom order, forces and the domain of
+   validity.
+3. Run a short pilot and read the diagnostics: failures, masks, overlap, ballistic regimes and the
+   recrossing plateau.
+4. Increase the bead number, reduce the time step, extend equilibration and production, add
+   independent replicas and check the domain, one change at a time.
+5. Fix the final protocol, run an independent production and keep the full provenance and
+   uncertainties.
 
-各步的物理判断不能由 `preset="production"` 代替。参考[科学约定](science.md)。
-
+`preset="production"` checks that every setting is explicit; steps 3 and 4 establish convergence.
+See [Scientific conventions](science.md).
