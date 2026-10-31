@@ -7,6 +7,7 @@ import copy
 import importlib.metadata
 import json
 import platform
+from collections.abc import Mapping
 from pathlib import Path
 import shutil
 import sys
@@ -38,6 +39,8 @@ def _initialize_output(config, system, output, resume=False):
     from .propagation import scientific_config
 
     path = Path(output)
+    if path.exists() and not path.is_dir():
+        raise InputError(f"Output path is not a directory: {path}; choose a directory for the run")
     manifest_path = path / "manifest.json"
     hashes = referenced_files(config)
     digest = fingerprint(scientific_config(config), system)
@@ -216,11 +219,54 @@ def run_resolved(config, system, *, output=None, resume=False):
     return result
 
 
+def _resume_parallel(current, overrides):
+    """Apply execution-only overrides without silently retaining old aliases."""
+    from .input import _SECTIONS, _unknown_fields
+    from .parallel import execution_plan
+
+    if not isinstance(overrides, Mapping) or any(not isinstance(key, str) for key in overrides):
+        raise InputError("Resume parallel overrides must be a mapping with string field names")
+    unknown = set(overrides) - _SECTIONS["parallel"]
+    if unknown:
+        raise _unknown_fields(unknown, _SECTIONS["parallel"], "parallel")
+    aliases = ("workers", "trajectory_workers", "trajectory_groups")
+    counts = []
+    for key in aliases:
+        if key in overrides:
+            value = overrides[key]
+            if (isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer))
+                    or value < 1):
+                raise InputError(f"parallel.{key} must be an integer >= 1")
+            counts.append(int(value))
+    if counts and any(value != counts[0] for value in counts):
+        raise InputError("Resume workers, trajectory_workers and trajectory_groups overrides disagree")
+    merged = copy.deepcopy(current)
+    merged.update(overrides)
+    if counts:
+        merged.pop("workers", None)
+        merged["trajectory_workers"] = merged["trajectory_groups"] = counts[0]
+    if "scheduling" in overrides and "coordinator_ranks" not in overrides:
+        merged["coordinator_ranks"] = int(overrides["scheduling"] == "dynamic")
+    try:
+        execution_plan(merged)
+    except (ValueError, TypeError) as error:
+        raise InputError(str(error)) from error
+    return merged
+
+
 def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None):
     path = Path(directory).resolve()
     if path.name == "checkpoints":
         path = path.parent
-    config = json.loads((path / "input" / "resolved.json").read_text())
+    if not (path / "manifest.json").is_file():
+        raise InputError(
+            f"No run manifest in {path}; pass the run directory containing manifest.json "
+            "or its checkpoints subdirectory"
+        )
+    resolved_path = path / "input" / "resolved.json"
+    if not resolved_path.is_file():
+        raise InputError(f"Cannot resume {path}: saved input/resolved.json is missing")
+    config = json.loads(resolved_path.read_text())
     system = _read_identity(config, path)
     if config["task"] == "pcet" and (parallel is not None or execution is not None):
         raise InputError("PCET resume does not accept trajectory parallelism or propagation overrides")
@@ -242,7 +288,7 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
             # selected checkpoint before continuing the already authorized work.
             return extend_run(path, max_time=target * config["dt_au"])
     if parallel is not None:
-        config["parallel"].update(parallel)
+        config["parallel"] = _resume_parallel(config.get("parallel", {}), parallel)
     if execution is not None:
         if not isinstance(execution, dict) or set(execution) - {"loop_backend", "block_steps"}:
             raise InputError("Resume execution overrides accept only loop_backend and block_steps")

@@ -48,9 +48,10 @@ Python code. Production PIMD settings are covered in [Materials and surfaces](pe
 | CLI `--pes`, `--pes-manifest`, `--output` | The directory where the command runs |
 | A `.o` link manifest | The directory of the manifest |
 
-For example, `output.directory="runs/manual-quickstart"` in `examples/manual/quickstart.inp`
-resolves next to that input, while `--output runs/manual-first` on the command line resolves in the
-current directory. Move referenced files together with the input and keep the atom order.
+For example, `output.directory="run"` in the starter `my-first-run/quickstart.inp` resolves to
+`my-first-run/run`, while CLI `--output runs/custom` resolves from the current directory.
+`validate INPUT --output runs/custom` shows the resolved input and output paths without creating
+the run directory. Move referenced files together with the input and keep the atom order.
 
 ## Common fields
 
@@ -223,13 +224,18 @@ different dimensions, write each entry as a string with units.
 
 | Command | Purpose | Common options |
 | --- | --- | --- |
-| `pyrpmd validate INPUT` | Parse the configuration and check the task | `--check-pes`, `--write-resolved FILE` |
+| `pyrpmd init DIR` | Write the bundled harmonic FES starter in a new or empty directory | Prints the input path and next commands |
+| `pyrpmd validate INPUT` | Parse the configuration and check the task | `--check-pes`, `--output DIR`, `--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | Show preparation information | `--pilot` runs the numerical preparation; `--output FILE` writes JSON |
 | `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume` |
 | `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N` |
 | `pyrpmd extend DIR` | Raise an existing dRPMD ensemble's total time budget for unresolved trajectories | `--max-time '20 ps'` (required; total time from launch) |
 | `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
 | `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below |
+| `pyrpmd report RUN [RUN ...]` | Generate figures and an HTML report from saved results | `--output DIR`, `--style`, `--formats`, `--overwrite`; see [Reports](analysis-reports.md) |
+| `pyrpmd project DIR` | Marginalize a saved FES over omitted CV axes | Required `--axes` and `--output`; optional `--selection` |
+| `pyrpmd rate-postprocess DIR` | Recompute rates from saved PMF/FES and signed fluxes | `--spec FILE`, `--output FILE`, `--bootstrap`; see [Rate postprocessing](../rate-postprocessing.md) |
+| `pyrpmd study INPUT` | Plan or run temperature, isotope and convergence scans | `--plan`, `--output DIR`, `--resume`; see [Rate studies](../rate-studies.md) |
 | `pyrpmd checkpoint FILE` | Verify a checkpoint container | `--require-integrity` rejects legacy containers without checksums |
 | `pyrpmd info` | Show version and native capabilities | |
 | `pyrpmd pes build/inspect/check` | Build and test C ABI potentials | See [Potentials](potentials.md) |
@@ -240,6 +246,9 @@ different dimensions, write each entry as a string with units.
 
 - `validate --check-pes` and `prepare --pilot` run the same numerical preparation: constructing
   the PES, TS preparation, or PCET eigenstates. Without the option, only the input is checked.
+- `validate --output DIR` selects the destination to show in its report; it does not create a run.
+  `prepare --output FILE` instead writes a preparation JSON file. `--write-resolved FILE` explicitly
+  writes the resolved configuration from `validate`.
 - `--workers N` sets `parallel.trajectory_workers`; for non-MPI inputs, N>1 selects the `process`
   backend.
 - `run` refuses an existing non-empty output directory. Continue a run with `pyrpmd resume DIR`
@@ -250,6 +259,25 @@ different dimensions, write each entry as a string with units.
 Diffusion reanalysis accepts `--fit-range '10 fs' '100 fs'`, `--axes 0 1`, `--atoms 0` and
 `--max-lag N`, where the lag counts saved frames. The fit range must lie within the saved duration;
 see [Output and analysis](results.md).
+
+### Terminal output and debugging
+
+`python -m pyrpmd` accepts the same commands as the `pyrpmd` executable. Use `pyrpmd --help` for
+the command list and `pyrpmd COMMAND --help` for a command's options. Command results are JSON
+on standard output; expected input/runtime errors go to standard error and return exit code 2.
+A successful command returns 0. This is an execution status: still inspect `ready`, `warnings`,
+`converged` and task-specific diagnostics before interpreting a scientific result.
+
+For an actionable error message, run the normal command. When reporting an unexpected failure,
+add `--debug` to include its traceback, for example:
+
+```bash
+pyrpmd validate my-first-run/quickstart.inp --check-pes --debug
+pyrpmd info > environment.json
+```
+
+`--debug` is accepted before or after the subcommand. Save the command, input and environment
+report with the error; the [troubleshooting guide](troubleshooting.md) explains recovery.
 
 The full section reference is in
 [docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)*.

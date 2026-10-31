@@ -25,10 +25,16 @@ block_steps = 256
 | `loop_backend="native"` | Require fused whole-block propagation; error if unavailable |
 | `block_steps` | Execution block size, 1–65536 |
 
-Periodic and fixed-atom systems, PILE-L sampling and metadynamics run in the Python outer loop with
-compiled deterministic substeps. The `pimd`, `diffusion` and `metadynamics` summaries report
+In the default materials engine, periodic and fixed-atom systems, PILE-L sampling and metadynamics
+use the Python outer loop with compiled deterministic substeps. The `pimd`, `diffusion` and `metadynamics` summaries report
 native and Python step counts with fallback reasons under `propagation`; in the API,
 `Dynamics.loop_stats` gives the same counters.
+
+For equilibrium `pimd`, the explicit `sampling.engine="native"` route also supports native
+thermostats, selected NPT barostats and compatible compiled potentials. It has its own
+checkpoint identity and input restrictions; see the
+[native PIMD workflow](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md).
+Selecting `loop_backend="native"` alone does not select this sampling engine.
 
 [NRPMD](nonadiabatic.md) propagates the electronic matrix with CPU NumPy, serially or with local
 trajectory processes; its nuclear free-ring substeps use the compiled kernels.

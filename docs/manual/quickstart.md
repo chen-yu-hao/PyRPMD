@@ -6,22 +6,31 @@ The built-in harmonic potential means no external model is needed.
 
 ## 1. Run your first task
 
-From the repository root:
+After [installation](installation.md), open a terminal in your working directory. The starter is
+bundled with PyRPMD, so this works with a wheel or a source installation:
 
 ```bash
-pyrpmd validate examples/manual/quickstart.inp --check-pes
-pyrpmd run examples/manual/quickstart.inp --output runs/manual-first
-pyrpmd analyze runs/manual-first
+pyrpmd init my-first-run
+pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run
+pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
+pyrpmd analyze my-first-run/run
 ```
+
+`init` writes `quickstart.inp` into a new or empty directory and prints the next commands. It
+refuses a nonempty destination, so use another name when starting a separate example. If your
+shell cannot find `pyrpmd`, use `python -m pyrpmd` with the same arguments.
 
 `validate` checks the input, units, task restrictions and resources; `--check-pes` also constructs
 the potential and performs the numerical preparation. `run` performs the calculation, prints a JSON
 summary and writes the run directory. `analyze` reads the saved summary.
+The validation report shows the resolved `input`, `output` and `preset`; `validate --output` previews
+the run destination without creating it. The starter's `output.directory="run"` resolves next to
+the input, so the explicit `--output my-first-run/run` above selects the same location.
 
 The run directory looks like this:
 
 ```text
-runs/manual-first/
+my-first-run/run/
 ├── manifest.json          # software, dependencies, native capabilities, physics fingerprint
 ├── input/                 # original.inp, resolved.json (resolved config), system.json
 ├── checkpoints/           # window_00000_replica_0000.npz … (one per window and replica)
@@ -40,11 +49,11 @@ The example computes the **x-component centroid probability density** of one H n
 harmonic potential. Three umbrella windows each run two independent replicas: 20 equilibration
 steps, then 100 production steps with a sample every 5 steps, using four beads and a 0.1 fs step.
 
-```{literalinclude} ../../examples/manual/quickstart.inp
+```{literalinclude} ../../src/pyrpmd/templates/quickstart.inp
 :language: toml
 ```
 
-Source file: [quickstart.inp](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/manual/quickstart.inp).
+Source file: [bundled quickstart.inp](https://github.com/chen-yu-hao/PyRPMD/blob/main/src/pyrpmd/templates/quickstart.inp).
 
 | Field | Meaning |
 | --- | --- |
@@ -65,7 +74,7 @@ at 0. The full rules are in [Input](input.md) and [Scientific conventions](scien
 import json
 from pathlib import Path
 
-run_dir = Path("runs/manual-first")
+run_dir = Path("my-first-run/run")
 summary = json.loads((run_dir / "results/summary.json").read_text())
 for key in ("task", "dimension", "windows", "streams", "samples",
             "overlap_connected", "converged", "warnings", "files"):
@@ -86,8 +95,8 @@ sampling support, which hold NaN. See [Output and analysis](results.md).
 ## 4. Restart and reanalyze
 
 ```bash
-pyrpmd resume runs/manual-first
-pyrpmd analyze runs/manual-first --recompute --bins 8 --bootstrap 10
+pyrpmd resume my-first-run/run
+pyrpmd analyze my-first-run/run --recompute --bins 8 --bootstrap 10
 ```
 
 `resume` continues an interrupted run from its last committed state; a finished run stays as it is.
@@ -100,20 +109,20 @@ step or sampling, start a new run directory.
 
 ## 5. The same task from Python
 
-Save as `my_first_run.py` in the repository root:
+Save as `my_first_run.py` in the working directory containing `my-first-run/`:
 
 ```python
 from pyrpmd import JobSpec, prepare, run, analyze_run, resume_run
 
 
 def main():
-    spec = JobSpec.from_file("examples/manual/quickstart.inp")
+    spec = JobSpec.from_file("my-first-run/quickstart.inp")
     report = prepare(spec, numerical=True)
     print("ready:", report["ready"])
-    summary = run(spec, output="runs/manual-python")
+    summary = run(spec, output="my-first-run/python-run")
     print(summary["samples"])
-    resume_run("runs/manual-python")
-    print(analyze_run("runs/manual-python")["task"])
+    resume_run("my-first-run/python-run")
+    print(analyze_run("my-first-run/python-run")["task"])
 
 
 if __name__ == "__main__":

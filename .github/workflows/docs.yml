@@ -30,10 +30,14 @@ jobs:
         run: diff <(ls docs/manual) <(ls docs/zh/manual)
       - name: Run the documented quickstart and low-level API
         run: |
-          pyrpmd validate examples/manual/quickstart.inp --check-pes
-          pyrpmd run examples/manual/quickstart.inp --output "$RUNNER_TEMP/manual-smoke"
-          pyrpmd resume "$RUNNER_TEMP/manual-smoke"
-          pyrpmd analyze "$RUNNER_TEMP/manual-smoke" --recompute --bins 8 --bootstrap 10
+          python -m pyrpmd init "$RUNNER_TEMP/manual-starter"
+          cd "$RUNNER_TEMP"
+          python -m pyrpmd validate manual-starter/quickstart.inp --check-pes --output manual-starter/run
+          python -m pyrpmd run manual-starter/quickstart.inp --output manual-starter/run
+          python -m pyrpmd analyze manual-starter/run
+          python -m pyrpmd resume manual-starter/run
+          python -m pyrpmd analyze manual-starter/run --recompute --bins 8 --bootstrap 10
+          cd "$GITHUB_WORKSPACE"
           python examples/manual/low_level.py
       - name: Run the experimental state-selected NRPMD tutorial
         run: |
