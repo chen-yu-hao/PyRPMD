@@ -74,7 +74,7 @@ derivative = "force"
 The model then works in Å and eV, and the adapter converts. A Python provider that returns positive
 gradients declares `derivative="gradient"`. The legacy f2py interface always returns positive
 gradients, which the adapter negates; Torch output is always interpreted as forces, or as the energy
-whose autograd gives them. C ABI v1 uses atomic units.
+whose autograd gives them. Both C ABI versions use atomic units.
 
 Finite-difference a new model on a few representative configurations, and check the atom order,
 energy zero, electronic state and domain of validity:
@@ -99,10 +99,14 @@ finally:
 | `builtin` / `free` / `harmonic`, … | Analytic model potentials |
 | `python` | `module:factory` or `file.py:factory`; wraps your own model |
 | `rpmdrate` / `f2py` | Legacy Fortran wrappers with `(3,N,B)` layout and positive gradients |
-| `cabi` | Shared libraries implementing the versioned PyRPMD PES v1 ABI |
+| `cabi` / `native` | Versioned C ABI v1/v2 libraries; v2 adds cells/PBC and physical virials |
 | `ase` | The factory returns an ASE Calculator; handles eV/Å, cell/PBC and stress |
-| `torch` | Batched energies, or energies and forces, from a Torch model; molecular systems |
-| `ipi` | Synchronous i-PI force protocol with an external driver |
+| `torch` | Batched molecular or explicitly cell-aware periodic Torch models |
+| `ipi` | Persistent i-PI client pool, evaluating multiple beads concurrently |
+| `mace`, `nequip`, `fairchem` | Ready-made reusable ASE calculators for explicit ML checkpoints |
+| `deepmd` | DeePMD `DeepPot` with native structure batching |
+| `tblite` / `xtb` | On-the-fly GFN1/GFN2/IPEA1-xTB through tblite |
+| `pyscf` | Molecular HF/DFT with analytic nuclear gradients |
 | `diabatic_python` | Real symmetric matrix potential with gradients for experimental NRPMD |
 
 For electronic calculations, D and T are passed as hydrogen and keep their nuclear masses.
@@ -123,7 +127,9 @@ protocols:
 Implement one protocol explicitly. The materials examples also include the `periodic_cosine` model.
 i-PI's POSDATA carries the fixed cell and its inverse but no PBC flags, so partially periodic
 systems, and non-periodic systems with a cell, set `potential.params.init.pbc`, which the driver
-reads from INIT. C ABI v1, f2py and Torch providers are rejected for periodic tasks.
+reads from INIT. C ABI v1 and f2py remain molecular interfaces. C ABI v2, periodic Torch,
+ASE-backed models and tblite support cell-aware evaluation; DeePMD requires full or no PBC.
+The PySCF adapter currently supports molecules.
 
 Fixed layers are a dynamics constraint; the potential always receives every atom. See
 [Materials and surfaces](periodic.md).
@@ -142,7 +148,97 @@ pyrpmd run job.inp --pes ./libpes.so --output runs/native-pes
 linked into a shared library with `pyrpmd pes build` and a manifest naming the wrapper, compiler,
 PIC flags and link dependencies. f2py extensions use the `rpmdrate` / `f2py` provider and must match
 the Python and NumPy ABI. The protocol and lifecycle are specified in the
-[PES v1 ABI](https://github.com/chen-yu-hao/PyRPMD/blob/main/native/ABI.md).
+[PES v1/v2 ABI](https://github.com/chen-yu-hao/PyRPMD/blob/main/native/ABI.md).
+
+## C ABI v2 and periodic Torch
+
+A compiled library exporting the v2 symbols is selected automatically; set `abi_version=2` to
+require it. Existing v1 libraries keep their original contract. The v2 batch includes
+`cells[B,3,3]` (row lattice vectors, bohr), `pbc[B,3]` (int32 booleans), and optional
+`virials[B,3,3]` (hartree). A structure's virial is `W = -dE/dstrain`; tensile stress is `-W/V`.
+It contains no kinetic, ring-spring, bias or bead factor. V2 calls the compiled PES for the whole
+batch, while the outer integrator uses the compatible Python loop.
+
+```toml
+[potential]
+provider = "cabi"
+library = "./libperiodic_pes.so"
+abi_version = 2
+```
+
+For Torch, select `periodic=true` explicitly and implement `forward(q, cell, pbc)` with tensor
+shapes `[B,N,3]`, `[B,3,3]`, `[B,3]`. q and cell use the model's declared position unit. The
+model owns periodic neighbor construction and minimum images. `virial="auto"` accepts model
+`virial` or tensile `stress`, or differentiates a common deformation of coordinates and cell.
+Use `virial="autograd"` to require that derivative, `"provided"` to require model output, or
+`"none"` to omit it. The generic Torch interface requires float64; that requirement does not
+change the trained precision of the named ML adapters.
+
+```toml
+[potential]
+provider = "torch"
+factory = "periodic_model.py:build"
+periodic = true
+virial = "autograd"
+device = "cpu"
+units = {positions = "angstrom", energy = "eV"}
+```
+
+## Ready-made ML and electronic-structure adapters
+
+Install only the extra needed for the selected provider, for example `pip install '.[tblite]'`
+or `pip install '.[pyscf]'`. All engines are imported lazily. Checkpoints are explicit: PyRPMD
+does not choose a chemical model for your system. NequIP uses an ASE-targeted compiled model;
+fairchem requires an explicit `task_name` and accepts a registered model name or local checkpoint.
+
+```toml
+[potential]
+provider = "mace"  # nequip, deepmd and fairchem are also available
+model = "models/material.model"
+device = "cpu"
+```
+
+For molecular electronic structure, the System supplies elements, charge and spin multiplicity:
+
+```toml
+[potential]
+provider = "pyscf"
+params = {method = "DFT", xc = "PBE", basis = "def2-svp", grid_level = 3, conv_tol = 1e-10}
+```
+
+Or use `provider="tblite"` with `params={method="GFN2-xTB"}`. SCF failure raises an error;
+unconverged energies are not accepted. Calculators persist across frames and evaluation calls.
+Electronic warm starts are opt-in and indexed by batch slot; keep each slot attached to the same
+bead when using them. ASE-backed adapters evaluate frames sequentially, whereas Torch and DeePMD
+have native batches. DeePMD device selection belongs to its backend and is not assigned by
+PyRPMD's GPU scheduler. Detailed options, upstream APIs and validation boundaries are in the
+[adapter guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/potential-adapters.md).
+
+## Several i-PI clients on one server
+
+```toml
+[potential]
+provider = "ipi"
+params = {host = "127.0.0.1", port = 31415, clients = 4, timeout = 60.0}
+
+[parallel]
+backend = "serial"
+bead_workers = 1
+```
+
+Start four identical force clients connected to the same address. The first call waits for all
+four clients within the connection timeout. Each client evaluates one structure at a time and
+then receives the next pending bead. Energy, force and virial arrays retain input order. The
+server waits for the complete batch before dynamics advances. Clients and communication threads
+persist between calls. `clients=1` retains single-driver operation.
+
+The wire format remains standard single-structure i-PI. INIT carries the frame index only when
+the driver requests initialization; there is no strict bead-to-client affinity. Drivers must
+return the same physical PES independently of assignment. Each geometry has a deadline covering
+its entire exchange. Malformed replies, missing clients, failed frames or disconnects close the
+whole pool and fail the batch; the caller must create a fresh provider to retry. Use one PyRPMD
+trajectory slot per socket server, or a custom factory supplying distinct addresses for separate
+slots; automatic port offsets are not provided.
 
 ## Custom CVs and classifiers
 

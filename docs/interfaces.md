@@ -71,9 +71,11 @@ observations, result arrays and exception payloads.
 
 ## Potential and CV plugins
 
-The PES C ABI remains **v1**, with the same header and lifecycle rules in
-[`native/include/pyrpmd/pes_api_v1.h`](../native/include/pyrpmd/pes_api_v1.h).
-There is no ABI revision solely for the new integrator choices. Potential
+The existing **v1** C ABI and its header remain compatible. **v2** adds explicit
+per-structure cells/PBC and optional physical virials while retaining synchronous
+host-memory batching and the same create/metadata/evaluate/destroy lifecycle.
+See [the versioned ABI specification](../native/ABI.md) and
+[`pes_api_v2.h`](../native/include/pyrpmd/pes_api_v2.h). Potential
 evaluation receives atomic-unit `float64[B,N,3]` coordinates and returns
 `energy[B]`, physical negative-gradient `forces[B,N,3]`, and status. Shape,
 finite-value and lifecycle checks remain enforced. Thread safety, per-context
@@ -82,9 +84,10 @@ callbacks do not become native just because a C++ ring substep is available.
 
 `System` adds optional fixed `cell[3,3]` (row lattice vectors, bohr) and
 `pbc[3]`. No-cell molecular serialization and existing identities are preserved.
-Periodic requests must reach a cell-aware provider: ASE, explicitly capable
-Python, or i-PI. The existing molecular C ABI v1, f2py and Torch interfaces
-reject periodic systems. `PESResult` adds optional physical configurational
+Periodic requests must reach a cell-aware provider: C ABI v2, ASE, explicitly
+capable Python/Torch, named periodic adapters, or i-PI. The molecular C ABI v1,
+f2py and PySCF interfaces reject periodic systems. Generic Torch requires
+`periodic=true` and `forward(q, cell, pbc)`; DeePMD rejects partial periodicity. `PESResult` adds optional physical configurational
 `virial[B,3,3]` in hartree; it is not a quantum pressure estimator. Dynamics
 keeps ring positions continuous and unwrapped.
 
@@ -101,7 +104,7 @@ see [potentials.md](potentials.md), [input.md](input.md) and
 
 ## Versioning and compatibility
 
-User input v1, run manifest v2, checkpoint container v2 and PES ABI v1 have
+User input v1, run manifest v2, checkpoint container v2 and PES ABI v1/v2 have
 independent version numbers. A new distribution version does not imply a
 new PES binary ABI. Unknown checkpoint/manifest versions fail explicitly;
 legacy reads and run-identity migration follow [checkpoints.md](checkpoints.md).

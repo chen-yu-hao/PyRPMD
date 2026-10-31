@@ -35,7 +35,7 @@ _SECTIONS = {
         "integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval thermostat_params gamma_centroid replicas parents".split()
     ),
     "potential": set(
-        "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params".split()
+        "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params abi_version periodic virial".split()
     ),
     "parallel": set(
         "backend mode trajectory_groups trajectory_workers workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling".split()
@@ -569,8 +569,16 @@ class JobSpec:
                 potential[k] = _path(base, potential[k])
         if "model" in potential and potential.get(
             "provider", potential.get("type")
-        ) not in ("builtin", None):
+        ) not in ("builtin", "fairchem", None):
             potential["model"] = _path(base, potential["model"])
+        elif potential.get("provider", potential.get("type")) == "fairchem" and "model" in potential:
+            # fairchem accepts registered names as well as local checkpoints.
+            # Preserve names; resolve explicit paths relative to the input.
+            model = potential["model"]
+            if isinstance(model, str) and (model.startswith((".", "~", "/"))
+                    or Path(model).suffix.lower() in (".pt", ".pth", ".ckpt", ".bin")
+                    or (base / model).is_file()):
+                potential["model"] = _path(base, model)
         # Model-specific path-valued parameters can be declared relative to input.
         for k in ("model", "weights", "reference"):
             if isinstance(potential.get("params", {}).get(k), str):
@@ -677,8 +685,8 @@ class JobSpec:
         )
         parallel.setdefault("threads_per_rank", 1)
         parallel.setdefault("pes_ranks", 1)
-        parallel.setdefault("coordinator_ranks", 0)
         parallel.setdefault("scheduling", "static")
+        parallel.setdefault("coordinator_ranks", 1 if parallel["scheduling"] == "dynamic" else 0)
         for k in (
             "trajectory_workers",
             "bead_workers",

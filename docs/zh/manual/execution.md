@@ -73,8 +73,36 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi-first
 mpiexec -n 4 pyrpmd resume runs/mpi-first
 ```
 
-world size 等于 `trajectory_groups * bead_workers`。分组是静态的，`pes_ranks=1`、`coordinator_ranks=0`，因此每次 PES
-调用在单个 rank 上运行。所有节点需要相同的代码、环境和模型路径，以及共享的输出目录。
+world size 等于 `trajectory_groups * bead_workers`。静态调度默认 `pes_ranks=1`、`coordinator_ranks=0`，各珠子分区在所分配的 rank 上求值。所有节点需要相同的代码、环境和模型路径，以及共享的输出目录。
+
+## 动态 MPI 队列
+
+对提前停止时间不同的 dRPMD 轨迹，启用动态队列：
+
+```toml
+[parallel]
+backend = "mpi"
+mode = "bead"
+scheduling = "dynamic"
+coordinator_ranks = 1
+trajectory_groups = 2
+bead_workers = 2
+threads_per_rank = 1
+```
+
+rank 数为 `1 + trajectory_groups * bead_workers`，上例需要五个 rank。
+world rank 0 负责调度，空闲轨迹组继续领取任务；GPU 模式下调度 rank 不占 GPU 槽。
+静态调度仍为默认。动态选项适用于 MPI，`pes_ranks=1` 约束继续有效。
+
+```bash
+mpiexec -n 5 pyrpmd run examples/drpmd/mpi_dynamic.py --output runs/dynamic-mpi
+```
+
+dRPMD 首先沿持久热化母链生成可续跑的初始构型，再将每条碰撞轨迹独立加入队列。
+早停后立即释放组，任务索引、随机流和检查点保持不变，输出仍按任务顺序排列。
+比较布局或改变 worker 数时显式设置 `sampling.parents`。
+任务异常停止新分配，等待已运行的组完成并释放势能上下文，再向全部 rank 报错；
+MPI 进程崩溃和网络故障由 launcher 处理。
 
 ## GPU 放置
 

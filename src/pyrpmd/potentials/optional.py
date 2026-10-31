@@ -53,13 +53,13 @@ class ASEPotential(Potential):
         def get(key, default=None):
             return system.get(key, default) if isinstance(system, dict) else getattr(system, key, default)
 
-        self.cell, self.pbc = validate_cell_pbc(get("cell"), get("pbc"))
-        cell, pbc = self.cell, self.pbc
+        cell, pbc = validate_cell_pbc(get("cell"), get("pbc"))
         symbols = get("symbols")
         if symbols is not None and ["H" if s in ("D", "T") else s for s in symbols] != self.atoms.get_chemical_symbols():
             raise PotentialError("ASE system atom identities differ from the provider")
         self.atoms.set_cell(np.zeros((3, 3)) if cell is None else cell * BOHR_ANGSTROM)
         self.atoms.set_pbc(pbc)
+        self.cell, self.pbc = cell, pbc
 
     def evaluate(self, x):
         x = coordinates(x)
@@ -93,7 +93,20 @@ class TorchPotential(Potential):
         device="cuda",
         units=None,
         dtype="float64",
+        cell=None,
+        pbc=None,
+        periodic=False,
+        virial="auto",
     ):
+        if not isinstance(periodic, (bool, np.bool_)):
+            raise ValueError("Torch periodic must be a boolean")
+        if virial not in ("auto", "autograd", "provided", "none"):
+            raise ValueError("Torch virial must be auto, autograd, provided, or none")
+        self.cell, self.pbc = validate_cell_pbc(cell, pbc)
+        self.periodic = bool(periodic)
+        self.virial_mode = virial
+        self.closed = False
+        self._check_cell_contract()
         try:
             import torch
         except ImportError as exc:
@@ -125,24 +138,35 @@ class TorchPotential(Potential):
             if hasattr(candidate, "evaluate") and not isinstance(
                 candidate, torch.nn.Module
             ):
-                md = getattr(candidate, "metadata", {})
-                declared = (
-                    md.get("execution_device", md.get("device", ""))
-                    if isinstance(md, dict)
-                    else ""
-                )
-                if self.device.type == "cuda" and not str(declared).startswith("cuda"):
-                    raise PotentialError(
-                        "GPU provider factory must declare CUDA execution in metadata"
+                try:
+                    md = getattr(candidate, "metadata", {})
+                    declared = str(
+                        md.get("execution_device", md.get("device", "cpu"))
+                        if isinstance(md, dict) else "cpu"
                     )
-                self.delegate = PythonPotential(candidate, units=units)
+                    requested = str(self.device)
+                    requested = "cuda:0" if requested == "cuda" else requested
+                    actual = "cuda:0" if declared == "cuda" else declared
+                    if actual != requested:
+                        raise PotentialError(
+                            f"Torch provider requested {requested}, but factory declares {declared!r}"
+                        )
+                    self.delegate = PythonPotential(
+                        candidate, units=units, cell=self.cell, pbc=self.pbc
+                    )
+                except BaseException:
+                    close = getattr(candidate, "close", None)
+                    if callable(close):
+                        close()
+                    raise
                 self.model = None
             else:
                 self.model = candidate
         else:
             if model is None:
                 raise ValueError("Torch provider requires model or factory")
-            self.model = torch.jit.load(str(model), map_location=self.device)
+            self.model = (model if isinstance(model, torch.nn.Module)
+                          else torch.jit.load(str(model), map_location=self.device))
         if self.model is not None:
             if hasattr(self.model, "to"):
                 self.model = self.model.to(device=self.device, dtype=torch.float64)
@@ -158,11 +182,36 @@ class TorchPotential(Potential):
             "thread_safety": "context_serial",
             "native_batch": True,
             "dtype": "float64",
+            "periodic": self.periodic,
+            "supports_pbc": self.periodic,
         }
 
+    def _check_cell_contract(self):
+        if self.pbc.any() and not self.periodic:
+            raise PotentialError(
+                "Periodic Torch models require periodic=True and forward(q, cell, pbc)"
+            )
+        if self.periodic and self.cell is None:
+            raise PotentialError("Periodic Torch models require a nonsingular cell")
+
+    def bind_system(self, system):
+        get = system.get if isinstance(system, dict) else lambda key, default=None: getattr(system, key, default)
+        cell, pbc = validate_cell_pbc(get("cell"), get("pbc"))
+        old_cell, old_pbc = self.cell, self.pbc
+        self.cell, self.pbc = cell, pbc
+        try:
+            self._check_cell_contract()
+            if self.delegate is not None:
+                self.delegate.bind_system(system)
+        except BaseException:
+            self.cell, self.pbc = old_cell, old_pbc
+            raise
+
     def evaluate(self, x):
+        if self.closed:
+            raise PotentialError("Torch provider is closed")
         x = coordinates(x)
-        if self.delegate:
+        if self.delegate is not None:
             return self.delegate.evaluate(x)
         torch = self.torch
         with torch.enable_grad():
@@ -172,11 +221,40 @@ class TorchPotential(Potential):
                 device=self.device,
                 requires_grad=True,
             )
-            out = self.model(q)
-            direct = None
+            # Each frame has its own strain, so batched virials do not mix beads.
+            # Row-vector coordinates/cells deform as r' = r @ (I + eps).T.
+            derive_virial = self.virial_mode == "autograd" or (
+                self.virial_mode == "auto" and self.periodic
+            )
+            strain = None
+            qe = q
+            cell = None
+            if self.cell is not None:
+                cell = torch.tensor(
+                    np.broadcast_to(self.cell / self.length_factor, (len(x), 3, 3)).copy(),
+                    dtype=torch.float64, device=self.device,
+                )
+            if derive_virial:
+                strain = torch.zeros((len(x), 3, 3), dtype=torch.float64,
+                                     device=self.device, requires_grad=True)
+                transform = torch.eye(3, dtype=torch.float64, device=self.device) + strain
+                qe = torch.matmul(q, transform.transpose(-1, -2))
+                if cell is not None:
+                    cell = torch.matmul(cell, transform.transpose(-1, -2))
+            if self.periodic:
+                flags = torch.tensor(np.broadcast_to(self.pbc, (len(x), 3)).copy(),
+                                     dtype=torch.bool, device=self.device)
+                out = self.model(qe, cell, flags)
+            else:
+                out = self.model(qe)
+            direct = provided_virial = stress = None
             if isinstance(out, dict):
                 e = out.get("energy", out.get("energies"))
                 direct = out.get("forces")
+                provided_virial = out.get("virial")
+                stress = out.get("stress")
+                if provided_virial is not None and stress is not None:
+                    raise PotentialError("Torch model must return either virial or stress")
             elif isinstance(out, (tuple, list)):
                 if len(out) != 2:
                     raise PotentialError("Torch tuple must be (energy,forces)")
@@ -184,33 +262,65 @@ class TorchPotential(Potential):
             else:
                 e = out
             if not isinstance(e, torch.Tensor) or tuple(e.shape) not in (
-                (len(x),),
-                (len(x), 1),
+                (len(x),), (len(x), 1),
             ):
-                raise PotentialError(
-                    "Torch energy must be a Tensor with shape [B] or [B,1]"
-                )
+                raise PotentialError("Torch energy must be a Tensor with shape [B] or [B,1]")
             if e.dtype != torch.float64:
                 raise PotentialError("Torch energy must retain float64 precision")
             e = e.reshape(-1)
-            if direct is None:
+            w = provided_virial
+            if stress is not None:
+                if self.cell is None:
+                    raise PotentialError("Torch stress requires a cell")
+                if (not isinstance(stress, torch.Tensor) or stress.dtype != torch.float64
+                        or tuple(stress.shape) != (len(x), 3, 3)):
+                    raise PotentialError("Torch stress must be a float64 Tensor [B,3,3]")
+                volume = abs(np.linalg.det(self.cell / self.length_factor))
+                w = -stress * volume
+            needs_strain = strain is not None and (
+                self.virial_mode == "autograd" or w is None
+            )
+            f = direct
+            targets = ([q] if f is None else []) + ([strain] if needs_strain else [])
+            if targets:
                 if not e.requires_grad:
-                    raise PotentialError(
-                        "model detached energy; forces require a differentiable input graph"
+                    if f is None or self.virial_mode == "autograd":
+                        raise PotentialError(
+                            "model detached energy; forces/virial require a differentiable input graph"
+                        )
+                else:
+                    derivatives = torch.autograd.grad(
+                        e.sum(), targets, allow_unused=True, create_graph=False,
                     )
-                g = torch.autograd.grad(
-                    e.sum(), q, allow_unused=False, create_graph=False
-                )[0]
-                f = -g
-            else:
-                f = direct
+                    if all(g is None for g in derivatives):
+                        raise PotentialError("model energy graph is disconnected from coordinates/strain")
+                    grads = iter(derivatives)
+                    if f is None:
+                        g = next(grads)
+                        f = torch.zeros_like(q) if g is None else -g
+                    if needs_strain:
+                        g = next(grads)
+                        w = torch.zeros_like(strain) if g is None else -g
             if not isinstance(f, torch.Tensor) or f.dtype != torch.float64:
                 raise PotentialError("Torch forces must be a float64 Tensor")
+            if self.virial_mode == "provided" and w is None:
+                raise PotentialError("Torch virial='provided' requires model virial or stress")
+            if self.virial_mode == "none":
+                w = None
+            if w is not None and (
+                not isinstance(w, torch.Tensor) or w.dtype != torch.float64
+                or tuple(w.shape) != (len(x), 3, 3)
+            ):
+                raise PotentialError("Torch virial must be a float64 Tensor [B,3,3]")
             energy = e.detach().cpu().numpy() * self.energy_factor
             force = f.detach().cpu().numpy() * self.energy_factor / self.length_factor
-        return validate_result(PESResult(energy, force), x.shape)
+            virial = None if w is None else w.detach().cpu().numpy() * self.energy_factor
+        return validate_result(PESResult(energy, force, virial=virial), x.shape)
 
     def close(self):
-        if self.delegate:
+        if self.closed:
+            return
+        if self.delegate is not None:
             self.delegate.close()
         self.model = None
+        self.closed = True

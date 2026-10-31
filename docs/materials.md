@@ -12,12 +12,12 @@
 | `diffusion` | PIMD 热化后无恒温 RPMD；质心 MSD、扩散张量、VACF 积分和独立副本误差 | 长时扩散区间、有限尺寸、势模型、H/D 收敛 |
 | `site_rate` | 一个线性质心坐标、一个有限反应物盆地、一个有向分割面的 QTST 与回穿 | PMF 支持、窗口重叠、回穿平台、盆地定义 |
 | 周期结构 | 正交/倾斜固定晶胞；三维体相或部分周期 slab | 各材料的晶格、表面、缺陷、浓度与电荷态 |
-| 周期 PES | ASE、显式声明周期能力的 Python 插件、带真实晶胞的 i-PI socket | 每个 calculator/服务实际支持的 PBC、元素、力与应力 |
+| 周期 PES | C ABI v2、ASE/命名 ML、显式周期 Python/Torch、tblite、带真实晶胞的 i-PI | 每个 calculator/服务实际支持的 PBC、元素、力与应力 |
 
 当前所有原子均可运动，使用同一个珠子数。没有 NPT/barostat、固定原子约束、
 机器学习模型训练、一般非线性约束速率、长时 kMC 网络、集体电导率或电子摩擦模型。
-周期 Torch/C ABI v1/f2py 入口会明确拒绝；不能因为这些入口支持分子计算就假定
-它们接收晶胞。旧的气相 `rate`/`drpmd` 也拒绝周期系统。
+周期 Torch 须显式开启 cell/PBC 契约，C ABI v2 支持晶胞批处理和 virial；C ABI v1/f2py
+仍拒绝周期请求。命名势能的边界条件限制见[适配器指南](potential-adapters.md)。旧的气相 `rate`/`drpmd` 也拒绝周期系统。
 
 ## 结构、晶胞和坐标约定
 

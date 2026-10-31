@@ -15,6 +15,7 @@ python -m pyrpmd resume runs/drpmd-free
 python -m pyrpmd run examples/drpmd/python_pes.py --output runs/drpmd-python
 python -m pyrpmd run examples/drpmd/bead.py --output runs/drpmd-bead
 mpiexec -n 4 python -m pyrpmd run examples/drpmd/mpi.py --output runs/drpmd-mpi
+mpiexec -n 5 python -m pyrpmd run examples/drpmd/mpi_dynamic.py --output runs/drpmd-mpi-dynamic
 ```
 
 `minimal.inp` supplies only the task, two reactant structures, their radial COM
@@ -82,13 +83,24 @@ CPU and MPI tests do not establish CUDA correctness or performance.
 
 ## MPI and Slurm
 
-MPI requires a matching MPI runtime and mpi4py installation. The supported
-topology is static `world_size = trajectory_groups * bead_workers`, with
+MPI requires a matching MPI runtime and mpi4py installation. Static scheduling
+uses `world_size = trajectory_groups * bead_workers`, with
 `pes_ranks = 1` and no dedicated coordinator. Group leaders advance trajectories;
 the other group ranks persistently evaluate their bead subsets. Only a group's
 ranks synchronize at a force call. All nodes need the same importable plugins,
 PES files and a shared output directory. `../slurm/` contains CPU and GPU templates
 whose module/environment and Slurm MPI plugin must match the actual cluster.
+
+`mpi_dynamic.py` adds `scheduling="dynamic"` and `coordinator_ranks=1`, requiring
+`world_size = 1 + trajectory_groups * bead_workers`. Its default is five ranks:
+one coordinator and two groups of two bead ranks. Parent sampling completes
+first; the coordinator then gives individual saved collisions to the first
+available group, so a short collision does not leave its group idle while a
+different group has queued work. The two thermal parents and five global
+collision IDs are unchanged. Set `PYRPMD_TRAJECTORY_GROUPS` and
+`PYRPMD_BEAD_WORKERS` for the execution topology, and keep `PYRPMD_PARENTS`
+(default 2) fixed when changing resources on resume. The coordinator consumes
+one rank but no GPU slot. See `docs/parallel.md` for error handling and boundaries.
 
 The opt-in integration driver is `mpiexec -n 4 python tests/mpi_integration.py`.
 It checks communication, ordered tasks, collective error propagation, persistent
@@ -96,6 +108,8 @@ parents and restart. Running four ranks on one host does not measure scaling
 across physical nodes. On restricted hosts where MPICH reports an unsupported
 cross-process-memory syscall, its TCP transport can be selected with
 `MPIR_CVAR_CH4_CMA_ENABLE=0 UCX_TLS=tcp,self`; this workaround is runtime-specific.
+`mpiexec -n 5 python tests/mpi_dynamic_integration.py` checks the dynamic queue,
+group cleanup on failure, and exact static/dynamic free-PES states and restart.
 
 ## Results and restart
 

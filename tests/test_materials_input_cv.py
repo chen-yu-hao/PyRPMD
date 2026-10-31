@@ -99,7 +99,7 @@ def test_standalone_tasks_reject_unused_analysis_options(task):
 @pytest.mark.parametrize("potential", [
     {"provider": "builtin", "name": "harmonic"},
     {"provider": "harmonic"}, {"provider": "morse_pair"},
-    {"provider": "cabi", "library": "not_loaded.so"},
+    {"provider": "cabi", "abi_version": 1, "library": "not_loaded.so"},
     {"provider": "f2py", "module": "not_imported"},
     {"provider": "rpmdrate", "module": "not_imported"},
     {"provider": "torch", "model": "not_loaded.pt"},

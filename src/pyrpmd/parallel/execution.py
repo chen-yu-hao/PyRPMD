@@ -9,11 +9,12 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import ExitStack, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import copy
 import multiprocessing as mp
 from multiprocessing.util import Finalize
 import os
+import pickle
 import sys
 from typing import Any
 
@@ -41,6 +42,8 @@ class ExecutionPlan:
     devices: tuple
     trajectories_per_gpu: int
     trajectory_groups: int
+    scheduling: str = "static"
+    coordinator_ranks: int = 0
 
 
 def execution_plan(config=None):
@@ -68,10 +71,16 @@ def execution_plan(config=None):
         raise ValueError(
             "This executor supports pes_ranks=1; internal MPI PES needs a dedicated adapter"
         )
-    if c.get("coordinator_ranks", 0) != 0 or c.get("scheduling", "static") != "static":
-        raise ValueError(
-            "This executor implements static groups with coordinator_ranks=0"
-        )
+    scheduling = c.get("scheduling", "static")
+    if scheduling not in ("static", "dynamic"):
+        raise ValueError("parallel.scheduling must be static or dynamic")
+    coordinators = _int(c.get("coordinator_ranks", int(scheduling == "dynamic")),
+                        "coordinator_ranks", 0)
+    if scheduling == "dynamic":
+        if backend != "mpi" or coordinators != 1:
+            raise ValueError("Dynamic scheduling requires backend='mpi' and coordinator_ranks=1")
+    elif coordinators != 0:
+        raise ValueError("Static scheduling requires coordinator_ranks=0")
     raw_devices = c.get("devices", c.get("gpus", [0] if mode == "gpu" else []))
     if isinstance(raw_devices, (str, int)):
         raw_devices = [raw_devices]
@@ -102,7 +111,8 @@ def execution_plan(config=None):
     if beads > 1:
         mode = "bead" if mode != "gpu" else mode
     return ExecutionPlan(
-        backend, mode, workers, beads, threads, devices, per_gpu, groups
+        backend, mode, workers, beads, threads, devices, per_gpu, groups,
+        scheduling, coordinators,
     )
 
 
@@ -262,6 +272,7 @@ class _MPIBeadPotential:
         from pyrpmd.potentials import make_potential
 
         self.comm = context.comm
+        self._owner_context = context
         self.identifier = context.next_id
         context.next_id += 1
         self.metadata = {"provider": "mpi-bead", "workers": self.comm.Get_size()}
@@ -273,11 +284,18 @@ class _MPIBeadPotential:
         except Exception as exc:
             local_error = _result_error(exc)
         errors = self.comm.gather(local_error, root=0)
+        self.closed = False
         if any(errors):
+            # Every rank has returned from creation. Release any contexts that
+            # succeeded before reporting another rank's initialization error.
+            try:
+                self.close()
+            except Exception as exc:
+                errors.append(_result_error(exc))
             raise RuntimeError(
                 "PES initialization failed: " + "; ".join(e for e in errors if e)
             )
-        self.closed = False
+        context.providers.append(self)
 
     def evaluate(self, positions):
         if self.closed:
@@ -308,6 +326,9 @@ class _MPIBeadPotential:
                 error = _result_error(exc)
             errors = self.comm.gather(error, root=0)
             self.closed = True
+            if self in self._owner_context.providers:
+                self._owner_context.providers.remove(self)
+            self._owner_context = None
             if any(errors):
                 raise RuntimeError(
                     "PES close failed: " + "; ".join(e for e in errors if e)
@@ -365,6 +386,7 @@ class _Context:
     slot: int
     comm: Any = None
     next_id: int = 0
+    providers: list = field(default_factory=list)
 
 
 _CONTEXT = None
@@ -378,7 +400,20 @@ def _context(plan, slot, comm=None):
     try:
         yield _CONTEXT
     finally:
-        _CONTEXT = previous
+        errors = []
+        try:
+            # A task can fail before its own finally block or omit close().
+            # Finish these collectives before the group service receives finish.
+            for provider in tuple(_CONTEXT.providers):
+                if not provider.closed:
+                    try:
+                        provider.close()
+                    except Exception as exc:
+                        errors.append(_result_error(exc))
+        finally:
+            _CONTEXT = previous
+        if errors:
+            raise RuntimeError("MPI PES cleanup failed: " + "; ".join(errors))
 
 
 def make_task_potential(spec, system):
@@ -401,6 +436,9 @@ def make_task_potential(spec, system):
             "python",
             "ase",
             "deepmd",
+            "mace",
+            "nequip",
+            "fairchem",
         ):
             raise ValueError(
                 "GPU execution requires a provider with an actual GPU implementation"
@@ -437,6 +475,70 @@ def _execute_batch(payload):
         return [(index, function(task)) for index, task in indexed_tasks]
 
 
+_TASK_TAG = 4101
+_RESULT_TAG = 4102
+
+
+def _dynamic_dispatch(control, leaders, count, mpi):
+    """Refill the first available group; drain all in-flight work on failure.
+
+    Only the coordinator calls this helper. A separate communicator keeps these
+    point-to-point messages distinct from workflow and bead collectives.
+    """
+    next_index, active, results, errors = 0, {}, {}, []
+    for leader in leaders:
+        index = next_index if next_index < count else None
+        control.send(index, dest=leader, tag=_TASK_TAG)
+        if index is not None:
+            active[leader] = index
+            next_index += 1
+    while active:
+        status = mpi.Status()
+        packet = control.recv(source=mpi.ANY_SOURCE, tag=_RESULT_TAG, status=status)
+        leader = status.Get_source()
+        expected = active.pop(leader)
+        try:
+            index, value, error = pickle.loads(packet)
+            if index != expected:
+                raise RuntimeError(f"group {leader} returned task {index}, expected {expected}")
+        except Exception as exc:
+            index, value, error = expected, None, _result_error(exc)
+        if error is not None:
+            errors.append(f"task {index}: {error}")
+        else:
+            results[index] = value
+        # A failed task stops new work. Already-running groups still finish and
+        # receive STOP, so no peer remains blocked in recv or in a bead service.
+        index = next_index if not errors and next_index < count else None
+        control.send(index, dest=leader, tag=_TASK_TAG)
+        if index is not None:
+            active[leader] = index
+            next_index += 1
+    return [results[i] for i in sorted(results)], errors
+
+
+def _dynamic_worker(function, tasks, plan, slot, group, control):
+    while True:
+        index = control.recv(source=0, tag=_TASK_TAG)
+        if index is None:
+            return
+        try:
+            with _context(plan, slot, group):
+                value = function(tasks[index])
+        except Exception as exc:
+            value, error = None, _result_error(exc)
+        else:
+            error = None
+        try:
+            packet = pickle.dumps((index, value, error), protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception as exc:
+            # Serialize before send: an unpicklable task result must become a
+            # collective error, rather than strand the coordinator in recv.
+            packet = pickle.dumps((index, None, "Task result serialization failed: " + _result_error(exc)),
+                                  protocol=pickle.HIGHEST_PROTOCOL)
+        control.send(packet, dest=0, tag=_RESULT_TAG)
+
+
 def _mpi_run(function, tasks, plan):
     try:
         from mpi4py import MPI
@@ -445,37 +547,53 @@ def _mpi_run(function, tasks, plan):
             "MPI backend requires the optional mpi4py package and an MPI runtime"
         ) from exc
     world = MPI.COMM_WORLD
-    expected = plan.trajectory_groups * plan.bead_workers
+    expected = plan.coordinator_ranks + plan.trajectory_groups * plan.bead_workers
     if world.Get_size() != expected:
         raise ValueError(
-            f"MPI world has {world.Get_size()} ranks; expected G*B={expected}"
+            f"MPI world has {world.Get_size()} ranks; expected "
+            f"coordinator_ranks+G*B={expected}"
         )
     rank = world.Get_rank()
-    group_id = rank // plan.bead_workers
+    worker_rank = rank - plan.coordinator_ranks
+    group_id = worker_rank // plan.bead_workers if worker_rank >= 0 else MPI.UNDEFINED
     device_slot = group_id
     if plan.mode == "gpu":
         # CUDA device IDs are local to each node / CUDA_VISIBLE_DEVICES. Global
         # rank arithmetic is wrong when the launcher scatters ranks over nodes.
         local = world.Split_type(MPI.COMM_TYPE_SHARED, key=rank)
-        device_slot = local.Get_rank()
+        workers = local.allgather(worker_rank >= 0)
+        device_slot = sum(workers[:local.Get_rank()])
         expected_local = len(plan.devices) * plan.trajectories_per_gpu
         local_error = None
-        if local.Get_size() != expected_local:
+        local_workers = sum(workers)
+        if local_workers and local_workers != expected_local:
             local_error = (
-                f"MPI GPU node {MPI.Get_processor_name()} has {local.Get_size()} ranks; "
+                f"MPI GPU node {MPI.Get_processor_name()} has {local_workers} worker ranks; "
                 f"expected len(devices)*trajectories_per_gpu={expected_local}"
             )
         local.Free()
         placement_errors = world.allgather(local_error)
         if any(placement_errors):
             raise ValueError("; ".join(sorted(set(e for e in placement_errors if e))))
+    task_counts = world.allgather(len(tasks))
+    if len(set(task_counts)) != 1:
+        raise ValueError("Every MPI rank must supply the same task list")
     group = world.Split(group_id, rank)
+    control = world.Dup() if plan.scheduling == "dynamic" else None
     results, error = [], None
-    if group.Get_rank() == 0:
+    if worker_rank < 0:
+        leaders = [1 + i * plan.bead_workers for i in range(plan.trajectory_groups)]
+        results, errors = _dynamic_dispatch(control, leaders, len(tasks), MPI)
+        if errors:
+            error = "; ".join(errors)
+    elif group.Get_rank() == 0:
         try:
-            with _context(plan, device_slot, group):
-                for index in range(group_id, len(tasks), plan.trajectory_groups):
-                    results.append((index, function(tasks[index])))
+            if control is not None:
+                _dynamic_worker(function, tasks, plan, device_slot, group, control)
+            else:
+                with _context(plan, device_slot, group):
+                    for index in range(group_id, len(tasks), plan.trajectory_groups):
+                        results.append((index, function(tasks[index])))
         except Exception as exc:
             error = _result_error(exc)
         finally:
@@ -486,12 +604,19 @@ def _mpi_run(function, tasks, plan):
         except Exception as exc:
             error = _result_error(exc)
     all_errors = world.allgather(error)
-    gathered = world.gather(results if group.Get_rank() == 0 else [], root=0)
-    group.Free()
+    if control is not None:
+        control.Free()
+        gathered = None
+    else:
+        gathered = world.gather(results if group.Get_rank() == 0 else [], root=0)
+    if worker_rank >= 0:
+        group.Free()
     if any(all_errors):
         raise RuntimeError("MPI task failed: " + "; ".join(e for e in all_errors if e))
     if rank != 0:
         return None
+    if plan.scheduling == "dynamic":
+        return results
     flat = [item for sub in gathered for item in sub]
     return [value for _, value in sorted(flat, key=lambda pair: pair[0])]
 
@@ -499,8 +624,9 @@ def _mpi_run(function, tasks, plan):
 def run_tasks(function, tasks, parallel_config=None):
     """Run importable ``function(task)``; MPI returns data on rank zero only.
 
-    Static process slots deliberately own task batches, keeping GPU placement
-    fixed and allowing one persistent thermal-parent task per slot.
+    Static process slots own task batches, keeping GPU placement fixed. MPI
+    dynamic scheduling uses one coordinator and refills complete trajectory
+    groups; each group's bead ranks remain attached to that group.
     """
     tasks = list(tasks)
     plan = execution_plan(parallel_config)

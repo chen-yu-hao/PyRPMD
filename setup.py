@@ -48,7 +48,7 @@ setup(
     ext_modules=extensions,
     license_files=["LICENSE", "THIRD_PARTY_NOTICES.md"],
     data_files=[
-        ("include/pyrpmd", ["native/include/pyrpmd/pes_api_v1.h"]),
-        ("share/pyrpmd/examples", ["native/examples/harmonic_pes.c"]),
+        ("include/pyrpmd", ["native/include/pyrpmd/pes_api_v1.h", "native/include/pyrpmd/pes_api_v2.h"]),
+        ("share/pyrpmd/examples", ["native/examples/harmonic_pes.c", "native/examples/periodic_cosine_pes.c"]),
     ],
 )
