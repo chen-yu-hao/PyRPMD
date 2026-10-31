@@ -62,6 +62,8 @@ class ASEPotential(Potential):
         self.cell, self.pbc = cell, pbc
 
     def evaluate(self, x):
+        from ase.calculators.calculator import PropertyNotImplementedError
+
         x = coordinates(x)
         if x.shape[1] != len(self.atoms):
             raise PotentialError("ASE atom count mismatch")
@@ -70,7 +72,17 @@ class ASEPotential(Potential):
         virials = [] if self.cell is not None and "stress" in getattr(self.atoms.calc, "implemented_properties", ()) else None
         for frame in x:
             self.atoms.set_positions(frame * BOHR_ANGSTROM)
-            es.append(self.atoms.get_potential_energy() * EV_HARTREE)
+            try:
+                # With electronic smearing, forces/stress differentiate the
+                # free energy; ASE's default may be a zero-K extrapolation.
+                energy = self.atoms.get_potential_energy(force_consistent=True)
+            except PropertyNotImplementedError:
+                # An engine which promises free_energy but cannot calculate it
+                # has failed. Never mask that failure with a different energy.
+                if "free_energy" in getattr(self.atoms.calc, "implemented_properties", ()):
+                    raise
+                energy = self.atoms.get_potential_energy()
+            es.append(energy * EV_HARTREE)
             fs.append(self.atoms.get_forces() * EV_HARTREE * BOHR_ANGSTROM)
             if virials is not None:
                 # ASE stress is tensile-positive eV/angstrom^3; W=-V*stress.

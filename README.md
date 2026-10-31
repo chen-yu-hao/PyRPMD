@@ -162,6 +162,11 @@ composition, charge and mechanism. Inputs, units, periodic CVs and
 statistics are in the [materials notes](docs/materials.md). What's new in this release is in the
 [0.2.0 release notes](docs/releases/0.2.0.md).
 
+The [periodic-materials implementation audit and TODO list](docs/periodic-materials-audit.md)
+records the code and guide review, open-source comparisons, fixes and remaining validation work
+for periodic materials and surface catalysis. The [periodic guide](docs/manual/periodic.md)
+distinguishes the default materials workflow from the opt-in native PIMD engine and its cell controls.
+
 ## Minimal inputs
 
 A transition state and a potential are a complete rate input:
