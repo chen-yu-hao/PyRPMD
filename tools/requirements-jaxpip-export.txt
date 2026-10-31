@@ -1,0 +1,12 @@
+# Offline export environment only; not PyRPMD runtime dependencies.
+# jax2onnx 0.11.2 failed the dynamic-batch force graph at B=3 in CI.
+jax[cpu]==0.9.0
+equinox==0.13.2
+jax2onnx==0.17.1
+onnx==1.20.1
+onnxruntime==1.24.1
+onnx-ir==1.1.0
+flax==0.12.3
+optax==0.2.6
+orbax-checkpoint==0.11.32
+jaxpip @ git+https://github.com/CQPES/JaxPIP.git@a18c8cca1e795202194d4082919ebd71722df125

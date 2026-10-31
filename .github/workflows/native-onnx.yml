@@ -5,6 +5,7 @@ on:
       - 'native/**'
       - 'src/pyrpmd/**'
       - 'tools/export_jaxpip_onnx.py'
+      - 'tools/requirements-jaxpip-export.txt'
       - 'tests/test_onnx_native.py'
       - 'tests/onnx/**'
       - '.github/workflows/native-onnx.yml'
@@ -31,12 +32,13 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y nlohmann-json3-dev
-          python -m pip install -e '.[test]' 'onnx==1.20.1' 'onnxruntime==1.23.2'
-          curl --fail --location --retry 3 https://github.com/microsoft/onnxruntime/releases/download/v1.23.2/onnxruntime-linux-x64-1.23.2.tgz -o "$RUNNER_TEMP/ort.tgz"
+          python -m pip install -e '.[test]' 'onnx==1.20.1' 'onnxruntime==1.24.1'
+          curl --fail --location --retry 3 https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz -o "$RUNNER_TEMP/ort.tgz"
+          echo "9142552248b735920f9390027e4512a2cacf8946a1ffcbe9071a5c210531026f  $RUNNER_TEMP/ort.tgz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/ort.tgz" -C "$RUNNER_TEMP"
       - name: Build the real ONNX Runtime plugin
         run: |
-          cmake -S native/onnx -B build/onnx -DCMAKE_BUILD_TYPE=Release -DONNXRUNTIME_ROOT="$RUNNER_TEMP/onnxruntime-linux-x64-1.23.2" -DPYRPMD_ONNX_CONTEXT_TEST=ON
+          cmake -S native/onnx -B build/onnx -DCMAKE_BUILD_TYPE=Release -DONNXRUNTIME_ROOT="$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1" -DPYRPMD_ONNX_CONTEXT_TEST=ON
           cmake --build build/onnx --parallel 2
           echo "PYRPMD_ONNX_LIBRARY=$GITHUB_WORKSPACE/build/onnx/libpyrpmd_onnx.so" >> "$GITHUB_ENV"
           echo "PYRPMD_ONNX_CONTEXT_TEST=$GITHUB_WORKSPACE/build/onnx/onnx_context_test" >> "$GITHUB_ENV"
@@ -44,8 +46,9 @@ jobs:
         run: python -m pytest -q tests/test_onnx_native.py tests/test_cabi_lifecycle.py tests/test_native_propagation.py --junitxml=onnx-tests.xml
       - name: Install pinned offline JaxPIP export stack
         run: |
-          python -m pip install 'jax[cpu]==0.9.0' 'equinox==0.13.2' 'jax2onnx==0.11.2' 'git+https://github.com/CQPES/JaxPIP.git@a18c8cca1e795202194d4082919ebd71722df125'
+          python -m pip install -r tools/requirements-jaxpip-export.txt
           python -m pip check
+          python -m pip freeze > export-environment.txt
       - name: Real JaxPIP linear and neural-network export roundtrips
         run: python tests/onnx/jaxpip_roundtrip.py --output build/onnx/jaxpip-validation
       - uses: actions/upload-artifact@v4
@@ -54,5 +57,6 @@ jobs:
           name: native-onnx-cpu-validation
           path: |
             onnx-tests.xml
+            export-environment.txt
             build/onnx/jaxpip-validation/
           if-no-files-found: warn
