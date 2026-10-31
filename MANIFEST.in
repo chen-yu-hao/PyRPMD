@@ -1,6 +1,6 @@
 include README.md README.zh-CN.md LICENSE THIRD_PARTY_NOTICES.md
 include pyproject.toml setup.py
-include native/CMakeLists.txt native/README.md native/ABI.md
+include native/CMakeLists.txt native/README.md native/ABI.md native/thermal-NOTICE.md
 recursive-include native *.cpp *.h *.hpp *.c
 recursive-include docs *.md *.json *.png *.pdf *.py *.css *.txt *.html
 prune docs/_build
@@ -11,4 +11,5 @@ recursive-include benchmarks/h3/convergence_inputs *.inp
 recursive-include benchmarks/loop_native *.py *.md *.c *.cpp *.h *.f90
 recursive-include benchmarks/materials *.py *.md *.json
 recursive-include benchmarks/efficiency *.py *.md
+include benchmarks/efficiency/native-ensembles-summary.json
 global-exclude __pycache__ *.py[cod] *.so *.o

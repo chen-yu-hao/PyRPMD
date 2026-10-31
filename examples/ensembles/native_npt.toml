@@ -1,0 +1,31 @@
+# Ideal-gas numerical control: not a material or a pressure-equilibrated result.
+schema_version = "native-ensembles/1"
+positions = [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]
+geometry_unit = "angstrom"
+masses = ["1.008 amu", "1.008 amu"]
+beads = 8
+temperature = "300 K"
+timestep = "0.1 fs"
+cell = [[10.0, 0.0, 0.0], [0.0, 10.0, 0.0], [0.0, 0.0, 10.0]]
+cell_unit = "angstrom"
+pbc = [true, true, true]
+seed = 813
+
+[potential]
+kind = "free"
+
+[thermostat]
+mode = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+
+[barostat]
+mode = "bzp"
+pressure = "100 bar"
+tau = "1000 fs"
+gamma = "0.01 fs^-1"
+
+[run]
+duration = "1 ps"
+interval = "1 fs"
+record_centroids = true
+output = "runs/native-npt"
