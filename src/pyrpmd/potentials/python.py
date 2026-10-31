@@ -167,6 +167,10 @@ class PythonPotential(Potential):
             result.messages,
             None if result.virial is None else result.virial * self.energy_factor,
         )
+        if self.length_factor == self.energy_factor == self.sign == 1:
+            # Multiplication only copied the validated arrays. Keep those
+            # independent output buffers without scanning their values again.
+            return result
         return validate_result(result, x.shape, require_success=False)
 
     def close(self):
