@@ -29,7 +29,7 @@ PyRPMD 需要 **Python 3.11 或更高版本**、NumPy ≥ 1.26、SciPy ≥ 1.11 
 | --- | --- |
 | `native.available`、`native.openmp` | C++ 扩展与 OpenMP 已加载 |
 | `native.integrators` | 已编译的积分器：`cayley-bcb`、`normal-mode-bab`、`velocity-verlet` |
-| `workflows` | 11 类可用 `task`，包括 OPES |
+| `workflows` | 11 类可用 `task`，包括 `opes` |
 | `input_schema_version` | 当前输入版本（1） |
 
 ASE、MPI、Torch 和外部势能库等可选功能需要各自的依赖，见[可选依赖](#可选依赖)。
@@ -61,8 +61,8 @@ PYRPMD_NO_OPENMP=1 python -m pip install -e .
 `pyrpmd info` 显示实际加载的内容。
 
 运行时由两个输入设置控制编译代码：`dynamics.native="required"` 要求编译的积分内核；
-`dynamics.loop_backend="native"` 要求整个传播循环走融合原生路径。使用缺省采样引擎时，自定义 Python 势或周期/固定原子体系
-在 Python 外层循环中使用编译的积分子步骤；独立的原生 PIMD 采样引擎有显式的能力与限制，见[执行与并行](execution.md)。
+`dynamics.loop_backend="native"` 要求整个传播循环走融合原生路径。默认工作流引擎下，自定义 Python 势或周期/固定原子体系
+在 Python 外层循环中使用编译的积分子步骤。单独选择的原生 PIMD 引擎有自己的势能与执行要求，见[执行与并行](execution.md)。
 
 ## 可选依赖
 
@@ -71,8 +71,8 @@ PYRPMD_NO_OPENMP=1 python -m pip install -e .
 | `python -m pip install -e '.[ase]'` | ASE calculator 势能 | calculator 的模型或程序 |
 | `python -m pip install -e '.[mpi]'` | MPI 轨迹组与珠子分块 | 与 mpi4py 匹配的 MPI 库和启动器 |
 | `python -m pip install -e '.[gpu]'` | Torch 势能 | 与节点驱动匹配的 PyTorch/CUDA 及模型 |
-| `python -m pip install -e '.[analysis]'` | PyMBAR 对照 | 无；常规 FES 使用内置 MBAR |
-| `python -m pip install -e '.[plots]'` | 科学图形与 HTML 分析报告 | Matplotlib；对已保存运行出报告不需要外部 PES |
+| `python -m pip install -e '.[plots]'` | Matplotlib 出图与 `pyrpmd report` 的 HTML/JSON 分析报告 | 保存的 PyRPMD 结果；出报告不需要外部 PES |
+| `python -m pip install -e '.[analysis]'` | PyMBAR 对照及绘图依赖 | 常规 FES 使用内置 MBAR |
 | `python -m pip install -e '.[test]'` | pytest 测试 | 缺少可选接口时相应测试跳过 |
 | `python -m pip install -e '.[docs]'` | 构建本手册 | Sphinx、MyST、PyData 主题 |
 

@@ -14,6 +14,32 @@ from .input_schema import InputError, _SECTIONS, _integer, _positive
 from .units import parse_quantity
 
 
+def validate_input_preflight(d):
+    # These nested tables are consumed before provider construction. Reject
+    # malformed values here, rather than leaking AttributeError or creating
+    # an output directory before a later workflow fails.
+    for section, fields in (
+        ("potential", ("params", "initializer_params")),
+        ("sampling", ("thermostat_params",)),
+        ("outcomes", ("params", "bond_cutoffs")),
+    ):
+        table = d.get(section, {})
+        for field in fields:
+            if (section == "potential" and field == "initializer_params"
+                    and table.get(field) is None):
+                # Python RPMDrate inputs use None for the default initializer.
+                continue
+            if field in table and not isinstance(table[field], Mapping):
+                raise InputError(f"{section}.{field} must be a table")
+    for table, label in ((d, "native"), (d.get("dynamics", {}), "dynamics.native")):
+        if "native" in table:
+            value = table["native"]
+            if isinstance(value, (bool, np.bool_)):
+                table["native"] = bool(value)
+            elif value is not None and not (isinstance(value, str) and value == "required"):
+                raise InputError(f"{label} must be a boolean, None or 'required'")
+
+
 def validate_task_sections(d):
     task = d["task"]
     materials = task in ("pimd", "diffusion")

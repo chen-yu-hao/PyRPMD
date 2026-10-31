@@ -197,6 +197,19 @@ def test_no_pickle_on_either_write_or_read_and_legacy_is_explicit(tmp_path):
         inspect_checkpoint(path)
 
 
+def test_legacy_checkpoint_does_not_compute_digests_without_an_envelope(tmp_path, monkeypatch):
+    import pyrpmd.checkpoint as checkpoint
+
+    path = tmp_path / "legacy.npz"
+    values = np.arange(24.0).reshape(2, 4, 3)
+    np.savez_compressed(path, q=values, metadata=json.dumps({"format": "PyRPMD.test.v1"}))
+    monkeypatch.setattr(checkpoint.hashlib, "sha256",
+                        lambda *a, **k: pytest.fail("legacy checkpoint has no digest to verify"))
+    with load_checkpoint(path, expected_kind="PyRPMD.test.v1") as saved:
+        assert saved.envelope["integrity"] == "unverified_legacy"
+        np.testing.assert_array_equal(saved["q"], values)
+
+
 def test_public_resume_accepts_execution_changes_and_checks_state_integrity(tmp_path):
     directory = tmp_path / "run"
     first = run(collision_job(), output=directory)

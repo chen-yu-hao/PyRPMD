@@ -37,26 +37,29 @@ def _read_adaptive_plan(run, path, *, require_frozen=False):
     cache = run.setdefault("_sampling_plan_cache", {})
     key = str(Path(path).resolve())
     if key not in cache:
-        cache[key] = _json(run, path)
+        data = _json(run, path)
+        if "checksum" in data:
+            import hashlib
+            canonical = json.dumps({name: value for name, value in data.items() if name != "checksum"},
+                                   sort_keys=True, separators=(",", ":"), allow_nan=False)
+            if hashlib.sha256(canonical.encode()).hexdigest() != data["checksum"]:
+                raise ValueError("Adaptive plan checksum mismatch")
+        else:
+            raise ValueError("Adaptive plan lacks the checksum required for saved diagnostics")
+        # Schema 2 adds a pilot schedule; schema 3 normalizes the MBAR overlap
+        # score. Centers and physical stiffness keep the same units and shape.
+        if data.get("schema_version") not in (1, 2, 3):
+            raise ValueError("Unsupported adaptive plan schema version")
+        metric = ("normalized_mbar_cosine" if data["schema_version"] == 3
+                  else "mbar_symmetric_transition")
+        if data.get("overlap_metric", None if data["schema_version"] == 3 else metric) != metric:
+            raise ValueError("Adaptive overlap metric does not match the plan schema")
+        if data.get("status") not in ("adapting", "incomplete", "frozen"):
+            raise ValueError("Unsupported adaptive plan status")
+        # Both report consumers only read this snapshot. Cache it after its
+        # invariant checks pass; production readiness remains caller-specific.
+        cache[key] = data
     data = cache[key]
-    if "checksum" in data:
-        import hashlib
-        canonical = json.dumps({name: value for name, value in data.items() if name != "checksum"},
-                               sort_keys=True, separators=(",", ":"), allow_nan=False)
-        if hashlib.sha256(canonical.encode()).hexdigest() != data["checksum"]:
-            raise ValueError("Adaptive plan checksum mismatch")
-    else:
-        raise ValueError("Adaptive plan lacks the checksum required for saved diagnostics")
-    # Schema 2 adds a pilot schedule; schema 3 normalizes the MBAR overlap
-    # score. Centers and physical stiffness keep the same units and shape.
-    if data.get("schema_version") not in (1, 2, 3):
-        raise ValueError("Unsupported adaptive plan schema version")
-    metric = ("normalized_mbar_cosine" if data["schema_version"] == 3
-              else "mbar_symmetric_transition")
-    if data.get("overlap_metric", None if data["schema_version"] == 3 else metric) != metric:
-        raise ValueError("Adaptive overlap metric does not match the plan schema")
-    if data.get("status") not in ("adapting", "incomplete", "frozen"):
-        raise ValueError("Unsupported adaptive plan status")
     if require_frozen and data.get("status") != "frozen":
         raise ValueError("Adaptive production centers require a supported frozen plan")
     return data

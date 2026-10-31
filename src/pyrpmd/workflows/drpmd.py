@@ -67,6 +67,8 @@ _jsonable = partial(jsonable, dataclasses="asdict", callables=False, to_dict="ig
 _atomic_json = partial(
     write_json,
     sort_keys=True,
+    ensure_ascii=True,
+    trailing_newline=False,
     dataclasses="asdict",
     callables=False,
     to_dict="ignore",

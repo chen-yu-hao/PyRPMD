@@ -15,6 +15,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 from ..constants import ATOMIC_TIME_S
+from ..validation import positive_integer
 from .fes import (
     UmbrellaReweighting,
     _block_resample,
@@ -44,10 +45,7 @@ def surface_normalization(options, system):
         raise ValueError("surface.normalization accepts reaction_order, area, reference_adsorbates, site_count, coverage, path_multiplicity")
 
     def integer(name, default):
-        value = options.get(name, default)
-        if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
-            raise ValueError(f"surface.normalization.{name} must be a positive integer")
-        return int(value)
+        return positive_integer(options.get(name, default), f"surface.normalization.{name}")
 
     order = integer("reaction_order", 1)
     if order not in (1, 2):
@@ -59,15 +57,24 @@ def surface_normalization(options, system):
         return result
     if "reference_adsorbates" not in options:
         raise ValueError("second-order normalization requires explicit reference_adsorbates")
+    area_vectors = None
     if "area" in options:
         area = parse_quantity(options["area"], (2, 0, 0, 0, 0, 0))
-    elif system.cell is not None and all(system.pbc[:2]):
-        area = float(np.linalg.norm(np.cross(system.cell[0], system.cell[1])))
+        area_source = "explicit"
+    elif system.cell is not None and np.count_nonzero(system.pbc) == 2:
+        # PBC flags select lattice vectors, not Cartesian axes. Reordering
+        # cell rows must not change the surface concentration or rate. A
+        # fully periodic cell does not identify a unique surface plane.
+        area_vectors = np.flatnonzero(system.pbc).tolist()
+        a, b = system.cell[area_vectors]
+        area = float(np.linalg.norm(np.cross(a, b)))
+        area_source = "periodic_cell_vectors"
     else:
-        raise ValueError("second-order normalization requires area or two periodic in-plane cell vectors")
+        raise ValueError("second-order normalization requires explicit area unless the cell has exactly two periodic lattice vectors")
     if not np.isfinite(area) or area <= 0:
         raise ValueError("surface normalization area must be finite and positive")
     result.update(area_cm2=area * (BOHR_M * 100)**2,
+                  area_source=area_source, area_lattice_vectors=area_vectors,
                   reference_adsorbates=integer("reference_adsorbates", 1))
     if ("coverage" in options) != ("site_count" in options):
         raise ValueError("coverage and site_count must be specified together")

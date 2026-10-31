@@ -27,7 +27,9 @@ remain in their resolvers.
 `io.jsonable` and `io.write_json` use strict metadata conversion by default.
 `io.report_jsonable` and `io.write_report_json` encode unavailable numerical
 estimates as JSON `null`. Callable, dataclass and `to_dict` policies preserve
-existing representations. Use `checkpoint.atomic_savez` for the common atomic
+existing representations. `write_json` delegates publication to
+`atomic_write_text`; `ensure_ascii` and `trailing_newline` retain each workflow's
+text format. Use `checkpoint.atomic_savez` for the common atomic
 compressed NPZ container and integrity envelope; `save_metadata_npz` only
 packages dRPMD metadata before delegating to it.
 
@@ -63,6 +65,9 @@ entry point.
 A change to a public interface updates the documentation, the examples and tests that check the
 numerical and state behavior in the same commit. Changes to sampling measures, forces, constraints,
 random streams or restart identity come with their scientific reasoning and regression tests.
+
+The [implementation and guide audit](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/implementation-guide-audit-2026-10-31.md)
+records the review scope, prioritized work, implemented fixes and remaining validation boundaries.
 
 The [2026-10-31 user-experience review](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/ux-review-2026-10-31.md)
 tracks the audit scope, prioritized to-do list, implemented fixes and remaining work.

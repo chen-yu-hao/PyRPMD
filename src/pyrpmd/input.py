@@ -26,7 +26,8 @@ from .input_runtime import (
 )
 from .input_system import resolve_system, resolve_potential
 from .input_tasks import (
-    validate_task_sections, resolve_reaction, resolve_collision, validate_workflow,
+    validate_input_preflight, validate_task_sections, resolve_reaction,
+    resolve_collision, validate_workflow,
 )
 
 
@@ -165,6 +166,7 @@ class JobSpec:
                 unknown = set(d[section]) - allowed
                 if unknown:
                     raise _unknown_fields(unknown, allowed, section)
+        validate_input_preflight(d)
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")

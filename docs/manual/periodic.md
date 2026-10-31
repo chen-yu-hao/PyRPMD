@@ -1,7 +1,9 @@
 # Periodic materials, diffusion and surface reactions
 
-PyRPMD handles periodic systems and slabs with frozen layers, plus isotropic NPT PIMD. This chapter covers
-equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop rates.
+PyRPMD handles periodic systems and slabs with frozen layers, plus constant-pressure PIMD. This chapter
+covers equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop rates. The
+default materials engine and the opt-in native PIMD engine have different potential, barostat and
+checkpoint contracts; select the engine explicitly when using the native route.
 
 ## Tasks and boundary conditions
 
@@ -9,7 +11,7 @@ equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop 
 | --- | --- | --- | --- | --- |
 | `pimd` | Equilibrium quantum statistics; optional BZP NPT | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
 | `diffusion` | Continuous centroid trajectories and transport | Yes | Yes | MSD, VACF, D and diagnostics |
-| `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one constant-gradient CV |
+| `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one supported smooth scalar centroid CV |
 | `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
 | `surface_rate` | A directed exit on a surface, optionally with fixed layers | Yes, or a finite cluster | Yes | First-order rate with the mass metric of the mobile atoms |
 
@@ -64,7 +66,9 @@ and equilibration time for each isotope.
 
 `periodic_bond_difference` also accepts the alias `periodic_difference`. A nearest-image CV has a
 derivative branch where the nearest image switches; keep the biased range away from it.
-`site_rate` accepts its supported linear centroid CVs. `surface_rate` also accepts unwrapped
+`site_rate` accepts its supported linear and smooth nonlinear scalar centroid CVs, with the
+constrained-parent mass-metric weighting described in [general-coordinate rates](../general-coordinate-rates.md).
+`surface_rate` also accepts unwrapped
 `distance` with its constant endpoint mass metric and full curved constraint. For
 `periodic_distance`, the dividing surface must be below half the smallest singular value
 of the periodic lattice basis, keeping it away from image switches. Bond differences and
@@ -84,16 +88,35 @@ Python periodic plugins use one of two contracts:
   `evaluate(q)`. The bound System is in atomic units, so a plugin working in angstrom/eV converts the
   stored cell itself.
 
-Run `validate --check-pes` on a new calculator, then check forces and periodic translations
-independently.
+Run `validate --check-pes` on a new calculator to check input/provider setup and finite PES results.
+For ordinary adiabatic potentials this is an interface/evaluation check, not an automatic
+finite-difference force, lattice-translation or finite-strain virial validation. Perform those
+checks independently before a research calculation.
 
 i-PI sends the true cell and its inverse in POSDATA, using the protocol's column-vector convention.
 POSDATA carries no PBC flags, so a slab sets `potential.params.init.pbc` to match the system and the
-server must honor this INIT field. For periodic models, use the ASE, Python or i-PI interfaces; the
-C ABI v1, RPMDrate/f2py and Torch adapters take molecular systems.
+server must honor this INIT field. Periodic models can use C ABI v2, ASE and its named ML adapters,
+explicitly periodic Python or Torch, tblite, or i-PI. C ABI v1 and RPMDrate/f2py remain molecular
+interfaces. The generic Torch model must explicitly select `periodic=true` and implement
+`forward(q, cell, pbc)`; merely loading a Torch model does not make it periodic. DeePMD currently
+accepts full PBC or no PBC, while the PySCF adapter is molecular. See
+[potential contracts and restrictions](potentials.md#c-abi-v2-and-periodic-torch).
 
-Periodic and fixed-atom systems run in a Python time-step loop with compiled deterministic
-substeps; use `loop_backend="auto"` or `"python"`.
+Match the electronic-structure solver's boundary convention: a plane-wave slab may use full 3D
+periodicity with vacuum. PyRPMD's PBC flags do not configure a calculator's electrostatic solver
+or dipole correction. Check the chosen treatment of repeated slabs, net charge and asymmetric
+surface dipoles, together with vacuum, k-point, cutoff and electronic-smearing convergence.
+The [GPAW dipole-layer tutorial](https://gpaw.readthedocs.io/tutorialsexercises/electrostatics/dipole_correction/dipole.html)
+illustrates distinct real-space and plane-wave boundary treatments. For a fully periodic slab,
+declare the surface normal explicitly and supply its area when requesting second-order normalization.
+
+With the default workflow engine, periodic and fixed-atom systems use a Python time-step loop
+with compiled deterministic substeps; use `loop_backend="auto"` or `"python"`. An explicit
+`task="pimd"`, `sampling.engine="native"` selects a separate C++ trajectory engine with supported
+builtins or a compiled `native_periodic` evaluator. C ABI v2 batch evaluation does not by itself
+supply that evaluator. See the
+[native PIMD workflow](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)
+for its potential ABI, thermostats and restart format.
 
 ## PIMD: equilibrium properties
 
@@ -109,7 +132,8 @@ pyrpmd analyze runs/manual-pimd
 pyrpmd resume runs/manual-pimd
 ```
 
-The [input](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/pimd.inp) uses a
+The [input](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/pimd.inp) uses the
+default (`sampling.engine="legacy"`) materials engine and a
 periodic cosine potential. `sampling.equilibration` is the initial equilibration time, `production`
 the sampling time, `interval` the save interval and `replicas` the number of independent streams.
 
@@ -135,12 +159,26 @@ estimators; the last is a propagation diagnostic. Each has a `mean` and a
 velocities, sample steps, energy estimators and radii of gyration. `checkpoints/materials_XXXX.npz`
 holds the state and the authoritative committed prefix. `[output] trajectory_storage="stream"`
 is the default; `chunk_frames=256` bounds the staging buffer. `trajectory_storage="memory"` retains
-the earlier single-NPZ layout. Old completed runs can migrate without loading the PES. Correlation
-analysis still loads scalar or selected-atom histories; budget that memory separately. See
+the earlier single-NPZ layout. Completed runs whose scientific identity remains compatible can
+migrate storage without loading the PES. Historical ASE-backed runs need a new output directory
+under the [force-consistent energy convention](potentials.md); saved summaries remain readable.
+Correlation analysis still loads scalar or selected-atom histories; budget that memory separately. See
 [streaming and recovery](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md).
 For transport properties use the `diffusion` task.
 
+### Native PIMD engine
+
+`sampling.engine="native"` selects the separate C++ ensemble engine. It has explicit built-in
+and compiled PES requirements, additional thermostats, NVT support for fixed atoms, and BZP,
+MTTK, RGB or SCR barostats subject to their documented restrictions. It uses transactional
+`samples/native_pimd_NNNN/journal.json` files and immutable chunks instead of the default
+materials checkpoint layout. Engine selection changes the run identity. See the
+[native PIMD guide and examples](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)
+for the full input and output contract; the BZP table below belongs to the default engine.
+
 ### Constant-pressure PIMD
+
+For the default materials engine:
 
 ```toml
 [barostat]
@@ -157,6 +195,15 @@ not supported for NPT. Pressure accepts Pa, kPa, MPa, GPa, bar, atm and atomic p
 The optional `friction` defaults to the inverse time constant. Samples include cells, pressures
 and volumes; checkpoint state includes the cell piston. See the
 [BZP method and example](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials-npt.md).
+The opt-in native PIMD engine additionally exposes `mode="mttk"` and `mode="rgb"` flexible-cell
+barostats, along with native `bzp` and one-bead `scr`. All these NPT modes require compiled physical
+virials, 3D PBC and all atoms mobile. Native fixed-cell NVT does support `fixed_atoms`.
+The native `mode`/`tau`/`gamma` controls do not replace the legacy
+`method`/`time_constant`/`friction` table above. Flexible-cell inputs have a specified triangular
+cell convention. A cell mask does not establish a slab or frozen-substrate NPT ensemble. The
+[native ensemble guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md#barostats)
+defines these restrictions and the tested numerical controls.
+
 RPMD diffusion production remains fixed-cell and thermostat-free by default.
 
 ## Diffusion: MSD and D from continuous trajectories
@@ -280,8 +327,9 @@ of leaving one local well to the right on a separable analytic surface. It takes
 on one core; the 2D surface FES takes about 1 minute.
 
 `system.fixed_atoms` freezes every bead of the listed atoms with zero momentum; they still enter the
-PES and act on the mobile atoms. The rate coordinate is one centroid `cartesian`, `surface_height`
-or `surface_lateral` CV. `surface.reactant_basin`, `surface.dividing_surface` and
+PES and act on the mobile atoms. The rate coordinate is one centroid `cartesian`, `surface_height`,
+`surface_lateral`, `distance` or smooth `periodic_distance` CV, subject to the image-switch restriction
+above. `surface.reactant_basin`, `surface.dividing_surface` and
 `surface.product_side="higher"/"lower"` define the basin and the product side; the whole basin lies
 on the reactant side. Give these lengths with units.
 
@@ -289,6 +337,16 @@ Outputs are `surface_pmf.csv` / `.npz` / `.json`, `recrossing.csv`, `umbrella/` 
 with the rate in `rate_s_inv`, `rate_estimate_s_inv`, `rate_standard_error_s_inv` and
 `rate_percentile_95_ci_s_inv` (same unit as `site_rate`, different field names). If basin support
 fails in some bootstrap draws, the joint interval is left empty.
+
+For an explicitly defined second-order surface normalization, set
+`surface.normalization.reaction_order=2` and `reference_adsorbates` to the number of co-reactants
+in the reference cell. The conversion is `k2 = k_cell * area / reference_adsorbates`, in `cm²/s`.
+Area is inferred only when exactly two lattice vectors are periodic, using their cross product;
+their indices need not be 0 and 1. For a fully periodic cell, a wire or a finite cluster, supply
+`surface.normalization.area` with area units to identify the intended surface. This conversion
+does not account for coverage-dependent interactions or turn a local rate into a total turnover
+frequency. See the
+[surface normalization definition](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md).
 
 Surface `fes` supports adaptive umbrellas; `surface_rate` uses fixed windows. To run a real ASE
 calculator, install ASE:
@@ -304,3 +362,31 @@ fixed layers. Models and sources are described in the
 [materials notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials.md) *(Chinese)*,
 the [surface notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md) *(Chinese)*
 and the [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md).
+
+## From a runnable slab to a research calculation
+
+The Cu/EMT, Ni–H/EAM and CO/O/Pt(111) examples exercise different models and workflows; their short
+pilots do not establish a converged catalytic rate or diffusion coefficient. Use the following
+sequence for a new material:
+
+1. Relax and identify the slab, adsorption sites, fixed layers, coverage and electronic state with
+   the intended PES. Declare all three lattice vectors and each PBC flag. Start a molecule or
+   adsorbate group in one consistent unwrapped image before using a COM coordinate; a nearest-image
+   pair distance does not reconstruct a whole group.
+2. Check the adapter's energy/force agreement with the underlying calculator, finite-difference
+   forces and lattice-translation invariance. For variable-cell sampling also compare the virial
+   with finite strains. For a metal with electronic smearing, verify that the reported energy is
+   the thermodynamic potential differentiated by its forces.
+3. Converge equilibrium preparation, bead count and timestep at each temperature and isotope.
+   Check the number of mobile degrees of freedom, ring radii and independent-replica statistics.
+   Equilibrium PIMD sampling time is not a physical transport trajectory.
+4. For diffusion, retain unwrapped centroids, choose a disjoint lattice reference group and test
+   the fit window and production length. `axes` denotes Cartesian axes; rotate a tilted slab into
+   the desired analysis frame or analyze its full tensor. For a local rate, establish connected
+   basin/transition-state sampling and an independently supported recrossing plateau.
+5. Vary lateral supercell, slab thickness, vacuum, coverage and frozen-layer choice. Report model
+   accuracy, finite-size effects and statistical/numerical convergence separately. A single directed
+   first-order rate does not determine total escape, sticking, turnover frequency or conductivity.
+
+The [periodic-materials audit and TODO list](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/periodic-materials-audit.md)
+records implementation findings, open-source comparisons and remaining validation work.

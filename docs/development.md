@@ -25,6 +25,8 @@ Import shared primitives from their owning module when adding code:
   `report_jsonable`/`write_report_json` represent unavailable numerical estimates
   as JSON `null`. The callable, dataclass and `to_dict` policies preserve legacy
   schemas; they are explicit choices, not interchangeable serializers.
+  `write_json` delegates publication to `atomic_write_text`; `ensure_ascii` and
+  `trailing_newline` preserve each workflow's existing text format.
 - `checkpoint.atomic_savez` owns atomic compressed NPZ writes, the integrity
   envelope and per-array checksums. `save_metadata_npz` packages dRPMD metadata
   and delegates to that writer. Workflow modules define payload contents and

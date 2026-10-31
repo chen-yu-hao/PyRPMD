@@ -51,7 +51,8 @@ pyrpmd analyze runs/job                 # read the summary; FES, metadynamics, O
 pyrpmd resume runs/job                  # continue from checkpoints without changing the science
 ```
 
-All options are listed in [Input and command line](manual/input.md#command-line-reference). The
+The command index and common options are in [Input and command line](manual/input.md#command-line-reference);
+`pyrpmd COMMAND --help` lists all options of the installed version. The
 Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 [Quickstart](manual/quickstart.md).
 

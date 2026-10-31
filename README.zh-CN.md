@@ -89,7 +89,7 @@ pyrpmd resume my-first-run/run
 | 一维/二维自由能面 | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
 | 自适应伞窗口 | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
 | Standard 或 well-tempered metadynamics | `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
-| 概率增强采样 | `opes` | `examples/opes/harmonic_2d.inp` | — |
+| OPES 概率增强采样 | `opes` | `examples/opes/harmonic_2d.inp` | — |
 | 固定晶胞 PIMD 与能量估计量 | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD 自扩散、MSD、VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | 材料中的有向位点跃迁 | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
@@ -120,7 +120,7 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 | 反应网络 | 同一原子与同位素组成下的不同入口、TS 和 PES；每条路径填入速率矩阵，按入口、通道和 TS 分别报告 |
 | dRPMD | 两个反应物 XYZ 和初始质心距离；常驻母链按设定间隔发射碰撞 |
 | 核初态选择 | 固定碰撞能下近似振动态选择 NE-RPMD / 单珠子 QCT，独立初态采样、碰撞前检查与未决轨迹延长续跑（[方法](docs/state-selected.md)、[示例](examples/state_selected/README.md)） |
-| 自由能 | 带完整 CV Jacobian 的一至三维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；一维/二维可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
+| 自由能 | 带完整 CV Jacobian 的一维/二维伞抽样、MBAR、重叠图、相关块 bootstrap、未采样区域 mask 与离线重分析；可依据 MBAR 重叠、有效样本数及可选覆盖目标自适应插入窗口 |
 | Metadynamics | Standard 与 well-tempered，1–3 维 CV、周期/固定层体系、NHC/PILE-L/Andersen、软墙、可选 1D/2D 偏置网格、独立历史与有限时间 FES |
 | 副本交换伞抽样 | 同温固定窗口 REUS、PILE-L 或 Andersen、同步集合续跑与跨窗口联合 bootstrap（[指南](docs/replica-exchange.md)） |
 | OPES | 固定带宽加权概率估计、可选冻结偏置重加权与可续跑的独立历史（[指南](docs/opes.md)） |
@@ -139,6 +139,10 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 PIMD 与固定晶胞扩散支持冻结基底原子；各向同性 BZP 恒压 PIMD 要求三维完全周期、全部原子可动及物理势能 virial。
 材料轨迹默认按带校验的分块流式保存。质子导体需要适合其组成、电荷与机理的周期势。输入、单位、周期 CV 与统计见
 [材料说明](docs/materials.md)。本版本的新内容见 [0.2.0 发行说明](docs/releases/0.2.0.md)。
+
+[周期材料实现审查与 TODO 清单](docs/periodic-materials-audit.md)记录代码与指南审查、开源实现对照、
+已修复问题和周期材料/表面催化仍需完成的验证。[周期体系指南](docs/zh/manual/periodic.md)区分默认材料工作流与
+显式原生 PIMD 引擎及其晶胞控制方式。
 
 ## 最小输入
 

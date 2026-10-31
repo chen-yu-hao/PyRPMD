@@ -187,6 +187,11 @@ def path_identity(config, system, *, entrance, transition_state, channel):
         "transition_state": transition_state, "channel": channel,
         "config": _scientific_job(config), "system": system.to_dict(),
     }
+    from .potentials import energy_convention_identity
+
+    energy_convention = energy_convention_identity(config)
+    if energy_convention is not None:
+        value["potential_energy_convention"] = energy_convention
     return hashlib.sha256(json.dumps(jsonable(value), sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 

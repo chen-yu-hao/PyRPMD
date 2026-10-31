@@ -29,6 +29,30 @@ The fixed System supplies atom identities, cell, PBC, charge and multiplicity.
 `D` and `T` map to the chemical element `H` in potential engines; isotope masses
 remain in PyRPMD dynamics. Do not repeat System fields inside `potential.params`.
 
+### ASE energy and force consistency
+
+ASE-backed adapters request `atoms.get_potential_energy(force_consistent=True)` so that a
+calculator with electronic smearing returns the electronic free energy differentiated by
+its forces and stress. This is the calculator's electronic thermodynamic potential, not
+a nuclear free energy or a PyRPMD PMF. Electronic smearing temperature and nuclear thermostat
+temperature remain separate model inputs. See the
+[ASE energy contract](https://docs.ase-lib.org/ase/atoms.html#ase.Atoms.get_potential_energy).
+
+If a calculator does not advertise `free_energy` and raises ASE's
+`PropertyNotImplementedError`, the adapter falls back to its ordinary energy. A calculator
+that advertises `free_energy` but fails to provide it raises an error; other calculator
+failures are not swallowed. Classical calculators whose two energies coincide retain their
+energy convention. The ASE energy convention is part of the run identity: older ASE-backed
+checkpoints cannot be resumed or recomputed with the new adapter, including classical runs
+where the two energies happen to coincide. Their existing summary can still be read. Start
+a new output directory; new-convention runs resume normally. In particular, do not splice
+old zero-temperature extrapolated energies or free-energy weights into a trajectory using
+the corrected convention.
+
+The identity guard recognizes the explicit `ase`, `mace`, `nequip` and `fairchem` providers;
+it cannot discover an ASE calculator hidden inside arbitrary Python factory code. Keep the
+source and energy convention of such plugins in the model provenance as well.
+
 ## MACE and NequIP
 
 Python input dictionaries:

@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import numbers
 import re
+from .validation import finite_real
 from .constants import (
     ANGSTROM_TO_AU,
     FS_TO_AU,
@@ -121,35 +122,46 @@ def unit_factor(unit: str, dimension=None) -> float:
 def parse_quantity(value, dimension=None) -> float:
     """Parse '0.1 fs'. Numeric values are explicitly canonical atomic values.
 
-    For temperature the canonical unit is kelvin. InputLoader can require a
-    string for user-facing quantities; numerical APIs may pass atomic values.
+    For temperature the canonical unit is kelvin. Explicit unit strings and
+    canonical numerical values follow the same rules in JobSpec and Python APIs.
     """
     if isinstance(value, bool):
         raise ValueError("Boolean is not a physical quantity")
-    if isinstance(value, numbers.Real):
-        result = float(value)
-    elif isinstance(value, str):
-        m = _NUMBER.fullmatch(value)
-        if not m:
-            raise ValueError(f"Invalid quantity {value!r}")
-        result = float(m[1]) * unit_factor(m[2], dimension)
-    elif isinstance(value, (tuple, list)) and len(value) == 2:
-        if isinstance(value[0], bool) or not isinstance(value[0], numbers.Real):
-            raise ValueError("Quantity value must be a real number")
-        result = float(value[0]) * unit_factor(str(value[1]), dimension)
-    else:
-        raise ValueError(f"Expected number or quantity string, got {value!r}")
+    try:
+        if isinstance(value, numbers.Real):
+            result = float(value)
+        elif isinstance(value, str):
+            m = _NUMBER.fullmatch(value)
+            if not m:
+                raise ValueError(f"Invalid quantity {value!r}")
+            result = float(m[1]) * unit_factor(m[2], dimension)
+        elif isinstance(value, (tuple, list)) and len(value) == 2:
+            if isinstance(value[0], bool) or not isinstance(value[0], numbers.Real):
+                raise ValueError("Quantity value must be a real number")
+            result = float(value[0]) * unit_factor(str(value[1]), dimension)
+        else:
+            raise ValueError(f"Expected number or quantity string, got {value!r}")
+    except OverflowError as error:
+        raise ValueError("Physical quantities must be finite") from error
     if not math.isfinite(result):
         raise ValueError("Physical quantities must be finite")
     return result
 
 
 def time_steps(value, dt, *, allow_zero=False) -> int:
+    """Resolve a duration against a positive, finite atomic-unit time step."""
     t = parse_quantity(value, "time")
-    if dt <= 0:
-        raise ValueError("Time step must be positive")
-    n = int(round(t / dt))
-    if not math.isclose(t / dt, n, rel_tol=1e-9, abs_tol=1e-8):
+    dt = finite_real(
+        dt, "Time step", positive=True,
+        message="Time step must be a positive finite real number",
+    )
+    if t < 0:
+        raise ValueError("Negative duration")
+    ratio = t / dt
+    if not math.isfinite(ratio):
+        raise ValueError("Duration divided by the time step must be finite")
+    n = int(round(ratio))
+    if not math.isclose(ratio, n, rel_tol=1e-9, abs_tol=1e-8):
         raise ValueError(
             f"Duration {value!r} is not an integer multiple of the time step"
         )

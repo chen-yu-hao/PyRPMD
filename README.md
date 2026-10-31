@@ -115,7 +115,7 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | 1D/2D free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
 | Adaptive umbrella windows | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
 | Standard or well-tempered metadynamics | `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
-| Probability-based enhanced sampling | `opes` | `examples/opes/harmonic_2d.inp` | — |
+| OPES probability-based enhanced sampling | `opes` | `examples/opes/harmonic_2d.inp` | — |
 | Fixed-cell PIMD and energy estimators | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | Directed site-to-site hop in a material | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
@@ -147,7 +147,7 @@ to a research calculation.
 | Reaction networks | Separate entrances, TSs and PESs for one atom and isotope inventory; each path fills a rate matrix, reported per entrance, channel and TS |
 | dRPMD | Two reactant XYZ files and an initial COM distance; persistent parent chains launch collisions at a set interval |
 | Selected nuclear initial states | Approximate vibrational NE-RPMD and P=1 QCT at fixed collision energy, independent initial-state draws, precollision checks and unresolved-trajectory extension ([guide](docs/state-selected.md), [examples](examples/state_selected/README.md)) |
-| Free energy | 1D–3D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive 1D/2D window insertion from MBAR overlap, effective sample size and optional coverage targets |
+| Free energy | 1D/2D umbrella sampling with full CV Jacobians, MBAR, overlap graphs, correlated-block bootstrap, masks for unsampled regions and offline reanalysis; adaptive window insertion from MBAR overlap, effective sample size and optional coverage targets |
 | Metadynamics | Standard and well-tempered on 1D–3D CVs, periodic/fixed-layer systems, NHC/PILE-L/Andersen sampling, soft walls and optional 1D/2D bias grids; independent histories and finite-time bias FES |
 | Replica-exchange umbrellas | Same-temperature fixed-window REUS, PILE-L or Andersen, synchronized ensemble restart and joint window bootstrap ([guide](docs/replica-exchange.md)) |
 | OPES | Fixed-bandwidth weighted probability estimation, optional frozen-bias reweighting and restartable independent histories ([guide](docs/opes.md)) |
@@ -170,6 +170,11 @@ checked chunks by default. A proton conductor needs a periodic potential suited 
 composition, charge and mechanism. Inputs, units, periodic CVs and
 statistics are in the [materials notes](docs/materials.md). What's new in this release is in the
 [0.2.0 release notes](docs/releases/0.2.0.md).
+
+The [periodic-materials implementation audit and TODO list](docs/periodic-materials-audit.md)
+records the code and guide review, open-source comparisons, fixes and remaining validation work
+for periodic materials and surface catalysis. The [periodic guide](docs/manual/periodic.md)
+distinguishes the default materials workflow from the opt-in native PIMD engine and its cell controls.
 
 ## Minimal inputs
 

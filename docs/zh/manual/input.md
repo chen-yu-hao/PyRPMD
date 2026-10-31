@@ -78,9 +78,11 @@ FES 中是两次保存样本之间的时间。
 
 ### 缺省值
 
-`pilot` 输入可以省略下表字段，PyRPMD 填入缺省值并在 `input_warnings` 中记录提示。`preset="production"`
-要求显式给出 `temperature`、`beads`、`[dynamics]` 和 `[sampling]`。它检查输入完整性，不检验科学收敛，
-也不会自动选择精度更高的一套参数。这些表中省略的子项仍使用缺省值。正式研究应显式给出物理模型和采样预算。
+热系综 `pilot` 输入可以省略下表字段，PyRPMD 填入缺省值并在 `input_warnings` 中记录 pilot 提示。
+热动力学的 `preset="production"` 要求显式给出 `temperature`、`beads`、`[dynamics]` 和 `[sampling]`，
+并执行显式 dRPMD `bmax` 等任务特有检查。它检查输入完整性，不检验科学收敛，也不会自动选择精度更高的一套参数。
+各 section 内省略的参数仍可使用缺省值，生产前应检查解析后的配置。正式研究应显式给出物理模型和采样预算。
+态选择准备与 PCET 有各自的参数要求。
 
 | 字段 | 缺省值 | 说明 |
 | --- | --- | --- |
@@ -92,7 +94,7 @@ FES 中是两次保存样本之间的时间。
 | `dynamics.integrator` | `cayley-bcb` | |
 | `dynamics.native` / `loop_backend` / `block_steps` | `true` / `auto` / 256 | 见[执行与并行](execution.md) |
 | `sampling.thermostat` | `andersen` | `pimd` / `diffusion` 为 `pile-l`（velocity-Verlet 时为 Andersen） |
-| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | 启用自适应伞或 metadynamics 时，生产段缺省为 `1000 fs`；显式长度优先 |
+| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | 启用自适应伞或 metadynamics 时，生产段缺省为 `1000 fs`；显式长度优先，时间均为步长整数倍 |
 | `sampling.andersen_interval` | 10 步 | 两次 Andersen 动量重抽之间的步数 |
 | `sampling.replicas` | 1 | `diffusion` 为 4 |
 | `output.directory` | `runs/<task>` | 相对于输入文件 |
@@ -131,7 +133,7 @@ FES 中是两次保存样本之间的时间。
 | `max_pilot_steps` | `16 * pilot_steps` | 每个窗口、每个副本的上限；默认步长下为 1.6 ps |
 | `max_rounds` | 8 | Pilot 轮数上限 |
 | `max_windows` | 128 | 插窗上限；达到该窗数后仍可通过延长 pilot 满足 ESS/覆盖目标 |
-| `target_overlap` | 0.03 | 新 schema-3 计划采用归一化重叠分数；旧计划沿用原指标 |
+| `target_overlap` | 0.03 | 新 schema-3 计划采用 MBAR 权重列的归一化余弦重叠；schema-1/2 计划沿用原指标 |
 | `min_effective_samples` | 20 | 每窗经相关性修正的 ESS，独立副本之间求和 |
 | `min_spacing` | `1e-6` | 无量纲度量 `sqrt(beta * delta.T @ K @ delta)` 下的距离 |
 | `coverage_bins` / `coverage_ranges` | 省略 | 只有同时提供两项才检查空间覆盖 |
@@ -160,7 +162,7 @@ FES 中是两次保存样本之间的时间。
 | `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` 可选偏置网格 |
 | `[opes]` | `opes` | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
 | `[replica_exchange]` | `fes` | 同温固定窗口的交换间隔与可选连通图，见[副本交换](../replica-exchange.md) |
-| `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
+| `[barostat]` | `pimd` | 默认引擎：`method="bzp"`、`pressure`、`time_constant`、`friction`；原生引擎使用单独的控制参数，见[材料](periodic.md) |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |
 | `[network]` | `network` | 入口、通道、过渡态 |
 | `[pcet]` | `pcet` | PCET 只接受 `schema_version`、`task`、`preset`、`description`、`temperature`、`pcet`、`output` |
@@ -253,15 +255,15 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 | `pyrpmd extend DIR` | 为已有 dRPMD 系综中未结束的轨迹提高总时间上限 | 必填 `--max-time '20 ps'`，从发射时刻计时 |
 | `pyrpmd state-check INPUT` | 无碰撞赋速演化已准备核初态，检查谐振模式稳定性 | `--time '100 fs'`、`--samples 8`、`--stride 10`、`--output report.json` |
 | `pyrpmd analyze DIR` | 读取结果或离线重分析 | `--recompute`、`--bins`、`--bootstrap`；扩散选项见下文 |
-| `pyrpmd report RUN [RUN ...]` | 从保存结果生成图形与 HTML 报告 | `--output DIR`、`--style`、`--formats`、`--overwrite`；见[自动报告](analysis-reports.md) |
-| `pyrpmd project DIR` | 对保存的 FES 积分消去未保留的 CV 轴 | 必填 `--axes` 与 `--output`；可选 `--selection` |
-| `pyrpmd rate-postprocess DIR` | 从保存的 PMF/FES 与带符号通量重新计算速率 | `--spec FILE`、`--output FILE`、`--bootstrap`；见[速率后处理](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
-| `pyrpmd study INPUT` | 规划或运行温度、同位素及数值收敛扫描 | `--plan`、`--output DIR`、`--resume`；见[速率研究](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
+| `pyrpmd report RUN [RUN ...]` | 从保存结果生成图片和 HTML/JSON 报告 | `--output DIR`、`--style`、`--formats`、`--overwrite`；[报告](analysis-reports.md) |
+| `pyrpmd rate-postprocess DIR` | 从保存的 PMF/FES 与有符号通量重算速率 | `--spec FILE`、`--output FILE`、`--bootstrap`；[速率后处理](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
+| `pyrpmd project DIR` | 对保存的 CV 密度 FES 做 Boltzmann 边缘化 | 必填 `--axes` 与 `--output DIR`；可选 `--selection FILE`；[材料](periodic.md) |
+| `pyrpmd study INPUT` | 规划或运行温度/同位素/收敛扫描 | `--plan`、`--output DIR`、`--resume`；[速率研究](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | `pyrpmd checkpoint FILE` | 校验检查点容器 | `--require-integrity` 拒绝没有校验值的旧容器 |
 | `pyrpmd info` | 显示版本与原生能力 | |
 | `pyrpmd pes build/inspect/check` | 构建与测试 C ABI 势能 | 见[势能](potentials.md) |
 
-`validate`、`prepare` 和 `run` 接受适用于该任务的覆盖选项 `--pes`、`--pes-manifest`、`--temperature`、
+`validate`、`prepare`、`state-check` 和 `run` 接受适用于该任务的覆盖选项 `--pes`、`--pes-manifest`、`--temperature`、
 `--beads` 和 `--workers`；PCET 只接受 `--temperature` 和 `--output`。`pyrpmd COMMAND --help` 列出当前安装版本的选项。
 
 - `validate --check-pes` 与 `prepare --pilot` 执行同样的数值准备：构造 PES、TS 准备或 PCET 本征态求解。

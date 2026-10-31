@@ -180,38 +180,40 @@ def _child_task(task):
             "q": task["q"],
         },
     )
+    # A complete pair needs only its checked saved result. In particular, an
+    # all-cached scalar or batched replay must not initialize a PES or bead pool.
+    if checkpoint.exists():
+        with load_checkpoint(checkpoint) as saved:
+            if str(saved["fingerprint"]) != identity:
+                raise ValueError(f"child checkpoint physics differs: {checkpoint}")
+            if "xi_star" in saved and float(saved["xi_star"]) != task["xi_star"]:
+                raise ValueError("child checkpoint dividing surface differs")
+            if "pmf_method" in saved and str(saved["pmf_method"]) != method:
+                raise ValueError("child checkpoint PMF method differs")
+            return {
+                **dynamics_metadata,
+                "chain": chain,
+                "parent": parent,
+                "pair": pair,
+                "xi_star": task["xi_star"],
+                "pmf_method": method,
+                "numerator": saved["numerator"],
+                "propagation": json.loads(str(saved["propagation"])) if "propagation" in saved else {},
+                "denominator": float(saved["denominator"]),
+                "energy_drift": float(saved["energy_drift"]),
+                "endpoint_energy_error_hartree_per_bead": (
+                    float(saved["endpoint_energy_error_hartree_per_bead"])
+                    if "endpoint_energy_error_hartree_per_bead" in saved
+                    else None
+                ),
+                "endpoint_energy_error_kbt": (
+                    float(saved["endpoint_energy_error_kbt"])
+                    if "endpoint_energy_error_kbt" in saved
+                    else None
+                ),
+            }
     with task_potential(config["potential"], system,
                         reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
-        if checkpoint.exists():
-            with load_checkpoint(checkpoint) as saved:
-                if str(saved["fingerprint"]) != identity:
-                    raise ValueError(f"child checkpoint physics differs: {checkpoint}")
-                if "xi_star" in saved and float(saved["xi_star"]) != task["xi_star"]:
-                    raise ValueError("child checkpoint dividing surface differs")
-                if "pmf_method" in saved and str(saved["pmf_method"]) != method:
-                    raise ValueError("child checkpoint PMF method differs")
-                return {
-                    **dynamics_metadata,
-                    "chain": chain,
-                    "parent": parent,
-                    "pair": pair,
-                    "xi_star": task["xi_star"],
-                    "pmf_method": method,
-                    "numerator": saved["numerator"],
-                    "propagation": json.loads(str(saved["propagation"])) if "propagation" in saved else {},
-                    "denominator": float(saved["denominator"]),
-                    "energy_drift": float(saved["energy_drift"]),
-                    "endpoint_energy_error_hartree_per_bead": (
-                        float(saved["endpoint_energy_error_hartree_per_bead"])
-                        if "endpoint_energy_error_hartree_per_bead" in saved
-                        else None
-                    ),
-                    "endpoint_energy_error_kbt": (
-                        float(saved["endpoint_energy_error_kbt"])
-                        if "endpoint_energy_error_kbt" in saved
-                        else None
-                    ),
-                }
         from .surface_source import source_hamiltonian, parent_selector
         if not parent_selector(config, system)(task["q"]):
             raise ValueError("child initial configuration lies outside the source PMF channel domain")

@@ -1,7 +1,7 @@
 # 表面催化：固定晶胞、表面自由能与一阶 RPMD 速率
 
 PyRPMD 的表面入口复用环聚合物传播、umbrella/MBAR、受约束母轨迹和回穿统计。
-当前版本可以计算周期 slab 或有限表面簇上的 1D/2D 伞抽样及 1D–3D MetaD 自由能，并针对**一个恒定质量度量的
+当前版本可以计算周期 slab 或有限表面簇上的 1D–3D 伞抽样及 MetaD 自由能，并针对**一个恒定质量度量的
 centroid 反应坐标、一个明确反应物盆地、一个选定出口**计算一阶 RPMD 速率。
 结果单位为 `s^-1`。势能模型须适用于目标材料、吸附物和反应。
 
@@ -14,18 +14,18 @@ centroid 反应坐标、一个明确反应物盆地、一个选定出口**计算
 | 表面高度 | `surface_height` | 吸附原子组 COM 对平面的线性投影，可相对于参考原子组 |
 | 表面迁移 | `surface_lateral` | 沿指定方向的连续展开 COM 投影，不取周期模 |
 | 周期键长 | `periodic_distance` | 一般倾斜晶胞下的最近像距离；显式启用 |
-| 表面 FES | `task="fes"` | 1D/2D，MBAR、相关块 bootstrap、未采样区域 mask、离线重分析 |
+| 表面 FES | `task="fes"` | 1D–3D，MBAR、相关块 bootstrap、未采样区域 mask、离线重分析 |
 | 表面 MetaD | `task="metadynamics"` | 1D–3D，周期 slab、固定底层、NHC/PILE-L/Andersen、二次墙和精确恢复 |
 | 非线性键长 | `distance` | 连续展开的质心键长；真实曲面 RATTLE，恒定活动端点质量度量 |
 | 条件速率 | `surface.free_energy` | 已保存 FES → 条件 Boltzmann 投影 → 同域母构型 → 配对回穿 |
 | 表面速率 | `task="surface_rate"` | 位置密度 PMF → 盆地 QTST → 约束母轨迹 → ±p 回穿 |
-| 势能 | ASE、i-PI、显式支持 PBC 的 Python 插件 | 每个 worker 收到完整 System 和固定晶胞 |
+| 势能 | C ABI v2、ASE/命名 ML、显式周期 Python/Torch、tblite、i-PI | 每个 provider 必须实际支持所选晶胞和 PBC |
 | 执行与恢复 | 现有窗口／轨迹进程及珠子势能执行器 | 保存 cell、PBC、fixed atoms、q/p、RNG、科学指纹 |
 
 固定原子仍参与真实 PES 的能量和对活动原子的作用力，只是不参与动力学自由度。
 活动表层与吸附物按同一 bead 数和物理质量传播；当前不提供“仅吸附物量子化、
-活动基底经典化”的混合 bead 模型。伞窗口和母轨迹使用 Andersen；MetaD 还可用
-NHC 或 PILE-L；回穿子轨迹无热浴。
+活动基底经典化”的混合 bead 模型。`surface_rate` 的伞窗口和母轨迹使用 Andersen；
+独立 `fes` 支持 Andersen 或 PILE-L，MetaD 还可用 NHC；回穿子轨迹无热浴。
 
 ## 三个可运行示例
 
@@ -279,7 +279,8 @@ slab、盆地和回穿时长。教学势的独立有限 P QTST 基准见
 ## 周期 PES 契约和性能
 
 ASE 接口会设置 `Atoms.cell` 和 `Atoms.pbc`，坐标仍按 bead batch 逐帧送入
-calculator。固定晶胞在同一 run 中不变；此版不请求应力、virial 或压强。
+calculator。固定晶胞 `surface_rate` 不以压力驱动传播；若 calculator 声明 `stress`，
+ASE 适配器仍返回物理构型 virial `-volume * stress`，不包含动能和环弹簧贡献。
 
 自定义周期 Python PES 必须显式声明并绑定系统：
 
@@ -301,19 +302,25 @@ class SurfacePES:
 同时兼容材料接口的 `metadata["periodic"]=True` 与 `evaluate(q, *, cell, pbc)`；
 后者的坐标和晶胞均为插件声明的长度单位，详见[材料计算](materials.md)。
 材料 i-PI adapter 支持真实 cell/PBC 和物理 virial；部分周期必须配置匹配的
-`potential.params.init.pbc` 并由 driver 解释。C ABI v1、原 RPMDrate/f2py 与 Torch
-仍不支持周期契约，请求周期系统时明确报错。可通过符合契约的 Python/ASE wrapper 接入适合的实际
-机器学习或电子结构 calculator，但每个模型仍须做能量／力和周期边界验证。
+`potential.params.init.pbc` 并由 driver 解释。C ABI v1 和原 RPMDrate/f2py
+仍限于分子体系；C ABI v2 已传递 cell/PBC 和物理 virial。通用 Torch 模型显式设置
+`periodic=true` 后须实现 `forward(q, cell, pbc)`，不能把普通分子模型自动当成周期势。
+命名 ASE/ML 与 tblite 也有各自的模型限制；DeePMD 目前只支持全周期或全非周期，
+PySCF 适配器仅支持分子。详见[势能适配器](potential-adapters.md)。每个模型仍须做
+能量／力、周期平移及适用化学空间验证。
 
-固定原子及周期 PES 使用 Python 时间步循环，保留已编译 Cayley 微内核；
+本表面速率工作流的固定原子及周期 PES 使用 Python 时间步循环，保留已编译 Cayley 微内核；
 `loop_backend="auto"` 选择兼容路径，固定原子路径会记录回退原因；强制原生融合循环不受支持。
-现有过程级并行可用，不声称完整 GPU 常驻传播或新增周期原生 ABI。
+现有过程级并行可用。独立的 `pimd` 可显式选择 `sampling.engine="native"`，使用编译的
+`native_periodic` 势能进行完整 C++ 轨迹传播；它不是本表面速率路径，也不接受任意 Python、
+ASE、Torch 或 socket 回调。详见[原生 PIMD](native-pimd-workflow.md)。
 
 ## 与 PyRPMD 0.2 工作流的组合
 
 固定原子约束同时覆盖 `cayley-bcb`、`normal-mode-bab` 和 `velocity-verlet`
-实时积分器；独立 `Dynamics.sample` 接口中的 BCOCB/BAOAB 采样也保持基底约束。
-表面 FES 和速率工作流采用与所选积分器对应的 Andersen 采样。
+实时积分器；独立 `Dynamics.sample_step` 接口中的 BCOCB/BAOAB 采样也保持基底约束。
+独立表面 `fes` 支持与所选积分器兼容的 Andersen 或 PILE-L 采样；
+`surface_rate` 的窗口与受约束母链仍要求 Andersen。
 
 `task="fes"` 可通过已有的 adaptive umbrella 流程进行试探和冻结后的生产采样；
 `surface_rate` 当前要求预先声明固定窗口集合，不接受 adaptive umbrella。
@@ -335,8 +342,13 @@ reference_adsorbates = 1
 site_count = 9
 coverage = 0.04
 path_multiplicity = 1
-# area = "62.318 angstrom^2"  # 省略时用周期 cell[0] × cell[1] 的面积
+# area = "62.318 angstrom^2"  # 恰有两个周期晶格矢量时可省略，自动取其叉积的模
 ```
+
+省略 `area` 只适用于恰好两个方向周期的 slab。程序使用 `pbc` 选中的两个晶格矢量，
+因此 `[true,false,true]` 和 `[false,true,true]` 同样适用，不假设表面一定对应 cell[0:2]。
+三维全周期晶胞、线体系和有限团簇须显式给出面积，避免把真空方向或未指定的晶面当成表面。
+输出归一化设置记录面积来源，便于核对晶面与单位。
 
 令面积为 A、参考共反应物数为 n，则 `k2=k_cell*A/n`，单位 `cm²/s`。
 指定 θ ML 和 N 个表面位点后，`k(θ)=k2*θ*N/A`，单位 `s⁻¹`。
@@ -384,11 +396,23 @@ MetaD hills 和伞势均不进入母／子传播。墙很远也必须检查它�
 条件回穿误差，正式 `rate_s_inv` 保持空值，状态为 `projected_pmf_pilot`；
 有偏 PMF 不能仅凭一个回穿平台被标成物理收敛。
 
-## 后续可扩展项
+## 相关能力与后续扩展
 
-当前交付不包含气体／表面入射初态与粘附概率、非线性通用表面速率、
-浓度变化导致的相互作用修正、NPT/变胞、电子摩擦、非绝热跃迁、电极恒电势或微观动力学。
-这些需要各自的统计定义和验证。现有周期 System、固定约束和 PES 契约为其提供基础。
+现有相关模块需按各自的物理定义使用：
+
+- `pimd` 已有默认各向同性 BZP 及原生柔性晶胞采样，但都要求全三维周期、全部原子可动；
+  本 `surface_rate` 仍是固定晶胞模型，固定层 slab NPT 尚未建立。
+- `diffusion` 可选 [Markovian 质心电子摩擦](electronic-friction.md)，不是任意表面速率的
+  摩擦回穿算法，也未包括非 Markovian 记忆或虚时间浴重整化。
+- [电化学模块](electrochemistry.md) 已有电子数相关势的绝热恒电位包装、电子数采样及
+  局部 HER 稳态后处理；需要经验证的电极模型，不等于自动接入真实恒电位 DFT 或通用微观动力学。
+- 非线性 `site_rate` 已有标量质心坐标的质量度量修正，但要求全部原子可动；
+  固定基底 `surface_rate` 当前只覆盖上述恒定度量坐标及连续距离子集。
+
+优先扩展项包括固定原子下的一般非线性坐标速率、源 FES 与条件回穿的联合统计误差、
+气体／表面入射初态与粘附概率、覆盖度相互作用、跨位点／多通道 kMC 网络，以及真实周期体系的
+势模型和采样收敛验证。既有非绝热模块也不能直接替代金属表面的电子耗散模型。
+具体证据、开源实现对照及验收条件见[周期材料审查与 TODO](periodic-materials-audit.md)。
 
 ## 参考
 

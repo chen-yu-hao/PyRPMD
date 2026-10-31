@@ -24,7 +24,9 @@
 
 `io.jsonable` 和 `io.write_json` 默认采用严格的元数据转换；`io.report_jsonable` 和
 `io.write_report_json` 把不可用的数值估计表示为 JSON `null`。可调用对象、dataclass 和
-`to_dict` 的转换策略用于保留已有表示。通用 NPZ 检查点容器通过 `checkpoint.atomic_savez`
+`to_dict` 的转换策略用于保留已有表示。`write_json` 通过 `atomic_write_text` 发布文件，
+并用 `ensure_ascii` 和 `trailing_newline` 保留各工作流的原有文本格式。
+通用 NPZ 检查点容器通过 `checkpoint.atomic_savez`
 完成原子压缩写入和完整性封装；`save_metadata_npz` 只负责组装 dRPMD 元数据，再委派给该写入器。
 
 运行指纹共用编码器，同时保留已有模式：`io.fingerprint(config, system)` 保留包含分析设置的
@@ -52,6 +54,9 @@ manifest 身份；提供 `extras` 时使用采样流身份，排除纯分析与�
 
 修改公共接口时，在同一提交中更新文档、示例以及检查数值与状态行为的测试。修改采样测度、力、约束、随机流或续跑身份时，
 附上科学依据和回归测试。
+
+[实现与使用指南审查记录](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/implementation-guide-audit-2026-10-31.md)
+列出审查范围、按优先级排序的待办事项、已落实修复与尚需验证的边界。
 
 [2026-10-31 用户体验审查](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/ux-review-2026-10-31.md)
 记录本次审查范围、按优先级排列的待办事项、已实施的修复与后续工作。

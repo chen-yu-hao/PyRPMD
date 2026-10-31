@@ -54,7 +54,9 @@ _scalar = partial(
 )
 
 
-def _array(value: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
+def _array(value: Any, shape: tuple[int, ...] | None = None, *, allow_bool: bool = False) -> np.ndarray:
+    if np.asarray(value).dtype.kind not in ("fiub" if allow_bool else "fiu"):
+        raise ValueError("arrays must contain real numerical values")
     a = np.array(value, dtype=np.float64, order="C", copy=True)
     if shape is not None and a.shape != shape:
         raise ValueError(f"expected shape {shape}, received {a.shape}")
@@ -279,7 +281,7 @@ class NativeEnsemble:
             raise ValueError("NPT requires an explicit external pressure")
         if bmode == "rgb" and ("stress" not in b or "reference_cell" not in b):
             raise ValueError("RGB requires explicit stress and reference_cell")
-        cell_mask = _array(b.get("cell_mask", [[1, 1, 1], [0, 1, 1], [0, 0, 1]]), (3, 3))
+        cell_mask = _array(b.get("cell_mask", [[1, 1, 1], [0, 1, 1], [0, 0, 1]]), (3, 3), allow_bool=True)
         external = _array(b.get("stress", np.zeros((3, 3))), (3, 3))
         if not np.allclose(external, external.T, atol=1e-12, rtol=1e-12):
             raise ValueError("external stress must be symmetric")
@@ -288,7 +290,7 @@ class NativeEnsemble:
             "masses": mass, "fixed": fixed,
             "thermostat": _THERMOSTATS[mode], "barostat": _BAROSTATS[bmode],
             "cayley": integrator == "cayley-bcb", "initialize_momenta": p is None,
-            "has_cell": cell is not None, "pbc": _array(flags),
+            "has_cell": cell is not None, "pbc": _array(flags, allow_bool=True),
             "gamma": _scalar(t.get("gamma", 1.0), "gamma", nonnegative=True),
             "gamma0": _scalar(t.get("gamma_centroid", 1.0), "gamma_centroid", nonnegative=True),
             "pile_scale": _scalar(t.get("pile_scale", 1.0), "pile_scale", nonnegative=True),
