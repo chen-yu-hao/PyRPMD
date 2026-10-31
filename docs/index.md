@@ -75,6 +75,7 @@ Nonadiabatic NRPMD <manual/nonadiabatic>
 Potentials and plugins <manual/potentials>
 Execution <manual/execution>
 Output and analysis <manual/results>
+Automatic analysis and figures <manual/analysis-reports>
 Examples <manual/examples>
 ```
 

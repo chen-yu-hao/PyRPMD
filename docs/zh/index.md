@@ -70,6 +70,7 @@ PCET <manual/pcet>
 势能与插件 <manual/potentials>
 执行与并行 <manual/execution>
 输出与分析 <manual/results>
+自动分析与出图 <manual/analysis-reports>
 示例索引 <manual/examples>
 ```
 

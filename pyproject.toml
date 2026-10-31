@@ -16,7 +16,8 @@ dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10", "threadpoolctl>=3.1"
 mpi = ["mpi4py>=3.1"]
 gpu = ["torch>=2.2"]
 ase = ["ase>=3.23"]
-analysis = ["pymbar>=4"]
+analysis = ["pymbar>=4", "matplotlib>=3.8"]
+plots = ["matplotlib>=3.8"]
 test = ["pytest>=8"]
 docs = ["sphinx>=8.2,<9", "myst-parser>=4,<5", "pydata-sphinx-theme>=0.16,<0.17"]
 
