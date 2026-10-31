@@ -80,9 +80,12 @@ two launches from a parent chain, in FES it is the time between saved samples.
 
 ### Defaults
 
-A `pilot` input may omit the fields below; PyRPMD fills in these defaults and records notes in
-`input_warnings`. `preset="production"` requires explicit `temperature`, `beads`, `[dynamics]`
-and `[sampling]`.
+A thermal `pilot` input may omit the fields below; PyRPMD fills in these defaults and records
+pilot notes in `input_warnings`. For thermal dynamics, `preset="production"` requires explicit
+`temperature`, `beads`, `[dynamics]` and `[sampling]`, plus task-specific checks such as an explicit
+dRPMD `bmax`. Values omitted within those sections can still use defaults. Inspect the resolved
+configuration before production; this preset does not establish convergence. State-selected
+preparation and PCET have their own parameter requirements.
 
 | Field | Default | Note |
 | --- | --- | --- |
@@ -94,7 +97,7 @@ and `[sampling]`.
 | `dynamics.integrator` | `cayley-bcb` | |
 | `dynamics.native` / `loop_backend` / `block_steps` | `true` / `auto` / 256 | See [Execution and parallelism](execution.md) |
 | `sampling.thermostat` | `andersen` | `pile-l` for `pimd` / `diffusion` (Andersen with velocity-Verlet) |
-| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | Multiples of the step |
+| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | Production defaults to `1000 fs` for metadynamics or enabled adaptive umbrellas; all times are multiples of the step |
 | `sampling.andersen_interval` | 10 steps | Steps between Andersen momentum resamplings |
 | `sampling.replicas` | 1 | 4 for `diffusion` |
 | `output.directory` | `runs/<task>` | Relative to the input file |
@@ -128,7 +131,7 @@ default resolved.
 | `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` optionally select a bias grid |
 | `[opes]` | `opes` | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
 | `[replica_exchange]` | `fes` | Fixed-window same-temperature exchange interval and optional graph; [REUS guide](../replica-exchange.md) |
-| `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
+| `[barostat]` | `pimd` | Default engine: `method="bzp"`, `pressure`, `time_constant`, `friction`; the native engine has separate controls in [Materials](periodic.md) |
 | `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md) |
 | `[network]` | `network` | Entrances, channels, transition states |
 | `[pcet]` | `pcet` | PCET accepts only `schema_version`, `task`, `preset`, `description`, `temperature`, `pcet`, `output` |
@@ -230,11 +233,15 @@ different dimensions, write each entry as a string with units.
 | `pyrpmd extend DIR` | Raise an existing dRPMD ensemble's total time budget for unresolved trajectories | `--max-time '20 ps'` (required; total time from launch) |
 | `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
 | `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below |
+| `pyrpmd report RUN [RUN ...]` | Generate figures and an HTML/JSON report | `--output DIR`, `--style`, `--formats`; [Reports](analysis-reports.md) |
+| `pyrpmd rate-postprocess DIR` | Recompute rates from saved PMF/FES and signed fluxes | `--spec FILE`, `--output FILE`, `--bootstrap`; [Rate postprocessing](../rate-postprocessing.md) |
+| `pyrpmd project DIR` | Boltzmann-marginalize a saved CV-density FES | Required `--axes` and `--output DIR`; optional `--selection FILE`; [Materials](periodic.md) |
+| `pyrpmd study INPUT` | Plan or run temperature/isotope/convergence scans | `--plan`, `--output DIR`, `--resume`; [Rate studies](../rate-studies.md) |
 | `pyrpmd checkpoint FILE` | Verify a checkpoint container | `--require-integrity` rejects legacy containers without checksums |
 | `pyrpmd info` | Show version and native capabilities | |
 | `pyrpmd pes build/inspect/check` | Build and test C ABI potentials | See [Potentials](potentials.md) |
 
-`validate`, `prepare` and `run` accept the overrides `--pes`, `--pes-manifest`, `--temperature`,
+`validate`, `prepare`, `state-check` and `run` accept the overrides `--pes`, `--pes-manifest`, `--temperature`,
 `--beads` and `--workers`, where they apply to the task; PCET accepts only `--temperature` and
 `--output`. `pyrpmd COMMAND --help` lists the options of the installed version.
 

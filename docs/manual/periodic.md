@@ -9,7 +9,7 @@ equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop 
 | --- | --- | --- | --- | --- |
 | `pimd` | Equilibrium quantum statistics; optional BZP NPT | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
 | `diffusion` | Continuous centroid trajectories and transport | Yes | Yes | MSD, VACF, D and diagnostics |
-| `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one constant-gradient CV |
+| `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one supported smooth centroid CV |
 | `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
 | `surface_rate` | A directed exit on a surface, optionally with fixed layers | Yes, or a finite cluster | Yes | First-order rate with the mass metric of the mobile atoms |
 
@@ -64,7 +64,8 @@ and equilibration time for each isotope.
 
 `periodic_bond_difference` also accepts the alias `periodic_difference`. A nearest-image CV has a
 derivative branch where the nearest image switches; keep the biased range away from it.
-`site_rate` accepts its supported linear centroid CVs. `surface_rate` also accepts unwrapped
+`site_rate` accepts supported linear centroid CVs and smooth nonlinear coordinates with the
+mass-metric treatment in [general-coordinate rates](../general-coordinate-rates.md). `surface_rate` also accepts unwrapped
 `distance` with its constant endpoint mass metric and full curved constraint. For
 `periodic_distance`, the dividing surface must be below half the smallest singular value
 of the periodic lattice basis, keeping it away from image switches. Bond differences and
@@ -89,11 +90,12 @@ independently.
 
 i-PI sends the true cell and its inverse in POSDATA, using the protocol's column-vector convention.
 POSDATA carries no PBC flags, so a slab sets `potential.params.init.pbc` to match the system and the
-server must honor this INIT field. For periodic models, use the ASE, Python or i-PI interfaces; the
-C ABI v1, RPMDrate/f2py and Torch adapters take molecular systems.
+server must honor this INIT field. Periodic providers include ASE, compatible Python and i-PI
+interfaces, C ABI v2 and explicitly cell-aware Torch models. C ABI v1 and RPMDrate/f2py remain
+molecular interfaces. See [Potentials](potentials.md) for provider-specific cell and virial contracts.
 
-Periodic and fixed-atom systems run in a Python time-step loop with compiled deterministic
-substeps; use `loop_backend="auto"` or `"python"`.
+With the default workflow engine, periodic and fixed-atom systems run in a Python time-step loop
+with compiled deterministic substeps; use `loop_backend="auto"` or `"python"`.
 
 ## PIMD: equilibrium properties
 
@@ -134,6 +136,16 @@ the earlier single-NPZ layout. Old completed runs can migrate without loading th
 analysis still loads scalar or selected-atom histories; budget that memory separately. See
 [streaming and recovery](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md).
 For transport properties use the `diffusion` task.
+
+### Native PIMD engine
+
+`sampling.engine="native"` selects the separate C++ ensemble engine. It has explicit built-in
+and compiled PES requirements, additional thermostats, NVT support for fixed atoms, and BZP,
+MTTK, RGB or SCR barostats subject to their documented restrictions. It uses transactional
+`samples/native_pimd_NNNN/journal.json` files and immutable chunks instead of the default
+materials checkpoint layout. Engine selection changes the run identity. See the
+[native PIMD guide and examples](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)
+for the full input and output contract; the BZP table below belongs to the default engine.
 
 ### Constant-pressure PIMD
 

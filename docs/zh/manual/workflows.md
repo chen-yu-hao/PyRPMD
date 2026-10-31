@@ -151,6 +151,20 @@ pyrpmd analyze runs/manual-fes --recompute --bins 20 20 --bootstrap 50
 
 `analyze --recompute` 从保存的窗口检查点重建分析，可更换 bin、计数门槛或 bootstrap 设置，不调用 PES。
 
+### PILE-L 与副本交换伞抽样
+
+FES 的默认恒温器仍是 Andersen。设置 `sampling.thermostat="pile-l"` 可使用 BCOCB/BAOAB 积分器。
+固定窗口可增加 `[replica_exchange]`，设置 `enabled=true` 与 `interval_steps=50`，在相同温度下交换完整的环构型和动量。
+
+此时 `sampling.replicas` 表示独立的交换系综数；每个系综中的窗口顺序推进，分析时同步重采样跨窗口的时间块，
+检查点保存和恢复整个系综。交换轨迹不是物理反应时间。REUS 不能与自适应插窗或 `rate_flux` 测度组合；
+完整输入与限制见[副本交换](../replica-exchange.md)。
+
+```bash
+pyrpmd run examples/fes/replica_exchange_2d.inp --output runs/manual-reus
+pyrpmd resume runs/manual-reus
+```
+
 ### 自适应伞抽样
 
 自适应工作流依据 pilot 的重叠和有效样本数插入窗口并延长 pilot，然后冻结窗口，用新的独立随机流运行生产段：
@@ -163,6 +177,11 @@ pyrpmd analyze runs/manual-adaptive --recompute --bins 30 --bootstrap 20
 
 `adaptive-plan.json` 记录每一轮的决定、窗口、随机种子与校验值。生产段只使用自己的样本。若 `max_rounds` 或
 `max_windows` 用尽时仍未达到目标，任务不启动生产段而停止，并在计划中记录 `failure_reason`。
+
+缺省预算为 8 轮、128 个窗口。有效样本不足会延长 pilot，最多到 `max_pilot_steps`；只调整位置时保留已有长度。
+预算耗尽后可提高限制继续，例如 `pyrpmd resume runs/manual-adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192`，
+已完成检查点继续复用。生产段 ESS 单独报告。Metadynamics 和已启用的自适应伞抽样在省略 production 时使用 1000 fs；
+增加预算或解释 FES 前先检查统计诊断。
 
 自适应伞抽样适用于 `fes`、表面 `fes` 和 `rate` PMF，在声明的区域内细化窗口；`surface_rate` 和 `site_rate`
 使用固定窗口。参数见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。

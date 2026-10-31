@@ -295,7 +295,7 @@ bootstrap = 0
 
 `mode="standard"` 使用固定 hill 高度并省略 `bias_factor`。`sigma_au`、
 `height_au` 可指定原子单位，但不得与对应未带 `_au` 的字段重复。
-`pace` 是生产步数间隔；1D/2D、周期 CV 与独立 replicas 均支持。
+`pace` 是生产步数间隔；1–3 维 CV、周期 CV 与独立 replicas 均支持；可选偏置网格限于 1D/2D。
 `loop_backend="native"` 会预先报错，因为偏置历史随时间改变；`auto` 的
 兼容传播仍能使用所选积分器的编译子步。有限时间 FES 估计及 HILLS/恢复
 时序见[增强采样规范](enhanced-sampling.md)。

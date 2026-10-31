@@ -12,6 +12,7 @@
 | `examples/manual/quickstart.inp` | 三个伞窗口、6 条采样流的一维谐势 FES | 约 2 s | [快速入门](quickstart.md) |
 | `examples/manual/low_level.py` | 使用 `Dynamics` / `State` 的 100 步程序 | <1 s | [API](api.md) |
 | `examples/fes/harmonic2d.inp` | 两个质心 CV、二维 MBAR 与 mask | 约 6 s | [气相与自由能](workflows.md) |
+| `examples/fes/replica_exchange_2d.inp` | PILE-L、副本交换伞抽样与同步 bootstrap | — | [副本交换](../replica-exchange.md) |
 | `examples/fes/custom_input.py` | 带完整 Jacobian 的自定义二维 CV | 约 7 s | [势能与插件](potentials.md) |
 | `examples/fes/adaptive_harmonic.inp` | pilot 插入窗口后冻结并运行生产段 | 约 4 s | [气相与自由能](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | 两条母链在 V=0 上共享 5 次碰撞 | 约 2 s | [气相与自由能](workflows.md) |
@@ -19,6 +20,9 @@
 | `examples/rate/pilot.inp` | 解析反应势上的 TS 准备、PMF 与回穿 | 约 15 s | [气相与自由能](workflows.md) |
 | `examples/network/two_entrances.py` | 两个入口、四条 TS/PES 路径 | 约 25 s | [气相与自由能](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 二维 well-tempered metadynamics | 约 2 s | [气相与自由能](workflows.md) |
+| `examples/opes/harmonic_2d.inp` | OPES 自适应、冻结偏置松弛与直方图重加权 | — | [OPES](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
+| `examples/plumed/centroid_metadynamics.py` | 可选 PLUMED 质心 MetaD，显式更新 kernel | — | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) |
+| `examples/sampling/transition_interface.py` | 受限双阱模型上的四个界面系综 | — | [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 
 ```bash
 pyrpmd validate examples/fes/harmonic2d.inp
@@ -34,6 +38,7 @@ pyrpmd analyze runs/tutorial-fes2d --recompute --bins 20 20 --bootstrap 50
 | 输入 | `task` | 内容 | 耗时 |
 | --- | --- | --- | --- |
 | `examples/materials/pimd.inp` | `pimd` | 周期模型中的平衡能量与环尺寸 | 约 2 s |
+| `examples/ensembles/pimd_native.inp`、`pimd_native_npt.inp` | `pimd` | 原生系综引擎，使用单独的恒温/恒压及检查点约定 | — |
 | `examples/materials/diffusion.inp` | `diffusion` | 自由粒子；分析标出弹道运动 | 约 3 s |
 | `examples/materials/site_rate.inp` | `site_rate` | 周期模型、显式盆地与单一有向出口 | 约 25 s |
 | `examples/surface/fes2d.inp` | `fes` | 固定基底上的二维表面 CV | 约 1 min |
@@ -74,4 +79,5 @@ EAM 模型上运行镍中的 H 和 D（P=1 与 4），模型需单独下载。
 4. 逐项增加珠子数、减小时间步、延长平衡与生产、增加独立副本并检查坐标域。
 5. 固定最终方案，运行独立的生产计算，保存完整的来源与不确定度信息。
 
-`preset="production"` 检查所有设置都已显式给出；第 3、4 步确立收敛。见[科学约定](science.md)。
+`preset="production"` 检查必填字段和任务限制，省略的参数仍可使用缺省值。固定方案前用
+`pyrpmd validate INPUT --write-resolved resolved.json` 检查完整配置；第 3、4 步确立收敛，见[科学约定](science.md)。

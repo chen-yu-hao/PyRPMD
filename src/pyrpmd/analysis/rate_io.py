@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 
 from ..constants import AU_RATE_TO_CM3_S
+from ..checkpoint import load_checkpoint
 from ..io import file_sha256, write_json
 
 
@@ -24,8 +25,8 @@ def _read_json(path):
 
 
 def _load_npz(path):
-    with np.load(path, allow_pickle=False) as source:
-        return {key: source[key].copy() for key in source.files}
+    with load_checkpoint(path) as source:
+        return dict(source.items())
 
 
 def _scalar(value, name):

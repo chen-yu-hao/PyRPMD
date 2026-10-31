@@ -12,9 +12,10 @@ procedure for converging a result. The inputs and commands for each task are in 
 | Explicit collisions with product classification | `drpmd` | Thermal rate or fixed-energy cross section, set by the launch distribution |
 | Equilibrium free energy along chosen CVs | `fes` | Probability density per CV volume element, and its free energy |
 | Separate rates for several entrances and TSs | `network` | Rate matrix indexed by entrance, channel and TS |
-| History-dependent bias on 1D/2D CVs | `metadynamics` | Finite-time bias free-energy estimate and HILLS |
-| Equilibrium nuclear quantum statistics in a fixed cell | `pimd` | Physical energy estimators, ring radius of gyration |
-| Thermostat-free RPMD transport | `diffusion` | Centroid MSD, VACF, diffusion tensor and diagnostics |
+| History-dependent bias on 1D–3D CVs | `metadynamics` | Finite-time bias free-energy estimate and HILLS |
+| Probability-based enhanced sampling | `opes` | Adaptive probability bias and optional frozen-bias reweighting |
+| Equilibrium nuclear quantum statistics at fixed volume or pressure | `pimd` | Physical energy estimators, ring radius of gyration; cells and volumes for NPT |
+| RPMD transport, optionally with electronic friction | `diffusion` | Centroid MSD, VACF, diffusion tensor and diagnostics |
 | A selected exit from a material site or surface basin | `site_rate` / `surface_rate` | Basin-normalized first-order rate in `s^-1` |
 | Local electrochemical proton–electron transfer | `pcet` | Reduction/oxidation rates and isotope effects in `s^-1` |
 
@@ -80,8 +81,10 @@ matching units.
 ## Sampling and real-time propagation
 
 PIMD, umbrella windows and constrained parent chains sample equilibrium distributions with a
-thermostat. dRPMD collisions, RPMD recrossing children and `diffusion` production use deterministic
-propagation without thermostat or bias; their time is physical time.
+thermostat. Ordinary dRPMD collisions, RPMD recrossing children and `diffusion` production use
+deterministic propagation without thermostat or bias; their time is physical time. Diffusion can
+instead select a physical Markovian electronic-friction bath through `[electronic_friction]`;
+those trajectories exchange energy with the bath and are not judged by NVE energy conservation.
 
 | Deterministic integrator | Free ring | Converge with respect to |
 | --- | --- | --- |
@@ -93,10 +96,12 @@ Converge every method in the time step. For Verlet the free ring is stable for
 $|\Delta t|\max\omega_k<2$; stiff bonds or biases tighten the limit. See the
 [integrator notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/integrators.md).
 
-Reaction and FES workflows use Andersen sampling matched to the integrator. Materials `pimd` /
-`diffusion` also offer PILE-L: `bcocb` with Cayley, `baoab` with the normal-mode integrator, and
-Andersen with Verlet. `native=true` enables compiled substeps; `loop_backend="native"` requires the
-whole loop to run fused. The rules for periodic and fixed-atom systems are in the
+Reaction workflows use Andersen sampling matched to the integrator. FES also supports PILE-L;
+materials `pimd` / `diffusion` use PILE-L by default with Cayley or normal-mode dynamics:
+`bcocb` with Cayley, `baoab` with the normal-mode integrator, and Andersen with Verlet.
+Metadynamics additionally supports Nosé–Hoover chains. `native=true` enables compiled substeps;
+`loop_backend="native"` requires the whole loop to run fused. The separate native PIMD engine
+offers additional thermostats. The rules for periodic and fixed-atom systems are in the
 [periodic task guide](periodic.md).
 
 ## Free-energy measures and rate normalization
@@ -124,7 +129,10 @@ K_{\mathrm{cv}}=\frac{3N}{2\beta}
 $$
 
 The internal energy estimate is $\langle V\rangle_P+K_{\mathrm{cv}}$. `ring_polymer_hamiltonian`
-is reported as a propagation diagnostic. The materials estimators require all atoms to be mobile.
+is reported as a propagation diagnostic. With fixed atoms, replace N by the number of mobile
+atoms and restrict the kinetic-energy sum to them. The PES still includes every atom; fixed atoms
+are external coordinates with identical bead positions and zero momenta. NPT requires all atoms
+to be mobile.
 
 ## Converging a result
 

@@ -22,6 +22,7 @@ from ..cv import make_cvs, RPMDrateCoordinate
 from ..dynamics import Dynamics, State
 from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
+from ..io import atomic_write_text
 from ..parallel import run_tasks, task_potential, root_call
 from ..units import parse_quantity, unit_factor, DIMS
 from .sampling import fes_sampler
@@ -46,13 +47,9 @@ def jsonable(value):
 
 
 def write_json(path, data):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_name(path.name + ".tmp")
-    temp.write_text(
-        json.dumps(jsonable(data), indent=2, allow_nan=False) + "\n", encoding="utf-8"
+    atomic_write_text(
+        path, json.dumps(jsonable(data), indent=2, allow_nan=False) + "\n"
     )
-    temp.replace(path)
 
 
 def _fingerprint(config, system, extras):

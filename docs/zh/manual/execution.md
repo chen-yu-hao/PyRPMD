@@ -23,9 +23,13 @@ block_steps = 256
 | `loop_backend="native"` | 要求融合的整段传播；不可用时报错 |
 | `block_steps` | 执行分块大小，1–65536 |
 
-周期与固定原子体系、PILE-L 采样和 metadynamics 在 Python 外层循环中运行，并使用编译的确定性子步骤。
+默认工作流引擎下，周期与固定原子体系、PILE-L 采样和 metadynamics 在 Python 外层循环中运行，并使用编译的确定性子步骤。
 `pimd`、`diffusion` 和 `metadynamics` 的摘要在 `propagation` 下报告原生与 Python 步数及回退原因；API 中
 `Dynamics.loop_stats` 给出同样的计数。
+
+对 `pimd`，`sampling.engine="native"` 选择单独的 C++ 系综引擎，使用自己的恒温器、势能和检查点约定。
+它支持 NVT 固定原子和兼容模型的周期 NVT/NPT，不提供 Python 势能回退。事务大小由检查点间隔控制，
+`dynamics.block_steps` 不覆盖这一间隔。切换引擎需要新建运行；见[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)。
 
 [NRPMD](nonadiabatic.md) 在 CPU 上用 NumPy 推进电子矩阵，可串行或使用本机轨迹进程；其核自由环子步骤使用编译内核。
 

@@ -11,9 +11,10 @@
 | 显式碰撞与产物分类 | `drpmd` | 热速率或固定能量截面，由发射分布决定 |
 | 所选 CV 上的平衡自由能 | `fes` | 相对于 CV 体积元的概率密度及其自由能 |
 | 多入口、多 TS 的独立速率 | `network` | 按入口、通道和 TS 索引的速率矩阵 |
-| 一维/二维 CV 上的历史偏置 | `metadynamics` | 有限时间偏置自由能估计与 HILLS |
-| 固定晶胞中的平衡核量子统计 | `pimd` | 物理能量估计量、环回转半径 |
-| 无恒温 RPMD 输运 | `diffusion` | 质心 MSD、VACF、扩散张量与诊断 |
+| 一至三维 CV 上的历史偏置 | `metadynamics` | 有限时间偏置自由能估计与 HILLS |
+| 基于概率的增强采样 | `opes` | 自适应概率偏置与可选的冻结偏置重加权 |
+| 固定体积或压力下的平衡核量子统计 | `pimd` | 物理能量估计量、环回转半径；NPT 另保存晶胞与体积 |
+| RPMD 输运，可选电子摩擦 | `diffusion` | 质心 MSD、VACF、扩散张量与诊断 |
 | 材料位点或表面盆地的选定出口 | `site_rate` / `surface_rate` | 盆地归一化的一阶速率，单位 `s^-1` |
 | 局域电化学质子–电子转移 | `pcet` | 还原/氧化速率与同位素效应，单位 `s^-1` |
 
@@ -70,8 +71,9 @@ $$
 
 ## 采样与实时传播
 
-PIMD、伞窗口和受约束母链在恒温器下采样平衡分布。dRPMD 碰撞、RPMD 回穿子轨迹和 `diffusion` 生产段使用
-无恒温、无偏置的确定性传播，其时间就是物理时间。
+PIMD、伞窗口和受约束母链在恒温器下采样平衡分布。普通 dRPMD 碰撞、RPMD 回穿子轨迹和 `diffusion` 生产段使用
+无恒温、无偏置的确定性传播，其时间就是物理时间。扩散也可通过 `[electronic_friction]` 选择物理 Markovian 电子摩擦浴；
+这些轨迹与浴交换能量，不用 NVE 能量守恒来判定质量。
 
 | 确定性积分器 | 自由环 | 需要收敛的参数 |
 | --- | --- | --- |
@@ -82,9 +84,10 @@ PIMD、伞窗口和受约束母链在恒温器下采样平衡分布。dRPMD 碰�
 每种方法都要对时间步收敛。Verlet 的自由环在 $|\Delta t|\max\omega_k<2$ 时稳定；刚性键或刚性偏置会收紧这一界限。
 见[积分器说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/integrators.md)。
 
-反应与 FES 工作流使用与积分器匹配的 Andersen 采样。材料 `pimd` / `diffusion` 另提供 PILE-L：Cayley 对应
-`bcocb`，正常模对应 `baoab`，Verlet 使用 Andersen。`native=true` 启用编译子步骤；`loop_backend="native"`
-要求整个循环融合执行。周期与固定原子体系的规则见[周期任务指南](periodic.md)。
+反应工作流使用与积分器匹配的 Andersen 采样。FES 也支持 PILE-L；材料 `pimd` / `diffusion` 在 Cayley 或正常模动力学下
+缺省使用 PILE-L：Cayley 对应 `bcocb`，正常模对应 `baoab`，Verlet 使用 Andersen。Metadynamics 还支持 Nosé–Hoover 链。
+`native=true` 启用编译子步骤；`loop_backend="native"` 要求整个循环融合执行。单独的原生 PIMD 引擎提供更多恒温器；
+周期与固定原子体系的规则见[周期任务指南](periodic.md)。
 
 ## 自由能测度与速率归一化
 
@@ -107,7 +110,9 @@ K_{\mathrm{cv}}=\frac{3N}{2\beta}
 -\frac{1}{2P}\sum_{ji}(q_{ji}-\bar q_i)\cdot F_{ji}.
 $$
 
-内能估计为 $\langle V\rangle_P+K_{\mathrm{cv}}$。`ring_polymer_hamiltonian` 作为传播诊断报告。材料估计量要求全部原子可动。
+内能估计为 $\langle V\rangle_P+K_{\mathrm{cv}}$。`ring_polymer_hamiltonian` 作为传播诊断报告。存在固定原子时，
+把 N 换成可动原子数，并把动能求和限制到可动原子。PES 仍包含全部原子；固定原子是外部坐标，各珠子位置一致、动量为零。
+NPT 要求全部原子可动。
 
 ## 使结果收敛
 

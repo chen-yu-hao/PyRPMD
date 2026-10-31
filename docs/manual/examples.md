@@ -41,6 +41,7 @@ separation) show the smallest valid inputs, with every other setting at its pilo
 | Input | `task` | Content | Time |
 | --- | --- | --- | --- |
 | `examples/materials/pimd.inp` | `pimd` | Equilibrium energies and ring size in a periodic model | ~2 s |
+| `examples/ensembles/pimd_native.inp`, `pimd_native_npt.inp` | `pimd` | Native ensemble engine with separate thermostat/barostat and checkpoint contracts | — |
 | `examples/materials/diffusion.inp` | `diffusion` | Free particle; the analysis flags ballistic motion | ~3 s |
 | `examples/materials/site_rate.inp` | `site_rate` | Periodic model, explicit basin and one directed exit | ~25 s |
 | `examples/surface/fes2d.inp` | `fes` | 2D surface CVs on a fixed substrate | ~1 min |
@@ -90,5 +91,6 @@ matches a pinned pyPCET commit to within 0.062% on the harmonic model.
 5. Fix the final protocol, run an independent production and keep the full provenance and
    uncertainties.
 
-`preset="production"` checks that every setting is explicit; steps 3 and 4 establish convergence.
-See [Scientific conventions](science.md).
+`preset="production"` enforces required fields and task restrictions; omitted parameters can
+still use defaults. Inspect `pyrpmd validate INPUT --write-resolved resolved.json` before fixing the
+protocol. Steps 3 and 4 establish convergence; see [Scientific conventions](science.md).
