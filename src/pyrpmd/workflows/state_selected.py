@@ -7,9 +7,10 @@ Reference-mode projection occurs only after propagation blocks return.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from pathlib import Path
 import json
+from collections.abc import Mapping
+from functools import partial
+from pathlib import Path
 
 import numpy as np
 
@@ -22,15 +23,12 @@ from ..io import jsonable, write_json
 from ..potentials import make_potential, validate_result
 from ..propagation import loop_options
 from ..units import time_steps
-
+from ..validation import positive_integer
 
 _DIAGNOSTICS = {"energy_parts": True, "ring_radii": True}
 
 
-def _positive_integer(value, name):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
-        raise InputError(f"{name} must be a positive integer")
-    return int(value)
+_positive_integer = partial(positive_integer, error_type=InputError)
 
 
 def _statistics(values):

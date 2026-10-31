@@ -6,11 +6,13 @@ as its parent: overridden Python mathematics must remain in the Python path.
 """
 from __future__ import annotations
 
+import copy
 from contextlib import contextmanager
 from dataclasses import dataclass
-import copy
-import numbers
+
 import numpy as np
+
+from .validation import checked_integer as _integer
 
 
 class NativeUnavailableError(RuntimeError):
@@ -62,8 +64,12 @@ def _atomic_binding(binding):
 
 
 def _check_dynamics_methods(dynamics):
-    from .dynamics import (Dynamics, CayleyIntegrator, _BLOCK_DYNAMICS_METHODS,
-                           _BLOCK_INTEGRATOR_METHODS)
+    from .dynamics import (
+        _BLOCK_DYNAMICS_METHODS,
+        _BLOCK_INTEGRATOR_METHODS,
+        CayleyIntegrator,
+        Dynamics,
+    )
     if getattr(dynamics, "fixed_atoms", ()):
         raise NativeUnavailableError("fixed atoms require the Python propagation loop")
     if type(dynamics) is not Dynamics or not _original_methods(dynamics, _BLOCK_DYNAMICS_METHODS):
@@ -123,7 +129,14 @@ def _check_bias_methods(bias):
 
 
 def cv_descriptor(cv, n):
-    from .cv import Distance, BondDifference, Cartesian, COMDistance, RPMDrateCoordinate, RateSurface
+    from .cv import (
+        BondDifference,
+        Cartesian,
+        COMDistance,
+        Distance,
+        RateSurface,
+        RPMDrateCoordinate,
+    )
     if getattr(cv, "estimator", None) != "centroid":
         raise NativeUnavailableError("native CV path requires centroid estimator")
     if any(p is not None for p in cv.periods):
@@ -171,7 +184,7 @@ def _cvs(cv, n):
 
 
 def _biases(bias, n, masses):
-    from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
+    from .bias import CompositeBias, FluxMetricBias, UmbrellaBias
     if bias is None:
         return []
     _check_bias_methods(bias)
@@ -188,12 +201,6 @@ def _biases(bias, n, masses):
             raise NativeUnavailableError("native flux metric requires RPMDrateCoordinate")
         return [{"kind": 1, "cvs": _cvs(bias.cv, n), "beta": float(bias.beta)}]
     raise NativeUnavailableError(f"{type(bias).__name__} requires Python bias evaluation")
-
-
-def _integer(value, name, minimum=1):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral) or value < minimum:
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
 
 
 def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interval=1,

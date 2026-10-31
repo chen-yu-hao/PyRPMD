@@ -31,27 +31,22 @@ from ..constants import ATOMIC_TIME_S
 from ..cv import Cartesian
 from ..cv_periodic import FractionalCoordinate, LinearProjection
 from ..dynamics import Dynamics, State
-from ..parallel import task_potential, root_call, run_tasks
+from ..io import fingerprint as _fingerprint
+from ..io import report_jsonable as jsonable
+from ..io import write_report_json as write_json
+from ..parallel import root_call, run_tasks, task_potential
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
-from .fes import (
-    _dimension,
-    _fingerprint,
-    checked_integer,
-    jsonable,
-    resolve_umbrellas,
-    run_fes,
-    write_json,
-)
+from ..validation import checked_integer
+from .fes import _dimension, resolve_umbrellas, run_fes
 from .rate import (
-    _recrossing_options,
     _recrossing_dynamics,
+    _recrossing_options,
     _recrossing_spec,
     constrained_step,
     project_momenta,
     project_positions,
 )
-
 
 _CONSTANT_CV_METHODS = {
     cls: {name: getattr(cls, name, None) for name in (

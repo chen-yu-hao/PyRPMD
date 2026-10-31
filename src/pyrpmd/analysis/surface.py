@@ -15,6 +15,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 from ..constants import ATOMIC_TIME_S
+from ..validation import positive_integer
 from .fes import (
     UmbrellaReweighting,
     _block_resample,
@@ -44,10 +45,7 @@ def surface_normalization(options, system):
         raise ValueError("surface.normalization accepts reaction_order, area, reference_adsorbates, site_count, coverage, path_multiplicity")
 
     def integer(name, default):
-        value = options.get(name, default)
-        if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
-            raise ValueError(f"surface.normalization.{name} must be a positive integer")
-        return int(value)
+        return positive_integer(options.get(name, default), f"surface.normalization.{name}")
 
     order = integer("reaction_order", 1)
     if order not in (1, 2):

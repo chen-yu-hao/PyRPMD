@@ -8,16 +8,17 @@ failure to distinguish two noisy estimates is not evidence of convergence.
 
 from __future__ import annotations
 
-from collections import defaultdict
-from copy import deepcopy
-from dataclasses import dataclass
 import csv
 import hashlib
 import itertools
 import json
 import math
-from pathlib import Path
 import tomllib
+from collections import defaultdict
+from copy import deepcopy
+from dataclasses import dataclass
+from functools import partial
+from pathlib import Path
 
 import numpy as np
 
@@ -26,6 +27,7 @@ from .input import InputError, JobSpec
 from .io import fingerprint, jsonable, referenced_files, write_json
 from .system import System
 from .units import parse_quantity, time_steps
+from .validation import checked_integer
 
 _AXES = {"beads": None, "timestep": "time", "separation": "length", "bmax": "length"}
 _RATE_TASKS = ("rate", "site_rate", "surface_rate", "drpmd")
@@ -129,10 +131,7 @@ outside this independent-stream helper.
             "uncertainty_model": "independent rates; first-order log-delta approximation"}
 
 
-def _integer(value, name, minimum=1):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < minimum:
-        raise InputError(f"{name} must be an integer >= {minimum}")
-    return int(value)
+_integer = partial(checked_integer, error_type=InputError)
 
 
 def _quantity(value, dimension, name):

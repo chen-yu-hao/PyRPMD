@@ -10,13 +10,8 @@ from __future__ import annotations
 
 import numpy as np
 
-from .base import Potential, PESResult, coordinates, validate_result
-
-
-def _positive_integer(value, name):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
-        raise ValueError(f"{name} must be a positive integer")
-    return int(value)
+from ..validation import positive_integer as _positive_integer
+from .base import PESResult, Potential, coordinates, validate_result
 
 
 def _component(provider, name):

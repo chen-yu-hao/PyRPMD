@@ -10,16 +10,18 @@ exit, not a sum over all chemical channels.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from functools import lru_cache
+from pathlib import Path
+
 import numpy as np
 
+from ..checkpoint import atomic_savez as _atomic_npz
+from ..checkpoint import load_checkpoint
 from ..cv import CVStack, make_cvs
 from ..io import file_sha256, fingerprint, jsonable, write_json
-from ..checkpoint import load_checkpoint
-from ..system import System
 from ..potentials.base import PESResult, validate_result
-from .fes import _atomic_npz, checked_integer
+from ..system import System
+from ..validation import checked_integer
 
 
 def source_paths(raw, base=None):

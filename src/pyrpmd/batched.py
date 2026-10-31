@@ -10,21 +10,15 @@ random streams, or the scalar :class:`pyrpmd.dynamics.Dynamics` defaults.
 
 from __future__ import annotations
 
+import threading
 from collections import OrderedDict
 from dataclasses import dataclass
-import numbers
-import threading
 
 import numpy as np
 
 from .dynamics import CayleyIntegrator, Dynamics, State
 from .potentials.base import PotentialError, validate_result
-
-
-def _integer(value, name, minimum=0):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral) or value < minimum:
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
+from .validation import integer_count as _integer
 
 
 def validate_batch_potential(potential):
@@ -53,7 +47,7 @@ def validate_batch_potential(potential):
 
     # Recurse through adapters before accepting an outer declaration: a Python
     # wrapper must not hide a ring-coupled or explicitly stateful inner object.
-    from .potentials.python import PythonPotential, _PYTHON_EVALUATE
+    from .potentials.python import _PYTHON_EVALUATE, PythonPotential
     if type(potential) is PythonPotential:
         if "evaluate" not in potential.__dict__ and PythonPotential.evaluate is _PYTHON_EVALUATE:
             inner = getattr(potential.obj, "metadata", {}) or {}
@@ -70,9 +64,14 @@ def validate_batch_potential(potential):
     if metadata.get("trajectory_batch_safe") is True:
         return
 
-    from .potentials.builtin import (FreePotential, HarmonicPotential,
-                                    MorsePairPotential, DoubleWellPotential,
-                                    PeriodicCosinePotential, _BUILTIN_EVALUATE)
+    from .potentials.builtin import (
+        _BUILTIN_EVALUATE,
+        DoubleWellPotential,
+        FreePotential,
+        HarmonicPotential,
+        MorsePairPotential,
+        PeriodicCosinePotential,
+    )
     known = (FreePotential, HarmonicPotential, MorsePairPotential,
              DoubleWellPotential, PeriodicCosinePotential)
     if (type(potential) in known and "evaluate" not in potential.__dict__
@@ -82,7 +81,7 @@ def validate_batch_potential(potential):
         ):
             raise ValueError("batched harmonic parameters cannot depend on the frame axis")
         return
-    from .potentials.cabi import CABIPotential, _CABI_EVALUATE
+    from .potentials.cabi import _CABI_EVALUATE, CABIPotential
     if (type(potential) is CABIPotential
             and "evaluate" not in potential.__dict__
             and CABIPotential.evaluate is _CABI_EVALUATE

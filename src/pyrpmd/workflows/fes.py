@@ -7,97 +7,29 @@ change stream identities. Only the coordinator writes aggregate products.
 
 from __future__ import annotations
 
-from pyrpmd.propagation import loop_options, scientific_config
-
 import copy
-import hashlib
 import json
 import os
 from pathlib import Path
+
 import numpy as np
 
+from pyrpmd.propagation import loop_options
+
 from ..analysis.fes import reconstruct_fes
-from ..bias import UmbrellaBias, FluxMetricBias, CompositeBias, displacement
-from ..cv import make_cvs, RPMDrateCoordinate
-from ..dynamics import Dynamics, State
+from ..bias import CompositeBias, FluxMetricBias, UmbrellaBias, displacement
 from ..block_propagation import PropagationError
-from ..checkpoint import atomic_savez, load_checkpoint
-from ..io import atomic_write_text
-from ..parallel import run_tasks, task_potential, root_call
-from ..units import parse_quantity, unit_factor, DIMS
+from ..checkpoint import atomic_savez as _atomic_npz
+from ..checkpoint import load_checkpoint
+from ..cv import RPMDrateCoordinate, make_cvs
+from ..dynamics import Dynamics, State
+from ..io import fingerprint as _fingerprint
+from ..io import report_jsonable as jsonable
+from ..io import write_report_json as write_json
+from ..parallel import root_call, run_tasks, task_potential
+from ..units import DIMS, parse_quantity, unit_factor
+from ..validation import checked_integer
 from .sampling import fes_sampler
-
-
-def jsonable(value):
-    if isinstance(value, np.ndarray):
-        return jsonable(value.tolist())
-    if isinstance(value, np.generic):
-        return jsonable(value.item())
-    if isinstance(value, Path):
-        return str(value)
-    if isinstance(value, dict):
-        return {str(k): jsonable(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [jsonable(v) for v in value]
-    if isinstance(value, float) and not np.isfinite(value):
-        return None
-    if hasattr(value, "to_dict"):
-        return value.to_dict()
-    return value
-
-
-def write_json(path, data):
-    atomic_write_text(
-        path, json.dumps(jsonable(data), indent=2, allow_nan=False) + "\n"
-    )
-
-
-def _fingerprint(config, system, extras):
-    config = scientific_config(config)
-    # Analysis settings, output path and worker count do not change a stream.
-    physics = {
-        k: v
-        for k, v in config.items()
-        if k
-        not in (
-            "parallel",
-            "output",
-            "analysis",
-            "resume",
-            "_resume",
-            "_input_path",
-            "_base_directory",
-            "_warnings",
-        )
-    }
-    value = {
-        "schema": 1,
-        "physics": physics,
-        "sampling_measure": config.get("analysis", {}).get("measure", "cv_density"),
-        "system": system.to_dict(),
-        "stream": extras,
-    }
-    if "flux_axis" in config.get("analysis", {}):
-        value["sampling_flux_axis"] = config["analysis"]["flux_axis"]
-    from ..cv import geometry_convention_identity
-
-    convention = geometry_convention_identity(config, system)
-    if convention is not None:
-        value["cv_geometry_convention"] = convention
-    from ..potentials import energy_convention_identity
-
-    energy_convention = energy_convention_identity(config)
-    if energy_convention is not None:
-        value["potential_energy_convention"] = energy_convention
-    return hashlib.sha256(
-        json.dumps(
-            jsonable(value), sort_keys=True, separators=(",", ":"), default=repr
-        ).encode()
-    ).hexdigest()
-
-
-def _atomic_npz(path, **arrays):
-    atomic_savez(path, kind="arrays", **arrays)
 
 
 def _dimension(unit):
@@ -107,16 +39,6 @@ def _dimension(unit):
         "hartree": DIMS["energy"],
         "dimensionless": DIMS["dimensionless"],
     }[unit]
-
-
-def checked_integer(value, name, minimum=1):
-    if (
-        isinstance(value, bool)
-        or not isinstance(value, (int, np.integer))
-        or value < minimum
-    ):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
 
 
 def _flux_coordinate(config, cv):

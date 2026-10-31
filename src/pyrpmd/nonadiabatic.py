@@ -4,17 +4,14 @@ Atomic units (hbar=1), real nuclear masses and one mapping vector per bead.
 The electronic estimate is signed; it is not a surface-hopping probability.
 This module does not prepare an electronic thermal trace or a QTST rate.
 """
+
 from dataclasses import dataclass
+
 import numpy as np
 
 from .dynamics import CayleyIntegrator, State
-from .potentials.base import Potential, PotentialError, PESResult, coordinates
-
-
-def _positive_integer(value, name):
-    if isinstance(value, bool) or not isinstance(value, (int, np.integer)) or value < 1:
-        raise ValueError(f"{name} must be a positive integer")
-    return int(value)
+from .potentials.base import PESResult, Potential, PotentialError, coordinates
+from .validation import positive_integer as _positive_integer
 
 
 @dataclass

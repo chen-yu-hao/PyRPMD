@@ -12,6 +12,7 @@ import numpy as np
 from . import cv as cv_module
 from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
 from .potentials.native import descriptor_binding
+from .validation import checked_integer
 
 
 class NotNative(ValueError):
@@ -182,11 +183,11 @@ def _outcome_options(outcome, state, steps):
         raise ValueError("outcome channel_labels must be unique nonempty strings")
 
     def integer(name, default, minimum):
-        value = outcome.get(name, default)
-        if (isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral)
-                or not minimum <= value <= np.iinfo(np.int64).max):
-            raise ValueError(f"outcome {name} must be an integer >= {minimum}")
-        return int(value)
+        return checked_integer(
+            outcome.get(name, default), f"outcome {name}", minimum,
+            np.iinfo(np.int64).max,
+            message="{name} must be an integer >= {minimum}",
+        )
 
     start = integer("start_step", state.step, 0)
     if start > np.iinfo(np.int64).max - steps:

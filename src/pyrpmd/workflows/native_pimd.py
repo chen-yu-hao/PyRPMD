@@ -10,17 +10,24 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-from pathlib import Path
 import shutil
 import tempfile
+from pathlib import Path
 
 import numpy as np
 
 from ..io import file_sha256, jsonable, referenced_files, write_json
-from ..native_ensemble import NativeEnsemble, NativePeriodicPES, ensemble_from_config, _COLUMNS, _THERMOSTATS
+from ..io import fingerprint as _fingerprint
+from ..native_ensemble import (
+    _COLUMNS,
+    _THERMOSTATS,
+    NativeEnsemble,
+    NativePeriodicPES,
+    ensemble_from_config,
+)
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
-from .fes import _fingerprint, checked_integer
+from ..validation import checked_integer
 
 _SCHEMA = "pyrpmd.native-pimd-journal.v1"
 _NAMES = ("potential_energy", "kinetic_primitive", "kinetic_centroid_virial",
@@ -89,7 +96,11 @@ def resolve_native_pimd(config, system):
 
 
 def _native_potential(provider):
-    from ..potentials.builtin import FreePotential, HarmonicPotential, PeriodicCosinePotential
+    from ..potentials.builtin import (
+        FreePotential,
+        HarmonicPotential,
+        PeriodicCosinePotential,
+    )
     if type(provider) is FreePotential:
         return {"kind": "free"}
     if type(provider) is HarmonicPotential:

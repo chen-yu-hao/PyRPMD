@@ -15,6 +15,7 @@ import numbers
 import threading
 import numpy as np
 from .potentials.base import validate_result
+from .validation import checked_integer, finite_real
 
 
 INTEGRATORS = ("cayley-bcb", "normal-mode-bab", "velocity-verlet")
@@ -22,21 +23,10 @@ INTEGRATORS = ("cayley-bcb", "normal-mode-bab", "velocity-verlet")
 
 def _state_clock(step, time):
     """Validate a live clock and normalize NumPy scalars without integer wrap."""
-    if (
-        isinstance(step, (bool, np.bool_))
-        or not isinstance(step, numbers.Integral)
-        or step < 0
-        or isinstance(time, (bool, np.bool_))
-        or not isinstance(time, numbers.Real)
-    ):
-        raise ValueError("invalid state clock")
-    try:
-        time = float(time)
-    except (OverflowError, ValueError) as exc:
-        raise ValueError("invalid state clock") from exc
-    if not math.isfinite(time):
-        raise ValueError("invalid state clock")
-    return int(step), time
+    return (
+        checked_integer(step, "state clock", minimum=0, message="invalid state clock"),
+        finite_real(time, "state clock", message="invalid state clock"),
+    )
 
 
 def normalize_integrator(value):

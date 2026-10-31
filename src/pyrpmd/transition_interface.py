@@ -10,8 +10,9 @@ This is TIS, not a collection of independent committor shots.  See
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
+from functools import partial
 from typing import Callable
 
 import numpy as np
@@ -19,24 +20,16 @@ import numpy as np
 from .analysis.fes import statistical_inefficiency
 from .constants import ATOMIC_TIME_S
 from .dynamics import (
-    CayleyIntegrator, Dynamics, State,
-    _BLOCK_DYNAMICS_METHODS, _BLOCK_INTEGRATOR_METHODS,
+    _BLOCK_DYNAMICS_METHODS,
+    _BLOCK_INTEGRATOR_METHODS,
+    CayleyIntegrator,
+    Dynamics,
+    State,
 )
+from .validation import finite_real
+from .validation import integer_count as _integer
 
-
-def _integer(value, name, minimum=0):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < minimum:
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
-
-
-def _finite(value, name):
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(f"{name} must be finite")
-    result = float(value)
-    if not math.isfinite(result):
-        raise ValueError(f"{name} must be finite")
-    return result
+_finite = partial(finite_real, coerce=True, message='{name} must be finite')
 
 
 def _readonly(value):
