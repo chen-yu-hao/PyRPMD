@@ -5,7 +5,7 @@
 ```python
 from pyrpmd import analyze_run
 
-summary = analyze_run("runs/manual-first")
+summary = analyze_run("my-first-run/run")
 print(summary["task"])
 print(summary.get("converged"))
 print(summary.get("warnings", []))
@@ -48,7 +48,7 @@ FES 写出 `fes.npz`、`fes.csv` 和 `fes.h5`；摘要中的 `files` 给出路�
 import numpy as np
 from pyrpmd import analyze_run
 
-summary = analyze_run("runs/manual-first")
+summary = analyze_run("my-first-run/run")
 table = np.genfromtxt(summary["files"]["table"], delimiter=",", names=True)
 supported = table["masked"] == 0
 print("supported bins:", int(supported.sum()))
@@ -60,7 +60,7 @@ print(table["free_energy_hartree"][supported])
 重新分箱复用保存的样本，不调用 PES：
 
 ```bash
-pyrpmd analyze runs/manual-first --recompute --bins 8 --bootstrap 20
+pyrpmd analyze my-first-run/run --recompute --bins 8 --bootstrap 20
 ```
 
 bootstrap 给出保存样本的统计误差。没有有效误差时该字段为 `null`。
@@ -83,7 +83,8 @@ bootstrap 给出保存样本的统计误差。没有有效误差时该字段为 
 
 ## PIMD 与扩散
 
-PIMD 的 primitive 和 centroid-virial 估计量给出物理热力学能量；环 Hamiltonian 是传播诊断。PIMD 在固定晶胞体积下运行。
+PIMD 的 primitive 和 centroid-virial 估计量给出物理热力学能量；环 Hamiltonian 是传播诊断。PIMD 缺省使用固定晶胞，
+显式设置受支持的恒压器时使用 NPT；请阅读报告的系综，NPT 运行还需检查保存的体积与压力。
 
 扩散保存连续、展开的质心位置和速度。MSD 拟合需要长时扩散区，`analysis_status` 标出弹道运动和不稳定的拟合。
 VACF 积分和副本间误差提供另外两项检查。

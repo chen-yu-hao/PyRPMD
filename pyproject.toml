@@ -42,4 +42,5 @@ addopts = "-ra"
 
 
 [tool.setuptools.package-data]
+"pyrpmd" = ["templates/*.inp"]
 "pyrpmd.pesgen" = ["_native/*.cpp", "_native/*.f90", "_native/*.h"]

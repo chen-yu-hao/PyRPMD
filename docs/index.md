@@ -41,11 +41,13 @@ work through [Scientific conventions and convergence](manual/science.md).
 ## The basic cycle
 
 Every task uses the same four commands. Give each new calculation its own output directory.
+To create a ready input first, use `pyrpmd init my-first-run` and follow the
+[Quickstart](manual/quickstart.md). In the template below, `job.inp` is your own input file.
 
 ```bash
 pyrpmd validate job.inp --check-pes     # check input and units, construct the PES
 pyrpmd run job.inp --output runs/job    # run; results in runs/job/results/summary.json
-pyrpmd analyze runs/job                 # read the summary; FES, metadynamics, diffusion accept --recompute
+pyrpmd analyze runs/job                 # read the summary; FES, metadynamics, OPES, diffusion accept --recompute
 pyrpmd resume runs/job                  # continue from checkpoints without changing the science
 ```
 

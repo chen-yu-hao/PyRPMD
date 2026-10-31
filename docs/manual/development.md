@@ -21,6 +21,9 @@ A change to a public interface updates the documentation, the examples and tests
 numerical and state behavior in the same commit. Changes to sampling measures, forces, constraints,
 random streams or restart identity come with their scientific reasoning and regression tests.
 
+The [2026-10-31 user-experience review](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/ux-review-2026-10-31.md)
+tracks the audit scope, prioritized to-do list, implemented fixes and remaining work.
+
 ## Running the tests
 
 ```bash

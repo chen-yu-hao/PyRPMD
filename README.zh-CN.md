@@ -7,7 +7,7 @@
 **一个输入文件完成环聚合物分子动力学——从过渡态到经回穿校正的速率，支持带科学指纹的检查点续跑。**
 
 给 PyRPMD 一个过渡态和一个势能，它会自动搭建完整的 Bennett–Chandler 计算：数值 Hessian 与双向下降识别反应通道，伞抽样
-给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动 10 类任务，从气相速率、直接碰撞到自由能面、
+给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动 11 类任务，从气相速率、直接碰撞到自由能面、
 metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核为 C++17/OpenMP，并配有 NumPy 参考实现。
 
 ## 为什么选择 PyRPMD
@@ -36,7 +36,9 @@ git clone https://github.com/chen-yu-hao/PyRPMD.git PyRPMD
 cd PyRPMD
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[test]'
+python -m pip install --upgrade pip
+python -m pip install -e .
+pyrpmd --version
 pyrpmd info
 ```
 
@@ -58,18 +60,22 @@ PYRPMD_NO_NATIVE=1 python -m pip install -e .
 
 ## 第一次运行
 
-在内置谐振势上做一次可续跑的一维自由能计算，约两秒：
+在内置谐振势上做一次可续跑的一维自由能短测试。安装完成后可在任意工作目录开始；`init` 提供输入文件，
+无需依赖源码目录中的示例或下载外部模型：
 
 ```bash
-pyrpmd validate examples/manual/quickstart.inp --check-pes   # 检查输入、单位和 PES
-pyrpmd run examples/manual/quickstart.inp --output runs/first  # 结果在 runs/first/results/summary.json
-pyrpmd analyze runs/first --recompute --bins 8 --bootstrap 10  # 新分箱与误差棒，不重新做动力学
-pyrpmd resume runs/first                                       # 从最后一个检查点继续
+pyrpmd init my-first-run
+pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run
+pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
+pyrpmd analyze my-first-run/run
+pyrpmd resume my-first-run/run
 ```
 
 所有任务都使用同样的 `validate` → `run` → `analyze` → `resume` 流程。`--check-pes` 还会评估势能，对只给 TS 的速率输入还会
 执行数值准备。每个新计算使用新的输出目录；`resume`（或对原输入使用 `run --resume`）继续已有运行。
-[快速入门](docs/zh/manual/quickstart.md)逐行讲解输入与输出。
+入门例子产生 3 个窗口、6 条采样流和 120 个保存样本，摘要位于 `my-first-run/run/results/summary.json`。
+这个小样本用于检查工作流，不代表物理结果已收敛。`init` 拒绝写入非空目录。若 shell 找不到 `pyrpmd`，
+可以用 `python -m pyrpmd` 加相同参数。[快速入门](docs/zh/manual/quickstart.md)逐行讲解输入、输出与离线重分析。
 
 ## 可以计算什么
 
@@ -83,6 +89,7 @@ pyrpmd resume runs/first                                       # 从最后一个
 | 一维/二维自由能面 | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
 | 自适应伞窗口 | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
 | Standard 或 well-tempered metadynamics | `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
+| 概率增强采样 | `opes` | `examples/opes/harmonic_2d.inp` | — |
 | 固定晶胞 PIMD 与能量估计量 | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD 自扩散、MSD、VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | 材料中的有向位点跃迁 | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
@@ -273,7 +280,7 @@ RATTLE，数值失败时保留成功的前缀。两者都支持三种积分器�
 
 ## 文档
 
-使用手册涵盖安装、快速入门、全部 10 类任务的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，
+使用手册涵盖安装、快速入门、全部 11 类任务的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，
 章节一一对应。构建带搜索的 HTML 手册（中文版输出到 `zh/`）：
 
 ```bash
@@ -283,6 +290,8 @@ python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
 ```
 
 GitHub **Documentation** 工作流构建两个版本、运行入门示例，并上传 `pyrpmd-manual-html` 产物。
+
+[用户体验审查与 to-do list](docs/ux-review-2026-10-31.md)记录当前上手流程的审查结果及后续工作。
 
 运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据和 `results/summary.json`。FES 另有
 `fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条轨迹的初态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。

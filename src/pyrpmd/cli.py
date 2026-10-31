@@ -33,7 +33,10 @@ def parser():
         description="PyRPMD: ring-polymer dynamics, reaction networks, enhanced sampling and PCET models",
     )
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
+    p.add_argument("--debug", action="store_true", help="Show a traceback when a command fails")
     commands = p.add_subparsers(dest="command", required=True)
+    starter = commands.add_parser("init", help="Create a self-contained harmonic tutorial in a new or empty directory")
+    starter.add_argument("directory", help="Directory for quickstart.inp; existing files are never overwritten")
     r = commands.add_parser("run", help="Execute a checked scientific task")
     _input_options(r)
     r.add_argument("--output")
@@ -44,6 +47,7 @@ def parser():
     )
     _input_options(v)
     v.add_argument("--check-pes", action="store_true")
+    v.add_argument("--output", help="Resolve a run destination relative to the current directory without creating it")
     v.add_argument("--write-resolved")
     q = commands.add_parser(
         "prepare", help="Prepare a task; --pilot permits numerical TS/PES checks"
@@ -166,6 +170,13 @@ def parser():
         default=1e-5,
         help="Absolute force tolerance in hartree/bohr",
     )
+    # Accept the diagnostic flag on either side of the command (and PES action).
+    # SUPPRESS preserves a value already parsed by a parent parser.
+    for command_parser in (*commands.choices.values(), *sub.choices.values()):
+        command_parser.add_argument(
+            "--debug", action="store_true", default=argparse.SUPPRESS,
+            help="Show a traceback when a command fails",
+        )
     return p
 
 
@@ -175,7 +186,7 @@ def _job(args):
         k: getattr(args, k, None)
         for k in ("pes", "pes_manifest", "temperature", "beads", "workers")
     }
-    if args.command == "run":
+    if args.command in ("run", "validate"):
         options["output"] = args.output
     return s.with_overrides(**options)
 
@@ -309,7 +320,12 @@ def main(argv=None):
     try:
         if args.command in ("run", "analyze") and not args.report and (args.report_output or args.report_overwrite or args.report_style):
             raise InputError("--report-output, --report-overwrite and --report-style require --report")
-        if args.command == "run":
+        if args.command == "init":
+            from .parallel import root_call
+            from .scaffold import init_project
+
+            _print(root_call(init_project, args.directory))
+        elif args.command == "run":
             from .runner import run
 
             result = run(_job(args), resume=args.resume)
@@ -327,10 +343,6 @@ def main(argv=None):
             else:
                 from .parallel import execution_plan
 
-                if config["task"] == "fes":
-                    from .workflows.fes import resolve_umbrellas
-
-                    resolve_umbrellas(config, system)
                 if config["task"] == "pcet":
                     from .workflows.pcet import prepare_pcet
 
@@ -355,6 +367,12 @@ def main(argv=None):
                 result["beta_au"] = config["beta"]
                 result["temperature_interpretation"] = config["temperature_interpretation"]
                 result["initial_ensemble_method"] = config["initial_ensemble"]["method"]
+            result.update({
+                "valid": True,
+                "input": str(Path(args.input).resolve()),
+                "output": config["output"]["directory"],
+                "preset": config.get("preset", "pilot"),
+            })
             if args.write_resolved:
                 from .parallel import root_call
 
@@ -452,12 +470,26 @@ def main(argv=None):
             if report is not None:
                 _print(_report_summary(report))
         elif args.command == "info":
+            import importlib.metadata
+            import platform
             from .dynamics import native_capabilities
 
+            dependencies = {}
+            for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "pymbar", "matplotlib"):
+                try:
+                    dependencies[distribution] = importlib.metadata.version(distribution)
+                except importlib.metadata.PackageNotFoundError:
+                    dependencies[distribution] = None
             _print(
                 {
                     "name": "PyRPMD",
                     "version": __version__,
+                    "environment": {
+                        "python": platform.python_version(),
+                        "executable": sys.executable,
+                        "platform": platform.platform(),
+                        "dependencies": dependencies,
+                    },
                     "native": native_capabilities(),
                     "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate"],
                     "materials": {
@@ -498,11 +530,14 @@ def main(argv=None):
 
             _print(inspect_checkpoint(args.path, require_integrity=args.require_integrity))
         return 0
-    except (ValueError, RuntimeError, OSError, ImportError, KeyError) as exc:
+    except (ValueError, RuntimeError, OSError, ImportError, KeyError, TypeError, SyntaxError) as exc:
+        if args.debug:
+            raise
         from .parallel import is_root
 
         if is_root():
             print(f"PyRPMD error: {exc}", file=sys.stderr)
+            print("Use --debug for a traceback; use 'pyrpmd info' for environment details.", file=sys.stderr)
         return 2
 
 

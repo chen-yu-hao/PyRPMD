@@ -79,6 +79,9 @@ RPMDrate/f2py 和 Torch 适配器用于分子体系。
 
 ## PIMD：平衡性质
 
+下文的控制项描述缺省（`sampling.engine="legacy"`）工作流。显式选择 `sampling.engine="native"` 时使用独立的
+原生恒温/恒压引擎与检查点格式；兼容势能、输入与示例见[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)。
+
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
 pyrpmd run examples/materials/pimd.inp --output runs/manual-pimd
