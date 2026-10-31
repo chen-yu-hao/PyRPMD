@@ -207,16 +207,19 @@ def evaluate_metrics(model, points, settings):
             "force_max_hartree_per_bohr": float(np.max(np.abs(df)))}
 
 
-def load_fit(directory):
-    directory = Path(directory).resolve()
+def _load_fit(directory, file_digest):
     manifest = checked_json(directory / "model.json", "pyrpmd.jaxpip-fit/1")
     for name, digest in manifest["artifacts"].items():
-        if file_hash(member(directory, name)) != digest:
+        if file_digest(member(directory, name)) != digest:
             raise ValueError(f"fitted artifact checksum mismatch: {name}")
     required = {manifest["basis"], "model.eqx", "probe.npy", "metrics.json"}
     if not required.issubset(manifest["artifacts"]):
         raise ValueError("missing fitted model artifacts")
     return manifest
+
+
+def load_fit(directory):
+    return _load_fit(Path(directory).resolve(), file_hash)
 
 
 def fit_jaxpip(input_file, output, *, resume=False):

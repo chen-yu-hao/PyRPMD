@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 from .jaxpip_data import checked_json, member, output_lock, write_checked
-from .jaxpip_fit import load_fit
+from .jaxpip_fit import _load_fit, load_fit
 from .reference import atomic_json, file_hash
 
 
@@ -23,11 +23,21 @@ def load_export(directory):
     manifest = checked_json(directory/"export.json", "pyrpmd.jaxpip-export/1")
     if not {"model.onnx", "export-report.json", "model.json"}.issubset(manifest["artifacts"]):
         raise ValueError("missing native-export artifacts")
-    for name, digest in manifest["artifacts"].items():
-        if file_hash(member(directory, name)) != digest:
+    # Both manifests describe the same files. Share their reads only within
+    # this load, while still comparing every independently recorded digest.
+    digests = {}
+
+    def file_digest(path):
+        path = Path(path).resolve()
+        if path not in digests:
+            digests[path] = file_hash(path)
+        return digests[path]
+
+    for name, expected in manifest["artifacts"].items():
+        if file_digest(member(directory, name)) != expected:
             raise ValueError(f"export artifact checksum mismatch: {name}")
-    fitted = load_fit(directory)
-    if manifest["fit_manifest_sha256"] != file_hash(directory/"model.json") or manifest["contract"] != fitted["contract"]:
+    fitted = _load_fit(directory, file_digest)
+    if manifest["fit_manifest_sha256"] != file_digest(directory/"model.json") or manifest["contract"] != fitted["contract"]:
         raise ValueError("export and fitted-model contracts disagree")
     return manifest, fitted
 

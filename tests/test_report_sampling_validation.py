@@ -1,7 +1,9 @@
 """Independent saved-data contract checks for automatic sampling reports."""
 
+from copy import deepcopy
 import hashlib
 import json
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
@@ -167,6 +169,74 @@ def test_schema_two_frozen_centers_are_usable_without_hdf5(tmp_path):
     row = run["sampling_diagnostics"]["sampling"]["windows"][0]
     assert row["center_atomic"] == [1., 1.]
     assert row["stiffness_atomic"] == [[2., 0.], [0., 2.]]
+
+
+def test_adaptive_plan_consumers_reuse_one_validated_snapshot(tmp_path, monkeypatch):
+    plan = {**_plan(), "status": "frozen", "checksum": "verified"}
+    original = deepcopy(plan)
+    path = tmp_path / "adaptive-plan.json"
+    path.touch()
+    read_json = Mock(return_value=plan)
+    checksum = Mock()
+    checksum.return_value.hexdigest.return_value = "verified"
+    monkeypatch.setattr(report_sampling, "_json", read_json)
+    monkeypatch.setattr(hashlib, "sha256", checksum)
+    run = _run(tmp_path, {"adaptive_umbrella": {"enabled": True}})
+
+    centers, stiffness = report_sampling._checkpoint_metadata(run, tmp_path, {}, 2)
+    report_sampling.collect_adaptive_progress(run, tmp_path)
+
+    read_json.assert_called_once_with(run, path)
+    checksum.assert_called_once()
+    np.testing.assert_array_equal(centers, original["centers"])
+    np.testing.assert_array_equal(stiffness, original["stiffness"])
+    assert run["sampling_diagnostics"]["sampling"]["adaptive"]["status"] == "frozen"
+    assert run["_sampling_plan_cache"][str(path.resolve())] is plan
+    assert plan == original
+
+
+@pytest.mark.parametrize("field,value,message", [
+    ("checksum", None, "lacks the checksum"),
+    ("checksum", "incorrect", "checksum mismatch"),
+    ("schema_version", 999, "Unsupported adaptive plan schema"),
+    ("status", "unsupported", "Unsupported adaptive plan status"),
+])
+def test_invalid_adaptive_plan_is_not_cached(tmp_path, monkeypatch, field, value, message):
+    plan = {**_plan(), "checksum": "verified"}
+    if value is None:
+        plan.pop(field)
+    else:
+        plan[field] = value
+    checksum = Mock()
+    checksum.return_value.hexdigest.return_value = "verified"
+    monkeypatch.setattr(report_sampling, "_json", Mock(return_value=plan))
+    monkeypatch.setattr(hashlib, "sha256", checksum)
+    run = _run(tmp_path)
+
+    with pytest.raises(ValueError, match=message):
+        report_sampling._read_adaptive_plan(run, tmp_path / "adaptive-plan.json")
+
+    assert run["_sampling_plan_cache"] == {}
+
+
+def test_cached_incomplete_plan_keeps_each_callers_frozen_requirement(tmp_path, monkeypatch):
+    plan = {**_plan(), "checksum": "verified"}
+    read_json = Mock(return_value=plan)
+    checksum = Mock()
+    checksum.return_value.hexdigest.return_value = "verified"
+    monkeypatch.setattr(report_sampling, "_json", read_json)
+    monkeypatch.setattr(hashlib, "sha256", checksum)
+    run = _run(tmp_path)
+    path = tmp_path / "adaptive-plan.json"
+
+    with pytest.raises(ValueError, match="require a supported frozen plan"):
+        report_sampling._read_adaptive_plan(run, path, require_frozen=True)
+    assert report_sampling._read_adaptive_plan(run, path) is plan
+    with pytest.raises(ValueError, match="require a supported frozen plan"):
+        report_sampling._read_adaptive_plan(run, path, require_frozen=True)
+
+    read_json.assert_called_once_with(run, path)
+    checksum.assert_called_once()
 
 
 def test_legacy_plan_without_saved_schedule_does_not_invent_steps_or_coverage(tmp_path):
