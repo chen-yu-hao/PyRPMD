@@ -23,8 +23,10 @@ def take_nearest_checkpoint(root, count):
         with np.load(path,allow_pickle=False) as d:
             q=d["q"].copy()
         c=q.mean(axis=0)
-        a=np.linalg.norm(c[0]-c[1]);b=np.linalg.norm(c[1]-c[2])
-        if 1.4 <= a <= 3.1 and 1.4 <= b <= 3.1:
+        a=np.linalg.norm(c[0]-c[1]);b=np.linalg.norm(c[1]-c[2]);other=np.linalg.norm(c[0]-c[2])
+        # r01=r12 is a desired exchange cut only in the corresponding
+        # third-bond topology, otherwise this can be the spectator channel.
+        if 1.4 <= a <= 3.1 and 1.4 <= b <= 3.1 and other>max(a,b):
             records.append((abs(a-b),str(path),q))
     if len(records)<count:
         raise ValueError("insufficient archived starting states near bond surface")
@@ -95,7 +97,13 @@ def main():
                             value,_=surface.centroid_value_gradient(child.q.mean(axis=0))
                             numerator[idx,k,0]+=-sign*velocity/fs*(value<0)
                         energy_error=max(energy_error,abs(childdyn.energy(child)-initial)*beta/16)
-                    diagnostics.append({"chain":chain,"parent":parent,"energy_error_kbt":energy_error,
+                    centroid=snapshot.mean(axis=0)
+                    d01=float(np.linalg.norm(centroid[0]-centroid[1]))
+                    d12=float(np.linalg.norm(centroid[1]-centroid[2]))
+                    d02=float(np.linalg.norm(centroid[0]-centroid[2]))
+                    diagnostics.append({"third_bond_longest_at_parent":bool(d02>max(d01,d12)),
+                                        "r01_bohr":d01,"r12_bohr":d12,"r02_bohr":d02,
+                                        "chain":chain,"parent":parent,"energy_error_kbt":energy_error,
                                         "starting_checkpoint":checkpoint,"normal_speed_au":float(fs)})
     finally:
         if hasattr(provider,"close"):provider.close()
@@ -114,6 +122,7 @@ def main():
             "kappa_physical_converged":False,"normalized_2d_rate_cm3_s":None,
             "status":"diagnostic_only__no_physical_entrance_bridge_or_complete_products",
             "maximum_endpoint_energy_error_kbt":max(d["energy_error_kbt"] for d in diagnostics),
+            "parent_topology_valid_count":sum(d["third_bond_longest_at_parent"] for d in diagnostics),
             "parents":diagnostics}
     (a.output/"bond_recrossing_pilot.json").write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps({k:v for k,v in report.items() if k!="parents"},indent=2))
