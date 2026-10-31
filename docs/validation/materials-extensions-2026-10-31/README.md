@@ -9,8 +9,9 @@ materials trajectories. The implementation starts from main commit
 
 | Check | Result |
 | --- | --- |
-| Full local regression suite with the compiled extension and ASE | **1,693 passed**, **153 subtests passed**, 14 skipped, 2 deselected; 227.28 s |
+| Full local regression suite with the compiled extension and ASE, before the benchmark-reader follow-up | **1,693 passed**, **153 subtests passed**, 14 skipped, 2 deselected; 227.28 s |
 | The two socket tests, run separately with localhost access | **2 passed**, 17 deselected |
+| Ni–H benchmark reader compatibility follow-up | **4 passed**, 1 opt-in real-PES skip |
 | Focused grid, metadynamics and fixed-surface suite | **100 passed** |
 | Independent grid review regressions after the final checkpoint-clock guard | **10 passed** |
 | English and Chinese Sphinx HTML builds, warnings as errors | Passed |
@@ -89,6 +90,10 @@ atomic chunk/checkpoint failure recovery, corrupt or truncated chunks, orphan
 chunks and completed restarts that do not construct the PES. The stress case
 stores 5,000 frames for 128 atoms with a 32-frame buffer; approximately 15 MB of
 logical trajectory data stays below 4 MiB of traced allocation during storage.
+The Ni–H benchmark reads both legacy NPZ exports and streamed manifests, and
+accumulates its finite-state, energy-drift and ring-radius checks chunk by chunk.
+Its compatibility regression also excludes later chunks outside the manifest's
+committed prefix.
 
 The storage descriptor has fixed size and uses immutable hash-linked chunks.
 The storage path does not hold the full trajectory in memory. Summary analysis
