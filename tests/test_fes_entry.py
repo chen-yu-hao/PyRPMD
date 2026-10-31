@@ -125,6 +125,50 @@ def test_direct_resolved_entry_can_flatten_one_unambiguous_method_subtable(tmp_p
     assert result["method"] == "metadynamics"
 
 
+@pytest.mark.parametrize("section, typo, correct", [
+    (None, "methd", "method"),
+    ("sampling", "production_step", "production_steps"),
+    ("metadynamics", "heigt", "height"),
+])
+def test_nested_fes_fields_preserve_actionable_typo_suggestions(section, typo, correct):
+    data = job("metadynamics")
+    table = data["fes"] if section is None else data["fes"][section]
+    table[typo] = table.pop(correct)
+    with pytest.raises(InputError, match=f"Did you mean.*'{correct}'"):
+        JobSpec.from_mapping(data).resolve()
+    assert typo in table and correct not in table
+
+
+@pytest.mark.parametrize("method", ["umbrella", "metadynamics", "opes"])
+@pytest.mark.parametrize("field", ["thermostat_params", "native"])
+def test_nested_fes_preserves_provider_preflight(method, field, tmp_path, monkeypatch):
+    data = job(method)
+    if field == "thermostat_params":
+        data["fes"]["sampling"][field] = []
+        message = "sampling.thermostat_params must be a table"
+    else:
+        data["dynamics"][field] = "auto"
+        message = "dynamics.native must be"
+    before = copy.deepcopy(data)
+    monkeypatch.setattr(
+        "pyrpmd.parallel.execution.make_task_potential",
+        lambda *args, **kwargs: pytest.fail("invalid input must fail before potential creation"),
+    )
+    with pytest.raises(InputError, match=message):
+        run(data, output=tmp_path / "invalid")
+    assert not (tmp_path / "invalid").exists()
+    assert data == before
+
+
+def test_direct_resolved_umbrella_uses_full_analysis_preflight(tmp_path, monkeypatch):
+    config, system = JobSpec.from_mapping(job("umbrella")).resolve()
+    config["analysis"]["bins"] = 1
+    monkeypatch.setattr("pyrpmd.potentials.make_potential", lambda *args, **kwargs: pytest.fail("invalid analysis must fail before potential creation"))
+    with pytest.raises(RuntimeError, match="analysis.bins"):
+        run_resolved(config, system, output=tmp_path / "invalid")
+    assert not (tmp_path / "invalid").exists()
+
+
 @pytest.mark.parametrize("method", ["umbrella", "metadynamics", "opes"])
 def test_old_run_manifest_and_streams_migrate_without_changing_samples(method, tmp_path):
     directory = tmp_path / method

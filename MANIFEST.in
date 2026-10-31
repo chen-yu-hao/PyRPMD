@@ -32,3 +32,4 @@ recursive-include benchmarks/analysis_reports *.py *.md
 global-exclude __pycache__ *.py[cod] *.so *.o
 
 recursive-include src/pyrpmd/pesgen/_native *.cpp *.f90 *.h
+recursive-include src/pyrpmd/templates *.inp

@@ -37,22 +37,29 @@ def _read_adaptive_plan(run, path, *, require_frozen=False):
     cache = run.setdefault("_sampling_plan_cache", {})
     key = str(Path(path).resolve())
     if key not in cache:
-        cache[key] = _json(run, path)
+        data = _json(run, path)
+        if "checksum" in data:
+            import hashlib
+            canonical = json.dumps({name: value for name, value in data.items() if name != "checksum"},
+                                   sort_keys=True, separators=(",", ":"), allow_nan=False)
+            if hashlib.sha256(canonical.encode()).hexdigest() != data["checksum"]:
+                raise ValueError("Adaptive plan checksum mismatch")
+        else:
+            raise ValueError("Adaptive plan lacks the checksum required for saved diagnostics")
+        # Schema 2 adds a pilot schedule; schema 3 normalizes the MBAR overlap
+        # score. Centers and physical stiffness keep the same units and shape.
+        if data.get("schema_version") not in (1, 2, 3):
+            raise ValueError("Unsupported adaptive plan schema version")
+        metric = ("normalized_mbar_cosine" if data["schema_version"] == 3
+                  else "mbar_symmetric_transition")
+        if data.get("overlap_metric", None if data["schema_version"] == 3 else metric) != metric:
+            raise ValueError("Adaptive overlap metric does not match the plan schema")
+        if data.get("status") not in ("adapting", "incomplete", "frozen"):
+            raise ValueError("Unsupported adaptive plan status")
+        # Both report consumers only read this snapshot. Cache it after its
+        # invariant checks pass; production readiness remains caller-specific.
+        cache[key] = data
     data = cache[key]
-    if "checksum" in data:
-        import hashlib
-        canonical = json.dumps({name: value for name, value in data.items() if name != "checksum"},
-                               sort_keys=True, separators=(",", ":"), allow_nan=False)
-        if hashlib.sha256(canonical.encode()).hexdigest() != data["checksum"]:
-            raise ValueError("Adaptive plan checksum mismatch")
-    else:
-        raise ValueError("Adaptive plan lacks the checksum required for saved diagnostics")
-    # Schema 2 adds a persisted pilot/budget schedule; the saved CV centers and
-    # physical stiffness have the same canonical units and shape as schema 1.
-    if data.get("schema_version") not in (1, 2):
-        raise ValueError("Unsupported adaptive plan schema version")
-    if data.get("status") not in ("adapting", "incomplete", "frozen"):
-        raise ValueError("Unsupported adaptive plan status")
     if require_frozen and data.get("status") != "frozen":
         raise ValueError("Adaptive production centers require a supported frozen plan")
     return data
@@ -449,10 +456,15 @@ def _adaptive(run, path, prefix):
     if not plan.exists():
         return
     data = _read_adaptive_plan(run, plan)
+    metric = ("normalized_mbar_cosine" if data["schema_version"] == 3
+              else "mbar_symmetric_transition")
+    metric_label = ("Normalized MBAR cosine overlap" if data["schema_version"] == 3
+                    else "Legacy symmetric MBAR transition overlap")
     rounds = data.get("rounds", [])
     if not isinstance(rounds, list) or any(not isinstance(row, dict) for row in rounds):
         raise ValueError("Adaptive diagnostic rounds must be a list of objects")
     run["metrics"][prefix + "_adaptive_status"] = data.get("status")
+    run["metrics"][prefix + "_adaptive_overlap_metric"] = metric
     run["metrics"][prefix + "_adaptive_failure_reason"] = data.get("failure_reason")
     if data["status"] != "frozen":
         reason = data.get("failure_reason", "Pilot targets have not yet been reached")
@@ -476,8 +488,10 @@ def _adaptive(run, path, prefix):
     overlaps, minimum_ess, windows, steps, coverage, targets = [], [], [], [], [], []
     dimension = None
     for row in rounds:
+        if row.get("overlap_metric", metric) != metric:
+            raise ValueError("Adaptive round overlap metric contradicts its plan")
         centers = np.asarray(row["centers"], float)
-        if (centers.ndim != 2 or not len(centers) or centers.shape[1] not in (1, 2)
+        if (centers.ndim != 2 or not len(centers) or centers.shape[1] not in (1, 2, 3)
                 or not np.isfinite(centers).all()
                 or dimension is not None and centers.shape[1] != dimension):
             raise ValueError("Adaptive round centers must be finite and preserve the CV dimension")
@@ -509,8 +523,10 @@ def _adaptive(run, path, prefix):
     for name, key, upper in (("overlap", "target_overlap", 1), ("ess", "min_effective_samples", None)):
         if key in options:
             thresholds[name] = number(options[key], key, upper=upper, positive=True)
-    caption = "Saved adaptation pilots only; these samples are discarded before production. Pilot overlap/ESS targets do not certify physical or production convergence."
-    metrics = [("overlap", "Spanning-tree overlap", overlaps),
+    caption = ("Saved adaptation pilots only; these samples are discarded before production. "
+               "Pilot overlap/ESS targets do not certify physical or production convergence. "
+               f"Overlap metric: {metric}. Scores from different metric versions are not directly comparable.")
+    metrics = [("overlap", "Spanning-tree " + metric_label.lower(), overlaps),
                ("ess", "Minimum effective samples per window", minimum_ess),
                ("windows", "Umbrella windows", windows)]
     if np.isfinite(steps).any():
@@ -526,6 +542,7 @@ def _adaptive(run, path, prefix):
               series, caption, **extra)
     run.setdefault("sampling_diagnostics", {}).setdefault(prefix, {})["adaptive"] = {
         "schema_version": data["schema_version"], "status": data["status"],
+        "overlap_metric": metric,
         "failure_reason": data.get("failure_reason"), "pilot_targets": thresholds,
         "rounds": [{"round": int(index), "windows": count, "spanning_overlap": overlap,
                     "minimum_effective_samples": ess, "pilot_steps_per_stream": step if np.isfinite(step) else None,

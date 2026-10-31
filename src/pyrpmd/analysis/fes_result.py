@@ -24,6 +24,11 @@ SCHEMA = "pyrpmd.fes-result"
 SCHEMA_VERSION = 1
 METHODS = ("umbrella", "metadynamics", "opes")
 UNCERTAINTY_KINDS = ("block_bootstrap", "replica_spread")
+_BOOTSTRAP_METADATA = (
+    "standard_error_scope", "supported_draw_condition", "bootstrap_requested",
+    "bootstrap_attempted", "bootstrap_replicates", "bootstrap_reference_bin",
+    "bootstrap_diagnostics", "bootstrap_block_plan",
+)
 
 
 def _json_value(value):
@@ -76,14 +81,20 @@ def _measure(metadata):
     return candidates[0] if candidates else None
 
 
-def estimate_fes_uncertainty(estimates, *, kind, mask, independent=True):
+def estimate_fes_uncertainty(estimates, *, kind, mask, independent=True,
+                             requested=None, conditional=False):
     """Return a grid of bootstrap errors or descriptive replica spread.
 
     Estimates must already share a physical measure, grid and reference gauge.
-    Bootstrap inputs are complete block-bootstrap reconstruction draws; replica
-    inputs are independently reconstructed bias histories.  A single history,
-    correlated shared-bias walkers, and bins with fewer than two valid draws
-    have unavailable (NaN) uncertainty.
+    Bootstrap inputs are block-bootstrap reconstruction draws; replica inputs
+    are independently reconstructed bias histories. Primary bootstrap errors
+    require support in every requested draw, including rejected fits that are
+    absent from ``estimates``. Pass their total count as ``requested`` (default:
+    the supplied count). ``conditional=True`` explicitly returns the spread of
+    supported draws for a separately labelled diagnostic; it never certifies a
+    primary error. A single history, correlated shared-bias walkers, and bins
+    with fewer than two valid draws have unavailable (NaN) uncertainty. The
+    caller remains responsible for excluding unresolved correlation blocks.
     """
     if kind not in UNCERTAINTY_KINDS:
         raise ValueError("FES uncertainty kind must be block_bootstrap or replica_spread")
@@ -91,6 +102,13 @@ def estimate_fes_uncertainty(estimates, *, kind, mask, independent=True):
     values = np.asarray(estimates, float)
     if values.ndim != mask.ndim + 1 or values.shape[1:] != mask.shape:
         raise ValueError("FES uncertainty estimates must have shape [replicate, *grid]")
+    if requested is None:
+        requested = len(values)
+    if (isinstance(requested, (bool, np.bool_))
+            or not isinstance(requested, (int, np.integer)) or requested < len(values)):
+        raise ValueError("FES uncertainty requested count must be an integer at least the supplied count")
+    if conditional and kind != "block_bootstrap":
+        raise ValueError("Conditional supported-draw errors require block_bootstrap")
     error = np.full(mask.shape, np.nan)
     if independent and len(values) >= 2:
         if kind == "replica_spread":
@@ -103,6 +121,8 @@ def estimate_fes_uncertainty(estimates, *, kind, mask, independent=True):
             square = np.nansum((values - means) ** 2, axis=0)
             np.sqrt(np.divide(square, valid - 1, out=error, where=valid > 1),
                     out=error, where=valid > 1)
+            if not conditional:
+                error[valid < requested] = np.nan
     error[mask] = np.nan
     return error
 
@@ -199,7 +219,8 @@ class FESResult:
         arrays.update({f"edges_{axis}": edge for axis, edge in enumerate(data["edges"])})
         arrays.update({key: np.asarray(data[key]) for key in ("measure", "energy_unit", "beta")
                        if key in data})
-        provenance = {key: data[key] for key in ("measure", "energy_unit", "beta") if key in data}
+        provenance = {key: data[key] for key in ("measure", "energy_unit", "beta", *_BOOTSTRAP_METADATA)
+                      if key in data}
         provenance.update(metadata or {})
         declared = _declared_method(provenance)
         if declared is not None and declared != method:

@@ -7,6 +7,7 @@ import copy
 import importlib.metadata
 import json
 import platform
+from collections.abc import Mapping
 from pathlib import Path
 import shutil
 import sys
@@ -38,6 +39,8 @@ def _initialize_output(config, system, output, resume=False):
     from .propagation import scientific_config
 
     path = Path(output)
+    if path.exists() and not path.is_dir():
+        raise InputError(f"Output path is not a directory: {path}; choose a directory for the run")
     manifest_path = path / "manifest.json"
     hashes = referenced_files(config)
     digest = fingerprint(scientific_config(config), system)
@@ -226,11 +229,54 @@ def run_resolved(config, system, *, output=None, resume=False):
     return result
 
 
+def _resume_parallel(current, overrides):
+    """Apply execution-only overrides without silently retaining old aliases."""
+    from .input import _SECTIONS, _unknown_fields
+    from .parallel import execution_plan
+
+    if not isinstance(overrides, Mapping) or any(not isinstance(key, str) for key in overrides):
+        raise InputError("Resume parallel overrides must be a mapping with string field names")
+    unknown = set(overrides) - _SECTIONS["parallel"]
+    if unknown:
+        raise _unknown_fields(unknown, _SECTIONS["parallel"], "parallel")
+    aliases = ("workers", "trajectory_workers", "trajectory_groups")
+    counts = []
+    for key in aliases:
+        if key in overrides:
+            value = overrides[key]
+            if (isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer))
+                    or value < 1):
+                raise InputError(f"parallel.{key} must be an integer >= 1")
+            counts.append(int(value))
+    if counts and any(value != counts[0] for value in counts):
+        raise InputError("Resume workers, trajectory_workers and trajectory_groups overrides disagree")
+    merged = copy.deepcopy(current)
+    merged.update(overrides)
+    if counts:
+        merged.pop("workers", None)
+        merged["trajectory_workers"] = merged["trajectory_groups"] = counts[0]
+    if "scheduling" in overrides and "coordinator_ranks" not in overrides:
+        merged["coordinator_ranks"] = int(overrides["scheduling"] == "dynamic")
+    try:
+        execution_plan(merged)
+    except (ValueError, TypeError) as error:
+        raise InputError(str(error)) from error
+    return merged
+
+
 def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None):
     path = Path(directory).resolve()
     if path.name == "checkpoints":
         path = path.parent
-    config = json.loads((path / "input" / "resolved.json").read_text())
+    if not (path / "manifest.json").is_file():
+        raise InputError(
+            f"No run manifest in {path}; pass the run directory containing manifest.json "
+            "or its checkpoints subdirectory"
+        )
+    resolved_path = path / "input" / "resolved.json"
+    if not resolved_path.is_file():
+        raise InputError(f"Cannot resume {path}: saved input/resolved.json is missing")
+    config = json.loads(resolved_path.read_text())
     system = _read_identity(config, path)
     if config["task"] == "pcet" and (parallel is not None or execution is not None):
         raise InputError("PCET resume does not accept trajectory parallelism or propagation overrides")
@@ -252,7 +298,7 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
             # selected checkpoint before continuing the already authorized work.
             return extend_run(path, max_time=target * config["dt_au"])
     if parallel is not None:
-        config["parallel"].update(parallel)
+        config["parallel"] = _resume_parallel(config.get("parallel", {}), parallel)
     if execution is not None:
         if not isinstance(execution, dict) or set(execution) - {"loop_backend", "block_steps"}:
             raise InputError("Resume execution overrides accept only loop_backend and block_steps")
@@ -458,19 +504,30 @@ def prepare(job, *, numerical=False):
         from .workflows.materials import resolve_materials
 
         materials_options = resolve_materials(config, system)
+        native_pimd = config.get("sampling", {}).get("engine", "legacy") == "native"
+        if native_pimd:
+            barostat = copy.deepcopy(config.get("barostat", {"mode": "none"}))
+            if barostat.get("mode", "none") == "none":
+                barostat = None
+            storage = "native_pimd_journal"
+        else:
+            barostat = materials_options["barostat"]
+            storage = materials_options["storage"]
         result["materials_preparation"] = {
             "cell_bohr": system.to_dict().get("cell"),
             "pbc": list(getattr(system, "pbc", (False, False, False))),
-            "ensemble": "npt" if materials_options["barostat"] is not None else "fixed_cell",
-            "barostat": materials_options["barostat"],
+            "ensemble": "npt" if barostat is not None else "fixed_cell",
+            "barostat": barostat,
             "fixed_atoms": list(system.fixed_atoms),
-            "trajectory_storage": materials_options["storage"],
+            "trajectory_storage": storage,
             "sampling_thermostat": config["sampling"]["thermostat"],
             "production_method": ("centroid_ef_rpmd" if "electronic_friction" in config else
                                   "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling"),
             "sampling": config["sampling"],
             "analysis": config.get("diffusion", {}),
         }
+        if native_pimd:
+            result["materials_preparation"]["engine"] = "native"
     elif config["task"] == "site_rate":
         from .workflows.site_rate import validate_site_rate
 
@@ -480,12 +537,36 @@ def prepare(job, *, numerical=False):
 
         # The provider itself validates array shape, status and finite results.
         provider = make_potential(config["potential"], system)
+        native_engine = None
         try:
             x = system.geometry[None, :, :]
-            evaluated = provider.evaluate(x)
             from .potentials import validate_result
 
-            if "nonadiabatic" in config:
+            if config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
+                from .potentials.base import PESResult
+                from .workflows.native_pimd import _engine
+
+                # Use the actual native thermostat/barostat and compiled PES
+                # contract. Construction evaluates the initial full ring;
+                # no trajectory, checkpoint, or production step is created.
+                native_engine = _engine(config, system, 0, provider)
+                initial = native_engine.state()
+                checked = validate_result(PESResult(
+                    initial["energy"], initial["force"], virial=initial["virial"],
+                ), (config["beads"], system.natoms, 3))
+                if any(not np.isfinite(initial[key]).all()
+                       for key in ("q", "p", "aux", "cell", "cell_p")):
+                    raise FloatingPointError("nonfinite native PIMD initial state")
+                result["pes_check"] = {
+                    "engine": "native", "backend": "native-cxx17",
+                    "energy_hartree": checked.energy.tolist(),
+                    "status": checked.status.tolist(),
+                    "initial_virial_hartree": checked.virial.tolist(),
+                    "step": initial["step"],
+                    "force_evaluations": initial["force_evaluations"],
+                }
+            elif "nonadiabatic" in config:
+                evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result
                 from .potentials.diabatic import check_diabatic_potential
                 checked = validate_diabatic_result(evaluated, x.shape, config["nonadiabatic"]["nstates"])
@@ -496,6 +577,7 @@ def prepare(job, *, numerical=False):
                 if checked.matrix.dtype.kind == "c":
                     result["pes_check"]["matrix_imag_hartree"] = checked.matrix.imag.tolist()
             else:
+                evaluated = provider.evaluate(x)
                 validate_result(evaluated, x.shape)
                 result["pes_check"] = {
                     "energy_hartree": evaluated.energy.tolist(),
@@ -509,7 +591,11 @@ def prepare(job, *, numerical=False):
                     q = np.repeat(x, config["beads"], axis=0)
                     result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
         finally:
-            provider.close()
+            # Destroy the temporary native engine before releasing its PES.
+            native_engine = None
+            close = getattr(provider, "close", None)
+            if callable(close):
+                close()
         if "electronic_friction" in config:
             from .electronic_friction import make_electronic_friction, validate_friction_result
             friction = make_electronic_friction(config, system)

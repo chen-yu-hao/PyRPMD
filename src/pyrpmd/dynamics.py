@@ -11,12 +11,32 @@ from dataclasses import dataclass
 import copy
 import importlib
 import math
+import numbers
 import threading
 import numpy as np
 from .potentials.base import validate_result
 
 
 INTEGRATORS = ("cayley-bcb", "normal-mode-bab", "velocity-verlet")
+
+
+def _state_clock(step, time):
+    """Validate a live clock and normalize NumPy scalars without integer wrap."""
+    if (
+        isinstance(step, (bool, np.bool_))
+        or not isinstance(step, numbers.Integral)
+        or step < 0
+        or isinstance(time, (bool, np.bool_))
+        or not isinstance(time, numbers.Real)
+    ):
+        raise ValueError("invalid state clock")
+    try:
+        time = float(time)
+    except (OverflowError, ValueError) as exc:
+        raise ValueError("invalid state clock") from exc
+    if not math.isfinite(time):
+        raise ValueError("invalid state clock")
+    return int(step), time
 
 
 def normalize_integrator(value):
@@ -44,6 +64,8 @@ class State:
     time: float = 0.0
 
     def __post_init__(self):
+        if any(np.asarray(value).dtype.kind not in "fiu" for value in (self.q, self.p)):
+            raise ValueError("q,p must be real numerical arrays")
         self.q = np.array(self.q, dtype=np.float64, order="C", copy=True)
         self.p = np.array(self.p, dtype=np.float64, order="C", copy=True)
         if (
@@ -55,13 +77,7 @@ class State:
             raise ValueError("q,p must have equal nonempty [P,N,3] shapes")
         if not np.isfinite(self.q).all() or not np.isfinite(self.p).all():
             raise ValueError("q,p must be finite")
-        if (
-            isinstance(self.step, bool)
-            or not isinstance(self.step, (int, np.integer))
-            or self.step < 0
-            or not np.isfinite(self.time)
-        ):
-            raise ValueError("invalid state clock")
+        self.step, self.time = _state_clock(self.step, self.time)
 
     def copy(self):
         return State(self.q, self.p, self.step, self.time)
@@ -86,6 +102,8 @@ class CayleyIntegrator:
 
     def __init__(self, masses, beta, nbeads, dt, threads=1, native=True, scheme="cayley-bcb"):
         self._scheme = normalize_integrator(scheme)
+        if np.asarray(masses).dtype.kind not in "fiu":
+            raise ValueError("masses must be a real numerical array")
         self.masses = np.array(masses, dtype=float, copy=True)
         if (
             self.masses.ndim != 1
@@ -95,8 +113,14 @@ class CayleyIntegrator:
         ):
             raise ValueError("invalid masses")
         self.masses.flags.writeable = False
-        self.beta = float(beta)
-        self.dt = float(dt)
+        if any(isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Real)
+               for value in (beta, dt)):
+            raise ValueError("beta/dt must be real numerical scalars")
+        try:
+            self.beta = float(beta)
+            self.dt = float(dt)
+        except (OverflowError, ValueError) as exc:
+            raise ValueError("invalid beta/dt") from exc
         if not math.isfinite(self.beta) or self.beta <= 0 or not math.isfinite(self.dt):
             raise ValueError("invalid beta/dt")
         if (
@@ -120,6 +144,7 @@ class CayleyIntegrator:
         self._omega = 2 * self.nbeads / self.beta * np.sin(np.pi * k / self.nbeads)
         if not np.isfinite(self._omega).all() or not np.isfinite(self.dt * self._omega).all():
             raise ValueError("free-ring frequencies or phase overflow")
+        self._cached_fourier_coefficients = ((self.dt, self.scheme), {})
         if self.scheme == "velocity-verlet" and abs(self.dt) * float(self._omega.max()) >= 2:
             raise ValueError("velocity-Verlet ring stability requires abs(dt)*max(omega_k) < 2; reduce timestep")
         self._native = None
@@ -189,32 +214,44 @@ class CayleyIntegrator:
     def _fourier_step(self, q, p, half=False):
         qk = np.fft.rfft(q, axis=0, norm="ortho")
         pk = np.fft.rfft(p, axis=0, norm="ortho")
-        z = 0.5 * self.dt * self._omega
-        if self.scheme == "normal-mode-bab":
-            h = 0.5 * self.dt if half else self.dt
-            theta = h * self._omega
-            a = np.cos(theta)
-            # sinc gives the exact centroid drift without a zero-frequency divide.
-            b = h * np.sinc(theta / np.pi)
-            c = self._omega * np.sin(theta)
-        elif half:
-            den = np.sqrt(1 + z * z)
-            a = 1 / den
-            b = (0.5 * self.dt) / den
-            c = 0.5 * self.dt * self._omega**2 / den
-        else:
-            den = 1 + z * z
-            a = (1 - z * z) / den
-            b = self.dt / den
-            c = self.dt * self._omega**2 / den
+        # These maps depend only on the context, not the evolving coordinates.
+        # Keep at most the full and half maps. Include dt/scheme in the key so
+        # direct integrator use cannot reuse coefficients from another map.
+        key = (self.dt, self.scheme)
+        if self._cached_fourier_coefficients[0] != key:
+            self._cached_fourier_coefficients = (key, {})
+        coefficients = self._cached_fourier_coefficients[1]
+        if half not in coefficients:
+            z = 0.5 * self.dt * self._omega
+            if self.scheme == "normal-mode-bab":
+                h = 0.5 * self.dt if half else self.dt
+                theta = h * self._omega
+                a = np.cos(theta)
+                # sinc gives the exact centroid drift without a zero-frequency divide.
+                b = h * np.sinc(theta / np.pi)
+                c = self._omega * np.sin(theta)
+            elif half:
+                den = np.sqrt(1 + z * z)
+                a = 1 / den
+                b = (0.5 * self.dt) / den
+                c = 0.5 * self.dt * self._omega**2 / den
+            else:
+                den = 1 + z * z
+                a = (1 - z * z) / den
+                b = self.dt / den
+                c = self.dt * self._omega**2 / den
+            coefficients[half] = tuple(value[:, None, None] for value in (a, b, c))
+            for value in coefficients[half]:
+                value.flags.writeable = False
+        a, b, c = coefficients[half]
         q[:] = np.fft.irfft(
-            a[:, None, None] * qk + b[:, None, None] * pk / self.masses[None, :, None],
+            a * qk + b * pk / self.masses[None, :, None],
             n=self.nbeads,
             axis=0,
             norm="ortho",
         )
         p[:] = np.fft.irfft(
-            a[:, None, None] * pk - c[:, None, None] * self.masses[None, :, None] * qk,
+            a * pk - c * self.masses[None, :, None] * qk,
             n=self.nbeads,
             axis=0,
             norm="ortho",
@@ -396,6 +433,10 @@ class Dynamics:
 
     def _propagate(self, state, bias=None, fragment_data=()):
         self._check_parameters()
+        step, time = _state_clock(state.step, state.time)
+        next_time = time + self.dt
+        if not math.isfinite(next_time):
+            raise FloatingPointError("nonfinite integration clock")
         self.integrator._check(state.q, state.p)
         self._check_fixed(state.q, state.p)
         # Commit the state only after both force calls succeed. Failed PES calls
@@ -415,8 +456,8 @@ class Dynamics:
             raise FloatingPointError("nonfinite integration state")
         state.q[:] = q
         state.p[:] = p
-        state.step += 1
-        state.time += self.dt
+        state.step = step + 1
+        state.time = next_time
         return state
 
     def energy(self, state, bias=None):
@@ -499,6 +540,14 @@ class Dynamics:
             raise ValueError("interval must be positive integer")
         if self.dt <= 0:
             raise ValueError("thermostatted sampling requires positive dt")
+        self._check_parameters()
+        _, time = _state_clock(state.step, state.time)
+        try:
+            final_time = time + int(steps) * self.dt
+        except OverflowError as exc:
+            raise FloatingPointError("nonfinite integration clock") from exc
+        if not math.isfinite(final_time):
+            raise FloatingPointError("nonfinite integration clock")
         self.integrator._check(state.q, state.p)
         self._check_fixed(state.q, state.p)
         data = self._fragment_data(state, fragments)
@@ -554,24 +603,30 @@ class Dynamics:
         owns the two PES calls and the exact real-mode NumPy noise sequence.
         """
         self._check_parameters()
+        step, time = _state_clock(state.step, state.time)
         if thermostat not in ("pile-l", "trpmd"):
             raise ValueError("thermostat must be pile-l or trpmd")
         if (isinstance(friction_scale, (bool, np.bool_))
-                or not np.isscalar(friction_scale)
+                or not isinstance(friction_scale, numbers.Real)
                 or not np.isfinite(friction_scale) or friction_scale < 0):
             raise ValueError("friction_scale must be a finite nonnegative number")
         if thermostat == "pile-l" and friction_scale != 1.0:
             raise ValueError("friction_scale is a TRPMD option; PILE-L retains gamma_k=2*omega_k")
         if gamma_centroid is None:
             gamma_centroid = 0.0 if thermostat == "trpmd" else 1.0
+        if (isinstance(gamma_centroid, (bool, np.bool_))
+                or not isinstance(gamma_centroid, numbers.Real)
+                or not np.isfinite(gamma_centroid)):
+            raise ValueError("gamma_centroid must be a finite real number")
         if thermostat == "trpmd":
             if gamma_centroid != 0.0:
                 raise ValueError("TRPMD requires gamma_centroid=0")
-        elif not np.isfinite(gamma_centroid) or gamma_centroid <= 0:
+        elif gamma_centroid <= 0:
             raise ValueError("gamma_centroid must be positive")
         if self.dt <= 0:
             raise ValueError("thermostatted sampling requires positive dt")
-        if not np.isfinite(state.time + self.dt):
+        next_time = time + self.dt
+        if not math.isfinite(next_time):
             raise FloatingPointError("nonfinite integration clock")
         expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
         if expected is None:
@@ -639,15 +694,13 @@ class Dynamics:
                 self._project_fixed(q, p)
                 if not np.isfinite(q).all() or not np.isfinite(p).all():
                     raise FloatingPointError("nonfinite integration state")
-                if not np.isfinite(state.time + self.dt):
-                    raise FloatingPointError("nonfinite integration clock")
             except BaseException:
                 self.rng.bit_generator.state = rng_state
                 raise
             state.q[:] = q
             state.p[:] = p
-            state.step += 1
-            state.time += self.dt
+            state.step = step + 1
+            state.time = next_time
             return state
         self.integrator.half_step(q, p)
         self._project_fixed(q, p)
@@ -689,15 +742,13 @@ class Dynamics:
             self._project_fixed(q, p)
             if not np.isfinite(q).all() or not np.isfinite(p).all():
                 raise FloatingPointError("nonfinite integration state")
-            if not np.isfinite(state.time + self.dt):
-                raise FloatingPointError("nonfinite integration clock")
         except BaseException:
             self.rng.bit_generator.state = rng_state
             raise
         state.q[:] = q
         state.p[:] = p
-        state.step += 1
-        state.time += self.dt
+        state.step = step + 1
+        state.time = next_time
         return state
 
 

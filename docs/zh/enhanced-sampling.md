@@ -43,7 +43,7 @@ bootstrap = 0
 ```
 
 这个片段还需要普通的 system、potential、温度、珠数和 x/y CV 定义；完整例子见
-[`multiple_walkers.inp`](../../examples/metadynamics/multiple_walkers.inp)。
+[`multiple_walkers.inp`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/metadynamics/multiple_walkers.inp)。
 `system`、`potential`、`dynamics`、`parallel`、`output` 仍为顶层设置。
 
 原有顶层 `cvs`、`sampling`、`analysis` 和方法表仍受支持，但同一部分不能同时写在
@@ -91,6 +91,9 @@ supported = ~surface.mask
 ### 误差含义
 
 伞形沿用时间相关的 block bootstrap，副本交换梯子内按同一时间索引共同重采样。
+如果请求的重采样在某格缺少支持，或共同参考点没有支持，该格的主要 `uncertainty`
+及兼容字段 `standard_error` 为 NaN。`supported_draw_standard_error` 只描述有支持的
+接受子集，`bootstrap_valid_per_bin` 保留支持次数，不能把这些条件统计当作完整误差。
 MetaD/OPES 对各独立 replica 的自由能对齐零点后，报告样本标准差，也就是
 `replica_spread`。它是描述性离散程度，不是均值标准误，也不是已校准的置信区间。
 只有一个独立历史时无法估计 spread。公共字段始终为 `uncertainty`，统计含义由
@@ -108,9 +111,23 @@ pyrpmd run examples/fes/harmonic3d.inp --output runs/umbrella3d
 pyrpmd analyze runs/umbrella3d --recompute --bins 6 6 6 --bootstrap 10
 ```
 
-[`harmonic3d.inp`](../../examples/fes/harmonic3d.inp) 使用解析谐振子势。它演示三维输入与
+[`harmonic3d.inp`](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/fes/harmonic3d.inp) 使用解析谐振子势。它演示三维输入与
 输出，不代表已经达到采样收敛。自适应伞形的覆盖网格也支持一至三维，保留最多一百万
 格的检查；pilot 达标后才冻结窗口并开始独立生产段。
+
+### 自适应计划与生产诊断
+
+新 schema-3 计划使用归一化重叠分数
+`sqrt(O_ij * O_ji / (O_ii * O_jj))`，记录为 `normalized_mbar_cosine`。
+旧 schema-1/2 计划保留 `mbar_symmetric_transition` 分数及已提交决策，续算时不重新选窗。
+两种分数下的相同阈值含义不同，不能直接比较。
+
+读取 `adaptive_umbrella.pilot_target_met` 判断选窗阶段是否达标，读取
+`production_target_met` 判断独立生产段是否通过已启用的重叠、ESS 与覆盖检查。
+`pilot_coverage` 和 `production_coverage` 分别记录两个阶段；生产诊断会同时保存在
+统一的 FESResult 元数据与摘要中。pilot 达标或存在有限自由能，并不表示生产结果已收敛。
+详细默认预算及验收步骤见[输入缺省值](manual/input.md#缺省值)和
+[评估自适应伞抽样结果](manual/science.md#评估自适应伞抽样结果)。
 
 ## MetaD 共享偏置 multiple-walker
 
@@ -192,11 +209,11 @@ MetaD/OPES 来源须同时满足 `allow_non_umbrella=true`、结果元数据
 
 ## 回归验证
 
-[`unification_regression.py`](../../benchmarks/fes_methods/unification_regression.py)
+[`unification_regression.py`](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/fes_methods/unification_regression.py)
 对旧 checkout 与新代码运行现有二维伞形、自适应、副本交换、standard/WT/grid MetaD
 和 OPES 算例，逐项比较 FES、轨迹、RNG 与偏置历史。它还实际用旧代码制造三种方法的
 中断 checkpoint，再由新代码续算并与完整运行对比。单独测试覆盖三维解析高斯格积分、
 公共结果、跨方法参数拒绝、PMF 来源及共享 walker 的失败恢复。这些验证说明实现
 兼容性，不代替珠数、时间步或长时间采样的物理收敛研究。
 
-算法公式、墙与网格偏置的细节见[英文增强采样规范](../enhanced-sampling.md)。
+算法公式、墙与网格偏置的细节见[英文增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。

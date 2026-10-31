@@ -94,6 +94,7 @@ def project_run(directory, *, axes, output, selection_file=None):
     selection = None if selection_file is None else np.load(selection_file, allow_pickle=False)
     result = marginalize_fes(surface.free_energy, surface.edges, beta, axes=axes,
                             mask=surface.mask, selection=selection)
+    axes = result["axes"]
     target = Path(output)
     if target.exists() and any(target.iterdir()):
         raise ValueError("projection output must be a new or empty directory")

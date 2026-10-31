@@ -85,21 +85,19 @@ class PythonPotential(Potential):
         self.metadata.setdefault("thread_safety", "context_serial")
         self.metadata.setdefault("execution_device", "cpu")
         self.cell, self.pbc = validate_cell_pbc(cell, pbc)
-        self._periodic_kwargs = False
-        self._check_periodic_contract()
+        self._periodic_kwargs = self._check_periodic_contract(self.pbc)
 
-    def _check_periodic_contract(self):
+    def _check_periodic_contract(self, pbc):
         """Accept either explicit periodic contract, never infer one from a cell."""
-        if not self.pbc.any():
-            self._periodic_kwargs = False
-            return
+        if not pbc.any():
+            return False
         if self.metadata.get("supports_pbc") is True:
             if not callable(getattr(self.obj, "bind_system", None)):
                 raise PotentialError("Periodic Python PES must implement bind_system(system)")
-            self._periodic_kwargs = False
+            return False
         elif (self.metadata.get("periodic") is True
               or self.metadata.get("boundary_conditions") == "periodic"):
-            self._periodic_kwargs = True
+            return True
         else:
             raise PotentialError(
                 "Periodic Python PES must declare metadata['periodic']=True with "
@@ -109,11 +107,15 @@ class PythonPotential(Potential):
     def bind_system(self, system):
         """Bind either provider-unit evaluation or a canonical-AU callback."""
         get = system.get if isinstance(system, dict) else lambda key, default=None: getattr(system, key, default)
-        self.cell, self.pbc = validate_cell_pbc(get("cell"), get("pbc"))
-        self._check_periodic_contract()
+        cell, pbc = validate_cell_pbc(get("cell"), get("pbc"))
+        periodic_kwargs = self._check_periodic_contract(pbc)
         bind = getattr(self.obj, "bind_system", None)
         if callable(bind):
             bind(system)
+        # Commit adapter state only after validation and the callback succeed.
+        # User callbacks remain responsible for their own failure side effects.
+        self.cell, self.pbc = cell, pbc
+        self._periodic_kwargs = periodic_kwargs
 
     def set_cell(self, cell):
         """Update a fully periodic cell without reinitializing the provider.
@@ -165,6 +167,10 @@ class PythonPotential(Potential):
             result.messages,
             None if result.virial is None else result.virial * self.energy_factor,
         )
+        if self.length_factor == self.energy_factor == self.sign == 1:
+            # Multiplication only copied the validated arrays. Keep those
+            # independent output buffers without scanning their values again.
+            return result
         return validate_result(result, x.shape, require_success=False)
 
     def close(self):

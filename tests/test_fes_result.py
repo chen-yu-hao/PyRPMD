@@ -5,6 +5,7 @@ import json
 import numpy as np
 import pytest
 
+from pyrpmd.analysis.fes import reconstruct_fes
 from pyrpmd.analysis.fes_result import (
     FESResult, estimate_fes_uncertainty, write_fes_result,
 )
@@ -152,11 +153,74 @@ def test_replica_spread_keeps_sample_sd_and_shared_walkers_have_no_independent_e
 
 
 def test_block_bootstrap_errors_count_valid_draws_per_bin():
-    draws = np.array([[0., 1., 3., np.nan], [0., 2., np.nan, np.nan],
+    draws = np.array([[0., 1., 3., np.nan], [0., 2., 5., np.nan],
                       [0., 3., np.nan, np.nan]])
     error = estimate_fes_uncertainty(draws, kind="block_bootstrap", mask=np.zeros(4, bool))
     np.testing.assert_array_equal(error[:2], [0., 1.])
     assert np.isnan(error[2:]).all()
+    conditional = estimate_fes_uncertainty(
+        draws, kind="block_bootstrap", mask=np.zeros(4, bool), conditional=True)
+    np.testing.assert_array_equal(conditional[:2], error[:2])
+    assert conditional[2] == np.std([3., 5.], ddof=1)
+    assert np.isnan(conditional[3])
+    # A rejected fit or reference bin is absent from the supplied draws; the
+    # requested count must still prevent survivor-only primary error bars.
+    assert np.isnan(estimate_fes_uncertainty(
+        draws, kind="block_bootstrap", mask=np.zeros(4, bool), requested=4)).all()
+
+
+@pytest.mark.parametrize("case", ["local_support", "reference_support", "masked_bin", "unresolved", "disabled"])
+def test_bootstrap_result_round_trip_keeps_primary_and_conditional_errors_separate(tmp_path, case):
+    options = dict(centers=[[1.5]], stiffness=[[1e-12]], beta=2.,
+                   bins=[[0., 1., 2., 3.]], seed=52, bootstrap=40)
+    values = np.r_[np.full(120, .5), 1.5, np.full(120, 2.5)]
+    if case == "reference_support":
+        values = np.r_[np.zeros(120), np.ones(120), 2.]
+        options.update(centers=[[0.]], stiffness=[[10.]], beta=1.,
+                       bins=[[-.5, .5, 1.5, 2.5]])
+    elif case == "masked_bin":
+        values = np.r_[np.full(120, .5), np.full(120, 1.5), np.full(120, 2.5), 3.5]
+        options.update(bins=[[0., 1., 2., 3., 4.]], min_count=2)
+    elif case == "unresolved":
+        values = np.full(100, .5)
+    elif case == "disabled":
+        options["bootstrap"] = 0
+    sample = values[:, None]
+    np.random.default_rng(7).shuffle(sample)
+    data = reconstruct_fes([sample], **options)
+    original = FESResult.from_data(data, method="umbrella", cv_units=["bohr"])
+    write_fes_result(tmp_path, original)
+    # The archive must retain the conditional provenance without a sidecar.
+    result = FESResult.read(tmp_path, summary={})
+    np.testing.assert_array_equal(result.free_energy, data["free_energy"])
+    np.testing.assert_array_equal(result.mask, data["mask"])
+    np.testing.assert_array_equal(result.uncertainty, data["standard_error"])
+    np.testing.assert_array_equal(result.uncertainty_mask,
+                                  data["mask"] | ~np.isfinite(data["standard_error"]))
+    np.testing.assert_array_equal(result.extras["supported_draw_standard_error"],
+                                  data["supported_draw_standard_error"])
+    np.testing.assert_array_equal(result.extras["bootstrap_valid_per_bin"], data["bootstrap_valid_per_bin"])
+    for key in ("standard_error_scope", "supported_draw_condition", "bootstrap_requested",
+                "bootstrap_attempted", "bootstrap_replicates", "bootstrap_diagnostics"):
+        assert result.metadata[key] == data[key]
+    assert result.metadata["bootstrap_block_plan"]["status"] == data["bootstrap_block_plan"]["status"]
+    reference = data["bootstrap_reference_bin"]
+    assert result.metadata["bootstrap_reference_bin"] == (None if reference is None else reference.tolist())
+    saved_metadata = json.loads((tmp_path / "fes.json").read_text())
+    assert saved_metadata["supported_draw_condition"] == data["supported_draw_condition"]
+    run = collect_run(tmp_path, energy_unit="hartree", length_unit="bohr")
+    plot = next(plot for plot in run["_plots"] if plot["id"].endswith("-fes"))
+    np.testing.assert_array_equal(plot["series"][0]["yerr"], data["standard_error"])
+    if case == "local_support":
+        assert np.isnan(result.uncertainty[1]) and result.extras["supported_draw_standard_error"][1] > 0
+    elif case == "reference_support":
+        assert np.isnan(result.uncertainty).all()
+        assert np.isfinite(result.extras["supported_draw_standard_error"]).all()
+    elif case == "masked_bin":
+        assert result.mask[-1] and np.isnan(result.extras["supported_draw_standard_error"][-1])
+    else:
+        assert np.isnan(result.uncertainty).all()
+        assert np.isnan(result.extras["supported_draw_standard_error"]).all()
 
 
 def test_report_consumes_three_dimensional_result_as_labelled_slices(tmp_path):

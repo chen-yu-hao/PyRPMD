@@ -29,23 +29,34 @@ def jsonable(value):
     return value
 
 
-def write_json(path, value):
+def atomic_write_text(path, text):
+    """Publish UTF-8 text using a unique temporary beside the destination.
+
+    A failed write, flush, or replacement leaves the previous file intact and
+    removes the temporary. Separate writers never share a temporary filename;
+    the last completed replacement wins. This is not a run-directory lock.
+    All fallible durability work precedes the commit at ``os.replace``.
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    raw = (
-        json.dumps(jsonable(value), ensure_ascii=False, indent=2, allow_nan=False)
-        + "\n"
-    )
     fd, tmp = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
-            f.write(raw)
+            f.write(text)
             f.flush()
             os.fsync(f.fileno())
         os.replace(tmp, path)
     finally:
         if os.path.exists(tmp):
             os.unlink(tmp)
+
+
+def write_json(path, value):
+    raw = (
+        json.dumps(jsonable(value), ensure_ascii=False, indent=2, allow_nan=False)
+        + "\n"
+    )
+    atomic_write_text(path, raw)
 
 
 def file_sha256(path):
@@ -78,6 +89,11 @@ def fingerprint(config, system):
     convention = geometry_convention_identity(config, system)
     if convention is not None:
         value["cv_geometry_convention"] = convention
+    from .potentials import energy_convention_identity
+
+    energy_convention = energy_convention_identity(config)
+    if energy_convention is not None:
+        value["potential_energy_convention"] = energy_convention
     return hashlib.sha256(
         json.dumps(jsonable(value), sort_keys=True, allow_nan=False).encode()
     ).hexdigest()

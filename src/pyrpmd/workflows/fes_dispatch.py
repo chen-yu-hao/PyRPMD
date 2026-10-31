@@ -6,7 +6,7 @@ from ..input import fes_method
 
 
 _WORKFLOWS = {
-    "umbrella": ("fes", "run_fes", "reanalyze_fes", "resolve_umbrellas"),
+    "umbrella": ("fes", "run_fes", "reanalyze_fes", "validate_fes_request"),
     "metadynamics": (
         "metadynamics", "run_metadynamics", "reanalyze_metadynamics", "validate_metadynamics"
     ),

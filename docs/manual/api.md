@@ -18,12 +18,28 @@ from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 | `JobSpec.resolve()` | Return `(config, identity)`; the identity is a `System`, or the PCET model |
 | `prepare(job, numerical=False)` | Return preparation information; `numerical=True` runs the model preparation and PES |
 | `run(job, output=None, resume=False)` | Run the task and return the JSON-compatible summary on the root rank |
-| `resume_run(directory, parallel=None, execution=None)` | Continue from the saved input and checkpoints; `execution` accepts block size and backend |
+| `resume_run(directory, parallel=None, execution=None, adaptive_budget=None)` | Continue from saved input and checkpoints; override execution resources or extend an adaptive FES/rate pilot budget |
 | `analyze_run(directory, ...)` | Read the summary, or reanalyze offline for supported tasks |
 
 `job` is a `JobSpec`, a dictionary or an input file path. Non-root MPI ranks return `None`, so handle
 the return value on the root. `resume_run` keeps the saved run identity; a new scientific setting
 needs a new task.
+
+To change execution resources while resuming:
+
+```python
+if __name__ == "__main__":
+    summary = resume_run("runs/example", parallel={"workers": 4})
+```
+
+Run this from a saved Python script so spawned process workers can import it.
+`workers`, `trajectory_workers` and `trajectory_groups` are aliases for this override.
+One supplied value replaces the saved worker/group counts; multiple supplied aliases must agree.
+Unknown fields and invalid resource combinations raise `InputError` before execution.
+These overrides leave the saved input and scientific fingerprint unchanged; the workflow still
+checks checkpoint compatibility. PCET does not accept parallel or propagation overrides.
+For thermal dRPMD, set `sampling.parents` explicitly in the original input if you plan to change
+worker counts; legacy implicit parent allocation can otherwise reject a changed layout safely.
 
 ```{autoclass} pyrpmd.input.JobSpec
 :members: from_file, from_mapping, with_overrides, resolve
@@ -309,6 +325,7 @@ mean-force PES; the other methods use a complete diabatic matrix and positive gr
 ## Versioning
 
 The package, input schema, run manifest, checkpoint container and PES ABI each carry their own
-version; package 0.2.0 uses PES ABI v1. Names that start with an underscore are internal. Interface
+version. Package 0.2.0 supports the molecular PES C ABI v1 and the cell-aware C ABI v2.
+Names that start with an underscore are internal. Interface
 and capability negotiation are described in the
 [public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md).

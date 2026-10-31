@@ -149,3 +149,29 @@ def test_three_dimensional_workflow_roundtrip_reanalysis_and_resume(tmp_path):
                   run_fes(config, system(), tmp_path, return_data=True)):
         np.testing.assert_array_equal(other["data"]["free_energy"], sampled["data"]["free_energy"])
         np.testing.assert_array_equal(other["data"]["standard_error"], sampled["data"]["standard_error"])
+
+
+def test_three_dimensional_preflight_preserves_every_axis_without_a_potential(monkeypatch):
+    """The merged early-validation route must keep the third umbrella axis."""
+    from pathlib import Path
+    from pyrpmd.input import JobSpec
+    from pyrpmd.workflows.fes import validate_fes_request
+
+    def unavailable(*args, **kwargs):
+        raise AssertionError("static FES validation must not construct a potential")
+
+    monkeypatch.setattr("pyrpmd.potentials.make_potential", unavailable)
+    example = Path(__file__).resolve().parents[1] / "examples/fes/harmonic3d.inp"
+    config, sys = JobSpec.from_file(example).resolve()
+    cv, _, centers, stiffness = validate_fes_request(config, sys)
+    assert cv.dimension == 3 and centers.shape == (8, 3) and stiffness.shape == (3, 3)
+    for changes, message in (
+        ({"ranges": [[-2, 2], [-2, 2], [2, -2]]}, "increasing"),
+        ({"ranges": [[-2, 2]] * 4}, "pair per CV"),
+        ({"bins": [4, 4]}, "per CV"),
+        ({"bins": [4, 4, [0.0, 1.0, 1.0]]}, "edges"),
+    ):
+        invalid = copy.deepcopy(config)
+        invalid["analysis"].update(changes)
+        with pytest.raises(ValueError, match=message):
+            validate_fes_request(invalid, sys)

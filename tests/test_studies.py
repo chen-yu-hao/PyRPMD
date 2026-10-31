@@ -157,3 +157,44 @@ def test_cli_plan_does_not_run_or_write_simulations(tmp_path, capsys):
     plan = json.loads(capsys.readouterr().out)
     assert len(plan["cases"]) == 2
     assert not list(tmp_path.glob("case-*"))
+
+
+def test_study_collects_shared_files_once_without_losing_case_inputs(tmp_path, monkeypatch):
+    from collections import Counter
+    from types import SimpleNamespace
+    from pyrpmd import io, runner, studies
+
+    shared, distinct = tmp_path / "model.dat", tmp_path / "other.dat"
+    shared.write_text("shared model")
+    distinct.write_text("case-specific input")
+    cases = [SimpleNamespace(
+        case_id=f"case-{index}", system=None,
+        config={"model": str(shared), **({"extra": str(distinct)} if index == 1 else {})},
+        to_dict=lambda index=index: {"case_id": f"case-{index}"},
+    ) for index in range(3)]
+    monkeypatch.setattr(studies, "plan_rate_study", lambda *args, **kwargs: {"cases": cases})
+    monkeypatch.setattr(studies, "_digest", lambda value: "study-identity-fixture")
+    reads = Counter()
+
+    def counted_contents(path):
+        reads[str(path)] += 1
+        return path.read_text()
+
+    class CollectionFinished(Exception):
+        pass
+
+    def stop_before_dynamics(*args, **kwargs):
+        raise CollectionFinished
+
+    monkeypatch.setattr(io, "file_sha256", counted_contents)
+    monkeypatch.setattr(runner, "run_resolved", stop_before_dynamics)
+    for attempt in range(2):
+        output = tmp_path / f"study-{attempt}"
+        with pytest.raises(CollectionFinished):
+            run_rate_study({}, output=output)
+        saved = json.loads((output / "study.json").read_text())
+        assert saved["files"] == {
+            str(shared): shared.read_text(), str(distinct): distinct.read_text(),
+        }
+        assert reads == {str(shared): attempt + 1, str(distinct): attempt + 1}
+        shared.write_text("changed between studies")

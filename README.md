@@ -10,7 +10,7 @@ recrossing-corrected rate, with fingerprinted checkpoint restart.**
 Give PyRPMD a transition state and a potential, and it builds the whole Bennett–Chandler
 calculation for you: a numerical Hessian and two-sided descent identify the reaction channel,
 umbrella sampling gives the PMF, and constrained parent chains launch paired recrossing
-trajectories for the transmission coefficient. The same Python or TOML input drives ten tasks,
+trajectories for the transmission coefficient. The same Python or TOML input drives the workflows,
 from gas-phase rates and direct collisions to free-energy surfaces, metadynamics, PIMD, diffusion,
 surface hops and electrochemical PCET, on C++17/OpenMP integrator kernels with a NumPy reference
 implementation alongside.
@@ -55,7 +55,9 @@ git clone https://github.com/chen-yu-hao/PyRPMD.git PyRPMD
 cd PyRPMD
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[test]'
+python -m pip install --upgrade pip
+python -m pip install -e .
+pyrpmd --version
 pyrpmd info
 ```
 
@@ -79,20 +81,26 @@ host, Torch on CPU and multi-GPU placement. See [Execution](docs/manual/executio
 
 ## Your first run
 
-A restartable 1D free-energy calculation on a built-in harmonic potential, in about two seconds:
+A restartable 1D free-energy calculation on a built-in harmonic potential takes only a short
+pilot run. After installation, start in any working directory; `init` supplies the input without
+needing a source checkout or an external model:
 
 ```bash
-pyrpmd validate examples/manual/quickstart.inp --check-pes   # check input, units and the PES
-pyrpmd run examples/manual/quickstart.inp --output runs/first  # results in runs/first/results/summary.json
-pyrpmd analyze runs/first --recompute --bins 8 --bootstrap 10  # new bins and error bars, no new dynamics
-pyrpmd resume runs/first                                       # continue from the last checkpoint
+pyrpmd init my-first-run
+pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run
+pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
+pyrpmd analyze my-first-run/run
+pyrpmd resume my-first-run/run
 ```
 
 Every task uses this same `validate` → `run` → `analyze` → `resume` cycle. `--check-pes` also
 evaluates the potential and, for a TS-only rate input, runs the numerical preparation. Give each
 new calculation its own output directory; `resume` (or `run --resume` on the original input)
-continues an existing one. The [Quickstart](docs/manual/quickstart.md) walks through the input
-and output line by line.
+continues an existing one. The starter produces 3 windows, 6 streams and 120 saved samples in
+`my-first-run/run/results/summary.json`; its small sample is a workflow check, not a converged
+physical prediction. `init` refuses a nonempty destination. If `pyrpmd` is not on your shell's
+path, use `python -m pyrpmd` with the same arguments. The [Quickstart](docs/manual/quickstart.md)
+explains the input, output and offline reanalysis.
 
 ## What you can compute
 
@@ -107,6 +115,7 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | 1D–3D umbrella free-energy surface | `fes` | `examples/fes/harmonic2d.inp` | ~6 s |
 | Adaptive umbrella windows | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
 | Standard or well-tempered metadynamics | `fes`, method `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
+| OPES probability-based enhanced sampling | `fes`, method `opes` | `examples/opes/harmonic_2d.inp` | — |
 | Fixed-cell PIMD and energy estimators | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | Directed site-to-site hop in a material | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |
@@ -114,7 +123,11 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Electrochemical PCET, H/D, potential and temperature scans | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | State-selected nonadiabatic scattering (NRPMD, experimental) | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
 
-Run any of them with `pyrpmd run INPUT --output runs/NAME`. Two more patterns worth knowing:
+Run any of them with `pyrpmd run INPUT --output runs/NAME`. FES selects its method in `[fes]`;
+omitting `method` defaults to `umbrella`. The old `metadynamics` and `opes` task names remain
+deprecated aliases, so the existing examples still run. See the
+[unified FES guide](docs/enhanced-sampling.md) for method subtables, shared walkers and result files.
+Two more patterns worth knowing:
 
 ```bash
 # Restart with a different block size; the scientific settings keep the run identity.
@@ -161,6 +174,11 @@ checked chunks by default. A proton conductor needs a periodic potential suited 
 composition, charge and mechanism. Inputs, units, periodic CVs and
 statistics are in the [materials notes](docs/materials.md). What's new in this release is in the
 [0.2.0 release notes](docs/releases/0.2.0.md).
+
+The [periodic-materials implementation audit and TODO list](docs/periodic-materials-audit.md)
+records the code and guide review, open-source comparisons, fixes and remaining validation work
+for periodic materials and surface catalysis. The [periodic guide](docs/manual/periodic.md)
+distinguishes the default materials workflow from the opt-in native PIMD engine and its cell controls.
 
 ## Minimal inputs
 
@@ -306,6 +324,10 @@ classification and connectivity analysis.
 Before a production study, read [Converging a result](docs/manual/science.md#converging-a-result),
 which takes a calculation from pilot to production.
 
+The [adaptive umbrella reliability audit](docs/validation/umbrella-reliability-2026-10-31/README.md)
+records reproducible overlap and uncertainty fixes, actual default budgets, and the remaining
+system-specific convergence checks. Passing adaptive pilot criteria is not a precision guarantee.
+
 ## Native propagation
 
 `Dynamics.propagate()` commits whole blocks atomically; `Dynamics.propagate_block()` commits step
@@ -327,7 +349,7 @@ the auxiliary beta parameter and fixed-energy statistical eligibility rules.
 
 ## Documentation
 
-The user manual covers installation, a quickstart, guides for all ten tasks, the API and developer
+The user manual covers installation, a quickstart, guides for all supported workflows, the API and developer
 notes, in [English](docs/index.md) and [Chinese](docs/zh/index.md) with matching chapters. Build
 the searchable HTML manual (the Chinese edition goes to `zh/`):
 
@@ -340,8 +362,12 @@ python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
 The GitHub **Documentation** workflow builds both editions, runs the getting-started examples and
 uploads the `pyrpmd-manual-html` artifact.
 
+See the [user-experience review and to-do list](docs/ux-review-2026-10-31.md) for the current
+onboarding audit and follow-up work.
+
 A run directory holds `manifest.json`, `input/`, `checkpoints/`, workflow data and
-`results/summary.json`. FES adds `fes.h5`/`fes.npz`/`fes.csv`; dRPMD stores each initial state,
+`results/summary.json`. Every FES method adds `fes.npz`, `fes.csv`, `fes.json` and `summary.json`;
+umbrella sampling also saves `fes.h5` diagnostics. dRPMD stores each initial state,
 collision trajectory and classification record. MPI ranks never share one HDF5 file.
 
 Reference specifications (some in Chinese):

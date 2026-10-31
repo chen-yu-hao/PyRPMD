@@ -47,8 +47,9 @@ def build():
 | 命令行 `--pes`、`--pes-manifest`、`--output` | 运行命令的目录 |
 | `.o` 链接 manifest | manifest 所在目录 |
 
-例如，`examples/manual/quickstart.inp` 中的 `output.directory="runs/manual-quickstart"` 解析到该输入旁边，
-而命令行的 `--output runs/manual-first` 解析到当前目录。移动输入时，连同其引用的文件一起移动并保持原子顺序。
+例如，入门输入 `my-first-run/quickstart.inp` 中的 `output.directory="run"` 解析为 `my-first-run/run`，
+而命令行 `--output runs/custom` 从当前目录解析。`validate INPUT --output runs/custom` 显示解析后的输入与输出路径，
+不创建运行目录。移动输入时，连同其引用的文件一起移动并保持原子顺序。
 
 ## 通用字段
 
@@ -77,8 +78,11 @@ FES 中是两次保存样本之间的时间。
 
 ### 缺省值
 
-`pilot` 输入可以省略下表字段，PyRPMD 填入缺省值并在 `input_warnings` 中记录提示。`preset="production"`
-要求显式给出 `temperature`、`beads`、`[dynamics]` 和 `[sampling]`。
+热系综 `pilot` 输入可以省略下表字段，PyRPMD 填入缺省值并在 `input_warnings` 中记录 pilot 提示。
+热动力学的 `preset="production"` 要求显式给出 `temperature`、`beads`、`[dynamics]` 和 `[sampling]`，
+并执行显式 dRPMD `bmax` 等任务特有检查。它检查输入完整性，不检验科学收敛，也不会自动选择精度更高的一套参数。
+各 section 内省略的参数仍可使用缺省值，生产前应检查解析后的配置。正式研究应显式给出物理模型和采样预算。
+态选择准备与 PCET 有各自的参数要求。
 
 | 字段 | 缺省值 | 说明 |
 | --- | --- | --- |
@@ -86,23 +90,58 @@ FES 中是两次保存样本之间的时间。
 | `beads` | 32 | `"auto"` 也取 32 并给出警告；production 拒绝 `auto` |
 | `seed` | 0 | 独立随机流由稳定任务 ID 派生 |
 | `system.charge` / `multiplicity` | 0 / 1 | 须与所选 PES 一致 |
-| `dynamics.timestep` | `0.1 fs` | |
+| `dynamics.timestep` | `0.1 fs` | 将步长减半后重新比较要报告的物理量 |
 | `dynamics.integrator` | `cayley-bcb` | |
 | `dynamics.native` / `loop_backend` / `block_steps` | `true` / `auto` / 256 | 见[执行与并行](execution.md) |
 | `sampling.thermostat` | `andersen` | `pimd` / `diffusion` 为 `pile-l`（velocity-Verlet 时为 Andersen） |
-| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | 均为步长整数倍 |
+| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | 启用自适应伞或 metadynamics 时，生产段缺省为 `1000 fs`；显式长度优先，时间均为步长整数倍 |
 | `sampling.andersen_interval` | 10 步 | 两次 Andersen 动量重抽之间的步数 |
 | `sampling.replicas` | 1 | `diffusion` 为 4 |
 | `output.directory` | `runs/<task>` | 相对于输入文件 |
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | FES 40；速率 PMF 100 | |
-| `analysis.bootstrap` | 20 | metadynamics 和 OPES 为 0；不接受 1 |
+| `analysis.bootstrap` | 20 | 仅为较短的分析预算，不是精度目标；metadynamics 和 OPES 为 0；不接受 1 |
 | `analysis.min_count` | 1 | 样本更少的 bin 被 mask |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | 仅 `drpmd` |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | `auto` 时不报告热速率 |
 | `outcomes.exit_distance` / `persistence` | R0 / `1 fs` | 仅 `drpmd` |
 
-`pyrpmd validate INPUT --write-resolved resolved.json` 写出所有缺省值都已解析的完整配置。
+`pyrpmd validate INPUT --write-resolved resolved.json` 写出前端解析后的输入。部分工作流设置，例如自动生成的
+速率窗口和自适应计划，在运行阶段解析并记录到相应采样输出中。
+
+气相 `rate` 工作流还会为省略的参数补充下列起始值：
+
+| 字段 | 缺省值 | 含义 |
+| --- | --- | --- |
+| `rate.pmf_method` | `ui` | 高斯 umbrella integration；可显式选择 `mbar` |
+| 初始伞中心 | 从 -0.05 到 1.05 的 23 个等距点 | 无量纲反应坐标步长 0.05 |
+| 伞刚度 | `50 / beta` | 无量纲反应坐标的物理谐和刚度，即 50 kBT |
+| `rate.pmf_points` | 401 | UI 积分网格数，不是实际采样窗口数 |
+| `recrossing.parent_replicas` / `parent_samples` | 2 / 4 | 若提供 `sampling.parents`，它替代默认母构型数 |
+| `recrossing.equilibration` / `parent_interval` / `child_time` | `20 fs` / `5 fs` / `50 fs` | 均需针对实际反应做收敛检查 |
+| `recrossing.child_pairs` / `bootstrap` | 2 / 100 | 每个母构型的子轨迹对数 / 重采样次数 |
+
+这些值不等同于 RPMDrate 手册的生产示例。初始窗距和刚度需要针对具体体系检查，尤其要验证默认 UI 的高斯近似。
+自适应选窗可以增加中心，但保持所给定的刚度不变。
+
+启用 `[adaptive_umbrella]` 后，下列缺省值是 **pilot 选窗判据与资源上限**，不保证生产 PMF 或速率已收敛：
+
+| 字段 | 缺省值 | 含义 |
+| --- | --- | --- |
+| `pilot_steps` | 1000 | 每个窗口、每个副本的长度；默认步长下为 100 fs |
+| `pilot_equilibration_steps` | `sampling.equilibration_steps` | 其他设置也取默认时为 1000 步 / 100 fs |
+| `max_pilot_steps` | `16 * pilot_steps` | 每个窗口、每个副本的上限；默认步长下为 1.6 ps |
+| `max_rounds` | 8 | Pilot 轮数上限 |
+| `max_windows` | 128 | 插窗上限；达到该窗数后仍可通过延长 pilot 满足 ESS/覆盖目标 |
+| `target_overlap` | 0.03 | 新 schema-3 计划采用 MBAR 权重列的归一化余弦重叠；schema-1/2 计划沿用原指标 |
+| `min_effective_samples` | 20 | 每窗经相关性修正的 ESS，独立副本之间求和 |
+| `min_spacing` | `1e-6` | 无量纲度量 `sqrt(beta * delta.T @ K @ delta)` 下的距离 |
+| `coverage_bins` / `coverage_ranges` | 省略 | 只有同时提供两项才检查空间覆盖 |
+| `min_bin_effective_samples` / `target_coverage` | 5 / 0.95 | 仅在显式启用覆盖网格后生效 |
+
+默认每 1 fs 保存一次，因此首轮 100 fs pilot 每窗、每副本仅约 100 帧，且这些帧还存在时间相关性。
+通过 ESS 20 只是筛选结果。应依据独立生产诊断和[收敛流程](science.md#评估自适应伞抽样结果)，
+为实际体系选择长度、副本数、珠子数与不确定度精度。
 
 ### 各任务使用的 section
 
@@ -111,26 +150,39 @@ FES 中是两次保存样本之间的时间。
 | `[system]` | 除 `pcet` 外全部 | `geometry`、`transition_state`、`reactants`、`separation`、`symbols`、`masses`、`masses_amu`、`isotopes`、`geometry_unit`、`fragments`、`charge`、`multiplicity`、`cell`、`cell_unit`、`pbc`、`fixed_atoms` |
 | `[potential]` | 除 `pcet` 外全部 | `provider`、`factory`、`library`、`manifest`、`params`、`units`、`derivative`、`device` 等，见[势能](potentials.md) |
 | `[dynamics]`、`[sampling]`、`[parallel]` | 除 `pcet` 外全部 | 见上文与[执行与并行](execution.md) |
-| `[[cvs]]`、`[umbrella]`、`[analysis]` | `fes`、`rate`、`network`、`site_rate`、`surface_rate`；`metadynamics` 和 `opes` 使用 `cvs` 与 `analysis` | 见下文 |
+| `[[cvs]]`、`[analysis]` | 三种 FES 方法；`rate`、`network`、`site_rate`、`surface_rate` | CV 定义与重构设置，见下文 |
+| `[umbrella]` | 伞形 FES；`rate`、`network`、`site_rate`、`surface_rate` | 窗口中心与刚度；FES 中可写为 `[fes.umbrella]` |
 | `[reaction]` | `rate`（`drpmd` 可用 `electronic_weight`） | `fragments`、`forming_bonds`、`breaking_bonds`、`rinf`、`symmetry_factor`、`equivalent_paths` |
-| `[rate]` | `rate` | `pmf_method`、`dividing_surface`、`pmf_search_range`、`compare_ui` |
+| `[rate]` | `rate` | `pmf_method`、`dividing_surface`、`pmf_search_range`、`compare_ui`、可选 `pmf_source`，见[PMF 来源](../enhanced-sampling.md#rate-选择-pmf-来源) |
 | `[recrossing]` | `rate`、`network`、`site_rate`、`surface_rate` | 母链数、母链间隔、child pairs、child 时间、bootstrap |
 | `[collision]`、`[outcomes]` | `drpmd` | 发射分布、`bmax`、总轨迹数、最大时间；产物分类 |
 | `[nonadiabatic]` | `drpmd`（实验性 NRPMD） | 见[非绝热 NRPMD](nonadiabatic.md) |
 | `[electronic_friction]` | `diffusion` | `method = "centroid"`、`provider`、`gamma` 或 `tensor`，或 Python `factory` 与 `params`；见[电子摩擦](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
 | `[initial_ensemble]` | `drpmd`（实验性核初态选择） | `method = "ne_rpmd"` 或 `"qct"`、NE 显式 `beta`、片段 Hessian/模式和 `vibrational_quanta`；见[直接碰撞](workflows.md) |
-| `[adaptive_umbrella]` | `fes`、`rate` | 见[气相与自由能](workflows.md) |
-| `[fes]`、`[fes.sampling]`、`[fes.analysis]`、`[fes.<method>]` | `fes` | 选择 umbrella / metadynamics / opes；公共与方法参数分层，见[统一增强采样](../enhanced-sampling.md) |
-| `[metadynamics]` | `fes.method="metadynamics"` 或旧别名 | `grid.ranges` / `grid.bins` 可选偏置网格 |
-| `[opes]` | `fes.method="opes"` 或旧别名 | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
-| `[replica_exchange]` | `fes` | 同温固定窗口的交换间隔与可选连通图，见[副本交换](../replica-exchange.md) |
-| `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
+| `[adaptive_umbrella]` | 伞形 FES；`rate` | 见[气相与自由能](workflows.md) |
+| `[fes]`、`[[fes.cvs]]`、`[fes.sampling]`、`[fes.analysis]`、`[fes.<method>]` | `fes` | 选择 umbrella / metadynamics / opes；公共与方法参数分层，见[统一增强采样](../enhanced-sampling.md) |
+| `[fes.metadynamics]` 或 `[metadynamics]` | FES 方法 `metadynamics` | hill 参数、可选偏置网格、`multiple_walkers` / `block_steps` |
+| `[fes.opes]` 或 `[opes]` | FES 方法 `opes` | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
+| `[replica_exchange]` | 伞形 FES | 同温固定窗口的交换间隔与可选连通图，见[副本交换](../replica-exchange.md) |
+| `[barostat]` | `pimd` | 默认引擎：`method="bzp"`、`pressure`、`time_constant`、`friction`；原生引擎使用单独的控制参数，见[材料](periodic.md) |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |
 | `[network]` | `network` | 入口、通道、过渡态 |
 | `[pcet]` | `pcet` | PCET 只接受 `schema_version`、`task`、`preset`、`description`、`temperature`、`pcet`、`output` |
 | `[output]` | 全部 | `directory`、`checkpoint_interval` / `checkpoint_steps`、`trajectory_stride` |
 
 全部字段与组合规则见[输入规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)。
+
+### 选择 FES 方法
+
+使用 `task="fes"`，并在 `[fes]` 中设置 `method="umbrella"`、`"metadynamics"` 或 `"opes"`，
+缺省为 `umbrella`。公共 `cvs`、`sampling`、`analysis` 可以放在 `fes` 下或顶层，但同一部分
+只能选择一种位置。偏置参数放在所选方法的表中；其他方法的表会被拒绝，包括空表。
+伞形和 MetaD 支持 1–3 维 CV，OPES 支持 1–2 维。完整迁移例子与公共输出格式见
+[统一 FES 指南](../enhanced-sampling.md)。
+
+旧的 `task="metadynamics"` 和 `task="opes"` 仍受支持，但会给出弃用提示。它们分发到相应
+FES 方法，可续算兼容的旧 checkpoint。输出目录的缺省值保留原输入中的任务拼写；迁移
+需要续算的运行时，应显式指定原目录。
 
 ## 原子、同位素与几何
 
@@ -158,7 +210,9 @@ isotopes = [{atom = 0, mass = "2.01410177812 amu"}]
 
 ## 集体变量与偏置
 
-`[[cvs]]` 定义带名字的 CV，`umbrella.cvs` 选择要偏置的 CV。`centroid` 在环质心上求坐标；`bead_average`
+`[[cvs]]`（或 `[[fes.cvs]]`）定义带名字的 CV。所选方法的 `cvs` 列表（如 `fes.umbrella.cvs` 或
+`fes.metadynamics.cvs`）选择要偏置的 CV；`umbrella.cvs` 等顶层方法表仍受支持。
+`centroid` 在环质心上求坐标；`bead_average`
 逐珠子求值后平均，对非线性 CV 两者不同。自定义 CV 返回完整 Jacobian，见[势能与插件](potentials.md)。
 
 数值伞中心使用 CV 声明的输入单位；带单位字符串携带自身单位。数值 stiffness 以原子单位计。`distance`、
@@ -190,15 +244,16 @@ isotopes = [{atom = 0, mass = "2.01410177812 amu"}]
 
 ### 伞窗口
 
-用以下任一形式给出窗口中心，`cvs` 指定被偏置的 CV：
+用以下任一形式给出窗口中心，`cvs` 指定被偏置的 CV。新的 `task="fes"` 输入可将表名写为
+`[fes.umbrella]`；速率等使用伞形采样的其他工作流继续使用 `[umbrella]`：
 
 ```toml
 [umbrella]
 cvs = ["x"]
-centers = [-0.5, 0.0, 0.5]              # 显式列表；二维时为 [[x, y], ...]
+centers = [-0.5, 0.0, 0.5]              # 二维/三维时为 [[x, y], ...] / [[x, y, z], ...]
 # start = -1.0, stop = 1.0, count = 9   # 一维等间距
 # grid = [{start = -1.0, stop = 1.0, count = 3},
-#         {start = -1.0, stop = 1.0, count = 3}]  # 二维张量网格；每轴也可直接给列表
+#         {start = -1.0, stop = 1.0, count = 3}]  # 每个 CV 一轴；每轴也可直接给列表
 stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 ```
 
@@ -209,28 +264,55 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 
 | 命令 | 用途 | 常用选项 |
 | --- | --- | --- |
-| `pyrpmd validate INPUT` | 解析配置并检查任务 | `--check-pes`、`--write-resolved FILE` |
+| `pyrpmd init DIR` | 向新目录或空目录写入内置谐振子 FES 入门输入 | 打印输入路径和下一步命令 |
+| `pyrpmd validate INPUT` | 解析配置并检查任务 | `--check-pes`、`--output DIR`、`--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | 显示准备信息 | `--pilot` 执行数值准备；`--output FILE` 写出 JSON |
 | `pyrpmd run INPUT` | 开始运行，或按输入继续 | `--output DIR`、`--resume` |
 | `pyrpmd resume DIR` | 按保存的配置续跑 | `--workers N`、`--loop-backend auto`、`--block-steps N` |
 | `pyrpmd extend DIR` | 为已有 dRPMD 系综中未结束的轨迹提高总时间上限 | 必填 `--max-time '20 ps'`，从发射时刻计时 |
 | `pyrpmd state-check INPUT` | 无碰撞赋速演化已准备核初态，检查谐振模式稳定性 | `--time '100 fs'`、`--samples 8`、`--stride 10`、`--output report.json` |
 | `pyrpmd analyze DIR` | 读取结果或离线重分析 | `--recompute`、`--bins`、`--bootstrap`；扩散选项见下文 |
+| `pyrpmd report RUN [RUN ...]` | 从保存结果生成图片和 HTML/JSON 报告 | `--output DIR`、`--style`、`--formats`、`--overwrite`；[报告](analysis-reports.md) |
+| `pyrpmd rate-postprocess DIR` | 从保存的 PMF/FES 与有符号通量重算速率 | `--spec FILE`、`--output FILE`、`--bootstrap`；[速率后处理](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md) |
+| `pyrpmd project DIR` | 对保存的 CV 密度 FES 做 Boltzmann 边缘化 | 必填 `--axes` 与 `--output DIR`；可选 `--selection FILE`；[材料](periodic.md) |
+| `pyrpmd study INPUT` | 规划或运行温度/同位素/收敛扫描 | `--plan`、`--output DIR`、`--resume`；[速率研究](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | `pyrpmd checkpoint FILE` | 校验检查点容器 | `--require-integrity` 拒绝没有校验值的旧容器 |
 | `pyrpmd info` | 显示版本与原生能力 | |
 | `pyrpmd pes build/inspect/check` | 构建与测试 C ABI 势能 | 见[势能](potentials.md) |
 
-`validate`、`prepare` 和 `run` 接受适用于该任务的覆盖选项 `--pes`、`--pes-manifest`、`--temperature`、
+`validate`、`prepare`、`state-check` 和 `run` 接受适用于该任务的覆盖选项 `--pes`、`--pes-manifest`、`--temperature`、
 `--beads` 和 `--workers`；PCET 只接受 `--temperature` 和 `--output`。`pyrpmd COMMAND --help` 列出当前安装版本的选项。
 
 - `validate --check-pes` 与 `prepare --pilot` 执行同样的数值准备：构造 PES、TS 准备或 PCET 本征态求解。
   不加该选项时只检查输入。
+- `validate --output DIR` 选择验证报告中显示的目标路径，不创建运行。`prepare --output FILE` 则写出准备 JSON 文件；
+  `validate --write-resolved FILE` 显式写出解析后的配置。
 - `--workers N` 设置 `parallel.trajectory_workers`；非 MPI 输入在 N>1 时使用 `process` 后端。
 - `run` 不写入已有的非空输出目录。继续运行使用 `pyrpmd resume DIR` 或 `pyrpmd run INPUT --resume`。
-- `--bins` 与 `--bootstrap` 隐含 `--recompute`。离线重分析适用于 `fes`、`metadynamics`、`opes` 和 `diffusion`；
-  其他任务的 `analyze` 读取保存的摘要。
+- `--bins` 与 `--bootstrap` 隐含 `--recompute`。离线重分析适用于三种 FES 方法（包括旧任务别名）和
+  `diffusion`；其他任务的 `analyze` 读取保存的摘要。FES bootstrap 仅用于伞形采样；MetaD/OPES
+  使用独立副本 spread，要求 `bootstrap=0`。
+
+FES 在创建运行目录之前执行所选方法的预检。伞形预检包括 CV 与窗口维度、刚度、直方图范围和
+每个窗口至少两个保存样本；`analysis.bootstrap` 必须为零或至少为二。这些检查用于发现静态输入
+错误。样本支持、窗口重叠与科学收敛仍需根据实际轨迹判断。
 
 扩散重分析接受 `--fit-range '10 fs' '100 fs'`、`--axes 0 1`、`--atoms 0` 和 `--max-lag N`，其中延迟以保存帧数计。
 拟合范围须在保存的时长之内，见[输出与分析](results.md)。
+
+### 终端输出与调试
+
+`python -m pyrpmd` 与 `pyrpmd` 可执行命令接受相同参数。`pyrpmd --help` 列出命令，`pyrpmd COMMAND --help`
+列出子命令选项。命令结果以 JSON 写到标准输出；预期的输入或运行错误写到标准错误，退出码为 2。
+命令执行成功时返回 0。退出码只表示执行状态；解读科学结果还需检查 `ready`、`warnings`、`converged` 与任务特有诊断。
+
+普通命令显示简洁的错误说明。报告意外故障时添加 `--debug` 保留 traceback，例如：
+
+```bash
+pyrpmd validate my-first-run/quickstart.inp --check-pes --debug
+pyrpmd info > environment.json
+```
+
+`--debug` 可以放在子命令之前或之后。请连同错误保留命令、输入与环境报告；恢复方法见[常见问题](troubleshooting.md)。
 
 完整的 section 参考见 [docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)。

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass
+from difflib import get_close_matches
 import hashlib
 import importlib.util
 import math
@@ -21,6 +22,20 @@ from .system import System, system_from_config
 
 class InputError(ValueError):
     """Actionable input error before any production simulation starts."""
+
+
+def _unknown_fields(unknown, allowed, section):
+    """Describe a misspelled field without silently accepting a different input."""
+    names = sorted(str(key) for key in unknown)
+    message = f"Unknown {section} fields: {', '.join(names)}"
+    suggestions = []
+    for name in names:
+        matches = get_close_matches(name, sorted(allowed), n=1, cutoff=0.7)
+        if matches:
+            suggestions.append(f"{name!r} → {matches[0]!r}")
+    if suggestions:
+        message += ". Did you mean " + "; ".join(suggestions) + "?"
+    return InputError(message)
 
 
 _ROOT = set(
@@ -116,7 +131,7 @@ def normalize_fes_task(config, *, warn=True):
         allowed = _SECTIONS[section] | ({"dt_au"} if section == "sampling" else set())
         unknown = set(table) - allowed
         if unknown:
-            raise InputError(f"Unknown {section} fields: " + ", ".join(sorted(unknown)))
+            raise _unknown_fields(unknown, allowed, section)
     if method != "umbrella":
         for section in ("adaptive_umbrella", "replica_exchange"):
             if section in config:
@@ -139,9 +154,10 @@ def _normalize_fes_input(data, *, warn=True):
         return None, []
     method = fes_method(data)
     table = data.get("fes", {})
-    unknown = set(table) - {"method", *_FES_COMMON, *_FES_METHODS}
+    allowed = {"method", *_FES_COMMON, *_FES_METHODS}
+    unknown = set(table) - allowed
     if unknown:
-        raise InputError("Unknown fes fields: " + ", ".join(sorted(unknown)))
+        raise _unknown_fields(unknown, allowed, "fes")
     for other in _FES_METHODS:
         if other != method and (other in table or other in data):
             raise InputError(f"fes.method='{method}' does not accept {other} parameters")
@@ -448,7 +464,7 @@ class JobSpec:
             try:
                 data = tomllib.loads(path.read_text(encoding="utf-8"))
             except tomllib.TOMLDecodeError as e:
-                raise InputError(str(e)) from e
+                raise InputError(f"{path}: {e}") from e
             result = cls.from_mapping(data, base_directory=path.parent)
         elif path.suffix.lower() == ".py":
             # Python inputs are ordinary trusted code, not a sandbox.
@@ -460,7 +476,12 @@ class JobSpec:
             spec = importlib.util.spec_from_file_location(name, path)
             module = importlib.util.module_from_spec(spec)
             sys.modules[name] = module
-            spec.loader.exec_module(module)
+            try:
+                spec.loader.exec_module(module)
+            except SyntaxError as error:
+                raise InputError(
+                    f"{error.filename or path}:{error.lineno}:{error.offset}: {error.msg}"
+                ) from error
             if not callable(getattr(module, "build", None)):
                 raise InputError(
                     "Python input must define build() returning JobSpec or dict"
@@ -478,6 +499,13 @@ class JobSpec:
 
     def with_overrides(self, **overrides):
         d = deepcopy(self.data)
+
+        def table(name):
+            value = d.setdefault(name, {})
+            if not isinstance(value, Mapping):
+                raise InputError(f"{name} must be a table")
+            return value
+
         for key, value in overrides.items():
             if value is None:
                 continue
@@ -486,15 +514,15 @@ class JobSpec:
                     f"PCET supports only temperature/output overrides; {key} is not applicable to this serial model"
                 )
             if key == "pes":
-                d.setdefault("potential", {})["library"] = str(Path(value).resolve())
+                table("potential")["library"] = str(Path(value).resolve())
                 if d["potential"].get("provider") not in ("rpmdrate", "f2py"):
                     d["potential"]["provider"] = "cabi"
             elif key == "pes_manifest":
-                d.setdefault("potential", {})["manifest"] = str(Path(value).resolve())
+                table("potential")["manifest"] = str(Path(value).resolve())
             elif key == "output":
-                d.setdefault("output", {})["directory"] = str(Path(value).resolve())
+                table("output")["directory"] = str(Path(value).resolve())
             elif key == "workers":
-                p = d.setdefault("parallel", {})
+                p = table("parallel")
                 if "trajectory_groups" in p and p["trajectory_groups"] != value:
                     p.pop("trajectory_groups")
                 p["trajectory_workers"] = value
@@ -544,7 +572,7 @@ class JobSpec:
         method, fes_notes = _normalize_fes_input(d)
         unknown = set(d) - _ROOT
         if unknown:
-            raise InputError(f"Unknown top-level fields: {', '.join(sorted(unknown))}")
+            raise _unknown_fields(unknown, _ROOT, "top-level")
         for section, allowed in _SECTIONS.items():
             if section in d:
                 if section == "system" and isinstance(d[section], System):
@@ -553,9 +581,30 @@ class JobSpec:
                     raise InputError(f"{section} must be a table")
                 unknown = set(d[section]) - allowed
                 if unknown:
-                    raise InputError(
-                        f"Unknown {section} fields: {', '.join(sorted(unknown))}"
-                    )
+                    raise _unknown_fields(unknown, allowed, section)
+        # These nested tables are consumed before provider construction. Reject
+        # malformed values here, rather than leaking AttributeError or creating
+        # an output directory before a later workflow fails.
+        for section, fields in (
+            ("potential", ("params", "initializer_params")),
+            ("sampling", ("thermostat_params",)),
+            ("outcomes", ("params", "bond_cutoffs")),
+        ):
+            table = d.get(section, {})
+            for field in fields:
+                if (section == "potential" and field == "initializer_params"
+                        and table.get(field) is None):
+                    # Python RPMDrate inputs use None for the default initializer.
+                    continue
+                if field in table and not isinstance(table[field], Mapping):
+                    raise InputError(f"{section}.{field} must be a table")
+        for table, label in ((d, "native"), (d.get("dynamics", {}), "dynamics.native")):
+            if "native" in table:
+                value = table["native"]
+                if isinstance(value, (bool, np.bool_)):
+                    table["native"] = bool(value)
+                elif value is not None and not (isinstance(value, str) and value == "required"):
+                    raise InputError(f"{label} must be a boolean, None or 'required'")
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")
@@ -1103,6 +1152,14 @@ class JobSpec:
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         try:
+            if task == "fes":
+                from .workflows.fes_dispatch import validate_fes
+
+                validate_fes(resolved, system)
+            elif task == "surface_rate" and not source_pmf:
+                from .workflows.fes import validate_fes_request
+
+                validate_fes_request(resolved, system)
             if task in ("rate", "surface_rate"):
                 from .workflows.rate import _recrossing_options
 
@@ -1126,14 +1183,6 @@ class JobSpec:
                 for unused in ("reaction", "collision", "outcomes"):
                     resolved.pop(unused, None)
                 validate_site_rate(resolved, system)
-            if method == "metadynamics":
-                from .workflows.metadynamics import validate_metadynamics
-
-                validate_metadynamics(resolved, system)
-            if method == "opes":
-                from .workflows.opes import validate_opes
-
-                validate_opes(resolved, system)
             if "replica_exchange" in d:
                 from .workflows.replica_exchange import exchange_options
 

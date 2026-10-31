@@ -106,6 +106,14 @@ finally:
 
 电子计算中 D 和 T 按氢传递，同时保留各自的核质量。
 
+ASE 适配器请求与力一致的能量 `get_potential_energy(force_consistent=True)`。有电子展宽时，这通常是
+calculator 的电子自由能，并非零温外推能或核 PMF。仅当 calculator 未声明 `free_energy` 且 ASE 抛出
+`PropertyNotImplementedError` 时才回退普通能量；已经声明却求值失败的属性仍报错。
+电子展宽温度与核恒温器温度是独立模型输入。能量约定属于运行指纹：旧 ASE-backed 检查点不能用
+新适配器续跑或重算分析，即便经典 calculator 的两种能量恰好相同也保守拒绝；已保存摘要仍可读取。
+请用新输出目录，新约定的检查点可正常续跑。不要把旧外推能或自由能权重与修正后的约定拼接。参见
+[ASE 能量契约](https://docs.ase-lib.org/ase/atoms.html#ase.Atoms.get_potential_energy)。
+
 Torch 适配器在其设备上求值模型，每次调用传输坐标和力；每个轨迹进程加载自己的模型副本。
 
 ## 周期模型

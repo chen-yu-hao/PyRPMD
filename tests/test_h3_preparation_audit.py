@@ -129,3 +129,28 @@ def test_parent_binding_restores_on_exception_and_worker_is_importable():
     assert len(cases) == 12
     assert sum(case["config"]["samples"] for case in cases) == 6144
     assert all(case["config"]["id_offset"] == 910000 for case in cases)
+
+
+@pytest.mark.parametrize("options", [
+    {"workers": 0}, {"workers": 1.5}, {"workers": True},
+    {"samples": 0}, {"samples": 1.5}, {"samples": True},
+    {"id_offset": -1}, {"id_offset": .5},
+    {"points": []}, {"variants": ["unknown"]},
+])
+def test_invalid_audit_plan_is_rejected_before_creating_output(monkeypatch, tmp_path, options):
+    def unexpected(*args, **kwargs):
+        raise AssertionError("Invalid audit plan reached a case runner")
+
+    monkeypatch.setattr(audit.study, "run", unexpected)
+    output = tmp_path/"audit"
+    with pytest.raises(ValueError):
+        audit.run_cases(output, **options)
+    assert not output.exists()
+
+
+def test_audit_preflights_every_registered_case_before_output(monkeypatch, tmp_path):
+    # A malformed physical plan must fail before writing even the root manifest.
+    monkeypatch.setattr(audit, "HOLD_TIME_FS", .03)
+    with pytest.raises(ValueError, match="hold_time_fs.*integer multiple"):
+        audit.run_cases(tmp_path/"audit", samples=1, workers=1)
+    assert not (tmp_path/"audit").exists()

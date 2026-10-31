@@ -70,6 +70,10 @@ def test_saved_umbrella_barrier_uses_supported_interpolation(tmp_path):
     assert estimate["barrier_standard_error_hartree"] is None
     assert estimate["pmf_bootstrap_barriers"] == []
     assert estimate["source_method"] == "umbrella"
+    assert np.isfinite(result.uncertainty).all()
+    assert np.isnan(estimate["standard_error"]).all()
+    assert estimate["barrier_uncertainty"]["reason"] == "source_missing_paired_endpoint_covariance"
+    assert not estimate["barrier_uncertainty"]["available"]
 
 
 @pytest.mark.parametrize("method", ["metadynamics", "opes"])
@@ -165,11 +169,37 @@ def test_rate_executes_from_saved_source_and_hashes_it_for_resume(tmp_path, monk
     from pyrpmd.workflows import rate
 
     monkeypatch.setattr(rate, "run_fes", lambda *args, **kwargs: pytest.fail("external source must not resample umbrellas"))
+    child_task = rate._child_task
+    executed_children = []
+
+    def record_child(task):
+        value = child_task(task)
+        executed_children.append((task, value))
+        return value
+
+    monkeypatch.setattr(rate, "_child_task", record_child)
     output = tmp_path / "rate"
     summary = run_resolved(config, system, output=output)
     assert summary["pmf"]["method"] == "source"
     assert summary["pmf"]["source_method"] == "umbrella"
+    assert summary["pmf"]["uncertainty"]["reason"] == "source_missing_paired_endpoint_covariance"
+    assert "source_missing_paired_endpoint_covariance" in summary["rate_uncertainty"]["reasons"]
+    assert summary["rate_standard_error_cm3_s"] is None
+    with np.load(output / "rate_pmf.npz", allow_pickle=False) as saved:
+        assert np.isnan(saved["standard_error"]).all()
+        assert saved["standard_error_mask"].all()
     assert not (output / "umbrella").exists()
+    assert executed_children
+    with monkeypatch.context() as cached:
+        cached.setattr(rate, "task_potential", lambda *args, **kwargs: pytest.fail("saved source children must replay without a potential"))
+        for task, expected in executed_children:
+            replayed = child_task(task)
+            assert replayed["pmf_method"] == "source"
+            np.testing.assert_array_equal(replayed["numerator"], expected["numerator"])
+        changed = copy.deepcopy(executed_children[0][0])
+        changed["config"]["rate"]["pmf_source"]["allow_non_umbrella"] = True
+        with pytest.raises(ValueError, match="checkpoint physics differs"):
+            child_task(changed)
     assert resume_run(output)["pmf"]["source_method"] == "umbrella"
     result.free_energy += 0.2
     write_fes_result(directory, result)

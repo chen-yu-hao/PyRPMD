@@ -24,7 +24,7 @@ from ..potentials.base import validate_result
 from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
 from ..units import parse_quantity
-from ..trajectory import TrajectoryStream, iter_chunks, materialize_stream
+from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
 from .common import _fingerprint, checked_integer, write_json
 
 
@@ -282,7 +282,34 @@ def _expected_steps(elapsed, options):
     return options["neq"] + np.arange((elapsed - options["neq"]) // options["interval"] + 1, dtype=np.int64) * options["interval"]
 
 
-def _read_stream(config, system, output, replica, options=None, *, materialize=True):
+def _collect_frames(chunks, schema, count, config, system, options, *, full):
+    """Collect requested histories while retaining only one complete chunk."""
+    fields = list(schema) if full else ["sample_steps", "observables"] + [
+        name for name in ("pressures", "volumes") if name in schema
+    ]
+    result = {name: np.empty((count, *schema[name]["shape"]), dtype=schema[name]["dtype"])
+              for name in fields}
+    atoms = None
+    if not full and config["task"] == "diffusion":
+        atoms = sorted(set(options["atom_indices"]) | set(options["reference_atoms"] or []))
+        result["positions"] = np.empty((count, len(atoms), 3))
+        result["velocities"] = np.empty_like(result["positions"])
+        result["_analysis_atoms"] = atoms
+    radius_sum = np.zeros(system.natoms) if not full else None
+    for start, stop, arrays in chunks:
+        for name in fields:
+            result[name][start:stop] = arrays[name]
+        if not full:
+            radius_sum += arrays["radii_gyration_squared"].sum(axis=0)
+        if atoms is not None:
+            for name in ("positions", "velocities"):
+                result[name][start:stop] = arrays[name][:, atoms]
+    if not full:
+        result["radii_gyration_squared"] = (radius_sum / max(1, count))[None]
+    return result
+
+
+def _read_stream(config, system, output, replica, options=None, *, materialize=True, analysis=False):
     """Validate a committed prefix; trajectory chunks are never discovered by glob."""
     options = resolve_materials(config, system) if options is None else options
     checkpoint = _checkpoint_path(output, replica)
@@ -322,56 +349,70 @@ def _read_stream(config, system, output, replica, options=None, *, materialize=T
             descriptor = json.loads(str(saved["trajectory"]))
             if not isinstance(descriptor, dict) or descriptor.get("schema") != schema:
                 raise ValueError("materials trajectory schema disagrees with system")
+            descriptor = _descriptor(descriptor)
             result.update(trajectory=descriptor, trajectory_directory=str(_stream_directory(output, replica)))
-            chunks = iter_chunks(result["trajectory_directory"], descriptor)
+            chunks = ((metadata["start"], metadata["stop"], arrays)
+                      for _, metadata, arrays in _walk_reverse(result["trajectory_directory"], descriptor))
             count = descriptor["frames"]
         else:
             arrays = {name: saved[name] for name in schema}
             count = len(arrays["sample_steps"])
-            chunks = iter([arrays])
+            chunks = iter([(0, count, arrays)])
             result.update(arrays)
         expected_count = 0 if elapsed < options["neq"] else (elapsed - options["neq"]) // options["interval"] + 1
         # An initial observable failure can save state/RNG before frame zero.
         initial_pending = elapsed == options["neq"] == 0 and count == 0
         if count != expected_count and not initial_pending:
             raise ValueError("materials checkpoint samples disagree with its phase clock")
-        cursor = 0
-        last_cell = None
-        last_step = None
-        for arrays in chunks:
-            length = len(arrays["sample_steps"])
-            for name, spec in schema.items():
-                value = arrays[name]
-                if value.shape != (length, *spec["shape"]) or not np.isfinite(value).all():
-                    raise ValueError("materials checkpoint has invalid observable arrays")
-            expected = options["neq"] + np.arange(cursor, cursor + length, dtype=np.int64) * options["interval"]
-            if not np.array_equal(arrays["sample_steps"], expected):
-                raise ValueError("materials checkpoint samples disagree with its phase clock")
-            if system.fixed_atoms:
-                fixed = list(system.fixed_atoms)
-                # Centroid summation can round a repeated reference by a few ulps.
-                if (not np.allclose(arrays["positions"][:, fixed], system.geometry[fixed], rtol=0, atol=1e-12)
-                        or np.any(arrays["velocities"][:, fixed] != 0)
-                        or np.any(arrays["radii_gyration_squared"][:, fixed] != 0)):
-                    raise ValueError("materials trajectory violates fixed-atom constraints")
-            if "volumes" in arrays and (np.any(arrays["volumes"] <= 0)
-                    or not np.allclose(np.abs(np.linalg.det(arrays["cells"])), arrays["volumes"], rtol=1e-12)):
-                raise ValueError("materials NPT trajectory has invalid cell volumes")
-            if "cells" in arrays and length:
-                scales = np.einsum("fij,ij->f", arrays["cells"], system.cell) / np.sum(system.cell**2)
-                if (np.any(scales <= 0) or not np.allclose(arrays["cells"],
-                        scales[:, None, None] * system.cell, rtol=1e-11, atol=1e-12)):
-                    raise ValueError("materials NPT trajectory cell is not an isotropic reference scaling")
-                last_cell, last_step = arrays["cells"][-1], int(arrays["sample_steps"][-1])
-            cursor += length
-        if cursor != count:
-            raise ValueError("materials trajectory frame count differs from its checkpoint")
-        if (last_step == elapsed and last_cell is not None
-                and not np.array_equal(last_cell, np.asarray(result["barostat"]["cell"]))):
-            raise ValueError("materials checkpoint cell disagrees with its last saved frame")
+        def checked_chunks():
+            seen = 0
+            last_cell = None
+            last_step = None
+            for start, stop, arrays in chunks:
+                length = len(arrays["sample_steps"])
+                # Stream chunks already checked every field at their storage
+                # boundary; legacy checkpoint arrays still need these checks.
+                if kind == CHECKPOINT_KIND:
+                    for name, spec in schema.items():
+                        value = arrays[name]
+                        if value.shape != (length, *spec["shape"]) or not np.isfinite(value).all():
+                            raise ValueError("materials checkpoint has invalid observable arrays")
+                expected = options["neq"] + np.arange(start, stop, dtype=np.int64) * options["interval"]
+                if not np.array_equal(arrays["sample_steps"], expected):
+                    raise ValueError("materials checkpoint samples disagree with its phase clock")
+                if system.fixed_atoms:
+                    fixed = list(system.fixed_atoms)
+                    # Centroid summation can round a repeated reference by a few ulps.
+                    if (not np.allclose(arrays["positions"][:, fixed], system.geometry[fixed], rtol=0, atol=1e-12)
+                            or np.any(arrays["velocities"][:, fixed] != 0)
+                            or np.any(arrays["radii_gyration_squared"][:, fixed] != 0)):
+                        raise ValueError("materials trajectory violates fixed-atom constraints")
+                if "volumes" in arrays and (np.any(arrays["volumes"] <= 0)
+                        or not np.allclose(np.abs(np.linalg.det(arrays["cells"])), arrays["volumes"], rtol=1e-12)):
+                    raise ValueError("materials NPT trajectory has invalid cell volumes")
+                if "cells" in arrays and length:
+                    scales = np.einsum("fij,ij->f", arrays["cells"], system.cell) / np.sum(system.cell**2)
+                    if (np.any(scales <= 0) or not np.allclose(arrays["cells"],
+                            scales[:, None, None] * system.cell, rtol=1e-11, atol=1e-12)):
+                        raise ValueError("materials NPT trajectory cell is not an isotropic reference scaling")
+                    # Reverse traversal encounters the final saved frame first.
+                    if last_step is None:
+                        last_cell, last_step = arrays["cells"][-1], int(arrays["sample_steps"][-1])
+                seen += length
+                yield start, stop, arrays
+            if seen != count:
+                raise ValueError("materials trajectory frame count differs from its checkpoint")
+            if (last_step == elapsed and last_cell is not None
+                    and not np.array_equal(last_cell, np.asarray(result["barostat"]["cell"]))):
+                raise ValueError("materials checkpoint cell disagrees with its last saved frame")
+
+        if kind == STREAM_CHECKPOINT_KIND and (materialize or analysis):
+            result.update(_collect_frames(checked_chunks(), schema, count, config, system, options,
+                                          full=materialize))
+        else:
+            for _ in checked_chunks():
+                pass
         result["frames"] = count
-    if materialize and result["storage"] == "stream":
-        result.update(materialize_stream(result["trajectory_directory"], result["trajectory"]))
     if "sample_steps" in result:
         result["times"] = (result["sample_steps"] - options["neq"]) * options["production_dt"]
     return result
@@ -603,26 +644,11 @@ def _analysis_stream(stream, config, system, options, *, return_data):
         if "positions" not in stream:
             stream.update(materialize_stream(stream["trajectory_directory"], stream["trajectory"]))
     elif stream["storage"] == "stream":
-        fields = ["sample_steps", "observables"]
-        fields += [name for name in ("pressures", "volumes") if name in stream["trajectory"]["schema"]]
-        stream.update(materialize_stream(stream["trajectory_directory"], stream["trajectory"], fields=fields))
-        radius_sum = np.zeros(system.natoms)
-        atoms = (sorted(set(options["atom_indices"]) | set(options["reference_atoms"] or []))
-                 if config["task"] == "diffusion" else None)
-        fields = ["radii_gyration_squared"] + (["positions", "velocities"] if atoms is not None else [])
-        if atoms is not None:
-            stream["positions"] = np.empty((stream["frames"], len(atoms), 3))
-            stream["velocities"] = np.empty_like(stream["positions"])
-            stream["_analysis_atoms"] = atoms
-        cursor = 0
-        for chunk in iter_chunks(stream["trajectory_directory"], stream["trajectory"], fields=fields):
-            length = len(chunk["radii_gyration_squared"])
-            radius_sum += chunk["radii_gyration_squared"].sum(axis=0)
-            if atoms is not None:
-                for name in ("positions", "velocities"):
-                    stream[name][cursor:cursor + length] = chunk[name][:, atoms]
-            cursor += length
-        stream["radii_gyration_squared"] = (radius_sum / max(1, stream["frames"]))[None]
+        descriptor = _descriptor(stream["trajectory"])
+        chunks = ((metadata["start"], metadata["stop"], arrays)
+                  for _, metadata, arrays in _walk_reverse(stream["trajectory_directory"], descriptor))
+        stream.update(_collect_frames(chunks, descriptor["schema"], descriptor["frames"],
+                                      config, system, options, full=False))
     elif config["task"] == "diffusion":
         atoms = sorted(set(options["atom_indices"]) | set(options["reference_atoms"] or []))
         for name in ("positions", "velocities"):
@@ -632,12 +658,15 @@ def _analysis_stream(stream, config, system, options, *, return_data):
     return stream
 
 
-def _analyze(streams, config, system, output, return_data=False):
+def _analyze(streams, config, system, output, return_data=False, *, stream_data_prepared=False):
     options = resolve_materials(config, system)
     if not streams or any(s["frames"] < 2 for s in streams):
         raise ValueError("materials analysis requires saved production samples")
     trajectories = [_write_trajectory(s, config, system, output) for s in streams]
-    streams = [_analysis_stream(s, config, system, options, return_data=return_data) for s in streams]
+    # Reanalysis can collect the requested histories during _read_stream's
+    # validation pass. Memory exports still precede any atom selection.
+    streams = [s if stream_data_prepared and s["storage"] == "stream" else
+               _analysis_stream(s, config, system, options, return_data=return_data) for s in streams]
     result = {
         "task": config["task"], "status": "complete" if all(s["complete"] for s in streams) else "partial",
         "physical_converged": False, "converged": False,
@@ -765,7 +794,8 @@ def reanalyze_diffusion(config, system, output, return_data=False):
         raise ValueError("reanalyze_diffusion requires a diffusion run")
     def analyze():
         options = resolve_materials(config, system)
-        streams = [_read_stream(config, system, output, replica, options, materialize=False)
+        streams = [_read_stream(config, system, output, replica, options,
+                                materialize=return_data, analysis=not return_data)
                    for replica in range(options["replicas"])]
-        return _analyze(streams, config, system, output, return_data)
+        return _analyze(streams, config, system, output, return_data, stream_data_prepared=True)
     return root_call(analyze)

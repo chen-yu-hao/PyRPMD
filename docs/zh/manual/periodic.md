@@ -1,6 +1,8 @@
 # 周期材料、扩散与表面反应
 
-PyRPMD 支持周期体系、带冻结层的 slab，以及各向同性 NPT PIMD。本章介绍平衡 PIMD、无恒温 RPMD 输运，以及盆地归一化的局部跃迁速率。
+PyRPMD 支持周期体系、带冻结层的 slab，以及恒压 PIMD。本章介绍平衡 PIMD、无恒温 RPMD 输运，
+以及盆地归一化的局部跃迁速率。默认材料引擎与显式选择的原生 PIMD 引擎使用不同的势能、barostat
+和检查点契约；使用原生路径时需显式选择引擎。
 
 ## 任务与边界条件
 
@@ -8,8 +10,8 @@ PyRPMD 支持周期体系、带冻结层的 slab，以及各向同性 NPT PIMD�
 | --- | --- | --- | --- | --- |
 | `pimd` | 平衡量子统计，可选 BZP 恒压 | 支持 | 固定晶胞时支持 | 能量估计量、回转半径 |
 | `diffusion` | 连续质心轨迹与输运 | 支持 | 支持 | MSD、VACF、D 与诊断 |
-| `site_rate` | 全原子可动材料中的有向出口 | 支持 | 不支持 | 沿单一恒定梯度 CV 的盆地速率 |
-| `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
+| `site_rate` | 全原子可动材料中的有向出口 | 支持 | 不支持 | 沿单一受支持的光滑标量质心 CV 的盆地速率 |
+| `fes`，method 为 `umbrella` | 一至三维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
 | `surface_rate` | 表面上的有向出口，可含固定层 | 支持，也可为有限团簇 | 支持 | 以可动原子质量度量计算的一阶速率 |
 
 `pimd`、`diffusion`、`fes`、`metadynamics` 和 `surface_rate` 支持固定原子；固定原子在所有珠子上保持
@@ -54,7 +56,9 @@ H、D、T 在电子 PES 上都对应氢，差别在于核质量。可用 `symbol
 | `surface_lateral` | 展开 COM 沿面内方向 | 表面迁移自由能与有向出口 |
 
 `periodic_bond_difference` 也接受别名 `periodic_difference`。最近镜像 CV 在镜像切换处有导数分支，偏置范围应避开该处。
-`site_rate` 接受其支持的线性质心 CV；`surface_rate` 还接受具有恒定端点质量度量的展开 `distance`。
+`site_rate` 接受受支持的线性及光滑非线性标量质心 CV，非线性路径使用约束母系综的质量度量权重，
+见[广义坐标速率](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md)。
+`surface_rate` 还接受具有恒定端点质量度量的展开 `distance`。
 `periodic_distance` 的分割面须小于周期晶格基最小奇异值的一半，以远离最小镜像切换边界。
 键差和变质量度量坐标不自动适用这一表面速率公式。
 
@@ -69,15 +73,31 @@ Python 周期插件使用以下两种契约之一：
 - 声明 `metadata["supports_pbc"] = True` 并实现 `bind_system(system)`，在 `evaluate(q)` 之前调用。绑定的 System
   使用原子单位，因此以 angstrom/eV 工作的插件自行转换保存的晶胞。
 
-对新的 calculator 先运行 `validate --check-pes`，再独立检查力和周期平移。
+对新的 calculator 先运行 `validate --check-pes` 检查输入、provider 构造及有限 PES 输出。
+对于普通绝热势，这是接口／求值检查，并不自动执行有限差分力、晶格平移或有限应变 virial 验证；
+研究计算前仍需独立完成这些检查。
 
 i-PI 在 POSDATA 中发送真实晶胞及其逆矩阵，采用协议的列向量约定。POSDATA 不含 PBC 标志，因此 slab 需设置与体系一致的
-`potential.params.init.pbc`，服务端需读取这一 INIT 字段。周期模型请通过 ASE、Python 或 i-PI 接口连接；C ABI v1、
-RPMDrate/f2py 和 Torch 适配器用于分子体系。
+`potential.params.init.pbc`，服务端需读取这一 INIT 字段。周期模型可使用 C ABI v2、ASE 及命名 ML 适配器、
+显式周期 Python/Torch、tblite 或 i-PI。C ABI v1 与 RPMDrate/f2py 仍限于分子体系。
+通用 Torch 模型须显式设置 `periodic=true` 并实现 `forward(q, cell, pbc)`；加载 Torch 模型本身不保证周期能力。
+DeePMD 目前只接受三维全周期或全非周期，PySCF 适配器仍限于分子。详见[势能契约与限制](potentials.md)。
 
-周期与固定原子体系在 Python 时间步循环中运行，并使用编译的确定性子步骤；使用 `loop_backend="auto"` 或 `"python"`。
+需匹配电子结构求解器的边界约定：平面波 slab 可能使用带真空的三维全周期模型。PyRPMD 的 PBC 标志不会替你
+设置 calculator 的静电求解器或偶极修正。应检查周期 slab 相互作用、净电荷和非对称表面偶极的处理，并分别收敛
+真空、k 点、截断及电子展宽。[GPAW 偶极层教程](https://gpaw.readthedocs.io/tutorialsexercises/electrostatics/dipole_correction/dipole.html)
+展示了实空间与平面波模式的不同边界处理。全周期 slab 请显式指定表面法向；请求二维二阶归一化时也须明确面积。
+
+默认材料及表面工作流的周期／固定原子体系使用 Python 时间步循环和编译的确定性子步骤，
+设置 `loop_backend="auto"` 或 `"python"`。显式选择 `task="pimd"`、`sampling.engine="native"` 可使用
+独立 C++ 轨迹引擎，势能限于受支持的内置模型或编译的 `native_periodic` 接口；C ABI v2 批量求值
+本身并不提供该接口。其势能 ABI、恒温器及恢复格式见
+[原生 PIMD 工作流](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)。
 
 ## PIMD：平衡性质
+
+下文的控制项描述缺省（`sampling.engine="legacy"`）工作流。显式选择 `sampling.engine="native"` 时使用独立的
+原生恒温/恒压引擎与检查点格式；兼容势能、输入与示例见[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)。
 
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
@@ -86,7 +106,8 @@ pyrpmd analyze runs/manual-pimd
 pyrpmd resume runs/manual-pimd
 ```
 
-[输入](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/pimd.inp)使用周期余弦势。
+[输入](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/pimd.inp)使用默认
+`sampling.engine="legacy"` 材料引擎及周期余弦势。
 `sampling.equilibration` 是初始平衡时间，`production` 是采样时间，`interval` 是保存间隔，`replicas` 是独立随机流数。
 
 | `dynamics.integrator` | PILE-L 时的 `sampling.integrator` | Andersen 名称 |
@@ -108,10 +129,21 @@ pyrpmd resume runs/manual-pimd
 `samples/materials_XXXX/manifest.json` 索引不可变 NPZ 分块，保存质心坐标、速度、采样步数、能量估计量与
 回转半径。`checkpoints/materials_XXXX.npz` 保存状态和已提交的轨迹前缀。默认
 `output.trajectory_storage="stream"`、`output.chunk_frames=256`；`"memory"` 保留旧的单 NPZ 格式。
-已完成的旧任务可在不加载 PES 的情况下迁移。离线相关分析仍加载标量或所选原子的历史，需要单独预算内存。
+科学身份仍兼容的已完成旧任务可在不加载 PES 的情况下迁移存储布局。旧 ASE-backed 运行须按
+[力一致能量约定](potentials.md) 使用新输出目录，已存摘要仍可读取。
+离线相关分析仍加载标量或所选原子的历史，需要单独预算内存。
 详见[流式存储](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md)。输运性质使用 `diffusion`。
 
+### 原生 PIMD 引擎
+
+`sampling.engine="native"` 选择单独的 C++ 系综引擎。它要求兼容的内置或编译势能，提供更多恒温器、NVT 固定原子支持，
+以及各有适用限制的 BZP、MTTK、RGB 或 SCR barostat。输出使用事务式 `samples/native_pimd_NNNN/journal.json`
+和不可变数据块，不使用默认的材料检查点布局。切换引擎会改变运行身份。完整输入输出约定及示例见
+[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)；下方 BZP 参数表属于默认引擎。
+
 ### 恒压 PIMD
+
+默认材料引擎的设置为：
 
 ```toml
 [barostat]
@@ -124,7 +156,16 @@ time_constant = "1000 fs"
 全部原子可动及能够更新晶胞并返回物理构型 virial 的 PES。支持 ASE、i-PI、兼容的 Python 模型和独立副本
 进程并行；暂不支持 NPT 的珠子进程池、MPI 或 GPU 模式。压力可用 Pa/kPa/MPa/GPa/bar/atm/原子单位；
 可选 `friction` 默认取时间常数的倒数。逐帧保存晶胞、压力和体积，检查点保存 barostat 动量。
-见[算法与示例](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials-npt.md)。RPMD 扩散生产段仍固定晶胞；默认使用无恒温器传播，可显式选择物理电子摩擦浴。
+见[算法与示例](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials-npt.md)。
+
+显式原生 PIMD 还提供 `mode="mttk"`、`mode="rgb"` 变形晶胞 barostat，以及原生 `bzp` 和单珠子 `scr`。
+这些 NPT 模式需要编译的物理 virial、三维 PBC 和全部原子可动；原生固定晶胞 NVT 支持 `fixed_atoms`。
+`mode`/`tau`/`gamma` 参数不能替代或混入上面的
+`method`/`time_constant`/`friction` 表。柔性晶胞须遵守其三角晶胞约定，cell mask 不等于已经实现 slab
+或固定基底 NPT 系综。限制及数值验证见
+[原生系综](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md#barostats)。
+
+RPMD 扩散生产段仍固定晶胞；默认使用无恒温器传播，可显式选择物理电子摩擦浴。
 
 ## 扩散：从连续轨迹得到 MSD 与 D
 
@@ -182,7 +223,9 @@ $$
 
 ## 位点与表面速率
 
-两个局部速率工作流都使用恒定质量度量的线性质心坐标 s，并从同一位置密度得到分割面值与盆地概率：
+两个局部速率工作流都从同一位置密度得到分割面值与盆地概率。非线性 `site_rate` 还对约束母系综的
+质量度量做加权平均，见[广义坐标速率](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md)。
+`surface_rate` 也接受前述非线性距离坐标。对于质量度量恒定的情况：
 
 $$
 k_{\mathrm{QTST}}=
@@ -205,7 +248,8 @@ pyrpmd analyze runs/manual-site-rate
 ```
 
 [例子](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)使用展开的 `fractional`
-质心坐标。支持的 CV 为 `cartesian`、`projection` 和 `fractional`，后两者可相对于一组晶格原子。`site_rate.cv`
+质心坐标。恒定度量路径支持 `cartesian`、`projection` 和 `fractional`，后两者可相对于一组晶格原子。
+光滑距离、键差、角度及兼容的 Python 质心 CV 可使用上述广义坐标方法的非线性度量路径。`site_rate.cv`
 指定伞抽样 CV，`basin=[lo,hi]` 定义有限盆地；`direction=1` 时分割面在 hi，`direction=-1` 时在 lo。
 
 窗口与分析范围覆盖整个盆地并越过出口。窗口和受约束母链使用 Andersen 恒温器，±p 子轨迹不恒温。有限样本的 κ 保留其符号。
@@ -227,12 +271,20 @@ pyrpmd analyze runs/manual-surface-fes --recompute --bins 24 12 --bootstrap 40
 局部势阱向右的速率。单核约需 1–2 分钟；二维表面 FES 约需 1 分钟。
 
 `system.fixed_atoms` 冻结所列原子的全部珠子，动量为零；它们仍参与 PES 并作用于可动原子。速率坐标是一个质心
-`cartesian`、`surface_height` 或 `surface_lateral` CV。`surface.reactant_basin`、`surface.dividing_surface` 和
+`cartesian`、`surface_height`、`surface_lateral`、`distance` 或满足前述镜像光滑性条件的
+`periodic_distance` CV。`surface.reactant_basin`、`surface.dividing_surface` 和
 `surface.product_side="higher"/"lower"` 定义盆地与产物一侧；整个盆地位于分割面的反应物一侧。这些长度带单位书写。
 
 输出为 `surface_pmf.csv` / `.npz` / `.json`、`recrossing.csv`、`umbrella/` 和摘要，速率字段为 `rate_s_inv`、
 `rate_estimate_s_inv`、`rate_standard_error_s_inv` 和 `rate_percentile_95_ci_s_inv`（单位与 `site_rate` 相同，
 字段名不同）。若部分 bootstrap 抽样中盆地缺少支持，联合区间留空。
+
+显式选择二维二阶表面归一化时，设置 `surface.normalization.reaction_order=2`，并用
+`reference_adsorbates` 给出参考晶胞中的共反应物数。换算为
+`k2 = k_cell * area / reference_adsorbates`，单位 `cm²/s`。仅当恰好两个晶格矢量周期时，面积才自动
+取这两个矢量叉积的模；它们的索引不必是 0、1。三维全周期、线体系或有限团簇需显式给出带面积单位的
+`surface.normalization.area`，明确所指表面。此换算不包含覆盖度相互作用，也不自动生成总周转频率。
+详见[表面归一化](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md)。
 
 表面 `fes` 支持自适应伞抽样；`surface_rate` 使用固定窗口。运行真实的 ASE calculator 需要安装 ASE：
 
@@ -246,3 +298,22 @@ pyrpmd run examples/surface/ase_emt.py --output runs/manual-surface-emt
 [材料说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials.md)、
 [表面说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/surface-catalysis.md)和
 [Ni–H 材料 pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/README.md)。
+
+## 从可运行 slab 到研究计算
+
+Cu/EMT、Ni–H/EAM 和 CO/O/Pt(111) 示例分别检验不同的模型与工作流；短 pilot 不构成催化速率或扩散系数
+的物理收敛验证。对于新材料，按以下顺序开展计算：
+
+1. 使用目标 PES 优化并确定 slab、吸附位、固定层、覆盖度及电子态，显式指定三个晶格矢量和各方向 PBC。
+   使用 COM 坐标前，将一个分子或吸附原子组放在一致的展开镜像中；成对最小镜像距离不会替你重建整个组。
+2. 与底层 calculator 逐项核对能量／力，检查有限差分力与晶格平移不变性；变胞采样还需用有限应变检查
+   virial。金属有电子展宽时，核对返回能量是否为产生这些力的同一热力学势。
+3. 对每个温度与同位素收敛热化、珠子数和时间步，检查活动自由度、环回转半径及独立副本统计。
+   平衡 PIMD 的采样时间不直接代表真实输运动力学。
+4. 扩散保留展开质心，选择与被测原子不重叠的晶格参考组，并检查拟合区间与生产长度。`axes` 为笛卡尔轴，
+   倾斜 slab 应旋转到所需分析系或分析完整张量。局部速率需证明盆地／分割面的采样连通与回穿平台的独立支持。
+5. 改变面内超胞、层数、真空、覆盖度及冻结层选择，分别报告模型精度、有限尺寸、统计及数值收敛。
+   单一有向一阶速率不能直接给出总逃逸率、粘附概率、周转频率或电导率。
+
+[周期材料审查与 TODO](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/periodic-materials-audit.md)
+记录实现发现、开源项目对照及尚待完成的验证。

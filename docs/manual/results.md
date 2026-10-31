@@ -5,7 +5,7 @@
 ```python
 from pyrpmd import analyze_run
 
-summary = analyze_run("runs/manual-first")
+summary = analyze_run("my-first-run/run")
 print(summary["task"])
 print(summary.get("converged"))
 print(summary.get("warnings", []))
@@ -52,7 +52,7 @@ and measure; gas-phase rates use the separate `rate_flux` PMF.
 import numpy as np
 from pyrpmd import analyze_run
 
-summary = analyze_run("runs/manual-first")
+summary = analyze_run("my-first-run/run")
 table = np.genfromtxt(summary["files"]["table"], delimiter=",", names=True)
 supported = table["masked"] == 0
 print("supported bins:", int(supported.sum()))
@@ -65,7 +65,7 @@ segments into one free-energy surface.
 Rebinning reuses the saved samples without calling the PES:
 
 ```bash
-pyrpmd analyze runs/manual-first --recompute --bins 8 --bootstrap 20
+pyrpmd analyze my-first-run/run --recompute --bins 8 --bootstrap 20
 ```
 
 The bootstrap gives the statistical error of the saved samples. When no valid error exists, the
@@ -103,11 +103,17 @@ observed contributions are reported. See [Nonadiabatic NRPMD](nonadiabatic.md).
 ## PIMD and diffusion
 
 The PIMD primitive and centroid-virial estimators give physical thermodynamic energies; the ring
-Hamiltonian is a propagation diagnostic. PIMD runs at the fixed cell volume.
+Hamiltonian is a propagation diagnostic. PIMD uses a fixed cell unless an explicit supported
+barostat selects NPT; read the reported ensemble and, for NPT, the saved cell, volume and pressure.
+Kinetic-energy estimators count mobile atoms only. The [materials chapter](periodic.md)
+distinguishes the default and native sampling engines.
 
 Diffusion saves continuous, unwrapped centroid positions and velocities. The MSD fit needs the
 long-time diffusive regime, and `analysis_status` flags ballistic motion and unstable fits. The VACF
 integral and the between-replica error give two further checks.
+
+Ordinary diffusion production is unthermostatted. With `[electronic_friction]`, energy exchange
+with the electronic bath replaces the NVE conservation diagnostic.
 
 ```bash
 pyrpmd analyze runs/diffusion --recompute \

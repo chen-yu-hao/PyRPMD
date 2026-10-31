@@ -1,0 +1,46 @@
+{
+  "purpose": "Targeted follow-up of slower noisy case from the full 16-case report; original report retained",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.3.5",
+  "dynamics_source_sha256": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+  "case": {
+    "beads": 64,
+    "atoms": 50,
+    "scheme": "cayley-bcb",
+    "half_step": true,
+    "steps": 1000,
+    "repeats": 9,
+    "seconds": {
+      "uncached": [
+        0.5202193980003358,
+        0.9808778619990335,
+        0.3584483300001011,
+        0.38295621500583366,
+        0.4805834919970948,
+        0.6393451929980074,
+        0.6475375200025155,
+        0.7351090619995375,
+        0.3548590720020002
+      ],
+      "cached": [
+        0.4683798760015634,
+        0.5137068680051016,
+        0.4054799920049845,
+        0.3083629489992745,
+        0.5764655160019174,
+        2.430942885002878,
+        0.6196913779931492,
+        0.9179657749991748,
+        0.2716335320001235
+      ]
+    },
+    "median_seconds": {
+      "uncached": 0.5202193980003358,
+      "cached": 0.5137068680051016
+    },
+    "speedup": 1.0126775217557915,
+    "positions_and_momenta_exactly_equal": true
+  },
+  "equality_check": "numpy.testing.assert_array_equal: exact elementwise equality, not byte-level signed-zero comparison"
+}

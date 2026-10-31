@@ -169,14 +169,26 @@ def source_estimate(config, system):
         ready = False
     warnings = [
         "Rate PMF loaded from a saved FESResult; no new biased trajectories were sampled.",
-        "The saved pointwise uncertainty does not supply paired endpoint covariance; barrier and total rate uncertainty are unavailable.",
+        "The saved pointwise uncertainty does not supply paired endpoint covariance; uncertainty for the re-referenced rate PMF, its barrier and the total rate is unavailable.",
     ]
     if result.method != "umbrella":
         warnings.append("MetaD/OPES PMF requires reweighting; this source explicitly declares a reweighted rate-flux estimate.")
-    standard_error = (
-        result.uncertainty.copy() if result.uncertainty_kind == "block_bootstrap"
-        else np.full_like(curve, np.nan)
-    )
+    # Re-referencing every point to F(0) changes its uncertainty. The source's
+    # marginal errors alone cannot determine covariance with that endpoint.
+    standard_error = np.full_like(curve, np.nan)
+    unavailable = "source_missing_paired_endpoint_covariance"
+    uncertainty = {
+        "available": False,
+        "block_status": "unavailable",
+        "reason": unavailable,
+        "reasons": [unavailable],
+        "bootstrap_requested": 0,
+        "bootstrap_attempted": 0,
+        "bootstrap_valid": 0,
+        "bootstrap_rejected": 0,
+        "surface_held_fixed": True,
+        "selection_uncertainty_included": False,
+    }
     return {
         "ready": ready,
         "status": "ready" if ready else "unsupported_source_pmf",
@@ -185,13 +197,17 @@ def source_estimate(config, system):
         "free_energy_barrier_hartree": surface - reference if ready else None,
         "barrier_standard_error_hartree": None,
         "barrier_percentile_95_ci_hartree": None,
+        "barrier_uncertainty": uncertainty,
         "pmf_bootstrap_barriers": [],
         "xi": grid,
         "free_energy": curve - reference if reference is not None else curve,
         "standard_error": standard_error,
         "mask": mask,
         "overlap_connected": ready,
-        "bootstrap": {"block_plan": {"status": "unavailable"}},
+        "bootstrap": {
+            "requested": 0, "attempted": 0, "valid": 0, "failures": [],
+            "block_plan": {"status": "unavailable"}, "skipped_reason": unavailable,
+        },
         "warnings": warnings,
         "source": paths,
         "source_method": result.method,

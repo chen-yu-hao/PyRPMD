@@ -116,7 +116,6 @@ def _validate(archive, *, expected_kind=None, require_integrity=False):
         # ZIP CRC checks and allow_pickle=False validation.
         for name in names:
             value = archive[name]
-            _array_description(value)
             arrays[name] = value
         payload_format = _payload_format(arrays, names, legacy=True)
         if expected_kind is not None and payload_format != expected_kind:

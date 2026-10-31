@@ -20,6 +20,7 @@ from math import prod
 import json
 from pathlib import Path
 from collections.abc import Mapping
+from functools import partial
 import numpy as np
 
 from ..analysis.fes import (solve_mbar, umbrella_reduced_potentials,
@@ -30,6 +31,10 @@ from .fes import resolve_umbrellas, _sample_window
 from .common import (_fingerprint, checked_integer, write_json, jsonable, _dimension,
                      fingerprint_matches)
 from ..units import parse_quantity
+
+
+LEGACY_OVERLAP_METRIC = "mbar_symmetric_transition"
+NORMALIZED_OVERLAP_METRIC = "normalized_mbar_cosine"
 
 
 ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
@@ -170,6 +175,59 @@ def _components(count, edges):
     return find, union
 
 
+def _plan_overlap_metric(plan):
+    """A saved plan owns its diagnostic, including legacy transition scores."""
+    if plan.get("schema_version", 1) < 3:
+        return LEGACY_OVERLAP_METRIC
+    metric = plan.get("overlap_metric")
+    if metric != NORMALIZED_OVERLAP_METRIC:
+        raise ValueError("unsupported adaptive umbrella overlap metric")
+    return metric
+
+
+def _overlap_scores(overlap, metric):
+    """Compare MBAR weight columns without dilution by the number of states.
+
+    O_ij = N_j (W_i . W_j).  Dividing its symmetric score by the geometric
+    mean of the diagonals gives the cosine of the two weight columns.  It is
+    one for identical sampled distributions, even with many nearby windows
+    or unequal sample counts, and zero for disjoint empirical support.  This
+    remains a local sampling diagnostic, not an equilibration certificate.
+    """
+    overlap = np.asarray(overlap, float)
+    scores = np.sqrt(np.maximum(0, overlap * overlap.T))
+    if metric == LEGACY_OVERLAP_METRIC:
+        return scores
+    if metric != NORMALIZED_OVERLAP_METRIC:
+        raise ValueError("unsupported adaptive umbrella overlap metric")
+    diagonal = np.diag(overlap)
+    normalization = np.sqrt(diagonal[:, None] * diagonal[None, :])
+    return np.clip(np.divide(scores, normalization, out=np.zeros_like(scores),
+                             where=normalization > 0), 0, 1)
+
+
+def _overlap_diagnostic(overlap, target, metric):
+    scores = _overlap_scores(overlap, metric)
+    count = len(scores)
+    pairs = [(i, j) for i in range(count) for j in range(i + 1, count)]
+    strong = [(i, j) for i, j in pairs if scores[i, j] >= target]
+    find, _ = _components(count, strong)
+    labels = [find(i) for i in range(count)]
+    _, tree_union = _components(count, [])
+    tree_scores = []
+    for i, j in sorted(pairs, key=lambda p: (-scores[p[0], p[1]], p)):
+        if tree_union(i, j):
+            tree_scores.append(float(scores[i, j]))
+    return {
+        "overlap_metric": metric,
+        "overlap_connected_at_target": len(set(labels)) == 1,
+        "overlap_components": labels,
+        "overlap": np.asarray(overlap).tolist(),
+        "symmetric_overlap": scores.tolist(),
+        "spanning_overlap": min(tree_scores, default=1.0),
+    }, scores, pairs, strong
+
+
 def _coverage_diagnostic(samples, weights, frame_inefficiency, periods, options):
     """Local Kish ESS with a conservative per-stream CV correlation factor.
 
@@ -200,7 +258,8 @@ def _coverage_diagnostic(samples, weights, frame_inefficiency, periods, options)
     }, edges, ess, supported
 
 
-def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
+def diagnose_and_refine(streams, centers, stiffness, beta, periods, options, *,
+                        overlap_metric=NORMALIZED_OVERLAP_METRIC):
     """Deterministic refinement from actual pilot samples, independently testable."""
     # Grouping visits the results once per window; executor.map may be a
     # one-shot iterator, so consume it only here and retain all pilot streams.
@@ -219,12 +278,10 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
     mbar = solve_mbar(reduced, [len(x) for x in samples], return_state_weights=False)
     if not mbar.converged:
         raise RuntimeError(f"adaptive pilot MBAR failed its equation residual: {mbar.residual:g}")
-    scores = np.sqrt(np.maximum(0, mbar.overlap * mbar.overlap.T))
-    pairs = [(i, j) for i in range(count) for j in range(i + 1, count)]
-    strong = [(i, j) for i, j in pairs if scores[i, j] >= options["target_overlap"]]
-    find, union = _components(count, strong)
-    labels = [find(i) for i in range(count)]
-    connected = len(set(labels)) == 1
+    overlap_report, scores, pairs, strong = _overlap_diagnostic(
+        mbar.overlap, options["target_overlap"], overlap_metric)
+    _, union = _components(count, strong)
+    connected = overlap_report["overlap_connected_at_target"]
     missing = []
     # Select shortest geometric links *between* sampled-overlap components,
     # preserving periodic distances and mixed-CV units via beta*K.
@@ -235,13 +292,6 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
     for i, j in sorted(pairs, key=lambda pair: (separation(pair), pair)):
         if union(i, j):
             missing.append((i, j))
-    # Also record the bottleneck of the strongest spanning tree as a compact
-    # overlap diagnostic; it is not a proof of global exploration/mixing.
-    _, tree_union = _components(count, [])
-    tree_scores = []
-    for i, j in sorted(pairs, key=lambda p: (-scores[p[0], p[1]], p)):
-        if tree_union(i, j):
-            tree_scores.append(float(scores[i, j]))
     proposed = centers.tolist()
     inserted = []
     rejected = []
@@ -293,9 +343,7 @@ def diagnose_and_refine(streams, centers, stiffness, beta, periods, options):
     enough = bool(np.all(np.asarray(ess) >= options["min_effective_samples"]))
     return {
         "target_met": bool(connected and enough and (coverage is None or coverage["target_met"])),
-        "overlap_connected_at_target": connected,
-        "overlap_components": labels, "overlap": mbar.overlap.tolist(),
-        "symmetric_overlap": scores.tolist(), "spanning_overlap": min(tree_scores, default=1.0),
+        **overlap_report,
         "effective_samples_per_window": ess, "effective_samples_target_met": enough,
         "effective_sample_observables": CV_CORRELATION_OBSERVABLES,
         "samples_per_window": [len(x) for x in samples], "mbar_residual": float(mbar.residual),
@@ -366,10 +414,14 @@ def _open_plan(config, system, output, centers, stiffness, options, create=True)
             raise ValueError("adaptive umbrella plan checksum mismatch")
         if not fingerprint_matches(plan.get("fingerprint"), config, system, {"adaptive_umbrella_schema": 1}):
             raise ValueError("adaptive umbrella plan physics differs; choose a fresh output directory")
+        if plan.get("schema_version", 1) not in (1, 2, 3):
+            raise ValueError("unsupported adaptive umbrella plan schema version")
+        _plan_overlap_metric(plan)
         return plan
     if not create:
         raise ValueError("no saved adaptive umbrella plan is available for reanalysis")
-    plan = {"schema_version": 2, "fingerprint": identity, "status": "adapting", "next_round": 0,
+    plan = {"schema_version": 3, "fingerprint": identity, "status": "adapting", "next_round": 0,
+            "overlap_metric": NORMALIZED_OVERLAP_METRIC,
             "centers": centers.tolist(), "stiffness": stiffness.tolist(), "options": options,
             "next_pilot_steps": options["pilot_steps"],
             "rounds": [], "production_seed": _seed(config, 2), "pilot_samples_used_in_production": 0}
@@ -392,7 +444,8 @@ def _next_pilot_steps(current, report, options):
 
 def _record_round(plan, streams, config, system, output, cv, options, pilot):
     report = diagnose_and_refine(streams, np.asarray(plan["centers"]), np.asarray(plan["stiffness"]),
-                                config["beta"], cv.periods, options)
+                                config["beta"], cv.periods, options,
+                                overlap_metric=_plan_overlap_metric(plan))
     round_index = plan["next_round"]
     decision = {"round": round_index, "seed": _seed(config, 1, round_index),
                 "centers": plan["centers"], "pilot": pilot, **report}
@@ -424,37 +477,101 @@ def _record_round(plan, streams, config, system, output, cv, options, pilot):
     return plan
 
 
-def _annotate(result, plan, output, return_data, production_steps=None):
-    summary = result["summary"] if return_data else result
-    # Independent production can be shorter or mix worse than the accepted
-    # pilot. Expose its own ESS instead of letting target_met imply otherwise.
-    production_ess = np.asarray(summary["effective_samples_per_stream"])
-    replicas = len(production_ess) // len(plan["centers"])
-    window_ess = production_ess.reshape(len(plan["centers"]), replicas).sum(axis=1)
-    production_target = bool(np.all(window_ess >= plan["options"]["min_effective_samples"]))
+def _production_diagnostic(result, plan, periods):
+    """Check the frozen trajectories using the already computed MBAR fit.
+
+    FES fits one state per stream; pilots pool replicas at the same window.
+    Identical-bias rows have identical MBAR weight columns, so selecting one
+    row and summing destination-replica columns exactly recovers window-level
+    overlap without another solve. Frame weights and correlation factors keep
+    the original stream order for independent production coverage checks.
+    """
+    data, streams = result["data"], result["streams"]
+    options = plan["options"]
+    count = len(plan["centers"])
+    groups = [[i for i, stream in enumerate(streams) if stream["window"] == window]
+              for window in range(count)]
+    if any(not group for group in groups) or sum(map(len, groups)) != len(streams):
+        raise ValueError("production results must contain every frozen umbrella window")
+    stream_overlap = np.asarray(data["overlap"])
+    overlap = np.array([[stream_overlap[group[0], other].sum() for other in groups]
+                        for group in groups])
+    report, _, _, _ = _overlap_diagnostic(
+        overlap, options["target_overlap"], _plan_overlap_metric(plan))
+    # The full stream-level matrix is already available in fes.npz/fes.h5.
+    # Keep the summary compact rather than repeating two quadratic matrices.
+    report.pop("overlap")
+    report.pop("symmetric_overlap")
+    stream_ess = np.asarray(data["effective_samples_per_stream"])
+    window_ess = np.array([stream_ess[group].sum() for group in groups])
+    enough = bool(np.all(window_ess >= options["min_effective_samples"]))
+    coverage = None
+    if "coverage_bins" in options:
+        samples = np.concatenate([stream["samples"] for stream in streams])
+        frame_g = np.repeat(data["statistical_inefficiency"],
+                            [len(stream["samples"]) for stream in streams])
+        coverage, _, _, _ = _coverage_diagnostic(
+            samples, data["weights"], frame_g, periods, options)
+        coverage["scope"] = "frozen_production"
+    report.update(
+        scope="frozen_production",
+        effective_samples_per_window=window_ess.tolist(),
+        effective_samples_target_met=enough,
+        analysis_overlap_connected=bool(data["connected"]),
+        target_met=bool(data["connected"] and report["overlap_connected_at_target"]
+                        and enough and (coverage is None or coverage["target_met"])),
+    )
+    if coverage is not None:
+        report["coverage"] = coverage
+    return report
+
+
+def _annotate(result, plan, output, production_steps=None, *, periods=None):
+    summary = result["summary"]
+    production = _production_diagnostic(result, plan, periods)
+    # Independent production can mix worse than an accepted pilot. Recheck
+    # all configured targets, including domain coverage, on these samples.
     summary["adaptive_umbrella"] = {
         "status": "frozen", "target_met": True, "pilot_rounds": len(plan["rounds"]),
+        "target_scope": "discarded_adaptation_pilots", "pilot_target_met": True,
+        "overlap_metric": production["overlap_metric"],
         "frozen_windows": len(plan["centers"]), "pilot_samples_used_in_production": 0,
         "production_seed": plan["production_seed"], "plan": str(_plan_path(output)),
-        "production_effective_samples_per_window": window_ess.tolist(),
-        "production_effective_samples_target_met": production_target,
+        "production_target_met": production["target_met"],
+        "production_overlap_connected_at_target": production["overlap_connected_at_target"],
+        "production_overlap_components": production["overlap_components"],
+        "production_spanning_overlap": production["spanning_overlap"],
+        "production_analysis_overlap_connected": production["analysis_overlap_connected"],
+        "production_effective_samples_per_window": production["effective_samples_per_window"],
+        "production_effective_samples_target_met": production["effective_samples_target_met"],
         "final_pilot_steps": plan["rounds"][-1]["pilot"]["production_steps"],
         "production_steps_per_stream": production_steps,
-        "target_note": "Pilot overlap/ESS and optional coverage targets only; physical and production sampling convergence remain unverified.",
+        "target_note": "target_met is a compatibility alias for pilot_target_met; production_target_met independently checks frozen-production overlap/ESS and optional coverage. Neither certifies equilibration or physical convergence.",
     }
     if "coverage" in plan["rounds"][-1]:
         summary["adaptive_umbrella"]["coverage"] = plan["rounds"][-1]["coverage"]
+        summary["adaptive_umbrella"]["coverage_scope"] = "discarded_adaptation_pilots"
+        summary["adaptive_umbrella"]["pilot_coverage"] = plan["rounds"][-1]["coverage"]
+    if "coverage" in production:
+        summary["adaptive_umbrella"]["production_coverage"] = production["coverage"]
     summary["adaptive_umbrella"]["effective_sample_observables"] = plan["rounds"][-1].get(
         "effective_sample_observables", "Legacy saved pilot: CV only, or first circular harmonics")
     if "effective_sample_observables" not in plan["rounds"][-1]:
         summary["warnings"].append("This saved frozen plan used legacy coordinate-only pilot ESS; "
                                    "use a fresh output directory to evaluate amplitude-sensitive pilot criteria.")
     summary["warnings"].append("Adaptive pilots were discarded before fixed-umbrella production; pilot overlap/ESS is not a physical convergence certificate.")
-    if not production_target:
+    if production["overlap_metric"] == LEGACY_OVERLAP_METRIC:
+        summary["warnings"].append("This saved plan retains legacy MBAR transition overlap scores; a fresh output directory uses normalized MBAR cosine overlap, whose thresholds have a different numerical meaning.")
+    if not production["effective_samples_target_met"]:
         summary["warnings"].append("Frozen production has windows below adaptive_umbrella.min_effective_samples; increase sampling.production_steps and check independent replicas.")
+    if not production["overlap_connected_at_target"]:
+        summary["warnings"].append("Frozen production does not meet adaptive_umbrella.target_overlap; an accepted pilot does not establish production overlap.")
+    if "coverage" in production and not production["coverage"]["target_met"]:
+        summary["warnings"].append("Frozen production does not meet the declared adaptive umbrella coverage target; pilot coverage is reported separately and cannot establish production support.")
     if production_steps is not None and production_steps < plan["rounds"][-1]["pilot"]["production_steps"]:
         summary["warnings"].append("Production is shorter than the final accepted pilot; pilot success does not establish adequate production statistics.")
-    write_json(Path(output) / "summary.json", summary)
+    # The FES writer persists this annotated summary in all canonical files.
+    # Writing only summary.json here would leave the NPZ metadata stale.
     return result
 
 
@@ -500,8 +617,10 @@ def run_adaptive_fes(config, system, output, executor=None, return_data=False):
         plan = root_call(_record_round, plan, streams, config, system, str(output), cv, options, pilot)
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
-    result = run_fes(frozen, system, output, executor=executor, return_data=return_data)
-    return root_call(_annotate, result, plan, str(output), return_data, frozen["sampling"]["production_steps"])
+    postprocess = partial(_annotate, plan=plan, output=str(output), periods=cv.periods,
+                          production_steps=frozen["sampling"]["production_steps"])
+    return run_fes(frozen, system, output, executor=executor, return_data=return_data,
+                   _postprocess=postprocess)
 
 
 def reanalyze_adaptive_fes(config, system, output, return_data=False):
@@ -513,5 +632,7 @@ def reanalyze_adaptive_fes(config, system, output, return_data=False):
     plan = root_call(_open_plan, config, system, str(output), centers, stiffness, options, False)
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
-    result = reanalyze_fes(frozen, system, output, return_data=return_data)
-    return root_call(_annotate, result, plan, str(output), return_data, frozen["sampling"]["production_steps"])
+    postprocess = partial(_annotate, plan=plan, output=str(output), periods=cv.periods,
+                          production_steps=frozen["sampling"]["production_steps"])
+    return reanalyze_fes(frozen, system, output, return_data=return_data,
+                        _postprocess=postprocess)

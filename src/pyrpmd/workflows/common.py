@@ -15,6 +15,7 @@ import numpy as np
 
 from ..checkpoint import atomic_savez
 from ..cv import make_cvs
+from ..io import atomic_write_text
 from ..propagation import scientific_config
 from ..units import DIMS, unit_factor
 
@@ -38,13 +39,9 @@ def jsonable(value):
 
 
 def write_json(path, data):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_name(path.name + ".tmp")
-    temp.write_text(
-        json.dumps(jsonable(data), indent=2, allow_nan=False) + "\n", encoding="utf-8"
+    atomic_write_text(
+        path, json.dumps(jsonable(data), indent=2, allow_nan=False) + "\n"
     )
-    temp.replace(path)
 
 
 def _legacy_fingerprint(config, system, extras):
@@ -79,6 +76,11 @@ def _legacy_fingerprint(config, system, extras):
     convention = geometry_convention_identity(config, system)
     if convention is not None:
         value["cv_geometry_convention"] = convention
+    from ..potentials import energy_convention_identity
+
+    energy_convention = energy_convention_identity(config)
+    if energy_convention is not None:
+        value["potential_energy_convention"] = energy_convention
     return hashlib.sha256(
         json.dumps(
             jsonable(value), sort_keys=True, separators=(",", ":"), default=repr
@@ -157,7 +159,8 @@ def fingerprint_matches(saved, config, system, extras):
     """Accept current identities and the exact pre-unification FES identity.
 
     Only input aliases/namespace metadata are migrated. Sampling, CVs, bias,
-    masses, seed, integration and stream identity stay in the hash.
+    masses, seed, integration, potential energy convention and stream identity
+    stay in the hash.
     """
     saved = str(saved)
     if saved == _fingerprint(config, system, extras):
