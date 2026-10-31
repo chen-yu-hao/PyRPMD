@@ -168,3 +168,12 @@ from Monte Carlo confidence intervals; author sampling and interpolation errors 
 The initial audit is at t = 0, not a reproduction of the article's 50,000-trajectory energy-time curves.
 These are approximate state preparations: no strict quantum pure state, arbitrary j,
 product quantum-state assignment, or guarantee against long-flight vibrational energy redistribution.
+
+## Exact source revision
+
+The formal and sensitivity calculation source is archived at
+[`0860a079950e09e1e97c001acd23a436ce273ec1`](https://github.com/chen-yu-hao/PyRPMD/tree/0860a079950e09e1e97c001acd23a436ce273ec1).
+The collision driver SHA256 there is `30f38ed2118d59808ab15edf2ee80f7c54f725090a917700a95b138e547f19f2`.
+Subsequent hardening validates explicit beta overrides and guards the driver hash during a run;
+it does not alter the positive-beta settings or numerical path used for these results.
+The provenance record distinguishes archived and current source hashes.

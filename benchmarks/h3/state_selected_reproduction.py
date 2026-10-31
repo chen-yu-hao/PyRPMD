@@ -79,7 +79,11 @@ class Config:
 
     @property
     def beta(self):
-        return self.beta_override or paper_beta(self.total_energy_ev, self.v)
+        value = (paper_beta(self.total_energy_ev, self.v)
+                 if self.beta_override is None else self.beta_override)
+        if not np.isfinite(value) or value <= 0:
+            raise ValueError("Auxiliary beta must be finite and positive")
+        return float(value)
 
     @property
     def collision_energy(self):
@@ -271,6 +275,7 @@ def summarize(config, rows):
 
 
 def run_case(config, workers, output):
+    script_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     ledger = output / "trajectories.jsonl"
@@ -292,6 +297,8 @@ def run_case(config, workers, output):
                     stream.flush()
                     print(json.dumps({"case": config.label, "complete": len(rows),
                                       "total": config.samples, "seconds": round(time.perf_counter() - started, 2)}), flush=True)
+    if hashlib.sha256(Path(__file__).read_bytes()).hexdigest() != script_sha256:
+        raise RuntimeError("Driver source changed during this run; trajectory ledger retained without a final summary")
     report = summarize(config, rows)
     report["elapsed_seconds"] = time.perf_counter() - started
     report["workers"] = workers
@@ -302,7 +309,7 @@ def run_case(config, workers, output):
         "mass_amu": 1.00782503223, "bond_bohr": BOND,
         "python": platform.python_version(), "numpy": np.__version__,
         "seed_rule": "SeedSequence([seed,v,round(Etot_eV*1e6),method_code,P,trajectory_id]).spawn(2)",
-        "script_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "script_sha256": script_sha256,
         "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "pes": json.loads((ROOT / "benchmarks/h3/build/libbkmp2.build.json").read_text()),
         "unknown_rule": "Unresolved and failed attempts remain in denominator; identified bounds reported",

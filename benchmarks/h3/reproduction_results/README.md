@@ -45,3 +45,5 @@ Paper values are digitized/interpolated, not an original author table. Image-rea
 The raw per-trajectory ledgers are delivered in the companion results archive. They are not large per-step coordinate files; each trajectory can be regenerated from its configuration and RNG identity.
 Exact-source replay applies to formal and sensitivity runs. The six separate pilots recorded an older draft driver hash whose exact source was not retained; they are not pooled into any formal estimate.
 Third-party BKMP2 source/binaries and publisher PDF/images are not redistributed here. Use the pinned build script and the linked original publication.
+
+Exact formal/sensitivity source: [`0860a079`](https://github.com/chen-yu-hao/PyRPMD/tree/0860a079950e09e1e97c001acd23a436ce273ec1). Current driver hardening does not change this calculation matrix; both archived and current hashes are recorded.

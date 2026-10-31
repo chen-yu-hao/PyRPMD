@@ -87,5 +87,23 @@
   "trajectory_ledger_scope": "Per-trajectory launch/outcome/time/energy-drift records and deterministic seed identities; no every-step coordinate dump.",
   "publication_scope": "Finite-sample protocol comparison, with documented discrepancies. No claim of full published-curve replication.",
   "exact_source_replay_scope": "Formal and sensitivity collision runs; preliminary pilots used an older draft source that was not retained.",
-  "pilot_recorded_driver_sha256": "3f7787f8891e69e573990773e7f539cef0757d0224d6f8be20cd865f2d35cdba"
+  "pilot_recorded_driver_sha256": "3f7787f8891e69e573990773e7f539cef0757d0224d6f8be20cd865f2d35cdba",
+  "calculation_source_commit": "0860a079950e09e1e97c001acd23a436ce273ec1",
+  "calculation_source_url": "https://github.com/chen-yu-hao/PyRPMD/tree/0860a079950e09e1e97c001acd23a436ce273ec1",
+  "source_hash_scope": "source_sha256 records the archived calculation/analysis sources at calculation_source_commit. Per-case startup provenance remains authoritative for the actual run.",
+  "published_source_sha256": {
+    "benchmarks/h3/state_selected_reproduction.py": "97b1ed0e6611aec7159c579fe3aca84c390294b6ad0be2f622d80e1a7567ac10",
+    "benchmarks/h3/state_selected_sensitivity.py": "8bf2c9f64c3068133071d50eaf57d5502abcd3e431bd310f96450048de470aef",
+    "benchmarks/h3/run_reproduction_checks.py": "9a654bcdeda7732eb50e7409ddddaf6406b52dcfec1328a09a0a9f5910007281",
+    "benchmarks/h3/h2_reference.py": "3325f580fa63497a58508024399813c4cbd6fe777084a1969fe190b17bc76cf3",
+    "benchmarks/h3/plot_h2_reference.py": "57b706b7a88e12b6d5afbb7acc7dc7c2f2d8b950fe70125e480debb2b2190056",
+    "benchmarks/h3/audit_state_selected_initial.py": "d28d9ddbb416728d30bdf5d6011f24683afd2f812cb4db64a412698772729dc5",
+    "benchmarks/h3/analyze_state_selected_reproduction.py": "ed6a87779384fe360d12f44c4c1e4a60536d06043886cd1fbcd190571b03a489",
+    "benchmarks/h3/render_reproduction_report.py": "ac98442d97e3dc77b7d78df4ac4bd26f2702b8825f67466bdba606cd2cbd000b"
+  },
+  "post_calculation_changes": [
+    "Reject nonpositive or nonfinite explicit beta overrides instead of treating zero as an omitted override.",
+    "Capture and verify the driver source hash across each future run.",
+    "Remove an extra blank line at the end of the audit script; numerical code unchanged."
+  ]
 }
