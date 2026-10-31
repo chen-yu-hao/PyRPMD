@@ -694,6 +694,12 @@ def _write_fes(output, data, streams, cv, config):
         warnings.append(
             "Some supported bins have fewer than two valid bootstrap draws; their errors are unavailable."
         )
+    if (data.get("bootstrap_requested", 0) and data["connected"]
+            and np.any((~data["mask"]) & (data["bootstrap_valid_per_bin"] < data["bootstrap_requested"]))):
+        warnings.append(
+            "Some supported bins lack complete bootstrap support; their main standard errors are unavailable. "
+            "supported_draw_standard_error describes surviving draws only and is a conditional diagnostic."
+        )
     summary = {
         "task": "fes",
         "status": "sampled" if data["connected"] else "disconnected_overlap",
@@ -715,6 +721,7 @@ def _write_fes(output, data, streams, cv, config):
         "bootstrap_requested": data.get("bootstrap_requested", 0),
         "bootstrap_attempted": data.get("bootstrap_attempted", 0),
         "bootstrap_reference_bin": data.get("bootstrap_reference_bin"),
+        "standard_error_scope": "complete_bootstrap_support_per_bin_fixed_reference",
         "bootstrap_diagnostics": data.get("bootstrap_diagnostics", []),
         "bootstrap_block_plan": data.get("bootstrap_block_plan", {}),
         "warnings": warnings,
@@ -728,7 +735,7 @@ def _write_fes(output, data, streams, cv, config):
     return summary
 
 
-def _analyze_streams(streams, config, system, output, return_data):
+def _analyze_streams(streams, config, system, output, return_data, _postprocess=None):
     # External executors return a one-shot map iterator. Analysis and exports
     # traverse these streams repeatedly, so retain every window once.
     streams = list(streams)
@@ -782,12 +789,15 @@ def _analyze_streams(streams, config, system, output, return_data):
     )
     data["measure"] = options.get("measure", "cv_density")
     summary = _write_fes(output, data, streams, cv, config)
-    if return_data:
-        return {"summary": summary, "data": data, "streams": streams}
-    return summary
+    result = {"summary": summary, "data": data, "streams": streams}
+    if _postprocess is not None:
+        # Adaptive production diagnostics reuse this fit on root, before a
+        # summary-only request discards arrays or broadcasts its result.
+        result = _postprocess(result)
+    return result if return_data else result["summary"]
 
 
-def run_fes(config, system, output, executor=None, return_data=False):
+def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None):
     fes_sampler(config)
     if config.get("replica_exchange"):
         from .replica_exchange import exchange_options, run_replica_exchange_fes
@@ -828,11 +838,11 @@ def run_fes(config, system, output, executor=None, return_data=False):
         else run_tasks(_sample_window, tasks, config.get("parallel", {}))
     )
     return root_call(
-        _analyze_streams, streams, config, system, str(output), return_data
+        _analyze_streams, streams, config, system, str(output), return_data, _postprocess
     )
 
 
-def reanalyze_fes(config, system, output, return_data=False):
+def reanalyze_fes(config, system, output, return_data=False, *, _postprocess=None):
     """Reconstruct with new bins/bootstrap settings without propagating PESs.
 
     Completed window checkpoint arrays are the authoritative sampled data;
@@ -886,6 +896,6 @@ def reanalyze_fes(config, system, output, return_data=False):
                             "checkpoint": str(checkpoint),
                         }
                     )
-        return _analyze_streams(streams, config, system, str(output), return_data)
+        return _analyze_streams(streams, config, system, str(output), return_data, _postprocess)
 
     return root_call(analyze)

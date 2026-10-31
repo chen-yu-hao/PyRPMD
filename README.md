@@ -306,6 +306,10 @@ classification and connectivity analysis.
 Before a production study, read [Converging a result](docs/manual/science.md#converging-a-result),
 which takes a calculation from pilot to production.
 
+The [adaptive umbrella reliability audit](docs/validation/umbrella-reliability-2026-10-31/README.md)
+records reproducible overlap and uncertainty fixes, actual default budgets, and the remaining
+system-specific convergence checks. Passing adaptive pilot criteria is not a precision guarantee.
+
 ## Native propagation
 
 `Dynamics.propagate()` commits whole blocks atomically; `Dynamics.propagate_block()` commits step

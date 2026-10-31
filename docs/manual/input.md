@@ -82,7 +82,9 @@ two launches from a parent chain, in FES it is the time between saved samples.
 
 A `pilot` input may omit the fields below; PyRPMD fills in these defaults and records notes in
 `input_warnings`. `preset="production"` requires explicit `temperature`, `beads`, `[dynamics]`
-and `[sampling]`.
+and `[sampling]`. It checks input completeness, not scientific convergence, and does not select
+a higher-accuracy parameter set. Omitted entries inside those tables still receive defaults.
+Specify the physical model and sampling budgets explicitly for a production study.
 
 | Field | Default | Note |
 | --- | --- | --- |
@@ -90,24 +92,62 @@ and `[sampling]`.
 | `beads` | 32 | `"auto"` also gives 32, with a warning; production rejects `auto` |
 | `seed` | 0 | Independent streams derive from stable task IDs |
 | `system.charge` / `multiplicity` | 0 / 1 | Must match the selected PES |
-| `dynamics.timestep` | `0.1 fs` | |
+| `dynamics.timestep` | `0.1 fs` | Check the reported observable again at half the step |
 | `dynamics.integrator` | `cayley-bcb` | |
 | `dynamics.native` / `loop_backend` / `block_steps` | `true` / `auto` / 256 | See [Execution and parallelism](execution.md) |
 | `sampling.thermostat` | `andersen` | `pile-l` for `pimd` / `diffusion` (Andersen with velocity-Verlet) |
-| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | Multiples of the step |
+| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | Enabled adaptive umbrellas and metadynamics default to `1000 fs` production; explicit lengths override this |
 | `sampling.andersen_interval` | 10 steps | Steps between Andersen momentum resamplings |
 | `sampling.replicas` | 1 | 4 for `diffusion` |
 | `output.directory` | `runs/<task>` | Relative to the input file |
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | 40 for FES; 100 for the rate PMF | |
-| `analysis.bootstrap` | 20 | 0 for metadynamics and OPES; 1 is rejected |
+| `analysis.bootstrap` | 20 | A short analysis budget, not a precision target; 0 for metadynamics and OPES; 1 is rejected |
 | `analysis.min_count` | 1 | Bins with fewer samples are masked |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | `drpmd` only |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | With `auto`, no thermal rate is reported |
 | `outcomes.exit_distance` / `persistence` | R0 / `1 fs` | `drpmd` only |
 
-`pyrpmd validate INPUT --write-resolved resolved.json` writes the full configuration with every
-default resolved.
+`pyrpmd validate INPUT --write-resolved resolved.json` writes the resolved front-end input.
+Some workflow settings, including automatically prepared rate windows and adaptive plans, are
+resolved at runtime and recorded in their sampling outputs.
+
+The gas-phase `rate` workflow supplies these additional starting values when omitted:
+
+| Field | Default | Meaning |
+| --- | --- | --- |
+| `rate.pmf_method` | `ui` | Gaussian umbrella integration; `mbar` is an explicit alternative |
+| Initial umbrella centers | 23 evenly spaced points from -0.05 to 1.05 | Step 0.05 in the dimensionless reaction coordinate |
+| Umbrella stiffness | `50 / beta` | Physical harmonic stiffness, i.e. 50 kBT for the dimensionless coordinate |
+| `rate.pmf_points` | 401 | UI integration grid, not a number of sampled windows |
+| `recrossing.parent_replicas` / `parent_samples` | 2 / 4 | `sampling.parents`, if supplied, replaces the default parent-sample count |
+| `recrossing.equilibration` / `parent_interval` / `child_time` | `20 fs` / `5 fs` / `50 fs` | Must be converged for the reaction |
+| `recrossing.child_pairs` / `bootstrap` | 2 / 100 | Per parent / number of resampling draws |
+
+These are not the RPMDrate manual's production examples. The initial window spacing and stiffness
+need system-specific checks, especially with the default Gaussian UI model. Adaptive placement
+can add centers but keeps the supplied stiffness fixed.
+
+For enabled `[adaptive_umbrella]`, the following are **pilot selection criteria and resource
+limits**, not guarantees about the production PMF or rate:
+
+| Field | Default | Meaning |
+| --- | --- | --- |
+| `pilot_steps` | 1000 | Per window and replica; 100 fs at the default time step |
+| `pilot_equilibration_steps` | `sampling.equilibration_steps` | 1000 steps / 100 fs with otherwise default input |
+| `max_pilot_steps` | `16 * pilot_steps` | Per window and replica; 1.6 ps at the default time step |
+| `max_rounds` | 8 | Maximum pilot rounds |
+| `max_windows` | 128 | Insertion cap; longer pilots may still satisfy ESS/coverage at this count |
+| `target_overlap` | 0.03 | Normalized overlap score in new schema-3 plans; legacy plans retain their metric |
+| `min_effective_samples` | 20 | Per-window correlation-corrected ESS, summed over independent replicas |
+| `min_spacing` | `1e-6` | Distance in the dimensionless `sqrt(beta * delta.T @ K @ delta)` metric |
+| `coverage_bins` / `coverage_ranges` | Omitted | Spatial coverage is not checked unless both are supplied |
+| `min_bin_effective_samples` / `target_coverage` | 5 / 0.95 | Apply only to an explicitly enabled coverage grid |
+
+At the default 1 fs save interval, the first 100 fs pilot stores only about 100 frames per
+window/replica, before accounting for correlation. Passing ESS 20 is a screening result. Use
+independent production diagnostics and the [convergence procedure](science.md#assessing-adaptive-umbrella-results)
+to choose lengths, replicas, bead number and uncertainty precision for the actual system.
 
 ### Sections by task
 

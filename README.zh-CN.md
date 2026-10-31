@@ -254,6 +254,8 @@ python benchmarks/h3/solver_check.py --run runs/h3-pmf/k400-a/run \
 
 开展正式研究前，请阅读[使结果收敛](docs/zh/manual/science.md#使结果收敛)，其中说明如何把计算从 pilot 推进到正式生产。
 
+[自适应伞抽样可靠性审查](docs/validation/umbrella-reliability-2026-10-31/README.md)记录了可复现的重叠与误差报告缺陷、对应修复、实际默认预算，以及仍须针对具体体系完成的收敛检查。pilot 达标不代表精度已经得到保证。
+
 ## 原生传播
 
 `Dynamics.propagate()` 以整块为单位原子提交；`Dynamics.propagate_block()` 逐步提交，提供观测 mask、完整 q/p 快照和原生质心

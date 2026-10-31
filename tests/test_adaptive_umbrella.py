@@ -165,10 +165,17 @@ def test_pilot_cap_stops_unproductive_ess_rounds(tmp_path):
 
 def test_production_ess_is_not_inferred_from_pilot_success(tmp_path):
     summary = {"effective_samples_per_stream": [1., 2., 30., 40.], "warnings": []}
-    plan = {"centers": [[0.], [1.]], "options": {"min_effective_samples": 20.},
+    plan = {"centers": [[0.], [1.]],
+            "options": {"min_effective_samples": 20., "target_overlap": .03},
             "rounds": [{"pilot": {"production_steps": 1000}}], "production_seed": 123}
-    adaptive._annotate(summary, plan, tmp_path, False)
+    result = {"summary": summary,
+              "streams": [{"window": i // 2, "samples": np.zeros((40, 1))} for i in range(4)],
+              "data": {"overlap": np.full((4, 4), .25), "connected": True,
+                       "effective_samples_per_stream": [1., 2., 30., 40.]}}
+    adaptive._annotate(result, plan, tmp_path)
     assert summary["adaptive_umbrella"]["target_met"]
+    assert summary["adaptive_umbrella"]["pilot_target_met"]
+    assert not summary["adaptive_umbrella"]["production_target_met"]
     assert not summary["adaptive_umbrella"]["production_effective_samples_target_met"]
     assert summary["adaptive_umbrella"]["production_effective_samples_per_window"] == [3., 70.]
     assert any("Frozen production" in warning for warning in summary["warnings"])
@@ -434,15 +441,207 @@ def test_coverage_shortfall_extends_pilots_and_stops_at_sampling_cap(tmp_path):
     assert not (tmp_path / "checkpoints").exists()
 
 
-def test_legacy_frozen_plan_preserves_samples_and_labels_its_original_ess_rule(tmp_path):
+@pytest.mark.parametrize("schema", [1, 2])
+def test_legacy_frozen_plan_preserves_samples_and_labels_its_original_ess_rule(tmp_path, schema):
     cfg = _config(2)
     original = run_fes(cfg, _system(), tmp_path, return_data=True)
     plan = json.loads((tmp_path / "adaptive-plan.json").read_text())
+    plan["schema_version"] = schema
+    plan.pop("overlap_metric")
     for report in plan["rounds"]:
         report.pop("effective_sample_observables")
+        report.pop("overlap_metric")
     adaptive._save_plan(tmp_path, plan)  # emulate a checksum-valid pre-enhancement plan
     resumed = reanalyze_fes(cfg, _system(), tmp_path, return_data=True)
     np.testing.assert_array_equal(resumed["data"]["free_energy"], original["data"]["free_energy"])
     summary = resumed["summary"]
+    assert summary["adaptive_umbrella"]["overlap_metric"] == adaptive.LEGACY_OVERLAP_METRIC
     assert summary["adaptive_umbrella"]["effective_sample_observables"].startswith("Legacy saved pilot")
     assert any("legacy coordinate-only pilot ESS" in warning for warning in summary["warnings"])
+
+
+def test_normalized_overlap_does_not_refine_64_almost_identical_windows():
+    # Transition probabilities are diluted to 1/K even when all K states have
+    # almost exactly the same support. Inserting more windows makes that old
+    # diagnostic worse, eventually exhausting max_windows on an ideal case.
+    rng = np.random.default_rng(24)
+    centers = np.linspace(-1e-4, 1e-4, 64)[:, None]
+    streams = [{"window": i, "samples": center + rng.normal(size=(400, 1))}
+               for i, center in enumerate(centers)]
+    options = adaptive_options({"adaptive_umbrella": {"enabled": True}})
+    current = diagnose_and_refine(streams, centers, np.eye(1), 1., [None], options)
+    legacy = diagnose_and_refine(streams, centers, np.eye(1), 1., [None], options,
+                                 overlap_metric=adaptive.LEGACY_OVERLAP_METRIC)
+    assert current["overlap_metric"] == adaptive.NORMALIZED_OVERLAP_METRIC
+    assert current["target_met"] and current["inserted"] == []
+    assert current["spanning_overlap"] > .999
+    assert legacy["effective_samples_target_met"]
+    assert not legacy["overlap_connected_at_target"]
+    assert legacy["spanning_overlap"] == pytest.approx(1 / 64, rel=1e-4)
+    assert len(legacy["inserted"]) == 63
+
+
+def test_normalized_overlap_distinguishes_identical_and_disjoint_support():
+    # Exact identical states with unequal sample counts must still score one.
+    counts = np.array([1., 99., 500.])
+    identical = np.broadcast_to(counts / counts.sum(), (3, 3))
+    np.testing.assert_allclose(
+        adaptive._overlap_scores(identical, adaptive.NORMALIZED_OVERLAP_METRIC), 1.)
+    # A disconnected empirical overlap matrix must stay disconnected.
+    np.testing.assert_array_equal(
+        adaptive._overlap_scores(np.eye(3), adaptive.NORMALIZED_OVERLAP_METRIC), np.eye(3))
+    rng = np.random.default_rng(15)
+    centers = np.array([[-3.], [3.]])
+    streams = [{"window": i, "samples": center + rng.normal(0, .01, (400, 1))}
+               for i, center in enumerate(centers)]
+    report = diagnose_and_refine(streams, centers, np.eye(1) * 100, 1., [None],
+                                 adaptive_options({"adaptive_umbrella": {"enabled": True}}))
+    assert not report["target_met"]
+    assert report["spanning_overlap"] < 1e-8
+    assert report["inserted"][0]["center"] == [0.]
+
+
+@pytest.mark.parametrize("schema", [1, 2, 3])
+def test_saved_plan_schema_keeps_its_overlap_decisions(tmp_path, schema):
+    cfg = _config()
+    cfg["umbrella"].update(centers=[[-.1], [.1]], stiffness=1.)
+    cfg["adaptive_umbrella"].update(target_overlap=.75, max_rounds=1,
+                                    min_effective_samples=20.)
+    options = adaptive_options(cfg)
+    cv, _, centers, stiffness = adaptive.resolve_umbrellas(cfg, _system())
+    plan = adaptive._open_plan(cfg, _system(), tmp_path, centers, stiffness, options)
+    assert plan["schema_version"] == 3
+    plan["schema_version"] = schema
+    if schema < 3:
+        plan.pop("overlap_metric")
+    if schema == 1:
+        plan.pop("next_pilot_steps")
+    adaptive._save_plan(tmp_path, plan)
+    plan = adaptive._open_plan(cfg, _system(), tmp_path, centers, stiffness, options)
+    rng = np.random.default_rng(123)
+    streams = [{"window": i, "samples": center + rng.normal(size=(400, 1))}
+               for i, center in enumerate(centers)]
+    adaptive._record_round(plan, streams, cfg, _system(), str(tmp_path), cv, options,
+                           {"equilibration_steps": 30, "production_steps": 400})
+    decision = plan["rounds"][-1]
+    if schema < 3:
+        assert decision["overlap_metric"] == adaptive.LEGACY_OVERLAP_METRIC
+        assert plan["status"] == "incomplete"
+        assert not decision["target_met"]
+    else:
+        assert decision["overlap_metric"] == adaptive.NORMALIZED_OVERLAP_METRIC
+        assert plan["status"] == "frozen"
+        assert decision["target_met"]
+
+
+def _synthetic_production(centers, *, scale=.1, stiffness=1., replicas=2):
+    from pyrpmd.analysis.fes import reconstruct_fes
+    rng = np.random.default_rng(73)
+    streams = []
+    # Unequal lengths and interleaved windows exercise grouping by identity,
+    # not an assumption that every window has equal, contiguous replicas.
+    for replica in range(replicas):
+        for window, center in enumerate(centers):
+            streams.append({"window": window, "replica": replica,
+                            "samples": np.asarray(center) + rng.normal(0, scale, (200 + 20 * replica, 1)),
+                            "center": center, "stiffness": [[stiffness]]})
+    data = reconstruct_fes([s["samples"] for s in streams],
+                           [s["center"] for s in streams],
+                           [s["stiffness"] for s in streams], 1., bootstrap=0)
+    return {"summary": {"effective_samples_per_stream": data["effective_samples_per_stream"],
+                        "converged": False, "warnings": []},
+            "data": data, "streams": streams}
+
+
+def _diagnostic_plan(centers, options):
+    return {"schema_version": 3, "overlap_metric": adaptive.NORMALIZED_OVERLAP_METRIC,
+            "centers": centers, "options": options, "production_seed": 123,
+            "rounds": [{"pilot": {"production_steps": 100},
+                        "effective_sample_observables": adaptive.CV_CORRELATION_OBSERVABLES}]}
+
+
+def test_production_coverage_is_recomputed_without_another_mbar_solve(tmp_path, monkeypatch):
+    centers = [[-.1], [.1]]
+    options = adaptive_options({"adaptive_umbrella": {
+        "enabled": True, "coverage_bins": [4], "coverage_ranges": [[-2., 2.]],
+        "target_coverage": 1., "min_bin_effective_samples": 5.}})
+    result = _synthetic_production(centers)
+    plan = _diagnostic_plan(centers, options)
+    plan["rounds"][-1]["coverage"] = {"fraction": 1., "target_met": True}
+    def no_new_solver(*args, **kwargs):
+        raise AssertionError("production diagnostics must reuse the existing MBAR fit")
+    monkeypatch.setattr(adaptive, "solve_mbar", no_new_solver)
+    adaptive._annotate(result, plan, tmp_path, periods=[None])
+    report = result["summary"]["adaptive_umbrella"]
+    assert report["target_met"] and report["pilot_target_met"]
+    assert report["pilot_coverage"]["target_met"]
+    assert report["coverage_scope"] == "discarded_adaptation_pilots"
+    assert report["production_overlap_connected_at_target"]
+    assert report["production_effective_samples_target_met"]
+    assert report["production_coverage"]["scope"] == "frozen_production"
+    assert report["production_coverage"]["fraction"] == .5
+    assert not report["production_coverage"]["target_met"]
+    assert not report["production_target_met"]
+    assert result["summary"]["converged"] is False
+    assert any("pilot coverage is reported separately" in text for text in result["summary"]["warnings"])
+
+
+def test_production_overlap_is_not_inferred_from_accepted_pilot(tmp_path):
+    centers = [[-3.], [3.]]
+    options = adaptive_options({"adaptive_umbrella": {"enabled": True}})
+    result = _synthetic_production(centers, scale=.01, stiffness=100.)
+    adaptive._annotate(result, _diagnostic_plan(centers, options), tmp_path, periods=[None])
+    report = result["summary"]["adaptive_umbrella"]
+    assert report["pilot_target_met"]
+    assert report["production_effective_samples_target_met"]
+    assert not report["production_overlap_connected_at_target"]
+    assert not report["production_analysis_overlap_connected"]
+    assert not report["production_target_met"]
+    assert report["production_spanning_overlap"] < 1e-8
+
+
+@pytest.mark.parametrize("metric", [adaptive.LEGACY_OVERLAP_METRIC, adaptive.NORMALIZED_OVERLAP_METRIC])
+def test_production_replica_grouping_matches_independent_pooled_fit(metric):
+    centers = [[-.2], [.2]]
+    options = adaptive_options({"adaptive_umbrella": {"enabled": True}})
+    result = _synthetic_production(centers, scale=1.)
+    plan = _diagnostic_plan(centers, options)
+    if metric == adaptive.LEGACY_OVERLAP_METRIC:
+        plan["schema_version"] = 2
+    production = adaptive._production_diagnostic(result, plan, [None])
+    independent = diagnose_and_refine(result["streams"], centers, np.eye(1), 1., [None], options,
+                                      overlap_metric=metric)
+    assert production["overlap_metric"] == metric
+    assert production["spanning_overlap"] == pytest.approx(independent["spanning_overlap"])
+    np.testing.assert_allclose(production["effective_samples_per_window"],
+                               independent["effective_samples_per_window"])
+    assert production["target_met"] == independent["target_met"]
+
+
+def test_summary_only_diagnostics_are_computed_before_root_broadcast(tmp_path, monkeypatch):
+    import pyrpmd.parallel.execution as execution
+    cfg = _config(2)
+    cfg["adaptive_umbrella"].update(coverage_bins=[2, 2], coverage_ranges=[[-.6, .6]] * 2,
+                                    min_bin_effective_samples=.1, target_coverage=1.)
+    original_broadcast = execution.broadcast
+    summaries = []
+    def inspect_payload(payload):
+        if isinstance(payload, tuple) and len(payload) == 2 and isinstance(payload[0], dict):
+            value = payload[0]
+            assert not {"summary", "data", "streams"}.issubset(value)
+            if value.get("task") == "fes":
+                assert "production_target_met" in value["adaptive_umbrella"]
+                summaries.append(copy.deepcopy(value))
+        return original_broadcast(payload)
+    with monkeypatch.context() as patch:
+        patch.setattr(execution, "broadcast", inspect_payload)
+        sampled = run_fes(cfg, _system(), tmp_path)
+        reanalyzed = reanalyze_fes(cfg, _system(), tmp_path)
+    assert len(summaries) == 2
+    assert sampled["adaptive_umbrella"] == reanalyzed["adaptive_umbrella"]
+    assert "data" not in sampled and isinstance(sampled["streams"], int)
+    full = reanalyze_fes(cfg, _system(), tmp_path, return_data=True)
+    assert {"summary", "data", "streams"}.issubset(full)
+    assert full["summary"]["adaptive_umbrella"] == sampled["adaptive_umbrella"]
+    saved = json.loads((tmp_path / "summary.json").read_text())
+    assert saved["adaptive_umbrella"] == sampled["adaptive_umbrella"]

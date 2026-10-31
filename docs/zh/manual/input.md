@@ -78,7 +78,8 @@ FES 中是两次保存样本之间的时间。
 ### 缺省值
 
 `pilot` 输入可以省略下表字段，PyRPMD 填入缺省值并在 `input_warnings` 中记录提示。`preset="production"`
-要求显式给出 `temperature`、`beads`、`[dynamics]` 和 `[sampling]`。
+要求显式给出 `temperature`、`beads`、`[dynamics]` 和 `[sampling]`。它检查输入完整性，不检验科学收敛，
+也不会自动选择精度更高的一套参数。这些表中省略的子项仍使用缺省值。正式研究应显式给出物理模型和采样预算。
 
 | 字段 | 缺省值 | 说明 |
 | --- | --- | --- |
@@ -86,23 +87,58 @@ FES 中是两次保存样本之间的时间。
 | `beads` | 32 | `"auto"` 也取 32 并给出警告；production 拒绝 `auto` |
 | `seed` | 0 | 独立随机流由稳定任务 ID 派生 |
 | `system.charge` / `multiplicity` | 0 / 1 | 须与所选 PES 一致 |
-| `dynamics.timestep` | `0.1 fs` | |
+| `dynamics.timestep` | `0.1 fs` | 将步长减半后重新比较要报告的物理量 |
 | `dynamics.integrator` | `cayley-bcb` | |
 | `dynamics.native` / `loop_backend` / `block_steps` | `true` / `auto` / 256 | 见[执行与并行](execution.md) |
 | `sampling.thermostat` | `andersen` | `pimd` / `diffusion` 为 `pile-l`（velocity-Verlet 时为 Andersen） |
-| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | 均为步长整数倍 |
+| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | 启用自适应伞或 metadynamics 时，生产段缺省为 `1000 fs`；显式长度优先 |
 | `sampling.andersen_interval` | 10 步 | 两次 Andersen 动量重抽之间的步数 |
 | `sampling.replicas` | 1 | `diffusion` 为 4 |
 | `output.directory` | `runs/<task>` | 相对于输入文件 |
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | FES 40；速率 PMF 100 | |
-| `analysis.bootstrap` | 20 | metadynamics 和 OPES 为 0；不接受 1 |
+| `analysis.bootstrap` | 20 | 仅为较短的分析预算，不是精度目标；metadynamics 和 OPES 为 0；不接受 1 |
 | `analysis.min_count` | 1 | 样本更少的 bin 被 mask |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | 仅 `drpmd` |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | `auto` 时不报告热速率 |
 | `outcomes.exit_distance` / `persistence` | R0 / `1 fs` | 仅 `drpmd` |
 
-`pyrpmd validate INPUT --write-resolved resolved.json` 写出所有缺省值都已解析的完整配置。
+`pyrpmd validate INPUT --write-resolved resolved.json` 写出前端解析后的输入。部分工作流设置，例如自动生成的
+速率窗口和自适应计划，在运行阶段解析并记录到相应采样输出中。
+
+气相 `rate` 工作流还会为省略的参数补充下列起始值：
+
+| 字段 | 缺省值 | 含义 |
+| --- | --- | --- |
+| `rate.pmf_method` | `ui` | 高斯 umbrella integration；可显式选择 `mbar` |
+| 初始伞中心 | 从 -0.05 到 1.05 的 23 个等距点 | 无量纲反应坐标步长 0.05 |
+| 伞刚度 | `50 / beta` | 无量纲反应坐标的物理谐和刚度，即 50 kBT |
+| `rate.pmf_points` | 401 | UI 积分网格数，不是实际采样窗口数 |
+| `recrossing.parent_replicas` / `parent_samples` | 2 / 4 | 若提供 `sampling.parents`，它替代默认母构型数 |
+| `recrossing.equilibration` / `parent_interval` / `child_time` | `20 fs` / `5 fs` / `50 fs` | 均需针对实际反应做收敛检查 |
+| `recrossing.child_pairs` / `bootstrap` | 2 / 100 | 每个母构型的子轨迹对数 / 重采样次数 |
+
+这些值不等同于 RPMDrate 手册的生产示例。初始窗距和刚度需要针对具体体系检查，尤其要验证默认 UI 的高斯近似。
+自适应选窗可以增加中心，但保持所给定的刚度不变。
+
+启用 `[adaptive_umbrella]` 后，下列缺省值是 **pilot 选窗判据与资源上限**，不保证生产 PMF 或速率已收敛：
+
+| 字段 | 缺省值 | 含义 |
+| --- | --- | --- |
+| `pilot_steps` | 1000 | 每个窗口、每个副本的长度；默认步长下为 100 fs |
+| `pilot_equilibration_steps` | `sampling.equilibration_steps` | 其他设置也取默认时为 1000 步 / 100 fs |
+| `max_pilot_steps` | `16 * pilot_steps` | 每个窗口、每个副本的上限；默认步长下为 1.6 ps |
+| `max_rounds` | 8 | Pilot 轮数上限 |
+| `max_windows` | 128 | 插窗上限；达到该窗数后仍可通过延长 pilot 满足 ESS/覆盖目标 |
+| `target_overlap` | 0.03 | 新 schema-3 计划采用归一化重叠分数；旧计划沿用原指标 |
+| `min_effective_samples` | 20 | 每窗经相关性修正的 ESS，独立副本之间求和 |
+| `min_spacing` | `1e-6` | 无量纲度量 `sqrt(beta * delta.T @ K @ delta)` 下的距离 |
+| `coverage_bins` / `coverage_ranges` | 省略 | 只有同时提供两项才检查空间覆盖 |
+| `min_bin_effective_samples` / `target_coverage` | 5 / 0.95 | 仅在显式启用覆盖网格后生效 |
+
+默认每 1 fs 保存一次，因此首轮 100 fs pilot 每窗、每副本仅约 100 帧，且这些帧还存在时间相关性。
+通过 ESS 20 只是筛选结果。应依据独立生产诊断和[收敛流程](science.md#评估自适应伞抽样结果)，
+为实际体系选择长度、副本数、珠子数与不确定度精度。
 
 ### 各任务使用的 section
 
