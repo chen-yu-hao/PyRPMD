@@ -249,6 +249,13 @@ dividing surface includes zero, and the joint relative standard error of the rat
 ([record](docs/validation/h3-pmf-refinement-2026-10-29/README.md),
 [method](docs/mbar-rate-pmf.md), [estimator audit](docs/h3-pmf-estimator-audit.md)).
 
+**State-selected scattering.** The [32-bead NE-RPMD / QCT reproduction](benchmarks/h3/STATE_SELECTED_REPRODUCTION.md)
+compares H + H₂ cross sections with the literature. The subsequent
+[initial-state preparation study](benchmarks/h3/STATE_PREPARATION_STUDY.md) separates centroid
+conditioning, full-PES action QCT and experimental smooth preparation. Its
+[paired results](benchmarks/h3/preparation_results/README.md) retain unresolved outcomes and the
+remaining low-energy discrepancy, alongside isolated-diatom stability and energy diagnostics.
+
 **PCET.** On the harmonic model, PyRPMD matches a pinned pyPCET commit to within 0.062% across 12
 forward and reverse rates ([record](docs/validation/pcet-model-2026-10-30/README.md)).
 

@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from pyrpmd.dynamics import Dynamics, State
-from pyrpmd.potentials import HarmonicPotential
+from pyrpmd.potentials import FreePotential, HarmonicPotential
 from pyrpmd.workflows import drpmd
 
 
@@ -99,3 +99,40 @@ def test_rejected_classifier_step_does_not_inflate_accepted_step_count(tmp_path)
     assert actual["status"] == "failed"
     assert actual["steps"] == 7
     assert actual["propagation"] == {"native_steps": 0, "python_steps": 7}
+
+
+@pytest.mark.parametrize("clock_error", [0.0, 0.2, -400_000.0])
+def test_long_checkpoint_accepts_accumulation_roundoff_but_rejects_bad_clock(tmp_path, clock_error):
+    # This is the actual repeated-addition clock of a million zero-force steps.
+    # A stationary free particle has exactly zero q, p and energy throughout.
+    steps, dt = 1_000_000, 0.2
+    accumulated = float(np.cumsum(np.full(steps, dt))[-1])
+    assert abs(accumulated - steps * dt) > 1e-11 * steps * dt
+    q = np.zeros((1, 1, 3))
+    directory = tmp_path / "trajectories"
+    directory.mkdir()
+    drpmd._atomic_npz(directory / "trajectory-00000000.checkpoint.npz", {
+        "format": "PyRPMD.drpmd.trajectory-checkpoint.v1", "physics_hash": "long-clock",
+        "trajectory_id": 0, "parent_id": 0, "step": steps, "done": steps,
+        "time": accumulated + clock_error, "initial": 0.0, "final": 0.0, "drift": 0.0,
+        "candidate": None, "candidate_since": None, "status": "unresolved",
+        "channel": None, "reason": "maximum_propagation_time", "launch": {},
+        "propagation": {"native_steps": 0, "python_steps": steps}, "diagnostics": {},
+    }, q=q, p=q, trace_steps=np.array([0, steps], dtype=np.int64),
+        trace_centroid=np.zeros((2, 1, 3)), trace_energy=np.zeros(2))
+    config = {"beads": 1, "dt_au": dt, "collision": {"max_steps": steps + 1},
+              "outcomes": {"check_interval": 1},
+              "output": {"trajectory_stride": steps, "checkpoint_steps": steps}}
+    dynamics = Dynamics(FreePotential(), [1.0], 1.0, 1, dt, native=False)
+    if clock_error != 0.0:
+        with pytest.raises(ValueError, match="inconsistent clocks"):
+            drpmd._trajectory(dynamics, State(q, q), None, config, tmp_path,
+                              0, 0, {}, "long-clock", True, extend_unresolved=True)
+    else:
+        result = drpmd._trajectory(dynamics, State(q, q), None, config, tmp_path,
+                                   0, 0, {}, "long-clock", True, extend_unresolved=True)
+        assert result["steps"] == steps + 1
+        assert result["propagation"] == {"native_steps": 0, "python_steps": steps + 1}
+        meta, arrays = drpmd._load_npz(directory / "trajectory-00000000.checkpoint.npz")
+        assert meta["time"] == accumulated + dt
+        np.testing.assert_array_equal(arrays["q"], q)
