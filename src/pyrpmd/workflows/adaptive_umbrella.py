@@ -2,8 +2,8 @@
 
 The algorithm refines the supplied 1D/2D domain; it does not discover arbitrary
 unspecified basins. Missing overlap is repaired by midpoint insertion along
-the shortest gaps between overlap components. Pilot length doubles each round
-to address insufficient effective sample size. The initial stiffness is kept
+the shortest gaps between overlap components. Pilot length grows only when
+effective sample size is insufficient, subject to an explicit cap. Stiffness is kept
 fixed. Every decision, seed and diagnostic is persisted before the next stage.
 
 Only frozen-production streams enter the final MBAR/UI analysis. Adaptive
@@ -26,7 +26,7 @@ from .fes import (resolve_umbrellas, _fingerprint, _sample_window,
 
 
 ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
-                   "max_windows", "target_overlap", "min_effective_samples", "min_spacing"}
+                   "max_windows", "max_pilot_steps", "target_overlap", "min_effective_samples", "min_spacing"}
 
 
 def adaptive_options(config):
@@ -43,10 +43,13 @@ def adaptive_options(config):
     for key, default, minimum in (
         ("pilot_steps", 1000, 1),
         ("pilot_equilibration_steps", config.get("sampling", {}).get("equilibration_steps", 0), 0),
-        ("max_rounds", 4, 1),
-        ("max_windows", 64, 1),
+        ("max_rounds", 8, 1),
+        ("max_windows", 128, 1),
     ):
         options[key] = checked_integer(table.get(key, default), "adaptive_umbrella." + key, minimum)
+    options["max_pilot_steps"] = checked_integer(
+        table.get("max_pilot_steps", 16 * options["pilot_steps"]),
+        "adaptive_umbrella.max_pilot_steps", options["pilot_steps"])
     for key, default in (("target_overlap", 0.03), ("min_effective_samples", 20.0), ("min_spacing", 1e-6)):
         value = table.get(key, default)
         if isinstance(value, (bool, np.bool_)):
@@ -215,6 +218,43 @@ def _save_plan(output, plan):
     write_json(_plan_path(output), plan)
 
 
+def extend_adaptive_budget(output, limits):
+    """Explicitly reopen an exhausted pilot plan; never change frozen data.
+
+    The run's input/physics fingerprint stays unchanged. Monotonic budget
+    overrides are recorded in the checksummed plan, which owns the resolved
+    pilot schedule. All completed round checkpoints remain authoritative.
+    """
+    fields = {"max_rounds", "max_windows", "max_pilot_steps"}
+    if not isinstance(limits, Mapping) or not limits or set(limits) - fields:
+        raise ValueError("adaptive budget accepts only max_rounds, max_windows and max_pilot_steps")
+    path = _plan_path(output)
+    plan = json.loads(path.read_text())
+    if plan.get("checksum") != _plan_checksum(plan):
+        raise ValueError("adaptive umbrella plan checksum mismatch")
+    if plan["status"] != "incomplete":
+        raise ValueError("adaptive budget can only extend an incomplete pilot plan")
+    options = dict(plan["options"])
+    for key, value in limits.items():
+        if key not in options:
+            raise ValueError(f"saved adaptive plan does not support {key}")
+        options[key] = checked_integer(value, "adaptive_umbrella." + key, options[key])
+    if options == plan["options"] or options["max_rounds"] <= plan["next_round"]:
+        raise ValueError("increase the exhausted budget and allow at least one further pilot round")
+    plan.setdefault("budget_extensions", []).append({
+        "after_rounds": plan["next_round"], "previous": plan["options"], "updated": options,
+        "previous_failure_reason": plan.get("failure_reason"),
+    })
+    plan["options"] = options
+    last = plan["rounds"][-1]
+    plan["centers"] = last["next_centers"]
+    if plan.get("schema_version", 1) >= 2:
+        plan["next_pilot_steps"] = _next_pilot_steps(last["pilot"]["production_steps"], last, options)
+    plan["status"] = "adapting"
+    plan.pop("failure_reason", None)
+    _save_plan(output, plan)
+
+
 def _open_plan(config, system, output, centers, stiffness, options, create=True):
     path = _plan_path(output)
     identity = _fingerprint(config, system, {"adaptive_umbrella_schema": 1})
@@ -227,11 +267,21 @@ def _open_plan(config, system, output, centers, stiffness, options, create=True)
         return plan
     if not create:
         raise ValueError("no saved adaptive umbrella plan is available for reanalysis")
-    plan = {"schema_version": 1, "fingerprint": identity, "status": "adapting", "next_round": 0,
+    plan = {"schema_version": 2, "fingerprint": identity, "status": "adapting", "next_round": 0,
             "centers": centers.tolist(), "stiffness": stiffness.tolist(), "options": options,
+            "next_pilot_steps": options["pilot_steps"],
             "rounds": [], "production_seed": _seed(config, 2), "pilot_samples_used_in_production": 0}
     _save_plan(output, plan)
     return plan
+
+
+def _next_pilot_steps(current, report, options):
+    """Refining placement alone must not double every trajectory's duration."""
+    if report["effective_samples_target_met"]:
+        return current
+    # Short-trace ESS is too noisy to extrapolate a fractional increase: that
+    # can cost an extra round of equilibration and a complete repeated pilot.
+    return min(options["max_pilot_steps"], 2 * current)
 
 
 def _record_round(plan, streams, config, system, output, cv, options, pilot):
@@ -242,6 +292,8 @@ def _record_round(plan, streams, config, system, output, cv, options, pilot):
                 "centers": plan["centers"], "pilot": pilot, **report}
     plan["rounds"].append(decision)
     plan["next_round"] += 1
+    if plan.get("schema_version", 1) >= 2:
+        plan["next_pilot_steps"] = _next_pilot_steps(pilot["production_steps"], report, options)
     if report["target_met"]:
         plan["status"] = "frozen"
         plan["target_met"] = True
@@ -251,6 +303,10 @@ def _record_round(plan, streams, config, system, output, cv, options, pilot):
     elif not report["overlap_connected_at_target"] and not report["inserted"]:
         plan["status"] = "incomplete"
         plan["failure_reason"] = "no admissible midpoint: max_windows or min_spacing"
+    elif (plan.get("schema_version", 1) >= 2 and not report["effective_samples_target_met"]
+          and pilot["production_steps"] >= options["max_pilot_steps"] and not report["inserted"]):
+        plan["status"] = "incomplete"
+        plan["failure_reason"] = "max_pilot_steps before effective-sample target"
     else:
         plan["centers"] = report["next_centers"]
     _save_plan(output, plan)
@@ -258,15 +314,29 @@ def _record_round(plan, streams, config, system, output, cv, options, pilot):
     return plan
 
 
-def _annotate(result, plan, output, return_data):
+def _annotate(result, plan, output, return_data, production_steps=None):
     summary = result["summary"] if return_data else result
+    # Independent production can be shorter or mix worse than the accepted
+    # pilot. Expose its own ESS instead of letting target_met imply otherwise.
+    production_ess = np.asarray(summary["effective_samples_per_stream"])
+    replicas = len(production_ess) // len(plan["centers"])
+    window_ess = production_ess.reshape(len(plan["centers"]), replicas).sum(axis=1)
+    production_target = bool(np.all(window_ess >= plan["options"]["min_effective_samples"]))
     summary["adaptive_umbrella"] = {
         "status": "frozen", "target_met": True, "pilot_rounds": len(plan["rounds"]),
         "frozen_windows": len(plan["centers"]), "pilot_samples_used_in_production": 0,
         "production_seed": plan["production_seed"], "plan": str(_plan_path(output)),
+        "production_effective_samples_per_window": window_ess.tolist(),
+        "production_effective_samples_target_met": production_target,
+        "final_pilot_steps": plan["rounds"][-1]["pilot"]["production_steps"],
+        "production_steps_per_stream": production_steps,
         "target_note": "Pilot overlap/ESS targets only; physical and production sampling convergence remain unverified.",
     }
     summary["warnings"].append("Adaptive pilots were discarded before fixed-umbrella production; pilot overlap/ESS is not a physical convergence certificate.")
+    if not production_target:
+        summary["warnings"].append("Frozen production has windows below adaptive_umbrella.min_effective_samples; increase sampling.production_steps and check independent replicas.")
+    if production_steps is not None and production_steps < plan["rounds"][-1]["pilot"]["production_steps"]:
+        summary["warnings"].append("Production is shorter than the final accepted pilot; pilot success does not establish adequate production statistics.")
     write_json(Path(output) / "summary.json", summary)
     return result
 
@@ -276,6 +346,12 @@ def _require_frozen(plan, output):
         summary = {"task": "fes", "status": "adaptation_incomplete", "converged": False,
                    "failure_reason": plan.get("failure_reason", "pilot stage incomplete"),
                    "production_started": False, "plan": str(_plan_path(output))}
+        if plan["rounds"]:
+            last = plan["rounds"][-1]
+            summary.update(pilot_rounds=len(plan["rounds"]), windows=len(plan["centers"]),
+                           spanning_overlap=last["spanning_overlap"],
+                           minimum_effective_samples=min(last["effective_samples_per_window"]),
+                           targets=plan["options"])
         write_json(Path(output) / "summary.json", summary)
         raise RuntimeError("Adaptive umbrella targets were not reached; production was not started. " +
                            summary["failure_reason"] + ". Inspect " + str(_plan_path(output)))
@@ -288,10 +364,13 @@ def run_adaptive_fes(config, system, output, executor=None, return_data=False):
     options = adaptive_options(config)
     cv, specs, centers, stiffness = resolve_umbrellas(config, system)
     plan = root_call(_open_plan, config, system, str(output), centers, stiffness, options)
+    # Saved plans own their resolved defaults and schedule, including v1's
+    # geometric schedule. Upgrading the package must not change an active run.
+    options = plan["options"]
     while plan["status"] == "adapting":
         index = plan["next_round"]
         pilot = {"equilibration_steps": options["pilot_equilibration_steps"],
-                 "production_steps": options["pilot_steps"] * 2**index}
+                 "production_steps": plan.get("next_pilot_steps", options["pilot_steps"] * 2**index)}
         stage = _stage_config(config, plan["centers"], plan["stiffness"], _seed(config, 1, index), pilot=pilot)
         pilot_output = Path(output) / "adaptation" / f"round_{index:03d}"
         replicas = checked_integer(config.get("sampling", {}).get("replicas", 1), "sampling.replicas")
@@ -304,7 +383,7 @@ def run_adaptive_fes(config, system, output, executor=None, return_data=False):
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
     result = run_fes(frozen, system, output, executor=executor, return_data=return_data)
-    return root_call(_annotate, result, plan, str(output), return_data)
+    return root_call(_annotate, result, plan, str(output), return_data, frozen["sampling"]["production_steps"])
 
 
 def reanalyze_adaptive_fes(config, system, output, return_data=False):
@@ -316,4 +395,4 @@ def reanalyze_adaptive_fes(config, system, output, return_data=False):
     root_call(_require_frozen, plan, str(output))
     frozen = _stage_config(config, plan["centers"], plan["stiffness"], plan["production_seed"])
     result = reanalyze_fes(frozen, system, output, return_data=return_data)
-    return root_call(_annotate, result, plan, str(output), return_data)
+    return root_call(_annotate, result, plan, str(output), return_data, frozen["sampling"]["production_steps"])

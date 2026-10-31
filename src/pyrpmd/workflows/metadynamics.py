@@ -17,7 +17,7 @@ import numpy as np
 
 from ..analysis.metadynamics import bias_fes
 from ..bias import MetadynamicsBias
-from ..cv import make_cvs
+from ..cv import make_cvs, RPMDrateCoordinate
 from ..dynamics import Dynamics, State
 from ..checkpoint import load_checkpoint
 from ..parallel import run_tasks, make_task_potential, root_call
@@ -256,7 +256,7 @@ def _sample_replica(task):
         while elapsed < total:
             previous = state.copy()
             old_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
-            nhills = len(bias.hills)
+            nhills = bias.hill_count
             try:
                 if state.step % interval == 0:
                     state.p[:] = dynamics.sample_momenta()
@@ -274,7 +274,7 @@ def _sample_replica(task):
             except BaseException:
                 state = previous
                 dynamics.rng.bit_generator.state = old_rng
-                del bias.hills[nhills:]
+                bias.truncate_hills(nhills)
                 save()
                 raise
             elapsed += 1
@@ -320,6 +320,16 @@ def _analyze(streams, config, system, output, return_data):
         warnings.append("Constant-height metadynamics continues depositing hills; -V can oscillate about the free energy and has finite-width/deposition error.")
     if not data["common_support"]:
         warnings.append("No common sampled bin between all replica histories; their relative gauges cannot be aligned and aggregate FES is masked.")
+    coverage = [float(np.mean(~mask)) for mask in data["mask_per_replica"]]
+    common_coverage = float(np.mean(~data["mask"]))
+    in_range = [float(count.sum() / len(s["samples"]))
+                for count, s in zip(data["raw_count_per_replica"], streams)]
+    if options["ranges"] is not None and common_coverage < 0.5:
+        warnings.append("Less than half of the requested FES grid has common sampled support; inspect CV coverage and increase exploration before interpreting the bias estimate.")
+    if options["ranges"] is not None and min(in_range) < 0.5:
+        warnings.append("A replica spends more than half its saved samples outside analysis.ranges. Analysis ranges only select output bins; they do not confine dynamics.")
+    if any(isinstance(component, RPMDrateCoordinate) for component in cv.cvs):
+        warnings.append("RPMDrate xi can have a pole outside the reaction corridor and is unsuitable for unconstrained global exploration. This cv_density estimate is not the rate_flux PMF used for RPMD rates.")
     summary = {
         "task": "metadynamics", "status": "bias_estimate" if all(s["complete"] for s in streams) else "partial_bias_estimate",
         "estimator": "bias_estimate", "mode": options["mode"], "bias_factor": options["bias_factor"],
@@ -329,6 +339,16 @@ def _analyze(streams, config, system, output, return_data):
         "hills_per_replica": [len(s["hills"]) for s in streams],
         "samples": sum(len(s["samples"]) for s in streams), "common_support": data["common_support"],
         "reference_bin": data["reference_bin"], "converged": False,
+        "sampling_diagnostics": {
+            "supported_grid_fraction_per_replica": coverage,
+            "common_supported_grid_fraction": common_coverage,
+            "samples_in_grid_fraction_per_replica": in_range,
+            "sampled_cv_min_per_replica": [np.min(s["samples"], axis=0).tolist() for s in streams],
+            "sampled_cv_max_per_replica": [np.max(s["samples"], axis=0).tolist() for s in streams],
+            "deposited_height_per_replica": [sum(h["height"] for h in s["hills"]) for s in streams],
+            "last_hill_height_per_replica": [s["hills"][-1]["height"] if s["hills"] else None for s in streams],
+            "coverage_note": "Grid coverage is not equilibration or FES convergence; automatically chosen ranges describe only the visited domain.",
+        },
         "propagation": [s["propagation"] for s in streams], "warnings": warnings,
         "sample_bias_convention": "physical V before deposition at the sampled step; energies include P*V",
         "files": {"data": str(output / "fes.npz"), "table": str(output / "fes.csv"),

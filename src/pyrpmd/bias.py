@@ -137,9 +137,31 @@ class MetadynamicsBias:
             p is not None and (not np.isfinite(p) or p <= 0) for p in cv.periods
         ):
             raise ValueError("CV periods must be positive finite numbers or None")
-        self.hills = []
+        self._hills = []
+        self._centers = np.empty((16, cv.dimension))
+        self._heights = np.empty(16)
         for hill in ([] if hills is None else hills):
             self._append(hill)
+
+    @property
+    def hills(self):
+        """Serializable history snapshot; change history via deposit/truncate.
+
+        Returning owned records prevents callers from silently changing forces
+        through a dictionary or center list retained from a deposition.
+        """
+        return [dict(h, center=h["center"].copy()) for h in self._hills]
+
+    @property
+    def hill_count(self):
+        return len(self._hills)
+
+    def truncate_hills(self, count):
+        """Roll back uncommitted depositions without retaining cached hills."""
+        if (isinstance(count, (bool, np.bool_)) or not isinstance(count, (int, np.integer))
+                or not 0 <= count <= self.hill_count):
+            raise ValueError("hill count must be an integer within the saved history")
+        del self._hills[count:]
 
     @staticmethod
     def _kernel(delta, sigma, period):
@@ -171,10 +193,11 @@ class MetadynamicsBias:
         values = np.asarray(values, float)
         if values.ndim < 1 or values.shape[-1] != self.cv.dimension or not np.isfinite(values).all():
             raise ValueError("metadynamics values must be finite [...,D]")
-        if not self.hills:
+        if not self._hills:
             return np.zeros(values.shape[:-1]), np.zeros_like(values)
-        centers = np.asarray([h["center"] for h in self.hills])
-        heights = np.asarray([h["height"] for h in self.hills])
+        # Numeric storage grows only at deposition, not at every force call.
+        centers = self._centers[:self.hill_count]
+        heights = self._heights[:self.hill_count]
         delta = values[..., None, :] - centers
         factors, derivatives = [], []
         for j, (sigma, period) in enumerate(zip(self.sigma, self.cv.periods)):
@@ -211,9 +234,16 @@ class MetadynamicsBias:
             raise ValueError("invalid metadynamics hill height/time/bias")
         if isinstance(step, (bool, np.bool_)) or not isinstance(step, (int, np.integer)) or step < 1:
             raise ValueError("metadynamics hill step must be a positive integer")
-        if self.hills and (step <= self.hills[-1]["step"] or time <= self.hills[-1]["time"]):
+        if self._hills and (step <= self._hills[-1]["step"] or time <= self._hills[-1]["time"]):
             raise ValueError("metadynamics hill clocks must strictly increase")
-        self.hills.append({"center": center.tolist(), "height": height,
+        count = self.hill_count
+        if count == len(self._heights):
+            centers = np.empty((max(16, 2 * count), self.cv.dimension))
+            heights = np.empty(len(centers))
+            centers[:count], heights[:count] = self._centers, self._heights
+            self._centers, self._heights = centers, heights
+        self._centers[count], self._heights[count] = center, height
+        self._hills.append({"center": center.tolist(), "height": height,
                            "step": int(step), "time": time, "bias_before": before})
 
     def deposit(self, values, *, step, time):
@@ -228,7 +258,7 @@ class MetadynamicsBias:
         hill = {"center": center, "height": height, "step": step,
                 "time": time, "bias_before": before}
         self._append(hill)
-        return dict(self.hills[-1])
+        return dict(self._hills[-1], center=self._hills[-1]["center"].copy())
 
     @property
     def fes_factor(self):

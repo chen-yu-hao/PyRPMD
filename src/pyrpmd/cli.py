@@ -50,6 +50,9 @@ def parser():
     c.add_argument("--workers", type=int)
     c.add_argument("--loop-backend", choices=("auto", "native", "python"))
     c.add_argument("--block-steps", type=int)
+    c.add_argument("--adaptive-max-rounds", type=int, help="Extend an exhausted adaptive pilot budget")
+    c.add_argument("--adaptive-max-windows", type=int)
+    c.add_argument("--adaptive-max-pilot-steps", type=int)
     a = commands.add_parser(
         "analyze", help="Read results or reanalyze saved free-energy/transport data"
     )
@@ -273,7 +276,15 @@ def main(argv=None):
                     "block_steps": args.block_steps,
                 }.items() if value is not None
             }
-            result = resume_run(args.directory, parallel=override, execution=execution or None)
+            adaptive_budget = {
+                key: value for key, value in {
+                    "max_rounds": args.adaptive_max_rounds,
+                    "max_windows": args.adaptive_max_windows,
+                    "max_pilot_steps": args.adaptive_max_pilot_steps,
+                }.items() if value is not None
+            }
+            result = resume_run(args.directory, parallel=override, execution=execution or None,
+                                adaptive_budget=adaptive_budget or None)
             if result is not None:
                 _print(result)
         elif args.command == "analyze":

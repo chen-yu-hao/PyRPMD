@@ -69,7 +69,7 @@ _SECTIONS = {
         "cvs mode sigma sigma_au height height_au pace bias_factor".split()
     ),
     "adaptive_umbrella": set(
-        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
+        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows max_pilot_steps target_overlap min_effective_samples min_spacing".split()
     ),
     "diffusion": set(
         "atom_indices axes reference_atoms fit_range max_lag bootstrap seed block_length".split()
@@ -620,8 +620,16 @@ class JobSpec:
             dt,
             allow_zero=True,
         )
+        adaptive_table = d.get("adaptive_umbrella", {})
+        enhanced_sampling = task == "metadynamics" or (
+            isinstance(adaptive_table, Mapping)
+            and adaptive_table.get("enabled", bool(adaptive_table))
+        )
+        default_production = "1000 fs" if enhanced_sampling else "200 fs"
+        if enhanced_sampling and not any(k in sampling for k in ("production_steps", "production")):
+            notes.append("Enhanced-sampling default production: 1000 fs; inspect production ESS and CV coverage before increasing the budget or interpreting the FES.")
         sampling["production_steps"] = _steps(
-            sampling, "production_steps", "production", "200 fs", dt
+            sampling, "production_steps", "production", default_production, dt
         )
         interval = sampling.get("interval_steps", sampling.get("sample_interval"))
         if interval is None:

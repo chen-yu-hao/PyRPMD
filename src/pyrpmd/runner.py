@@ -207,7 +207,7 @@ def run_resolved(config, system, *, output=None, resume=False):
     return result
 
 
-def resume_run(directory, *, parallel=None, execution=None):
+def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None):
     path = Path(directory).resolve()
     if path.name == "checkpoints":
         path = path.parent
@@ -229,6 +229,16 @@ def resume_run(directory, *, parallel=None, execution=None):
             if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 65536:
                 raise InputError("block_steps must be an integer in 1..65536")
         config.setdefault("dynamics", {}).update(execution)
+    if adaptive_budget is not None:
+        from .parallel import root_call
+        from .workflows.adaptive_umbrella import extend_adaptive_budget
+
+        if config["task"] not in ("fes", "rate") or not config.get("adaptive_umbrella"):
+            raise InputError("adaptive budget overrides require an adaptive FES or rate run")
+        # Authenticate saved inputs/model files before modifying the plan.
+        root_call(_initialize_output, config, system, path, True)
+        pilot_output = path / "umbrella" if config["task"] == "rate" else path
+        root_call(extend_adaptive_budget, pilot_output, adaptive_budget)
     return run_resolved(config, system, output=path, resume=True)
 
 

@@ -77,6 +77,63 @@ def test_tempering_uses_physical_bias_without_an_extra_bead_factor():
         assert standard.deposit([0.0], step=i + 1, time=0.1 * (i + 1))["height"] == 0.4
 
 
+def test_numeric_history_matches_direct_sum_after_growth_rollback_and_restore():
+    cv = CVStack([Cartesian(0, 0), Cartesian(0, 1)])
+    bias = MetadynamicsBias(cv, [0.3, 0.7], 0.1, 2., mode="standard")
+    rng = np.random.default_rng(81)
+    for i, center in enumerate(rng.normal(size=(70, 2))):
+        bias.deposit(center, step=i + 1, time=(i + 1) * 0.1)
+    bias.truncate_hills(31)
+    bias.deposit([0.7, -0.2], step=32, time=3.2)
+    values = rng.normal(size=(9, 2))
+    centers = np.array([h["center"] for h in bias.hills])
+    heights = np.array([h["height"] for h in bias.hills])
+    delta = values[:, None] - centers
+    terms = heights * np.exp(-0.5 * np.sum((delta / bias.sigma) ** 2, axis=-1))
+    energy, gradient = bias.physical_energy_gradient(values)
+    np.testing.assert_allclose(energy, terms.sum(axis=1), atol=1e-15)
+    np.testing.assert_allclose(gradient, np.sum(-delta / bias.sigma**2 * terms[..., None], axis=1), atol=1e-15)
+    restored = MetadynamicsBias(cv, bias.sigma, 0.1, 2., mode="standard", hills=bias.hills)
+    np.testing.assert_array_equal(restored.physical_energy_gradient(values)[0], energy)
+    np.testing.assert_array_equal(restored.physical_energy_gradient(values)[1], gradient)
+    bias.truncate_hills(0)
+    assert bias.hill_count == 0
+    np.testing.assert_array_equal(bias.physical_energy(values), np.zeros(len(values)))
+
+
+def test_deposition_and_history_snapshots_cannot_mutate_active_forces():
+    bias = MetadynamicsBias(CVStack([Cartesian(0, 0)]), [0.5], 0.4, 2.)
+    deposited = bias.deposit([0.], step=1, time=0.1)
+    before = bias.physical_energy([0.])
+    deposited["center"][0] = 99.
+    saved = bias.hills
+    saved[0]["height"] = 100.
+    saved[0]["center"][0] = -99.
+    saved.clear()
+    assert bias.hill_count == 1
+    assert bias.physical_energy([0.]) == before
+
+
+def test_failure_after_deposition_rolls_back_numeric_history(tmp_path, monkeypatch):
+    cfg = config()
+    full = _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path / "full"), "replica": 0})
+    original = MetadynamicsBias.deposit
+    def fail_after_deposit(self, *args, **kwargs):
+        result = original(self, *args, **kwargs)
+        if kwargs["step"] == 12:
+            raise RuntimeError("after deposit")
+        return result
+    task = {"config": cfg, "system": system(), "output": str(tmp_path / "resume"), "replica": 0}
+    with monkeypatch.context() as patch:
+        patch.setattr(MetadynamicsBias, "deposit", fail_after_deposit)
+        with pytest.raises(RuntimeError, match="after deposit"):
+            _sample_replica(task)
+    resumed = _sample_replica(task)
+    assert resumed["hills"] == full["hills"]
+    np.testing.assert_array_equal(resumed["state"].q, full["state"].q)
+    np.testing.assert_array_equal(resumed["sample_bias"], full["sample_bias"])
+
+
 @pytest.mark.parametrize("width", [0.2, 1.4, 5.0])
 def test_periodic_gaussians_are_smooth_and_match_finite_difference(width):
     axis = Cartesian(0, 0)
@@ -139,11 +196,35 @@ def test_two_dimensional_workflow_and_saved_reanalysis(tmp_path):
     assert result["data"]["bias_per_replica"].shape == (2, 6, 6)
     assert result["streams"][0]["hills"] != result["streams"][1]["hills"]
     assert np.isnan(result["data"]["standard_error"]).all()
+    diagnostics = result["summary"]["sampling_diagnostics"]
+    assert diagnostics["common_supported_grid_fraction"] == np.mean(~result["data"]["mask"])
+    assert diagnostics["samples_in_grid_fraction_per_replica"] == [1., 1.]
     again = reanalyze_metadynamics(cfg, system(), tmp_path, return_data=True)
     np.testing.assert_array_equal(result["data"]["free_energy"], again["data"]["free_energy"])
     cfg["analysis"]["bins"] = [4, 5]
     changed = reanalyze_metadynamics(cfg, system(), tmp_path, return_data=True)
     assert changed["data"]["free_energy"].shape == (4, 5)
+
+
+def test_requested_grid_does_not_constrain_or_hide_outside_samples(tmp_path):
+    cfg = config()
+    cfg["analysis"]["ranges"] = [[10., 11.]]
+    result = run_metadynamics(cfg, system(), tmp_path, return_data=True)
+    diagnostics = result["summary"]["sampling_diagnostics"]
+    assert diagnostics["samples_in_grid_fraction_per_replica"] == [0.]
+    assert diagnostics["common_supported_grid_fraction"] == 0.
+    assert np.all(result["data"]["mask"])
+    assert any("do not confine" in warning for warning in result["summary"]["warnings"])
+
+
+def test_metadynamics_default_production_budget():
+    from pyrpmd.input import JobSpec
+    from pyrpmd.constants import AU_TIME_FS
+    spec = JobSpec.from_file("examples/metadynamics/standard.inp")
+    for key in ("production_steps", "production"):
+        spec.data["sampling"].pop(key, None)
+    cfg, _ = spec.resolve()
+    assert cfg["sampling"]["production_steps"] == round(1000 / (cfg["dt_au"] * AU_TIME_FS))
 
 
 def test_bias_fes_uses_distinct_standard_and_tempered_factors_and_masks_unsampled_bins():
