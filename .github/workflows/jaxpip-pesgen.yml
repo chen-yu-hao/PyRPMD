@@ -1,0 +1,41 @@
+name: PySCF to JaxPIP PES
+on:
+  push:
+    branches: ['feat/jaxpip-pesgen-link-20261031']
+  pull_request:
+    paths: ['src/pyrpmd/pesgen/**', 'tests/test_jaxpip*', 'tests/jaxpip/**', 'examples/pesgen/jaxpip/**', '.github/workflows/jaxpip-pesgen.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: jaxpip-pesgen-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      JAX_ENABLE_X64: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: chen-yu-hao/PyRPMD
+          ref: 550f41b4af0e9c743d657a8c61a44bb64cd9e7b2
+          path: external/onnx-bridge
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Prepare versioned offline dependencies
+        run: |
+          mkdir -p build/dependencies/wheels
+          python -m pip wheel --no-deps --wheel-dir build/dependencies/wheels equinox==0.13.2 optax==0.2.6 jaxtyping==0.3.7 wadler-lindig==0.1.7 'jaxpip @ git+https://github.com/CQPES/JaxPIP.git@a18c8cca1e795202194d4082919ebd71722df125'
+          tar --exclude=.git -czf build/dependencies/onnx-bridge.tar.gz -C external onnx-bridge
+          sha256sum build/dependencies/wheels/* build/dependencies/*.tar.gz > build/dependencies/SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jaxpip-generation-dependencies
+          path: build/dependencies/
+          retention-days: 3
