@@ -8,6 +8,7 @@ recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html *.n
 exclude docs/validation/tier1-2026-10-31/*.npz
 prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
+include examples/analysis/reference-rates.csv
 recursive-include tests *.py
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json
 recursive-include benchmarks/h3/convergence_inputs *.inp

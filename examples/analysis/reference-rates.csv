@@ -1,0 +1,4 @@
+series,temperature_K,rate,rate_unit,source,standard_error
+synthetic-format-example,300,1.0e-13,cm3 molecule^-1 s^-1,Synthetic format demonstration; not experimental data,1.0e-14
+synthetic-format-example,500,4.0e-13,cm3 molecule^-1 s^-1,Synthetic format demonstration; not experimental data,4.0e-14
+synthetic-format-example,700,9.0e-13,cm3 molecule^-1 s^-1,Synthetic format demonstration; not experimental data,9.0e-14

@@ -78,6 +78,7 @@ PCET <manual/pcet>
 JaxPIP 拟合与原生执行 <manual/jaxpip-generation>
 执行与并行 <manual/execution>
 输出与分析 <manual/results>
+自动分析与出图 <manual/analysis-reports>
 示例索引 <manual/examples>
 副本交换伞形采样 <replica-exchange>
 ```
