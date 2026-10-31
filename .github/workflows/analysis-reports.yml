@@ -11,6 +11,11 @@ permissions:
 jobs:
   figures:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12']
     env:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
@@ -19,20 +24,19 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python }}
       - run: python -m pip install -e '.[test,plots]'
-      - run: python -m pytest -q tests/test_report*.py
-      - name: Run saved-data report examples
+      - run: python -m pytest -q tests/test_report*.py --junitxml="$RUNNER_TEMP/analysis-reports-junit.xml"
+      - name: Validate actual workflow output and numerical plot data
         run: |
-          pyrpmd run examples/manual/quickstart.inp --output "$RUNNER_TEMP/analysis-1d" --report
-          pyrpmd run examples/fes/harmonic2d.inp --output "$RUNNER_TEMP/analysis-2d"
-          pyrpmd report "$RUNNER_TEMP/analysis-2d" --formats png pdf svg --output "$RUNNER_TEMP/fes-report"
-          pyrpmd analyze "$RUNNER_TEMP/analysis-2d" --report --report-output "$RUNNER_TEMP/analyze-report"
+          python -m benchmarks.analysis_reports.validate --output "$RUNNER_TEMP/analysis-validation" --formats png pdf svg --style nature
+          pyrpmd run examples/manual/quickstart.inp --output "$RUNNER_TEMP/analysis-1d" --report --report-style nature
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: analysis-report-examples
+          name: analysis-report-examples-py${{ matrix.python }}
           path: |
+            ${{ runner.temp }}/analysis-reports-junit.xml
+            ${{ runner.temp }}/analysis-validation
             ${{ runner.temp }}/analysis-1d/analysis-report
-            ${{ runner.temp }}/fes-report
-            ${{ runner.temp }}/analyze-report
           if-no-files-found: error

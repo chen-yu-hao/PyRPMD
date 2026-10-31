@@ -73,8 +73,8 @@ def test_fixed_energy_uses_cross_section_not_thermal_rate(tmp_path):
         channels={"exchange": {"count": 3, "event_fraction": .3,
                                 "rate_cm3_molecule_s": None, "cross_section_bohr2": 2.5}})
     result = collect(tmp_path, summary)
-    assert plot(result, "channel-estimates")["ylabel"] == "Cross section (bohr²)"
-    assert plot(result, "channel-estimates")["y"] == [2.5]
+    assert plot(result, "channel-estimates")["ylabel"] == "Cross section (Å²)"
+    assert plot(result, "channel-estimates")["y"] == pytest.approx([2.5 * BOHR_ANGSTROM ** 2])
     assert plot(result, "channel-estimates")["yerr"] == [[None], [None]]
 
 
@@ -82,7 +82,8 @@ def test_fixed_energy_uses_cross_section_not_thermal_rate(tmp_path):
     ("iid_wilson95_bohr2", "iid_wilson"),
     ("parent_cluster_bootstrap95_bohr2", "parent_cluster_percentile_bootstrap"),
 ])
-def test_selected_state_cross_section_intervals_keep_producer_meaning(tmp_path, interval_key, method):
+@pytest.mark.parametrize("length_unit,factor", [("angstrom", BOHR_ANGSTROM), ("bohr", 1.), ("nm", BOHR_ANGSTROM / 10)])
+def test_selected_state_cross_section_intervals_keep_producer_meaning(tmp_path, interval_key, method, length_unit, factor):
     entry = {"count": 3, "event_fraction": .3, "cross_section_bohr2": 2.5,
              "observed_lower_bohr2": 2.5, "possible_upper_bohr2": 2.5,
              interval_key: [1., 6.], "uncertainty": {"method": method, "confidence_level": .95}}
@@ -90,9 +91,10 @@ def test_selected_state_cross_section_intervals_keep_producer_meaning(tmp_path, 
         counts={"product": 3, "nonreactive": 7, "unresolved": 0, "failed": 0},
         all_trajectories_resolved=True, sampling="fixed_energy", channels={"exchange": entry},
         fixed_energy_scattering={"initialization_mode": "independent", "channels": {"exchange": entry}})
-    result = collect(tmp_path, summary)
+    result = collect(tmp_path, summary, length_unit=length_unit)
     figure = plot(result, "channel-estimates")
-    assert figure["yerr"] == [[1.5], [3.5]]
+    np.testing.assert_allclose(figure["y"], [2.5 * factor**2])
+    np.testing.assert_allclose(figure["yerr"], np.array([[1.5], [3.5]]) * factor**2)
     assert "95%" in figure["caption"] and "Wilson" in figure["caption"]
     assert result["metrics"]["channels"]["exchange"]["uncertainty"]["method"] == method
     assert result["metrics"]["fixed_energy_scattering"] == summary["fixed_energy_scattering"]
@@ -190,7 +192,8 @@ def materials_stream(path):
 
 
 @pytest.mark.parametrize("task", ["pimd", "diffusion"])
-def test_default_materials_stream_matches_npz_and_ignores_uncommitted_tail(tmp_path, task):
+@pytest.mark.parametrize("length_unit", ["angstrom", "bohr", "nm"])
+def test_default_materials_stream_matches_npz_and_ignores_uncommitted_tail(tmp_path, task, length_unit):
     legacy, streamed = tmp_path / "legacy", tmp_path / "streamed"
     legacy.mkdir()
     materials_file(legacy)
@@ -199,8 +202,8 @@ def test_default_materials_stream_matches_npz_and_ignores_uncommitted_tail(tmp_p
     stream.append({"sample_steps": 12, "observables": [99] * 5, "radii_gyration_squared": [99, 99]})
     extra = stream.prepare_commit()["head"]
     summary, config = {"task": task}, {"beads": 8, "beta": 2}
-    before = collect(legacy, summary, config, energy_unit="hartree")
-    after = collect(streamed, summary, config, energy_unit="hartree")
+    before = collect(legacy, summary, config, energy_unit="hartree", length_unit=length_unit)
+    after = collect(streamed, summary, config, energy_unit="hartree", length_unit=length_unit)
     for suffix in ("materials-energy", "gyration"):
         assert plot(after, suffix) == plot(before, suffix)
     assert len(after["source_records"]) == 3  # manifest and two committed chunks

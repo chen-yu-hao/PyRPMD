@@ -62,7 +62,7 @@ def _write_csv(path, header, rows):
             writer.writerow([_csv_value(value) for value in row])
 
 
-def _line_plot(ax, plot, data_path):
+def _line_plot(ax, plot, data_path, *, legend=True, linewidth=1.25):
     rows = []
     for index, series in enumerate(plot.get("series", [])):
         x, y = _vector(series["x"], "x"), _vector(series["y"], "y")
@@ -87,7 +87,7 @@ def _line_plot(ax, plot, data_path):
         )
         ax.plot(draw_x, draw_y, label=label or None, color=color, linestyle=linestyle,
                 marker="o" if style == "points" or len(x) == 1 else None,
-                markersize=3.5, linewidth=1.25)
+                markersize=3.5, linewidth=linewidth)
         supported = valid & np.all(np.isfinite(error), axis=0)
         if plot.get("yscale") == "log":
             # Do not clip error bars at zero and thereby misrepresent their size.
@@ -118,7 +118,7 @@ def _line_plot(ax, plot, data_path):
         ax.axvspan(float(item["start"]), float(item["stop"]), color="#009E73",
                    alpha=0.09, label=item.get("label"))
     handles, labels = ax.get_legend_handles_labels()
-    if labels:
+    if labels and legend:
         ax.legend(handles, labels, frameon=False, fontsize=8,
                   ncols=2 if len(labels) > 7 else 1)
     _write_csv(data_path, ["series", "x", "y", "error_minus", "error_plus"], rows)
@@ -195,13 +195,17 @@ def _bar_plot(ax, plot, data_path):
                ((label, value, lo, hi) for label, value, lo, hi in zip(labels, y, *error)))
 
 
-def render_figures(plots, output, *, formats=("png", "pdf"), dpi=300):
+def render_figures(plots, output, *, formats=("png", "pdf"), dpi=300, style="jctc"):
     """Render normalized plots and export the plotted data without resampling.
 
     ``yerr`` contains uncertainty magnitudes (symmetric N or asymmetric 2×N).
     Its statistical interpretation is supplied in each plot's caption.  Missing
     uncertainties are omitted, never replaced with zero.  The caller owns the
     output directory and is responsible for atomic publication of the report.
+    ``plots`` may be any iterable.  ``style="nature"`` uses 89/183 mm widths,
+    6–7 pt type, no background grid and a separate legend row; ``"jctc"``
+    retains the default 3.33/7 inch graphics profile.  Both retain all input data,
+    uncertainty meanings, full titles and run labels in the exported manifest.
     """
     try:
         from matplotlib import rc_context
@@ -217,6 +221,11 @@ def render_figures(plots, output, *, formats=("png", "pdf"), dpi=300):
         raise ValueError("Figure formats must be selected from png, pdf, svg")
     if isinstance(dpi, bool) or not isinstance(dpi, (int, np.integer)) or dpi <= 0:
         raise ValueError("Figure dpi must be a positive integer")
+    if style not in ("jctc", "nature"):
+        raise ValueError("Figure style must be jctc or nature")
+    # Validation and rendering both inspect the collection; preserve one-shot
+    # iterables instead of silently consuming all plots during ID validation.
+    plots = list(plots)
     output = Path(output)
     figure_dir, data_dir = output / "figures", output / "data"
     figure_dir.mkdir(parents=True, exist_ok=True)
@@ -225,34 +234,75 @@ def render_figures(plots, output, *, formats=("png", "pdf"), dpi=300):
     if len(set(ids)) != len(ids) or any(not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]*", value) for value in ids):
         raise ValueError("Figure ids must be unique safe filename slugs")
     manifests = []
-    style = {
+    rc_style = {
         "font.family": "DejaVu Sans", "font.size": 9, "axes.titlesize": 9,
         "axes.labelsize": 9, "xtick.labelsize": 8, "ytick.labelsize": 8,
         "axes.linewidth": 0.7, "axes.spines.top": False, "axes.spines.right": False,
         "pdf.fonttype": 42, "ps.fonttype": 42, "svg.fonttype": "none",
         "text.usetex": False, "savefig.facecolor": "white", "figure.facecolor": "white",
+        "savefig.bbox": None, "savefig.transparent": False, "axes.grid": False,
+        "axes.facecolor": "white", "axes.edgecolor": "black", "axes.labelcolor": "black",
+        "axes.titlecolor": "black", "text.color": "black",
+        "xtick.color": "black", "ytick.color": "black",
+        "xtick.labelcolor": "black", "ytick.labelcolor": "black",
     }
-    with rc_context(style):
+    if style == "nature":
+        rc_style.update({
+            "font.size": 7, "axes.titlesize": 7, "axes.labelsize": 7,
+            "xtick.labelsize": 6, "ytick.labelsize": 6, "legend.fontsize": 7,
+            "axes.linewidth": 0.6, "xtick.major.width": 0.6, "ytick.major.width": 0.6,
+            "xtick.major.size": 3, "ytick.major.size": 3,
+            "xtick.direction": "out", "ytick.direction": "out",
+        })
+    with rc_context(rc_style):
         for plot in plots:
             kind = plot.get("kind", "line")
             if kind not in ("line", "heatmap", "bar"):
                 raise ValueError(f"Unsupported figure kind: {kind}")
+            line_labels = ([str(item["label"]) for field in ("series", "vlines", "hlines", "spans")
+                            for item in plot.get(field, [])
+                            if item.get("label") and not str(item["label"]).startswith("_")]
+                           if kind == "line" else [])
             wide = (kind == "heatmap" or len(plot.get("series", [])) > 4
                     or len(plot.get("labels", [])) > 5
-                    or any(len(str(s.get("label", ""))) > 28 for s in plot.get("series", [])))
-            width = 7.0 if wide else 3.33
+                    or len(line_labels) > 4 or any(len(label) > 28 for label in line_labels))
+            width = (183 if wide else 89) / 25.4 if style == "nature" else (7.0 if wide else 3.33)
             note = str(plot.get("note") or "")
             wrapped = textwrap.fill(note, width=110 if wide else 48)
             lines = len(wrapped.splitlines())
-            fig = Figure(figsize=(width, (4.1 if wide else 2.8) + 0.12 * lines), layout="constrained")
+            # Dense or long JCTC legends also need their own row: an in-panel
+            # legend can otherwise collapse the axes or clip labels at export.
+            legend_labels = line_labels if style == "nature" or wide else []
+            legend_columns = 2 if wide and len(legend_labels) > 1 else 1
+            if style == "nature":
+                label_width = 58 if wide and legend_columns == 1 else 45
+            else:
+                label_width = 52 if wide and legend_columns == 1 else 38
+            legend_labels = [textwrap.fill(label, width=label_width) for label in legend_labels]
+            legend_lines = max((sum(len(label.splitlines()) for label in column)
+                                for column in np.array_split(legend_labels, legend_columns)), default=0)
+            legend_height = (0.13 if style == "nature" else 0.16) * legend_lines + (0.06 if legend_labels else 0)
+            base_height = (3.7 if wide else 2.6) if style == "nature" else (4.1 if wide else 2.8)
+            height = base_height + 0.12 * lines + legend_height
+            fig = Figure(figsize=(width, height), layout="constrained")
             FigureCanvasAgg(fig)
-            if note:
-                grid = fig.add_gridspec(2, 1, height_ratios=(1, 0.045 * max(lines, 1)))
+            legend_ax = None
+            if note or legend_labels:
+                heights = [base_height]
+                if legend_labels:
+                    heights.append(legend_height)
+                if note:
+                    heights.append(0.12 * max(lines, 1))
+                grid = fig.add_gridspec(len(heights), 1, height_ratios=heights)
                 ax = fig.add_subplot(grid[0])
-                note_ax = fig.add_subplot(grid[1])
-                note_ax.axis("off")
-                note_ax.text(0, 1, wrapped, va="top", ha="left", fontsize=8,
-                             transform=note_ax.transAxes, color="#444444")
+                if legend_labels:
+                    legend_ax = fig.add_subplot(grid[1])
+                    legend_ax.axis("off")
+                if note:
+                    note_ax = fig.add_subplot(grid[-1])
+                    note_ax.axis("off")
+                    note_ax.text(0, 1, wrapped, va="top", ha="left", fontsize=6 if style == "nature" else 8,
+                                 transform=note_ax.transAxes, color="#444444")
             else:
                 ax = fig.add_subplot()
             for name in ("xscale", "yscale"):
@@ -262,7 +312,8 @@ def render_figures(plots, output, *, formats=("png", "pdf"), dpi=300):
                 getattr(ax, "set_" + name)(scale)
             data_path = data_dir / f"{plot['id']}.csv"
             if kind == "line":
-                _line_plot(ax, plot, data_path)
+                _line_plot(ax, plot, data_path, legend=legend_ax is None,
+                           linewidth=1.0 if style == "nature" else 1.25)
             elif kind == "heatmap":
                 _heatmap_plot(fig, ax, plot, data_path)
             else:
@@ -270,7 +321,13 @@ def render_figures(plots, output, *, formats=("png", "pdf"), dpi=300):
             ax.set_xlabel(str(plot.get("xlabel", "")))
             ax.set_ylabel(str(plot.get("ylabel", "")))
             ax.set_title(textwrap.fill(str(plot.get("title", "")), width=90 if wide else 46), loc="left", pad=9)
-            if kind != "heatmap":
+            if legend_ax is not None:
+                handles, labels = ax.get_legend_handles_labels()
+                legend_ax.legend(handles, [textwrap.fill(label, width=label_width) for label in labels],
+                                 frameon=False, loc="center left", ncols=legend_columns,
+                                 fontsize=7 if style == "nature" else 8, borderaxespad=0, handlelength=2.0,
+                                 columnspacing=1.4, labelspacing=0.45)
+            if kind != "heatmap" and style != "nature":
                 ax.grid(axis="y", alpha=0.16, linewidth=0.5)
                 ax.set_axisbelow(True)
             files = {}
@@ -283,6 +340,7 @@ def render_figures(plots, output, *, formats=("png", "pdf"), dpi=300):
                 "id": plot["id"], "kind": kind, "title": str(plot.get("title", "")),
                 "caption": str(plot.get("caption", "")), "note": note,
                 "xlabel": str(plot.get("xlabel", "")), "ylabel": str(plot.get("ylabel", "")),
+                "style": style, "width_mm": width * 25.4,
                 "files": files, "data": f"data/{plot['id']}.csv",
             })
     return manifests
