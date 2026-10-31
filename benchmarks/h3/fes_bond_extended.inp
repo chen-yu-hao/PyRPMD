@@ -1,0 +1,59 @@
+# H + H2 / BKMP2: independent, broad-range 2D centroid bond-distance FES.
+# This is a physical probability-density PMF, not the rate_flux measure.
+task = "fes"
+preset = "pilot"
+temperature = "1500 K"
+beads = 16
+seed = 721065
+
+[system]
+symbols = ["H", "H", "H"]
+masses_amu = [1.00782503223, 1.00782503223, 1.00782503223]
+geometry = [[-1.7570000251, 0.0, 0.0], [0.0, 0.0, 0.0], [1.7570000251, 0.0, 0.0]]
+multiplicity = 2
+
+[potential]
+provider = "python"
+factory = "pes.py:build"
+
+[dynamics]
+timestep = "0.1 fs"
+native = "required"
+
+[sampling]
+equilibration = "100 fs"
+production = "300 fs"
+interval = "0.5 fs"
+andersen_interval = 50
+replicas = 2
+
+[[cvs]]
+name = "r01"
+kind = "distance"
+atoms = [0, 1]
+estimator = "centroid"
+unit = "bohr"
+
+[[cvs]]
+name = "r12"
+kind = "distance"
+atoms = [1, 2]
+estimator = "centroid"
+unit = "bohr"
+
+[umbrella]
+cvs = ["r01", "r12"]
+grid = [{start = 1.35, stop = 5.2, count = 8}, {start = 1.35, stop = 5.2, count = 8}]
+stiffness = ["0.05 hartree/bohr^2", "0.05 hartree/bohr^2"]
+
+[analysis]
+method = "mbar"
+measure = "cv_density"
+bins = [44, 44]
+ranges = [[1.15, 5.55], [1.15, 5.55]]
+bootstrap = 12
+min_count = 5
+
+[output]
+directory = "runs/h3-bond-distance-fes"
+checkpoint_interval = "50 fs"
