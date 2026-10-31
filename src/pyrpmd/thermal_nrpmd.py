@@ -14,33 +14,24 @@ is essential when the thermally sampled mapping norm fluctuates.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 import copy
 import math
+from dataclasses import dataclass, field
 
 import numpy as np
 
 from .dynamics import CayleyIntegrator
 from .nonadiabatic import (
-    DiabaticResult, NRPMDDynamics, NRPMDState, _mint, _positive_integer,
+    DiabaticResult,
+    NRPMDDynamics,
+    NRPMDState,
+    _mint,
+    _positive_integer,
     validate_diabatic_result,
 )
 from .potentials.base import PotentialError, coordinates
-
-
-def _finite_positive(value, name, *, zero=False):
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(f"{name} must be finite and {'nonnegative' if zero else 'positive'}")
-    value = float(value)
-    if not np.isfinite(value) or (value < 0 if zero else value <= 0):
-        raise ValueError(f"{name} must be finite and {'nonnegative' if zero else 'positive'}")
-    return value
-
-
-def _nonnegative_integer(value, name):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 0:
-        raise ValueError(f"{name} must be a nonnegative integer")
-    return int(value)
+from .validation import finite_positive as _finite_positive
+from .validation import nonnegative_integer as _nonnegative_integer
 
 
 @dataclass(frozen=True)

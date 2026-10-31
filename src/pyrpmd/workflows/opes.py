@@ -4,26 +4,31 @@ from __future__ import annotations
 
 import copy
 import json
-from pathlib import Path
 from collections.abc import Mapping
+from pathlib import Path
+
 import numpy as np
 
+from ..checkpoint import atomic_savez as _atomic_npz
 from ..checkpoint import load_checkpoint
 from ..cv import make_cvs
 from ..dynamics import Dynamics, State
+from ..io import fingerprint as _fingerprint
+from ..io import write_report_json as write_json
 from ..opes import OPESBias, normalized_weights
-from ..parallel import run_tasks, make_task_potential, root_call
+from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
-from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
-from .sampling import fes_sampler, checkpoint_cv_config
-
+from ..validation import checked_integer
+from .fes import _dimension
+from .sampling import checkpoint_cv_config, fes_sampler
 
 OPES_FIELDS = {"cvs", "sigma", "sigma_au", "barrier", "barrier_au", "bias_factor", "pace",
                "freeze_after_steps", "freeze_equilibration_steps"}
 
 
 def _stream_fingerprint(config, system, replica):
+    """Adapt OPES CV identity and replica keys to the shared stream schema."""
     return _fingerprint(checkpoint_cv_config(config), system, {"opes_replica": replica})
 
 

@@ -7,19 +7,21 @@ wrapping their step loop. See docs/native-ensembles.md for equations and limits.
 """
 from __future__ import annotations
 
-from contextlib import contextmanager, nullcontext
 import ctypes
 import hashlib
 import json
 import math
-import numbers
 import os
-from pathlib import Path
 import tempfile
 import threading
+from contextlib import contextmanager, nullcontext
+from functools import partial
+from pathlib import Path
 from typing import Any
 
 import numpy as np
+
+from .validation import finite_real, integer_count
 
 _THERMOSTATS = {name: i for i, name in enumerate((
     "none", "andersen", "langevin", "pile-l", "pile-g", "svr", "gle",
@@ -36,23 +38,20 @@ _LIBRARY_LOCKS: dict[str, threading.RLock] = {}
 _LIBRARY_LOCKS_GUARD = threading.Lock()
 
 
-def _integer(value: Any, name: str, minimum: int = 0) -> int:
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral):
-        raise ValueError(f"{name} must be an integer")
-    value = int(value)
-    if value < minimum or value > 2**64 - 1:
-        raise ValueError(f"{name} is out of range")
-    return value
+_integer = partial(
+    integer_count,
+    maximum=2 ** 64 - 1,
+    type_message="{name} must be an integer",
+    bounds_message="{name} is out of range",
+)
 
 
-def _scalar(value: Any, name: str, *, positive: bool = False,
-            nonnegative: bool = False) -> float:
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Real):
-        raise ValueError(f"{name} must be a finite real number in atomic units")
-    value = float(value)
-    if not math.isfinite(value) or (positive and value <= 0) or (nonnegative and value < 0):
-        raise ValueError(f"invalid {name}")
-    return value
+_scalar = partial(
+    finite_real,
+    type_message="{name} must be a finite real number in atomic units",
+    finite_message="invalid {name}",
+    bounds_message="invalid {name}",
+)
 
 
 def _array(value: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
@@ -177,7 +176,12 @@ class NativePeriodicPES:
 
     def evaluate(self, q):
         """Preflight/reference evaluation; not called from the native step loop."""
-        from .potentials.base import coordinates, PESResult, PotentialError, validate_result
+        from .potentials.base import (
+            PESResult,
+            PotentialError,
+            coordinates,
+            validate_result,
+        )
         x = coordinates(q)
         if x.shape[1] != self.natoms:
             raise PotentialError("native PES atom count mismatch")
@@ -600,6 +604,7 @@ def main(argv=None) -> int:
     """``pyrpmd-native input.toml``: one native call for the requested trajectory."""
     import argparse
     import tomllib
+
     from .units import time_steps
 
     parser = argparse.ArgumentParser(description=__doc__)

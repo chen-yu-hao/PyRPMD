@@ -9,17 +9,19 @@ or diagnostic evaluation.  No PLUMED import is required to import PyRPMD.
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass
 import importlib
 import math
-from pathlib import Path
 import threading
+from dataclasses import dataclass
+from functools import partial
+from pathlib import Path
 
 import numpy as np
 
 from .constants import AMU_TO_AU, ATOMIC_TIME_S, BOHR_M, KCAL_MOL_TO_AU
 from .dynamics import Dynamics, State
 from .geometry import validate_cell_pbc
+from .validation import checked_integer, finite_positive
 
 
 @dataclass(frozen=True)
@@ -39,23 +41,19 @@ class PlumedBiasResult:
     step: int
 
 
-def _positive(value, name):
-    if isinstance(value, (bool, np.bool_)) or not np.isscalar(value):
-        raise ValueError(f"{name} must be positive and finite")
-    result = float(value)
-    if not math.isfinite(result) or result <= 0:
-        raise ValueError(f"{name} must be positive and finite")
-    return result
+_positive = partial(
+    finite_positive,
+    shape="scalar",
+    message="{name} must be positive and finite",
+)
 
 
-def _integer(value, name, minimum):
-    if (isinstance(value, (bool, np.bool_))
-            or not isinstance(value, (int, np.integer)) or value < minimum):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    # setStep is PLUMED's portable C-int command (also on Windows).
-    if value > np.iinfo(np.intc).max:
-        raise ValueError(f"{name} exceeds the PLUMED setStep integer range")
-    return int(value)
+_integer = partial(
+    checked_integer,
+    maximum=np.iinfo(np.intc).max,
+    message="{name} must be an integer >= {minimum}",
+    maximum_message="{name} exceeds the PLUMED setStep integer range",
+)
 
 
 class PlumedBias:

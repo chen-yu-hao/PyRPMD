@@ -16,10 +16,12 @@ import numpy as np
 from ..bias import UmbrellaBias, displacement
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
+from ..io import fingerprint as _fingerprint
+from ..io import write_report_json as write_json
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
-from .fes import (_analyze_streams, _fingerprint, checked_integer,
-                  resolve_umbrellas, steer_to_center, write_json)
+from ..validation import checked_integer
+from .fes import _analyze_streams, resolve_umbrellas, steer_to_center
 from .sampling import checkpoint_cv_config, fes_sampler
 
 CHECKPOINT_KIND = "PyRPMD.replica_exchange.v1"

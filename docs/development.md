@@ -12,6 +12,54 @@ requires permission to create a local loopback socket. For a NumPy-only install,
 set `PYRPMD_NO_NATIVE=1` before building in a clean environment; requesting native
 execution with `native='required'` must fail explicitly if it is unavailable.
 
+## Shared utilities and module boundaries
+
+Import shared primitives from their owning module when adding code:
+
+- `validation.py` owns scalar integer, finiteness and sign/bounds checks. Integer
+  checks reject booleans and fractional values. Callers select the exception
+  type and diagnostic wording; unit conversion and task-specific constraints
+  stay with their domain resolver.
+- `io.py` owns portable JSON conversion, atomic JSON writes and fingerprint
+  encoding. `jsonable`/`write_json` reject nonfinite metadata by default;
+  `report_jsonable`/`write_report_json` represent unavailable numerical estimates
+  as JSON `null`. The callable, dataclass and `to_dict` policies preserve legacy
+  schemas; they are explicit choices, not interchangeable serializers.
+- `checkpoint.atomic_savez` owns atomic compressed NPZ writes, the integrity
+  envelope and per-array checksums. `save_metadata_npz` packages dRPMD metadata
+  and delegates to that writer. Workflow modules define payload contents and
+  restart checks, and use `load_checkpoint` to validate the container.
+
+Scientific identities retain their existing schema and encoding:
+
+| Entry point | Identity contract |
+| --- | --- |
+| `io.fingerprint(config, system)` | Manifest configuration/system identity; retains analysis settings and excludes output destination, execution topology and transient input metadata. |
+| `io.fingerprint(config, system, extras)` | Sampling-stream identity; excludes analysis-only and execution settings, while retaining the sampling measure, flux axis, CV geometry and stream-specific values. FES and OPES use this path. |
+| `io.fingerprint_payload(payload, ...)` | Shared encoding for an explicitly defined payload. dRPMD retains its versioned physics payload, parent-chain policy and local dependency digests in `drpmd_persistence.py`. |
+
+Do not replace these schemas with one new digest during a structural refactor:
+that would reject existing manifests and checkpoints even when the physics is
+unchanged. Changes to a scientific identity need an explicit compatibility or
+migration decision and regression evidence.
+
+The main implementation boundaries, relative to `src/pyrpmd/`, are:
+
+| Family | Responsibility |
+| --- | --- |
+| `input.py`, `input_*.py` | `JobSpec` loading, overrides and resolution order remain in `input.py`; schema, scientific options, paths, runtime settings, systems/providers and task contracts have separate modules. |
+| `workflows/drpmd.py`, `drpmd_*.py` | The entry point dispatches work; sampling, trajectory propagation, outcome classification, analysis and restart conventions are separate modules. |
+| `workflows/rate.py`, `rate_*.py` | The entry point coordinates PMF and recrossing stages; constraints, options, PMF preparation, parent/child tasks and aggregation have separate modules. |
+| `analysis/fes.py` | FES reconstruction and established analysis imports. |
+| `analysis/mbar.py`, `umbrella.py`, `fes_statistics.py`, `rate_pmf.py` | MBAR solving/reusable weights, umbrella energies/histograms/UI, correlation/bootstrap statistics, and rate-barrier estimation respectively. |
+
+Compatibility modules keep established imports and deserialization paths with
+explicit re-exports or small adapters. dRPMD worker entry points remain
+importable for process/MPI dispatch; factory and persistence callbacks are passed
+into kernels explicitly. FES adapters pass the solver, block-resampling and UI
+callbacks used by existing diagnostics. New implementation modules should depend
+on the owning helpers rather than import the compatibility module back again.
+
 ## MPI
 
 ```bash

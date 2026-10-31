@@ -1,12 +1,17 @@
 """Validated molecular identity and XYZ parsing; coordinates/masses in atomic units."""
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
+
 import numpy as np
+
 from .constants import AMU_TO_AU, ANGSTROM_TO_AU
-from .units import parse_quantity
 from .geometry import validate_cell_pbc
+from .units import parse_quantity
+from .validation import integer_value
 
 _SYMBOLS = (
     "X H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og"
@@ -45,13 +50,11 @@ _MASSES = {
 }
 
 
-def _integer(value, name, minimum=None):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)):
-        raise ValueError(f"{name} must be an integer")
-    value = int(value)
-    if minimum is not None and value < minimum:
-        raise ValueError(f"{name} must be >= {minimum}")
-    return value
+_integer = partial(
+    integer_value,
+    type_message="{name} must be an integer",
+    bounds_message="{name} must be >= {minimum}",
+)
 
 
 @dataclass

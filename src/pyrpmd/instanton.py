@@ -15,27 +15,27 @@ and kelvin; hbar=1 in atomic units.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
+from functools import partial
 
 import numpy as np
 from scipy.optimize import root
 
 from .constants import ATOMIC_TIME_S, BOHR_M, KB_AU
 from .potentials.base import coordinates, validate_result
+from .validation import finite_positive
 
 
 class InstantonError(RuntimeError):
     """The requested stationary orbit or its rate prefactor is not valid."""
 
 
-def _positive(value, name):
-    if isinstance(value, (bool, np.bool_)) or np.ndim(value) != 0:
-        raise ValueError(f"{name} must be a positive finite scalar")
-    value = float(value)
-    if not np.isfinite(value) or value <= 0:
-        raise ValueError(f"{name} must be a positive finite scalar")
-    return value
+_positive = partial(
+    finite_positive,
+    shape="zero_dim",
+    message="{name} must be a positive finite scalar",
+)
 
 
 def _mask_and_masses(shape, masses, active_mask):

@@ -17,6 +17,39 @@
 | `src/pyrpmd/parallel/` | 任务进程、珠子池、MPI 与 GPU 放置 |
 | `examples/`、`tests/`、`benchmarks/` | 可运行示例、回归测试、固定来源的基准 |
 
+### 公共工具约定
+
+标量整数、有限性以及正负号和上下界检查统一使用 `validation.py`。整数检查拒绝布尔值和小数；
+调用方可以保留本领域的异常类型与错误消息。单位换算和任务专属约束仍由各自的解析器处理。
+
+`io.jsonable` 和 `io.write_json` 默认采用严格的元数据转换；`io.report_jsonable` 和
+`io.write_report_json` 把不可用的数值估计表示为 JSON `null`。可调用对象、dataclass 和
+`to_dict` 的转换策略用于保留已有表示。通用 NPZ 检查点容器通过 `checkpoint.atomic_savez`
+完成原子压缩写入和完整性封装；`save_metadata_npz` 只负责组装 dRPMD 元数据，再委派给该写入器。
+
+运行指纹共用编码器，同时保留已有模式：`io.fingerprint(config, system)` 保留包含分析设置的
+manifest 身份；提供 `extras` 时使用采样流身份，排除纯分析与执行设置，同时保留采样测度、
+通量轴和 CV 几何约定。FES 与 OPES 使用采样流形式。dRPMD 在 `drpmd_persistence.py` 中组装
+带版本的物理参数、父链身份策略和本地依赖摘要，再调用 `io.fingerprint_payload`。修改编码或
+模式时，必须明确如何兼容续跑，并提供回归验证。
+
+### 按职责拆分的实现模块
+
+以下路径相对于 `src/pyrpmd/`：
+
+| 模块组 | 职责 |
+| --- | --- |
+| `input.py`、`input_*.py` | `JobSpec` 加载、覆盖和解析顺序；字段模式、科学选项、路径、运行参数、系统/provider 和任务约束分别实现。 |
+| `workflows/drpmd.py`、`drpmd_*.py` | 分派、采样、轨迹传播、出射通道判定、分析和续跑约定。 |
+| `workflows/rate.py`、`rate_*.py` | 流程协调、约束几何、选项、PMF 准备、父/子轨迹和统计汇总。 |
+| `analysis/fes.py` | FES 重建与既有分析导入入口。 |
+| `analysis/mbar.py`、`umbrella.py`、`fes_statistics.py`、`rate_pmf.py` | 分别负责 MBAR/可复用权重，伞形势能/直方图/UI，相关性/bootstrap 统计，以及速率势垒估计。 |
+
+兼容入口通过显式重新导出或小型适配函数，保留既有导入与已序列化的全局对象引用。进程/MPI
+工作函数保持可导入；dRPMD 将工厂和持久化回调显式传入工作内核。FES 适配器在调用时解析
+既有诊断使用的求解器、重采样和 UI 回调。新模块从实际负责该功能的模块导入依赖，避免反向
+依赖兼容入口。
+
 修改公共接口时，在同一提交中更新文档、示例以及检查数值与状态行为的测试。修改采样测度、力、约束、随机流或续跑身份时，
 附上科学依据和回归测试。
 

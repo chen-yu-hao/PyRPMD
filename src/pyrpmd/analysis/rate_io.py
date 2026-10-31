@@ -8,12 +8,14 @@ must distinguish coordinate density from a flux-weighted sampling measure.
 from __future__ import annotations
 
 import json
+from functools import partial
 from pathlib import Path
 
 import numpy as np
 
 from ..constants import AU_RATE_TO_CM3_S
 from ..io import file_sha256, write_json
+from ..validation import finite_positive
 
 
 def _read_json(path):
@@ -35,13 +37,7 @@ def _scalar(value, name):
     return array.item()
 
 
-def _positive(value, name):
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(f"{name} must be positive and finite")
-    value = float(value)
-    if not np.isfinite(value) or value <= 0:
-        raise ValueError(f"{name} must be positive and finite")
-    return value
+_positive = partial(finite_positive, message='{name} must be positive and finite')
 
 
 def _json_safe(value):
@@ -274,7 +270,7 @@ def _import_channels(root, spec, static, *, bootstrap, seed):
 
 
 def _fes_rate(root, spec, *, bootstrap, seed):
-    from .rate_postprocess import surface_rate_2d, flux_slice_rate_2d
+    from .rate_postprocess import flux_slice_rate_2d, surface_rate_2d
 
     unknown = set(spec) - _SPEC_FIELDS
     if unknown:

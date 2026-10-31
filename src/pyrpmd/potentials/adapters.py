@@ -7,14 +7,20 @@ hartree, and forces are -dE/dq. Optional engines are imported only on request.
 from __future__ import annotations
 
 import importlib
+
 import numpy as np
 
 from ..constants import KB_AU
 from ..geometry import validate_cell_pbc
 from ..system import _Z
+from ..validation import positive_number as _positive
 from .base import (
-    Potential, PESResult, PotentialError, BackendUnavailableError,
-    coordinates, validate_result,
+    BackendUnavailableError,
+    PESResult,
+    Potential,
+    PotentialError,
+    coordinates,
+    validate_result,
 )
 from .optional import ASEPotential
 from .python import BOHR_ANGSTROM, EV_HARTREE
@@ -47,14 +53,6 @@ def _identity(symbols, charge, multiplicity):
             or not isinstance(multiplicity, (int, np.integer)) or multiplicity < 1):
         raise ValueError("multiplicity must be a positive integer")
     return symbols, int(charge), int(multiplicity)
-
-
-def _positive(value, name, *, integer=False):
-    if (isinstance(value, (bool, np.bool_)) or not np.isscalar(value)
-            or not np.isfinite(value) or value <= 0
-            or (integer and not isinstance(value, (int, np.integer)))):
-        raise ValueError(f"{name} must be a positive {'integer' if integer else 'number'}")
-    return int(value) if integer else float(value)
 
 
 def _get(system, key, default=None):

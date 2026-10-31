@@ -11,14 +11,14 @@ from __future__ import annotations
 from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
-import numbers
+from functools import partial
 from pathlib import Path
 
 import numpy as np
 
-from .units import parse_quantity, unit_factor
 from .pcet import ISOTOPE_MASSES_AU
-
+from .units import parse_quantity, unit_factor
+from .validation import checked_integer, finite_real
 
 _ROOT_FIELDS = {
     "schema_version", "task", "preset", "description", "temperature", "pcet", "output",
@@ -60,24 +60,20 @@ def _required(table, name, field):
     return table[field]
 
 
-def _integer(value, name, minimum=1, maximum=None):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral):
-        raise _error(f"{name} must be an integer")
-    value = int(value)
-    if value < minimum or (maximum is not None and value > maximum):
-        bounds = f"{minimum}..{maximum}" if maximum is not None else f">= {minimum}"
-        raise _error(f"{name} must be {bounds}")
-    return value
+_integer = partial(
+    checked_integer,
+    error_type=_error,
+    type_message="{name} must be an integer",
+    bounds_message="{name} must be {bounds}",
+)
 
 
-def _real(value, name, *, positive=False, nonnegative=False):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Real):
-        raise _error(f"{name} must be a finite real number")
-    value = float(value)
-    if not np.isfinite(value) or (positive and value <= 0) or (nonnegative and value < 0):
-        constraint = "positive" if positive else "nonnegative" if nonnegative else "finite"
-        raise _error(f"{name} must be finite and {constraint}")
-    return value
+_real = partial(
+    finite_real,
+    error_type=_error,
+    finite_message="{name} must be finite and {sign}",
+    bounds_message="{name} must be finite and {sign}",
+)
 
 
 def _quantity(value, name, dimension, *, positive=False, nonnegative=False):

@@ -17,6 +17,49 @@
 | `src/pyrpmd/parallel/` | Task processes, bead pools, MPI and GPU placement |
 | `examples/`, `tests/`, `benchmarks/` | Runnable examples, regression tests, source-pinned benchmarks |
 
+### Shared utility contracts
+
+Use `validation.py` for scalar integer, finiteness and sign/bounds checks. Integer
+checks reject booleans and fractional values; callers can retain their domain
+exception type and error message. Unit conversion and task-specific constraints
+remain in their resolvers.
+
+`io.jsonable` and `io.write_json` use strict metadata conversion by default.
+`io.report_jsonable` and `io.write_report_json` encode unavailable numerical
+estimates as JSON `null`. Callable, dataclass and `to_dict` policies preserve
+existing representations. Use `checkpoint.atomic_savez` for the common atomic
+compressed NPZ container and integrity envelope; `save_metadata_npz` only
+packages dRPMD metadata before delegating to it.
+
+Fingerprints share an encoder while preserving their existing schemas:
+`io.fingerprint(config, system)` keeps the manifest identity, including analysis
+settings; supplying `extras` selects the stream identity, excluding analysis-only
+and execution settings while retaining the sampling measure, flux axis and CV
+geometry. FES and OPES use the stream form. dRPMD builds its versioned physics
+payload, parent-chain policy and local dependency digests in
+`drpmd_persistence.py`, then uses `io.fingerprint_payload`. Changing an encoding or
+schema requires a restart compatibility decision and regression evidence.
+
+### Focused implementation modules
+
+The following paths are relative to `src/pyrpmd/`:
+
+| Family | Responsibility |
+| --- | --- |
+| `input.py`, `input_*.py` | `JobSpec` loading, overrides and resolution order; separate schema, scientific-option, path, runtime, system/provider and task-contract modules. |
+| `workflows/drpmd.py`, `drpmd_*.py` | Dispatch, sampling, trajectory propagation, outcome classification, analysis and restart conventions. |
+| `workflows/rate.py`, `rate_*.py` | Coordination, constrained geometry, options, PMF preparation, parent/child trajectories and statistical aggregation. |
+| `analysis/fes.py` | FES reconstruction and established analysis imports. |
+| `analysis/mbar.py`, `umbrella.py`, `fes_statistics.py`, `rate_pmf.py` | MBAR/reusable weights, umbrella energies/histograms/UI, correlation/bootstrap statistics, and rate-barrier estimation respectively. |
+
+Compatibility entry points use explicit re-exports or small adapters so existing
+imports and serialized global references remain usable. Process/MPI workers stay
+importable, and dRPMD passes its factory and persistence callbacks into the worker
+kernels. FES adapters resolve the solver, resampler and UI callbacks used by
+existing diagnostics at call time. New modules import their dependencies from the
+owning implementation module, avoiding a dependency back to the compatibility
+entry point.
+
 A change to a public interface updates the documentation, the examples and tests that check the
 numerical and state behavior in the same commit. Changes to sampling measures, forces, constraints,
 random streams or restart identity come with their scientific reasoning and regression tests.

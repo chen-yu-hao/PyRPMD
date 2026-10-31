@@ -5,36 +5,26 @@ does not convert a specified initial state and collision energy into a thermal
 rate, infer quantum state-to-state probabilities, or establish convergence.
 """
 
-from collections import Counter
-from collections.abc import Mapping
 import hashlib
 import json
 import math
+from collections import Counter
+from collections.abc import Mapping
+from functools import partial
 
 import numpy as np
 
+from ..validation import checked_integer as _integer
+from ..validation import finite_positive
 
 _STATUSES = ("product", "nonreactive", "unresolved", "failed")
 _INITIALIZATION_MODES = ("independent", "parent_chain", "unknown")
 
 
-def _positive_finite(value, name):
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(f"{name} must be positive and finite")
-    try:
-        result = float(value)
-    except (TypeError, ValueError):
-        raise ValueError(f"{name} must be positive and finite") from None
-    if not math.isfinite(result) or result <= 0:
-        raise ValueError(f"{name} must be positive and finite")
-    return result
-
-
-def _integer(value, name, minimum):
-    if (isinstance(value, (bool, np.bool_))
-            or not isinstance(value, (int, np.integer)) or value < minimum):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
+_positive_finite = partial(
+    finite_positive,
+    message="{name} must be positive and finite",
+)
 
 
 def _state_key(descriptor):

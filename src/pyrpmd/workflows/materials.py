@@ -19,14 +19,15 @@ import numpy as np
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
+from ..io import fingerprint as _fingerprint
+from ..io import write_report_json as write_json
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..potentials.base import validate_result
 from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
-from ..units import parse_quantity
 from ..trajectory import TrajectoryStream, iter_chunks, materialize_stream
-from .fes import _fingerprint, checked_integer, write_json
-
+from ..units import parse_quantity
+from ..validation import checked_integer
 
 CHECKPOINT_KIND = "PyRPMD.materials.v1"
 STREAM_CHECKPOINT_KIND = "PyRPMD.materials-stream.v1"
@@ -416,7 +417,10 @@ def _sample_replica(task):
             kwargs.update(fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry)
         sampling = Dynamics(provider, system.masses, config["beta"], config["beads"], options["sample_dt"], **kwargs)
         if options["electronic_friction"] is not None:
-            from ..electronic_friction import ElectronicFrictionDynamics, make_electronic_friction
+            from ..electronic_friction import (
+                ElectronicFrictionDynamics,
+                make_electronic_friction,
+            )
             friction_provider = make_electronic_friction(config, system)
             production = ElectronicFrictionDynamics(
                 provider, system.masses, config["beta"], config["beads"], options["production_dt"],
@@ -660,8 +664,8 @@ def _analyze(streams, config, system, output, return_data=False):
     if system.fixed_atoms:
         result["warnings"].append("Fixed atoms are external coordinates; quantum kinetic-energy estimators count mobile atoms only.")
     if options["barostat"] is not None:
-        from ..constants import BOHR_M, HARTREE_J
         from ..analysis.diagnostics import correlated_mean_diagnostics
+        from ..constants import BOHR_M, HARTREE_J
         result["barostat"] = {
             "method": "bzp", **options["barostat"],
             "target_pressure_bar": options["barostat"]["pressure_au"] * HARTREE_J / BOHR_M**3 / 1e5,
@@ -692,8 +696,8 @@ def _analyze(streams, config, system, output, return_data=False):
         ]
         result["warnings"].append("PIMD sampling times are not physical dynamical times; H_P is reported only as an integration diagnostic.")
     else:
-        from ..analysis.diffusion import analyze_diffusion
         from ..analysis.diagnostics import nve_energy_diagnostics
+        from ..analysis.diffusion import analyze_diffusion
 
         times = streams[0]["times"]
         if any(not np.array_equal(s["times"], times) for s in streams):

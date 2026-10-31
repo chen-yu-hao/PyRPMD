@@ -14,21 +14,29 @@ pilot samples cannot be passed off as samples from the frozen umbrella set.
 """
 
 from __future__ import annotations
+
 import copy
 import hashlib
 import json
-from pathlib import Path
 from collections.abc import Mapping
+from pathlib import Path
+
 import numpy as np
 
-from ..analysis.fes import (solve_mbar, umbrella_reduced_potentials,
-                            cv_statistical_inefficiency, CV_CORRELATION_OBSERVABLES)
+from ..analysis.fes import (
+    CV_CORRELATION_OBSERVABLES,
+    cv_statistical_inefficiency,
+    solve_mbar,
+    umbrella_reduced_potentials,
+)
 from ..bias import displacement
+from ..io import fingerprint as _fingerprint
+from ..io import report_jsonable as jsonable
+from ..io import write_report_json as write_json
 from ..parallel import root_call, run_tasks
-from .fes import (resolve_umbrellas, _fingerprint, _sample_window,
-                  checked_integer, write_json, jsonable, _dimension)
 from ..units import parse_quantity
-
+from ..validation import checked_integer
+from .fes import _dimension, _sample_window, resolve_umbrellas
 
 ADAPTIVE_FIELDS = {"enabled", "pilot_steps", "pilot_equilibration_steps", "max_rounds",
                    "max_windows", "max_pilot_steps", "target_overlap", "min_effective_samples", "min_spacing",

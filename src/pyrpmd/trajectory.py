@@ -13,20 +13,21 @@ No paths from a descriptor are followed and no pickle/object arrays are used.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import struct
 import tempfile
 import uuid
+from collections.abc import Mapping
+from functools import partial
+from pathlib import Path
 
 import numpy as np
 
 from .checkpoint import CheckpointError, atomic_savez, load_checkpoint
-
+from .validation import integer_count
 
 FORMAT = "PyRPMD.trajectory-stream.v1"
 CHUNK_KIND = "PyRPMD.trajectory-chunk.v1"
@@ -41,11 +42,12 @@ class TrajectoryError(CheckpointError):
     """The selected committed trajectory cannot be used safely."""
 
 
-def _integer(value, name, minimum=0):
-    if (isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer))
-            or value < minimum or value > np.iinfo(np.int64).max):
-        raise TrajectoryError(f"{name} must be an integer >= {minimum}")
-    return int(value)
+_integer = partial(
+    integer_count,
+    maximum=np.iinfo(np.int64).max,
+    error_type=TrajectoryError,
+    message="{name} must be an integer >= {minimum}",
+)
 
 
 def _schema(value):

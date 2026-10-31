@@ -1,39 +1,103 @@
 """Atomic metadata and portable array storage for reproducible runs."""
 
 from __future__ import annotations
+
 import hashlib
 import importlib.util
 import json
 import os
-from pathlib import Path
 import tempfile
 import tomllib
+from dataclasses import asdict, is_dataclass
+from functools import partial
+from pathlib import Path
+
 import numpy as np
 
 
-def jsonable(value):
-    if isinstance(value, np.ndarray):
-        return value.tolist()
-    if isinstance(value, np.generic):
-        return value.item()
-    if isinstance(value, Path):
-        return str(value)
-    if isinstance(value, dict):
-        return {str(k): jsonable(v) for k, v in value.items()}
-    if isinstance(value, (tuple, list)):
-        return [jsonable(x) for x in value]
-    if hasattr(value, "to_dict"):
-        return jsonable(value.to_dict())
-    if callable(value):
-        return {"python_callable": f"{value.__module__}:{value.__qualname__}"}
-    return value
+def jsonable(
+    value,
+    *,
+    nonfinite="raise",
+    callables=True,
+    dataclasses="to_dict",
+    to_dict="recursive",
+):
+    """Convert portable values with an explicit policy for missing numbers.
+
+    Configuration/checkpoint metadata is strict. Numerical reports may select
+    ``nonfinite='null'`` to represent unsampled bins in valid JSON. ``callables``
+    retains the manifest's callable identity convention; stream identities use
+    their historical ``repr`` fallback instead. ``to_dict`` controls whether an
+    object's explicit representation is recursively converted, kept shallow
+    (legacy FES), or ignored (legacy dRPMD). Dataclasses can explicitly select
+    their fields with ``dataclasses='asdict'``.
+    """
+    if nonfinite not in ("raise", "null"):
+        raise ValueError("nonfinite must be 'raise' or 'null'")
+    if dataclasses not in ("to_dict", "asdict"):
+        raise ValueError("dataclasses must be 'to_dict' or 'asdict'")
+    if to_dict not in ("recursive", "shallow", "ignore"):
+        raise ValueError("to_dict must be 'recursive', 'shallow' or 'ignore'")
+
+    def convert(item):
+        if isinstance(item, np.ndarray):
+            return convert(item.tolist())
+        if isinstance(item, np.generic):
+            return convert(item.item())
+        if isinstance(item, Path):
+            return str(item)
+        if (
+            dataclasses == "asdict"
+            and is_dataclass(item)
+            and not isinstance(item, type)
+        ):
+            return convert(asdict(item))
+        if isinstance(item, dict):
+            return {str(k): convert(v) for k, v in item.items()}
+        if isinstance(item, (tuple, list)):
+            return [convert(x) for x in item]
+        if isinstance(item, float) and not np.isfinite(item):
+            if nonfinite == "null":
+                return None
+            raise ValueError("Nonfinite values are not permitted in JSON metadata")
+        if to_dict != "ignore" and hasattr(item, "to_dict"):
+            result = item.to_dict()
+            return convert(result) if to_dict == "recursive" else result
+        if callables and callable(item):
+            return {"python_callable": f"{item.__module__}:{item.__qualname__}"}
+        return item
+
+    return convert(value)
 
 
-def write_json(path, value):
+def write_json(
+    path,
+    value,
+    *,
+    nonfinite="raise",
+    sort_keys=False,
+    callables=True,
+    dataclasses="to_dict",
+    to_dict="recursive",
+):
+    """Atomically write JSON, preserving the old destination on any failure."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     raw = (
-        json.dumps(jsonable(value), ensure_ascii=False, indent=2, allow_nan=False)
+        json.dumps(
+            jsonable(
+                value,
+                nonfinite=nonfinite,
+                callables=callables,
+                dataclasses=dataclasses,
+                to_dict=to_dict,
+            ),
+            ensure_ascii=False,
+            indent=2,
+            sort_keys=sort_keys,
+            allow_nan=False,
+        )
         + "\n"
     )
     fd, tmp = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
@@ -48,6 +112,21 @@ def write_json(path, value):
             os.unlink(tmp)
 
 
+# Reports deliberately represent missing/nonfinite estimates as JSON null.
+report_jsonable = partial(
+    jsonable,
+    nonfinite="null",
+    callables=False,
+    to_dict="shallow",
+)
+write_report_json = partial(
+    write_json,
+    nonfinite="null",
+    callables=False,
+    to_dict="shallow",
+)
+
+
 def file_sha256(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -56,8 +135,50 @@ def file_sha256(path):
     return h.hexdigest()
 
 
-def fingerprint(config, system):
-    """Science identity excludes output destination and execution topology."""
+def fingerprint_payload(
+    value,
+    *,
+    compact=False,
+    nonfinite="raise",
+    default=None,
+    callables=True,
+    dataclasses="to_dict",
+    to_dict="recursive",
+    allow_nan=False,
+):
+    """Hash a canonical JSON payload while preserving versioned encodings."""
+    options = {"sort_keys": True, "allow_nan": allow_nan}
+    if compact:
+        options["separators"] = (",", ":")
+    if default is not None:
+        options["default"] = default
+    return hashlib.sha256(
+        json.dumps(
+            jsonable(
+                value,
+                nonfinite=nonfinite,
+                callables=callables,
+                dataclasses=dataclasses,
+                to_dict=to_dict,
+            ),
+            **options,
+        ).encode()
+    ).hexdigest()
+
+
+def fingerprint(config, system, extras=None):
+    """Return the stable identity for a manifest or a sampling stream.
+
+    With ``extras=None``, retain the manifest's original config/system schema.
+    Supplying a stream mapping selects the existing v1 stream schema, which
+    ignores analysis-only and execution settings but retains sampling measure,
+    flux axis and CV geometry. Keeping both schemas byte-compatible lets old
+    manifests and checkpoints resume after implementation refactors.
+    """
+    if extras is not None:
+        from .propagation import scientific_config
+
+        config = scientific_config(config)
     data = {
         k: v
         for k, v in config.items()
@@ -71,16 +192,36 @@ def fingerprint(config, system):
             "_input_path",
             "_base_directory",
         )
+        and (extras is None or k != "analysis")
     }
-    value = {"config": data, "system": system.to_dict()}
+    if extras is None:
+        value = {"config": data, "system": system.to_dict()}
+    else:
+        value = {
+            "schema": 1,
+            "physics": data,
+            "sampling_measure": config.get("analysis", {}).get("measure", "cv_density"),
+            "system": system.to_dict(),
+            "stream": extras,
+        }
+        if "flux_axis" in config.get("analysis", {}):
+            value["sampling_flux_axis"] = config["analysis"]["flux_axis"]
     from .cv import geometry_convention_identity
 
     convention = geometry_convention_identity(config, system)
     if convention is not None:
         value["cv_geometry_convention"] = convention
-    return hashlib.sha256(
-        json.dumps(jsonable(value), sort_keys=True, allow_nan=False).encode()
-    ).hexdigest()
+    if extras is None:
+        return fingerprint_payload(value)
+    return fingerprint_payload(
+        value,
+        compact=True,
+        nonfinite="null",
+        default=repr,
+        callables=False,
+        to_dict="shallow",
+        allow_nan=True,
+    )
 
 
 def referenced_files(config):

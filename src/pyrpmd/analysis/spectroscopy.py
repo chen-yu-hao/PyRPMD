@@ -13,10 +13,14 @@ frequency and wavenumber conversions do not silently rescale that density.
 
 from __future__ import annotations
 
+from functools import partial
+
 import numpy as np
 from scipy.constants import c
 
 from ..constants import ATOMIC_TIME_S
+from ..validation import checked_integer as _integer
+from ..validation import finite_positive
 
 
 def _real_array(value, name):
@@ -29,18 +33,12 @@ def _real_array(value, name):
     return result
 
 
-def _integer(value, name, minimum):
-    if (isinstance(value, (bool, np.bool_))
-            or not isinstance(value, (int, np.integer)) or value < minimum):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
-
-
-def _positive(value, name):
-    if (isinstance(value, (bool, np.bool_)) or not np.isscalar(value)
-            or not np.isreal(value) or not np.isfinite(value) or value <= 0):
-        raise ValueError(f"{name} must be a finite positive real number")
-    return float(value)
+_positive = partial(
+    finite_positive,
+    coerce=False,
+    shape="scalar",
+    message="{name} must be a finite positive real number",
+)
 
 
 def _series(value, name):
