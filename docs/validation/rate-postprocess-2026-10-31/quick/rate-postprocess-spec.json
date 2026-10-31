@@ -1,0 +1,11 @@
+{
+  "method": "flux_slice_2d",
+  "surface": 1.0,
+  "reference": 0.0,
+  "reference_rate_au": 0.9873012308830208,
+  "reference_definition": "Free H + H2 incoming sphere at Rinf=10 bohr; 4*pi*Rinf^2/sqrt(2*pi*beta*mu)",
+  "beta": 210.51668320265807,
+  "flux_axis": 0,
+  "channel_flux": "../dynamics/channel_recrossing.npz",
+  "surface_identity": "86f6443c2832fc013ef521f7df166ffdfce2c04a0503fb25fb0e2f66b494762c"
+}

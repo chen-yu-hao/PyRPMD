@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "job": "../drpmd/free_scattering.inp",
+  "temperatures": ["1000 K", "1500 K"],
+  "convergence": {
+    "beads": [1, 4, 8],
+    "timestep": ["0.5 fs", "0.25 fs"],
+    "separation": ["3 angstrom", "4 angstrom", "5 angstrom"],
+    "bmax": ["1 angstrom", "1.5 angstrom", "2 angstrom"]
+  },
+  "replicates": 3,
+  "design": "one_at_a_time",
+  "relative_tolerance": 0.05
+}

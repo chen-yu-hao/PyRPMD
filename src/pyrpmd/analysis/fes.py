@@ -42,6 +42,54 @@ def statistical_inefficiency(series):
     return float(np.clip(1 + 2 * total, 1, n))
 
 
+CV_CORRELATION_OBSERVABLES = (
+    "CV and nonconstant centered CV squared; periodic CVs use nonconstant first and second circular harmonics"
+)
+
+
+def cv_statistical_inefficiency(values, periods=None):
+    """Estimate the slowest resolved linear/amplitude CV correlation.
+
+    Fast sign changes can hide a slowly relaxing oscillator amplitude from
+    the initial-positive-sequence estimate of the coordinate alone. Include
+    its centered square, or first/second circular harmonics for periodic CVs.
+    Constant derived traces contain no additional fluctuations to diagnose;
+    a truly constant CV retains the existing unresolved-variation convention
+    (g=N for N>=4). This still cannot establish equilibration or detect every
+    slow variable relevant to a histogram or rate.
+    """
+    values = np.asarray(values, float)
+    if values.ndim == 1:
+        values = values[:, None]
+    if values.ndim != 2 or min(values.shape) == 0 or not np.isfinite(values).all():
+        raise ValueError("CV correlation requires finite nonempty [N,D] values")
+    periods = (None,) * values.shape[1] if periods is None else tuple(periods)
+    if len(periods) != values.shape[1] or any(
+        p is not None and (not np.isscalar(p) or not np.isfinite(p) or p <= 0)
+        for p in periods
+    ):
+        raise ValueError("periods must contain one positive finite number or None per CV")
+    gs = []
+    for j, period in enumerate(periods):
+        if period is None:
+            coordinate = values[:, j]
+            gs.append(statistical_inefficiency(coordinate))
+            square = (coordinate - coordinate.mean())**2
+            if (np.ptp(square) > 16 * np.finfo(float).eps * np.max(square)
+                    and np.var(square) > np.finfo(float).tiny):
+                gs.append(statistical_inefficiency(square))
+        else:
+            angle = 2 * np.pi * (values[:, j] % period) / period
+            traces = (np.sin(angle), np.cos(angle), np.sin(2 * angle), np.cos(2 * angle))
+            # Discard roundoff-sized variation, e.g. sin(pi) versus sin(0).
+            # A constant circular CV may have different raw branch labels.
+            varying = [trace for trace in traces if np.ptp(trace) > 16 * np.finfo(float).eps]
+            gs.extend(statistical_inefficiency(trace) for trace in varying)
+            if not varying:
+                gs.append(statistical_inefficiency(np.zeros(len(values))))
+    return float(max(gs))
+
+
 @dataclass
 class MBARResult:
     free_energies: np.ndarray
@@ -431,6 +479,32 @@ def _bootstrap_block_plan(counts, inefficiencies):
     }
 
 
+def _bootstrap_groups(groups, counts):
+    """A partition of synchronized streams; independent streams are singleton groups."""
+    if groups is None:
+        return [np.array([i], dtype=int) for i in range(len(counts))]
+    labels = np.asarray(groups)
+    if (labels.shape != counts.shape or labels.dtype.kind not in "iu"
+            or np.any(labels < 0)):
+        raise ValueError("bootstrap_groups needs one nonnegative integer per stream")
+    result = [np.flatnonzero(labels == label) for label in dict.fromkeys(labels.tolist())]
+    if any(np.any(counts[group] != counts[group[0]]) for group in result):
+        raise ValueError("streams in a bootstrap group must have equal synchronized lengths")
+    return result
+
+
+def _grouped_resample_indices(counts, block_lengths, groups, rng):
+    """Preserve cross-window correlation by using one clock draw per exchange ladder."""
+    offsets = np.r_[0, np.cumsum(counts)]
+    indices = [None] * len(counts)
+    for group in groups:
+        first = group[0]
+        clock = _block_resample(np.arange(counts[first]), block_lengths[first], rng)
+        for i in group:
+            indices[i] = offsets[i] + clock
+    return np.concatenate(indices)
+
+
 def reconstruct_fes(
     samples,
     centers,
@@ -444,11 +518,17 @@ def reconstruct_fes(
     min_count=1,
     overlap_threshold=1e-6,
     return_reweighting=False,
+    correlation_observables=None,
+    *,
+    bootstrap_groups=None,
 ):
     """Reconstruct 1D/2D density w.r.t. ds1...dsD, not bin probability mass.
 
     Bootstrap resamples contiguous circular time blocks independently inside
-    each window/replica. No unsupported region is filled by interpolation.
+    each window/replica by default. With bootstrap_groups, equally spaced and
+    synchronized streams in a group use the same clock indices and the largest
+    estimated correlation block in that group (for replica-exchange ladders).
+    Different groups remain independent. No unsupported region is interpolated.
     Disconnected overlap components are reported; a single global FES is then
     masked because its relative offset is not identifiable.
 
@@ -457,6 +537,14 @@ def reconstruct_fes(
     axis defaults to [-period/2, period/2] and may cover at most one period.
     The error is relative to the original minimum bin, which is held fixed in
     every bootstrap draw. Per-bin valid-draw counts expose missing support.
+
+    ``correlation_observables`` optionally supplies one finite real [Ns,M]
+    array per stream, with the same M >= 1 across streams. Its observations
+    must be aligned to the CV samples. The largest statistical inefficiency
+    among CVs and these additional observables controls diagnostics and block
+    lengths only; MBAR samples, raw counts and point weights are unchanged.
+    This allows a hidden coordinate to enlarge correlation blocks without
+    treating it as an additional biased CV or changing the target measure.
     """
     arrays = [np.asarray(a, float) for a in samples]
     if not arrays or any(a.ndim != 2 or not len(a) for a in arrays):
@@ -466,6 +554,28 @@ def reconstruct_fes(
         a.shape[1] != d or not np.isfinite(a).all() for a in arrays
     ):
         raise ValueError("FES supports finite one- or two-dimensional samples")
+    extra = None
+    if correlation_observables is not None:
+        try:
+            supplied = list(correlation_observables)
+        except TypeError as exc:
+            raise ValueError("correlation_observables requires one [Ns,M] array per stream") from exc
+        if len(supplied) != len(arrays):
+            raise ValueError("correlation_observables stream count must match samples")
+        extra = []
+        for index, (value, sample) in enumerate(zip(supplied, arrays)):
+            value = np.asarray(value)
+            if (value.dtype.kind not in "fiu" or value.ndim != 2
+                    or value.shape[0] != len(sample) or value.shape[1] < 1
+                    or not np.isfinite(value).all()):
+                raise ValueError(f"correlation_observables stream {index} must be finite real [Ns,M] aligned with samples")
+            if extra and value.shape[1] != extra[0].shape[1]:
+                raise ValueError("correlation_observables must have the same M in every stream")
+            with np.errstate(over="ignore", invalid="ignore"):
+                value = np.asarray(value, dtype=float)
+            if not np.isfinite(value).all():
+                raise ValueError(f"correlation_observables stream {index} must be finite float64 observations")
+            extra.append(value)
     centers = np.asarray(centers, float)
     if centers.shape != (len(arrays), d) or not np.isfinite(centers).all():
         raise ValueError("one finite center per sampling stream required")
@@ -499,6 +609,7 @@ def reconstruct_fes(
         raise ValueError("periods must contain one positive finite number or None per CV")
     x = np.concatenate(arrays)
     counts = np.array([len(a) for a in arrays])
+    groups = _bootstrap_groups(bootstrap_groups, counts)
     if np.isscalar(bins):
         bins = [bins] * d
     if len(bins) != d:
@@ -549,20 +660,23 @@ def reconstruct_fes(
             f"MBAR did not converge; equation residual={mbar.residual:g}"
         )
     mass, density, count, f, mask = _histogram(x, mbar.weights, edges, beta, min_count)
-    def stream_inefficiency(a):
-        # Raw angles depend on the arbitrary branch cut. Circular observables
-        # preserve the correlation diagnostic under integer-period shifts.
-        observables = []
-        for j, p in enumerate(periods):
-            if p is None:
-                observables.append(a[:, j])
-            else:
-                angle = 2 * np.pi * a[:, j] / p
-                observables.extend((np.sin(angle), np.cos(angle)))
-        return statistical_inefficiency(np.column_stack(observables))
-
-    gs = np.array([stream_inefficiency(a) for a in arrays])
-    block_plan = _bootstrap_block_plan(counts, gs)
+    cv_gs = np.array([cv_statistical_inefficiency(a, periods) for a in arrays])
+    gs = cv_gs
+    if extra is not None:
+        extra_gs = np.array([statistical_inefficiency(a) for a in extra])
+        gs = np.maximum(cv_gs, extra_gs)
+    block_gs = gs.copy()
+    for group in groups:
+        block_gs[group] = np.max(gs[group])
+    block_plan = _bootstrap_block_plan(counts, block_gs)
+    block_plan["observables"] = CV_CORRELATION_OBSERVABLES
+    if bootstrap_groups is not None:
+        block_plan["resampling"] = "synchronous_within_group"
+        block_plan["group_ids"] = np.asarray(bootstrap_groups, dtype=int)
+        block_plan["group_max_statistical_inefficiency"] = block_gs
+        block_plan["warnings"].append(
+            "Exchange windows are jointly block-resampled within each independent ladder; "
+            "CV-based block lengths do not establish hidden-coordinate or walker mixing.")
     se = np.full_like(f, np.nan)
     connected = len(set(mbar.components)) == 1
     boots = []
@@ -572,14 +686,9 @@ def reconstruct_fes(
     if connected and bootstrap and np.any(~mask):
         rng = np.random.default_rng(seed)
         ref = np.unravel_index(np.nanargmin(f), f.shape)
-        offsets = np.r_[0, np.cumsum(counts)]
-        stream_indices = [np.arange(start, stop)
-                          for start, stop in zip(offsets[:-1], offsets[1:])]
         for draw in range(int(bootstrap)):
-            indices = np.concatenate([
-                _block_resample(indices, block, rng)
-                for indices, block in zip(stream_indices, block_plan["block_lengths"])
-            ])
+            indices = _grouped_resample_indices(
+                counts, block_plan["block_lengths"], groups, rng)
             xb = x[indices]
             # Every umbrella is already evaluated at each original (wrapped)
             # frame. Resampling columns retains the identical bias problem.
@@ -659,6 +768,9 @@ def reconstruct_fes(
     }
     if return_reweighting:
         result["_reweighting"] = UmbrellaReweighting.from_result(mbar, u, counts, overlap_threshold)
+    if extra is not None:
+        result["cv_statistical_inefficiency"] = cv_gs
+        result["additional_statistical_inefficiency"] = extra_gs
     return result
 
 
@@ -917,8 +1029,9 @@ def mbar_rate_pmf(
     if not fit.converged or not connected:
         free[:] = np.nan
         mask[:] = True
-    gs = np.asarray([statistical_inefficiency(a) for a in arrays])
+    gs = np.asarray([cv_statistical_inefficiency(a) for a in arrays])
     block_plan = _bootstrap_block_plan(counts, gs)
+    block_plan["observables"] = CV_CORRELATION_OBSERVABLES
     blocks = block_plan["block_lengths"]
     warnings.extend(block_plan["warnings"])
     moments = []

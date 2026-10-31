@@ -1,0 +1,214 @@
+{
+  "config": {
+    "task": "rate",
+    "preset": "pilot",
+    "temperature": "300 K",
+    "beads": 128,
+    "seed": 831072,
+    "system": {
+      "symbols": [
+        "H",
+        "H",
+        "H"
+      ],
+      "masses_amu": [
+        1.00782503223,
+        1.00782503223,
+        1.00782503223
+      ],
+      "geometry": [
+        [
+          -1.7570000251,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.7570000251,
+          0.0,
+          0.0
+        ]
+      ],
+      "multiplicity": 2,
+      "fragments": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ]
+    },
+    "potential": {
+      "provider": "python",
+      "factory": "/workspace/scratch/bb7406a4ed41/PyRPMD/benchmarks/h3/pes.py:build",
+      "params": {
+        "library": "/workspace/scratch/bb7406a4ed41/PyRPMD/benchmarks/h3/build/libbkmp2.so"
+      }
+    },
+    "dynamics": {
+      "timestep": "0.1 fs",
+      "native": "required"
+    },
+    "sampling": {
+      "equilibration": "50 fs",
+      "production": "100 fs",
+      "interval": "0.5 fs",
+      "andersen_interval": 50,
+      "replicas": 2,
+      "dt_au": 4.134137333517016,
+      "thermostat": "andersen",
+      "integrator": "cayley-bcb-andersen",
+      "equilibration_steps": 500,
+      "production_steps": 1000,
+      "interval_steps": 5,
+      "sample_interval": 5
+    },
+    "reaction": {
+      "fragments": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "forming_bonds": [
+        [
+          0,
+          1
+        ]
+      ],
+      "breaking_bonds": [
+        [
+          1,
+          2
+        ]
+      ],
+      "equivalent_paths": [
+        [
+          0,
+          2,
+          1
+        ]
+      ],
+      "rinf": "30 bohr",
+      "electronic_weight": 1.0,
+      "symmetry_factor": 1.0,
+      "rinf_au": 30.0
+    },
+    "umbrella": {
+      "start": -0.05,
+      "stop": 1.05,
+      "count": 111,
+      "kappa": "30 hartree"
+    },
+    "analysis": {
+      "bins": 100,
+      "bootstrap": 10,
+      "min_count": 5
+    },
+    "recrossing": {
+      "parent_replicas": 2,
+      "parent_samples": 16,
+      "equilibration": "200 fs",
+      "parent_interval": "10 fs",
+      "child_pairs": 2,
+      "child_time": "80 fs",
+      "plateau_fraction": 0.25,
+      "plateau_tolerance": 0.1,
+      "bootstrap": 40
+    },
+    "output": {
+      "directory": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff/run",
+      "checkpoint_interval": "50 fs",
+      "checkpoint_steps": 500
+    },
+    "parallel": {
+      "trajectory_workers": 2,
+      "threads_per_rank": 1,
+      "backend": "process",
+      "bead_workers": 1,
+      "mode": "serial",
+      "pes_ranks": 1,
+      "coordinator_ranks": 0,
+      "scheduling": "static"
+    },
+    "schema_version": 1,
+    "temperature_K": 300.0,
+    "beta": 1052.5834160132904,
+    "dt_au": 4.134137333517016,
+    "collision": {},
+    "outcomes": {},
+    "_input_path": "/workspace/scratch/bb7406a4ed41/PyRPMD/benchmarks/h3/rate.inp",
+    "_base_directory": "/workspace/scratch/bb7406a4ed41/PyRPMD/benchmarks/h3",
+    "_warnings": [],
+    "hamiltonian_convention": "sum_beads_beta_over_P"
+  },
+  "system": {
+    "symbols": [
+      "H",
+      "H",
+      "H"
+    ],
+    "masses": [
+      1837.1526474396187,
+      1837.1526474396187,
+      1837.1526474396187
+    ],
+    "geometry": [
+      [
+        -1.7570000251,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.7570000251,
+        0.0,
+        0.0
+      ]
+    ],
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "charge": 0,
+    "multiplicity": 2
+  },
+  "pes_provenance": {
+    "provider": "BKMP2",
+    "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+    "execution_device": "cpu",
+    "thread_safety": "process_serial",
+    "native_batch": true,
+    "dtype": "float64",
+    "trajectory_batch_safe": true,
+    "atomic_numbers": [
+      1,
+      1,
+      1
+    ],
+    "charge": 0,
+    "multiplicity": 2,
+    "energy_zero": "three separated H atoms",
+    "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+    "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+    "library_sha256": "83a35e84b9212c4010d4d9541dc6115d8c1d7fbd6e6477d7066558b26bba9c03"
+  }
+}

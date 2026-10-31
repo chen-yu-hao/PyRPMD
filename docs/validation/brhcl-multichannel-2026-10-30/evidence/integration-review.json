@@ -1,0 +1,104 @@
+{
+  "schema": "pyrpmd.brhcl.integration-review.v1",
+  "recorded_utc": "2026-10-30T16:59:13.720377+00:00",
+  "base_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "reviewed_main_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+  "reviewed_pull_request": 14,
+  "method": "Read-only git diff plus execution of the reviewed checkpoint/fes source in fresh in-memory Python modules. Existing run files were read and compared; no sampling was repeated and no native library was rebuilt.",
+  "base_analysis_note": "The current worktree is based on the base commit and includes this task's optional correlation_observables extension. The comparison used its default None path, whose original output contract is separately regression-tested.",
+  "checkpoint_checks": {
+    "expected_kind": "arrays",
+    "require_integrity": true,
+    "total_payload_arrays_compared": 70,
+    "runs": [
+      {
+        "run": "p1-mixed",
+        "payload_arrays": 18
+      },
+      {
+        "run": "p8-mixed",
+        "payload_arrays": 18
+      },
+      {
+        "run": "p16",
+        "payload_arrays": 17
+      },
+      {
+        "run": "p8-halfdt",
+        "payload_arrays": 17
+      }
+    ],
+    "filename_in_each_run": "streams/w0000_compact.npz",
+    "keys_and_order_identical": true,
+    "values_and_dtypes_identical": true,
+    "integrity": "verified",
+    "independent_writable_read_copies_preserved": true,
+    "schema_version_and_hash_contract_unchanged": true
+  },
+  "mbar_bootstrap_comparison": {
+    "data_run": "p1-mixed",
+    "windows": [
+      0,
+      1,
+      2
+    ],
+    "families": [
+      "compact",
+      "open"
+    ],
+    "streams": 6,
+    "samples": 6000,
+    "bins": [
+      10,
+      12
+    ],
+    "seed": 94213,
+    "min_count": 3,
+    "connected": true,
+    "bootstrap_requested": 6,
+    "bootstrap_valid": 4,
+    "finite_standard_error_bins": 70,
+    "all_compared_arrays_bitwise_equal": true,
+    "maximum_absolute_difference_on_common_finite_entries": {
+      "weights": 0.0,
+      "free_energy": 0.0,
+      "standard_error": 0.0,
+      "probability_mass": 0.0,
+      "density": 0.0,
+      "raw_count": 0.0,
+      "mask": 0.0,
+      "overlap": 0.0,
+      "components": 0.0,
+      "window_free_energies": 0.0,
+      "statistical_inefficiency": 0.0,
+      "bootstrap_valid_per_bin": 0.0
+    },
+    "nan_and_mask_patterns_identical": true,
+    "per_draw_diagnostics_identical": true
+  },
+  "unchanged_source_files_on_active_native_pes_path": [
+    "native/fused.hpp",
+    "native/include/pyrpmd/pes_api_v1.h",
+    "src/pyrpmd/potentials/cabi.py",
+    "src/pyrpmd/potentials/native.py"
+  ],
+  "native_path_review": {
+    "active_scan_path": "sample_stream -> Dynamics.propagate -> propagation.propagate -> native.run_block",
+    "integrator": "cayley-bcb",
+    "thermostat": "Andersen momentum refresh",
+    "complete_cayley_step_algorithm_unchanged": true,
+    "andersen_momentum_draws_and_refresh_schedule_unchanged": true,
+    "native_pes_cabi_unchanged": true,
+    "new_pile_l_and_large_p_exact_normal_mode_fft_not_used_by_scan": true,
+    "advance_check_energy_addition_not_used_by_scan": true,
+    "old_run_block_already_checks_each_step_total_energy": true,
+    "compiled_new_native_binary_tested_in_this_review": false
+  },
+  "integration_requirements": [
+    "Preserve this task's correlation_observables validation and combined-g/bootstrap behavior when rebasing.",
+    "Preserve sampling provenance as base commit 6fde29d; distinguish final analysis and validation revision.",
+    "Rebuild the PyRPMD native extension, start fresh Python processes, and run the planned native smoke/full test suite.",
+    "Keep the existing checksum-pinned BrHCl PES binary unchanged."
+  ],
+  "conclusion": "No substantive change requiring resampling or recomputation of existing PMF point estimates or bootstrap results was found. Actual old/new checkpoint and PMF comparisons were identical. Native-path equivalence is based on source review; final rebuilt-native runtime verification is delegated to the parent task."
+}

@@ -50,7 +50,7 @@ asymptotic_coupling_tolerance = "1e-8 hartree"
 | 能量矩阵 | `[B,K,K]`，hartree |
 | 矩阵的梯度 | `[B,K,K,N,3]`，hartree/bohr |
 
-B 是批大小，K 是电子态数。两个数组均为实数、有限，并在电子指标上对称，每个对角元和耦合都有梯度。矩阵接口使用
+B 是批大小，K 是电子态数。两个数组须有限，并在电子指标上满足 Hermitian 条件；可使用实数或复数，每个对角元和耦合都有梯度。矩阵接口使用
 **正梯度**（标量势返回的是力）。provider 声明坐标或能量单位时，适配器负责转换。
 
 与态无关的能量放在每个对角元中；该矩阵就是完整的势能。`validate --check-pes` 检查矩阵并对每个矩阵元的梯度做有限差分。
@@ -92,8 +92,28 @@ $$
 ## 支持的配置
 
 NRPMD 在 CPU 上用 NumPy 运行，可串行或使用本机轨迹进程；核自由环可使用编译内核。使用 `loop_backend="auto"` 或
-`"python"`。此模式不支持 MPI、珠子 worker 拆分、GPU、融合原生电子传播、周期或固定原子体系，以及复 Hermitian
-自旋–轨道耦合。
+`"python"`。指定初态的碰撞模式不支持 MPI、珠子 worker 拆分、GPU、融合原生电子传播、周期或固定原子体系。
+复 Hermitian 自旋–轨道耦合已支持，包括电子旋转和核动量冲量中的复相位。
+
+## 新增模型方法和表面电子摩擦
+
+| 方法 | 入口 | 当前范围 |
+| --- | --- | --- |
+| 热 NRPMD | `ThermalNRPMDSampler`、`ThermalNRPMDDynamics` | 实矩阵、SEO 投影的有符号热采样、有限时间通量/布居速率曲线 |
+| 电子摩擦 EF-RPMD | `diffusion` 的 `[electronic_friction]`；`ElectronicFrictionDynamics` | Markov 质心摩擦张量、涨落–耗散噪声、周期体系及固定原子 |
+| 环聚合物表面跳跃 | `RPSHDynamics` | 实矩阵、质心电子传播、显式动量缩放和受挫跳跃策略 |
+| MV-RPMD | `MVRPMDDynamics` | SEO 映射迹 Hamiltonian 及其专用传播器 |
+| KC-RPMD | `KCRPMDDynamics` | 两个实态、动力学约束、用户提供的校准参数 |
+| Isomorphic RPMD | `IsomorphicPotential`、`IsomorphicEhrenfestDynamics` | 两态电子迹匹配与 Ehrenfest 传播组合 |
+
+各方法的初始分布、传播 Hamiltonian 和速率定义不同。模型 API 不会隐式替代现有 `rate` 工作流。
+热 NRPMD 保留符号抵消及平台诊断；质心电子摩擦不包含完整非 Markov 路径积分 GLE 的隧穿抑制。
+计算测试说明的是实现一致性，不是某个真实催化体系的定量验证。
+
+详见 [热 NRPMD](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/thermal-nrpmd.md)、
+[电子摩擦](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md)、
+[SOC/RPSH](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-soc-rpsh.md) 和
+[KC/MV/isomorphic](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-methods.md) 专题。
 
 用于真实体系时，提供含态间耦合的 diabatic 基、完整矩阵及其梯度，并收敛远区态、能量与 mapping 范数、珠子数、
 时间步、母链相关性、碰撞参数和产物判定。方法与来源见 [NRPMD 专题](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic.md)

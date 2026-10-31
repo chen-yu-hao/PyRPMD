@@ -1,0 +1,24 @@
+# Analytic harmonic validation model, not a fitted chemical PES.
+schema_version = "native-ensembles/1"
+positions = [[0.0, 0.0, 0.0]]
+geometry_unit = "angstrom"
+masses = ["1.008 amu"]
+beads = 8
+temperature = "300 K"
+timestep = "0.1 fs"
+seed = 812
+
+[potential]
+kind = "harmonic"
+k = "1 eV/angstrom^2"
+
+[thermostat]
+mode = "pile-g"
+tau = "100 fs"
+pile_scale = 1.0
+
+[run]
+duration = "1 ps"
+interval = "1 fs"
+record_centroids = true
+output = "runs/native-nvt"

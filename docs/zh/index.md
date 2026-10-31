@@ -16,11 +16,15 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 一维/二维自由能面 | `fes` | [快速入门](manual/quickstart.md)、[气相与自由能](manual/workflows.md) |
 | 多入口、多过渡态的速率矩阵 | `network` | [气相与自由能](manual/workflows.md) |
 | Standard 或 well-tempered metadynamics | `metadynamics` | [气相与自由能](manual/workflows.md) |
+| 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
+| OPES 概率增强采样 | `opes` | [OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
+| PLUMED 质心偏置、过渡界面路径采样 | Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
 | RPMD 自扩散、MSD、VACF | `diffusion` | [材料与表面](manual/periodic.md) |
 | 材料中的有向位点跃迁 | `site_rate` | [材料与表面](manual/periodic.md) |
 | 固定基底上的有向逃逸 | `surface_rate` | [材料与表面](manual/periodic.md) |
 | 弱振电耦合极限下的电化学 PCET | `pcet` | [PCET](manual/pcet.md) |
+| 恒电位有效势、电子数平衡采样与 HER 电流 | `fes` / Python API | [电极模型](manual/electrochemistry.md) |
 
 示例使用解析模型势，几秒内即可完成。进行正式研究前，请按[科学约定与收敛](manual/science.md)完成收敛流程。
 
@@ -45,6 +49,7 @@ pyrpmd resume runs/job                  # 从检查点续跑，科学设置保�
 | 开始使用 | [安装](manual/installation.md) · [快速入门](manual/quickstart.md) · [输入与命令行](manual/input.md) · [科学约定](manual/science.md) |
 | 计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [示例](manual/examples.md) |
 | 模型与运行 | [势能与插件](manual/potentials.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) |
+| 动力学扩展（英文指南） | [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
 | 参考 | [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
 
 ```{toctree}
@@ -66,11 +71,14 @@ pyrpmd resume runs/job                  # 从检查点续跑，科学设置保�
 气相与自由能 <manual/workflows>
 材料与表面 <manual/periodic>
 PCET <manual/pcet>
+电极模型 <manual/electrochemistry>
 非绝热 NRPMD <manual/nonadiabatic>
 势能与插件 <manual/potentials>
+势能生成 <manual/pes-generation>
 执行与并行 <manual/execution>
 输出与分析 <manual/results>
 示例索引 <manual/examples>
+副本交换伞形采样 <replica-exchange>
 ```
 
 ```{toctree}
@@ -85,7 +93,8 @@ Python API <manual/api>
 
 ## 关于本手册
 
-手册有[英文](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md)与中文两个版本，章节一一对应；
-HTML 版本中，导航栏的语言按钮会打开同一页面的另一语言版本。[输入规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)、
+手册有[英文](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md)与中文两个版本，核心章节一一对应；
+HTML 版本中，导航栏的语言按钮会打开同一页面的另一语言版本。目前仅有英文版的扩展指南和验证报告，其语言按钮会打开中文手册目录。
+[输入规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)、
 [公共接口约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md)等详细规范和
 [验证记录](https://github.com/chen-yu-hao/PyRPMD/tree/main/docs/validation)与手册一同保存在仓库中。

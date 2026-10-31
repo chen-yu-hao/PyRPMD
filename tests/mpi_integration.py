@@ -12,7 +12,7 @@ from unittest.mock import patch
 import numpy as np
 from mpi4py import MPI
 
-from pyrpmd.parallel import make_task_potential, root_call, run_tasks
+from pyrpmd.parallel import make_task_potential, task_potential, root_call, run_tasks
 from pyrpmd.workflows.drpmd import KB, run_drpmd
 
 PARALLEL = {
@@ -43,6 +43,20 @@ def evaluate_task(task):
 
 def bad_initialization(task):
     make_task_potential({"provider": "missing-provider"}, SYSTEM)
+
+
+def evaluate_reused_task(value):
+    with task_potential({"provider": "harmonic", "k": 2.0}, SYSTEM) as potential:
+        result = potential.evaluate(np.full((3, 2, 3), value, dtype=float))
+        return potential.identifier, float(result.energy.sum())
+
+
+def fail_reused_task(value):
+    with task_potential({"provider": "harmonic", "k": 2.0}, SYSTEM) as potential:
+        potential.evaluate(np.zeros((3, 2, 3)))
+        if value == 2:
+            raise ValueError("injected failure with a cached MPI potential")
+        return value
 
 
 def mock_gpu_route(task):
@@ -103,6 +117,20 @@ def main():
         np.testing.assert_allclose(results, 18 * np.arange(5.0) ** 2)
 
     root_call(check_results)
+    reused = run_tasks(evaluate_reused_task, list(range(5)), PARALLEL)
+    def check_reused():
+        # Each group retains its first provider across all assigned tasks.
+        assert [item[0] for item in reused] == [0] * 5
+        np.testing.assert_allclose([item[1] for item in reused], 18*np.arange(5.)**2)
+    root_call(check_reused)
+    try:
+        run_tasks(fail_reused_task, list(range(5)), PARALLEL)
+    except RuntimeError as exc:
+        assert "injected failure" in str(exc)
+    else:
+        raise AssertionError("cached MPI task failure was swallowed")
+    # A fresh group must still communicate after cached-provider teardown.
+    run_tasks(evaluate_reused_task, [1, 2, 3], PARALLEL)
     try:
         run_tasks(bad_initialization, [0, 1], PARALLEL)
     except RuntimeError as exc:

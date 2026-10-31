@@ -1,0 +1,29 @@
+[
+  {
+    "hills": 100,
+    "calls": 200,
+    "repeats": 5,
+    "median_before_cpu_seconds": 0.012676352999999974,
+    "median_after_cpu_seconds": 0.006891518000000041,
+    "speedup": 1.8394137547054072,
+    "identical_energy_and_gradient": true
+  },
+  {
+    "hills": 1000,
+    "calls": 200,
+    "repeats": 5,
+    "median_before_cpu_seconds": 0.06328705099999998,
+    "median_after_cpu_seconds": 0.009709505000000007,
+    "speedup": 6.518051229182119,
+    "identical_energy_and_gradient": true
+  },
+  {
+    "hills": 5000,
+    "calls": 200,
+    "repeats": 5,
+    "median_before_cpu_seconds": 0.3035794920000001,
+    "median_after_cpu_seconds": 0.028525271000000352,
+    "speedup": 10.642475298481699,
+    "identical_energy_and_gradient": true
+  }
+]

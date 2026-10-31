@@ -1,0 +1,30 @@
+{
+  "native_backend": "native",
+  "steps": 25,
+  "beads": 4,
+  "common_wall": {
+    "radius_bohr": 11.338356755446696,
+    "kappa_hartree_per_bohr2": 0.008925077046121556,
+    "enabled": true,
+    "retained_in_target_pmf": true,
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        0,
+        2
+      ]
+    ]
+  },
+  "maximum_q_difference_bohr": 0.0,
+  "maximum_p_difference_au": 0.0,
+  "maximum_energy_difference_hartree": 2.220446049250313e-16,
+  "maximum_cv_difference_bohr": 0.0,
+  "energy_span_hartree": 1.3927459185936186e-10
+}

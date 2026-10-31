@@ -27,7 +27,7 @@ statistical analysis → restart.
 | Atoms far apart or overlapping | Check inline bohr against XYZ angstrom, and `geometry_unit` / `cell_unit` |
 | Atom index out of range | Indices start at 0; coordinates, masses, classifiers and the model must use one atom order |
 | Periodic provider rejected | Use a provider that supports cell/PBC (ASE, periodic Python plugin, i-PI) |
-| Fixed atoms rejected in `pimd` / `diffusion` / `site_rate` | These tasks need all atoms mobile; use surface `fes` or `surface_rate` for fixed layers |
+| Fixed atoms rejected in `site_rate` or BZP NPT | These two methods need all atoms mobile; fixed-cell `pimd`, `diffusion`, `metadynamics`, `fes` and `surface_rate` support fixed layers |
 
 For `--check-pes` with an external program, start the i-PI driver or prepare the calculator's model
 files first.

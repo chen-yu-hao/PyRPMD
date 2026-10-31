@@ -1,0 +1,107 @@
+Running Sphinx v8.2.3
+loading translations [en]... done
+making output directory... done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'colon_fence', 'dollarmath'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output...
+building [singlehtml]: all documents
+updating environment: [new config] 22 added, 0 changed, 0 removed
+reading sources... [  5%] batched-dynamics
+reading sources... [  9%] index
+reading sources... [ 14%] manual/api
+reading sources... [ 18%] manual/development
+reading sources... [ 23%] manual/examples
+reading sources... [ 27%] manual/execution
+reading sources... [ 32%] manual/input
+reading sources... [ 36%] manual/installation
+reading sources... [ 41%] manual/nonadiabatic
+reading sources... [ 45%] manual/pcet
+reading sources... [ 50%] manual/periodic
+reading sources... [ 55%] manual/potentials
+reading sources... [ 59%] manual/quickstart
+reading sources... [ 64%] manual/results
+reading sources... [ 68%] manual/science
+reading sources... [ 73%] manual/troubleshooting
+reading sources... [ 77%] manual/workflows
+reading sources... [ 82%] performance-dynamics
+reading sources... [ 86%] rpc-mts
+reading sources... [ 91%] trpmd-spectroscopy
+reading sources... [ 95%] validation/tier1-2026-10-31/README
+reading sources... [100%] validation/tier1-2026-10-31/pmf-replay
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets...
+copying downloadable files... [  8%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [ 17%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 25%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 33%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 42%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 50%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 58%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 67%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 75%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 83%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 92%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files...
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/_static/basic.css
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/_static/documentation_options.js
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/_static/language_data.js
+copying static files: done
+copying extra files...
+copying extra files: done
+copying assets: done
+assembling single document...
+index
+ manual/installation
+ manual/quickstart
+ manual/input
+ manual/science
+  manual/workflows
+  manual/periodic
+  manual/pcet
+  manual/nonadiabatic
+  manual/potentials
+  manual/execution
+  performance-dynamics
+  batched-dynamics
+  rpc-mts
+  trpmd-spectroscopy
+  manual/results
+  manual/examples
+   manual/api
+   manual/troubleshooting
+   manual/development
+   validation/tier1-2026-10-31/README
+   validation/tier1-2026-10-31/pmf-replay
+assembling single document: done
+writing... done
+writing additional files... done
+copying downloadable files... [  8%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [ 17%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 25%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 33%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 42%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 50%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 58%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 67%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 75%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 83%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 92%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files...
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/_static/basic.css
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/_static/documentation_options.js
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/_static/language_data.js
+copying static files: done
+copying extra files...
+copying extra files: done
+dumping object inventory... done
+build succeeded.
+
+The HTML page is in ../../../../tmp/pyrpmd-merged-docs-singlehtml.

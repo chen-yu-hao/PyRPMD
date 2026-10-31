@@ -1,0 +1,196 @@
+{
+  "task": "metadynamics",
+  "preset": "pilot",
+  "temperature": "1500 K",
+  "beads": 16,
+  "seed": 721062,
+  "system": {
+    "symbols": [
+      "H",
+      "H",
+      "H"
+    ],
+    "masses_amu": [
+      1.00782503223,
+      1.00782503223,
+      1.00782503223
+    ],
+    "geometry": [
+      [
+        -1.7570000251,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.7570000251,
+        0.0,
+        0.0
+      ]
+    ],
+    "multiplicity": 2,
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ]
+  },
+  "potential": {
+    "provider": "python",
+    "factory": "/workspace/PyRPMD/benchmarks/h3/pes.py:build",
+    "params": {
+      "library": "/workspace/PyRPMD/work/pes/libbkmp2.so"
+    }
+  },
+  "dynamics": {
+    "timestep": "0.1 fs",
+    "native": "required"
+  },
+  "sampling": {
+    "equilibration": "100 fs",
+    "production": "1000 fs",
+    "interval": "0.5 fs",
+    "andersen_interval": 50,
+    "replicas": 2,
+    "dt_au": 4.134137333517016,
+    "thermostat": "andersen",
+    "integrator": "cayley-bcb-andersen",
+    "equilibration_steps": 3000,
+    "production_steps": 10000,
+    "interval_steps": 5,
+    "sample_interval": 10
+  },
+  "reaction": {
+    "fragments": [
+      [
+        0
+      ],
+      [
+        1,
+        2
+      ]
+    ],
+    "forming_bonds": [
+      [
+        0,
+        1
+      ]
+    ],
+    "breaking_bonds": [
+      [
+        1,
+        2
+      ]
+    ],
+    "equivalent_paths": [
+      [
+        0,
+        2,
+        1
+      ]
+    ],
+    "rinf": 10.0,
+    "electronic_weight": 1.0,
+    "symmetry_factor": 1.0,
+    "rinf_au": 10.0
+  },
+  "analysis": {
+    "bins": 120,
+    "bootstrap": 0,
+    "min_count": 5,
+    "ranges": [
+      [
+        -0.15,
+        1.25
+      ]
+    ],
+    "measure": "cv_density",
+    "method": "bias_estimate"
+  },
+  "recrossing": {
+    "parent_replicas": 2,
+    "parent_samples": 32,
+    "equilibration": "200 fs",
+    "parent_interval": "10 fs",
+    "child_pairs": 2,
+    "child_time": "80 fs",
+    "plateau_fraction": 0.25,
+    "plateau_tolerance": 0.1,
+    "bootstrap": 100
+  },
+  "output": {
+    "directory": "/workspace/PyRPMD/work/h3-after/meta/run",
+    "checkpoint_interval": "50 fs",
+    "checkpoint_steps": 5000
+  },
+  "parallel": {
+    "backend": "process",
+    "trajectory_workers": 4,
+    "bead_workers": 1,
+    "threads_per_rank": 1,
+    "mode": "serial",
+    "pes_ranks": 1,
+    "coordinator_ranks": 0,
+    "scheduling": "static"
+  },
+  "schema_version": 1,
+  "temperature_K": 1500.0,
+  "beta": 210.51668320265807,
+  "dt_au": 4.134137333517016,
+  "collision": {},
+  "outcomes": {},
+  "_input_path": "/workspace/PyRPMD/benchmarks/h3/rate.inp",
+  "_base_directory": "/workspace/PyRPMD/benchmarks/h3",
+  "_warnings": [],
+  "hamiltonian_convention": "sum_beads_beta_over_P",
+  "cvs": [
+    {
+      "name": "xi",
+      "kind": "rpmdrate_xi",
+      "estimator": "centroid",
+      "fragments": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "forming_bonds": [
+        [
+          0,
+          1
+        ]
+      ],
+      "breaking_bonds": [
+        [
+          1,
+          2
+        ]
+      ],
+      "rinf": 10.0,
+      "equivalent_paths": [
+        [
+          0,
+          2,
+          1
+        ]
+      ]
+    }
+  ],
+  "metadynamics": {
+    "sigma": 0.03,
+    "height": 0.0009500434690369221,
+    "pace": 100,
+    "bias_factor": 10.0
+  }
+}

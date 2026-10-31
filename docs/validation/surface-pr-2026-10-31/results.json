@@ -1,0 +1,120 @@
+{
+  "base_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+  "source_tree_before_integration_evidence": "bc7f9a3bf06792a1001c52b28f8522fed2d5939f",
+  "source_files_hashed": 153,
+  "tests": {
+    "passed": 1441,
+    "skipped": 11,
+    "subtests_passed": 153,
+    "warnings": 106,
+    "seconds": 127.96,
+    "skip_reason": "10 optional BKMP2 checks and 1 optional real EAM check"
+  },
+  "mpi": {
+    "ranks": 4,
+    "trajectory_groups": 2,
+    "bead_ranks_per_group": 2,
+    "new_matching_npz_files": 19,
+    "existing_matching_npz_files": 27,
+    "comparison": "exact array equality",
+    "completed_resumes": "passed"
+  },
+  "docs": {
+    "html_warnings_as_errors": "passed",
+    "singlehtml_warnings_as_errors": "passed"
+  },
+  "packages": {
+    "python_sources_match_working_tree": 55,
+    "wheel": {
+      "name": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+      "sha256": "6290139cf1a1fddd895098e29c2459909f1d05b209a9d73d22aa607fdd061ac1"
+    },
+    "sdist": {
+      "name": "pyrpmd-0.2.0.tar.gz",
+      "sha256": "d0a0bb4960424c23c82dfecac935acc75437bb26007807dfd29bc1daeba9c760"
+    }
+  },
+  "real_metal": {
+    "natoms": 39,
+    "mobile_atoms": 21,
+    "fixed_atoms": 18,
+    "temperature_K": 600,
+    "beads": 1,
+    "timestep_fs": 0.2,
+    "equilibration_steps": 100,
+    "production_steps": 800,
+    "dimension": 3,
+    "samples": 40,
+    "hills_per_replica": [
+      2
+    ],
+    "completed_resume_equal": true,
+    "reanalysis_preserves_all_original_summary_fields": true,
+    "converged": false,
+    "production_40ns_executed": false
+  },
+  "source_rate": {
+    "status": "basin_lower_outside_histogram_centers",
+    "rate_s_inv": null,
+    "rate_estimate_s_inv": null,
+    "children_launched": false,
+    "completed_resume_equal": true
+  },
+  "dynamics": {
+    "checks": [
+      {
+        "beads": 1,
+        "natoms": 39,
+        "mobile_cartesian_dof": 63,
+        "ring_dof": 63,
+        "timestep_fs": 0.2,
+        "parent_steps": 100,
+        "child_steps_per_sign": 100,
+        "constraint_max_bohr": 8.881784197001252e-16,
+        "tangent_velocity_max_au": 8.131516293641283e-20,
+        "fixed_position_error_bohr": 0.0,
+        "child_energy_drift_eV_per_bead": [
+          4.217398792643159e-05,
+          5.412228534645385e-05
+        ],
+        "max_drift_kBT": 0.0010467717351377137
+      },
+      {
+        "beads": 4,
+        "natoms": 39,
+        "mobile_cartesian_dof": 63,
+        "ring_dof": 252,
+        "timestep_fs": 0.2,
+        "parent_steps": 100,
+        "child_steps_per_sign": 100,
+        "constraint_max_bohr": 1.7763568394002505e-15,
+        "tangent_velocity_max_au": 8.131516293641283e-20,
+        "fixed_position_error_bohr": 0.0,
+        "child_energy_drift_eV_per_bead": [
+          0.009276569816643248,
+          0.009335228167994867
+        ],
+        "max_drift_kBT": 0.18055137407383537
+      },
+      {
+        "beads": 4,
+        "natoms": 39,
+        "mobile_cartesian_dof": 63,
+        "ring_dof": 252,
+        "timestep_fs": 0.1,
+        "parent_steps": 200,
+        "child_steps_per_sign": 200,
+        "constraint_max_bohr": 2.220446049250313e-15,
+        "tangent_velocity_max_au": 6.098637220230962e-20,
+        "fixed_position_error_bohr": 0.0,
+        "child_energy_drift_eV_per_bead": [
+          0.0023171691145018524,
+          0.002328114967523114
+        ],
+        "max_drift_kBT": 0.045027753882789935
+      }
+    ],
+    "is_rate_validation": false
+  },
+  "remote_ci": "Recorded separately in the PR Checks tab; local tests do not establish remote CI success."
+}

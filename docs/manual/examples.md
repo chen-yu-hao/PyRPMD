@@ -1,6 +1,8 @@
 # Example index and learning path
 
-Run every command from the repository root: `pyrpmd validate INPUT` first (add `--check-pes` to
+Every task has a runnable example on an analytic model that finishes in seconds to about a minute
+on one core, so you can see a complete workflow and its output before connecting your own
+potential. Run every command from the repository root: `pyrpmd validate INPUT` first (add `--check-pes` to
 construct the PES), then `pyrpmd run` with a new `--output` directory. External models, MPI and GPU
 need the dependencies listed in [Installation](installation.md).
 
@@ -13,6 +15,7 @@ need the dependencies listed in [Installation](installation.md).
 | `examples/manual/quickstart.inp` | 1D harmonic FES with three umbrella windows and 6 streams | ~2 s | [Quickstart](quickstart.md) |
 | `examples/manual/low_level.py` | 100-step program with `Dynamics` / `State` | <1 s | [API](api.md) |
 | `examples/fes/harmonic2d.inp` | Two centroid CVs, 2D MBAR and masks | ~6 s | [Gas phase and free energy](workflows.md) |
+| `examples/fes/replica_exchange_2d.inp` | PILE-L, replica-exchange umbrellas and synchronized bootstrap | — | [Replica exchange](../replica-exchange.md) |
 | `examples/fes/custom_input.py` | Custom 2D CV with a full Jacobian | ~7 s | [Potentials and plugins](potentials.md) |
 | `examples/fes/adaptive_harmonic.inp` | Pilot window insertion, then frozen production | ~4 s | [Gas phase and free energy](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | Two parent chains sharing 5 collisions on V=0 | ~2 s | [Gas phase and free energy](workflows.md) |
@@ -20,6 +23,9 @@ need the dependencies listed in [Installation](installation.md).
 | `examples/rate/pilot.inp` | TS preparation, PMF and recrossing on an analytic reaction potential | ~15 s | [Gas phase and free energy](workflows.md) |
 | `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 2D well-tempered metadynamics | ~2 s | [Gas phase and free energy](workflows.md) |
+| `examples/opes/harmonic_2d.inp` | OPES adaptation, frozen-bias relaxation and histogram reweighting | — | [OPES](../opes.md) |
+| `examples/plumed/centroid_metadynamics.py` | Optional PLUMED centroid MetaD with explicit kernel updates | — | [PLUMED](../plumed.md) |
+| `examples/sampling/transition_interface.py` | Four interface ensembles on a confined double-well model | — | [TIS](../transition-interface-sampling.md) |
 
 ```bash
 pyrpmd validate examples/fes/harmonic2d.inp
@@ -51,8 +57,8 @@ pyrpmd run examples/pcet/harmonic_scan.inp --output runs/tutorial-pcet
 pyrpmd resume runs/tutorial-pcet
 ```
 
-The surface and site-rate examples run umbrella sampling, constrained parents and recrossing, which
-is why they take longer. Their output is described in [Materials and surfaces](periodic.md) and
+The surface and site-rate examples run the full umbrella sampling, constrained-parent and
+recrossing pipeline, hence the longer times. Their output is described in [Materials and surfaces](periodic.md) and
 [PCET](pcet.md).
 
 ## Benchmarks with real models
@@ -66,7 +72,7 @@ The [Ni–H materials pilot](https://github.com/chen-yu-hao/PyRPMD/blob/main/ben
 runs H and D in nickel with P=1 and 4 on a pinned, checksummed EAM model, which is downloaded
 separately.
 
-The [ASE surface example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/surface/README.md) *(partly Chinese)*
+The [ASE surface example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/surface/README.md)
 connects ASE EMT for a Cu adatom on Cu(111).
 
 The [PCET comparison](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/pcet-model-2026-10-30/README.md)

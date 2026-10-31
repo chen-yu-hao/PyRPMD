@@ -158,7 +158,8 @@ def _source_identity():
              "src/pyrpmd/dynamics.py", "src/pyrpmd/propagation.py", "native/cayley.cpp",
              "src/pyrpmd/potentials/base.py", "src/pyrpmd/potentials/python.py",
              "src/pyrpmd/potentials/optional.py",
-             "src/pyrpmd/workflows/materials.py", "src/pyrpmd/analysis/diffusion.py",
+             "src/pyrpmd/workflows/materials.py", "src/pyrpmd/trajectory.py",
+             "src/pyrpmd/analysis/diffusion.py",
              "benchmarks/materials/ni_h_eam.py"]
     try:
         revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=root, text=True).strip()
@@ -170,10 +171,48 @@ def _source_identity():
                        for path in files if (root / path).is_file()}}
 
 
+def _trajectory_chunks(path):
+    """Read the exported committed history in either supported storage format."""
+    path = Path(path)
+    fields = ["positions", "velocities", "observables", "radii_gyration_squared"]
+    if path.suffix == ".json":
+        from pyrpmd.trajectory import iter_chunks
+
+        manifest = json.loads(path.read_text())
+        if manifest.get("format") != "PyRPMD.materials-trajectory-stream.v1":
+            raise ValueError("Unknown materials trajectory manifest format")
+        yield from iter_chunks(path.parent, manifest["trajectory"], fields=fields)
+    else:
+        with np.load(path, allow_pickle=False) as trajectory:
+            yield {name: trajectory[name] for name in fields}
+
+
+def _trajectory_diagnostics(path):
+    """Accumulate finite-state, NVE and H-ring checks without collecting frames."""
+    from pyrpmd.workflows.materials import OBSERVABLE_NAMES
+
+    initial_energy = None
+    drift, radius_sum, frames, finite = 0.0, 0.0, 0, True
+    energy_column = OBSERVABLE_NAMES.index("ring_polymer_hamiltonian")
+    for chunk in _trajectory_chunks(path):
+        observables = chunk["observables"]
+        if not len(observables):
+            continue
+        hamiltonian = observables[:, energy_column]
+        if initial_energy is None:
+            initial_energy = float(hamiltonian[0])
+        drift = max(drift, float(np.max(np.abs(hamiltonian - initial_energy))))
+        radius_sum += float(chunk["radii_gyration_squared"][:, -1].sum())
+        frames += len(observables)
+        finite = finite and all(np.isfinite(chunk[name]).all() for name in chunk)
+    if not frames:
+        raise ValueError("Materials pilot trajectory contains no saved frames")
+    return drift, radius_sum / frames, bool(finite)
+
+
 def run_pilot(model, output, *, quick=False):
     from pyrpmd import run
     from pyrpmd.io import write_json
-    from pyrpmd.workflows.materials import OBSERVABLE_NAMES
 
     model = obtain_model(model)
     output = Path(output).resolve()
@@ -202,15 +241,7 @@ def run_pilot(model, output, *, quick=False):
         case_name = f"{isotope.lower()}-p{beads}"
         start = time.perf_counter()
         summary = run(job(model, isotope=isotope, beads=beads, quick=quick), output=output / case_name)
-        with np.load(summary["files"]["trajectories"][0], allow_pickle=False) as trajectory:
-            positions = trajectory["positions"]
-            velocities = trajectory["velocities"]
-            observables = trajectory["observables"]
-            hamiltonian = observables[:, OBSERVABLE_NAMES.index("ring_polymer_hamiltonian")]
-            drift = float(np.max(np.abs(hamiltonian - hamiltonian[0])))
-            radius = float(trajectory["radii_gyration_squared"][:, -1].mean())
-            finite = bool(np.isfinite(positions).all() and np.isfinite(velocities).all() and
-                          np.isfinite(observables).all())
+        drift, radius, finite = _trajectory_diagnostics(summary["files"]["trajectories"][0])
         ring_check = radius == 0.0 if beads == 1 else radius > 0.0
         energy_check = drift / beads < NVE_ENERGY_TOLERANCE_PER_BEAD
         saved_system = json.loads((output / case_name / "input/system.json").read_text())

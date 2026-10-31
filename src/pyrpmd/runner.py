@@ -1,6 +1,8 @@
 """Public run/prepare/resume entry points shared by Python and the CLI."""
 
 from __future__ import annotations
+
+import numpy as np
 import copy
 import importlib.metadata
 import json
@@ -146,6 +148,9 @@ def run(job, *, output=None, resume=False):
 
 def run_resolved(config, system, *, output=None, resume=False):
     config = copy.deepcopy(config)
+    if "electronic_friction" in config:
+        from .electronic_friction import validate_electronic_friction
+        validate_electronic_friction(config, system)
     if ("nonadiabatic" in config
             or config.get("potential", {}).get("provider", config.get("potential", {}).get("type")) == "diabatic_python"):
         from .input import validate_nonadiabatic
@@ -180,6 +185,10 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.metadynamics import run_metadynamics
 
         result = run_metadynamics(config, system, Path(target))
+    elif config["task"] == "opes":
+        from .workflows.opes import run_opes
+
+        result = run_opes(config, system, Path(target))
     elif config["task"] == "network":
         from .workflows.network import run_network
 
@@ -207,7 +216,7 @@ def run_resolved(config, system, *, output=None, resume=False):
     return result
 
 
-def resume_run(directory, *, parallel=None, execution=None):
+def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None):
     path = Path(directory).resolve()
     if path.name == "checkpoints":
         path = path.parent
@@ -229,6 +238,16 @@ def resume_run(directory, *, parallel=None, execution=None):
             if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 65536:
                 raise InputError("block_steps must be an integer in 1..65536")
         config.setdefault("dynamics", {}).update(execution)
+    if adaptive_budget is not None:
+        from .parallel import root_call
+        from .workflows.adaptive_umbrella import extend_adaptive_budget
+
+        if config["task"] not in ("fes", "rate") or not config.get("adaptive_umbrella"):
+            raise InputError("adaptive budget overrides require an adaptive FES or rate run")
+        # Authenticate saved inputs/model files before modifying the plan.
+        root_call(_initialize_output, config, system, path, True)
+        pilot_output = path / "umbrella" if config["task"] == "rate" else path
+        root_call(extend_adaptive_budget, pilot_output, adaptive_budget)
     return run_resolved(config, system, output=path, resume=True)
 
 
@@ -241,9 +260,9 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             summary = path / "summary.json"
         return json.loads(summary.read_text())
     config = json.loads((path / "input" / "resolved.json").read_text())
-    if config["task"] not in ("fes", "metadynamics", "diffusion"):
+    if config["task"] not in ("fes", "metadynamics", "opes", "diffusion"):
         raise InputError(
-            "Recomputing analysis supports FES, metadynamics and diffusion; omit --recompute to read other results"
+            "Recomputing analysis supports FES, metadynamics, OPES and diffusion; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
@@ -300,6 +319,10 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         from .workflows.metadynamics import reanalyze_metadynamics
 
         result = reanalyze_metadynamics(config, system, path)
+    elif config["task"] == "opes":
+        from .workflows.opes import reanalyze_opes
+
+        result = reanalyze_opes(config, system, path)
     else:
         from .workflows.fes import reanalyze_fes
 
@@ -356,14 +379,19 @@ def prepare(job, *, numerical=False):
     elif config["task"] in ("fes", "surface_rate"):
         from .workflows.fes import resolve_umbrellas
 
-        cv, specs, centers, stiffness = resolve_umbrellas(config, system)
-        result["umbrella_preparation"] = {
-            "dimension": cv.dimension,
-            "windows": len(centers),
-            "cv_units": cv.units,
-            "centers_au": centers,
-            "stiffness_au": stiffness,
-        }
+        if config.get("surface", {}).get("free_energy"):
+            from .workflows.surface_source import source_context
+            context = source_context(config, system, verify=True)
+            result["source_preparation"] = context["paths"]
+        else:
+            cv, specs, centers, stiffness = resolve_umbrellas(config, system)
+            result["umbrella_preparation"] = {
+                "dimension": cv.dimension,
+                "windows": len(centers),
+                "cv_units": cv.units,
+                "centers_au": centers,
+                "stiffness_au": stiffness,
+            }
         if config["task"] == "surface_rate":
             from .workflows.surface import surface_definition
 
@@ -376,6 +404,11 @@ def prepare(job, *, numerical=False):
 
         validate_metadynamics(config, system)
         result["metadynamics_preparation"] = config["metadynamics"]
+    elif config["task"] == "opes":
+        from .workflows.opes import validate_opes
+
+        validate_opes(config, system)
+        result["opes_preparation"] = config["opes"]
     elif config["task"] == "network":
         from .workflows.network import prepare_network
 
@@ -383,15 +416,19 @@ def prepare(job, *, numerical=False):
         result["ready"] = result["network_preparation"].get("ready", False)
         return result
     elif config["task"] in ("pimd", "diffusion"):
-        from .workflows.materials import validate_materials
+        from .workflows.materials import resolve_materials
 
-        validate_materials(config, system)
+        materials_options = resolve_materials(config, system)
         result["materials_preparation"] = {
             "cell_bohr": system.to_dict().get("cell"),
             "pbc": list(getattr(system, "pbc", (False, False, False))),
-            "ensemble": "fixed_cell",
+            "ensemble": "npt" if materials_options["barostat"] is not None else "fixed_cell",
+            "barostat": materials_options["barostat"],
+            "fixed_atoms": list(system.fixed_atoms),
+            "trajectory_storage": materials_options["storage"],
             "sampling_thermostat": config["sampling"]["thermostat"],
-            "production_method": "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling",
+            "production_method": ("centroid_ef_rpmd" if "electronic_friction" in config else
+                                  "unthermostatted_rpmd" if config["task"] == "diffusion" else "pimd_sampling"),
             "sampling": config["sampling"],
             "analysis": config.get("diffusion", {}),
         }
@@ -414,15 +451,35 @@ def prepare(job, *, numerical=False):
                 from .potentials.diabatic import check_diabatic_potential
                 checked = validate_diabatic_result(evaluated, x.shape, config["nonadiabatic"]["nstates"])
                 result["pes_check"] = {
-                    "matrix_hartree": checked.matrix.tolist(),
+                    "matrix_hartree": checked.matrix.real.tolist(),
                     **check_diabatic_potential(provider, x, config["nonadiabatic"]["nstates"]),
                 }
+                if checked.matrix.dtype.kind == "c":
+                    result["pes_check"]["matrix_imag_hartree"] = checked.matrix.imag.tolist()
             else:
                 validate_result(evaluated, x.shape)
                 result["pes_check"] = {
                     "energy_hartree": evaluated.energy.tolist(),
                     "status": evaluated.status.tolist(),
                 }
+                if config["task"] == "pimd" and materials_options["barostat"] is not None:
+                    from .barostat import BZPBarostat
+                    from .dynamics import State
+                    piston = BZPBarostat(provider, system, config["beta"], config["beads"],
+                                        **materials_options["barostat"])
+                    q = np.repeat(x, config["beads"], axis=0)
+                    result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
         finally:
             provider.close()
+        if "electronic_friction" in config:
+            from .electronic_friction import make_electronic_friction, validate_friction_result
+            friction = make_electronic_friction(config, system)
+            try:
+                checked = validate_friction_result(friction.evaluate(x), x.shape)
+                result["friction_check"] = {"tensor_atomic_units": checked.tensor.tolist(),
+                                            "method": "markovian_centroid_ef_rpmd"}
+            finally:
+                close = getattr(friction, "close", None)
+                if callable(close):
+                    close()
     return result

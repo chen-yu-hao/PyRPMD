@@ -56,8 +56,7 @@ factory 在每个实际势能进程中创建自己的对象。带有全局 Fortr
 
 周期 System 的 cell/PBC 会传入 ASE `Atoms`。自定义 Python provider 须声明
 `metadata["supports_pbc"]=True` 并实现 `bind_system(system)`，接收原子单位的
-完整系统；所有串行／进程／珠子 worker 均执行该绑定。当前 C ABI v1、原 f2py、
-Torch 和 i-PI socket 工厂不能承载该固定晶胞契约，周期请求会明确拒绝。
+完整系统；所有串行／进程／珠子 worker 均执行该绑定。C ABI v2、显式周期 Torch 和 i-PI 支持该晶胞契约；C ABI v1 和原 f2py 仍为分子接口。
 参见 [表面 PES 契约](surface-catalysis.md#周期-pes-契约和性能) 与
 `examples/surface/toy_surface.py`、`examples/surface/ase_emt.py`。
 
@@ -78,7 +77,7 @@ with_dimensions = false
 
 ## C ABI `.so` 与 `.o`
 
-现成 `.so` 如果实现 [PES v1 ABI](../native/ABI.md)，可直接使用：
+现成 `.so` 如果实现 [PES v1/v2 ABI](../native/ABI.md)，可直接使用：
 
 ```bash
 pyrpmd run job.inp --pes ./libpes.so
@@ -151,9 +150,11 @@ provider = "ipi"
 params = {host="127.0.0.1", port=31415, timeout=60.0, init={periodic=false}}
 ```
 
-PyRPMD 充当同步 force server，外部 driver 连接并按 i-PI 协议提供力。每个 context 对应一个 driver。并行执行器为不同轨迹/珠子 context 分配不同端口或 Unix socket 后缀；需自行启动相应数量的 driver 并连接正确地址。多节点 hostname/防火墙/driver 批处理由站点配置。固定晶胞任务传入真实 cell 与逆矩阵；部分 PBC 另需匹配的 `params.init.pbc` 和服务端支持，因为 POSDATA 不传边界布尔标志。非周期分子保留原协议行为。
+PyRPMD 充当同步 force server，外部 driver 连接并按 i-PI 协议提供力。每个 context 可通过 `params.clients`（默认 1）连接多个 driver，并动态并行分配珠子。首次调用等待全部客户端，完整批次成功后按输入顺序返回。不同 context 需要不同地址，执行器不自动分配端口或 Unix 后缀。多节点 hostname/防火墙/driver 批处理由站点配置。固定晶胞任务传入真实 cell 与逆矩阵；部分 PBC 另需匹配的 `params.init.pbc` 和服务端支持，因为 POSDATA 不传边界布尔标志。非周期分子保留原协议行为。
 
-周期能力当前不扩展到分子 Torch、C ABI v1 或 f2py；这些入口会拒绝周期系统。
+周期 Torch 需 `periodic=true` 和 `forward(q,cell,pbc)`；C ABI v2 携带完整 cell/PBC 与可选 virial。C ABI v1 和 f2py 仍拒绝周期系统。
+
+新命名适配器 `mace`、`nequip`、`deepmd`、`fairchem`、`tblite`/`xtb`、`pyscf` 的参数、安装和计算限制见 [适配器指南](potential-adapters.md)。
 
 ## 自定义 CV
 

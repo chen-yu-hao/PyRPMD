@@ -1,4 +1,4 @@
-"""CPU Python matrix PES adapter: real diabatic energies and positive gradients."""
+"""CPU Python PES adapter for Hermitian diabatic matrices and positive gradients."""
 
 import numpy as np
 
@@ -53,5 +53,5 @@ def check_diabatic_potential(potential, q, nstates, epsilon=1e-5):
             numerical[..., a, c] = (vp - vm) / (2 * epsilon)
     delta = result.gradients - numerical
     return {"max_absolute_gradient_error": float(np.max(np.abs(delta))),
-            "rms_gradient_error": float(np.sqrt(np.mean(delta ** 2))),
+            "rms_gradient_error": float(np.sqrt(np.mean(np.abs(delta) ** 2))),
             "gradient_unit": "hartree/bohr", "finite_difference_step_bohr": epsilon}

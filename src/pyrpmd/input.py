@@ -23,9 +23,10 @@ class InputError(ValueError):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics adaptive_umbrella pcet diffusion site_rate surface nonadiabatic".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction".split()
 )
 _SECTIONS = {
+    "electronic_friction": set("method provider gamma tensor factory params".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
         "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
@@ -35,10 +36,10 @@ _SECTIONS = {
         "integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval thermostat_params gamma_centroid replicas parents".split()
     ),
     "potential": set(
-        "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params".split()
+        "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params abi_version periodic virial".split()
     ),
     "parallel": set(
-        "backend mode trajectory_groups trajectory_workers workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling".split()
+        "backend mode trajectory_groups trajectory_workers workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling reuse_potentials".split()
     ),
     "collision": set(
         "sampling impact_sampling bmax trajectories max_time max_steps energy orientation".split()
@@ -47,13 +48,13 @@ _SECTIONS = {
         "factory params channels exit_distance persistence persistence_steps check_interval bond_cutoffs".split()
     ),
     "output": set(
-        "directory checkpoint_interval checkpoint_steps trajectory_stride".split()
+        "directory checkpoint_interval checkpoint_steps trajectory_stride trajectory_storage chunk_frames".split()
     ),
     "reaction": set(
         "fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
     ),
     "analysis": set(
-        "method measure bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count".split()
+        "method measure flux_axis bins bootstrap_samples bootstrap_replicates bootstrap seed overlap_threshold ranges min_count max_grid_points".split()
     ),
     "umbrella": set(
         "cvs grid centers centers_au kappa stiffness stiffness_au start stop count".split()
@@ -62,14 +63,19 @@ _SECTIONS = {
         "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui".split()
     ),
     "recrossing": set(
-        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance".split()
+        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale".split()
     ),
-    "surface": set("reactant_basin dividing_surface product_side".split()),
+    "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid".split()
     ),
+    "opes": set(
+        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps".split()
+    ),
+    "replica_exchange": set("enabled interval_steps pairs".split()),
+    "barostat": set("method pressure time_constant friction".split()),
     "adaptive_umbrella": set(
-        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows target_overlap min_effective_samples min_spacing".split()
+        "enabled pilot_steps pilot_equilibration_steps max_rounds max_windows max_pilot_steps target_overlap min_effective_samples min_spacing coverage_bins coverage_ranges min_bin_effective_samples target_coverage".split()
     ),
     "diffusion": set(
         "atom_indices axes reference_atoms fit_range max_lag bootstrap seed block_length".split()
@@ -412,11 +418,17 @@ class JobSpec:
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
         task = d.get("task")
-        if task not in ("rate", "drpmd", "fes", "metadynamics", "pimd", "diffusion", "site_rate", "surface_rate"):
-            raise InputError("task must be rate, drpmd, fes, metadynamics, network, pcet, pimd, diffusion, site_rate or surface_rate")
+        if task not in ("rate", "drpmd", "fes", "metadynamics", "opes", "pimd", "diffusion", "site_rate", "surface_rate"):
+            raise InputError("task must be rate, drpmd, fes, metadynamics, opes, network, pcet, pimd, diffusion, site_rate or surface_rate")
         materials = task in ("pimd", "diffusion")
+        if "barostat" in d and task != "pimd":
+            raise InputError("[barostat] requires task='pimd'; RPMD transport uses fixed-cell unthermostatted production")
+        if not materials and any(key in d.get("output", {}) for key in ("trajectory_storage", "chunk_frames")):
+            raise InputError("output.trajectory_storage/chunk_frames require task='pimd' or 'diffusion'")
         if "diffusion" in d and task != "diffusion":
             raise InputError("[diffusion] requires task='diffusion'")
+        if "electronic_friction" in d and task != "diffusion":
+            raise InputError("[electronic_friction] requires task='diffusion'; other protocols use the Python API")
         if "site_rate" in d and task != "site_rate":
             raise InputError("[site_rate] requires task='site_rate'")
         if materials and any(k in d for k in ("umbrella", "cvs", "reaction", "collision", "outcomes", "rate", "recrossing")):
@@ -431,20 +443,35 @@ class JobSpec:
             raise InputError("[network] requires task='network'")
         if "metadynamics" in d and task != "metadynamics":
             raise InputError("[metadynamics] requires task='metadynamics'")
+        if "opes" in d and task != "opes":
+            raise InputError("[opes] requires task='opes'")
+        if task == "opes" and any(
+            key in d for key in ("umbrella", "reaction", "rate", "recrossing", "collision", "outcomes")
+        ):
+            raise InputError("OPES uses its own probability bias; umbrella and reaction/rate settings do not apply")
         if "adaptive_umbrella" in d and task not in ("fes", "rate"):
             raise InputError("Adaptive umbrellas require task='fes' or task='rate'")
-        if task == "metadynamics":
+        if "replica_exchange" in d and task != "fes":
+            raise InputError("[replica_exchange] requires task='fes'")
+        if task in ("metadynamics", "opes"):
             analysis = d.setdefault("analysis", {})
-            analysis.setdefault("method", "bias_estimate")
+            analysis.setdefault("method", "kde" if task == "opes" else "bias_estimate")
             analysis.setdefault("measure", "cv_density")
             if not any(key in analysis for key in ("bootstrap", "bootstrap_replicates", "bootstrap_samples")):
                 analysis["bootstrap"] = 0
         analysis = d.get("analysis", {})
         if analysis.get("measure", "cv_density") not in ("cv_density", "rate_flux"):
             raise InputError("analysis.measure must be cv_density or rate_flux")
-        if task in ("fes", "surface_rate") and analysis.get("method", "mbar") != "mbar":
+        if "flux_axis" in analysis:
+            if analysis.get("measure", "cv_density") != "rate_flux":
+                raise InputError("analysis.flux_axis requires measure='rate_flux'")
+            if _integer(analysis["flux_axis"], "analysis.flux_axis", 0) != 0:
+                raise InputError("analysis.flux_axis currently supports only zero")
+        source_pmf = task == "surface_rate" and bool(d.get("surface", {}).get("free_energy"))
+        expected_analysis = "source" if source_pmf else "mbar"
+        if task in ("fes", "surface_rate") and analysis.get("method", expected_analysis) != expected_analysis:
             raise InputError(
-                "The FES workflow uses MBAR; umbrella integration is part of the rate workflow"
+                f"This FES/surface workflow requires analysis.method='{expected_analysis}'"
             )
         if task == "rate" and analysis.get("measure", "rate_flux") != "rate_flux":
             raise InputError("Standard RPMD rates require analysis.measure='rate_flux'")
@@ -549,15 +576,13 @@ class JobSpec:
                 "Gas-phase rate/drpmd normalization does not apply to periodic or fixed-atom systems; "
                 "use fes, surface_rate or site_rate for a fixed cell"
             )
-        if task == "metadynamics" and (any(system.pbc) or system.fixed_atoms):
-            raise InputError(
-                "Metadynamics does not yet support periodic or fixed-atom systems; "
-                "use the surface FES workflow"
-            )
         if task == "surface_rate":
             from .workflows.surface import surface_definition
 
             try:
+                if source_pmf:
+                    from .workflows.surface_source import source_paths
+                    d["surface"]["free_energy"] = source_paths(d["surface"]["free_energy"], base)
                 surface_definition(d, system)
             except (ValueError, KeyError, TypeError) as e:
                 raise InputError(str(e)) from e
@@ -569,8 +594,16 @@ class JobSpec:
                 potential[k] = _path(base, potential[k])
         if "model" in potential and potential.get(
             "provider", potential.get("type")
-        ) not in ("builtin", None):
+        ) not in ("builtin", "fairchem", None):
             potential["model"] = _path(base, potential["model"])
+        elif potential.get("provider", potential.get("type")) == "fairchem" and "model" in potential:
+            # fairchem accepts registered names as well as local checkpoints.
+            # Preserve names; resolve explicit paths relative to the input.
+            model = potential["model"]
+            if isinstance(model, str) and (model.startswith((".", "~", "/"))
+                    or Path(model).suffix.lower() in (".pt", ".pth", ".ckpt", ".bin")
+                    or (base / model).is_file()):
+                potential["model"] = _path(base, model)
         # Model-specific path-valued parameters can be declared relative to input.
         for k in ("model", "weights", "reference"):
             if isinstance(potential.get("params", {}).get(k), str):
@@ -588,10 +621,22 @@ class JobSpec:
         sampling["dt_au"] = sampling_dt
         default_thermostat = "pile-l" if materials and integrator != "velocity-verlet" else "andersen"
         sampling["thermostat"] = sampling.get("thermostat", default_thermostat)
+        if not isinstance(sampling["thermostat"], str):
+            raise InputError("sampling.thermostat must be a name such as 'andersen', 'pile-l' or 'nose-hoover-chain'")
         sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
-        expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-andersen"
+        expected_sampler = sampler if sampling["thermostat"] == "pile-l" else integrator + "-" + sampling["thermostat"]
         sampling["integrator"] = sampling.get("integrator", expected_sampler)
-        if materials and sampling["thermostat"] == "pile-l":
+        if task == "metadynamics" and sampling["thermostat"] == "nose-hoover-chain":
+            from .thermostats import nhc_options
+            try:
+                nhc_options(sampling)
+            except (ValueError, TypeError) as error:
+                raise InputError(str(error)) from error
+            if sampling["integrator"] != expected_sampler:
+                raise InputError("NHC sampling.integrator must match dynamics.integrator + '-nose-hoover-chain'")
+            if "gamma_centroid" in sampling:
+                raise InputError("sampling.gamma_centroid requires PILE-L sampling")
+        elif (materials or task in ("fes", "metadynamics")) and sampling["thermostat"] == "pile-l":
             if sampler is None or sampling["integrator"] != sampler:
                 raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
             sampling["gamma_centroid"] = _positive(
@@ -620,8 +665,16 @@ class JobSpec:
             dt,
             allow_zero=True,
         )
+        adaptive_table = d.get("adaptive_umbrella", {})
+        enhanced_sampling = task == "metadynamics" or (
+            isinstance(adaptive_table, Mapping)
+            and adaptive_table.get("enabled", bool(adaptive_table))
+        )
+        default_production = "1000 fs" if enhanced_sampling else "200 fs"
+        if enhanced_sampling and not any(k in sampling for k in ("production_steps", "production")):
+            notes.append("Enhanced-sampling default production: 1000 fs; inspect production ESS and CV coverage before increasing the budget or interpreting the FES.")
         sampling["production_steps"] = _steps(
-            sampling, "production_steps", "production", "200 fs", dt
+            sampling, "production_steps", "production", default_production, dt
         )
         interval = sampling.get("interval_steps", sampling.get("sample_interval"))
         if interval is None:
@@ -677,8 +730,8 @@ class JobSpec:
         )
         parallel.setdefault("threads_per_rank", 1)
         parallel.setdefault("pes_ranks", 1)
-        parallel.setdefault("coordinator_ranks", 0)
         parallel.setdefault("scheduling", "static")
+        parallel.setdefault("coordinator_ranks", 1 if parallel["scheduling"] == "dynamic" else 0)
         for k in (
             "trajectory_workers",
             "bead_workers",
@@ -832,6 +885,10 @@ class JobSpec:
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         try:
+            if task in ("rate", "surface_rate"):
+                from .workflows.rate import _recrossing_options
+
+                _recrossing_options(resolved)
             if materials:
                 from .workflows.materials import validate_materials
 
@@ -855,6 +912,17 @@ class JobSpec:
                 from .workflows.metadynamics import validate_metadynamics
 
                 validate_metadynamics(resolved, system)
+            if task == "opes":
+                from .workflows.opes import validate_opes
+
+                validate_opes(resolved, system)
+            if "replica_exchange" in d:
+                from .workflows.replica_exchange import exchange_options
+
+                exchange_options(resolved, system)
+            if source_pmf:
+                from .workflows.surface_source import source_context
+                source_context(resolved, system, verify=True)
             if "adaptive_umbrella" in d:
                 from .workflows.adaptive_umbrella import validate_adaptive_umbrella
 

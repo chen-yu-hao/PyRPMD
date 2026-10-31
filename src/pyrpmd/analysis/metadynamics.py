@@ -58,7 +58,13 @@ def _cv_signature(cv):
     return common + (parameters,)
 
 
-def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
+def _grid_signature(bias):
+    if not hasattr(bias, "grid_algorithm"):
+        return None
+    return (bias.grid_algorithm, tuple(bias.grid_ranges.ravel()), tuple(bias.grid_bins))
+
+
+def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1, max_grid_points=10_000_000):
     """Estimate F from independently deposited biases on a common grid.
 
     Replica bias histories are evaluated separately, never merged. Estimates
@@ -72,12 +78,13 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     if not biases or len(biases) != len(samples):
         raise ValueError("one bias history and sample array per replica required")
     dimension = biases[0].cv.dimension
-    if dimension not in (1, 2):
-        raise ValueError("metadynamics FES supports one or two dimensions")
+    if dimension not in (1, 2, 3):
+        raise ValueError("metadynamics FES supports one, two or three dimensions")
     if any(b.cv.dimension != dimension or b.mode != biases[0].mode or
            b.bias_factor != biases[0].bias_factor or b.beta != biases[0].beta or
            tuple(b.cv.units) != tuple(biases[0].cv.units) or
            tuple(b.cv.periods) != tuple(biases[0].cv.periods) or
+           _grid_signature(b) != _grid_signature(biases[0]) or
            _cv_signature(b.cv) != _cv_signature(biases[0].cv)
            for b in biases):
         raise ValueError("metadynamics replicas must share their temperature, method and CVs")
@@ -92,8 +99,13 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     if len(bins) != dimension or any(isinstance(b, (bool, np.bool_)) or
             not isinstance(b, (int, np.integer)) or b < 2 for b in bins):
         raise ValueError("metadynamics bins must contain an integer >=2 per CV")
-    if np.prod(bins, dtype=float) > 1_000_000:
-        raise ValueError("metadynamics analysis grid exceeds one million points")
+    if isinstance(max_grid_points, (bool, np.bool_)) or not isinstance(max_grid_points, (int, np.integer)) or max_grid_points < 1:
+        raise ValueError("max_grid_points must be a positive integer")
+    if np.prod(bins, dtype=float) > max_grid_points:
+        raise ValueError("metadynamics analysis grid exceeds max_grid_points")
+    if ranges is None:
+        if hasattr(biases[0], "grid_ranges"):
+            ranges = biases[0].grid_ranges.tolist()
     if ranges is None:
         all_samples = np.concatenate(arrays)
         ranges = []
@@ -121,7 +133,8 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     # Bound temporary [grid,hill] allocations even for long HILLS histories.
     for bias in biases:
         chunks = []
-        chunk_size = max(1, min(1024, 1_000_000 // max(1, len(bias.hills))))
+        chunk_size = (1024 if hasattr(bias, "grid_algorithm") else
+                      max(1, min(1024, 1_000_000 // max(1, bias.hill_count))))
         for start in range(0, len(flat), chunk_size):
             chunks.append(bias.physical_energy(flat[start:start + chunk_size]))
         values.append(np.concatenate(chunks).reshape(grid.shape[:-1]))
@@ -130,7 +143,7 @@ def bias_fes(biases, samples, *, bins=40, ranges=None, min_count=1):
     masks = count < min_count
     # A history with zero hills cannot be an estimated free-energy landscape.
     for i, bias in enumerate(biases):
-        if not bias.hills:
+        if not bias.hill_count:
             masks[i] = True
     common = ~np.any(masks, axis=0)
     raw = np.asarray([-b.fes_factor * value for b, value in zip(biases, values)])

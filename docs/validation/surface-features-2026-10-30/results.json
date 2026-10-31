@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-30",
+  "base_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "working_tree_changes": true,
+  "tests": {
+    "passed": 1057,
+    "subtests_passed": 153,
+    "skipped": 11,
+    "skip_reason": "10 optional BKMP2; 1 optional real EAM"
+  },
+  "mpi": {
+    "ranks": 4,
+    "trajectory_groups": 2,
+    "bead_ranks_per_group": 2,
+    "new_workflow_matching_npz_files": 19,
+    "existing_surface_matching_npz_files": 27,
+    "comparison": "exact array equality",
+    "completed_resume": "passed"
+  },
+  "real_metal_metadynamics": {
+    "paper_doi": "10.1038/s41467-026-77226-4",
+    "model_doi": "10.5281/zenodo.21401971",
+    "model_sha256": "64a2a91636d11c091585aaf1bc72af6397e9672a0a3bd02602f95ec1772fb6f4",
+    "natoms": 39,
+    "mobile_atoms": 21,
+    "fixed_atoms": 18,
+    "physical_dof": 63,
+    "temperature_K": 600,
+    "beads": 1,
+    "dt_fs": 0.2,
+    "equilibration_steps": 100,
+    "production_steps": 800,
+    "cv_kinds": [
+      "periodic_distance",
+      "periodic_distance",
+      "surface_height"
+    ],
+    "cv_dimension": 3,
+    "hills": [
+      2
+    ],
+    "samples": 40,
+    "thermostat": "nose-hoover-chain",
+    "resume_and_reanalysis": "passed",
+    "production_input_validated": true,
+    "production_40ns_executed": false
+  },
+  "real_metal_dynamics": [
+    {
+      "beads": 1,
+      "natoms": 39,
+      "mobile_cartesian_dof": 63,
+      "ring_dof": 63,
+      "timestep_fs": 0.2,
+      "parent_steps": 100,
+      "child_steps_per_sign": 100,
+      "constraint_max_bohr": 8.881784197001252e-16,
+      "tangent_velocity_max_au": 8.131516293641283e-20,
+      "fixed_position_error_bohr": 0.0,
+      "child_energy_drift_eV_per_bead": [
+        4.217398792643159e-05,
+        5.412228534645385e-05
+      ],
+      "max_drift_kBT": 0.0010467717351377137
+    },
+    {
+      "beads": 4,
+      "natoms": 39,
+      "mobile_cartesian_dof": 63,
+      "ring_dof": 252,
+      "timestep_fs": 0.2,
+      "parent_steps": 100,
+      "child_steps_per_sign": 100,
+      "constraint_max_bohr": 1.7763568394002505e-15,
+      "tangent_velocity_max_au": 1.0842021724855044e-19,
+      "fixed_position_error_bohr": 0.0,
+      "child_energy_drift_eV_per_bead": [
+        0.009276569816667416,
+        0.009335228167946531
+      ],
+      "max_drift_kBT": 0.1805513740729005
+    },
+    {
+      "beads": 4,
+      "natoms": 39,
+      "mobile_cartesian_dof": 63,
+      "ring_dof": 252,
+      "timestep_fs": 0.1,
+      "parent_steps": 200,
+      "child_steps_per_sign": 200,
+      "constraint_max_bohr": 2.220446049250313e-15,
+      "tangent_velocity_max_au": 1.0842021724855044e-19,
+      "fixed_position_error_bohr": 0.0,
+      "child_energy_drift_eV_per_bead": [
+        0.0023171691145260206,
+        0.0023281149676197886
+      ],
+      "max_drift_kBT": 0.0450277538846597
+    }
+  ],
+  "source_rate_guard": {
+    "status": "basin_lower_outside_histogram_centers",
+    "rate_estimate_s_inv": null,
+    "children_launched": false
+  },
+  "limitations": [
+    "Finite pilot does not reproduce the paper catalytic rates; no 40 ns production run performed.",
+    "Direct Gaussian sum is not grid accelerated; long production and FES analysis cost grow with hill count.",
+    "Projected source FES does not provide calibrated PMF uncertainty; only candidate rate is returned when supported.",
+    "P=4 velocity-Verlet at 0.2 fs has 0.1806 kBT per-bead energy drift in this short test; 0.1 fs reduces it to 0.0450 kBT. This is not a general timestep convergence certificate.",
+    "Published float LAMMPS / legacy Fortran versus public double TorchScript, thermostat DOF, and sampling-wall protocols remain different; do not claim trajectory identity."
+  ]
+}

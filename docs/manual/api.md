@@ -41,6 +41,56 @@ needs a new task.
 ```{autofunction} pyrpmd.runner.analyze_run
 ```
 
+## Additional scientific APIs
+
+Temperature and isotope studies reuse the workflows and checkpoints. Instanton and quantum-statistics APIs use `Potential.evaluate` and leave real-time dynamics explicit. See [rate studies](../rate-studies.md), [instantons](../instanton.md) and [quantum statistics](../quantum-statistics.md) for normalization and scope.
+
+```{autofunction} pyrpmd.studies.plan_rate_study
+```
+
+```{autofunction} pyrpmd.studies.run_rate_study
+```
+
+```{autofunction} pyrpmd.studies.arrhenius_fit
+```
+
+```{autofunction} pyrpmd.studies.kinetic_isotope_effect
+```
+
+```{autofunction} pyrpmd.instanton.optimize_instanton
+```
+
+```{autofunction} pyrpmd.instanton.instanton_rate_1d
+```
+
+```{autoclass} pyrpmd.path_integral.PathIntegralAction
+:members: evaluate, evaluate_batch
+```
+
+```{autofunction} pyrpmd.path_integral.sample_path_integral
+```
+
+```{autoclass} pyrpmd.path_integral.OpenPathAction
+```
+
+```{autofunction} pyrpmd.path_integral.sample_open_path
+```
+
+```{autofunction} pyrpmd.quantum_statistics.energy_heat_capacity
+```
+
+```{autofunction} pyrpmd.quantum_statistics.quantum_kinetic_energy
+```
+
+```{autofunction} pyrpmd.quantum_statistics.isotope_substitution_free_energy
+```
+
+```{autofunction} pyrpmd.quantum_statistics.isotope_fractionation
+```
+
+```{autofunction} pyrpmd.quantum_statistics.momentum_distribution_from_open_paths
+```
+
 ## System and State
 
 `System` holds the atoms, nuclear masses, initial geometry, fragments, electronic state and optional
@@ -79,7 +129,7 @@ you. The last line prints `loop_stats`: the Python `HarmonicPotential` has no na
 every step runs in Python and the fallback reason says so.
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
-:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, loop_stats
+:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, loop_stats
 ```
 
 ```{autofunction} pyrpmd.dynamics.native_capabilities
@@ -88,6 +138,24 @@ every step runs in Python and the fallback reason says so.
 `step()` takes one thermostat-free deterministic step. `sample_step()` takes one sampling step with
 the matching thermostat. `energy()` returns the summed-bead ring Hamiltonian. `propagate()` and
 `propagate_block()` differ in what they commit on failure; see [Execution and restart](execution.md).
+
+## Trajectory batches, RPC/MTS and spectroscopy
+
+```python
+from pyrpmd import BatchedState, BatchedDynamics, MTSDynamics
+from pyrpmd import RingPolymerContraction, SplitPotential, DifferencePotential
+from pyrpmd.analysis.spectroscopy import (
+    velocity_autocorrelation, dipole_autocorrelation, flux_correlation,
+    power_spectrum, relative_ir_spectrum,
+)
+```
+
+`BatchedState` stores `[K,P,N,3]` arrays and an independent clock for each trajectory.
+`MTSDynamics` separates the outer timestep from the number of inner steps; RPC
+requires an explicitly declared slow potential correction. `Dynamics.trpmd_step()`
+retains physical nuclear masses and applies friction only to internal ring modes.
+Examples and supported combinations are in [Trajectory batching](../batched-dynamics.md),
+[RPC/MTS](../rpc-mts.md) and [TRPMD and spectra](../trpmd-spectroscopy.md).
 
 ## Potentials
 
@@ -148,8 +216,8 @@ These objects are also importable from `pyrpmd` and serve collisions from a sele
 diabatic state; see the [nonadiabatic guide](nonadiabatic.md).
 
 `NRPMDState` stores `mapping_q/mapping_p[P,K]` next to the nuclear `q/p[P,N,3]`. `DiabaticResult`
-takes the energy matrix `[B,K,K]` and its positive gradient `[B,K,K,N,3]`, both real, finite and
-symmetric in the electronic indices.
+takes the energy matrix `[B,K,K]` and its positive gradient `[B,K,K,N,3]`, both finite and
+Hermitian in the electronic indices. Complex spin-orbit couplings retain their phases.
 
 ```{autoclass} pyrpmd.nonadiabatic.DiabaticResult
 ```
@@ -160,6 +228,82 @@ symmetric in the electronic indices.
 
 ```{autoclass} pyrpmd.nonadiabatic.NRPMDDynamics
 :members: step, energy, populations, asymptotic_coupling
+```
+
+## Enhanced sampling APIs
+
+```python
+from pyrpmd import (
+    OPESBias, PlumedBias, TransitionInterfaceSampler, TISPath,
+    estimate_effective_flux, combine_tis_rate,
+)
+```
+
+`task="opes"` uses the standard run/prepare/resume/analyze entry points.
+`OPESBias` also supports direct integration through explicit `update()` events;
+force evaluations do not change the probability estimate.
+See [OPES](../opes.md) for fixed-bandwidth and frozen-production conventions.
+
+`PlumedBias.step(dynamics, state)` owns the PLUMED update clock and calls the
+existing integrator. `evaluate()` returns read-only diagnostics without a
+history update. The optional PLUMED runtime is loaded only when constructing
+the bridge. See [PLUMED](../plumed.md) for units and its external restart files.
+
+`TransitionInterfaceSampler` generates and samples unbiased path ensembles
+using a scalar CV or callable. `TISPath` owns each q/p path; the optional sample
+callback can stream retained paths, including rejected-move repeats.
+`estimate_effective_flux` consumes a separate unbiased trace, and
+`combine_tis_rate` returns a candidate first-order rate with its normalization
+and convergence status explicit. See [TIS](../transition-interface-sampling.md).
+## Electronic friction and thermal nonadiabatic models
+
+These classes are also available from `pyrpmd`. The [nonadiabatic chapter](nonadiabatic.md)
+distinguishes the initial distributions and method restrictions. Friction uses a scalar
+mean-force PES; the other methods use a complete diabatic matrix and positive gradients.
+
+```{autoclass} pyrpmd.electronic_friction.ElectronicFrictionDynamics
+:members: step, propagate
+```
+
+```{autoclass} pyrpmd.electronic_friction.ConstantElectronicFriction
+:members: from_rates
+```
+
+```{autoclass} pyrpmd.electronic_friction.FrictionResult
+```
+
+```{autoclass} pyrpmd.thermal_nrpmd.ThermalNRPMDSampler
+:members: sample, snapshot, restore
+```
+
+```{autoclass} pyrpmd.thermal_nrpmd.ThermalNRPMDDynamics
+:members: step, energy, population_flux
+```
+
+```{autofunction} pyrpmd.thermal_nrpmd.thermal_flux_side
+```
+
+```{autofunction} pyrpmd.thermal_nrpmd.thermal_population_rate
+```
+
+```{autoclass} pyrpmd.surface_hopping.RPSHDynamics
+:members: initialize, step, energy, populations, attempt_hop
+```
+
+```{autoclass} pyrpmd.mv_rpmd.MVRPMDDynamics
+:members: step, energy, populations
+```
+
+```{autoclass} pyrpmd.kc_rpmd.KCRPMDDynamics
+:members: step, energy
+```
+
+```{autoclass} pyrpmd.isomorphic.IsomorphicPotential
+:members: evaluate
+```
+
+```{autoclass} pyrpmd.isomorphic.IsomorphicEhrenfestDynamics
+:members: step, energy
 ```
 
 ## Versioning

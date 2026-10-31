@@ -1,0 +1,19 @@
+{
+  "task": "fes_projection",
+  "method": "boltzmann_marginal",
+  "measure": "cv_density",
+  "source": "/workspace/PyRPMD/runs/surface-pr-20261031/pt111",
+  "source_sha256": "8fe166c52aec55e51220e96b7504c78a4277f0935992ed97bd34d649eaf1001b",
+  "axes": [
+    2
+  ],
+  "beta": 526.2917080066452,
+  "conditioned": false,
+  "selection_sha256": null,
+  "supported_bins": 0,
+  "total_bins": 10,
+  "converged": false,
+  "warnings": [
+    "Incomplete integration slices are masked; projection does not establish FES or rate convergence."
+  ]
+}

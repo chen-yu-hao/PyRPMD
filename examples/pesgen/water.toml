@@ -1,0 +1,14 @@
+schema = "pyrpmd.pesgen/1"
+method = "qmdff"
+endpoints = ["water.xyz"]
+native_build = "../../runs/caracal-native"
+optimize_endpoints = true
+gradient_tolerance = 1e-5 # hartree/bohr
+worker_timeout = 120    # seconds per native transaction
+
+[qm]
+method = "RHF"
+basis = "sto-3g"        # small functional smoke test, not a production recommendation
+conv_tol = 1e-10
+hessian = "analytic"
+population_grid_level = 4

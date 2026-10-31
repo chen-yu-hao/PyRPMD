@@ -81,7 +81,8 @@ def run_case(directory, parallel):
     with patch.object(Dynamics, "step", side_effect=AssertionError("completed resume propagated")), \
          patch.object(Dynamics, "propagate_block", side_effect=AssertionError("completed resume propagated")):
         second = resume_run(directory)
-    for key in ("rate_estimate_s_inv", "rate_standard_error_s_inv", "kappa", "status", "child_trajectories"):
+    for key in ("rate_estimate_s_inv", "rate_standard_error_s_inv", "kappa", "status",
+                "child_trajectories", "rate_quality", "plateau_diagnostics"):
         assert first[key] == second[key], key
     assert first["pmf"]["k_qtst_s_inv"] == second["pmf"]["k_qtst_s_inv"]
     return first
@@ -140,7 +141,8 @@ def compare_outputs(root):
     for key in ("task", "status", "rate_unit", "rate_s_inv", "rate_estimate_s_inv",
                 "rate_standard_error_s_inv", "rate_percentile_95_ci_s_inv", "rate_uncertainty",
                 "kappa", "kappa_standard_error", "plateau_detected", "child_trajectories",
-                "parent_configurations", "pmf", "surface", "converged"):
+                "parent_configurations", "pmf", "surface", "converged",
+                "rate_quality", "plateau_diagnostics"):
         assert a[key] == b[key], key
     print(
         f"Surface rate serial versus G2 B2 MPI: PASS; {files} array/checkpoint files "

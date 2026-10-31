@@ -1,0 +1,88 @@
+name: H3 bond-distance 2D FES (real BKMP2)
+
+on:
+  push:
+    branches: ['experiment/h3-bond-distance-fes-20261031']
+    paths:
+      - 'benchmarks/h3/fes_bond_extended.inp'
+      - '.github/workflows/h3-bond-distance-fes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OMP_NUM_THREADS: '1'
+  OPENBLAS_NUM_THREADS: '1'
+  MKL_NUM_THREADS: '1'
+  PYTHONUNBUFFERED: '1'
+  MPLBACKEND: Agg
+
+jobs:
+  sample:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install compiled PyRPMD and plotting requirements
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gfortran
+          python -m pip install -e '.[test]' matplotlib
+      - name: Compile checksum-pinned H3 BKMP2 PES and verify independent oracles
+        run: |
+          python benchmarks/h3/build_pes.py
+          python benchmarks/h3/pes.py --check --output validation/h3-bond-extended/pes-check.json
+      - name: Run independent 16-bead real 2D r01/r12 umbrella sampling
+        run: |
+          pyrpmd validate benchmarks/h3/fes_bond_extended.inp
+          pyrpmd run benchmarks/h3/fes_bond_extended.inp --output validation/h3-bond-extended/run
+      - name: Inspect real sampled FES and preserve numerical diagnostics
+        run: |
+          python - <<'PY'
+          import json
+          import numpy as np
+          from pathlib import Path
+          root = Path('validation/h3-bond-extended')
+          run = root / 'run'
+          s = json.loads((run / 'summary.json').read_text())
+          with np.load(run / 'fes.npz',allow_pickle=False) as d:
+              m = np.asarray(d['mask'],bool)
+              E = np.asarray(d['free_energy'])
+              e0,e1 = d['edges_0'],d['edges_1']
+              counts = np.asarray(d['raw_count'])
+              valid = (~m) & np.isfinite(E)
+              assert valid.sum() >= 50, 'Insufficient valid FES support'
+              assert (e0[-1] - e0[0]) >= 4.0
+              assert np.count_nonzero(valid & valid.T) >= 30
+              result = {
+                  'task':'2D centroid-distance FES, not a rate calculation',
+                  'temperature_K':1500,'beads':16,
+                  'cv_names':['r01','r12'],
+                  'grid_bohr': [[float(e0[0]),float(e0[-1])],[float(e1[0]),float(e1[-1])]],
+                  'shape':list(m.shape),
+                  'valid_bins':int(valid.sum()),
+                  'masked_bins':int(m.sum()),
+                  'samples':int(s['samples']),
+                  'connected':bool(s.get('overlap_connected',False)),
+                  'weight_effective_samples':float(s.get('weight_effective_samples',float('nan'))),
+                  'F_range_hartree':[float(np.nanmin(E[valid])),float(np.nanmax(E[valid]))],
+                  'raw_count_total':int(counts.sum()),
+                  'converged':bool(s.get('converged',False)),
+              }
+          (root/'diagnostics.json').write_text(json.dumps(result,indent=2)+'\n')
+          print(json.dumps(result,indent=2))
+          PY
+      - name: Retain original 2D PMF samples, checkpoint states and diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h3-r01-r12-expanded-16bead
+          path: |
+            validation/h3-bond-extended/
+            benchmarks/h3/fes_bond_extended.inp
+          retention-days: 30
+          if-no-files-found: error

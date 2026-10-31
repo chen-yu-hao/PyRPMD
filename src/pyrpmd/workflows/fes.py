@@ -22,8 +22,9 @@ from ..cv import make_cvs, RPMDrateCoordinate
 from ..dynamics import Dynamics, State
 from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
-from ..parallel import run_tasks, make_task_potential, root_call
+from ..parallel import run_tasks, task_potential, root_call
 from ..units import parse_quantity, unit_factor, DIMS
+from .sampling import fes_sampler
 
 
 def jsonable(value):
@@ -79,6 +80,8 @@ def _fingerprint(config, system, extras):
         "system": system.to_dict(),
         "stream": extras,
     }
+    if "flux_axis" in config.get("analysis", {}):
+        value["sampling_flux_axis"] = config["analysis"]["flux_axis"]
     from ..cv import geometry_convention_identity
 
     convention = geometry_convention_identity(config, system)
@@ -114,6 +117,38 @@ def checked_integer(value, name, minimum=1):
     return int(value)
 
 
+def _flux_coordinate(config, cv):
+    """Validate an explicit rate-flux measure before sampling or reuse.
+
+    A two-dimensional flux surface has one distinguished coordinate: its
+    first scalar RPMDrate coordinate.  The second CV is a transverse
+    observable, not a second independent flux factor.  Ordinary density
+    surfaces must never silently acquire this weighting.
+    """
+    options = config.get("analysis", {})
+    axis = options.get("flux_axis")
+    if options.get("measure", "cv_density") != "rate_flux":
+        if axis is not None:
+            raise ValueError("analysis.flux_axis requires measure='rate_flux'")
+        return None
+    if axis is not None and (
+        isinstance(axis, (bool, np.bool_))
+        or not isinstance(axis, (int, np.integer))
+        or axis != 0
+    ):
+        raise ValueError("rate_flux currently requires flux_axis=0")
+    if cv.dimension == 2 and axis is None:
+        raise ValueError("two-dimensional rate_flux requires explicit flux_axis=0")
+    if (
+        cv.dimension not in (1, 2)
+        or len(cv.cvs) != cv.dimension
+        or not isinstance(cv.cvs[0], RPMDrateCoordinate)
+        or any(c.dimension != 1 for c in cv.cvs)
+    ):
+        raise ValueError("rate_flux requires the first scalar centroid RPMDrate coordinate")
+    return cv.cvs[0]
+
+
 def resolve_umbrellas(config, system):
     """Resolve user centers/stiffness to canonical CV units and hartree.
 
@@ -136,6 +171,7 @@ def resolve_umbrellas(config, system):
     )
     if cv.dimension not in (1, 2):
         raise ValueError("umbrella FES supports one or two CV dimensions")
+    _flux_coordinate(config, cv)
     dims = [_dimension(u) for u in cv.units]
     scales = []
     for spec, component in zip(selected, cv.cvs):
@@ -357,6 +393,7 @@ def _sample_window(task):
     stiffness = np.asarray(task["stiffness"])
     window, replica = task["window"], task["replica"]
     sampling = config["sampling"]
+    sampler = fes_sampler(config)
     neq = checked_integer(
         sampling["equilibration_steps"], "sampling.equilibration_steps", 0
     )
@@ -392,8 +429,8 @@ def _sample_window(task):
         },
     )
     seed = np.random.SeedSequence([int(config.get("seed", 0)), 101, window, replica])
-    provider = make_task_potential(config["potential"], system)
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         dynamics = Dynamics(
             provider,
             system.masses,
@@ -409,13 +446,10 @@ def _sample_window(task):
         )
         umbrella = UmbrellaBias(cv, center, stiffness)
         bias = umbrella
-        if config.get("analysis", {}).get("measure") == "rate_flux":
-            if len(cv.cvs) != 1 or not isinstance(cv.cvs[0], RPMDrateCoordinate):
-                raise ValueError(
-                    "rate_flux measure requires the centroid RPMDrate coordinate"
-                )
+        flux_coordinate = _flux_coordinate(config, cv)
+        if flux_coordinate is not None:
             bias = CompositeBias(
-                umbrella, FluxMetricBias(cv.cvs[0], system.masses, config["beta"])
+                umbrella, FluxMetricBias(flux_coordinate, system.masses, config["beta"])
             )
         values = []
         energies = []
@@ -439,7 +473,10 @@ def _sample_window(task):
                     dynamics.propagation_stats = json.loads(str(saved["propagation"]))
         else:
             geometry = system.geometry
-            if len(cv.cvs) == 1 and isinstance(cv.cvs[0], RPMDrateCoordinate):
+            # Rigid fragment translations and equivalent-path permutations
+            # assume every atom is mobile. With any fixed atoms, retain the
+            # reference geometry and use the fixed-aware steering below.
+            if isinstance(cv.cvs[0], RPMDrateCoordinate) and not dynamics.fixed_atoms:
                 coordinate = cv.cvs[0]
                 permutations = coordinate.permutations
                 permutation = permutations[replica % len(permutations)]
@@ -475,11 +512,11 @@ def _sample_window(task):
             )
             saved_elapsed = elapsed
 
-        fused_loop = dynamics.can_fuse(bias=bias, observe=cv)
+        fused_loop = sampler.thermostat == "andersen" and dynamics.can_fuse(bias=bias, observe=cv)
         while elapsed < neq + nprod:
             initial_elapsed = elapsed
             thermostat_p = thermostat_rng = None
-            if state.step % andersen == 0:
+            if sampler.thermostat == "andersen" and state.step % andersen == 0:
                 thermostat_p = state.p.copy()
                 thermostat_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
                 state.p[:] = dynamics.sample_momenta()
@@ -509,7 +546,7 @@ def _sample_window(task):
                     previous = state.copy()
                     previous_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
                     try:
-                        dynamics.step(state, bias)
+                        sampler.step(dynamics, state, bias)
                         production = elapsed + 1 - neq
                         if production > 0 and production % interval == 0:
                             value = np.asarray(cv.value(state.q), dtype=float)
@@ -555,9 +592,6 @@ def _sample_window(task):
             "native": dynamics.native,
             "propagation": dict(dynamics.propagation_stats),
         }
-    finally:
-        if hasattr(provider, "close"):
-            provider.close()
 
 
 def _write_fes(output, data, streams, cv, config):
@@ -565,7 +599,15 @@ def _write_fes(output, data, streams, cv, config):
     path.mkdir(parents=True, exist_ok=True)
     arrays = {k: v for k, v in data.items() if isinstance(v, np.ndarray)}
     arrays.update({f"edges_{i}": edge for i, edge in enumerate(data["edges"])})
-    _atomic_npz(path / "fes.npz", **arrays)
+    metadata = {
+        "measure": np.asarray(data["measure"]),
+        "energy_unit": np.asarray("hartree"),
+        "cv_units": np.asarray(cv.units),
+        "beta": np.asarray(config["beta"]),
+    }
+    if data["measure"] == "rate_flux":
+        metadata["flux_axis"] = np.asarray(0, dtype=np.int32)
+    _atomic_npz(path / "fes.npz", **arrays, **metadata)
     try:
         import h5py
     except ImportError:
@@ -577,6 +619,9 @@ def _write_fes(output, data, streams, cv, config):
             h.attrs["energy_unit"] = "hartree"
             h.attrs["cv_units"] = json.dumps(cv.units)
             h.attrs["measure"] = data["measure"]
+            h.attrs["beta"] = config["beta"]
+            if data["measure"] == "rate_flux":
+                h.attrs["flux_axis"] = 0
             h.attrs["hamiltonian_convention"] = "sum_beads_beta_over_P"
             for name, value in arrays.items():
                 h.create_dataset(name, data=value)
@@ -588,6 +633,9 @@ def _write_fes(output, data, streams, cv, config):
                 g.attrs["window"] = stream["window"]
                 g.attrs["replica"] = stream["replica"]
                 g.attrs["propagation"] = json.dumps(stream.get("propagation", {}))
+                if "exchange_group" in stream:
+                    g.attrs["exchange_group"] = stream["exchange_group"]
+                    g.create_dataset("walker_ids", data=stream["walker_ids"])
         os.replace(tmp, path / "fes.h5")
     mid = [0.5 * (e[1:] + e[:-1]) for e in data["edges"]]
     mesh = np.meshgrid(*mid, indexing="ij")
@@ -653,6 +701,8 @@ def _write_fes(output, data, streams, cv, config):
         "units": cv.units,
         "energy_unit": "hartree",
         "measure": data["measure"],
+        "beta": config["beta"],
+        "flux_axis": 0 if data["measure"] == "rate_flux" else None,
         "estimator": "mbar",
         "windows": len(set(s["window"] for s in streams)),
         "streams": len(streams),
@@ -679,6 +729,11 @@ def _write_fes(output, data, streams, cv, config):
 
 
 def _analyze_streams(streams, config, system, output, return_data):
+    # External executors return a one-shot map iterator. Analysis and exports
+    # traverse these streams repeatedly, so retain every window once.
+    streams = list(streams)
+    if not streams:
+        raise ValueError("FES analysis requires at least one sampling stream")
     cv, specs, centers, stiffness = resolve_umbrellas(config, system)
     options = config.get("analysis", {})
     if options.get("method", "mbar") not in ("mbar", "umbrella_integration"):
@@ -722,6 +777,8 @@ def _analyze_streams(streams, config, system, output, return_data):
         min_count=checked_integer(options.get("min_count", 1), "analysis.min_count"),
         overlap_threshold=float(options.get("overlap_threshold", 1e-6)),
         return_reweighting=return_data and config.get("task") == "surface_rate",
+        bootstrap_groups=([s["exchange_group"] for s in streams]
+                          if all("exchange_group" in s for s in streams) else None),
     )
     data["measure"] = options.get("measure", "cv_density")
     summary = _write_fes(output, data, streams, cv, config)
@@ -731,6 +788,12 @@ def _analyze_streams(streams, config, system, output, return_data):
 
 
 def run_fes(config, system, output, executor=None, return_data=False):
+    fes_sampler(config)
+    if config.get("replica_exchange"):
+        from .replica_exchange import exchange_options, run_replica_exchange_fes
+        if exchange_options(config, system)["enabled"]:
+            return run_replica_exchange_fes(config, system, output, executor=executor,
+                                            return_data=return_data)
     if config.get("adaptive_umbrella"):
         from .adaptive_umbrella import adaptive_options, run_adaptive_fes
         if adaptive_options(config)["enabled"]:
@@ -777,6 +840,10 @@ def reanalyze_fes(config, system, output, return_data=False):
     All MPI ranks may call this; only the coordinator reads/writes files.
     """
 
+    if config.get("replica_exchange"):
+        from .replica_exchange import exchange_options, reanalyze_replica_exchange_fes
+        if exchange_options(config, system)["enabled"]:
+            return reanalyze_replica_exchange_fes(config, system, output, return_data=return_data)
     if config.get("adaptive_umbrella"):
         from .adaptive_umbrella import adaptive_options, reanalyze_adaptive_fes
         if adaptive_options(config)["enabled"]:

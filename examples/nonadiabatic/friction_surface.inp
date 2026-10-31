@@ -1,0 +1,52 @@
+# Analytic fixed-slab EF-RPMD demonstration. No fitted Cu friction is implied.
+task = "diffusion"
+preset = "pilot"
+temperature = "300 K"
+beads = 8
+seed = 1181
+
+[system]
+symbols = ["H", "Cu", "Cu", "Cu", "Cu"]
+geometry = [[0.0, 0.0, 3.0], [-1.5, -1.5, 0.0], [1.5, -1.5, 0.0], [-1.5, 1.5, 0.0], [1.5, 1.5, 0.0]]
+geometry_unit = "bohr"
+cell = [[6.0, 0.0, 0.0], [0.0, 6.0, 0.0], [0.0, 0.0, 20.0]]
+cell_unit = "bohr"
+pbc = [true, true, false]
+fixed_atoms = [1, 2, 3, 4]
+
+[potential]
+provider = "python"
+factory = "../surface/toy_surface.py:build"
+
+[dynamics]
+timestep = "0.1 fs"
+integrator = "cayley-bcb"
+loop_backend = "auto"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+equilibration_steps = 200
+production_steps = 1000
+sample_interval = 5
+replicas = 2
+
+[electronic_friction]
+method = "centroid"
+provider = "constant"
+# An illustrative relaxation rate, not a first-principles surface tensor.
+gamma = "0.01 fs^-1"
+
+[diffusion]
+atom_indices = [0]
+axes = [0, 1]
+reference_atoms = [1, 2, 3, 4]
+max_lag = 20
+bootstrap = 0
+
+[parallel]
+backend = "serial"
+
+[output]
+directory = "runs/friction-surface"
+checkpoint_steps = 100

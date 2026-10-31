@@ -1,0 +1,26 @@
+{
+  "dt_au": 20.670686667585077,
+  "sampling": {
+    "andersen_interval": 100,
+    "production_steps": 200000
+  },
+  "adaptive_umbrella": {
+    "pilot_steps": 20000,
+    "coverage_bins": [
+      6,
+      6
+    ],
+    "coverage_ranges": [
+      [
+        -6,
+        6
+      ],
+      [
+        -6,
+        6
+      ]
+    ],
+    "min_bin_effective_samples": 5,
+    "target_coverage": 0.95
+  }
+}

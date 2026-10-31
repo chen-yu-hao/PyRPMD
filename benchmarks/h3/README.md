@@ -1,5 +1,10 @@
 # 真实体系测试：H + H₂ / BKMP2
 
+二维速率后处理、同样本一维边际对照与通道分辨有符号通量回归，见
+[RATE_POSTPROCESS.md](RATE_POSTPROCESS.md)。该测试使用覆盖渐近入口的
+`(xi, r12)` flux-weighted 二维面，不把下面局部 `(r01,r12)` 密度图直接当作
+双分子绝对速率的归一化依据。
+
 这组计算使用 BKMP2 基态 H₃ 势能面，实际传播 16 珠子的环聚合物，检验
 dRPMD、二维自由能面、伞抽样 PMF 和 recrossing。它不是裸 PES 的等高线图，
 也不把少量碰撞和短时间平台称为已经收敛的反应速率。
@@ -143,3 +148,28 @@ bootstrap 误差与端点能量变化。
 `--trajectories`、`--parents`、`--beads`、`--timestep-fs`、`--bmax-bohr`、
 `--separation-bohr` 等。参数加大本身并不是收敛证明，应比较独立重复、
 窗口分布、相关时间、PMF/κ(t) 及最终速率在变化前后的误差。
+
+## 固定 96 窗与增强采样对照
+
+`enhanced_sampling.py` 固定 T=1500 K、P=16、dt=0.1 fs、两个副本和
+βK=400。固定窗在 ξ=-0.05…1.10 放置 96 个中心，自适应从 6 个中心开始。
+`short` 使用 100 fs 平衡/200 fs 生产，`production` 使用 300 fs/1000 fs；
+两者都是有限预算诊断，不运行 recrossing，也不输出已收敛速率。
+
+```bash
+python benchmarks/h3/enhanced_sampling.py --method fixed96 --output runs/h3/fixed96 --bootstrap 20
+python benchmarks/h3/enhanced_sampling.py --method adaptive --output runs/h3/adaptive --bootstrap 20
+python benchmarks/h3/enhanced_sampling.py --method metadynamics --output runs/h3/meta-diagnostic
+```
+
+可用 `--library` 指定已校验的 BKMP2 库，用 `--seed` 做独立重复。
+每次使用新目录；`config.json`、原始 checkpoint 和 `comparison.json` 保存
+完整预算及结果。`--production-steps` 可用于等总步数对照：计入所有 pilot
+和平衡步数，根据实际冻结窗数分配剩余生产预算，不能把“每窗一样长”当成
+“总成本一样”。输出包含同一固定分割面 ξ*=1.00925 的 MBAR 势垒、按时间块
+bootstrap 的误差、逐流 ESS、总积分步数，以及共同支持区的 PMF。
+
+Metadynamics 这一项是**无约束 ξ 的失败模式诊断**：它保持 `cv_density`
+测度，不与 `rate_flux` PMF 作数值比较；输出范围不是墙，ξ 在反应区外可能
+奇异。更多 hills 或更长时间不能替代正确的 CV/空间限制。实测结果与建议见
+[增强采样检查报告](../../docs/validation/enhanced-sampling-2026-10-31/README.md)。

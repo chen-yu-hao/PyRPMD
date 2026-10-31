@@ -1,0 +1,22 @@
+{
+  "sampling_base_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "native_binaries": {
+    "src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "77a578acff0313112f07efab291126645d7f8d53167f5356962078f5b57365b7"
+  },
+  "source_hashes": {
+    "src/pyrpmd/dynamics.py": "34510880844d8a4e4c955cb9bdafb5c43a038d15fddb8912a80fc6d916caf318",
+    "src/pyrpmd/checkpoint.py": "beb08b497cfc9eb74929105f621be8c5ea4085ad7a1d3f7f3813e7b216f16dbe",
+    "native/cayley.cpp": "89331f4e7521be194d39c86e115151dbe1e0e8c8ce8404f004449a26da19652f",
+    "native/propagation.h": "0cd062976480e8ce686e7778a3a728049b4a4901dd8f1b987bbd8cfcc10be6c4",
+    "benchmarks/brhcl/scan.py": "0479fbc547feb7557fa746f6a7596504ba526ad8c443aedac9e7e42a9b748afa",
+    "benchmarks/brhcl/sampling.py": "7c114a5987c2f91c20f8282e2d8506d9a5f75b580b4a9c6404c0c1ccd515b12b"
+  },
+  "notes": [
+    "PES binary identity is stored per run in model.json.",
+    "The C ABI message-copy optimization changes only decoding cost, not energy/force/status values or RNG. Existing atomic checkpoints were resumed after that optimization.",
+    "Scan plan, checkpoint integrity, RNG and native counters are checked before analysis."
+  ]
+}

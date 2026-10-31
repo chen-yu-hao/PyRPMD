@@ -171,11 +171,13 @@ def test_failed_second_pes_evaluation_rolls_back_electronic_and_nuclear_state():
     assert (s.step,s.time)==(0,0)
 
 
-@pytest.mark.parametrize('defect',['complex','asymmetric','gradient_asymmetric','shape','gradient_shape','nan','status','nstates'])
+@pytest.mark.parametrize('defect',['complex_diagonal','asymmetric','gradient_asymmetric','shape','gradient_shape','nan','status','nstates'])
 def test_diabatic_contract_rejects_invalid_results(defect):
     q=np.zeros((3,1,3));r=LinearMatrix([[.1,.2],[.2,-.1]]).evaluate(q)
     ns=2
-    if defect=='complex': r.matrix=r.matrix.astype(complex)
+    if defect=='complex_diagonal':
+        r.matrix=r.matrix.astype(complex)
+        r.matrix[0,0,0] += .01j
     if defect=='asymmetric':r.matrix[0,0,1]+=.01
     if defect=='gradient_asymmetric':r.gradients[0,0,1,0,0]=.1
     if defect=='shape':r.matrix=r.matrix[0]

@@ -1,0 +1,60 @@
+{
+  "schema": "pyrpmd.ci-feature-verification.v1",
+  "commit": "c75daae36e1557e2f91cb2b23fe8446b6ac71ca7",
+  "scope": "Initial feature commit; the later main merge only changes documentation/packaging and an optional-dependency test skip. Consult PR26 checks for the final merge head.",
+  "tests": [
+    {
+      "python": "3.11.17",
+      "passed": 1840,
+      "skipped": 14,
+      "subtests_passed": 153,
+      "elapsed_seconds": 76.66,
+      "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41182681347/job/124483147102"
+    },
+    {
+      "python": "3.12.15",
+      "passed": 1840,
+      "skipped": 14,
+      "subtests_passed": 153,
+      "elapsed_seconds": 134.39,
+      "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41182681347/job/124483147308"
+    }
+  ],
+  "mpi": {
+    "ranks": 4,
+    "hosts": 1,
+    "status": "passed on both CPU jobs",
+    "scripts": [
+      "tests/mpi_integration.py",
+      "tests/mpi_workflow_smoke.py",
+      "tests/mpi_materials_smoke.py",
+      "tests/mpi_surface_smoke.py"
+    ],
+    "gpu_routing": "mock only; no CUDA validation"
+  },
+  "torch_cpu": {
+    "passed": 10,
+    "skipped": 1,
+    "subtests_passed": 3,
+    "elapsed_seconds": 2.89,
+    "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41182681347/job/124483147292"
+  },
+  "packaging": {
+    "status": "success",
+    "platforms": [
+      "ubuntu-24.04/Python3.11",
+      "ubuntu-24.04/Python3.12",
+      "macos-15/Python3.12"
+    ],
+    "url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41182681284"
+  },
+  "real_h3": {
+    "status": "success",
+    "scope": "oracle, forces, NVE and workflow checks; no published-rate convergence assertion",
+    "url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41182681419"
+  },
+  "docs": {
+    "status": "success",
+    "url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41182681291"
+  }
+}

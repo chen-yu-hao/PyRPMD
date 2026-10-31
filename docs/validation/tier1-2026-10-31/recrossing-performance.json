@@ -1,0 +1,392 @@
+{
+  "schema": "pyrpmd.tier1.recrossing-performance.v1",
+  "passed": true,
+  "scope": "Matched short BKMP2 child propagation and setup cost, not a thermal-rate prediction",
+  "physical_rate_converged": false,
+  "gpu_benchmark": false,
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "logical_cpus": 9,
+    "affinity_cpus": 9,
+    "native": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    }
+  },
+  "workload": {
+    "temperature_K": 1000.0,
+    "beads": 16,
+    "atoms": 3,
+    "dt_fs": 0.1,
+    "child_steps": 128,
+    "child_pairs": 8,
+    "trajectories": 16,
+    "repeats": 3,
+    "dividing_surface_xi": 1.0,
+    "rinf_bohr": 10.0,
+    "momentum_seed": 41873,
+    "coordinate_seed": 80413,
+    "coordinate_maximum_surface_residual": 4.440892098500626e-16,
+    "initial_coordinate_sha256": "1c3fbad9725fc7399359e2293fe5153708d978a6fcc750465c0f35dbd72c5c7c"
+  },
+  "potential": {
+    "metadata": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "83a35e84b9212c4010d4d9541dc6115d8c1d7fbd6e6477d7066558b26bba9c03"
+    },
+    "build": {
+      "schema": "pyrpmd.h3.bkmp2-build.v1",
+      "created_utc": "2026-10-30T12:39:04.239311+00:00",
+      "source": {
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "paper": "A. I. Boothroyd, W. J. Keogh, P. G. Martin, M. R. Peterson, A refined H3 potential energy surface, J. Chem. Phys. 104, 7139-7152 (1996)",
+        "doi": "10.1063/1.471430",
+        "authors_page": "https://www.cita.utoronto.ca/~boothroy/bkmp2.html",
+        "authors_test": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.f",
+        "authors_test_output": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.out",
+        "repository": "https://github.com/chen-yu-hao/RPMDrate",
+        "commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "path": "examples/H+H2/h3_bkmp2.f",
+        "url": "https://raw.githubusercontent.com/chen-yu-hao/RPMDrate/19ba2602bad5b2145b0d0ba0716d7ba3d90a1003/examples/H%2BH2/h3_bkmp2.f",
+        "sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "bytes": 61792,
+        "upstream_license": "No explicit redistribution license identified in this PES source; fetched at build time, not relicensed as PyRPMD MIT.",
+        "energy_zero": "three separated H atoms",
+        "distance_unit": "bohr",
+        "energy_unit": "hartree",
+        "minimum_pair_distance_bohr": 0.2,
+        "precision_note": "GNU -fdefault-real-8 -fdefault-double-8 promotes unsuffixed literals in the RPMDrate legacy source to binary64 without promoting DOUBLE PRECISION to binary128. Author test-point energies and derivatives independently verify the resulting PES."
+      },
+      "source_file": "/workspace/scratch/701b67400000/pyrpmd-benchmark-pes/h3_bkmp2.f",
+      "wrapper_sha256": "57ce0ff2acdcc657f51693d9c7fbca5e7bed26e60ee2b446cd2c51eb4250d3a9",
+      "library": "/workspace/scratch/701b67400000/pyrpmd-benchmark-pes/libbkmp2.so",
+      "library_sha256": "83a35e84b9212c4010d4d9541dc6115d8c1d7fbd6e6477d7066558b26bba9c03",
+      "compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "command": [
+        "gfortran",
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8",
+        "/workspace/scratch/701b67400000/pyrpmd-benchmark-pes/h3_bkmp2.f",
+        "/workspace/scratch/701b67400000/PyRPMD-baseline/benchmarks/h3/wrapper.f90",
+        "-o",
+        "/workspace/scratch/701b67400000/pyrpmd-benchmark-pes/libbkmp2.so.79533.tmp"
+      ],
+      "flags": [
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "compiler_stdout": "",
+      "compiler_stderr": "",
+      "author_saddle_energy_hartree": -0.1591760001210627
+    }
+  },
+  "source_sha256": {
+    "src/pyrpmd/batched.py": "d2c86cebda4a66fa550bb0fe7c7ce2f47a0e72ca75db14f7cea158a3cf106a7e",
+    "src/pyrpmd/dynamics.py": "77677fbe972e253853883ae8d0a6715fdb8d35bd6a8cec632603e8eed990c664",
+    "src/pyrpmd/parallel/execution.py": "7f43a6192bb5e5471d6255542ecb97959cbe68da85814d084c394dcd0ab3712a",
+    "src/pyrpmd/workflows/rate.py": "a5cb18647c1b0c859080158bd376fd70a34f95159689c930de0c7aec80205f69",
+    "src/pyrpmd/workflows/batched_recrossing.py": "780a7713122cd3a0ca9a17fe1dcee1a3bc95d51eab3006e4288c2d5958863aa8",
+    "src/pyrpmd/propagation.py": "de6384d6d4452ad02c6aff8a8aac1063e77291c969edf4f984193e98442e2a45",
+    "benchmarks/h3/pes.py": "c1178e522cb32e73544f33adb48d0d0542bb23108549306d7d892b6306e4e892",
+    "benchmarks/tier1_recrossing.py": "b70a570d3a5c1f6dd6df7a2d6837dfb48b527461cbc1d39f54ce5378c62af981"
+  },
+  "native_extension_sha256": "6d4448ee9ff9f4c4020bb0508a20f33edee11a6c39b17632940f25b7493c3d2b",
+  "variants": {
+    "serial_reload": {
+      "settings": {
+        "mode": "serial",
+        "reuse": false,
+        "batch_pairs": 1
+      },
+      "seconds": [
+        0.13128216999939468,
+        0.1627540030003729,
+        0.12412404600036098
+      ],
+      "comparison": [
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 2048,
+          "python_loop_steps": 0
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 2048,
+          "python_loop_steps": 0
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 2048,
+          "python_loop_steps": 0
+        }
+      ],
+      "median_seconds": 0.13128216999939468,
+      "speedup_vs_serial_reuse": 0.84720723310618
+    },
+    "serial_reuse": {
+      "settings": {
+        "mode": "serial",
+        "reuse": true,
+        "batch_pairs": 1
+      },
+      "seconds": [
+        0.11028388299928338,
+        0.12354347600012261,
+        0.11122320400136232
+      ],
+      "comparison": [
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 2048,
+          "python_loop_steps": 0
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 2048,
+          "python_loop_steps": 0
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 2048,
+          "python_loop_steps": 0
+        }
+      ],
+      "median_seconds": 0.11122320400136232,
+      "speedup_vs_serial_reuse": 1.0
+    },
+    "bead2_reload": {
+      "settings": {
+        "mode": "bead",
+        "reuse": false,
+        "batch_pairs": 1
+      },
+      "seconds": [
+        11.027498478999405,
+        10.355195554000602,
+        9.619382202999986
+      ],
+      "comparison": [
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        }
+      ],
+      "median_seconds": 10.355195554000602,
+      "speedup_vs_serial_reuse": 0.010740811549270318
+    },
+    "bead2_reuse": {
+      "settings": {
+        "mode": "bead",
+        "reuse": true,
+        "batch_pairs": 1
+      },
+      "seconds": [
+        6.187186950999603,
+        7.579184747999534,
+        5.756753247000233
+      ],
+      "comparison": [
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        }
+      ],
+      "median_seconds": 6.187186950999603,
+      "speedup_vs_serial_reuse": 0.017976376806166018
+    },
+    "batch4": {
+      "settings": {
+        "mode": "serial",
+        "reuse": true,
+        "batch_pairs": 4
+      },
+      "seconds": [
+        0.4182523580002453,
+        0.7765280769999663,
+        0.40253816199947323
+      ],
+      "comparison": [
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        }
+      ],
+      "median_seconds": 0.4182523580002453,
+      "speedup_vs_serial_reuse": 0.2659236747239022
+    },
+    "batch8": {
+      "settings": {
+        "mode": "serial",
+        "reuse": true,
+        "batch_pairs": 8
+      },
+      "seconds": [
+        0.358759007000117,
+        0.72182857199914,
+        0.3601043899998331
+      ],
+      "comparison": [
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        },
+        {
+          "maximum_absolute_denominator_difference": 0.0,
+          "maximum_absolute_numerator_difference": 0.0,
+          "maximum_endpoint_energy_error_difference_hartree_per_bead": 0.0,
+          "maximum_endpoint_energy_error_hartree_per_bead": 1.366703323088525e-05,
+          "native_loop_steps": 0,
+          "python_loop_steps": 2048
+        }
+      ],
+      "median_seconds": 0.3601043899998331,
+      "speedup_vs_serial_reuse": 0.3088637825309874
+    }
+  },
+  "setup_reuse_speedup": {
+    "serial": 1.1803487516668434,
+    "bead2": 1.6736516345813042
+  },
+  "reference_denominators": [
+    1.0992903867138548,
+    2.655493535314182,
+    0.967738262484105,
+    3.1334932406526512,
+    1.5155020359494085,
+    1.238233932091577,
+    0.46998985817899264,
+    0.24530010367248475
+  ],
+  "reference_numerator_sha256": "839fb22691c0042154ec81a9b7a155e0f3eadfae0ccc4a20304f34bcbc572f28",
+  "limitations": [
+    "Starts are constrained near the TS, not equilibrium parent samples; no thermal rate can be inferred.",
+    "BKMP2 is inexpensive; fully fused scalar C++ may beat Python-orchestrated batches.",
+    "Reload=False/True contrast removes per-task factory/pool setup, not a large ML-model load benchmark.",
+    "One task worker and, for bead cases, two bead worker processes; no GPU or external cluster.",
+    "Timing includes normal checkpoint writes and is hardware/load dependent."
+  ]
+}

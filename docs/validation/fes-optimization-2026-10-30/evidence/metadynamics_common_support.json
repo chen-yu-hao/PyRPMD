@@ -1,0 +1,86 @@
+[
+  {
+    "label": "standard-height04",
+    "seed": 4101,
+    "steps": 210000,
+    "coverage_before": 0.4032,
+    "coverage_after": 0.3488,
+    "rmse_own_support_before": 1.081417812879138,
+    "rmse_own_support_after": 0.6899912893817731,
+    "common_coverage": 0.236,
+    "rmse_common_before": 0.9148506223596544,
+    "rmse_common_after": 0.6205600908422608
+  },
+  {
+    "label": "well_tempered-andersen500",
+    "seed": 4101,
+    "steps": 210000,
+    "coverage_before": 0.4168,
+    "coverage_after": 0.4,
+    "rmse_own_support_before": 1.0947381374049316,
+    "rmse_own_support_after": 0.9284300016412967,
+    "common_coverage": 0.316,
+    "rmse_common_before": 0.8932607476089034,
+    "rmse_common_after": 0.7670529143256973
+  },
+  {
+    "label": "well_tempered-andersen500_height04",
+    "seed": 4101,
+    "steps": 210000,
+    "coverage_before": 0.4168,
+    "coverage_after": 0.3464,
+    "rmse_own_support_before": 1.0947381374049316,
+    "rmse_own_support_after": 1.3704973113786036,
+    "common_coverage": 0.2464,
+    "rmse_common_before": 0.8735858538656157,
+    "rmse_common_after": 1.2106593722424357
+  },
+  {
+    "label": "well_tempered-dt04",
+    "seed": 4101,
+    "steps": 210000,
+    "coverage_before": 0.4168,
+    "coverage_after": 0.416,
+    "rmse_own_support_before": 1.0947381374049316,
+    "rmse_own_support_after": 0.8669145298280063,
+    "common_coverage": 0.3208,
+    "rmse_common_before": 0.890365352494929,
+    "rmse_common_after": 0.6903059418193358
+  },
+  {
+    "label": "well_tempered-height04",
+    "seed": 4101,
+    "steps": 210000,
+    "coverage_before": 0.4168,
+    "coverage_after": 0.3512,
+    "rmse_own_support_before": 1.0947381374049316,
+    "rmse_own_support_after": 0.5698556274312127,
+    "common_coverage": 0.2704,
+    "rmse_common_before": 0.9690228468308565,
+    "rmse_common_after": 0.5216156242602957
+  },
+  {
+    "label": "well_tempered-height04",
+    "seed": 4102,
+    "steps": 210000,
+    "coverage_before": 0.4232,
+    "coverage_after": 0.3904,
+    "rmse_own_support_before": 1.0513599220472523,
+    "rmse_own_support_after": 0.6439726019776183,
+    "common_coverage": 0.28,
+    "rmse_common_before": 0.8371852200034451,
+    "rmse_common_after": 0.5757715588296562
+  },
+  {
+    "label": "well_tempered-height04",
+    "seed": 4103,
+    "steps": 210000,
+    "coverage_before": 0.4,
+    "coverage_after": 0.3456,
+    "rmse_own_support_before": 1.2204772571555453,
+    "rmse_own_support_after": 0.7967034051994252,
+    "common_coverage": 0.2664,
+    "rmse_common_before": 1.0778005368490178,
+    "rmse_common_after": 0.7457265547699121
+  }
+]

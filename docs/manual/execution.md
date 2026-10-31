@@ -81,9 +81,41 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi-first
 mpiexec -n 4 pyrpmd resume runs/mpi-first
 ```
 
-The world size equals `trajectory_groups * bead_workers`. Groups are static, with `pes_ranks=1` and
-`coordinator_ranks=0`, so each PES call runs on a single rank. All nodes need the same code,
+The world size equals `trajectory_groups * bead_workers`. With static scheduling, `pes_ranks=1` and
+`coordinator_ranks=0`; each bead PES partition runs on its assigned rank. All nodes need the same code,
 environment and model paths and a shared output directory.
+
+## Dynamic MPI work queue
+
+For dRPMD trajectories with different stopping times, select dynamic scheduling:
+
+```toml
+[parallel]
+backend = "mpi"
+mode = "bead"
+scheduling = "dynamic"
+coordinator_ranks = 1
+trajectory_groups = 2
+bead_workers = 2
+threads_per_rank = 1
+```
+
+This uses `1 + trajectory_groups * bead_workers` ranks: five in this example. World rank 0
+coordinates the queue; each free group requests another task. The static layout remains the
+default. `pes_ranks=1` still applies. Dynamic scheduling is an MPI option, not a new local
+process backend. In GPU mode the coordinator consumes no GPU slot.
+
+```bash
+mpiexec -n 5 pyrpmd run examples/drpmd/mpi_dynamic.py --output runs/dynamic-mpi
+```
+
+For dRPMD, persistent parent chains first generate restartable launch samples. Individual
+collision trajectories then enter the dynamic queue, so an early-stopping trajectory immediately
+frees its group. Each task keeps its global index, random stream and checkpoint; returned results
+retain task order. Set `sampling.parents` explicitly when comparing layouts or changing worker
+counts. A task error stops new dispatch, drains active groups, closes provider contexts and
+reports the error collectively. MPI process crashes and network failures remain launcher-level
+failures.
 
 ## GPU placement
 

@@ -169,8 +169,9 @@ PES 按全局 → 入口 → TS 继承，更具体的 `potential` 表整体替�
 
 ## Metadynamics
 
-`task="metadynamics"` 在一维/二维 CV 上支持 standard 和 well-tempered 模式，多个副本各自积累偏置历史。
-CV 可以声明周期。该工作流用于不含 PBC 和固定原子的分子体系。
+`task="metadynamics"` 在一至三维 CV 上支持 standard 和 well-tempered 模式，多个副本各自积累偏置历史。
+CV 可以声明周期。该工作流支持分子体系、固定晶胞的周期体系，以及 `system.fixed_atoms` 指定的固定基底原子。
+采样可选择 Andersen、Nosé–Hoover 链或 PILE-L，并可对长度 CV 添加二次软墙。
 
 ```bash
 pyrpmd validate examples/metadynamics/well_tempered_2d.inp
@@ -181,12 +182,13 @@ pyrpmd resume runs/manual-meta
 
 | 参数 | 含义 |
 | --- | --- |
-| `metadynamics.cvs` | 一个或两个已声明 CV 的名称 |
+| `metadynamics.cvs` | 一至三个已声明 CV 的名称 |
 | `mode` | `standard` 或 `well_tempered` |
 | `sigma` | 各 CV 的 Gaussian 宽度，带单位 |
 | `height` | hill 高度 |
 | `pace` | 两次沉积之间完成的生产步数 |
 | `bias_factor` | WT 模式的 $\gamma>1$；standard 模式省略 |
+| `grid.ranges`、`grid.bins` | 可选的一维/二维 Hermite 偏置网格范围与区间数 |
 | `analysis.method` | `bias_estimate` |
 | `analysis.bootstrap` | 0 |
 
@@ -196,5 +198,7 @@ hills 从生产段开始：第 `pace` 步完成后沉积第一个 hill，同一�
 standard 模式的自由能估计为 $F\approx -V+C$，WT 模式为 $F\approx-\gamma V/(\gamma-1)+C$。`fes.npz` / `fes.csv`
 保存有限时间估计与支持 mask。各副本在共同支持区域上对齐后比较，`replica_spread` 给出副本之间的离散程度。
 
-历史偏置在 Python 时间步循环中运行并使用编译子步骤，因此拒绝 `loop_backend="native"`；计算量随 hill 数增长。
+历史偏置在 Python 时间步循环中运行并使用编译子步骤，因此拒绝 `loop_backend="native"`。直接求和的计算量随 hill 数增长；
+可选的[网格偏置](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)通过局部插值使每步偏置查询量与历史长度无关。
+网格默认间距不超过 `sigma/5`；网格加密需要独立检查，非周期 CV 超出范围会报错并回滚该步。
 Metadynamics 只输出自由能估计。方法与续跑时序见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。

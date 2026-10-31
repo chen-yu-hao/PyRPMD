@@ -1,0 +1,197 @@
+{
+  "date": "2026-10-31",
+  "base_commit": "76dd6ad24adc6c244f775857987cd2f0e119845f",
+  "branch": "feat/potentials-parallelism-20261031",
+  "scope": "Software and numerical interface validation; no trained-ML, GPU or material/reaction accuracy claim",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "dependencies": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pytest": "9.2.0",
+    "torch": "2.15.0+cpu",
+    "ase": "3.29.0",
+    "tblite": "0.8.0",
+    "pyscf": "2.14.0",
+    "mpi4py": "4.1.2",
+    "mpich": "5.0.2"
+  },
+  "electronic_structure_examples": {
+    "tblite": {
+      "provider": "tblite",
+      "energy_hartree": [
+        -0.9820171395651588,
+        -0.98268549388436
+      ],
+      "forces_hartree_per_bohr": [
+        [
+          [
+            -0.020593071824194512,
+            -0.0,
+            -0.0
+          ],
+          [
+            0.020593071824194512,
+            -0.0,
+            -0.0
+          ]
+        ],
+        [
+          [
+            0.0006028285908164996,
+            -0.0,
+            -0.0
+          ],
+          [
+            -0.0006028285908164996,
+            -0.0,
+            -0.0
+          ]
+        ]
+      ],
+      "force_check": {
+        "max_absolute_force_error": 4.799547107005309e-07,
+        "rms_force_error": 2.6926371069636344e-07,
+        "force_unit": "hartree/bohr",
+        "finite_difference_step_bohr": 0.0001
+      }
+    },
+    "pyscf": {
+      "provider": "pyscf",
+      "energy_hartree": [
+        -1.116714325062551,
+        -1.1136248498035628
+      ],
+      "forces_hartree_per_bohr": [
+        [
+          [
+            0.02845405843395632,
+            -0.0,
+            -0.0
+          ],
+          [
+            -0.028454058433955876,
+            -0.0,
+            -0.0
+          ]
+        ],
+        [
+          [
+            0.05869342434271374,
+            -0.0,
+            -0.0
+          ],
+          [
+            -0.05869342434271374,
+            -0.0,
+            -0.0
+          ]
+        ]
+      ],
+      "force_check": {
+        "max_absolute_force_error": 2.566912016277456e-09,
+        "rms_force_error": 1.3397902945226398e-09,
+        "force_unit": "hartree/bohr",
+        "finite_difference_step_bohr": 0.0001
+      }
+    }
+  },
+  "cabi_v2_pimd": {
+    "task": "pimd",
+    "status": "complete",
+    "samples_per_replica": [
+      21
+    ],
+    "checkpoint_arrays_unchanged_on_resume": true,
+    "converged": false,
+    "propagation": [
+      {
+        "sampling": {
+          "native_steps": 0,
+          "python_steps": 60,
+          "fallback_reasons": {
+            "PILE-L sampling uses Python/NumPy": 60
+          }
+        },
+        "production": null
+      }
+    ]
+  },
+  "torch_periodic_pimd": {
+    "completed": true,
+    "resumed": true,
+    "samples_per_replica": [
+      21
+    ],
+    "converged": false
+  },
+  "mpi": {
+    "dynamic_ranks": 5,
+    "static_ranks": 4,
+    "dynamic_passed": true,
+    "static_passed": true,
+    "dynamic_drpmd_static_npz_exact": true,
+    "gpu_placement": "mock only",
+    "local_transport_environment": {
+      "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+      "UCX_TLS": "tcp,self"
+    }
+  },
+  "source_sha256": {
+    "examples/drpmd/README.md": "af7b78ef6af4afe65aab6ce6b838cf925a465caf99655a4e467e1b18a50d45cd",
+    "examples/drpmd/mpi_dynamic.py": "b491274ae0e326f44c406da54339d207242ecf21a40f7bc6f31884267c261376",
+    "examples/potentials/README.md": "e41265d768b5ccc8a67860beba79a1ccd7ea5805397db7ff047350cf5b930300",
+    "examples/potentials/on_the_fly.py": "eff50d47c9b9d83390112692d27c949324d02b02e5c83a3518ff88efc44ac8ab",
+    "examples/potentials/periodic_torch.inp": "5c4db85a7bf4fadf10b21401cc9f91fdb669152c7fc1b669278a65acdebce898",
+    "examples/potentials/periodic_torch.py": "dbb87ed795b371760013b1c474bd9511c526ffe605af0b1920359cfd63d1a6d3",
+    "native/ABI.md": "409dd617c009333467f0265736d038e14e763582e98383645cb72d439da304d0",
+    "native/examples/periodic_cosine_pes.c": "bf5e4025550f81724746e46fea5855ba6dd7054940d662e708ddbf36781b53dc",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "src/pyrpmd/input.py": "1647adb4ccdbd6a65ab7f34e378ab9fb1febeb17f79531dada25bc4b3e69ce41",
+    "src/pyrpmd/parallel/execution.py": "cc316b068d012b441ab1b6754e80272d39d8cfa35699dcd1458d76a6562d077e",
+    "src/pyrpmd/potentials/__init__.py": "4df5363f40b0e80576277dda894e1d5714925dfe0d30de30617f6f224b5a144a",
+    "src/pyrpmd/potentials/adapters.py": "bc6662a4a3e936b894457446ec6a080d66c0c51c24deae89cd82973f6b7d03bd",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/optional.py": "69d10b7dce92326b4604d08c6cb7a8c52d92b8abd81c88c2c57c1be88b0c9f09",
+    "src/pyrpmd/potentials/socket.py": "46764cbb8840e4929a464f2575a1cf9893da6715b99687b89a625e93817deb58",
+    "src/pyrpmd/workflows/drpmd.py": "1d6d8029dc0edd8eb5ed23192d5b894502f542885a8112df7382f0bfff8985ce",
+    "tests/mpi_dynamic_integration.py": "5ca68ddcc1253d5d0359c2f42ade06ec48b2c55514e933b06ca8f0e55b80fcc0",
+    "tests/test_cabi_v2.py": "61878e28665311212dae549665ca17948e03b2b01d2cb643215bb8cae1e87d58",
+    "tests/test_dynamic_scheduling.py": "dda48e6be6c1697979ac2f65007d245e43dbe15289be6d543432a174b7155b78",
+    "tests/test_ipi_clients.py": "4274fe745ab66bcf644c47b980b3d8f59dea321b27fca4fc8e076fab1eca72e0",
+    "tests/test_materials_input_cv.py": "e4f405ddde27038df0d1d4b7c9f9c9ad3ffc04e3b3f7c29faa3a89e501346851",
+    "tests/test_periodic_materials.py": "794929249ecca846dd5174ae68e2ae668f4c19cd68c599c776903807e81836bc",
+    "tests/test_potential_adapters.py": "6951833b2daa0c8a4a7d3c8dee1be26f04e07a92b0b55726abe80f04bc502b63",
+    "tests/test_potential_input_v2.py": "b739fa2c1cd50538d7f61225da06e2b2aaf74af531214787b711e1888d147e13",
+    "tests/test_surface_geometry.py": "053aebf5e591415b87a4f4b3921692b7acdbd601b305e4a0c89c852ee617b79b",
+    "tests/test_torch_periodic.py": "45ff123c0246bedddb8762d4f76f09a1bf6e4c3e9430c7a4986d923451f3d9f6"
+  },
+  "full_suite": {
+    "status": "passed",
+    "passed": 1643,
+    "skipped": 17,
+    "subtests_passed": 153,
+    "warnings": 3,
+    "elapsed_seconds": 191.81,
+    "scope": "Complete suite; two later INIT/PBC regressions also pass in the final 20-case socket invocation",
+    "skip_reasons": {
+      "unbuilt_BKMP2": 10,
+      "unconfigured_EAM": 1,
+      "optional_independent_solver": 1,
+      "runtime_cannot_provide_four_BLAS_threads": 5
+    },
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=1 python -m pytest -q"
+  },
+  "final_socket_suite": {
+    "passed": 20
+  },
+  "docs": {
+    "english_strict_html": "passed",
+    "chinese_strict_html": "passed"
+  },
+  "packaging": {
+    "sdist": "passed",
+    "native_wheel": "passed",
+    "v2_header_and_example_in_distributions": true
+  }
+}

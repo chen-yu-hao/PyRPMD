@@ -1,0 +1,119 @@
+[
+  {
+    "case": "current-pilot",
+    "seed": 417,
+    "original_status": "plateau_estimate",
+    "status": "pilot_requires_convergence",
+    "original_rate_s_inv": 13880235179.088665,
+    "rate_s_inv": null,
+    "rate_estimate_s_inv": 13880235179.088665,
+    "rate_standard_error_s_inv": 15439126226.688913,
+    "plateau_diagnostics": {
+      "passed": true,
+      "reasons": [],
+      "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+      "scope": "selected_finite_time_tail",
+      "tail_samples": 100,
+      "relative_tolerance": 0.1,
+      "absolute_tolerance": 0.1,
+      "maximum_tail_deviation": 0.0,
+      "bootstrap_95_envelope_radius": 1.1102230246251565e-16,
+      "maximum_tail_deviation_bound": 1.1102230246251565e-16,
+      "absolute_drift_plus_two_standard_errors": 0.0,
+      "uncertainty_available": true
+    },
+    "rate_quality": {
+      "passed": false,
+      "reasons": [
+        "pmf_correlation_blocks_not_resolved",
+        "fewer_than_twenty_nonzero_flux_parent_configurations",
+        "relative_standard_error_exceeds_target"
+      ],
+      "relative_standard_error": 1.1123101321762043,
+      "max_relative_standard_error": 0.2,
+      "pmf_block_status": "limited_blocks",
+      "minimum_nonzero_flux_parent_configurations": 20,
+      "minimum_independent_parent_chains": 2,
+      "physical_convergence_established": false
+    },
+    "point_estimate_and_error_exactly_preserved": true
+  },
+  {
+    "case": "refined-417",
+    "seed": 417,
+    "original_status": "plateau_estimate",
+    "status": "pilot_requires_convergence",
+    "original_rate_s_inv": 207935319564.00693,
+    "rate_s_inv": null,
+    "rate_estimate_s_inv": 207935319564.00693,
+    "rate_standard_error_s_inv": 138393531335.437,
+    "plateau_diagnostics": {
+      "passed": true,
+      "reasons": [],
+      "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+      "scope": "selected_finite_time_tail",
+      "tail_samples": 100,
+      "relative_tolerance": 0.1,
+      "absolute_tolerance": 0.1,
+      "maximum_tail_deviation": 0.0,
+      "bootstrap_95_envelope_radius": 1.1102230246251565e-16,
+      "maximum_tail_deviation_bound": 1.1102230246251565e-16,
+      "absolute_drift_plus_two_standard_errors": 0.0,
+      "uncertainty_available": true
+    },
+    "rate_quality": {
+      "passed": false,
+      "reasons": [
+        "pmf_correlation_blocks_not_resolved",
+        "fewer_than_twenty_nonzero_flux_parent_configurations",
+        "relative_standard_error_exceeds_target"
+      ],
+      "relative_standard_error": 0.665560481142005,
+      "max_relative_standard_error": 0.2,
+      "pmf_block_status": "limited_blocks",
+      "minimum_nonzero_flux_parent_configurations": 20,
+      "minimum_independent_parent_chains": 2,
+      "physical_convergence_established": false
+    },
+    "point_estimate_and_error_exactly_preserved": true
+  },
+  {
+    "case": "refined-913",
+    "seed": 913,
+    "original_status": "plateau_estimate",
+    "status": "pilot_requires_convergence",
+    "original_rate_s_inv": 416276983804.2286,
+    "rate_s_inv": null,
+    "rate_estimate_s_inv": 416276983804.2286,
+    "rate_standard_error_s_inv": 151240530906.8167,
+    "plateau_diagnostics": {
+      "passed": true,
+      "reasons": [],
+      "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+      "scope": "selected_finite_time_tail",
+      "tail_samples": 100,
+      "relative_tolerance": 0.1,
+      "absolute_tolerance": 0.09999999999999999,
+      "maximum_tail_deviation": 0.0,
+      "bootstrap_95_envelope_radius": 1.1657341758564112e-16,
+      "maximum_tail_deviation_bound": 1.1657341758564112e-16,
+      "absolute_drift_plus_two_standard_errors": 0.0,
+      "uncertainty_available": true
+    },
+    "rate_quality": {
+      "passed": false,
+      "reasons": [
+        "pmf_correlation_blocks_not_resolved",
+        "fewer_than_twenty_nonzero_flux_parent_configurations",
+        "relative_standard_error_exceeds_target"
+      ],
+      "relative_standard_error": 0.36331706241521106,
+      "max_relative_standard_error": 0.2,
+      "pmf_block_status": "limited_blocks",
+      "minimum_nonzero_flux_parent_configurations": 20,
+      "minimum_independent_parent_chains": 2,
+      "physical_convergence_established": false
+    },
+    "point_estimate_and_error_exactly_preserved": true
+  }
+]

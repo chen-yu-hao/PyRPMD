@@ -1,0 +1,31 @@
+{
+  "schema": "pyrpmd.extra-correlation-verification.v1",
+  "new_tests_passed": 18,
+  "regression_tests_passed": 111,
+  "regression_subtests_passed": 10,
+  "regression_seconds": 17.85,
+  "cv_statistical_inefficiency": [
+    1.1556453919883776,
+    1.0,
+    1.0
+  ],
+  "additional_statistical_inefficiency": [
+    81.08759414652553,
+    106.39116529892756,
+    87.31790862611116
+  ],
+  "base_block_lengths": [
+    6,
+    5,
+    5
+  ],
+  "hidden_block_lengths": [
+    406,
+    532,
+    437
+  ],
+  "point_weights_max_difference": 0.0,
+  "point_free_energy_max_difference": 0.0,
+  "none_preserves_contract": true,
+  "constant_hidden_marks_uncertainty_unavailable": true
+}

@@ -1,0 +1,236 @@
+[
+  {
+    "case": "ackley-coverage-tuned-s4101",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 1061.334118881616,
+    "old_summary_sha256": "91141b1c2ac6e17d4788086964af98723f10d4f3015ce2e420225ec65f2e34a5",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "ackley-coverage-tuned-s4102",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 894.1732751159053,
+    "old_summary_sha256": "a6817a4aba0daceeb2c8b6840aef5f33b2bc8ba34ed545d94f793fcd6da8c945",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "ackley-coverage-tuned-s4103",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 1004.3527092352588,
+    "old_summary_sha256": "777a10bc24942c7b8afb0a221e5417339bca6cca7732664f6acd63ee7e2b4ff9",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "ackley-thermostat500-s4101",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 25.089460016950056,
+    "old_summary_sha256": "245c980af75728a8a2befae8a0b9737082c5c4e7def596407c6f6fc2ad0a050a",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "ackley-thermostat500-s4102",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 27.94597389965043,
+    "old_summary_sha256": "6a1ee7954f4bb4165971dfa5268d1bcdb4a7340dc3e281e2cd63febd08336acb",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "ackley-thermostat500-s4103",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 20.85895527085577,
+    "old_summary_sha256": "60db57b7fd62e53d05b5f0bb372baeb2b1395f6dfa524c7d1c3aea743fceaee3",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-budget4000000-s4101",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 527.9378020074763,
+    "old_summary_sha256": "0bd349488e38538b6ad3cdc59d654651a839e985c90859ba0aa52c3495c51d34",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-budget4000000-s4102",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 247.8458317148411,
+    "old_summary_sha256": "af31c76ce1459925271907e82b50eed027f507411472755c14188a8bf38c2e3f",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-budget4000000-s4103",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 423.56160395071095,
+    "old_summary_sha256": "6234e536e2d28cbe8c8bfd800f01f3609d6614e7eb7648d0fae0ef7b03b62d26",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-s4101",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 60.480084133645036,
+    "old_summary_sha256": "82122c5dd028efcb07cc616c6a15499ca1e4634a3625c0bb064bd2408accf9db",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-s4102",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 69.23750722326825,
+    "old_summary_sha256": "ee55cb54d1473c6234e5b0946962b8a3202c25d1df80b1d0af58f6ddef2c3a21",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-s4103",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 45.473285680734065,
+    "old_summary_sha256": "713f34ae406f8d1c193f0c1d1af9b801dafa619a41a79d15383f37785d00b193",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-tuned-s4101",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 159.86067512059813,
+    "old_summary_sha256": "f93674d6a89a70d8670406c34b383e38bb62917baa2a71351678561ec270a394",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-tuned-s4102",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 121.65976975488456,
+    "old_summary_sha256": "c02063c461e5f5982f9510854801bc5dee760d0942b8a173c61c1f43d5ac3a5f",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-coverage-tuned-s4103",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 103.41312282854753,
+    "old_summary_sha256": "54062beb1b2d4e08d45f231dd83bfcbe7fefe1ead566fe67c60b13d199c01588",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-legacy-budget4000000-s4101",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 431.8048201215094,
+    "old_summary_sha256": "4dff2fcb92a47d199ae5a8167a628ef28ab41c04317f3d853c293befec2a21d3",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-legacy-budget4000000-s4102",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 276.8871497002052,
+    "old_summary_sha256": "5a84aa98e986ce29796ba388f57a0ecc58941585b26ddcfd4ebd51810938e3cb",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  },
+  {
+    "case": "double_well-legacy-budget4000000-s4103",
+    "unchanged": {
+      "free_energy": true,
+      "probability_mass": true,
+      "raw_count": true,
+      "mask": true
+    },
+    "new_dynamics_steps": 0,
+    "minimum_production_ess": 207.30563953666558,
+    "old_summary_sha256": "405fbb399cb90cb47c17ef21f4f315b06d313da7700cb40567223e25871ae17e",
+    "note": "Reanalyzed the existing checkpoints with moment-aware ESS and bootstrap block diagnostics; pilot decisions retained."
+  }
+]

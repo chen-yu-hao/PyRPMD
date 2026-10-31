@@ -1,0 +1,4738 @@
+{
+  "cases": [
+    {
+      "source": "baseline",
+      "case": "ackley-fixed-s4101-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4101-n1",
+      "label": "fixed-n1",
+      "model": "ackley",
+      "method": "fixed",
+      "seed": 4101,
+      "integration_steps": 8450000,
+      "pilot_steps": 0,
+      "windows": 169,
+      "samples": 338000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 0.9892361111111111,
+          "supported_bins": 14245,
+          "total_bins": 14400,
+          "rmse_kjmol": 1.0283723188471312,
+          "additive_offset_kjmol": 0.10866459250321878,
+          "point_min_gauge_rmse_kjmol": 1.116463533492872
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.5105208333333333,
+          "supported_bins": 29406,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.8829226866337397,
+          "additive_offset_kjmol": 2.920705367981143,
+          "point_min_gauge_rmse_kjmol": 0.8839779768568223
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "ackley-fixed-s4102-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4102-n1",
+      "label": "fixed-n1",
+      "model": "ackley",
+      "method": "fixed",
+      "seed": 4102,
+      "integration_steps": 8450000,
+      "pilot_steps": 0,
+      "windows": 169,
+      "samples": 338000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 0.9922916666666667,
+          "supported_bins": 14289,
+          "total_bins": 14400,
+          "rmse_kjmol": 1.0293830413259644,
+          "additive_offset_kjmol": -0.5831722223715097,
+          "point_min_gauge_rmse_kjmol": 1.0607003322521318
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.5087326388888889,
+          "supported_bins": 29303,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.8579429572559241,
+          "additive_offset_kjmol": 3.0494103052168393,
+          "point_min_gauge_rmse_kjmol": 1.040357351860498
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "ackley-fixed-s4103-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4103-n1",
+      "label": "fixed-n1",
+      "model": "ackley",
+      "method": "fixed",
+      "seed": 4103,
+      "integration_steps": 8450000,
+      "pilot_steps": 0,
+      "windows": 169,
+      "samples": 338000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 0.9933333333333333,
+          "supported_bins": 14304,
+          "total_bins": 14400,
+          "rmse_kjmol": 1.0153506890891244,
+          "additive_offset_kjmol": -0.06264474710884932,
+          "point_min_gauge_rmse_kjmol": 1.0490164666388744
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.5106770833333333,
+          "supported_bins": 29415,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.8649271266140017,
+          "additive_offset_kjmol": 2.9628073931445456,
+          "point_min_gauge_rmse_kjmol": 0.9116584849364919
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-adaptive-s4101-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-adaptive-s4101-n1",
+      "label": "adaptive-n1",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4101,
+      "integration_steps": 855000,
+      "pilot_steps": 105000,
+      "windows": 15,
+      "samples": 30000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.812,
+          "supported_bins": 1015,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.0821368410514902,
+          "additive_offset_kjmol": 10.78410295274719,
+          "point_min_gauge_rmse_kjmol": 1.3475643414151885
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-adaptive-s4101-n5",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-adaptive-s4101-n5",
+      "label": "adaptive-n5",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4101,
+      "integration_steps": 3255000,
+      "pilot_steps": 105000,
+      "windows": 15,
+      "samples": 150000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9872,
+          "supported_bins": 1234,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.5274138247802219,
+          "additive_offset_kjmol": 10.262445026915067,
+          "point_min_gauge_rmse_kjmol": 0.5982280915184743
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.8456,
+          "supported_bins": 4228,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.7397477622007655,
+          "additive_offset_kjmol": 6.76467887944452,
+          "point_min_gauge_rmse_kjmol": 0.9536905727249092
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-adaptive-s4102-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-adaptive-s4102-n1",
+      "label": "adaptive-n1",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4102,
+      "integration_steps": 855000,
+      "pilot_steps": 105000,
+      "windows": 15,
+      "samples": 30000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.8,
+          "supported_bins": 1000,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.8134813255615346,
+          "additive_offset_kjmol": 10.698925778555749,
+          "point_min_gauge_rmse_kjmol": 1.0875930660357864
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-adaptive-s4102-n5",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-adaptive-s4102-n5",
+      "label": "adaptive-n5",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4102,
+      "integration_steps": 3255000,
+      "pilot_steps": 105000,
+      "windows": 15,
+      "samples": 150000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9792,
+          "supported_bins": 1224,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.49442849522706256,
+          "additive_offset_kjmol": 10.359462637592841,
+          "point_min_gauge_rmse_kjmol": 0.6245700761327431
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.845,
+          "supported_bins": 4225,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.6855751138488562,
+          "additive_offset_kjmol": 6.856322312469414,
+          "point_min_gauge_rmse_kjmol": 1.058192414076173
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-adaptive-s4103-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-adaptive-s4103-n1",
+      "label": "adaptive-n1",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4103,
+      "integration_steps": 1097000,
+      "pilot_steps": 297000,
+      "windows": 16,
+      "samples": 32000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.8112,
+          "supported_bins": 1014,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.0292595136993292,
+          "additive_offset_kjmol": 10.790397834855376,
+          "point_min_gauge_rmse_kjmol": 1.3101555025328544
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-adaptive-s4103-n5",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-adaptive-s4103-n5",
+      "label": "adaptive-n5",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4103,
+      "integration_steps": 3657000,
+      "pilot_steps": 297000,
+      "windows": 16,
+      "samples": 160000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.988,
+          "supported_bins": 1235,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.4655106431425277,
+          "additive_offset_kjmol": 10.323291373296549,
+          "point_min_gauge_rmse_kjmol": 0.5789933963245413
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.858,
+          "supported_bins": 4290,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.6448083242382587,
+          "additive_offset_kjmol": 6.774397013717967,
+          "point_min_gauge_rmse_kjmol": 1.3272762581490123
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-fixed-s4101-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-fixed-s4101-n1",
+      "label": "fixed-n1",
+      "model": "double_well",
+      "method": "fixed",
+      "seed": 4101,
+      "integration_steps": 2250000,
+      "pilot_steps": 0,
+      "windows": 45,
+      "samples": 90000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.46575228007229996,
+          "additive_offset_kjmol": 10.37744071705642,
+          "point_min_gauge_rmse_kjmol": 0.6153989066332928
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-fixed-s4101-n5",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-fixed-s4101-n5",
+      "label": "fixed-n5",
+      "model": "double_well",
+      "method": "fixed",
+      "seed": 4101,
+      "integration_steps": 9450000,
+      "pilot_steps": 0,
+      "windows": 45,
+      "samples": 450000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.19544964787248578,
+          "additive_offset_kjmol": 10.11017245023049,
+          "point_min_gauge_rmse_kjmol": 0.23737841279171648
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 1.0,
+          "supported_bins": 5000,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.348458030964617,
+          "additive_offset_kjmol": 6.808629232334179,
+          "point_min_gauge_rmse_kjmol": 0.45080774080059594
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-fixed-s4102-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-fixed-s4102-n1",
+      "label": "fixed-n1",
+      "model": "double_well",
+      "method": "fixed",
+      "seed": 4102,
+      "integration_steps": 2250000,
+      "pilot_steps": 0,
+      "windows": 45,
+      "samples": 90000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.4558197090927838,
+          "additive_offset_kjmol": 10.431226507333353,
+          "point_min_gauge_rmse_kjmol": 0.6422191926946968
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-fixed-s4102-n5",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-fixed-s4102-n5",
+      "label": "fixed-n5",
+      "model": "double_well",
+      "method": "fixed",
+      "seed": 4102,
+      "integration_steps": 9450000,
+      "pilot_steps": 0,
+      "windows": 45,
+      "samples": 450000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.20150785818334616,
+          "additive_offset_kjmol": 10.09949559436582,
+          "point_min_gauge_rmse_kjmol": 0.23648614597470596
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 1.0,
+          "supported_bins": 5000,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.35708909944941797,
+          "additive_offset_kjmol": 6.884510626427307,
+          "point_min_gauge_rmse_kjmol": 0.5633198496218138
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-fixed-s4103-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-fixed-s4103-n1",
+      "label": "fixed-n1",
+      "model": "double_well",
+      "method": "fixed",
+      "seed": 4103,
+      "integration_steps": 2250000,
+      "pilot_steps": 0,
+      "windows": 45,
+      "samples": 90000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.48201782426457507,
+          "additive_offset_kjmol": 9.70271641605952,
+          "point_min_gauge_rmse_kjmol": 0.5544050609997003
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-fixed-s4103-n5",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-fixed-s4103-n5",
+      "label": "fixed-n5",
+      "model": "double_well",
+      "method": "fixed",
+      "seed": 4103,
+      "integration_steps": 9450000,
+      "pilot_steps": 0,
+      "windows": 45,
+      "samples": 450000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.2026784438347115,
+          "additive_offset_kjmol": 10.058564290033653,
+          "point_min_gauge_rmse_kjmol": 0.21966817870519664
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 1.0,
+          "supported_bins": 5000,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.3520760748478002,
+          "additive_offset_kjmol": 6.758603502171432,
+          "point_min_gauge_rmse_kjmol": 0.44780410697003603
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-standard-s4101-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-standard-s4101-n1",
+      "label": "standard-n1",
+      "model": "double_well",
+      "method": "standard",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.4032,
+          "supported_bins": 504,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.081417812879138,
+          "additive_offset_kjmol": 8.52389864348563,
+          "point_min_gauge_rmse_kjmol": 1.8035471820352522
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-standard-s4102-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-standard-s4102-n1",
+      "label": "standard-n1",
+      "model": "double_well",
+      "method": "standard",
+      "seed": 4102,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.4104,
+          "supported_bins": 513,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.9770567678842954,
+          "additive_offset_kjmol": 8.774053109912716,
+          "point_min_gauge_rmse_kjmol": 1.5422075280946255
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-standard-s4103-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-standard-s4103-n1",
+      "label": "standard-n1",
+      "model": "double_well",
+      "method": "standard",
+      "seed": 4103,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.4,
+          "supported_bins": 500,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.2650505823509084,
+          "additive_offset_kjmol": 8.210028010507186,
+          "point_min_gauge_rmse_kjmol": 2.1652364372887485
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-unbiased-s4101-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-unbiased-s4101-n1",
+      "label": "unbiased-n1",
+      "model": "double_well",
+      "method": "unbiased",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.356,
+          "supported_bins": 445,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.0593682122638333,
+          "additive_offset_kjmol": 9.765839662501191,
+          "point_min_gauge_rmse_kjmol": 1.0827001883405167
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-unbiased-s4102-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-unbiased-s4102-n1",
+      "label": "unbiased-n1",
+      "model": "double_well",
+      "method": "unbiased",
+      "seed": 4102,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.3368,
+          "supported_bins": 421,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.8453645960063633,
+          "additive_offset_kjmol": 10.261861265607324,
+          "point_min_gauge_rmse_kjmol": 0.8974798374769001
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-unbiased-s4103-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-unbiased-s4103-n1",
+      "label": "unbiased-n1",
+      "model": "double_well",
+      "method": "unbiased",
+      "seed": 4103,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.3576,
+          "supported_bins": 447,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.0756657435531884,
+          "additive_offset_kjmol": 9.86471303004402,
+          "point_min_gauge_rmse_kjmol": 1.0863644928475569
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-well_tempered-s4101-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4101-n1",
+      "label": "well_tempered-n1",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.4168,
+          "supported_bins": 521,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.0947381374049316,
+          "additive_offset_kjmol": 8.557209506066378,
+          "point_min_gauge_rmse_kjmol": 1.785138463106481
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-well_tempered-s4102-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4102-n1",
+      "label": "well_tempered-n1",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4102,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.4232,
+          "supported_bins": 529,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.0513599220472523,
+          "additive_offset_kjmol": 8.829817745143501,
+          "point_min_gauge_rmse_kjmol": 1.5489199514085612
+        }
+      }
+    },
+    {
+      "source": "baseline",
+      "case": "double_well-well_tempered-s4103-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4103-n1",
+      "label": "well_tempered-n1",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4103,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.4,
+          "supported_bins": 500,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.2204772571555453,
+          "additive_offset_kjmol": 8.45884526725015,
+          "point_min_gauge_rmse_kjmol": 1.9403367895713002
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "ackley-coverage-tuned-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4101",
+      "label": "coverage-tuned",
+      "model": "ackley",
+      "method": "adaptive",
+      "seed": 4101,
+      "integration_steps": 11368000,
+      "pilot_steps": 1078000,
+      "windows": 49,
+      "samples": 490000,
+      "dt_au": 20.670686667585077,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 1.0,
+          "supported_bins": 14400,
+          "total_bins": 14400,
+          "rmse_kjmol": 0.5468487058227149,
+          "additive_offset_kjmol": -0.07450761431060177,
+          "point_min_gauge_rmse_kjmol": 0.6019271365341594
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.7257638888888889,
+          "supported_bins": 41804,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.7279281340826691,
+          "additive_offset_kjmol": 3.39266717339356,
+          "point_min_gauge_rmse_kjmol": 0.9196547532078483
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "ackley-coverage-tuned-s4102",
+      "path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4102",
+      "label": "coverage-tuned",
+      "model": "ackley",
+      "method": "adaptive",
+      "seed": 4102,
+      "integration_steps": 11368000,
+      "pilot_steps": 1078000,
+      "windows": 49,
+      "samples": 490000,
+      "dt_au": 20.670686667585077,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 1.0,
+          "supported_bins": 14400,
+          "total_bins": 14400,
+          "rmse_kjmol": 0.5450879402478398,
+          "additive_offset_kjmol": -0.16763408420479997,
+          "point_min_gauge_rmse_kjmol": 0.567640393867228
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.7220138888888888,
+          "supported_bins": 41588,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.7293453054376609,
+          "additive_offset_kjmol": 3.3761174027137026,
+          "point_min_gauge_rmse_kjmol": 0.755742739226485
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "ackley-coverage-tuned-s4103",
+      "path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4103",
+      "label": "coverage-tuned",
+      "model": "ackley",
+      "method": "adaptive",
+      "seed": 4103,
+      "integration_steps": 11368000,
+      "pilot_steps": 1078000,
+      "windows": 49,
+      "samples": 490000,
+      "dt_au": 20.670686667585077,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 1.0,
+          "supported_bins": 14400,
+          "total_bins": 14400,
+          "rmse_kjmol": 0.5531833158549848,
+          "additive_offset_kjmol": -0.3104702267684125,
+          "point_min_gauge_rmse_kjmol": 0.553220587769035
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.7195659722222222,
+          "supported_bins": 41447,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.7273015144336377,
+          "additive_offset_kjmol": 3.4356666395117528,
+          "point_min_gauge_rmse_kjmol": 0.7379403501767141
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "ackley-thermostat500-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4101",
+      "label": "thermostat500",
+      "model": "ackley",
+      "method": "fixed",
+      "seed": 4101,
+      "integration_steps": 8450000,
+      "pilot_steps": 0,
+      "windows": 169,
+      "samples": 338000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 500,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 0.9943055555555556,
+          "supported_bins": 14318,
+          "total_bins": 14400,
+          "rmse_kjmol": 0.9503363956304735,
+          "additive_offset_kjmol": -0.290906230754628,
+          "point_min_gauge_rmse_kjmol": 0.9509930330359234
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.5138194444444445,
+          "supported_bins": 29596,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.8667350281125359,
+          "additive_offset_kjmol": 2.965260347593687,
+          "point_min_gauge_rmse_kjmol": 1.033356898075653
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "ackley-thermostat500-s4102",
+      "path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4102",
+      "label": "thermostat500",
+      "model": "ackley",
+      "method": "fixed",
+      "seed": 4102,
+      "integration_steps": 8450000,
+      "pilot_steps": 0,
+      "windows": 169,
+      "samples": 338000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 500,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 0.9952777777777778,
+          "supported_bins": 14332,
+          "total_bins": 14400,
+          "rmse_kjmol": 0.9073844778582402,
+          "additive_offset_kjmol": 0.0672298919233769,
+          "point_min_gauge_rmse_kjmol": 0.9891040501006013
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.5165625,
+          "supported_bins": 29754,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.816846803247526,
+          "additive_offset_kjmol": 3.0539447014696073,
+          "point_min_gauge_rmse_kjmol": 0.818254933854907
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "ackley-thermostat500-s4103",
+      "path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4103",
+      "label": "thermostat500",
+      "model": "ackley",
+      "method": "fixed",
+      "seed": 4103,
+      "integration_steps": 8450000,
+      "pilot_steps": 0,
+      "windows": 169,
+      "samples": 338000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 500,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.09999999999999964,
+            0.09999999999999964
+          ],
+          "bins": [
+            120,
+            120
+          ],
+          "coverage": 0.9955555555555555,
+          "supported_bins": 14336,
+          "total_bins": 14400,
+          "rmse_kjmol": 0.9415816090776765,
+          "additive_offset_kjmol": -0.05840938095421536,
+          "point_min_gauge_rmse_kjmol": 0.9790456084947466
+        },
+        "paper": {
+          "bin_widths": [
+            0.04999999999999982,
+            0.04999999999999982
+          ],
+          "bins": [
+            240,
+            240
+          ],
+          "coverage": 0.5144618055555555,
+          "supported_bins": 29633,
+          "total_bins": 57600,
+          "rmse_kjmol": 0.8527389537999475,
+          "additive_offset_kjmol": 3.099712247746614,
+          "point_min_gauge_rmse_kjmol": 0.957581645264064
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-budget4000000-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4101",
+      "label": "coverage-budget4000000",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4101,
+      "integration_steps": 3999800,
+      "pilot_steps": 441000,
+      "windows": 28,
+      "samples": 163940,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 50,
+      "production_steps_per_window": 117100,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.37712148916040844,
+          "additive_offset_kjmol": 10.23795994640591,
+          "point_min_gauge_rmse_kjmol": 0.45862126587404717
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.9712,
+          "supported_bins": 4856,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.5967064368084437,
+          "additive_offset_kjmol": 6.843845413420859,
+          "point_min_gauge_rmse_kjmol": 0.8957440820776186
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-budget4000000-s4102",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4102",
+      "label": "coverage-budget4000000",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4102,
+      "integration_steps": 3999840,
+      "pilot_steps": 1159000,
+      "windows": 31,
+      "samples": 126542,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 50,
+      "production_steps_per_window": 81640,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.40243123337287146,
+          "additive_offset_kjmol": 10.190558816550412,
+          "point_min_gauge_rmse_kjmol": 0.45812098194354844
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.9568,
+          "supported_bins": 4784,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.6458209218176945,
+          "additive_offset_kjmol": 6.895726117347168,
+          "point_min_gauge_rmse_kjmol": 1.049438255612869
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-budget4000000-s4103",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4103",
+      "label": "coverage-budget4000000",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4103,
+      "integration_steps": 3999400,
+      "pilot_steps": 489000,
+      "windows": 32,
+      "samples": 159520,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 50,
+      "production_steps_per_window": 99700,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 1.0,
+          "supported_bins": 1250,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.4064517552000315,
+          "additive_offset_kjmol": 10.199087568860845,
+          "point_min_gauge_rmse_kjmol": 0.4634987481201985
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.9752,
+          "supported_bins": 4876,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.6152829205556154,
+          "additive_offset_kjmol": 6.848239163043368,
+          "point_min_gauge_rmse_kjmol": 1.0523430974220678
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-s4101",
+      "label": "coverage",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4101,
+      "integration_steps": 5697000,
+      "pilot_steps": 4347000,
+      "windows": 27,
+      "samples": 54000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9968,
+          "supported_bins": 1246,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.6564503345489139,
+          "additive_offset_kjmol": 11.098316636394166,
+          "point_min_gauge_rmse_kjmol": 1.297767726337016
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.741,
+          "supported_bins": 3705,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.8899386441661765,
+          "additive_offset_kjmol": 6.620854087320754,
+          "point_min_gauge_rmse_kjmol": 2.030162625339915
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-s4102",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-s4102",
+      "label": "coverage",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4102,
+      "integration_steps": 2445000,
+      "pilot_steps": 1045000,
+      "windows": 28,
+      "samples": 56000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9864,
+          "supported_bins": 1233,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.638099818520017,
+          "additive_offset_kjmol": 10.321171487086636,
+          "point_min_gauge_rmse_kjmol": 0.7245750704545268
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.736,
+          "supported_bins": 3680,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.8019212055137647,
+          "additive_offset_kjmol": 6.630657372029689,
+          "point_min_gauge_rmse_kjmol": 1.2093430716936906
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-s4103",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-s4103",
+      "label": "coverage",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4103,
+      "integration_steps": 2793000,
+      "pilot_steps": 1193000,
+      "windows": 32,
+      "samples": 64000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.988,
+          "supported_bins": 1235,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.5412298265854127,
+          "additive_offset_kjmol": 10.401840535352582,
+          "point_min_gauge_rmse_kjmol": 0.6874850166276498
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.7994,
+          "supported_bins": 3997,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.7775310102190491,
+          "additive_offset_kjmol": 6.908164299400553,
+          "point_min_gauge_rmse_kjmol": 1.789200348031751
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-tuned-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-tuned-s4101",
+      "label": "coverage-tuned",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4101,
+      "integration_steps": 1841000,
+      "pilot_steps": 441000,
+      "windows": 28,
+      "samples": 56000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 50,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9864,
+          "supported_bins": 1233,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.6331387766426615,
+          "additive_offset_kjmol": 10.671128907363904,
+          "point_min_gauge_rmse_kjmol": 0.9391519832838078
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.7534,
+          "supported_bins": 3767,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.8379194257332,
+          "additive_offset_kjmol": 6.851207032034476,
+          "point_min_gauge_rmse_kjmol": 1.653020602200012
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-tuned-s4102",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-tuned-s4102",
+      "label": "coverage-tuned",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4102,
+      "integration_steps": 2709000,
+      "pilot_steps": 1159000,
+      "windows": 31,
+      "samples": 62000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 50,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.996,
+          "supported_bins": 1245,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.6014827683293625,
+          "additive_offset_kjmol": 10.175607738484988,
+          "point_min_gauge_rmse_kjmol": 0.6362824159059894
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.8142,
+          "supported_bins": 4071,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.8170494133266042,
+          "additive_offset_kjmol": 6.856825561248757,
+          "point_min_gauge_rmse_kjmol": 1.2145251573391291
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-coverage-tuned-s4103",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-tuned-s4103",
+      "label": "coverage-tuned",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4103,
+      "integration_steps": 2089000,
+      "pilot_steps": 489000,
+      "windows": 32,
+      "samples": 64000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 50,
+      "production_steps_per_window": 40000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9928,
+          "supported_bins": 1241,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.5915081548920003,
+          "additive_offset_kjmol": 10.590968946185324,
+          "point_min_gauge_rmse_kjmol": 0.8515130884229165
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.8298,
+          "supported_bins": 4149,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.8271757678444364,
+          "additive_offset_kjmol": 6.762658953843671,
+          "point_min_gauge_rmse_kjmol": 1.5434809124695268
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-legacy-budget4000000-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4101",
+      "label": "legacy-budget4000000",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4101,
+      "integration_steps": 3999900,
+      "pilot_steps": 105000,
+      "windows": 15,
+      "samples": 187245,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 249660,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9928,
+          "supported_bins": 1241,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.47631105257610185,
+          "additive_offset_kjmol": 10.133442919216527,
+          "point_min_gauge_rmse_kjmol": 0.5007512794018231
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.881,
+          "supported_bins": 4405,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.6819607041513631,
+          "additive_offset_kjmol": 6.76561703805307,
+          "point_min_gauge_rmse_kjmol": 0.8831169908905129
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-legacy-budget4000000-s4102",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4102",
+      "label": "legacy-budget4000000",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4102,
+      "integration_steps": 3999900,
+      "pilot_steps": 105000,
+      "windows": 15,
+      "samples": 187245,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 249660,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9912,
+          "supported_bins": 1239,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.4515426996844537,
+          "additive_offset_kjmol": 10.533335402630824,
+          "point_min_gauge_rmse_kjmol": 0.7160054098049438
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.8838,
+          "supported_bins": 4419,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.6447541861144669,
+          "additive_offset_kjmol": 6.859206060638592,
+          "point_min_gauge_rmse_kjmol": 0.9506472012858395
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-legacy-budget4000000-s4103",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4103",
+      "label": "legacy-budget4000000",
+      "model": "double_well",
+      "method": "adaptive",
+      "seed": 4103,
+      "integration_steps": 3999720,
+      "pilot_steps": 297000,
+      "windows": 16,
+      "samples": 177136,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 221420,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.9928,
+          "supported_bins": 1241,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.4452275772136191,
+          "additive_offset_kjmol": 10.2556155100803,
+          "point_min_gauge_rmse_kjmol": 0.525045135610753
+        },
+        "paper": {
+          "bin_widths": [
+            0.020000000000000018,
+            0.020000000000000018
+          ],
+          "bins": [
+            50,
+            100
+          ],
+          "coverage": 0.8742,
+          "supported_bins": 4371,
+          "total_bins": 5000,
+          "rmse_kjmol": 0.6175159379990492,
+          "additive_offset_kjmol": 6.800830547780115,
+          "point_min_gauge_rmse_kjmol": 1.407041566662906
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-standard-height04-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-standard-height04-s4101",
+      "label": "standard-height04",
+      "model": "double_well",
+      "method": "standard",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.3488,
+          "supported_bins": 436,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.6899912893817731,
+          "additive_offset_kjmol": 9.54260936426909,
+          "point_min_gauge_rmse_kjmol": 0.8101998368089052
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-well_tempered-andersen500-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-andersen500-s4101",
+      "label": "well_tempered-andersen500",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 500,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.4,
+          "supported_bins": 500,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.9284300016412967,
+          "additive_offset_kjmol": 8.548456076048923,
+          "point_min_gauge_rmse_kjmol": 1.69558613684223
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-well_tempered-andersen500_height04-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-andersen500_height04-s4101",
+      "label": "well_tempered-andersen500_height04",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 500,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.3464,
+          "supported_bins": 433,
+          "total_bins": 1250,
+          "rmse_kjmol": 1.3704973113786036,
+          "additive_offset_kjmol": 8.466597715396606,
+          "point_min_gauge_rmse_kjmol": 2.032308330278672
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-well_tempered-dt04-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-dt04-s4101",
+      "label": "well_tempered-dt04",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 16.536549334068063,
+      "andersen_interval": 25,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.416,
+          "supported_bins": 520,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.8669145298280063,
+          "additive_offset_kjmol": 8.92006395007062,
+          "point_min_gauge_rmse_kjmol": 1.3594775444175646
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-well_tempered-height04-s4101",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-height04-s4101",
+      "label": "well_tempered-height04",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4101,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.3512,
+          "supported_bins": 439,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.5698556274312127,
+          "additive_offset_kjmol": 10.121731711813597,
+          "point_min_gauge_rmse_kjmol": 0.5904186388665613
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-well_tempered-height04-s4102",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-height04-s4102",
+      "label": "well_tempered-height04",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4102,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.3904,
+          "supported_bins": 488,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.6439726019776183,
+          "additive_offset_kjmol": 9.772681135570522,
+          "point_min_gauge_rmse_kjmol": 0.6727296221095931
+        }
+      }
+    },
+    {
+      "source": "optimized",
+      "case": "double_well-well_tempered-height04-s4103",
+      "path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-height04-s4103",
+      "label": "well_tempered-height04",
+      "model": "double_well",
+      "method": "well_tempered",
+      "seed": 4103,
+      "integration_steps": 210000,
+      "pilot_steps": 0,
+      "windows": 1,
+      "samples": 10000,
+      "dt_au": 4.134137333517016,
+      "andersen_interval": 100,
+      "production_steps_per_window": 200000,
+      "equilibration_steps_per_window": 10000,
+      "physical_convergence_claimed": false,
+      "grids": {
+        "coarse": {
+          "bin_widths": [
+            0.03999999999999998,
+            0.040000000000000036
+          ],
+          "bins": [
+            25,
+            50
+          ],
+          "coverage": 0.3456,
+          "supported_bins": 432,
+          "total_bins": 1250,
+          "rmse_kjmol": 0.7967034051994252,
+          "additive_offset_kjmol": 10.359765756817954,
+          "point_min_gauge_rmse_kjmol": 0.8881385191975625
+        }
+      }
+    }
+  ],
+  "failures": [
+    {
+      "source": "baseline",
+      "case": "ackley-adaptive-s4101-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/ackley-adaptive-s4101-n1",
+      "failure": {
+        "error": "Root stage failed: RuntimeError: Adaptive umbrella targets were not reached; production was not started. max_rounds before overlap/effective-sample targets. Inspect /workspace/work/rpmd-fes-review/ogre/ackley-adaptive-s4101-n1/run/adaptive-plan.json",
+        "wall_seconds_this_call": 44.5079267709998
+      },
+      "plan_status": "incomplete",
+      "integration_steps": 8085000
+    },
+    {
+      "source": "baseline",
+      "case": "ackley-adaptive-s4102-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/ackley-adaptive-s4102-n1",
+      "failure": {
+        "error": "Root stage failed: RuntimeError: Adaptive umbrella targets were not reached; production was not started. max_rounds before overlap/effective-sample targets. Inspect /workspace/work/rpmd-fes-review/ogre/ackley-adaptive-s4102-n1/run/adaptive-plan.json",
+        "wall_seconds_this_call": 50.415737559000036
+      },
+      "plan_status": "incomplete",
+      "integration_steps": 8085000
+    },
+    {
+      "source": "baseline",
+      "case": "ackley-adaptive-s4103-n1",
+      "path": "/workspace/work/rpmd-fes-review/ogre/ackley-adaptive-s4103-n1",
+      "failure": {
+        "error": "Root stage failed: RuntimeError: Adaptive umbrella targets were not reached; production was not started. max_rounds before overlap/effective-sample targets. Inspect /workspace/work/rpmd-fes-review/ogre/ackley-adaptive-s4103-n1/run/adaptive-plan.json",
+        "wall_seconds_this_call": 41.140199863000134
+      },
+      "plan_status": "incomplete",
+      "integration_steps": 8085000
+    }
+  ],
+  "pending": [],
+  "missing_required": [],
+  "aggregate": [
+    {
+      "source": "baseline",
+      "model": "ackley",
+      "label": "fixed-n1",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.9916203703703704,
+        "min": 0.9892361111111111,
+        "max": 0.9933333333333333,
+        "sd": 0.0021295038207605364
+      },
+      "rmse_kjmol": {
+        "mean": 1.0243686830874068,
+        "min": 1.0153506890891244,
+        "max": 1.0293830413259644,
+        "sd": 0.007826145398412665
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.0753934441279593,
+        "min": 1.0490164666388744,
+        "max": 1.116463533492872,
+        "sd": 0.03604431105248926
+      },
+      "integration_steps": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "ackley",
+      "label": "fixed-n1",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.5099768518518518,
+        "min": 0.5087326388888889,
+        "max": 0.5106770833333333,
+        "sd": 0.0010803485264157984
+      },
+      "rmse_kjmol": {
+        "mean": 0.8685975901678885,
+        "min": 0.8579429572559241,
+        "max": 0.8829226866337397,
+        "sd": 0.012888015633623946
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.9453312712179374,
+        "min": 0.8839779768568223,
+        "max": 1.040357351860498,
+        "sd": 0.0834507018161141
+      },
+      "integration_steps": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "adaptive-n1",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.8077333333333333,
+        "min": 0.8,
+        "max": 0.812,
+        "sd": 0.006709197666884866
+      },
+      "rmse_kjmol": {
+        "mean": 0.9749592267707848,
+        "min": 0.8134813255615346,
+        "max": 1.0821368410514902,
+        "sd": 0.14232124708273583
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.2484376366612764,
+        "min": 1.0875930660357864,
+        "max": 1.3475643414151885,
+        "sd": 0.14054567667276285
+      },
+      "integration_steps": {
+        "mean": 935666.6666666666,
+        "min": 855000.0,
+        "max": 1097000.0,
+        "sd": 139718.76514388944
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "adaptive-n5",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.9847999999999999,
+        "min": 0.9792,
+        "max": 0.988,
+        "sd": 0.004866210024238587
+      },
+      "rmse_kjmol": {
+        "mean": 0.49578432104993747,
+        "min": 0.4655106431425277,
+        "max": 0.5274138247802219,
+        "sd": 0.03097385465136396
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.6005971879919195,
+        "min": 0.5789933963245413,
+        "max": 0.6245700761327431,
+        "sd": 0.022880513524836044
+      },
+      "integration_steps": {
+        "mean": 3389000.0,
+        "min": 3255000.0,
+        "max": 3657000.0,
+        "sd": 232094.80821422956
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "adaptive-n5",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.8495333333333334,
+        "min": 0.845,
+        "max": 0.858,
+        "sd": 0.007338483040338327
+      },
+      "rmse_kjmol": {
+        "mean": 0.6900437334292935,
+        "min": 0.6448083242382587,
+        "max": 0.7397477622007655,
+        "sd": 0.047627204840040425
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.1130530816500315,
+        "min": 0.9536905727249092,
+        "max": 1.3272762581490123,
+        "sd": 0.19274033237347155
+      },
+      "integration_steps": {
+        "mean": 3389000.0,
+        "min": 3255000.0,
+        "max": 3657000.0,
+        "sd": 232094.80821422956
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "fixed-n1",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "sd": 0.0
+      },
+      "rmse_kjmol": {
+        "mean": 0.46786327114321963,
+        "min": 0.4558197090927838,
+        "max": 0.48201782426457507,
+        "sd": 0.013226016865055663
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.6040077201092301,
+        "min": 0.5544050609997003,
+        "max": 0.6422191926946968,
+        "sd": 0.04500166418207265
+      },
+      "integration_steps": {
+        "mean": 2250000.0,
+        "min": 2250000.0,
+        "max": 2250000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "fixed-n5",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "sd": 0.0
+      },
+      "rmse_kjmol": {
+        "mean": 0.19987864996351448,
+        "min": 0.19544964787248578,
+        "max": 0.2026784438347115,
+        "sd": 0.003880027362474143
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.23117757915720635,
+        "min": 0.21966817870519664,
+        "max": 0.23737841279171648,
+        "sd": 0.00997741244470357
+      },
+      "integration_steps": {
+        "mean": 9450000.0,
+        "min": 9450000.0,
+        "max": 9450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "fixed-n5",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "sd": 0.0
+      },
+      "rmse_kjmol": {
+        "mean": 0.3525410684206118,
+        "min": 0.348458030964617,
+        "max": 0.35708909944941797,
+        "sd": 0.004334281954879959
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.48731056579748194,
+        "min": 0.44780410697003603,
+        "max": 0.5633198496218138,
+        "sd": 0.0658431004332489
+      },
+      "integration_steps": {
+        "mean": 9450000.0,
+        "min": 9450000.0,
+        "max": 9450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "standard-n1",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.40453333333333336,
+        "min": 0.4,
+        "max": 0.4104,
+        "sd": 0.005326662494783497
+      },
+      "rmse_kjmol": {
+        "mean": 1.107841721038114,
+        "min": 0.9770567678842954,
+        "max": 1.2650505823509084,
+        "sd": 0.1458038973572139
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.8369970491395422,
+        "min": 1.5422075280946255,
+        "max": 2.1652364372887485,
+        "sd": 0.3128584754004208
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "unbiased-n1",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.35013333333333335,
+        "min": 0.3368,
+        "max": 0.3576,
+        "sd": 0.01157468502091237
+      },
+      "rmse_kjmol": {
+        "mean": 0.9934661839411284,
+        "min": 0.8453645960063633,
+        "max": 1.0756657435531884,
+        "sd": 0.128518335824625
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.022181506221658,
+        "min": 0.8974798374769001,
+        "max": 1.0863644928475569,
+        "sd": 0.10801035331242816
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "baseline",
+      "model": "double_well",
+      "label": "well_tempered-n1",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.4133333333333334,
+        "min": 0.4,
+        "max": 0.4232,
+        "sd": 0.011982209033952513
+      },
+      "rmse_kjmol": {
+        "mean": 1.1221917722025765,
+        "min": 1.0513599220472523,
+        "max": 1.2204772571555453,
+        "sd": 0.08783760473871378
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.7581317346954475,
+        "min": 1.5489199514085612,
+        "max": 1.9403367895713002,
+        "sd": 0.19710100921590798
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "ackley",
+      "label": "coverage-tuned",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "sd": 0.0
+      },
+      "rmse_kjmol": {
+        "mean": 0.5483733206418465,
+        "min": 0.5450879402478398,
+        "max": 0.5531833158549848,
+        "sd": 0.004257594897970725
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.5742627060568075,
+        "min": 0.553220587769035,
+        "max": 0.6019271365341594,
+        "sd": 0.025019457172459788
+      },
+      "integration_steps": {
+        "mean": 11368000.0,
+        "min": 11368000.0,
+        "max": 11368000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "ackley",
+      "label": "coverage-tuned",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.7224479166666665,
+        "min": 0.7195659722222222,
+        "max": 0.7257638888888889,
+        "sd": 0.003121670680204469
+      },
+      "rmse_kjmol": {
+        "mean": 0.7281916513179892,
+        "min": 0.7273015144336377,
+        "max": 0.7293453054376609,
+        "sd": 0.0010470680097369948
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.8044459475370158,
+        "min": 0.7379403501767141,
+        "max": 0.9196547532078483,
+        "sd": 0.10017002017592179
+      },
+      "integration_steps": {
+        "mean": 11368000.0,
+        "min": 11368000.0,
+        "max": 11368000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "ackley",
+      "label": "thermostat500",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.9950462962962963,
+        "min": 0.9943055555555556,
+        "max": 0.9955555555555555,
+        "sd": 0.0006563632814239703
+      },
+      "rmse_kjmol": {
+        "mean": 0.9331008275221301,
+        "min": 0.9073844778582402,
+        "max": 0.9503363956304735,
+        "sd": 0.02269712651246508
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.9730475638770905,
+        "min": 0.9509930330359234,
+        "max": 0.9891040501006013,
+        "sd": 0.019750817954013657
+      },
+      "integration_steps": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "ackley",
+      "label": "thermostat500",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.5149479166666667,
+        "min": 0.5138194444444445,
+        "max": 0.5165625,
+        "sd": 0.0014346833986895212
+      },
+      "rmse_kjmol": {
+        "mean": 0.8454402617200031,
+        "min": 0.816846803247526,
+        "max": 0.8667350281125359,
+        "sd": 0.02573250715736477
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.9363978257315413,
+        "min": 0.818254933854907,
+        "max": 1.033356898075653,
+        "sd": 0.10910444267029473
+      },
+      "integration_steps": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "coverage",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.9904000000000001,
+        "min": 0.9864,
+        "max": 0.9968,
+        "sd": 0.005599999999999994
+      },
+      "rmse_kjmol": {
+        "mean": 0.6119266598847812,
+        "min": 0.5412298265854127,
+        "max": 0.6564503345489139,
+        "sd": 0.061908941507271144
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.9032759378063977,
+        "min": 0.6874850166276498,
+        "max": 1.297767726337016,
+        "sd": 0.34214287430368145
+      },
+      "integration_steps": {
+        "mean": 3645000.0,
+        "min": 2445000.0,
+        "max": 5697000.0,
+        "sd": 1785582.2579763723
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "coverage",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.7587999999999999,
+        "min": 0.736,
+        "max": 0.7994,
+        "sd": 0.0352493971579657
+      },
+      "rmse_kjmol": {
+        "mean": 0.8231302866329967,
+        "min": 0.7775310102190491,
+        "max": 0.8899386441661765,
+        "sd": 0.059128993597383946
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.6762353483551191,
+        "min": 1.2093430716936906,
+        "max": 2.030162625339915,
+        "sd": 0.42190876179092673
+      },
+      "integration_steps": {
+        "mean": 3645000.0,
+        "min": 2445000.0,
+        "max": 5697000.0,
+        "sd": 1785582.2579763723
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "coverage-budget4000000",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "sd": 0.0
+      },
+      "rmse_kjmol": {
+        "mean": 0.3953348259111038,
+        "min": 0.37712148916040844,
+        "max": 0.4064517552000315,
+        "sd": 0.015900797955962474
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.46008033197926473,
+        "min": 0.45812098194354844,
+        "max": 0.4634987481201985,
+        "sd": 0.002970984296024849
+      },
+      "integration_steps": {
+        "mean": 3999680.0,
+        "min": 3999400.0,
+        "max": 3999840.0,
+        "sd": 243.3105012119288
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "coverage-budget4000000",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.9677333333333333,
+        "min": 0.9568,
+        "max": 0.9752,
+        "sd": 0.009677465232866146
+      },
+      "rmse_kjmol": {
+        "mean": 0.6192700930605844,
+        "min": 0.5967064368084437,
+        "max": 0.6458209218176945,
+        "sd": 0.02479881686430354
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.9991751450375185,
+        "min": 0.8957440820776186,
+        "max": 1.0523430974220678,
+        "sd": 0.08958570262740141
+      },
+      "integration_steps": {
+        "mean": 3999680.0,
+        "min": 3999400.0,
+        "max": 3999840.0,
+        "sd": 243.3105012119288
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "coverage-tuned",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.9917333333333334,
+        "min": 0.9864,
+        "max": 0.996,
+        "sd": 0.0048880807412861995
+      },
+      "rmse_kjmol": {
+        "mean": 0.6087098999546748,
+        "min": 0.5915081548920003,
+        "max": 0.6331387766426615,
+        "sd": 0.021735932013232102
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.8089824958709046,
+        "min": 0.6362824159059894,
+        "max": 0.9391519832838078,
+        "sd": 0.15584971025967823
+      },
+      "integration_steps": {
+        "mean": 2213000.0,
+        "min": 1841000.0,
+        "max": 2709000.0,
+        "sd": 447088.3581575347
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "coverage-tuned",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.7991333333333334,
+        "min": 0.7534,
+        "max": 0.8298,
+        "sd": 0.04036698320822767
+      },
+      "rmse_kjmol": {
+        "mean": 0.8273815356347468,
+        "min": 0.8170494133266042,
+        "max": 0.8379194257332,
+        "sd": 0.010436527667309308
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.4703422240028894,
+        "min": 1.2145251573391291,
+        "max": 1.653020602200012,
+        "sd": 0.2282137476224883
+      },
+      "integration_steps": {
+        "mean": 2213000.0,
+        "min": 1841000.0,
+        "max": 2709000.0,
+        "sd": 447088.3581575347
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "legacy-budget4000000",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.9922666666666666,
+        "min": 0.9912,
+        "max": 0.9928,
+        "sd": 0.0009237604307034277
+      },
+      "rmse_kjmol": {
+        "mean": 0.45769377649139154,
+        "min": 0.4452275772136191,
+        "max": 0.47631105257610185,
+        "sd": 0.016429315858128554
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.5806006082725067,
+        "min": 0.5007512794018231,
+        "max": 0.7160054098049438,
+        "sd": 0.11789144613119333
+      },
+      "integration_steps": {
+        "mean": 3999840.0,
+        "min": 3999720.0,
+        "max": 3999900.0,
+        "sd": 103.92304845413264
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "legacy-budget4000000",
+      "grid": "paper",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.8796666666666667,
+        "min": 0.8742,
+        "max": 0.8838,
+        "sd": 0.004936935621752991
+      },
+      "rmse_kjmol": {
+        "mean": 0.6480769427549596,
+        "min": 0.6175159379990492,
+        "max": 0.6819607041513631,
+        "sd": 0.032350618307469166
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.0802685862797528,
+        "min": 0.8831169908905129,
+        "max": 1.407041566662906,
+        "sd": 0.28500090852552684
+      },
+      "integration_steps": {
+        "mean": 3999840.0,
+        "min": 3999720.0,
+        "max": 3999900.0,
+        "sd": 103.92304845413264
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "standard-height04",
+      "grid": "coarse",
+      "seeds": 1,
+      "coverage": {
+        "mean": 0.3488,
+        "min": 0.3488,
+        "max": 0.3488,
+        "sd": null
+      },
+      "rmse_kjmol": {
+        "mean": 0.6899912893817731,
+        "min": 0.6899912893817731,
+        "max": 0.6899912893817731,
+        "sd": null
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.8101998368089052,
+        "min": 0.8101998368089052,
+        "max": 0.8101998368089052,
+        "sd": null
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "well_tempered-andersen500",
+      "grid": "coarse",
+      "seeds": 1,
+      "coverage": {
+        "mean": 0.4,
+        "min": 0.4,
+        "max": 0.4,
+        "sd": null
+      },
+      "rmse_kjmol": {
+        "mean": 0.9284300016412967,
+        "min": 0.9284300016412967,
+        "max": 0.9284300016412967,
+        "sd": null
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.69558613684223,
+        "min": 1.69558613684223,
+        "max": 1.69558613684223,
+        "sd": null
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "well_tempered-andersen500_height04",
+      "grid": "coarse",
+      "seeds": 1,
+      "coverage": {
+        "mean": 0.3464,
+        "min": 0.3464,
+        "max": 0.3464,
+        "sd": null
+      },
+      "rmse_kjmol": {
+        "mean": 1.3704973113786036,
+        "min": 1.3704973113786036,
+        "max": 1.3704973113786036,
+        "sd": null
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 2.032308330278672,
+        "min": 2.032308330278672,
+        "max": 2.032308330278672,
+        "sd": null
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "well_tempered-dt04",
+      "grid": "coarse",
+      "seeds": 1,
+      "coverage": {
+        "mean": 0.416,
+        "min": 0.416,
+        "max": 0.416,
+        "sd": null
+      },
+      "rmse_kjmol": {
+        "mean": 0.8669145298280063,
+        "min": 0.8669145298280063,
+        "max": 0.8669145298280063,
+        "sd": null
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 1.3594775444175646,
+        "min": 1.3594775444175646,
+        "max": 1.3594775444175646,
+        "sd": null
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "source": "optimized",
+      "model": "double_well",
+      "label": "well_tempered-height04",
+      "grid": "coarse",
+      "seeds": 3,
+      "coverage": {
+        "mean": 0.36240000000000006,
+        "min": 0.3456,
+        "max": 0.3904,
+        "sd": 0.024409834083827776
+      },
+      "rmse_kjmol": {
+        "mean": 0.6701772115360853,
+        "min": 0.5698556274312127,
+        "max": 0.7967034051994252,
+        "sd": 0.11567190558289364
+      },
+      "point_min_gauge_rmse_kjmol": {
+        "mean": 0.717095593391239,
+        "min": 0.5904186388665613,
+        "max": 0.8881385191975625,
+        "sd": 0.15373853239152274
+      },
+      "integration_steps": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": 0.0
+      }
+    }
+  ],
+  "paired_comparisons": [
+    {
+      "experiment": "double_well_equal_budget",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "double_well-legacy-budget4000000-s4101",
+      "after": "double_well-coverage-budget4000000-s4101",
+      "before_path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4101",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4101",
+      "integration_steps_before": 3999900,
+      "integration_steps_after": 3999800,
+      "common_coverage": 0.9928,
+      "common_supported_bins": 1241,
+      "coverage_before": 0.9928,
+      "coverage_after": 1.0,
+      "rmse_own_before": 0.47631105257610185,
+      "rmse_own_after": 0.37712148916040844,
+      "rmse_common_before": 0.47631105257610185,
+      "rmse_common_after": 0.3770836419713013,
+      "offset_common_before": 10.133442919216527,
+      "offset_common_after": 10.237543737969778,
+      "paper_point_min_common_before": 0.5007512794018231,
+      "paper_point_min_common_after": 0.4583056342804389
+    },
+    {
+      "experiment": "double_well_equal_budget",
+      "model": "double_well",
+      "grid": "paper",
+      "seed": 4101,
+      "before": "double_well-legacy-budget4000000-s4101",
+      "after": "double_well-coverage-budget4000000-s4101",
+      "before_path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4101",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4101",
+      "integration_steps_before": 3999900,
+      "integration_steps_after": 3999800,
+      "common_coverage": 0.8538,
+      "common_supported_bins": 4269,
+      "coverage_before": 0.881,
+      "coverage_after": 0.9712,
+      "rmse_own_before": 0.6819607041513631,
+      "rmse_own_after": 0.5967064368084437,
+      "rmse_common_before": 0.6790051695995896,
+      "rmse_common_after": 0.597965929273914,
+      "offset_common_before": 6.759533526858068,
+      "offset_common_after": 6.841518212679723,
+      "paper_point_min_common_before": 0.8770540175614825,
+      "paper_point_min_common_after": 0.8946950035938342
+    },
+    {
+      "experiment": "double_well_equal_budget",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4102,
+      "before": "double_well-legacy-budget4000000-s4102",
+      "after": "double_well-coverage-budget4000000-s4102",
+      "before_path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4102",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4102",
+      "integration_steps_before": 3999900,
+      "integration_steps_after": 3999840,
+      "common_coverage": 0.9912,
+      "common_supported_bins": 1239,
+      "coverage_before": 0.9912,
+      "coverage_after": 1.0,
+      "rmse_own_before": 0.4515426996844537,
+      "rmse_own_after": 0.40243123337287146,
+      "rmse_common_before": 0.4515426996844537,
+      "rmse_common_after": 0.4034310969024985,
+      "offset_common_before": 10.533335402630824,
+      "offset_common_after": 10.191420675651123,
+      "paper_point_min_common_before": 0.7160054098049438,
+      "paper_point_min_common_after": 0.4594000674891302
+    },
+    {
+      "experiment": "double_well_equal_budget",
+      "model": "double_well",
+      "grid": "paper",
+      "seed": 4102,
+      "before": "double_well-legacy-budget4000000-s4102",
+      "after": "double_well-coverage-budget4000000-s4102",
+      "before_path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4102",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4102",
+      "integration_steps_before": 3999900,
+      "integration_steps_after": 3999840,
+      "common_coverage": 0.844,
+      "common_supported_bins": 4220,
+      "coverage_before": 0.8838,
+      "coverage_after": 0.9568,
+      "rmse_own_before": 0.6447541861144669,
+      "rmse_own_after": 0.6458209218176945,
+      "rmse_common_before": 0.6366373782985526,
+      "rmse_common_after": 0.6411859468007493,
+      "offset_common_before": 6.848448254144744,
+      "offset_common_after": 6.8797716481027,
+      "paper_point_min_common_before": 0.937299852991913,
+      "paper_point_min_common_after": 1.0338615648919736
+    },
+    {
+      "experiment": "double_well_equal_budget",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4103,
+      "before": "double_well-legacy-budget4000000-s4103",
+      "after": "double_well-coverage-budget4000000-s4103",
+      "before_path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4103",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4103",
+      "integration_steps_before": 3999720,
+      "integration_steps_after": 3999400,
+      "common_coverage": 0.9928,
+      "common_supported_bins": 1241,
+      "coverage_before": 0.9928,
+      "coverage_after": 1.0,
+      "rmse_own_before": 0.4452275772136191,
+      "rmse_own_after": 0.4064517552000315,
+      "rmse_common_before": 0.4452275772136191,
+      "rmse_common_after": 0.4066341932614456,
+      "offset_common_before": 10.2556155100803,
+      "offset_common_after": 10.19863309014397,
+      "paper_point_min_common_before": 0.525045135610753,
+      "paper_point_min_common_after": 0.4634141096479532
+    },
+    {
+      "experiment": "double_well_equal_budget",
+      "model": "double_well",
+      "grid": "paper",
+      "seed": 4103,
+      "before": "double_well-legacy-budget4000000-s4103",
+      "after": "double_well-coverage-budget4000000-s4103",
+      "before_path": "/workspace/work/rpmd-fes-optimization/production/double_well-legacy-budget4000000-s4103",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-coverage-budget4000000-s4103",
+      "integration_steps_before": 3999720,
+      "integration_steps_after": 3999400,
+      "common_coverage": 0.853,
+      "common_supported_bins": 4265,
+      "coverage_before": 0.8742,
+      "coverage_after": 0.9752,
+      "rmse_own_before": 0.6175159379990492,
+      "rmse_own_after": 0.6152829205556154,
+      "rmse_common_before": 0.6149765792868274,
+      "rmse_common_after": 0.6014547545284346,
+      "offset_common_before": 6.803895539224236,
+      "offset_common_after": 6.842982313887502,
+      "paper_point_min_common_before": 1.4087414841227788,
+      "paper_point_min_common_after": 1.0398753380623904
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "model": "ackley",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "ackley-fixed-s4101-n1",
+      "after": "ackley-thermostat500-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4101",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 8450000,
+      "common_coverage": 0.9836805555555556,
+      "common_supported_bins": 14165,
+      "coverage_before": 0.9892361111111111,
+      "coverage_after": 0.9943055555555556,
+      "rmse_own_before": 1.0283723188471312,
+      "rmse_own_after": 0.9503363956304735,
+      "rmse_common_before": 1.0287746262572233,
+      "rmse_common_after": 0.9487856446563017,
+      "offset_common_before": 0.10893622132625197,
+      "offset_common_after": -0.29098558752230014,
+      "paper_point_min_common_before": 1.1169476107985805,
+      "paper_point_min_common_after": 0.9494445731615295
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "model": "ackley",
+      "grid": "paper",
+      "seed": 4101,
+      "before": "ackley-fixed-s4101-n1",
+      "after": "ackley-thermostat500-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4101",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 8450000,
+      "common_coverage": 0.29739583333333336,
+      "common_supported_bins": 17130,
+      "coverage_before": 0.5105208333333333,
+      "coverage_after": 0.5138194444444445,
+      "rmse_own_before": 0.8829226866337397,
+      "rmse_own_after": 0.8667350281125359,
+      "rmse_common_before": 0.8928209580905462,
+      "rmse_common_after": 0.8776954185661535,
+      "offset_common_before": 3.0607033718212064,
+      "offset_common_after": 3.1038009501233708,
+      "paper_point_min_common_before": 0.9071676836722611,
+      "paper_point_min_common_after": 0.974750513930341
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "model": "ackley",
+      "grid": "coarse",
+      "seed": 4102,
+      "before": "ackley-fixed-s4102-n1",
+      "after": "ackley-thermostat500-s4102",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4102-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4102",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 8450000,
+      "common_coverage": 0.9875694444444445,
+      "common_supported_bins": 14221,
+      "coverage_before": 0.9922916666666667,
+      "coverage_after": 0.9952777777777778,
+      "rmse_own_before": 1.0293830413259644,
+      "rmse_own_after": 0.9073844778582402,
+      "rmse_common_before": 1.0290351155249815,
+      "rmse_common_after": 0.9074455228256916,
+      "offset_common_before": -0.5822837188553074,
+      "offset_common_after": 0.06744851510259095,
+      "paper_point_min_common_before": 1.0601360923247616,
+      "paper_point_min_common_after": 0.9892586641925176
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "model": "ackley",
+      "grid": "paper",
+      "seed": 4102,
+      "before": "ackley-fixed-s4102-n1",
+      "after": "ackley-thermostat500-s4102",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4102-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4102",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 8450000,
+      "common_coverage": 0.2953472222222222,
+      "common_supported_bins": 17012,
+      "coverage_before": 0.5087326388888889,
+      "coverage_after": 0.5165625,
+      "rmse_own_before": 0.8579429572559241,
+      "rmse_own_after": 0.816846803247526,
+      "rmse_common_before": 0.8653660301454811,
+      "rmse_common_after": 0.8332751010873625,
+      "offset_common_before": 3.1728572485239614,
+      "offset_common_after": 3.186566125715351,
+      "paper_point_min_common_before": 0.9823228827056664,
+      "paper_point_min_common_after": 0.8414303679084701
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "model": "ackley",
+      "grid": "coarse",
+      "seed": 4103,
+      "before": "ackley-fixed-s4103-n1",
+      "after": "ackley-thermostat500-s4103",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4103-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4103",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 8450000,
+      "common_coverage": 0.9890972222222222,
+      "common_supported_bins": 14243,
+      "coverage_before": 0.9933333333333333,
+      "coverage_after": 0.9955555555555555,
+      "rmse_own_before": 1.0153506890891244,
+      "rmse_own_after": 0.9415816090776765,
+      "rmse_common_before": 1.0153302857962905,
+      "rmse_common_after": 0.9406028609988291,
+      "offset_common_before": -0.06271802215978554,
+      "offset_common_after": -0.05890319597817613,
+      "paper_point_min_common_before": 1.0489797896030109,
+      "paper_point_min_common_after": 0.977980855772364
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "model": "ackley",
+      "grid": "paper",
+      "seed": 4103,
+      "before": "ackley-fixed-s4103-n1",
+      "after": "ackley-thermostat500-s4103",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4103-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-thermostat500-s4103",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 8450000,
+      "common_coverage": 0.2955902777777778,
+      "common_supported_bins": 17026,
+      "coverage_before": 0.5106770833333333,
+      "coverage_after": 0.5144618055555555,
+      "rmse_own_before": 0.8649271266140017,
+      "rmse_own_after": 0.8527389537999475,
+      "rmse_common_before": 0.8849037493825698,
+      "rmse_common_after": 0.8593350237408416,
+      "offset_common_before": 3.091400393693627,
+      "offset_common_after": 3.230613042471353,
+      "paper_point_min_common_before": 0.8995581024493595,
+      "paper_point_min_common_after": 1.0294958477993061
+    },
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "model": "ackley",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "ackley-fixed-s4101-n1",
+      "after": "ackley-coverage-tuned-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4101",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 11368000,
+      "common_coverage": 0.9892361111111111,
+      "common_supported_bins": 14245,
+      "coverage_before": 0.9892361111111111,
+      "coverage_after": 1.0,
+      "rmse_own_before": 1.0283723188471312,
+      "rmse_own_after": 0.5468487058227149,
+      "rmse_common_before": 1.0283723188471312,
+      "rmse_common_after": 0.5455545045560243,
+      "offset_common_before": 0.10866459250321878,
+      "offset_common_after": -0.0753262685957839,
+      "paper_point_min_common_before": 1.116463533492872,
+      "paper_point_min_common_after": 0.6004332875970052
+    },
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "model": "ackley",
+      "grid": "paper",
+      "seed": 4101,
+      "before": "ackley-fixed-s4101-n1",
+      "after": "ackley-coverage-tuned-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4101",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 11368000,
+      "common_coverage": 0.39154513888888887,
+      "common_supported_bins": 22553,
+      "coverage_before": 0.5105208333333333,
+      "coverage_after": 0.7257638888888889,
+      "rmse_own_before": 0.8829226866337397,
+      "rmse_own_after": 0.7279281340826691,
+      "rmse_common_before": 0.8925094125781646,
+      "rmse_common_after": 0.7390381783486988,
+      "offset_common_before": 2.994374558792343,
+      "offset_common_after": 3.4557329682808327,
+      "paper_point_min_common_before": 0.8978689404493149,
+      "paper_point_min_common_after": 0.9684008540353478
+    },
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "model": "ackley",
+      "grid": "coarse",
+      "seed": 4102,
+      "before": "ackley-fixed-s4102-n1",
+      "after": "ackley-coverage-tuned-s4102",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4102-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4102",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 11368000,
+      "common_coverage": 0.9922916666666667,
+      "common_supported_bins": 14289,
+      "coverage_before": 0.9922916666666667,
+      "coverage_after": 1.0,
+      "rmse_own_before": 1.0293830413259644,
+      "rmse_own_after": 0.5450879402478398,
+      "rmse_common_before": 1.0293830413259644,
+      "rmse_common_after": 0.5454563283311105,
+      "offset_common_before": -0.5831722223715097,
+      "offset_common_after": -0.1678747266225694,
+      "paper_point_min_common_before": 1.0607003322521318,
+      "paper_point_min_common_after": 0.567937707891506
+    },
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "model": "ackley",
+      "grid": "paper",
+      "seed": 4102,
+      "before": "ackley-fixed-s4102-n1",
+      "after": "ackley-coverage-tuned-s4102",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4102-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4102",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 11368000,
+      "common_coverage": 0.3903125,
+      "common_supported_bins": 22482,
+      "coverage_before": 0.5087326388888889,
+      "coverage_after": 0.7220138888888888,
+      "rmse_own_before": 0.8579429572559241,
+      "rmse_own_after": 0.7293453054376609,
+      "rmse_common_before": 0.8683456119059455,
+      "rmse_common_after": 0.7364047162120109,
+      "offset_common_before": 3.109877633549178,
+      "offset_common_after": 3.4507483266203507,
+      "paper_point_min_common_before": 1.0162030342143802,
+      "paper_point_min_common_after": 0.7853160282914243
+    },
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "model": "ackley",
+      "grid": "coarse",
+      "seed": 4103,
+      "before": "ackley-fixed-s4103-n1",
+      "after": "ackley-coverage-tuned-s4103",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4103-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4103",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 11368000,
+      "common_coverage": 0.9933333333333333,
+      "common_supported_bins": 14304,
+      "coverage_before": 0.9933333333333333,
+      "coverage_after": 1.0,
+      "rmse_own_before": 1.0153506890891244,
+      "rmse_own_after": 0.5531833158549848,
+      "rmse_common_before": 1.0153506890891244,
+      "rmse_common_after": 0.5521395458436469,
+      "offset_common_before": -0.06264474710884932,
+      "offset_common_after": -0.3116321612664737,
+      "paper_point_min_common_before": 1.0490164666388744,
+      "paper_point_min_common_after": 0.5521568934379427
+    },
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "model": "ackley",
+      "grid": "paper",
+      "seed": 4103,
+      "before": "ackley-fixed-s4103-n1",
+      "after": "ackley-coverage-tuned-s4103",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/ackley-fixed-s4103-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/ackley-coverage-tuned-s4103",
+      "integration_steps_before": 8450000,
+      "integration_steps_after": 11368000,
+      "common_coverage": 0.38762152777777775,
+      "common_supported_bins": 22327,
+      "coverage_before": 0.5106770833333333,
+      "coverage_after": 0.7195659722222222,
+      "rmse_own_before": 0.8649271266140017,
+      "rmse_own_after": 0.7273015144336377,
+      "rmse_common_before": 0.8758115699757926,
+      "rmse_common_after": 0.7387827603620281,
+      "offset_common_before": 3.032806932718473,
+      "offset_common_after": 3.4955827046515124,
+      "paper_point_min_common_before": 0.9027637231108393,
+      "paper_point_min_common_after": 0.7419321510031239
+    },
+    {
+      "experiment": "well_tempered_height_same_steps",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "double_well-well_tempered-s4101-n1",
+      "after": "double_well-well_tempered-height04-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-height04-s4101",
+      "integration_steps_before": 210000,
+      "integration_steps_after": 210000,
+      "common_coverage": 0.2704,
+      "common_supported_bins": 338,
+      "coverage_before": 0.4168,
+      "coverage_after": 0.3512,
+      "rmse_own_before": 1.0947381374049316,
+      "rmse_own_after": 0.5698556274312127,
+      "rmse_common_before": 0.9690228468308565,
+      "rmse_common_after": 0.5216156242602957,
+      "offset_common_before": 8.93820847717813,
+      "offset_common_after": 10.158201781810655,
+      "paper_point_min_common_before": 1.413495954324683,
+      "paper_point_min_common_after": 0.5554621419800053
+    },
+    {
+      "experiment": "well_tempered_height_same_steps",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4102,
+      "before": "double_well-well_tempered-s4102-n1",
+      "after": "double_well-well_tempered-height04-s4102",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4102-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-height04-s4102",
+      "integration_steps_before": 210000,
+      "integration_steps_after": 210000,
+      "common_coverage": 0.28,
+      "common_supported_bins": 350,
+      "coverage_before": 0.4232,
+      "coverage_after": 0.3904,
+      "rmse_own_before": 1.0513599220472523,
+      "rmse_own_after": 0.6439726019776183,
+      "rmse_common_before": 0.8371852200034451,
+      "rmse_common_after": 0.5757715588296562,
+      "offset_common_before": 9.263390601196667,
+      "offset_common_after": 9.904410166426,
+      "paper_point_min_common_before": 1.0937659147148378,
+      "paper_point_min_common_after": 0.5791926444835542
+    },
+    {
+      "experiment": "well_tempered_height_same_steps",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4103,
+      "before": "double_well-well_tempered-s4103-n1",
+      "after": "double_well-well_tempered-height04-s4103",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4103-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-height04-s4103",
+      "integration_steps_before": 210000,
+      "integration_steps_after": 210000,
+      "common_coverage": 0.2664,
+      "common_supported_bins": 333,
+      "coverage_before": 0.4,
+      "coverage_after": 0.3456,
+      "rmse_own_before": 1.2204772571555453,
+      "rmse_own_after": 0.7967034051994252,
+      "rmse_common_before": 1.0778005368490178,
+      "rmse_common_after": 0.7457265547699121,
+      "offset_common_before": 8.9115424099257,
+      "offset_common_after": 10.49160860066724,
+      "paper_point_min_common_before": 1.508712234049566,
+      "paper_point_min_common_after": 0.9116140212605452
+    },
+    {
+      "experiment": "metadynamics_scan:standard-height04",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "double_well-standard-s4101-n1",
+      "after": "double_well-standard-height04-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/double_well-standard-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-standard-height04-s4101",
+      "integration_steps_before": 210000,
+      "integration_steps_after": 210000,
+      "common_coverage": 0.236,
+      "common_supported_bins": 295,
+      "coverage_before": 0.4032,
+      "coverage_after": 0.3488,
+      "rmse_own_before": 1.081417812879138,
+      "rmse_own_after": 0.6899912893817731,
+      "rmse_common_before": 0.9148506223596544,
+      "rmse_common_after": 0.6205600908422608,
+      "offset_common_before": 8.920760987460962,
+      "offset_common_after": 9.729177279579343,
+      "paper_point_min_common_before": 1.3900110275490232,
+      "paper_point_min_common_after": 0.6646672009580411
+    },
+    {
+      "experiment": "metadynamics_scan:well_tempered-andersen500",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "double_well-well_tempered-s4101-n1",
+      "after": "double_well-well_tempered-andersen500-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-andersen500-s4101",
+      "integration_steps_before": 210000,
+      "integration_steps_after": 210000,
+      "common_coverage": 0.316,
+      "common_supported_bins": 395,
+      "coverage_before": 0.4168,
+      "coverage_after": 0.4,
+      "rmse_own_before": 1.0947381374049316,
+      "rmse_own_after": 0.9284300016412967,
+      "rmse_common_before": 0.8932607476089034,
+      "rmse_common_after": 0.7670529143256973,
+      "offset_common_before": 8.93935474750291,
+      "offset_common_after": 8.809096154519526,
+      "paper_point_min_common_before": 1.3618085215309514,
+      "paper_point_min_common_after": 1.3891488350431909
+    },
+    {
+      "experiment": "metadynamics_scan:well_tempered-andersen500_height04",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "double_well-well_tempered-s4101-n1",
+      "after": "double_well-well_tempered-andersen500_height04-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-andersen500_height04-s4101",
+      "integration_steps_before": 210000,
+      "integration_steps_after": 210000,
+      "common_coverage": 0.2464,
+      "common_supported_bins": 308,
+      "coverage_before": 0.4168,
+      "coverage_after": 0.3464,
+      "rmse_own_before": 1.0947381374049316,
+      "rmse_own_after": 1.3704973113786036,
+      "rmse_common_before": 0.8735858538656157,
+      "rmse_common_after": 1.2106593722424357,
+      "offset_common_before": 9.037800120347814,
+      "offset_common_after": 8.985657164146488,
+      "paper_point_min_common_before": 1.275564432030324,
+      "paper_point_min_common_after": 1.5586076762911512
+    },
+    {
+      "experiment": "metadynamics_scan:well_tempered-dt04",
+      "model": "double_well",
+      "grid": "coarse",
+      "seed": 4101,
+      "before": "double_well-well_tempered-s4101-n1",
+      "after": "double_well-well_tempered-dt04-s4101",
+      "before_path": "/workspace/work/rpmd-fes-review/ogre/double_well-well_tempered-s4101-n1",
+      "after_path": "/workspace/work/rpmd-fes-optimization/production/double_well-well_tempered-dt04-s4101",
+      "integration_steps_before": 210000,
+      "integration_steps_after": 210000,
+      "common_coverage": 0.3208,
+      "common_supported_bins": 401,
+      "coverage_before": 0.4168,
+      "coverage_after": 0.416,
+      "rmse_own_before": 1.0947381374049316,
+      "rmse_own_after": 0.8669145298280063,
+      "rmse_common_before": 0.890365352494929,
+      "rmse_common_after": 0.6903059418193358,
+      "offset_common_before": 8.929205421804811,
+      "offset_common_after": 9.19952705631006,
+      "paper_point_min_common_before": 1.367598782050801,
+      "paper_point_min_common_after": 1.0324485300460775
+    }
+  ],
+  "paired_aggregate": [
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "grid": "coarse",
+      "seeds": 3,
+      "rmse_common_before": {
+        "mean": 1.0243686830874068,
+        "min": 1.0153506890891244,
+        "max": 1.0293830413259644,
+        "sd": 0.007826145398412665
+      },
+      "rmse_common_after": {
+        "mean": 0.5477167929102605,
+        "min": 0.5454563283311105,
+        "max": 0.5521395458436469,
+        "sd": 0.0038305309390628483
+      },
+      "coverage_before": {
+        "mean": 0.9916203703703704,
+        "min": 0.9892361111111111,
+        "max": 0.9933333333333333,
+        "sd": 0.0021295038207605364
+      },
+      "coverage_after": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "sd": 0.0
+      },
+      "common_coverage": {
+        "mean": 0.9916203703703704,
+        "min": 0.9892361111111111,
+        "max": 0.9933333333333333,
+        "sd": 0.0021295038207605364
+      },
+      "rmse_own_before": {
+        "mean": 1.0243686830874068,
+        "min": 1.0153506890891244,
+        "max": 1.0293830413259644,
+        "sd": 0.007826145398412665
+      },
+      "rmse_own_after": {
+        "mean": 0.5483733206418465,
+        "min": 0.5450879402478398,
+        "max": 0.5531833158549848,
+        "sd": 0.004257594897970725
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.0753934441279593,
+        "min": 1.0490164666388744,
+        "max": 1.116463533492872,
+        "sd": 0.03604431105248926
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.573509296308818,
+        "min": 0.5521568934379427,
+        "max": 0.6004332875970052,
+        "sd": 0.024615736965795568
+      },
+      "integration_steps_before": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      },
+      "integration_steps_after": {
+        "mean": 11368000.0,
+        "min": 11368000.0,
+        "max": 11368000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "experiment": "ackley_adaptive_different_budget",
+      "grid": "paper",
+      "seeds": 3,
+      "rmse_common_before": {
+        "mean": 0.8788888648199675,
+        "min": 0.8683456119059455,
+        "max": 0.8925094125781646,
+        "sd": 0.01237233298130041
+      },
+      "rmse_common_after": {
+        "mean": 0.7380752183075793,
+        "min": 0.7364047162120109,
+        "max": 0.7390381783486988,
+        "sd": 0.0014523231477369155
+      },
+      "coverage_before": {
+        "mean": 0.5099768518518518,
+        "min": 0.5087326388888889,
+        "max": 0.5106770833333333,
+        "sd": 0.0010803485264157984
+      },
+      "coverage_after": {
+        "mean": 0.7224479166666665,
+        "min": 0.7195659722222222,
+        "max": 0.7257638888888889,
+        "sd": 0.003121670680204469
+      },
+      "common_coverage": {
+        "mean": 0.3898263888888889,
+        "min": 0.38762152777777775,
+        "max": 0.39154513888888887,
+        "sd": 0.002006466806869209
+      },
+      "rmse_own_before": {
+        "mean": 0.8685975901678885,
+        "min": 0.8579429572559241,
+        "max": 0.8829226866337397,
+        "sd": 0.012888015633623946
+      },
+      "rmse_own_after": {
+        "mean": 0.7281916513179892,
+        "min": 0.7273015144336377,
+        "max": 0.7293453054376609,
+        "sd": 0.0010470680097369948
+      },
+      "paper_point_min_common_before": {
+        "mean": 0.9389452325915114,
+        "min": 0.8978689404493149,
+        "max": 1.0162030342143802,
+        "sd": 0.0669519653036772
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.8318830111099653,
+        "min": 0.7419321510031239,
+        "max": 0.9684008540353478,
+        "sd": 0.12020141962510728
+      },
+      "integration_steps_before": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      },
+      "integration_steps_after": {
+        "mean": 11368000.0,
+        "min": 11368000.0,
+        "max": 11368000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "grid": "coarse",
+      "seeds": 3,
+      "rmse_common_before": {
+        "mean": 1.024380009192832,
+        "min": 1.0153302857962905,
+        "max": 1.0290351155249815,
+        "sd": 0.007838372524324433
+      },
+      "rmse_common_after": {
+        "mean": 0.9322780094936075,
+        "min": 0.9074455228256916,
+        "max": 0.9487856446563017,
+        "sd": 0.02189129467803159
+      },
+      "coverage_before": {
+        "mean": 0.9916203703703704,
+        "min": 0.9892361111111111,
+        "max": 0.9933333333333333,
+        "sd": 0.0021295038207605364
+      },
+      "coverage_after": {
+        "mean": 0.9950462962962963,
+        "min": 0.9943055555555556,
+        "max": 0.9955555555555555,
+        "sd": 0.0006563632814239703
+      },
+      "common_coverage": {
+        "mean": 0.9867824074074073,
+        "min": 0.9836805555555556,
+        "max": 0.9890972222222222,
+        "sd": 0.002792783542936226
+      },
+      "rmse_own_before": {
+        "mean": 1.0243686830874068,
+        "min": 1.0153506890891244,
+        "max": 1.0293830413259644,
+        "sd": 0.007826145398412665
+      },
+      "rmse_own_after": {
+        "mean": 0.9331008275221301,
+        "min": 0.9073844778582402,
+        "max": 0.9503363956304735,
+        "sd": 0.02269712651246508
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.075354497575451,
+        "min": 1.0489797896030109,
+        "max": 1.1169476107985805,
+        "sd": 0.036450049016412724
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.9722280310421371,
+        "min": 0.9494445731615295,
+        "max": 0.9892586641925176,
+        "sd": 0.020521006443117867
+      },
+      "integration_steps_before": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      },
+      "integration_steps_after": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "experiment": "ackley_fixed_thermostat_equal_budget",
+      "grid": "paper",
+      "seeds": 3,
+      "rmse_common_before": {
+        "mean": 0.8810302458728657,
+        "min": 0.8653660301454811,
+        "max": 0.8928209580905462,
+        "sd": 0.014131393745733172
+      },
+      "rmse_common_after": {
+        "mean": 0.8567685144647857,
+        "min": 0.8332751010873625,
+        "max": 0.8776954185661535,
+        "sd": 0.022321097164503527
+      },
+      "coverage_before": {
+        "mean": 0.5099768518518518,
+        "min": 0.5087326388888889,
+        "max": 0.5106770833333333,
+        "sd": 0.0010803485264157984
+      },
+      "coverage_after": {
+        "mean": 0.5149479166666667,
+        "min": 0.5138194444444445,
+        "max": 0.5165625,
+        "sd": 0.0014346833986895212
+      },
+      "common_coverage": {
+        "mean": 0.2961111111111111,
+        "min": 0.2953472222222222,
+        "max": 0.29739583333333336,
+        "sd": 0.0011192195459226683
+      },
+      "rmse_own_before": {
+        "mean": 0.8685975901678885,
+        "min": 0.8579429572559241,
+        "max": 0.8829226866337397,
+        "sd": 0.012888015633623946
+      },
+      "rmse_own_after": {
+        "mean": 0.8454402617200031,
+        "min": 0.816846803247526,
+        "max": 0.8667350281125359,
+        "sd": 0.02573250715736477
+      },
+      "paper_point_min_common_before": {
+        "mean": 0.9296828896090957,
+        "min": 0.8995581024493595,
+        "max": 0.9823228827056664,
+        "sd": 0.04574607181499022
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.9485589098793724,
+        "min": 0.8414303679084701,
+        "max": 1.0294958477993061,
+        "sd": 0.09672981067754988
+      },
+      "integration_steps_before": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      },
+      "integration_steps_after": {
+        "mean": 8450000.0,
+        "min": 8450000.0,
+        "max": 8450000.0,
+        "sd": 0.0
+      }
+    },
+    {
+      "experiment": "double_well_equal_budget",
+      "grid": "coarse",
+      "seeds": 3,
+      "rmse_common_before": {
+        "mean": 0.45769377649139154,
+        "min": 0.4452275772136191,
+        "max": 0.47631105257610185,
+        "sd": 0.016429315858128554
+      },
+      "rmse_common_after": {
+        "mean": 0.3957163107117485,
+        "min": 0.3770836419713013,
+        "max": 0.4066341932614456,
+        "sd": 0.016215647223117656
+      },
+      "coverage_before": {
+        "mean": 0.9922666666666666,
+        "min": 0.9912,
+        "max": 0.9928,
+        "sd": 0.0009237604307034277
+      },
+      "coverage_after": {
+        "mean": 1.0,
+        "min": 1.0,
+        "max": 1.0,
+        "sd": 0.0
+      },
+      "common_coverage": {
+        "mean": 0.9922666666666666,
+        "min": 0.9912,
+        "max": 0.9928,
+        "sd": 0.0009237604307034277
+      },
+      "rmse_own_before": {
+        "mean": 0.45769377649139154,
+        "min": 0.4452275772136191,
+        "max": 0.47631105257610185,
+        "sd": 0.016429315858128554
+      },
+      "rmse_own_after": {
+        "mean": 0.3953348259111038,
+        "min": 0.37712148916040844,
+        "max": 0.4064517552000315,
+        "sd": 0.015900797955962474
+      },
+      "paper_point_min_common_before": {
+        "mean": 0.5806006082725067,
+        "min": 0.5007512794018231,
+        "max": 0.7160054098049438,
+        "sd": 0.11789144613119333
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.4603732704725074,
+        "min": 0.4583056342804389,
+        "max": 0.4634141096479532,
+        "sd": 0.0026896976001524507
+      },
+      "integration_steps_before": {
+        "mean": 3999840.0,
+        "min": 3999720.0,
+        "max": 3999900.0,
+        "sd": 103.92304845413264
+      },
+      "integration_steps_after": {
+        "mean": 3999680.0,
+        "min": 3999400.0,
+        "max": 3999840.0,
+        "sd": 243.3105012119288
+      }
+    },
+    {
+      "experiment": "double_well_equal_budget",
+      "grid": "paper",
+      "seeds": 3,
+      "rmse_common_before": {
+        "mean": 0.6435397090616565,
+        "min": 0.6149765792868274,
+        "max": 0.6790051695995896,
+        "sd": 0.0325675716293425
+      },
+      "rmse_common_after": {
+        "mean": 0.6135355435343659,
+        "min": 0.597965929273914,
+        "max": 0.6411859468007493,
+        "sd": 0.02400940599034805
+      },
+      "coverage_before": {
+        "mean": 0.8796666666666667,
+        "min": 0.8742,
+        "max": 0.8838,
+        "sd": 0.004936935621752991
+      },
+      "coverage_after": {
+        "mean": 0.9677333333333333,
+        "min": 0.9568,
+        "max": 0.9752,
+        "sd": 0.009677465232866146
+      },
+      "common_coverage": {
+        "mean": 0.8502666666666666,
+        "min": 0.844,
+        "max": 0.8538,
+        "sd": 0.005441813423238017
+      },
+      "rmse_own_before": {
+        "mean": 0.6480769427549596,
+        "min": 0.6175159379990492,
+        "max": 0.6819607041513631,
+        "sd": 0.032350618307469166
+      },
+      "rmse_own_after": {
+        "mean": 0.6192700930605844,
+        "min": 0.5967064368084437,
+        "max": 0.6458209218176945,
+        "sd": 0.02479881686430354
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.0743651182253915,
+        "min": 0.8770540175614825,
+        "max": 1.4087414841227788,
+        "sd": 0.29114095507972637
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.9894773021827327,
+        "min": 0.8946950035938342,
+        "max": 1.0398753380623904,
+        "sd": 0.08213893389424189
+      },
+      "integration_steps_before": {
+        "mean": 3999840.0,
+        "min": 3999720.0,
+        "max": 3999900.0,
+        "sd": 103.92304845413264
+      },
+      "integration_steps_after": {
+        "mean": 3999680.0,
+        "min": 3999400.0,
+        "max": 3999840.0,
+        "sd": 243.3105012119288
+      }
+    },
+    {
+      "experiment": "metadynamics_scan:standard-height04",
+      "grid": "coarse",
+      "seeds": 1,
+      "rmse_common_before": {
+        "mean": 0.9148506223596544,
+        "min": 0.9148506223596544,
+        "max": 0.9148506223596544,
+        "sd": null
+      },
+      "rmse_common_after": {
+        "mean": 0.6205600908422608,
+        "min": 0.6205600908422608,
+        "max": 0.6205600908422608,
+        "sd": null
+      },
+      "coverage_before": {
+        "mean": 0.4032,
+        "min": 0.4032,
+        "max": 0.4032,
+        "sd": null
+      },
+      "coverage_after": {
+        "mean": 0.3488,
+        "min": 0.3488,
+        "max": 0.3488,
+        "sd": null
+      },
+      "common_coverage": {
+        "mean": 0.236,
+        "min": 0.236,
+        "max": 0.236,
+        "sd": null
+      },
+      "rmse_own_before": {
+        "mean": 1.081417812879138,
+        "min": 1.081417812879138,
+        "max": 1.081417812879138,
+        "sd": null
+      },
+      "rmse_own_after": {
+        "mean": 0.6899912893817731,
+        "min": 0.6899912893817731,
+        "max": 0.6899912893817731,
+        "sd": null
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.3900110275490232,
+        "min": 1.3900110275490232,
+        "max": 1.3900110275490232,
+        "sd": null
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.6646672009580411,
+        "min": 0.6646672009580411,
+        "max": 0.6646672009580411,
+        "sd": null
+      },
+      "integration_steps_before": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      },
+      "integration_steps_after": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "experiment": "metadynamics_scan:well_tempered-andersen500",
+      "grid": "coarse",
+      "seeds": 1,
+      "rmse_common_before": {
+        "mean": 0.8932607476089034,
+        "min": 0.8932607476089034,
+        "max": 0.8932607476089034,
+        "sd": null
+      },
+      "rmse_common_after": {
+        "mean": 0.7670529143256973,
+        "min": 0.7670529143256973,
+        "max": 0.7670529143256973,
+        "sd": null
+      },
+      "coverage_before": {
+        "mean": 0.4168,
+        "min": 0.4168,
+        "max": 0.4168,
+        "sd": null
+      },
+      "coverage_after": {
+        "mean": 0.4,
+        "min": 0.4,
+        "max": 0.4,
+        "sd": null
+      },
+      "common_coverage": {
+        "mean": 0.316,
+        "min": 0.316,
+        "max": 0.316,
+        "sd": null
+      },
+      "rmse_own_before": {
+        "mean": 1.0947381374049316,
+        "min": 1.0947381374049316,
+        "max": 1.0947381374049316,
+        "sd": null
+      },
+      "rmse_own_after": {
+        "mean": 0.9284300016412967,
+        "min": 0.9284300016412967,
+        "max": 0.9284300016412967,
+        "sd": null
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.3618085215309514,
+        "min": 1.3618085215309514,
+        "max": 1.3618085215309514,
+        "sd": null
+      },
+      "paper_point_min_common_after": {
+        "mean": 1.3891488350431909,
+        "min": 1.3891488350431909,
+        "max": 1.3891488350431909,
+        "sd": null
+      },
+      "integration_steps_before": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      },
+      "integration_steps_after": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "experiment": "metadynamics_scan:well_tempered-andersen500_height04",
+      "grid": "coarse",
+      "seeds": 1,
+      "rmse_common_before": {
+        "mean": 0.8735858538656157,
+        "min": 0.8735858538656157,
+        "max": 0.8735858538656157,
+        "sd": null
+      },
+      "rmse_common_after": {
+        "mean": 1.2106593722424357,
+        "min": 1.2106593722424357,
+        "max": 1.2106593722424357,
+        "sd": null
+      },
+      "coverage_before": {
+        "mean": 0.4168,
+        "min": 0.4168,
+        "max": 0.4168,
+        "sd": null
+      },
+      "coverage_after": {
+        "mean": 0.3464,
+        "min": 0.3464,
+        "max": 0.3464,
+        "sd": null
+      },
+      "common_coverage": {
+        "mean": 0.2464,
+        "min": 0.2464,
+        "max": 0.2464,
+        "sd": null
+      },
+      "rmse_own_before": {
+        "mean": 1.0947381374049316,
+        "min": 1.0947381374049316,
+        "max": 1.0947381374049316,
+        "sd": null
+      },
+      "rmse_own_after": {
+        "mean": 1.3704973113786036,
+        "min": 1.3704973113786036,
+        "max": 1.3704973113786036,
+        "sd": null
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.275564432030324,
+        "min": 1.275564432030324,
+        "max": 1.275564432030324,
+        "sd": null
+      },
+      "paper_point_min_common_after": {
+        "mean": 1.5586076762911512,
+        "min": 1.5586076762911512,
+        "max": 1.5586076762911512,
+        "sd": null
+      },
+      "integration_steps_before": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      },
+      "integration_steps_after": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "experiment": "metadynamics_scan:well_tempered-dt04",
+      "grid": "coarse",
+      "seeds": 1,
+      "rmse_common_before": {
+        "mean": 0.890365352494929,
+        "min": 0.890365352494929,
+        "max": 0.890365352494929,
+        "sd": null
+      },
+      "rmse_common_after": {
+        "mean": 0.6903059418193358,
+        "min": 0.6903059418193358,
+        "max": 0.6903059418193358,
+        "sd": null
+      },
+      "coverage_before": {
+        "mean": 0.4168,
+        "min": 0.4168,
+        "max": 0.4168,
+        "sd": null
+      },
+      "coverage_after": {
+        "mean": 0.416,
+        "min": 0.416,
+        "max": 0.416,
+        "sd": null
+      },
+      "common_coverage": {
+        "mean": 0.3208,
+        "min": 0.3208,
+        "max": 0.3208,
+        "sd": null
+      },
+      "rmse_own_before": {
+        "mean": 1.0947381374049316,
+        "min": 1.0947381374049316,
+        "max": 1.0947381374049316,
+        "sd": null
+      },
+      "rmse_own_after": {
+        "mean": 0.8669145298280063,
+        "min": 0.8669145298280063,
+        "max": 0.8669145298280063,
+        "sd": null
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.367598782050801,
+        "min": 1.367598782050801,
+        "max": 1.367598782050801,
+        "sd": null
+      },
+      "paper_point_min_common_after": {
+        "mean": 1.0324485300460775,
+        "min": 1.0324485300460775,
+        "max": 1.0324485300460775,
+        "sd": null
+      },
+      "integration_steps_before": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      },
+      "integration_steps_after": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": null
+      }
+    },
+    {
+      "experiment": "well_tempered_height_same_steps",
+      "grid": "coarse",
+      "seeds": 3,
+      "rmse_common_before": {
+        "mean": 0.961336201227773,
+        "min": 0.8371852200034451,
+        "max": 1.0778005368490178,
+        "sd": 0.12049168463277615
+      },
+      "rmse_common_after": {
+        "mean": 0.6143712459532881,
+        "min": 0.5216156242602957,
+        "max": 0.7457265547699121,
+        "sd": 0.11693536324826304
+      },
+      "coverage_before": {
+        "mean": 0.4133333333333334,
+        "min": 0.4,
+        "max": 0.4232,
+        "sd": 0.011982209033952513
+      },
+      "coverage_after": {
+        "mean": 0.36240000000000006,
+        "min": 0.3456,
+        "max": 0.3904,
+        "sd": 0.024409834083827776
+      },
+      "common_coverage": {
+        "mean": 0.27226666666666666,
+        "min": 0.2664,
+        "max": 0.28,
+        "sd": 0.006989515958443292
+      },
+      "rmse_own_before": {
+        "mean": 1.1221917722025765,
+        "min": 1.0513599220472523,
+        "max": 1.2204772571555453,
+        "sd": 0.08783760473871378
+      },
+      "rmse_own_after": {
+        "mean": 0.6701772115360853,
+        "min": 0.5698556274312127,
+        "max": 0.7967034051994252,
+        "sd": 0.11567190558289364
+      },
+      "paper_point_min_common_before": {
+        "mean": 1.3386580343630292,
+        "min": 1.0937659147148378,
+        "max": 1.508712234049566,
+        "sd": 0.21736063967632174
+      },
+      "paper_point_min_common_after": {
+        "mean": 0.6820896025747016,
+        "min": 0.5554621419800053,
+        "max": 0.9116140212605452,
+        "sd": 0.19912779380858306
+      },
+      "integration_steps_before": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": 0.0
+      },
+      "integration_steps_after": {
+        "mean": 210000.0,
+        "min": 210000.0,
+        "max": 210000.0,
+        "sd": 0.0
+      }
+    }
+  ],
+  "metadynamics_cache_performance": [
+    {
+      "hills": 100,
+      "calls": 1000,
+      "clock": "process_time",
+      "before_seconds": 0.07988278399999998,
+      "after_seconds": 0.022303976000000003,
+      "speedup": 3.5815490475778837,
+      "array_equal": true,
+      "source_before_sha256": "0934b65f10423d590fe2ec1b71e3abc8d31a337599ec7a598c35f90fca97ca8c",
+      "source_after_sha256": "905b7c7dba9ebdfef6d089009b5c82ccece5c06e5cf3cb763b74882d5bfd9c2b"
+    },
+    {
+      "hills": 1000,
+      "calls": 1000,
+      "clock": "process_time",
+      "before_seconds": 0.29034510000000013,
+      "after_seconds": 0.039632260999999946,
+      "speedup": 7.325978702047823,
+      "array_equal": true,
+      "source_before_sha256": "0934b65f10423d590fe2ec1b71e3abc8d31a337599ec7a598c35f90fca97ca8c",
+      "source_after_sha256": "905b7c7dba9ebdfef6d089009b5c82ccece5c06e5cf3cb763b74882d5bfd9c2b"
+    },
+    {
+      "hills": 5000,
+      "calls": 1000,
+      "clock": "process_time",
+      "before_seconds": 1.3268562379999995,
+      "after_seconds": 0.1312803469999997,
+      "speedup": 10.107043958377126,
+      "array_equal": true,
+      "source_before_sha256": "0934b65f10423d590fe2ec1b71e3abc8d31a337599ec7a598c35f90fca97ca8c",
+      "source_after_sha256": "905b7c7dba9ebdfef6d089009b5c82ccece5c06e5cf3cb763b74882d5bfd9c2b"
+    }
+  ],
+  "limitations": [
+    "All completed optimization attempts are retained; absence of a FES is not a successful result.",
+    "Double-well comparison combines coverage refinement and thermostat tuning, not an isolated algorithm effect.",
+    "Three seeds show observed variation, not a calibrated confidence interval.",
+    "Same seeds and extended trajectories can share prefixes; variants are paired rather than independent replicates.",
+    "Common-support errors refit additive constants on the same mask. Coverage of the entire requested domain is reported separately.",
+    "Coarse grids and source-paper grid widths are reported separately; using paper widths does not reproduce the paper protocol.",
+    "All OGRe model FES comparisons here use P=1. No nonharmonic quantum-centroid or molecular rate convergence is claimed.",
+    "No claim of achieving published OGRe accuracy or reproducing its adaptive algorithm is made."
+  ],
+  "ackley_three_way_common_support": [
+    {
+      "grid": "coarse",
+      "seed": 4101,
+      "case": "ackley-fixed-s4101-n1",
+      "label": "fixed-n1",
+      "common_coverage": 0.9836805555555556,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 1.0287746262572233,
+      "additive_offset_kjmol": 0.10893622132625197,
+      "point_min_gauge_rmse_kjmol": 1.1169476107985805
+    },
+    {
+      "grid": "coarse",
+      "seed": 4101,
+      "case": "ackley-thermostat500-s4101",
+      "label": "thermostat500",
+      "common_coverage": 0.9836805555555556,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.9487856446563017,
+      "additive_offset_kjmol": -0.29098558752230014,
+      "point_min_gauge_rmse_kjmol": 0.9494445731615295
+    },
+    {
+      "grid": "coarse",
+      "seed": 4101,
+      "case": "ackley-coverage-tuned-s4101",
+      "label": "coverage-tuned",
+      "common_coverage": 0.9836805555555556,
+      "integration_steps": 11368000,
+      "rmse_kjmol": 0.5456775743792894,
+      "additive_offset_kjmol": -0.07532418011347754,
+      "point_min_gauge_rmse_kjmol": 0.6005570078999759
+    },
+    {
+      "grid": "coarse",
+      "seed": 4102,
+      "case": "ackley-fixed-s4102-n1",
+      "label": "fixed-n1",
+      "common_coverage": 0.9875694444444445,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 1.0290351155249815,
+      "additive_offset_kjmol": -0.5822837188553074,
+      "point_min_gauge_rmse_kjmol": 1.0601360923247616
+    },
+    {
+      "grid": "coarse",
+      "seed": 4102,
+      "case": "ackley-thermostat500-s4102",
+      "label": "thermostat500",
+      "common_coverage": 0.9875694444444445,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.9074455228256916,
+      "additive_offset_kjmol": 0.06744851510259095,
+      "point_min_gauge_rmse_kjmol": 0.9892586641925176
+    },
+    {
+      "grid": "coarse",
+      "seed": 4102,
+      "case": "ackley-coverage-tuned-s4102",
+      "label": "coverage-tuned",
+      "common_coverage": 0.9875694444444445,
+      "integration_steps": 11368000,
+      "rmse_kjmol": 0.5450893018337789,
+      "additive_offset_kjmol": -0.16873639207594812,
+      "point_min_gauge_rmse_kjmol": 0.5673576801222046
+    },
+    {
+      "grid": "coarse",
+      "seed": 4103,
+      "case": "ackley-fixed-s4103-n1",
+      "label": "fixed-n1",
+      "common_coverage": 0.9890972222222222,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 1.0153302857962905,
+      "additive_offset_kjmol": -0.06271802215978554,
+      "point_min_gauge_rmse_kjmol": 1.0489797896030109
+    },
+    {
+      "grid": "coarse",
+      "seed": 4103,
+      "case": "ackley-thermostat500-s4103",
+      "label": "thermostat500",
+      "common_coverage": 0.9890972222222222,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.9406028609988291,
+      "additive_offset_kjmol": -0.05890319597817613,
+      "point_min_gauge_rmse_kjmol": 0.977980855772364
+    },
+    {
+      "grid": "coarse",
+      "seed": 4103,
+      "case": "ackley-coverage-tuned-s4103",
+      "label": "coverage-tuned",
+      "common_coverage": 0.9890972222222222,
+      "integration_steps": 11368000,
+      "rmse_kjmol": 0.5514071143597304,
+      "additive_offset_kjmol": -0.3116948708760239,
+      "point_min_gauge_rmse_kjmol": 0.5514257409317379
+    },
+    {
+      "grid": "paper",
+      "seed": 4101,
+      "case": "ackley-fixed-s4101-n1",
+      "label": "fixed-n1",
+      "common_coverage": 0.24118055555555556,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.9003568963388694,
+      "additive_offset_kjmol": 3.1210070658829774,
+      "point_min_gauge_rmse_kjmol": 0.9268134061739239
+    },
+    {
+      "grid": "paper",
+      "seed": 4101,
+      "case": "ackley-thermostat500-s4101",
+      "label": "thermostat500",
+      "common_coverage": 0.24118055555555556,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.8837267351113192,
+      "additive_offset_kjmol": 3.1696664953479226,
+      "point_min_gauge_rmse_kjmol": 0.9535031997100756
+    },
+    {
+      "grid": "paper",
+      "seed": 4101,
+      "case": "ackley-coverage-tuned-s4101",
+      "label": "coverage-tuned",
+      "common_coverage": 0.24118055555555556,
+      "integration_steps": 11368000,
+      "rmse_kjmol": 0.7452558923276291,
+      "additive_offset_kjmol": 3.5155353247952292,
+      "point_min_gauge_rmse_kjmol": 1.0130548823215544
+    },
+    {
+      "grid": "paper",
+      "seed": 4102,
+      "case": "ackley-fixed-s4102-n1",
+      "label": "fixed-n1",
+      "common_coverage": 0.24020833333333333,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.8713488441347212,
+      "additive_offset_kjmol": 3.225326636849027,
+      "point_min_gauge_rmse_kjmol": 0.9639642450055356
+    },
+    {
+      "grid": "paper",
+      "seed": 4102,
+      "case": "ackley-thermostat500-s4102",
+      "label": "thermostat500",
+      "common_coverage": 0.24020833333333333,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.8366979430378454,
+      "additive_offset_kjmol": 3.243344711944572,
+      "point_min_gauge_rmse_kjmol": 0.854029604252845
+    },
+    {
+      "grid": "paper",
+      "seed": 4102,
+      "case": "ackley-coverage-tuned-s4102",
+      "label": "coverage-tuned",
+      "common_coverage": 0.24020833333333333,
+      "integration_steps": 11368000,
+      "rmse_kjmol": 0.7450198370255624,
+      "additive_offset_kjmol": 3.5082107802953715,
+      "point_min_gauge_rmse_kjmol": 0.8151193426527272
+    },
+    {
+      "grid": "paper",
+      "seed": 4103,
+      "case": "ackley-fixed-s4103-n1",
+      "label": "fixed-n1",
+      "common_coverage": 0.23737847222222222,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.892323290856989,
+      "additive_offset_kjmol": 3.151621514005642,
+      "point_min_gauge_rmse_kjmol": 0.8984218302078119
+    },
+    {
+      "grid": "paper",
+      "seed": 4103,
+      "case": "ackley-thermostat500-s4103",
+      "label": "thermostat500",
+      "common_coverage": 0.23737847222222222,
+      "integration_steps": 8450000,
+      "rmse_kjmol": 0.8677990549393153,
+      "additive_offset_kjmol": 3.284682255451202,
+      "point_min_gauge_rmse_kjmol": 1.0672578893175013
+    },
+    {
+      "grid": "paper",
+      "seed": 4103,
+      "case": "ackley-coverage-tuned-s4103",
+      "label": "coverage-tuned",
+      "common_coverage": 0.23737847222222222,
+      "integration_steps": 11368000,
+      "rmse_kjmol": 0.7465819291892696,
+      "additive_offset_kjmol": 3.545730003322597,
+      "point_min_gauge_rmse_kjmol": 0.7472810351214685
+    }
+  ],
+  "repository_summary_note": "Duplicate raw original_report objects are omitted here; grid scores, paired comparisons and aggregates are retained. The full evidence ZIP preserves complete per-case records and all per-window setting diagnostics."
+}

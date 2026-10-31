@@ -1,0 +1,11 @@
+{
+  "sampling_base_commit": "347facf",
+  "implementation_commit": "9fe9b50",
+  "same_total_integration_steps": 2496000,
+  "barrier_difference_kcal_mol": 1.0666893419390917,
+  "common_interval_pmf_rms_difference_kcal_mol": 0.8449259211329098,
+  "all_meta_states_samples_hills_rng_bitwise_equal_to_baseline": true,
+  "wheel_build": "passed (isolated setuptools build)",
+  "converged": false,
+  "documentation_build": "Sphinx HTML and singlehtml passed with -W --keep-going"
+}

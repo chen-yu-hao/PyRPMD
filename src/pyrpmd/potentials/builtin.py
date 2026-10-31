@@ -15,7 +15,13 @@ class FreePotential(Potential):
 
     def evaluate(self, x, *, cell=None, pbc=None):
         x = coordinates(x)
-        return PESResult(np.zeros(len(x)), np.zeros_like(x))
+        return PESResult(np.zeros(len(x)), np.zeros_like(x), virial=np.zeros((len(x), 3, 3)))
+
+    def set_cell(self, cell):
+        """The free-particle energy is cell independent; retain a validated cell."""
+        self.cell, self.pbc = validate_cell_pbc(cell, [True, True, True])
+        if self.cell is None:
+            raise ValueError("variable-cell free particles require a finite cell")
 
 
 class PeriodicCosinePotential(Potential):
@@ -179,3 +185,12 @@ class DoubleWellPotential(Potential):
         )
         f[:, self.atom, self.axis] = -4 * self.height * y * (y * y - 1) / self.width
         return PESResult(v + vv, f)
+
+
+# Capture at provider-module import, before any optional batch dispatcher is
+# loaded. Class-level scientific overrides must not acquire an implicit promise
+# that frames are independent merely because the class has a built-in name.
+_BUILTIN_EVALUATE = {kind: kind.evaluate for kind in (
+    FreePotential, HarmonicPotential, MorsePairPotential,
+    DoubleWellPotential, PeriodicCosinePotential,
+)}

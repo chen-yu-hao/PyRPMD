@@ -569,7 +569,7 @@ _BUILTIN_CV_METHODS = {
         )
         if hasattr(cls, name)
     }
-    for cls in (*_VALUE_ONLY_TYPES, CVStack)
+    for cls in (*_VALUE_ONLY_TYPES, Angle, CVStack)
 }
 
 

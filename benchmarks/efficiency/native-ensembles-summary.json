@@ -1,0 +1,16 @@
+{
+  "description": "Summary of the local call-boundary experiment; rounded medians, not raw per-repeat timing logs",
+  "environment": {"python": "3.13.5", "platform": "Linux", "compiler": "GCC", "optimization": "-O3 -std=c++17"},
+  "potential": "two-atom harmonic control",
+  "thermostat": "pile-l",
+  "steps": 20000,
+  "repeats": 3,
+  "comparison": "One run(20000) versus 20000 calls to run(1) using the same new C++ engine",
+  "cases": [
+    {"beads": 1, "native_block_seconds": 0.00631, "per_step_calls_seconds": 0.07798, "speedup": 12.37, "final_state_identical": true},
+    {"beads": 8, "native_block_seconds": 0.08931, "per_step_calls_seconds": 0.16654, "speedup": 1.86, "final_state_identical": true},
+    {"beads": 32, "native_block_seconds": 0.39605, "per_step_calls_seconds": 0.48946, "speedup": 1.24, "final_state_identical": true}
+  ],
+  "force_evaluations_each": 20001,
+  "limitation": "Not an old-workflow, GPU, DFT or real-material speedup measurement"
+}

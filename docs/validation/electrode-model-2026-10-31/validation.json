@@ -1,0 +1,76 @@
+{
+  "base_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux x86_64",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pytest": "9.2.0",
+    "h5py": "3.16.0",
+    "native": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    }
+  },
+  "full_suite": {
+    "passed": 1562,
+    "skipped": 14,
+    "subtests_passed": 153,
+    "failed": 0,
+    "elapsed_s": 112.2,
+    "new_electrode_tests": 163
+  },
+  "initial_environment_attempt": "Two existing i-PI localhost socket tests were initially denied by the sandbox. Both passed with localhost access, then the entire final suite passed in that environment.",
+  "documentation": {
+    "html_warnings_as_errors": "passed",
+    "singlehtml_warnings_as_errors": "passed"
+  },
+  "fes_example": {
+    "dimension": 2,
+    "windows": 9,
+    "streams": 9,
+    "samples": 720,
+    "measure": "cv_density",
+    "estimator": "mbar",
+    "overlap_connected": true,
+    "weight_effective_samples": 596.183075031125,
+    "converged": false,
+    "warnings": [
+      "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+      "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+    ],
+    "completed_resume_summary_identical": true,
+    "fes_npz_sha256": "434316c977ef1098eaa06d190de4b93aca781c600cbc01ed4b850f7b8d7806c1"
+  },
+  "hmc_cache": {
+    "steps": 5,
+    "uncached_nuclear_pes_calls": 12,
+    "cached_nuclear_pes_calls": 6,
+    "additional_post_hmc_energy_calls": 1,
+    "seeded_trajectory_acceptance_rng_equal": true
+  },
+  "scope": "Analytical and workflow validation only; not a fitted electrode PES, TP-RPMD reproduction, converged Pt/water result, or calibrated current prediction.",
+  "source_sha256": {
+    ".github/workflows/electrochemistry.yml": "71d1912f4943f6741b480d51f62c3b1cfc209eadb41ade272f3913d3508f06a7",
+    "examples/electrochemistry/fes2d.inp": "948bb552ab9c95db1700b278f47367b45f1d59912dde1f190da764cbe9795106",
+    "examples/electrochemistry/her_scan.py": "f8f08e84301d8ade2b1c198beced67d823c07cf563738627b3818d357f3ab79a",
+    "examples/electrochemistry/sample_grand_canonical.py": "e6edb5ca8acf463e57050bac60458f3accf8d54070fce42c636de7fef55654f5",
+    "examples/electrochemistry/toy_electrode.py": "92cf1d988c18514a863740f2052c54ea1e2ecf9ffd47867d3fecbcb6491d96aa",
+    "src/pyrpmd/electrochemistry/__init__.py": "8793377b911aa8da402211f04e986d56c77fc00a0bb8b8bd4a1d7389cab3460c",
+    "src/pyrpmd/electrochemistry/kinetics.py": "cd2502a570790e4a57e3e97675be20ece276e2728efd031e7962571254c82095",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/reservoir.py": "c2092e405d6d880e21afa512597c37858daeed067f351ac134ddb5c5b5379be3",
+    "src/pyrpmd/electrochemistry/sampling.py": "873d1ed5f4e9e4c4a2a1c10ea35578e084bbe5dc4fa875bbfe8eb7b479b085aa",
+    "src/pyrpmd/potentials/__init__.py": "e825aa691a3567482397607d89daaf8f05fb4da5c875d98a0aaf91dd75bc405e",
+    "src/pyrpmd/potentials/python.py": "68f71cae06b677d8099ea68eb633856791ee0b0da1942e00c83ad8365003e832",
+    "tests/test_electrochemistry_integration.py": "13d54b8b65876c12b2592feac2c669d77bc4e36ffe17e44d4149fc88596e4501",
+    "tests/test_electrochemistry_kinetics.py": "b03853931d23246c5c6ba9ab7ab931f7c182c7e4af9368d9487e6ead53343188",
+    "tests/test_electrochemistry_potentials.py": "f740797321bb264615da32af824a27dd9c8edd615861da52663f21b7f79a4cc7",
+    "tests/test_electrochemistry_sampling.py": "3522a1263e5e09e670c4666a97d567abcf9b33f7f0488efe597553b3d90bf225"
+  }
+}

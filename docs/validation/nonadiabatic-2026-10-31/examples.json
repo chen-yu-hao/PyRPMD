@@ -1,0 +1,397 @@
+{
+  "schema": "pyrpmd.nonadiabatic.example-validation",
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "base_commit": "76dd6ad24adc6c244f775857987cd2f0e119845f",
+  "scope": "Synthetic finite model runs; no real-system chemistry or transport convergence claim.",
+  "physical_converged": false,
+  "soc_and_rpsh": {
+    "purpose": "finite synthetic-model numerical demonstration",
+    "physical_converged": false,
+    "chemistry_validation": false,
+    "settings": {
+      "units": "atomic",
+      "nbeads": 4,
+      "masses": [
+        2.0
+      ],
+      "beta": 4.0,
+      "dt": 0.01,
+      "steps": 200,
+      "seed": 2026,
+      "initial_nuclei": "specified unthermalized ring"
+    },
+    "soc_nrpmd": {
+      "initialization": "focused diabatic state 0",
+      "initial_energy": 0.9965527218269706,
+      "final_energy": 0.9965556632053372,
+      "max_absolute_energy_drift": 2.952276359824424e-06,
+      "final_populations_signed": [
+        0.9688730206916106,
+        0.031126979308414793
+      ],
+      "population_sum": 1.0000000000000253,
+      "final_centroid": [
+        [
+          0.6933292330841548,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    "rpsh": {
+      "method": "centroid approximation, real matrix",
+      "rescaling": "centroid",
+      "frustrated_hops": "keep",
+      "electronic_substeps": 8,
+      "accepted_hops": 1,
+      "frustrated_hop_count": 0,
+      "hop_full_ring_energy_changes": [
+        -3.904060353221439e-06
+      ],
+      "final_active_surface": 1,
+      "final_adiabatic_amplitude_populations": [
+        0.6491485522626554,
+        0.35085144773734606
+      ],
+      "amplitude_norm": 1.0000000000000018,
+      "final_centroid": [
+        [
+          0.5568562085251637,
+          0.0,
+          0.0
+        ]
+      ]
+    }
+  },
+  "thermal_rates": {
+    "model": "uncalibrated_two_state_harmonic_vibronic_model",
+    "beta_au": 2.0,
+    "masses_au": [
+      1.0
+    ],
+    "dt_au": 0.02,
+    "beads": 2,
+    "seed": 20261031,
+    "sampling": {
+      "sweeps": 420,
+      "burn_in_requested": 100,
+      "sample_stride": 5,
+      "attempted": {
+        "nuclear": 840,
+        "centroid": 420,
+        "mapping": 840
+      },
+      "accepted": {
+        "nuclear": 569,
+        "centroid": 285,
+        "mapping": 203
+      },
+      "distribution": "absolute_SEO_projected_trace",
+      "potential_split": "trace",
+      "independent_chains": 1,
+      "physical_converged": false
+    },
+    "electronic": {
+      "summary": {
+        "estimator": "thermal_nrpmd_electronic_population_flux",
+        "time_unit": "atomic_time",
+        "rate_unit": "atomic_time^-1",
+        "samples": 64,
+        "average_sign": 0.78125,
+        "signed_reactant_weight": 0.26968472160933676,
+        "reactant_population": 0.34519644365995106,
+        "rate_curve_available": true,
+        "unavailable_reasons": [],
+        "candidate_rate": null,
+        "standard_error": null,
+        "plateau_detected": false,
+        "physical_converged": false
+      },
+      "time_au": [
+        0.0,
+        0.02,
+        0.04,
+        0.06,
+        0.08,
+        0.1,
+        0.12,
+        0.14,
+        0.16,
+        0.18,
+        0.2,
+        0.22,
+        0.24,
+        0.26,
+        0.28,
+        0.3,
+        0.32,
+        0.34,
+        0.36,
+        0.38,
+        0.4,
+        0.42,
+        0.44,
+        0.46,
+        0.48,
+        0.5,
+        0.52,
+        0.54,
+        0.56,
+        0.58,
+        0.6
+      ],
+      "rate_curve_au": [
+        0.15956659561815695,
+        0.1602555115090729,
+        0.1609326586076648,
+        0.16159834109501905,
+        0.16225287870998475,
+        0.16289660603313424,
+        0.16352987167620175,
+        0.16415303738026973,
+        0.16476647702666303,
+        0.16537057556517634,
+        0.1659657278648861,
+        0.16655233749338422,
+        0.16713081543081218,
+        0.1677015787255657,
+        0.1682650490989776,
+        0.16882165150667514,
+        0.16937181266463217,
+        0.1699159595482116,
+        0.17045451787270055,
+        0.1709879105639974,
+        0.17151655622820394,
+        0.1720408676289091,
+        0.1725612501809348,
+        0.1730781004692328,
+        0.17359180480149736,
+        0.17410273780287003,
+        0.1746112610608863,
+        0.175117721828532,
+        0.17562245179295205,
+        0.17612576591699003,
+        0.17662796136032702
+      ]
+    },
+    "nuclear": {
+      "summary": {
+        "estimator": "thermal_nrpmd_smoothed_nuclear_flux_side",
+        "time_unit": "atomic_time",
+        "rate_unit": "atomic_time^-1",
+        "samples": 64,
+        "average_sign": 0.78125,
+        "signed_reactant_weight": 0.40777723535686683,
+        "reactant_population": 0.5219548612567896,
+        "rate_curve_available": true,
+        "unavailable_reasons": [],
+        "candidate_rate": null,
+        "standard_error": null,
+        "plateau_detected": false,
+        "physical_converged": false
+      },
+      "time_au": [
+        0.0,
+        0.02,
+        0.04,
+        0.06,
+        0.08,
+        0.1,
+        0.12,
+        0.14,
+        0.16,
+        0.18,
+        0.2,
+        0.22,
+        0.24,
+        0.26,
+        0.28,
+        0.3,
+        0.32,
+        0.34,
+        0.36,
+        0.38,
+        0.4,
+        0.42,
+        0.44,
+        0.46,
+        0.48,
+        0.5,
+        0.52,
+        0.54,
+        0.56,
+        0.58,
+        0.6
+      ],
+      "rate_curve_au": [
+        -0.11232643124257795,
+        -0.09631956849106568,
+        -0.08007468514729686,
+        -0.06360692890275509,
+        -0.046968457533125944,
+        -0.030241934405807434,
+        -0.013529547224407853,
+        0.0030587079712591438,
+        0.01941473837450891,
+        0.035438741718909095,
+        0.05104217288030173,
+        0.06614797981230529,
+        0.08068919343362523,
+        0.09460708729810577,
+        0.10785003255511111,
+        0.12037379506391471,
+        0.13214333434617034,
+        0.14313538359961966,
+        0.15334063228687353,
+        0.16276449185453007,
+        0.17142608151600322,
+        0.17935578435343227,
+        0.18659210991390285,
+        0.19317858032825666,
+        0.199161099842324,
+        0.20458597991826336,
+        0.20949859118806302,
+        0.213942518923847,
+        0.2179590798060945,
+        0.2215870767421247,
+        0.22486269882773502
+      ]
+    },
+    "physical_converged": false,
+    "rate_constant": null
+  },
+  "other_methods": {
+    "beta_hartree_inverse": 3.0,
+    "beads": 3,
+    "timestep_atomic": 0.001,
+    "propagation_steps": 20,
+    "physical_converged": false,
+    "model_equilibrated": false,
+    "mv_rpmd": {
+      "initial_sum_energy_hartree": 21.274298451919407,
+      "final_sum_energy_hartree": 21.274298776340412,
+      "centroid_bohr": [
+        [
+          -0.032927947020272984,
+          -0.08069150608035187,
+          -0.024365052852619435
+        ]
+      ],
+      "signed_populations": [
+        -0.004294885285220217,
+        1.0042948852852198
+      ],
+      "weight_sign": -1,
+      "sampler_attempts": 100,
+      "sampler_accepted": 92
+    },
+    "kc_rpmd": {
+      "initial_sum_energy_hartree": 2.340475437765588,
+      "final_sum_energy_hartree": 2.3404754378088666,
+      "centroid_bohr": [
+        [
+          -0.032972686785065465,
+          -0.08069150608035187,
+          -0.024365052852619435
+        ]
+      ],
+      "auxiliary_y": 0.10048490545901642,
+      "published_convention_auxiliary_mass": 0.15674245734534953,
+      "sampler_attempts": 100,
+      "sampler_accepted": 90
+    },
+    "iso_ehrenfest": {
+      "initial_sum_energy_hartree": 0.21618377366926744,
+      "final_sum_energy_hartree": 0.21618377362459823,
+      "centroid_bohr": [
+        [
+          -0.0330127094574171,
+          -0.08069150608035187,
+          -0.024365052852619435
+        ]
+      ],
+      "diabatic_populations": [
+        0.6438366423187329,
+        0.35616335768126817
+      ]
+    }
+  },
+  "electronic_friction": {
+    "task": "diffusion",
+    "status": "complete",
+    "samples_per_replica": [
+      201,
+      201
+    ],
+    "phase": "centroid_ef_rpmd_production",
+    "physical_converged": false,
+    "electronic_friction": {
+      "method": "markovian_centroid_ef_rpmd",
+      "bath_temperature_K": 300.0,
+      "tensor_convention": "physical_eta_mass_per_time",
+      "friction_average": "all_beads",
+      "noise_convention": "shared_bead_increment_centroid_covariance_M_over_beta",
+      "internal_mode_thermostat": false,
+      "non_markovian_memory": false
+    },
+    "nve_energy_diagnostics": null,
+    "warnings": [
+      "Bead count, timestep, equilibration, system size and statistical convergence have not been certified.",
+      "EF-RPMD exchanges energy with the electronic bath; H_P is not conserved. Centroid friction omits bath-induced changes to the imaginary-time distribution."
+    ],
+    "diffusion": {
+      "status": "ballistic_or_drifting",
+      "physical_converged": false,
+      "diffusion_au": null,
+      "diffusion_m2_s": null,
+      "input": {
+        "replicas": 2,
+        "frames": 201,
+        "atoms": 5,
+        "atom_indices": [
+          0
+        ],
+        "axes": [
+          0,
+          1
+        ],
+        "dimension": 2,
+        "time_step_au": 20.67068666758508,
+        "max_lag": 20,
+        "fit_range_au": [
+          206.7068666758508,
+          413.4137333517016
+        ],
+        "fit_lag_indices": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20
+        ],
+        "reference_atom_count": 4,
+        "block_length": null,
+        "coordinate_convention": "continuous_unwrapped_centroids",
+        "length_unit": "bohr",
+        "time_unit": "atomic",
+        "msd_unit": "bohr^2",
+        "diffusion_unit_au": "bohr^2/atomic_time",
+        "diffusion_unit_si": "m^2/s"
+      },
+      "diagnostics": [
+        "Coordinates are relative to the declared reference centre of mass.",
+        "VACF integrals are finite-time estimates; no plateau is presumed.",
+        "Uncertainty resamples whole independent replicas, not overlapping time origins or atoms.",
+        "MSD grows faster than a diffusion-like window; inspect ballistic motion and the lattice reference.",
+        "Bead count, time step, cell size, production length, model accuracy and fit-window convergence remain separate checks."
+      ]
+    }
+  }
+}

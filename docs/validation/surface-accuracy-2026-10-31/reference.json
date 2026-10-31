@@ -1,0 +1,234 @@
+{
+  "model": "Shipped separable rigid-substrate cosine potential ONLY",
+  "formula": "sqrt(1/(2*pi*beta*m))*E[exp(-a*C)]/(L*E[I0(a*sqrt(C^2+S^2))]) / atomic_time",
+  "path_integral": "Primitive finite-P unwrapped ring, linear centroid, no winding/exchange",
+  "beta_au": 1052.5834160132904,
+  "mass_au": 1837.1526474396187,
+  "period_bohr": 6.0,
+  "barrier_hartree": 0.003,
+  "classical_exact_qtst_s_inv": 235981411649.3548,
+  "finite_P_reference": [
+    {
+      "beads": 1,
+      "points_per_scramble": 16384,
+      "scrambles": 4,
+      "k_qtst_s_inv": 235981411649.3548,
+      "scramble_std_s_inv": 0.0,
+      "scramble_rates": [
+        235981411649.3548,
+        235981411649.3548,
+        235981411649.3548,
+        235981411649.3548
+      ]
+    },
+    {
+      "beads": 1,
+      "points_per_scramble": 131072,
+      "scrambles": 4,
+      "k_qtst_s_inv": 235981411649.3548,
+      "scramble_std_s_inv": 0.0,
+      "scramble_rates": [
+        235981411649.3548,
+        235981411649.3548,
+        235981411649.3548,
+        235981411649.3548
+      ]
+    },
+    {
+      "beads": 2,
+      "points_per_scramble": 16384,
+      "scrambles": 4,
+      "k_qtst_s_inv": 248054584373.258,
+      "scramble_std_s_inv": 3409835.261064567,
+      "scramble_rates": [
+        248056536779.95172,
+        248050887507.76068,
+        248052638743.9992,
+        248058274461.32025
+      ]
+    },
+    {
+      "beads": 2,
+      "points_per_scramble": 131072,
+      "scrambles": 4,
+      "k_qtst_s_inv": 248052001449.9853,
+      "scramble_std_s_inv": 215984.27851050047,
+      "scramble_rates": [
+        248052075621.97382,
+        248051818407.6954,
+        248051837922.64996,
+        248052273847.62207
+      ]
+    },
+    {
+      "beads": 4,
+      "points_per_scramble": 16384,
+      "scrambles": 4,
+      "k_qtst_s_inv": 251042284894.51004,
+      "scramble_std_s_inv": 1959535.5143107064,
+      "scramble_rates": [
+        251044375700.49667,
+        251040088735.77475,
+        251041260722.2807,
+        251043414419.488
+      ]
+    },
+    {
+      "beads": 4,
+      "points_per_scramble": 131072,
+      "scrambles": 4,
+      "k_qtst_s_inv": 251041334493.07617,
+      "scramble_std_s_inv": 170362.84959297554,
+      "scramble_rates": [
+        251041568542.1063,
+        251041181735.81616,
+        251041240684.2499,
+        251041347010.13226
+      ]
+    },
+    {
+      "beads": 8,
+      "points_per_scramble": 16384,
+      "scrambles": 4,
+      "k_qtst_s_inv": 251790186660.8591,
+      "scramble_std_s_inv": 1501554.4964367892,
+      "scramble_rates": [
+        251792293421.21088,
+        251788748514.7382,
+        251789982299.45844,
+        251789722408.02893
+      ]
+    },
+    {
+      "beads": 8,
+      "points_per_scramble": 131072,
+      "scrambles": 4,
+      "k_qtst_s_inv": 251789049322.94995,
+      "scramble_std_s_inv": 194859.23504200098,
+      "scramble_rates": [
+        251789087050.87128,
+        251788931305.4426,
+        251789307797.34195,
+        251788871138.1441
+      ]
+    },
+    {
+      "beads": 16,
+      "points_per_scramble": 16384,
+      "scrambles": 4,
+      "k_qtst_s_inv": 251976445697.6137,
+      "scramble_std_s_inv": 1665350.3784462807,
+      "scramble_rates": [
+        251976084255.01175,
+        251976868089.86188,
+        251974414065.34384,
+        251978416380.23737
+      ]
+    },
+    {
+      "beads": 16,
+      "points_per_scramble": 131072,
+      "scrambles": 4,
+      "k_qtst_s_inv": 251975845682.8624,
+      "scramble_std_s_inv": 91107.3012609616,
+      "scramble_rates": [
+        251975832857.86386,
+        251975829613.1408,
+        251975750445.5561,
+        251975969814.8888
+      ]
+    },
+    {
+      "beads": 32,
+      "points_per_scramble": 16384,
+      "scrambles": 4,
+      "k_qtst_s_inv": 252022937996.04733,
+      "scramble_std_s_inv": 1429468.5449267256,
+      "scramble_rates": [
+        252022260366.45895,
+        252025075890.2635,
+        252022077133.0317,
+        252022338594.4352
+      ]
+    },
+    {
+      "beads": 32,
+      "points_per_scramble": 131072,
+      "scrambles": 4,
+      "k_qtst_s_inv": 252022666750.7522,
+      "scramble_std_s_inv": 230746.83279285076,
+      "scramble_rates": [
+        252022546656.90686,
+        252022808304.67593,
+        252022906062.69952,
+        252022405978.7265
+      ]
+    },
+    {
+      "beads": 64,
+      "points_per_scramble": 16384,
+      "scrambles": 4,
+      "k_qtst_s_inv": 252034428719.3014,
+      "scramble_std_s_inv": 906343.789347475,
+      "scramble_rates": [
+        252035757105.06567,
+        252034244775.24484,
+        252033782135.7302,
+        252033930861.16473
+      ]
+    },
+    {
+      "beads": 64,
+      "points_per_scramble": 131072,
+      "scrambles": 4,
+      "k_qtst_s_inv": 252034401823.40002,
+      "scramble_std_s_inv": 124793.0880941989,
+      "scramble_rates": [
+        252034377926.61633,
+        252034314957.37894,
+        252034584619.44672,
+        252034329790.15817
+      ]
+    }
+  ],
+  "integration_checks": [
+    {
+      "bins": 20,
+      "k_qtst_s_inv": 239313542131.18323,
+      "relative_error": 0.014120309131719466
+    },
+    {
+      "bins": 40,
+      "k_qtst_s_inv": 238875102382.5574,
+      "relative_error": 0.012262367247392936
+    },
+    {
+      "bins": 80,
+      "k_qtst_s_inv": 236702374132.32605,
+      "relative_error": 0.0030551664130331613
+    },
+    {
+      "bins": 160,
+      "k_qtst_s_inv": 236161498717.6211,
+      "relative_error": 0.0007631409059196681
+    },
+    {
+      "bins": 320,
+      "k_qtst_s_inv": 236026423822.68082,
+      "relative_error": 0.00019074457183476667
+    },
+    {
+      "bins": 16001,
+      "k_qtst_s_inv": 235981428852.78714,
+      "relative_error": 7.290164183437753e-08
+    }
+  ],
+  "oscillatory_negative_control": {
+    "plateau_detected": false,
+    "kappa": 0.5,
+    "drift": 0.0,
+    "drift_standard_error": 0.0,
+    "tail_min": 0.1,
+    "tail_max": 0.9
+  }
+}

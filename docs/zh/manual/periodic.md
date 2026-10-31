@@ -1,21 +1,22 @@
 # 周期材料、扩散与表面反应
 
-PyRPMD 支持固定晶胞的周期体系和带冻结层的 slab。本章介绍平衡 PIMD、无恒温 RPMD 输运，以及盆地归一化的局部跃迁速率。
+PyRPMD 支持周期体系、带冻结层的 slab，以及各向同性 NPT PIMD。本章介绍平衡 PIMD、无恒温 RPMD 输运，以及盆地归一化的局部跃迁速率。
 
 ## 任务与边界条件
 
 | 任务 | 用途 | 周期晶胞 | `fixed_atoms` | 主要结果 |
 | --- | --- | --- | --- | --- |
-| `pimd` | 平衡量子统计 | 支持 | 不支持 | 能量估计量、回转半径 |
-| `diffusion` | 连续质心轨迹与输运 | 支持 | 不支持 | MSD、VACF、D 与诊断 |
+| `pimd` | 平衡量子统计，可选 BZP 恒压 | 支持 | 固定晶胞时支持 | 能量估计量、回转半径 |
+| `diffusion` | 连续质心轨迹与输运 | 支持 | 支持 | MSD、VACF、D 与诊断 |
 | `site_rate` | 全原子可动材料中的有向出口 | 支持 | 不支持 | 沿单一恒定梯度 CV 的盆地速率 |
 | `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
 | `surface_rate` | 表面上的有向出口，可含固定层 | 支持，也可为有限团簇 | 支持 | 以可动原子质量度量计算的一阶速率 |
 
-`pimd`、`diffusion` 和 `site_rate` 的估计量要求全部原子可动；冻结底层时使用表面 `fes` 和 `surface_rate`。
-气相 `rate`、`drpmd`、`network` 和 `metadynamics` 用于不含 PBC 和固定原子的分子体系。
+`pimd`、`diffusion`、`fes`、`metadynamics` 和 `surface_rate` 支持固定原子；固定原子在所有珠子上保持
+参考坐标和零动量。材料量子动能估计量只计入可动原子。`site_rate` 仍要求全部原子可动。
+气相 `rate`、`drpmd` 和 `network` 用于不含 PBC 和固定原子的分子体系。
 
-所有可动原子使用同一珠子数，晶胞固定（恒体积）。
+所有可动原子使用同一珠子数。晶胞默认固定，`pimd` 可显式增加 `[barostat]` 做恒压采样。
 
 ## 晶胞、坐标与同位素
 
@@ -53,7 +54,9 @@ H、D、T 在电子 PES 上都对应氢，差别在于核质量。可用 `symbol
 | `surface_lateral` | 展开 COM 沿面内方向 | 表面迁移自由能与有向出口 |
 
 `periodic_bond_difference` 也接受别名 `periodic_difference`。最近镜像 CV 在镜像切换处有导数分支，偏置范围应避开该处。
-`site_rate` 和 `surface_rate` 只接受下文各节列出的线性质心 CV。
+`site_rate` 接受其支持的线性质心 CV；`surface_rate` 还接受具有恒定端点质量度量的展开 `distance`。
+`periodic_distance` 的分割面须小于周期晶格基最小奇异值的一半，以远离最小镜像切换边界。
+键差和变质量度量坐标不自动适用这一表面速率公式。
 
 ## 周期势能
 
@@ -102,13 +105,35 @@ pyrpmd resume runs/manual-pimd
 每项有 `mean` 和 `standard_error_between_replicas`，只有一个副本时后者为 `null`。
 `radius_of_gyration_squared_bohr2` 给出每个原子的平均环回转半径平方。
 
-`samples/materials_XXXX.npz` 保存质心 `positions` 与 `velocities`、`times`、`observables` 和
-`radii_gyration_squared`。`checkpoints/materials_XXXX.npz` 保存续跑状态。输运性质请使用 `diffusion` 任务。
+`samples/materials_XXXX/manifest.json` 索引不可变 NPZ 分块，保存质心坐标、速度、采样步数、能量估计量与
+回转半径。`checkpoints/materials_XXXX.npz` 保存状态和已提交的轨迹前缀。默认
+`output.trajectory_storage="stream"`、`output.chunk_frames=256`；`"memory"` 保留旧的单 NPZ 格式。
+已完成的旧任务可在不加载 PES 的情况下迁移。离线相关分析仍加载标量或所选原子的历史，需要单独预算内存。
+详见[流式存储](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md)。输运性质使用 `diffusion`。
+
+### 恒压 PIMD
+
+```toml
+[barostat]
+method = "bzp"
+pressure = "1 bar"
+time_constant = "1000 fs"
+```
+
+各向同性 Bussi–Zykova–Parrinello barostat 耦合质心与晶胞，保持内部环模不随晶胞缩放。要求三维完全周期、
+全部原子可动及能够更新晶胞并返回物理构型 virial 的 PES。支持 ASE、i-PI、兼容的 Python 模型和独立副本
+进程并行；暂不支持 NPT 的珠子进程池、MPI 或 GPU 模式。压力可用 Pa/kPa/MPa/GPa/bar/atm/原子单位；
+可选 `friction` 默认取时间常数的倒数。逐帧保存晶胞、压力和体积，检查点保存 barostat 动量。
+见[算法与示例](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials-npt.md)。RPMD 扩散生产段仍固定晶胞；默认使用无恒温器传播，可显式选择物理电子摩擦浴。
 
 ## 扩散：从连续轨迹得到 MSD 与 D
 
-`task="diffusion"` 在热化后保存 t=0，然后在没有恒温器、伞势或 metadynamics 的情况下传播 RPMD。它保存每个原子的
+`task="diffusion"` 在热化后保存 t=0，默认在没有恒温器、伞势或 metadynamics 的情况下传播 RPMD。它保存每个原子的
 质心位置和速度，被测原子、参考系和拟合都可以事后更改。
+
+显式指定 `[electronic_friction]` 可使用 Markovian 质心 EF-RPMD 生产浴，包括固定基底。
+这一路径交换能量，不应用 NVE 能量守恒判据；它没有非 Markovian 记忆或虚时间分布的浴重整化。
+方法和限制见[电子摩擦](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md)。
 
 ```bash
 pyrpmd run examples/materials/diffusion.inp --output runs/manual-diffusion

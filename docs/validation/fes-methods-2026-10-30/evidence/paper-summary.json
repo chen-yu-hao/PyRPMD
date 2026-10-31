@@ -1,0 +1,68 @@
+{
+  "doi": "10.1021/acs.jctc.3c01028",
+  "source_commit": "e7511c7dd48be80230c3cc4afc660696584712b1",
+  "rows": 6441,
+  "figure_12_parameter_family": [
+    {
+      "model": "ackley",
+      "spacing": "2.0",
+      "initial_kappa": "1.0",
+      "kappa_growth": "2",
+      "consistency": "0.96",
+      "confinement": "0.33",
+      "overlap": "0.50",
+      "max_layers": "1",
+      "rmse_kjmol": 1.4238602651092678,
+      "source_non_converged_flag": 1,
+      "simulations": 221,
+      "extreme_kappa_flag": 0,
+      "nan_bins": 5217
+    },
+    {
+      "model": "ackley",
+      "spacing": "2.0",
+      "initial_kappa": "1.0",
+      "kappa_growth": "2",
+      "consistency": "0.96",
+      "confinement": "0.33",
+      "overlap": "0.50",
+      "max_layers": "2",
+      "rmse_kjmol": 0.7202053663914455,
+      "source_non_converged_flag": 1,
+      "simulations": 471,
+      "extreme_kappa_flag": 0,
+      "nan_bins": 1
+    },
+    {
+      "model": "ackley",
+      "spacing": "2.0",
+      "initial_kappa": "1.0",
+      "kappa_growth": "2",
+      "consistency": "0.96",
+      "confinement": "0.33",
+      "overlap": "0.50",
+      "max_layers": "3",
+      "rmse_kjmol": 0.29024290862420876,
+      "source_non_converged_flag": 1,
+      "simulations": 1250,
+      "extreme_kappa_flag": 0,
+      "nan_bins": 0
+    },
+    {
+      "model": "ackley",
+      "spacing": "2.0",
+      "initial_kappa": "1.0",
+      "kappa_growth": "2",
+      "consistency": "0.96",
+      "confinement": "0.33",
+      "overlap": "0.50",
+      "max_layers": "4",
+      "rmse_kjmol": 0.14767241360404557,
+      "source_non_converged_flag": 1,
+      "simulations": 3264,
+      "extreme_kappa_flag": 0,
+      "nan_bins": 0
+    }
+  ],
+  "note": "The 3-layer entry matches the published 0.29 value. Preserve the source non_converged flag; numerical agreement is not a global convergence certificate."
+}

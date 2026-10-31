@@ -1,0 +1,63 @@
+# Analytic periodic teaching model; not a fitted Cu-H potential.
+task = "metadynamics"
+temperature = "300 K"
+beads = 4
+seed = 173
+
+[system]
+symbols = ["Cu", "H"]
+geometry = [[0.0, 0.0, 0.0], [0.4, 0.2, 0.8]]
+geometry_unit = "bohr"
+cell = [[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 12.0]]
+cell_unit = "bohr"
+pbc = [true, true, false]
+fixed_atoms = [0]
+
+[potential]
+provider = "builtin"
+name = "periodic_cosine"
+params = {height = [0.005, 0.005, 0.0], confinement = 0.01}
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 100
+production_steps = 400
+sample_interval = 5
+andersen_interval = 20
+replicas = 1
+
+[[cvs]]
+name = "lateral"
+kind = "surface_lateral"
+atoms = [1]
+reference_atoms = [0]
+direction = [1.0, 0.0, 0.0]
+
+[[cvs]]
+name = "height"
+kind = "surface_height"
+atoms = [1]
+reference_atoms = [0]
+
+[metadynamics]
+cvs = ["lateral", "height"]
+mode = "well_tempered"
+sigma = ["0.25 bohr", "0.25 bohr"]
+height = "0.02 kcal/mol"
+pace = 20
+bias_factor = 8.0
+
+[metadynamics.grid]
+ranges = [["-4 bohr", "4 bohr"], ["-3 bohr", "3 bohr"]]
+bins = [160, 120]
+
+[analysis]
+method = "bias_estimate"
+bins = [20, 16]
+bootstrap = 0
+
+[output]
+directory = "runs/meta_grid_fixed_slab"
+checkpoint_steps = 100

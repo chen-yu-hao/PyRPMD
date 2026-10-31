@@ -1200,6 +1200,75 @@ def _trajectory(
     return record
 
 
+def _production_dynamics(config, system, potential, parent_id):
+    """Use identical propagation settings for inline and queued collisions."""
+    masses = np.asarray(_field(system, "masses"), dtype=float)
+    options = loop_options(config)
+    native = config.get("native", config.get("dynamics", {}).get("native", True))
+    threads = execution_plan(config.get("parallel")).threads
+    na = config.get("nonadiabatic")
+    if na:
+        from pyrpmd.nonadiabatic import NRPMDDynamics
+
+        return NRPMDDynamics(potential, masses, config["beta"], config["beads"],
+                             config["dt_au"], na["nstates"], native=native,
+                             threads=threads, integrator=options["integrator"])
+    return Dynamics(
+        potential, masses, config["beta"], config["beads"], config["dt_au"],
+        seed=np.random.SeedSequence([int(config.get("seed", 0)), 3, parent_id]),
+        native=native, threads=threads, **options,
+    )
+
+
+def _saved_collision(task, production, classifier):
+    """Replay one already sampled launch without advancing its thermal chain."""
+    config, system = task["config"], task["system"]
+    trajectory_id, parent_id = task["trajectory_id"], task["parent_id"]
+    out = Path(task["output"])
+    meta, arrays = _load_npz(out / "states" / f"initial-{trajectory_id:08d}.npz",
+                             expected_kind="PyRPMD.drpmd.launch.v1")
+    if (meta.get("physics_hash") != task["physics_hash"]
+            or meta.get("trajectory_id") != trajectory_id
+            or meta.get("parent_id") != parent_id):
+        raise ValueError("Saved collision launch does not match this task")
+    expected_shape = (config["beads"], len(_field(system, "masses")), 3)
+    if any(arrays[key].shape != expected_shape or not np.isfinite(arrays[key]).all()
+           for key in ("q", "p")):
+        raise ValueError("Saved collision launch has invalid nuclear state")
+    na = config.get("nonadiabatic")
+    if na:
+        from pyrpmd.nonadiabatic import NRPMDState
+
+        for key in ("mapping_q", "mapping_p"):
+            if (key not in arrays or arrays[key].shape != (config["beads"], na["nstates"])
+                    or not np.isfinite(arrays[key]).all()):
+                raise ValueError("Saved collision launch has invalid electronic state")
+        child = NRPMDState(arrays["q"], arrays["p"], 0, 0.0,
+                           arrays["mapping_q"], arrays["mapping_p"])
+    else:
+        child = State(arrays["q"], arrays["p"])
+    record = _trajectory(
+        production, child, classifier, config, out, trajectory_id, parent_id,
+        meta["launch"], task["physics_hash"],
+        bool(config.get("resume", config.get("_resume", False))),
+    )
+    record["parent_sample_step"] = meta["parent_step"]
+    return record
+
+
+def _collision_task(task):
+    """Independent collision unit for the dynamic MPI work queue."""
+    potential = make_task_potential(task["config"]["potential"], task["system"])
+    try:
+        production = _production_dynamics(task["config"], task["system"],
+                                         potential, task["parent_id"])
+        return _saved_collision(task, production,
+                                _make_classifier(task["config"], task["system"]))
+    finally:
+        if hasattr(potential, "close"):
+            potential.close()
+
+
 def _parent_task(task):
     config, system = task["config"], task["system"]
     parent_id, ids, physics_hash = (
@@ -1208,6 +1277,7 @@ def _parent_task(task):
         task["physics_hash"],
     )
     out = Path(task["output"])
+    sample_only = bool(task.get("sample_only", False))
     masses = np.asarray(_field(system, "masses"), dtype=float)
     fragments = validate_fragments(_field(system, "fragments"), len(masses))
     beads, beta, dt = config["beads"], config["beta"], config["dt_au"]
@@ -1237,7 +1307,7 @@ def _parent_task(task):
     parent_seed = np.random.SeedSequence([seed, 1, parent_id])
     na = config.get("nonadiabatic")
     if na:
-        from pyrpmd.nonadiabatic import DiagonalPotential, NRPMDDynamics, NRPMDState
+        from pyrpmd.nonadiabatic import DiagonalPotential, NRPMDState
         thermal_potential = DiagonalPotential(potential, na["initial_state"], na["nstates"])
     else:
         thermal_potential = potential
@@ -1252,21 +1322,7 @@ def _parent_task(task):
         threads=plan.threads,
         **options,
     )
-    if na:
-        production = NRPMDDynamics(potential, masses, beta, beads, dt, na["nstates"],
-                                   native=native, threads=plan.threads, integrator=method)
-    else:
-        production = Dynamics(
-            potential,
-            masses,
-            beta,
-            beads,
-            dt,
-            seed=np.random.SeedSequence([seed, 3, parent_id]),
-            native=native,
-            threads=plan.threads,
-            **options,
-        )
+    production = None if sample_only else _production_dynamics(config, system, potential, parent_id)
     classifier = _make_classifier(config, system)
     parent_path = out / "checkpoints" / f"parent-{parent_id:06d}.npz"
     resume = bool(config.get("resume", config.get("_resume", False)))
@@ -1324,6 +1380,17 @@ def _parent_task(task):
         )
 
     try:
+        if not sample_only:
+            # Dynamic runs checkpoint the sampling clock before their queued
+            # children finish. A later static resume must replay those launches
+            # without resampling, including after a partially finished queue.
+            complete = {record["trajectory_id"] for record in records}
+            for trajectory_id in ids[:next_index]:
+                if trajectory_id not in complete:
+                    record = _saved_collision(dict(task, trajectory_id=trajectory_id),
+                                              production, classifier)
+                    records.append(record)
+                    save_parent()
         while burn_done < equil:
             count = min(checkpoint_steps, equil - burn_done)
             start = time.perf_counter()
@@ -1389,20 +1456,21 @@ def _parent_task(task):
                 **_mapping_arrays(child),
                 masses=masses,
             )
-            record = _trajectory(
-                production,
-                child,
-                classifier,
-                config,
-                out,
-                trajectory_id,
-                parent_id,
-                launch,
-                physics_hash,
-                resume,
-            )
-            record["parent_sample_step"] = parent.step
-            records.append(record)
+            if not sample_only:
+                record = _trajectory(
+                    production,
+                    child,
+                    classifier,
+                    config,
+                    out,
+                    trajectory_id,
+                    parent_id,
+                    launch,
+                    physics_hash,
+                    resume,
+                )
+                record["parent_sample_step"] = parent.step
+                records.append(record)
             next_index, pending = index + 1, None
             save_parent()
         return {
@@ -1698,6 +1766,32 @@ def _write_summary(results, config, system, output, expected):
     return summary
 
 
+def _deferred_collision_tasks(parent_tasks, sampled):
+    complete = {record["trajectory_id"] for parent in sampled for record in parent["records"]}
+    return [dict(task, trajectory_id=trajectory_id)
+            for task in parent_tasks for trajectory_id in task["trajectory_ids"]
+            if trajectory_id not in complete]
+
+
+def _write_dynamic_summary(sampled, collisions, config, system, output, expected):
+    by_parent = {parent["parent_id"]: parent for parent in sampled}
+    for record in collisions:
+        by_parent[record["parent_id"]]["records"].append(record)
+    # The coordinator alone updates ledgers after all child writers have
+    # stopped. Before this point, completed trajectory files remain sufficient
+    # for recovery even if a queue or the job is interrupted.
+    for parent in sampled:
+        parent["records"].sort(key=lambda record: record["trajectory_id"])
+        path = Path(output) / "checkpoints" / f"parent-{parent['parent_id']:06d}.npz"
+        meta, arrays = _load_npz(path, expected_kind="PyRPMD.drpmd.parent-checkpoint.v1")
+        actual_ids = [record["trajectory_id"] for record in parent["records"]]
+        if actual_ids != meta["trajectory_ids"]:
+            raise RuntimeError("Dynamic collision ledger has missing or duplicate global IDs")
+        meta["records"] = parent["records"]
+        _atomic_npz(path, meta, **arrays)
+    return _write_summary(sampled, config, system, output, expected)
+
+
 def run_drpmd(config, system, output, executor=None):
     """Run N total collisions from persistent independent thermal parent chains.
 
@@ -1756,9 +1850,18 @@ def run_drpmd(config, system, output, executor=None):
             }
         )
         start += count
+    dynamic = plan.backend == "mpi" and plan.scheduling == "dynamic"
+    if dynamic:
+        for task in tasks:
+            task["sample_only"] = True
     results = (
         executor.map(_parent_task, tasks)
         if executor is not None
         else run_tasks(_parent_task, tasks, config.get("parallel"))
     )
+    if dynamic:
+        collisions = root_call(_deferred_collision_tasks, tasks, results)
+        records = (executor.map(_collision_task, collisions) if executor is not None
+                   else run_tasks(_collision_task, collisions, config.get("parallel")))
+        return root_call(_write_dynamic_summary, results, records, config, system, directory, n)
     return root_call(_write_summary, results, config, system, directory, n)

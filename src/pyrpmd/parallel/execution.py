@@ -9,11 +9,12 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 from contextlib import ExitStack, contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import copy
 import multiprocessing as mp
 from multiprocessing.util import Finalize
 import os
+import pickle
 import sys
 from typing import Any
 
@@ -41,10 +42,14 @@ class ExecutionPlan:
     devices: tuple
     trajectories_per_gpu: int
     trajectory_groups: int
+    scheduling: str = "static"
+    coordinator_ranks: int = 0
 
 
 def execution_plan(config=None):
     c = dict(config or {})
+    if "reuse_potentials" in c and not isinstance(c["reuse_potentials"], (bool, np.bool_)):
+        raise ValueError("parallel.reuse_potentials must be a boolean")
     backend = c.get("backend", "serial")
     mode = c.get("mode", c.get("pes_mode", "serial"))
     # Older user inputs used the backend names for PES execution modes.
@@ -68,10 +73,16 @@ def execution_plan(config=None):
         raise ValueError(
             "This executor supports pes_ranks=1; internal MPI PES needs a dedicated adapter"
         )
-    if c.get("coordinator_ranks", 0) != 0 or c.get("scheduling", "static") != "static":
-        raise ValueError(
-            "This executor implements static groups with coordinator_ranks=0"
-        )
+    scheduling = c.get("scheduling", "static")
+    if scheduling not in ("static", "dynamic"):
+        raise ValueError("parallel.scheduling must be static or dynamic")
+    coordinators = _int(c.get("coordinator_ranks", int(scheduling == "dynamic")),
+                        "coordinator_ranks", 0)
+    if scheduling == "dynamic":
+        if backend != "mpi" or coordinators != 1:
+            raise ValueError("Dynamic scheduling requires backend='mpi' and coordinator_ranks=1")
+    elif coordinators != 0:
+        raise ValueError("Static scheduling requires coordinator_ranks=0")
     raw_devices = c.get("devices", c.get("gpus", [0] if mode == "gpu" else []))
     if isinstance(raw_devices, (str, int)):
         raw_devices = [raw_devices]
@@ -102,7 +113,8 @@ def execution_plan(config=None):
     if beads > 1:
         mode = "bead" if mode != "gpu" else mode
     return ExecutionPlan(
-        backend, mode, workers, beads, threads, devices, per_gpu, groups
+        backend, mode, workers, beads, threads, devices, per_gpu, groups,
+        scheduling, coordinators,
     )
 
 
@@ -213,6 +225,8 @@ def _bead_init(spec, system):
     try:
         limits.enter_context(_blas_thread_limit())
         _BEAD_PROVIDER = make_potential(spec, system)
+        if callable(getattr(_BEAD_PROVIDER, "close", None)):
+            limits.callback(_BEAD_PROVIDER.close)
         # A provider factory may have loaded another BLAS implementation.
         limits.enter_context(threadpool_limits(limits=1, user_api="blas"))
     except BaseException:
@@ -223,6 +237,10 @@ def _bead_init(spec, system):
 
 def _bead_evaluate(x):
     return _BEAD_PROVIDER.evaluate(x)
+
+
+def _bead_reuse_allowed():
+    return _can_reuse_potential(_BEAD_PROVIDER)
 
 
 class ProcessBeadPotential:
@@ -256,12 +274,18 @@ class ProcessBeadPotential:
             self.pool.shutdown(wait=True, cancel_futures=True)
             self.closed = True
 
+    def _task_reuse_allowed(self):
+        # Ask the actual initialized plugin, not a guessed capability from its
+        # factory name. All workers use the same spec/System and initializer.
+        return self.pool.submit(_bead_reuse_allowed).result()
+
 
 class _MPIBeadPotential:
     def __init__(self, spec, system, context):
         from pyrpmd.potentials import make_potential
 
         self.comm = context.comm
+        self._owner_context = context
         self.identifier = context.next_id
         context.next_id += 1
         self.metadata = {"provider": "mpi-bead", "workers": self.comm.Get_size()}
@@ -273,11 +297,18 @@ class _MPIBeadPotential:
         except Exception as exc:
             local_error = _result_error(exc)
         errors = self.comm.gather(local_error, root=0)
+        self.closed = False
         if any(errors):
+            # Every rank has returned from creation. Release any contexts that
+            # succeeded before reporting another rank's initialization error.
+            try:
+                self.close()
+            except Exception as exc:
+                errors.append(_result_error(exc))
             raise RuntimeError(
                 "PES initialization failed: " + "; ".join(e for e in errors if e)
             )
-        self.closed = False
+        context.providers.append(self)
 
     def evaluate(self, positions):
         if self.closed:
@@ -297,6 +328,9 @@ class _MPIBeadPotential:
             raise RuntimeError("MPI bead PES failure: " + "; ".join(errors))
         return _combine([r[0] for r in responses if r[0] is not None])
 
+    def _task_reuse_allowed(self):
+        return _can_reuse_potential(self.local)
+
     def close(self):
         if not self.closed:
             self.comm.bcast(("close", self.identifier), root=0)
@@ -308,6 +342,9 @@ class _MPIBeadPotential:
                 error = _result_error(exc)
             errors = self.comm.gather(error, root=0)
             self.closed = True
+            if self in self._owner_context.providers:
+                self._owner_context.providers.remove(self)
+            self._owner_context = None
             if any(errors):
                 raise RuntimeError(
                     "PES close failed: " + "; ".join(e for e in errors if e)
@@ -365,6 +402,11 @@ class _Context:
     slot: int
     comm: Any = None
     next_id: int = 0
+    potentials: dict = field(default_factory=dict)
+    releases: dict = field(default_factory=dict)
+    borrowed: set = field(default_factory=set)
+    cleanup: ExitStack = field(default_factory=ExitStack)
+    providers: list = field(default_factory=list)
 
 
 _CONTEXT = None
@@ -376,9 +418,124 @@ def _context(plan, slot, comm=None):
     previous = _CONTEXT
     _CONTEXT = _Context(plan, slot, comm)
     try:
-        yield _CONTEXT
+        with _CONTEXT.cleanup:
+            yield _CONTEXT
     finally:
-        _CONTEXT = previous
+        errors = []
+        try:
+            # A task can fail before its own finally block or omit close().
+            # Finish these collectives before the group service receives finish.
+            for provider in tuple(_CONTEXT.providers):
+                if not provider.closed:
+                    try:
+                        provider.close()
+                    except Exception as exc:
+                        errors.append(_result_error(exc))
+        finally:
+            _CONTEXT = previous
+        if errors:
+            raise RuntimeError("MPI PES cleanup failed: " + "; ".join(errors))
+
+
+def _potential_cache_token(value):
+    """Snapshot only ordinary configuration data; never hash mutable identity.
+
+    Unsupported Python objects are deliberately not reused. In particular an
+    already constructed provider remains an explicitly owned per-task object.
+    Including the complete System prevents sharing across different cells,
+    isotopes, geometries, charges or atom orderings.
+    """
+    from pathlib import Path
+    from pyrpmd.system import System
+
+    if type(value) is System:
+        return ("System", _potential_cache_token(vars(value)))
+    if isinstance(value, np.ndarray):
+        if value.dtype.hasobject:
+            raise TypeError("object arrays cannot identify a reusable potential")
+        return ("array", value.dtype.str, value.shape, value.tobytes())
+    if isinstance(value, np.generic):
+        return _potential_cache_token(value.item())
+    if value is None or type(value) in (bool, int, float, str, bytes):
+        return (type(value).__name__, value)
+    if isinstance(value, Path):
+        return ("path", str(value))
+    if type(value) in (list, tuple):
+        return (type(value).__name__, tuple(_potential_cache_token(x) for x in value))
+    if type(value) is dict and all(isinstance(k, str) for k in value):
+        return ("dict", tuple((k, _potential_cache_token(value[k])) for k in sorted(value)))
+    raise TypeError("potential reuse requires ordinary serializable configuration")
+
+
+def _can_reuse_potential(provider):
+    check = getattr(provider, "_task_reuse_allowed", None)
+    if callable(check):
+        return bool(check())
+    metadata = getattr(provider, "metadata", {}) or {}
+    capabilities = metadata.get("capabilities", {}) or {}
+    return (metadata.get("reuse_across_tasks", True) is not False
+            and metadata.get("stateful", False) is not True
+            and capabilities.get("stateful", False) is not True)
+
+
+@contextmanager
+def task_potential(spec, system, *, reuse=True):
+    """Lease an actual provider for one task, reusing it within its worker.
+
+    The worker closes cached providers once, after its entire task batch (also
+    on exceptions), before an MPI group sends ``finish``. The returned object
+    is not proxied, so native PES bindings and custom dispatch keep working.
+    Outside ``run_tasks`` this is an ordinary create/close context manager.
+    Stateful plugins can declare ``metadata['reuse_across_tasks']=False``;
+    callers can opt out with ``reuse=False``.
+    """
+    if not isinstance(reuse, (bool, np.bool_)):
+        raise ValueError("reuse_potentials must be a boolean")
+    context = _CONTEXT
+    key = None
+    if reuse and context is not None and isinstance(spec, dict):
+        try:
+            key = (_potential_cache_token(spec), _potential_cache_token(system))
+        except TypeError:
+            pass
+    # Nested leases must not alias a non-reentrant provider.
+    if key is not None and key in context.borrowed:
+        key = None
+    provider = context.potentials.get(key) if key is not None else None
+    if provider is None:
+        provider = make_task_potential(spec, system)
+        try:
+            reusable = key is not None and _can_reuse_potential(provider)
+        except BaseException:
+            if callable(getattr(provider, "close", None)):
+                provider.close()
+            raise
+        if reusable:
+            context.potentials[key] = provider
+            release = ExitStack()
+            if callable(getattr(provider, "close", None)):
+                release.callback(provider.close)
+            context.releases[key] = release
+            context.cleanup.callback(release.close)
+        else:
+            key = None
+    if key is not None:
+        context.borrowed.add(key)
+    try:
+        yield provider
+    except BaseException:
+        # A caller may catch a task failure and continue its batch. Do not hand
+        # a possibly damaged backend to that next task. Cleanup still owns it.
+        if key is not None:
+            context.potentials.pop(key, None)
+            context.releases.pop(key).close()
+        raise
+    finally:
+        if key is None:
+            if callable(getattr(provider, "close", None)):
+                provider.close()
+        else:
+            context.borrowed.remove(key)
 
 
 def make_task_potential(spec, system):
@@ -401,6 +558,9 @@ def make_task_potential(spec, system):
             "python",
             "ase",
             "deepmd",
+            "mace",
+            "nequip",
+            "fairchem",
         ):
             raise ValueError(
                 "GPU execution requires a provider with an actual GPU implementation"
@@ -437,6 +597,70 @@ def _execute_batch(payload):
         return [(index, function(task)) for index, task in indexed_tasks]
 
 
+_TASK_TAG = 4101
+_RESULT_TAG = 4102
+
+
+def _dynamic_dispatch(control, leaders, count, mpi):
+    """Refill the first available group; drain all in-flight work on failure.
+
+    Only the coordinator calls this helper. A separate communicator keeps these
+    point-to-point messages distinct from workflow and bead collectives.
+    """
+    next_index, active, results, errors = 0, {}, {}, []
+    for leader in leaders:
+        index = next_index if next_index < count else None
+        control.send(index, dest=leader, tag=_TASK_TAG)
+        if index is not None:
+            active[leader] = index
+            next_index += 1
+    while active:
+        status = mpi.Status()
+        packet = control.recv(source=mpi.ANY_SOURCE, tag=_RESULT_TAG, status=status)
+        leader = status.Get_source()
+        expected = active.pop(leader)
+        try:
+            index, value, error = pickle.loads(packet)
+            if index != expected:
+                raise RuntimeError(f"group {leader} returned task {index}, expected {expected}")
+        except Exception as exc:
+            index, value, error = expected, None, _result_error(exc)
+        if error is not None:
+            errors.append(f"task {index}: {error}")
+        else:
+            results[index] = value
+        # A failed task stops new work. Already-running groups still finish and
+        # receive STOP, so no peer remains blocked in recv or in a bead service.
+        index = next_index if not errors and next_index < count else None
+        control.send(index, dest=leader, tag=_TASK_TAG)
+        if index is not None:
+            active[leader] = index
+            next_index += 1
+    return [results[i] for i in sorted(results)], errors
+
+
+def _dynamic_worker(function, tasks, plan, slot, group, control):
+    while True:
+        index = control.recv(source=0, tag=_TASK_TAG)
+        if index is None:
+            return
+        try:
+            with _context(plan, slot, group):
+                value = function(tasks[index])
+        except Exception as exc:
+            value, error = None, _result_error(exc)
+        else:
+            error = None
+        try:
+            packet = pickle.dumps((index, value, error), protocol=pickle.HIGHEST_PROTOCOL)
+        except Exception as exc:
+            # Serialize before send: an unpicklable task result must become a
+            # collective error, rather than strand the coordinator in recv.
+            packet = pickle.dumps((index, None, "Task result serialization failed: " + _result_error(exc)),
+                                  protocol=pickle.HIGHEST_PROTOCOL)
+        control.send(packet, dest=0, tag=_RESULT_TAG)
+
+
 def _mpi_run(function, tasks, plan):
     try:
         from mpi4py import MPI
@@ -445,37 +669,53 @@ def _mpi_run(function, tasks, plan):
             "MPI backend requires the optional mpi4py package and an MPI runtime"
         ) from exc
     world = MPI.COMM_WORLD
-    expected = plan.trajectory_groups * plan.bead_workers
+    expected = plan.coordinator_ranks + plan.trajectory_groups * plan.bead_workers
     if world.Get_size() != expected:
         raise ValueError(
-            f"MPI world has {world.Get_size()} ranks; expected G*B={expected}"
+            f"MPI world has {world.Get_size()} ranks; expected "
+            f"coordinator_ranks+G*B={expected}"
         )
     rank = world.Get_rank()
-    group_id = rank // plan.bead_workers
+    worker_rank = rank - plan.coordinator_ranks
+    group_id = worker_rank // plan.bead_workers if worker_rank >= 0 else MPI.UNDEFINED
     device_slot = group_id
     if plan.mode == "gpu":
         # CUDA device IDs are local to each node / CUDA_VISIBLE_DEVICES. Global
         # rank arithmetic is wrong when the launcher scatters ranks over nodes.
         local = world.Split_type(MPI.COMM_TYPE_SHARED, key=rank)
-        device_slot = local.Get_rank()
+        workers = local.allgather(worker_rank >= 0)
+        device_slot = sum(workers[:local.Get_rank()])
         expected_local = len(plan.devices) * plan.trajectories_per_gpu
         local_error = None
-        if local.Get_size() != expected_local:
+        local_workers = sum(workers)
+        if local_workers and local_workers != expected_local:
             local_error = (
-                f"MPI GPU node {MPI.Get_processor_name()} has {local.Get_size()} ranks; "
+                f"MPI GPU node {MPI.Get_processor_name()} has {local_workers} worker ranks; "
                 f"expected len(devices)*trajectories_per_gpu={expected_local}"
             )
         local.Free()
         placement_errors = world.allgather(local_error)
         if any(placement_errors):
             raise ValueError("; ".join(sorted(set(e for e in placement_errors if e))))
+    task_counts = world.allgather(len(tasks))
+    if len(set(task_counts)) != 1:
+        raise ValueError("Every MPI rank must supply the same task list")
     group = world.Split(group_id, rank)
+    control = world.Dup() if plan.scheduling == "dynamic" else None
     results, error = [], None
-    if group.Get_rank() == 0:
+    if worker_rank < 0:
+        leaders = [1 + i * plan.bead_workers for i in range(plan.trajectory_groups)]
+        results, errors = _dynamic_dispatch(control, leaders, len(tasks), MPI)
+        if errors:
+            error = "; ".join(errors)
+    elif group.Get_rank() == 0:
         try:
-            with _context(plan, device_slot, group):
-                for index in range(group_id, len(tasks), plan.trajectory_groups):
-                    results.append((index, function(tasks[index])))
+            if control is not None:
+                _dynamic_worker(function, tasks, plan, device_slot, group, control)
+            else:
+                with _context(plan, device_slot, group):
+                    for index in range(group_id, len(tasks), plan.trajectory_groups):
+                        results.append((index, function(tasks[index])))
         except Exception as exc:
             error = _result_error(exc)
         finally:
@@ -486,12 +726,19 @@ def _mpi_run(function, tasks, plan):
         except Exception as exc:
             error = _result_error(exc)
     all_errors = world.allgather(error)
-    gathered = world.gather(results if group.Get_rank() == 0 else [], root=0)
-    group.Free()
+    if control is not None:
+        control.Free()
+        gathered = None
+    else:
+        gathered = world.gather(results if group.Get_rank() == 0 else [], root=0)
+    if worker_rank >= 0:
+        group.Free()
     if any(all_errors):
         raise RuntimeError("MPI task failed: " + "; ".join(e for e in all_errors if e))
     if rank != 0:
         return None
+    if plan.scheduling == "dynamic":
+        return results
     flat = [item for sub in gathered for item in sub]
     return [value for _, value in sorted(flat, key=lambda pair: pair[0])]
 
@@ -499,8 +746,9 @@ def _mpi_run(function, tasks, plan):
 def run_tasks(function, tasks, parallel_config=None):
     """Run importable ``function(task)``; MPI returns data on rank zero only.
 
-    Static process slots deliberately own task batches, keeping GPU placement
-    fixed and allowing one persistent thermal-parent task per slot.
+    Static process slots own task batches, keeping GPU placement fixed. MPI
+    dynamic scheduling uses one coordinator and refills complete trajectory
+    groups; each group's bead ranks remain attached to that group.
     """
     tasks = list(tasks)
     plan = execution_plan(parallel_config)

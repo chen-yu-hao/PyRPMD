@@ -11,7 +11,12 @@ and numerical behavior; they do not establish physical accuracy for a real
 chemical reaction. A single chosen incident electronic state is prepared at a
 decoupled reactant asymptote. This is **not an implementation of an electronic
 thermal-equilibrium PMF or nonadiabatic Bennett–Chandler rate estimator**.
-`rate`, `fes` and other equilibrium tasks reject the nonadiabatic configuration.
+`rate`, `fes` and other equilibrium tasks reject this focused nonadiabatic configuration.
+For electronic thermal preparation and finite-time rate correlations, use the
+separate [thermal NRPMD API](thermal-nrpmd.md). Additional model methods are
+described in [KC/MV/isomorphic RPMD](nonadiabatic-methods.md),
+[complex SOC and RPSH](nonadiabatic-soc-rpsh.md), and
+[electronic-friction dynamics](electronic-friction.md).
 
 ## Hamiltonian and conventions
 
@@ -23,12 +28,14 @@ sum-beads Hamiltonian is
 H_P=\sum_{b=1}^{P}\left[
 \sum_a\frac{p_{ba}^2}{2m_a}
 +\sum_a\frac{m_a\omega_P^2}{2}(q_{ba}-q_{b-1,a})^2
-+\frac12\left(x_b^T V(q_b)x_b+y_b^T V(q_b)y_b-\mathrm{Tr}\,V(q_b)\right)
++\frac12\left(z_b^\dagger V(q_b)z_b-\mathrm{Tr}\,V(q_b)\right)
 \right],\qquad \omega_P=P/\beta.
 \]
 
 `q` and `p` have shape `[P, natoms, 3]`; `mapping_q` (x) and `mapping_p` (y)
-have shape `[P, K]`. The provider supplies the **full** diabatic energy matrix,
+have shape `[P, K]`, with $z=x+iy$. The real Hamiltonian uses a Hermitian
+matrix; the expression includes the imaginary-coupling cross term automatically.
+The provider supplies the **full** diabatic energy matrix,
 including any common state-independent energy on every diagonal. The code does
 not add a second scalar potential or rescale its matrix by P. `energy()` reports
 this propagated Hamiltonian, not a quantum thermodynamic internal-energy
@@ -68,8 +75,8 @@ half potential substep. The free-ring map is selected with the existing
 unthermostatted. Only parent sampling uses its configured thermostat.
 
 The potential substep uses the momentum-integral (MInt) construction [3]. At
-fixed nuclear coordinates, diagonalize the real symmetric matrix as
-`V = U diag(lambda) U.T`. For `z = x + i*y`, electronic evolution is exactly
+fixed nuclear coordinates, diagonalize the Hermitian matrix as
+`V = U diag(lambda) U.conj().T`. For `z = x + i*y`, electronic evolution is exactly
 `z(t) = exp(-i*V*t) z(0)`. Nuclear momentum must change during this rotation:
 
 \[
@@ -106,8 +113,9 @@ return DiabaticResult(
 )
 ```
 
-Both arrays must be finite and real. The matrix and its nuclear derivatives must
-be symmetric in the two electronic indices. Every diagonal and coupling must
+Both arrays must be finite real or complex numerical arrays. The matrix and its
+nuclear derivatives must be Hermitian in the two electronic indices, including
+real diagonal elements. Every diagonal and coupling must
 have its nuclear gradient; energies alone are insufficient. Do not provide
 adiabatic energy gradients in this interface without an appropriate diabatic
 transformation, and do not mix derivative couplings with diabatic off-diagonal
@@ -180,8 +188,10 @@ The electronic matrix propagation uses NumPy on CPU. Serial execution and local
 trajectory processes are supported, and the nuclear free-ring map may use the
 existing native kernel. MPI, bead-worker matrix evaluation, GPU matrix propagation
 and fused native electronic propagation are not supported. This version uses
-real symmetric matrices; general complex Hermitian spin-orbit couplings require
-another interface and propagator extension.
+real symmetric and complex Hermitian spin-orbit matrices in a fixed diabatic
+basis. The exact electronic substep preserves complex phase information in
+both electronic rotation and the integrated nuclear impulse. Coordinate-dependent
+basis changes require the appropriate derivative terms from the provider.
 
 For H + HO2 or another real reaction, supply a justified diabatic basis, the full
 coupled matrix and its gradients. Independent singlet and triplet PESs do not

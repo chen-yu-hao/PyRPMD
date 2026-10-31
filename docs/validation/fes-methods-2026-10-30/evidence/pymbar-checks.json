@@ -1,0 +1,22 @@
+[
+  {
+    "case": "/workspace/work/rpmd-fes-review/ogre/double_well-fixed-s4101-n1",
+    "windows": 45,
+    "samples": 90000,
+    "thinning": 1,
+    "max_window_free_energy_difference_dimensionless": 1.4495800393365954e-12,
+    "max_normalized_weight_difference": 9.226560487851643e-16,
+    "passed": true,
+    "scope": "Same finite data, independent reduced bias expression and PyMBAR solver; does not establish sampling convergence."
+  },
+  {
+    "case": "/workspace/work/rpmd-fes-review/harmonic/fixed-p8-s3101-n1",
+    "windows": 25,
+    "samples": 20000,
+    "thinning": 1,
+    "max_window_free_energy_difference_dimensionless": 2.338546023494814e-13,
+    "max_normalized_weight_difference": 2.1494308069525125e-17,
+    "passed": true,
+    "scope": "Same finite data, independent reduced bias expression and PyMBAR solver; does not establish sampling convergence."
+  }
+]

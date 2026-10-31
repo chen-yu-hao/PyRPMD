@@ -1,0 +1,56 @@
+{
+  "checks": [
+    {
+      "beads": 1,
+      "natoms": 39,
+      "mobile_cartesian_dof": 63,
+      "ring_dof": 63,
+      "timestep_fs": 0.2,
+      "parent_steps": 100,
+      "child_steps_per_sign": 100,
+      "constraint_max_bohr": 8.881784197001252e-16,
+      "tangent_velocity_max_au": 8.131516293641283e-20,
+      "fixed_position_error_bohr": 0.0,
+      "child_energy_drift_eV_per_bead": [
+        4.217398792643159e-05,
+        5.412228534645385e-05
+      ],
+      "max_drift_kBT": 0.0010467717351377137
+    },
+    {
+      "beads": 4,
+      "natoms": 39,
+      "mobile_cartesian_dof": 63,
+      "ring_dof": 252,
+      "timestep_fs": 0.2,
+      "parent_steps": 100,
+      "child_steps_per_sign": 100,
+      "constraint_max_bohr": 1.7763568394002505e-15,
+      "tangent_velocity_max_au": 8.131516293641283e-20,
+      "fixed_position_error_bohr": 0.0,
+      "child_energy_drift_eV_per_bead": [
+        0.009276569816643248,
+        0.009335228167994867
+      ],
+      "max_drift_kBT": 0.18055137407383537
+    },
+    {
+      "beads": 4,
+      "natoms": 39,
+      "mobile_cartesian_dof": 63,
+      "ring_dof": 252,
+      "timestep_fs": 0.1,
+      "parent_steps": 200,
+      "child_steps_per_sign": 200,
+      "constraint_max_bohr": 2.220446049250313e-15,
+      "tangent_velocity_max_au": 6.098637220230962e-20,
+      "fixed_position_error_bohr": 0.0,
+      "child_energy_drift_eV_per_bead": [
+        0.0023171691145018524,
+        0.002328114967523114
+      ],
+      "max_drift_kBT": 0.045027753882789935
+    }
+  ],
+  "is_rate_validation": false
+}

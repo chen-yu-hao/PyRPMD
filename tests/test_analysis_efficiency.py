@@ -58,7 +58,8 @@ def test_optional_state_weights_preserve_public_default_and_all_other_mbar_outpu
         np.testing.assert_equal(compact.diagnostics[name], value)
 
 
-def test_fes_reuses_bias_columns_with_the_same_periodic_multistream_bootstrap(monkeypatch):
+@pytest.mark.parametrize("correlation_policy", ["legacy", "moments"])
+def test_fes_reuses_bias_columns_with_the_same_periodic_multistream_bootstrap(monkeypatch, correlation_policy):
     rng = np.random.default_rng(1825)
     centers = np.array([[-0.6, -0.2], [0.6, 0.3], [-0.6, -0.2]])
     stiffness = np.array([[[0.6, 0.1], [0.1, 1.2]],
@@ -81,8 +82,21 @@ def test_fes_reuses_bias_columns_with_the_same_periodic_multistream_bootstrap(mo
     fit = solve(u, counts)
     _, _, _, point_free, point_mask = histogram(x, fit.weights, edges, beta, min_count)
     reference_bin = np.unravel_index(np.nanargmin(point_free), point_free.shape)
-    gs = np.array([fes.statistical_inefficiency(np.column_stack(
-        (np.sin(sample[:, 0]), np.cos(sample[:, 0]), sample[:, 1]))) for sample in wrapped])
+    def reference_inefficiency(sample, periods):
+        # Hold the correlation policy identical on both sides of the allocation
+        # comparison. Keep the historical policy covered, and independently
+        # form the new moment observables for the production-policy case.
+        angle = sample[:, 0] % periods[0]
+        coordinate = sample[:, 1]
+        observables = [np.sin(angle), np.cos(angle), coordinate]
+        if correlation_policy == "moments":
+            observables.extend([np.sin(2 * angle), np.cos(2 * angle),
+                                (coordinate - coordinate.mean())**2])
+        return fes.statistical_inefficiency(np.column_stack(observables))
+
+    gs = np.array([reference_inefficiency(sample, periods) for sample in wrapped])
+    if correlation_policy == "legacy":
+        monkeypatch.setattr(fes, "cv_statistical_inefficiency", reference_inefficiency)
     plan = fes._bootstrap_block_plan(counts, gs)
     assert plan["status"] != "unavailable"
     reference_rng = np.random.default_rng(seed)

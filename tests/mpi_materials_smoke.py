@@ -6,6 +6,7 @@ This checks single-host collectives and ownership, not cross-node scaling.
 """
 
 import copy
+import json
 import sys
 from pathlib import Path
 
@@ -13,8 +14,10 @@ import numpy as np
 from mpi4py import MPI
 
 from pyrpmd import analyze_run, resume_run, run
+from pyrpmd.checkpoint import load_checkpoint
 from pyrpmd.constants import KB_AU
 from pyrpmd.parallel import root_call
+from pyrpmd.trajectory import materialize_stream, validate_stream
 
 
 def main():
@@ -60,10 +63,19 @@ def main():
                 assert first["diffusion"] == second["diffusion"]
                 assert first["analysis_status"] == "ballistic_or_drifting"
                 assert first["diffusion_m2_s"] is None
-            paths = sorted((directory / "samples").glob("materials_*.npz"))
+            paths = sorted((directory / "samples").glob("materials_*/manifest.json"))
             assert len(paths) == 3  # No bead worker writes a duplicate stream.
-            with np.load(paths[0]) as saved:
-                np.testing.assert_array_equal(saved["sample_steps"], np.arange(20, 181, 2))
+            assert first["trajectory_storage"] == ["stream"] * 3
+            for replica, path in enumerate(paths):
+                manifest = json.loads(path.read_text())
+                assert manifest["format"] == "PyRPMD.materials-trajectory-stream.v1"
+                with load_checkpoint(directory / "checkpoints" / f"materials_{replica:04d}.npz",
+                                     require_integrity=True) as saved:
+                    descriptor = json.loads(str(saved["trajectory"]))
+                assert manifest["trajectory"] == descriptor
+                assert validate_stream(path.parent, descriptor)["frames"] == 81
+                frames = materialize_stream(path.parent, descriptor, fields=["sample_steps"])
+                np.testing.assert_array_equal(frames["sample_steps"], np.arange(20, 181, 2))
 
         root_call(check)
         if task == "diffusion":
@@ -75,6 +87,28 @@ def main():
                 assert report["analysis_status"] == "ballistic_or_drifting"
 
             root_call(check_analysis)
+    # The physical electronic bath acts on trajectory leaders while the scalar
+    # force evaluations still use the same two bead ranks.  RNG continuation
+    # must remain exact across the sampling/production boundary and restart.
+    friction_config = copy.deepcopy(mapping)
+    friction_config["task"] = "diffusion"
+    friction_config["potential"] = {"provider": "free"}
+    friction_config["electronic_friction"] = {"gamma": "0.01 fs^-1"}
+    friction_config["diffusion"] = {"axes": [0, 1], "bootstrap": 0}
+    friction_directory = output / "diffusion_electronic_friction"
+    friction_first = run(friction_config, output=friction_directory)
+    friction_second = resume_run(friction_directory, execution={"block_steps": 7})
+
+    def check_friction():
+        assert friction_first["phase"] == "centroid_ef_rpmd_production"
+        assert friction_first["nve_energy_diagnostics"] is None
+        assert friction_first["diffusion"] == friction_second["diffusion"]
+        assert friction_first["electronic_friction"] == friction_second["electronic_friction"]
+        assert friction_first["samples_per_replica"] == [81, 81, 81]
+        assert len(list((friction_directory / "samples").glob("materials_*/manifest.json"))) == 3
+        assert friction_first["trajectory_storage"] == ["stream"] * 3
+
+    root_call(check_friction)
     # A small thermal-mass validation model tests every site-rate collective:
     # FES windows, root MBAR analysis, constrained parents, paired children and
     # final aggregation. It is not a physical hydrogen benchmark.
@@ -118,7 +152,7 @@ def main():
         assert len(list((directory / "checkpoints").glob("site_child_*.npz"))) == 12
 
     root_call(check_site_rate)
-    root_call(lambda: print("Materials PIMD + RPMD diffusion + site rate, PBC, G2 B2, exact resume and offline analysis: PASS", flush=True))
+    root_call(lambda: print("Materials PIMD + RPMD/EF-RPMD diffusion + site rate, PBC, G2 B2, exact resume and offline analysis: PASS", flush=True))
 
 
 if __name__ == "__main__":

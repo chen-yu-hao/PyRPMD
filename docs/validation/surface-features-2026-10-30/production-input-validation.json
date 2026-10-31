@@ -1,0 +1,18 @@
+{
+  "valid": true,
+  "task": "metadynamics",
+  "natoms": 39,
+  "temperature_K": 600.0,
+  "beads": 1,
+  "parallel": {
+    "backend": "serial",
+    "mode": "serial",
+    "trajectory_workers": 1,
+    "bead_workers": 1,
+    "threads": 1,
+    "devices": [],
+    "trajectories_per_gpu": 1,
+    "trajectory_groups": 1
+  },
+  "warnings": []
+}

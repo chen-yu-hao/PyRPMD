@@ -40,7 +40,7 @@ Command-line commands expose these same entry points, plus `validate`, `info`,
 | `fes` | Fixed-bias 1D/2D umbrella FES; optional pilot adaptation followed by independent production |
 | `network` | Entrance → channel label → TS matrix of independent complete rate calculations; no implicit sum |
 | `metadynamics` | Standard/WT bias history and finite-time 1D/2D bias FES estimates; no rate inferred from biased time |
-| `pimd` | Fixed-cell equilibrium sampling, quantum energy estimators and ring spread |
+| `pimd` | Fixed-cell or isotropic BZP NPT sampling, quantum energy estimators and ring spread; fixed atoms supported at fixed cell |
 | `diffusion` | Equilibrate then unthermostatted RPMD; unwrapped centroid MSD/tensor, VACF, uncertainty and finite-record diagnostics |
 | `site_rate` | Finite-basin QTST and paired recrossing for one constant-gradient centroid surface; rate in s⁻¹ |
 
@@ -71,9 +71,11 @@ observations, result arrays and exception payloads.
 
 ## Potential and CV plugins
 
-The PES C ABI remains **v1**, with the same header and lifecycle rules in
-[`native/include/pyrpmd/pes_api_v1.h`](../native/include/pyrpmd/pes_api_v1.h).
-There is no ABI revision solely for the new integrator choices. Potential
+The existing **v1** C ABI and its header remain compatible. **v2** adds explicit
+per-structure cells/PBC and optional physical virials while retaining synchronous
+host-memory batching and the same create/metadata/evaluate/destroy lifecycle.
+See [the versioned ABI specification](../native/ABI.md) and
+[`pes_api_v2.h`](../native/include/pyrpmd/pes_api_v2.h). Potential
 evaluation receives atomic-unit `float64[B,N,3]` coordinates and returns
 `energy[B]`, physical negative-gradient `forces[B,N,3]`, and status. Shape,
 finite-value and lifecycle checks remain enforced. Thread safety, per-context
@@ -82,9 +84,10 @@ callbacks do not become native just because a C++ ring substep is available.
 
 `System` adds optional fixed `cell[3,3]` (row lattice vectors, bohr) and
 `pbc[3]`. No-cell molecular serialization and existing identities are preserved.
-Periodic requests must reach a cell-aware provider: ASE, explicitly capable
-Python, or i-PI. The existing molecular C ABI v1, f2py and Torch interfaces
-reject periodic systems. `PESResult` adds optional physical configurational
+Periodic requests must reach a cell-aware provider: C ABI v2, ASE, explicitly
+capable Python/Torch, named periodic adapters, or i-PI. The molecular C ABI v1,
+f2py and PySCF interfaces reject periodic systems. Generic Torch requires
+`periodic=true` and `forward(q, cell, pbc)`; DeePMD rejects partial periodicity. `PESResult` adds optional physical configurational
 `virial[B,3,3]` in hartree; it is not a quantum pressure estimator. Dynamics
 keeps ring positions continuous and unwrapped.
 
@@ -92,7 +95,9 @@ A CV provides its declared estimator's `value[D]` and complete
 `jacobian[D,P,N,3]`, canonical units and optional periods. Centroid and
 bead-average estimators keep distinct meanings. Bias forces apply the full
 Jacobian and the sum-beads Hamiltonian scaling. Metadynamics additionally
-requires one or two CV dimensions and a serializable hill history.
+supports one to three CV dimensions, fixed-cell slabs, static quadratic walls,
+and a serializable hill/thermostat history. `NoseHooverChain` wraps a `Dynamics`
+instance for sampling; its `state_dict()` must be restored together with q/p.
 
 Python factories must be importable in process/MPI workers. Paths resolve
 relative to the input file. For plugin examples and exact adapter protocols,
@@ -101,7 +106,7 @@ see [potentials.md](potentials.md), [input.md](input.md) and
 
 ## Versioning and compatibility
 
-User input v1, run manifest v2, checkpoint container v2 and PES ABI v1 have
+User input v1, run manifest v2, checkpoint container v2 and PES ABI v1/v2 have
 independent version numbers. A new distribution version does not imply a
 new PES binary ABI. Unknown checkpoint/manifest versions fail explicitly;
 legacy reads and run-identity migration follow [checkpoints.md](checkpoints.md).

@@ -65,6 +65,8 @@ def build():
 | `sampling` | 平衡、采样间隔、生产长度、恒温器、副本数或母链数 |
 | `parallel` | 进程/MPI 拓扑、珠子分块与线程 |
 | `output.checkpoint_steps` | 以步数计的检查点间隔；`checkpoint_interval` 接受时间 |
+| `output.trajectory_storage` / `chunk_frames` | 材料轨迹默认 `"stream"` 分块保存，256 帧缓冲；`"memory"` 保留旧格式 |
+| `barostat` | 三维完全周期、全部原子可动的 `pimd` 可设置 BZP 压力、时间常数与摩擦 |
 
 每个任务只接受自己的 section。PCET 使用独立的 `[pcet]` 模型，没有分子 `system` 或珠子，见 [PCET](pcet.md)。
 未知字段和无效组合会报错。
@@ -94,7 +96,7 @@ FES 中是两次保存样本之间的时间。
 | `output.directory` | `runs/<task>` | 相对于输入文件 |
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | FES 40；速率 PMF 100 | |
-| `analysis.bootstrap` | 20 | metadynamics 为 0；不接受 1 |
+| `analysis.bootstrap` | 20 | metadynamics 和 OPES 为 0；不接受 1 |
 | `analysis.min_count` | 1 | 样本更少的 bin 被 mask |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | 仅 `drpmd` |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | `auto` 时不报告热速率 |
@@ -109,14 +111,18 @@ FES 中是两次保存样本之间的时间。
 | `[system]` | 除 `pcet` 外全部 | `geometry`、`transition_state`、`reactants`、`separation`、`symbols`、`masses`、`masses_amu`、`isotopes`、`geometry_unit`、`fragments`、`charge`、`multiplicity`、`cell`、`cell_unit`、`pbc`、`fixed_atoms` |
 | `[potential]` | 除 `pcet` 外全部 | `provider`、`factory`、`library`、`manifest`、`params`、`units`、`derivative`、`device` 等，见[势能](potentials.md) |
 | `[dynamics]`、`[sampling]`、`[parallel]` | 除 `pcet` 外全部 | 见上文与[执行与并行](execution.md) |
-| `[[cvs]]`、`[umbrella]`、`[analysis]` | `fes`、`rate`、`network`、`site_rate`、`surface_rate`；`metadynamics` 使用 `cvs` 与 `analysis` | 见下文 |
+| `[[cvs]]`、`[umbrella]`、`[analysis]` | `fes`、`rate`、`network`、`site_rate`、`surface_rate`；`metadynamics` 和 `opes` 使用 `cvs` 与 `analysis` | 见下文 |
 | `[reaction]` | `rate`（`drpmd` 可用 `electronic_weight`） | `fragments`、`forming_bonds`、`breaking_bonds`、`rinf`、`symmetry_factor`、`equivalent_paths` |
 | `[rate]` | `rate` | `pmf_method`、`dividing_surface`、`pmf_search_range`、`compare_ui` |
 | `[recrossing]` | `rate`、`network`、`site_rate`、`surface_rate` | 母链数、母链间隔、child pairs、child 时间、bootstrap |
 | `[collision]`、`[outcomes]` | `drpmd` | 发射分布、`bmax`、总轨迹数、最大时间；产物分类 |
 | `[nonadiabatic]` | `drpmd`（实验性 NRPMD） | 见[非绝热 NRPMD](nonadiabatic.md) |
+| `[electronic_friction]` | `diffusion` | `method = "centroid"`、`provider`、`gamma` 或 `tensor`，或 Python `factory` 与 `params`；见[电子摩擦](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
 | `[adaptive_umbrella]` | `fes`、`rate` | 见[气相与自由能](workflows.md) |
-| `[metadynamics]` | `metadynamics` | |
+| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` 可选偏置网格 |
+| `[opes]` | `opes` | 概率估计宽度、物理能垒、更新间隔和可选冻结/再平衡步数 |
+| `[replica_exchange]` | `fes` | 同温固定窗口的交换间隔与可选连通图，见[副本交换](../replica-exchange.md) |
+| `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
 | `[diffusion]`、`[site_rate]`、`[surface]` | 同名任务（`[surface]` 属于 `surface_rate`） | 见[材料与表面](periodic.md) |
 | `[network]` | `network` | 入口、通道、过渡态 |
 | `[pcet]` | `pcet` | PCET 只接受 `schema_version`、`task`、`preset`、`description`、`temperature`、`pcet`、`output` |
@@ -217,7 +223,7 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
   不加该选项时只检查输入。
 - `--workers N` 设置 `parallel.trajectory_workers`；非 MPI 输入在 N>1 时使用 `process` 后端。
 - `run` 不写入已有的非空输出目录。继续运行使用 `pyrpmd resume DIR` 或 `pyrpmd run INPUT --resume`。
-- `--bins` 与 `--bootstrap` 隐含 `--recompute`。离线重分析适用于 `fes`、`metadynamics` 和 `diffusion`；
+- `--bins` 与 `--bootstrap` 隐含 `--recompute`。离线重分析适用于 `fes`、`metadynamics`、`opes` 和 `diffusion`；
   其他任务的 `analyze` 读取保存的摘要。
 
 扩散重分析接受 `--fit-range '10 fs' '100 fs'`、`--axes 0 1`、`--atoms 0` 和 `--max-lag N`，其中延迟以保存帧数计。

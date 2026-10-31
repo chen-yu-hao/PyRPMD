@@ -1,0 +1,17 @@
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_materials_eam.py:32: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [1] tests/test_parallel.py:63: optional ASE runtime not installed
+SKIPPED [1] tests/test_periodic_materials.py:124: ASE runtime required
+SKIPPED [1] tests/test_periodic_materials.py:140: ASE runtime required
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [2] .venv/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+SKIPPED [1] .venv/lib/python3.12/site-packages/_pytest/unittest.py:521: optional ASE runtime not installed
+SKIPPED [3] tests/test_surface_examples.py:18: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_surface_examples.py:45: could not import 'ase': No module named 'ase'
+SKIPPED [1] tests/test_surface_geometry.py:246: could not import 'ase': No module named 'ase'
+1759 passed, 23 skipped, 153 subtests passed in 176.90s (0:02:56)

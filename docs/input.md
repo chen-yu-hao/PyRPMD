@@ -18,6 +18,7 @@
 | `output.directory` | 运行目录；新任务不覆盖已有非空目录 |
 | `output.checkpoint_interval` / `checkpoint_steps` | 时间间隔或正整数步数；步数优先 |
 | `output.trajectory_stride` | dRPMD 轨迹保存的正整数步数间隔 |
+| `output.trajectory_storage` / `chunk_frames` | 材料任务默认 `"stream"`、256 帧；`"memory"` 使用旧格式 |
 
 `production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，科学收敛仍需用户用系列计算确认。未知顶层和常用 section 字段会报错，不会自动忽略。
 
@@ -41,10 +42,13 @@ Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（
 `pbc=[true,true,false]` 和 `fixed_atoms=[...]`。这些字段参与恢复的科学指纹。
 `task="surface_rate"` 还要求 `[surface]` 的 `reactant_basin` 和 `dividing_surface`；
 `product_side` 为 `higher`（默认）或 `lower`。速率使用位置密度 PMF 和一阶盆地
-归一化，单位 s^-1，仅支持内置线性 centroid 坐标。已有气相 `rate`／`drpmd`／
+归一化，单位 s^-1，支持内置线性 centroid 坐标、连续展开的 `distance` 以及满足光滑分割面条件的 `periodic_distance`。
+`surface.normalization` 显式指定面积／覆盖度换算；`surface.free_energy` 可接入
+已保存的多维 FES，并沿用源体系的 CV、静态墙与通道区域。已有气相 `rate`／`drpmd`／
 `network` 会拒绝周期／固定原子系统。表面 FES 可使用自适应伞抽样；当前
-`surface_rate` 不接受 `[adaptive_umbrella]`，`metadynamics` 尚不接受周期／固定
-原子系统。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
+`surface_rate` 不接受 `[adaptive_umbrella]`。`metadynamics` 支持 1–3 个 CV、周期／固定
+原子系统、NHC/PILE-L/Andersen 和二次墙。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
+1–2 维偏置网格设置见 [网格 metadynamics](grid-metadynamics.md)。
 
 ## 热化与持续母轨迹
 
@@ -62,9 +66,11 @@ parents = 8
 
 `equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
 
-FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和 `diffusion` 生产段使用无温控传播。
+FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。FES、气相和位点速率工作流使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，显式指定时须为所选 canonical 名称加 `-andersen`。`pimd`/`diffusion` 还支持与 Cayley 匹配的 BCOCB/PILE-L、与正常模匹配的 BAOAB/PILE-L，`sampling.gamma_centroid` 设置采样温控器的质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和默认的 `diffusion` 生产段使用无温控传播。
 
-## 固定晶胞材料任务
+`diffusion` 可额外配置 `[electronic_friction]`，在生产段启用物理电子浴的 Markovian 质心 EF-RPMD。该 section 接受 `method = "centroid"` 与 `provider = "constant"` 或 `"python"`：常量 provider 必须在松弛率 `gamma` 和物理摩擦张量 `tensor` 中二选一；Python provider 使用 `factory` 和 `params`。数值 `gamma` 使用原子时间的倒数，也可写为 `"0.01 fs^-1"`；`tensor` 使用电子质量/原子时间，维度为 `[3*N,3*N]`。固定基底原子可保留，摩擦只作用于移动自由度。此时生产轨迹与电子浴交换能量，不进行 NVE 能量漂移判定。其他任务、显式 `loop_backend = "native"` 以及混合 mapping 势均拒绝该配置。完整接口、相关噪声、模型限制和示例见[电子摩擦](electronic-friction.md)。
+
+## 材料任务
 
 `pimd` 和 `diffusion` 使用上述 sampling 时间配置，不接受 reaction、umbrella 或
 metadynamics 偏置。`diffusion` 增加 `[diffusion]`：`atom_indices`、`axes`、
@@ -73,6 +79,12 @@ metadynamics 偏置。`diffusion` 增加 `[diffusion]`：`atom_indices`、`axes`
 均从零起始。`site_rate` 使用一个线性 centroid CV、固定 umbrella 和 `[recrossing]`，
 并显式设置 `[site_rate]` 的 `cv`、`basin`、`dividing_surface`、`direction`。
 三种任务的完整配置与结果解释见[材料计算](materials.md)。
+
+`pimd` 和 `diffusion` 可固定部分原子；扩散选择的测量原子必须可动，参考原子可固定。
+`pimd` 可添加 `[barostat]`：`method="bzp"`、`pressure="1 bar"`、
+`time_constant="1000 fs"`，可选 `friction`。它要求三维完全周期、全部原子可动、
+支持变晶胞及物理 virial 的 PES；各向同性压力不改变晶胞形状。详见 [NPT](materials-npt.md)。
+材料轨迹默认流式保存，见 [分块与续跑](streaming-trajectories.md)。
 
 ## dRPMD
 
@@ -228,8 +240,9 @@ min_count = 5
 enabled = true
 pilot_steps = 1000
 pilot_equilibration_steps = 200
-max_rounds = 4
-max_windows = 64
+max_rounds = 8
+max_windows = 128
+max_pilot_steps = 16000
 target_overlap = 0.03
 min_effective_samples = 20.0
 min_spacing = 0.000001
@@ -239,6 +252,27 @@ min_spacing = 0.000001
 overlap 与有效样本数插窗、延长 pilot。窗口冻结后使用独立种子重新平衡并
 采集 production；pilot 不进入最终 FES/PMF。预算耗尽明确失败，不静默跳过
 重叠要求。参数单位、阶段恢复及适用边界见[增强采样](enhanced-sampling.md)。
+
+二维面建议显式启用空间覆盖检查，在同一表中增加：
+
+```toml
+coverage_bins = [4, 8]
+coverage_ranges = [["-0.5 bohr", "0.5 bohr"], ["-1 bohr", "1 bohr"]]
+min_bin_effective_samples = 5.0
+target_coverage = 0.95
+```
+
+上述范围仅为示例，应按实际 CV 修改。两项网格参数必须一起指定，默认不启用。
+检查使用 MBAR 权重与轨迹相关性修正后的局部有效样本数，在薄弱格中心补窗；
+它与最终分析分箱相互独立。全局窗口 ESS 还检查坐标二阶矩，防止快速振荡掩盖
+振幅分布的慢收敛。所有阈值通过后仍需检查生产轨迹的覆盖率和独立重复结果。
+
+窗口 ESS 不足，或覆盖不足且无法继续插窗时，将下一轮 pilot 加倍；单纯插窗不增加每窗长度。
+`max_pilot_steps` 默认是 `16 * pilot_steps`。未显式指定生产长度时，启用
+自适应或 metadynamics 的任务默认生产 1000 fs；其他任务的 pilot 默认仍为
+200 fs。显式长度不变，生产 ESS 和覆盖率仍须单独检查。预算耗尽后可用
+`pyrpmd resume RUN --adaptive-max-rounds 12 --adaptive-max-windows 192`
+增加上限，已完成的 pilot 不重算；不能用这个接口降低统计门槛或重开冻结的窗口。
 
 ## Metadynamics
 

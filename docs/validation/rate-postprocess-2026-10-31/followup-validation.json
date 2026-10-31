@@ -1,0 +1,18 @@
+{
+  "original_head": "97a93d72d485650f6c4ddfbb3d687a25efeab441",
+  "artifact_run": 41104245323,
+  "artifact_id": 13000158112,
+  "artifact_sha256": "7cbfda0481ffa2d2be5c9149683a2a729e964c549be49e1c21fc1ea816cbc51f",
+  "rate_estimate_cm3_s": 4.592576395458098e-12,
+  "k_tst_cm3_s": 4.818519203916087e-12,
+  "total_kappa": 0.9531094930005963,
+  "branching_fraction_estimates": [0.5364298995369599, 0.46357010046304015],
+  "point_estimates_equal_remote_artifact": true,
+  "source_file_count": 112,
+  "all_source_files_unchanged": true,
+  "rate_cm3_s": null,
+  "converged": false,
+  "scope": "Offline replay of already completed real BKMP2 trajectories; no new trajectories or physical convergence claim.",
+  "local_tests": {"passed": 80, "failed": 0},
+  "local_docs_build": "Unavailable: Sphinx/MyST/theme not installed and package index unavailable; remote Documentation workflow must validate both builds."
+}

@@ -72,7 +72,7 @@ python examples/manual/low_level.py
 最后一行打印 `loop_stats`：Python `HarmonicPotential` 没有原生 PES 绑定，因此每一步都在 Python 中运行，回退原因中会写明。
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
-:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, loop_stats
+:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, loop_stats
 ```
 
 ```{autofunction} pyrpmd.dynamics.native_capabilities
@@ -80,6 +80,24 @@ python examples/manual/low_level.py
 
 `step()` 执行一步无恒温的确定性传播。`sample_step()` 用匹配的恒温器执行一步采样。`energy()` 返回对珠子求和的环
 Hamiltonian。`propagate()` 与 `propagate_block()` 在失败时提交的内容不同，见[执行与续跑](execution.md)。
+
+## 批量轨迹、RPC/MTS 与谱分析
+
+```python
+from pyrpmd import BatchedState, BatchedDynamics, MTSDynamics
+from pyrpmd import RingPolymerContraction, SplitPotential, DifferencePotential
+from pyrpmd.analysis.spectroscopy import (
+    velocity_autocorrelation, dipole_autocorrelation, flux_correlation,
+    power_spectrum, relative_ir_spectrum,
+)
+```
+
+`BatchedState` 保存 `[K,P,N,3]` 数组以及每条轨迹的独立时钟。
+`MTSDynamics` 区分外层步长和内层步数；RPC 的慢势能必须是显式声明的修正。
+`Dynamics.trpmd_step()` 保持真实核质量，只对环内部模施加摩擦。
+示例和支持的组合见英文扩展指南：[批量传播](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md)、
+[RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md)和
+[TRPMD/谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md)。
 
 ## 势能
 
@@ -136,7 +154,7 @@ Hamiltonian。`propagate()` 与 `propagate_block()` 在失败时提交的内容�
 这些对象也可从 `pyrpmd` 导入，用于从指定入射 diabatic 态出发的碰撞，见[非绝热指南](nonadiabatic.md)。
 
 `NRPMDState` 在核的 `q/p[P,N,3]` 之外保存 `mapping_q/mapping_p[P,K]`。`DiabaticResult` 接收能量矩阵 `[B,K,K]`
-及其正梯度 `[B,K,K,N,3]`，两者均为实数、有限，并在电子指标上对称。
+及其正梯度 `[B,K,K,N,3]`，两者须有限，并在电子指标上满足 Hermitian 条件；复数自旋–轨道耦合保留完整相位。
 
 ```{autoclass} pyrpmd.nonadiabatic.DiabaticResult
 ```
@@ -148,6 +166,22 @@ Hamiltonian。`propagate()` 与 `propagate_block()` 在失败时提交的内容�
 ```{autoclass} pyrpmd.nonadiabatic.NRPMDDynamics
 :members: step, energy, populations, asymptotic_coupling
 ```
+
+## 电子摩擦与其他非绝热方法
+
+以下对象可从 `pyrpmd` 直接导入。各方法的初始分布、适用范围和速率定义见[非绝热章节](nonadiabatic.md)。
+
+| 功能 | Python 入口 |
+| --- | --- |
+| 质心电子摩擦 | `ElectronicFrictionDynamics`、`ConstantElectronicFriction`、`FrictionResult` |
+| 电子热平衡 NRPMD | `ThermalNRPMDSampler`、`ThermalNRPMDDynamics`、`thermal_flux_side`、`thermal_population_rate` |
+| 环聚合物表面跳跃 | `RPSHDynamics`、`RPSHState`、`HopResult` |
+| MV-RPMD | `MVRPMDState`、`MVRPMDPotential`、`MVRPMDDynamics`、`MVRPMDSampler` |
+| KC-RPMD | `KCCalibration`、`KCRPMDState`、`KCRPMDPotential`、`KCRPMDDynamics`、`KCRPMDSampler` |
+| Isomorphic Hamiltonian | `IsomorphicPotential`、`IsomorphicEhrenfestState`、`IsomorphicEhrenfestDynamics` |
+
+电子摩擦接口使用标量平均力势和物理摩擦张量；其他方法使用完整的 diabatic 矩阵势及正梯度。
+热采样、符号重加权、QC 模型误差和数值收敛应分别检查。
 
 ## 版本
 

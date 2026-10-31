@@ -56,6 +56,21 @@ def resolve_job(job=None):
     return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
 
 
+@pytest.mark.parametrize("target", [0., -1., float("nan"), float("inf"), True, "0.2"])
+def test_surface_precision_target_rejects_invalid_values(target):
+    job = cluster_job()
+    job["surface"]["max_relative_standard_error"] = target
+    with pytest.raises(InputError, match="max_relative_standard_error"):
+        resolve_job(job)
+
+
+def test_surface_precision_target_is_preserved_in_definition():
+    job = cluster_job()
+    job["surface"]["max_relative_standard_error"] = .15
+    config, system = resolve_job(job)
+    assert surface_definition(config, system)["max_relative_standard_error"] == .15
+
+
 @pytest.mark.parametrize("change", [
     {"surface": {"reactant_basin": [-0.8, -0.2]}},
     {"surface": {"reactant_basin": [-0.8, 0.2], "dividing_surface": 0.0}},
@@ -127,6 +142,22 @@ def test_affine_gradient_override_cannot_change_surface_mass_metric():
     config["cvs"] = [cv]
     with pytest.raises(ValueError, match="overridden"):
         surface_definition(config, system)
+
+
+def test_periodic_bond_surface_requires_a_provably_smooth_image_region():
+    job = cluster_job()
+    job["system"].update(cell=[[8., 0., 0.], [2., 8., 0.], [0., 0., 20.]], pbc=[True, True, False])
+    job["potential"] = {"provider": "free"}
+    job["cvs"] = [{"kind": "periodic_distance", "atoms": [0, 1]}]
+    job["surface"] = {"reactant_basin": [2.1, 3.], "dividing_surface": 2., "product_side": "lower"}
+    job["umbrella"]["centers"] = [1.5, 2., 2.5, 3., 4., 5.]
+    config, system = resolve_job(job)
+    definition = surface_definition(config, system)
+    expected = .5 * np.linalg.svd(system.cell[:2], compute_uv=False)[-1]
+    assert definition["periodic_safe_radius_bohr"] == pytest.approx(expected)
+    job["surface"].update(reactant_basin=[4.1, 5.], dividing_surface=4.)
+    with pytest.raises(InputError, match="image-switch"):
+        resolve_job(job)
 
 
 @pytest.mark.parametrize("integrator", ["cayley-bcb", "normal-mode-bab", "velocity-verlet"])
@@ -247,7 +278,7 @@ def test_network_input_cannot_drop_surface_boundary_metadata(boundary):
 
 
 @pytest.mark.parametrize("boundary", ["fixed", "periodic"])
-def test_metadynamics_input_rejects_unvalidated_surface_combination(boundary):
+def test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell(boundary):
     job = cluster_job()
     job["task"] = "metadynamics"
     for key in ("surface", "umbrella", "recrossing"):
@@ -257,9 +288,10 @@ def test_metadynamics_input_rejects_unvalidated_surface_combination(boundary):
     if boundary == "periodic":
         job["system"].pop("fixed_atoms")
         job["system"].update(cell=np.diag([4.0, 4.0, 10.0]).tolist(), pbc=[True, True, False])
-    with pytest.raises(InputError, match="[Mm]etadynamics.*periodic|[Mm]etadynamics.*fixed"):
-        resolve_job(job)
-
+    config, system = resolve_job(job)
+    assert config["task"] == "metadynamics"
+    assert bool(system.fixed_atoms) == (boundary == "fixed")
+    assert any(system.pbc) == (boundary == "periodic")
 
 def test_adaptive_surface_fes_is_accepted_but_surface_rate_is_not():
     job = periodic_job()

@@ -73,6 +73,23 @@ jobs:
               'benchmarks/efficiency/audit_optimization.py',
               'benchmarks/efficiency/README.md',
               'native/include/pyrpmd/pes_api_v1.h',
+              'native/include/pyrpmd/pes_api_v2.h',
+              'native/include/pyrpmd/thermal_pes.h',
+              'native/CMakeLists.txt', 'native/thermal.cpp', 'native/thermal.hpp',
+              'native/thermal-NOTICE.md', 'THIRD_PARTY_NOTICES.md',
+              'native/onnx/CMakeLists.txt', 'native/onnx/README.md',
+              'native/onnx/onnx_pes.cpp', 'native/onnx/context_test.cpp',
+              'tools/export_jaxpip_onnx.py', 'tools/requirements-jaxpip-export.txt',
+              'tests/onnx/jaxpip_roundtrip.py',
+              'src/pyrpmd/pesgen/_native/bridge.cpp',
+              'src/pyrpmd/pesgen/_native/worker.f90',
+              'src/pyrpmd/pesgen/_native/pes_api_v1.h',
+              'benchmarks/brhcl/build_pes.py', 'benchmarks/brhcl/source.json',
+              'benchmarks/brhcl/SOURCE.md', 'benchmarks/brhcl/wrapper.cpp',
+              'benchmarks/brhcl/wrapper.f90', 'benchmarks/brhcl/exports.map',
+              'benchmarks/fes_methods/ogre_models.c',
+              'benchmarks/pmf_accuracy/render_validation.py',
+              'docs/validation/brhcl-multichannel-2026-10-30/evidence/pytest-full.xml',
               'examples/network/two_entrances.py',
               'examples/rate/toy_exchange.py',
               'examples/fes/adaptive_harmonic.inp',
@@ -95,8 +112,16 @@ jobs:
           for name in required:
               assert (roots[0] / name).is_file(), name
           with zipfile.ZipFile(wheels[0]) as archive:
-              assert any(n.startswith('pyrpmd/_native') and n.endswith(('.so', '.pyd'))
-                         for n in archive.namelist())
+              names = archive.namelist()
+              for module in ('_native', '_thermal'):
+                  assert any(n.startswith('pyrpmd/' + module) and n.endswith(('.so', '.pyd'))
+                             for n in names), module
+              for header in ('pes_api_v1.h', 'pes_api_v2.h', 'thermal_pes.h'):
+                  assert any(n.endswith('/include/pyrpmd/' + header) for n in names), header
+              for name in ('bridge.cpp', 'worker.f90', 'pes_api_v1.h'):
+                  assert 'pyrpmd/pesgen/_native/' + name in names, name
+              for notice in ('LICENSE', 'THIRD_PARTY_NOTICES.md', 'native/thermal-NOTICE.md'):
+                  assert any(n.endswith('.dist-info/licenses/' + notice) for n in names), notice
           assert not wheels[0].name.endswith('none-any.whl'), wheels[0]
           receipt = {
               'commit': os.environ['GITHUB_SHA'],

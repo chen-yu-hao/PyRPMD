@@ -262,6 +262,8 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     Blocks must end at thermostat/Python-classifier/checkpoint boundaries.
     Sampling RNG remains in Python at those boundaries.
     """
+    if getattr(dynamics, "_stochastic_propagation", False):
+        raise ValueError("stochastic dynamics require step() or transactional propagate(), not propagate_block()")
     if isinstance(steps, (bool, np.bool_)) or not isinstance(steps, (int, np.integer)) or not 0 <= steps <= 4096:
         raise ValueError("steps must be an integer in [0, 4096]")
     steps = int(steps)

@@ -1,0 +1,35 @@
+# Analytic periodic teaching model; not a fitted Ni-H potential.
+task = "pimd"
+temperature = "300 K"
+beads = 4
+seed = 307
+
+[system]
+symbols = ["Ni", "H"]
+geometry = [[0.0, 0.0, 0.0], [0.4, 0.2, 0.8]]
+geometry_unit = "bohr"
+cell = [[4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [0.0, 0.0, 12.0]]
+cell_unit = "bohr"
+pbc = [true, true, false]
+fixed_atoms = [0]
+
+[potential]
+provider = "builtin"
+name = "periodic_cosine"
+params = {height = [0.005, 0.005, 0.0], confinement = 0.01}
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "pile-l"
+equilibration_steps = 100
+production_steps = 400
+sample_interval = 5
+replicas = 2
+
+[output]
+directory = "runs/materials_fixed_slab"
+trajectory_storage = "stream"
+chunk_frames = 32
+checkpoint_steps = 100
