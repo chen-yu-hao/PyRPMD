@@ -49,7 +49,7 @@ _SECTIONS = {
         "factory params channels exit_distance persistence persistence_steps check_interval bond_cutoffs".split()
     ),
     "output": set(
-        "directory checkpoint_interval checkpoint_steps trajectory_stride trajectory_storage chunk_frames diagnostics".split()
+        "directory checkpoint_interval checkpoint_steps trajectory_stride trajectory_storage chunk_frames diagnostics store_configurations".split()
     ),
     "reaction": set(
         "fragments forming_bonds breaking_bonds electronic_weight rinf Rinf equivalent_paths symmetry_factor preparation entry_side".split()
@@ -959,6 +959,8 @@ class JobSpec:
                 name: bool(diagnostics.get(name, selected))
                 for name in ("energy_parts", "ring_radii")
             }
+        if "store_configurations" in output and task != "metadynamics":
+            raise InputError("output.store_configurations is supported only for metadynamics")
         resolved = {
             **d,
             "schema_version": 1,
