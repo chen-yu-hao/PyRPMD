@@ -1,0 +1,5 @@
+kind,v,total_energy_ev,paired_samples,initial_draws_verified,base_reactive,variant_reactive,reactivity_label_changes,status_or_channel_changes,median_energy_drift_ratio,mean_termination_time_change_fs
+radial,0,0.55,256,True,2,2,0,0,0.9999963646679155,-1.9507812500000694
+radial,1,1.1,256,True,17,19,8,8,0.9999633413968197,-2.5632812500000934
+timestep,0,0.55,256,True,2,2,0,0,0.24973292215685317,-6.372125049836086e-13
+timestep,1,1.1,256,True,17,17,0,0,0.24946857038070158,0.002343749997426592

@@ -1,0 +1,4 @@
+v,total_energy_ev,beads,disk_bmax_bohr,combined_bmax_bohr,disk_samples,annulus_samples,disk_reactive,annulus_reactive,disk_sigma_angstrom2,annulus_sigma_angstrom2,combined_sigma_angstrom2,conservative_ci95_lower_angstrom2,conservative_ci95_upper_angstrom2,ci_method,beyond_combined_bmax_tested
+0,1.1,32,3.5,4.5,4096,1024,420,0,1.1050389067842272,0.0,1.1050389067842272,0.9931448361662539,1.2548040967569443,Sum of per-stratum 97.5% Clopper-Pearson intervals; Bonferroni coverage at least95%; unknowns included,False
+1,0.9,32,4.0,5.0,4096,1024,40,1,0.13745867839492817,0.007732050659714711,0.1451907290546429,0.09364140985787014,0.2435609460196816,Sum of per-stratum 97.5% Clopper-Pearson intervals; Bonferroni coverage at least95%; unknowns included,False
+1,1.1,32,4.0,5.0,4096,1024,275,0,0.9450284139651313,0.0,0.9450284139651313,0.8254957241952792,1.1095271099568826,Sum of per-stratum 97.5% Clopper-Pearson intervals; Bonferroni coverage at least95%; unknowns included,False
