@@ -4,10 +4,14 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from benchmarks.h3.state_preparation_study import LaunchConfig, PreparationSpec, run
+from benchmarks.h3.state_preparation_study import (
+    LaunchConfig, PreparationSpec, run, validate_request,
+)
 
 
 def jobs(group):
+    if group not in ("fast", "switch", "audit", "all"):
+        raise ValueError("Unknown preparation-study workload group")
     points=((0,.55),(1,.90),(1,1.10))
     if group in ("fast","all"):
         for v,energy in points:
@@ -32,7 +36,10 @@ def main():
     parser.add_argument("--workers",type=int,default=8)
     parser.add_argument("--output",type=Path,default=Path("runs/state_preparation_study"))
     args=parser.parse_args()
-    for scope,label,config,spec,audit in jobs(args.group):
+    planned = list(jobs(args.group))
+    for _, _, config, spec, audit in planned:
+        validate_request(config, spec, workers=args.workers, audit=audit)
+    for scope,label,config,spec,audit in planned:
         run(config,spec,args.output/scope/label,workers=args.workers,audit=audit)
     if args.group in ("audit", "all"):
         # Reduce native every-step hold integrals before thinning the saved

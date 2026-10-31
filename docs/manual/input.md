@@ -48,9 +48,10 @@ Python code. Production PIMD settings are covered in [Materials and surfaces](pe
 | CLI `--pes`, `--pes-manifest`, `--output` | The directory where the command runs |
 | A `.o` link manifest | The directory of the manifest |
 
-For example, `output.directory="runs/manual-quickstart"` in `examples/manual/quickstart.inp`
-resolves next to that input, while `--output runs/manual-first` on the command line resolves in the
-current directory. Move referenced files together with the input and keep the atom order.
+For example, `output.directory="run"` in the starter `my-first-run/quickstart.inp` resolves to
+`my-first-run/run`, while CLI `--output runs/custom` resolves from the current directory.
+`validate INPUT --output runs/custom` shows the resolved input and output paths without creating
+the run directory. Move referenced files together with the input and keep the atom order.
 
 ## Common fields
 
@@ -83,9 +84,11 @@ two launches from a parent chain, in FES it is the time between saved samples.
 A thermal `pilot` input may omit the fields below; PyRPMD fills in these defaults and records
 pilot notes in `input_warnings`. For thermal dynamics, `preset="production"` requires explicit
 `temperature`, `beads`, `[dynamics]` and `[sampling]`, plus task-specific checks such as an explicit
-dRPMD `bmax`. Values omitted within those sections can still use defaults. Inspect the resolved
-configuration before production; this preset does not establish convergence. State-selected
-preparation and PCET have their own parameter requirements.
+dRPMD `bmax`. Values omitted within those sections can still use defaults. The preset checks
+input completeness without selecting a higher-accuracy parameter set or establishing scientific
+convergence. Specify the physical model and sampling budgets explicitly and inspect the resolved
+configuration before production. State-selected preparation and PCET have their own parameter
+requirements.
 
 | Field | Default | Note |
 | --- | --- | --- |
@@ -93,24 +96,62 @@ preparation and PCET have their own parameter requirements.
 | `beads` | 32 | `"auto"` also gives 32, with a warning; production rejects `auto` |
 | `seed` | 0 | Independent streams derive from stable task IDs |
 | `system.charge` / `multiplicity` | 0 / 1 | Must match the selected PES |
-| `dynamics.timestep` | `0.1 fs` | |
+| `dynamics.timestep` | `0.1 fs` | Check the reported observable again at half the step |
 | `dynamics.integrator` | `cayley-bcb` | |
 | `dynamics.native` / `loop_backend` / `block_steps` | `true` / `auto` / 256 | See [Execution and parallelism](execution.md) |
 | `sampling.thermostat` | `andersen` | `pile-l` for `pimd` / `diffusion` (Andersen with velocity-Verlet) |
-| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | Production defaults to `1000 fs` for metadynamics or enabled adaptive umbrellas; all times are multiples of the step |
+| `sampling.equilibration` / `production` / `interval` | `100 fs` / `200 fs` / `1 fs` | Enabled adaptive umbrellas and metadynamics default to `1000 fs` production; explicit lengths override this, and all times must be multiples of the step |
 | `sampling.andersen_interval` | 10 steps | Steps between Andersen momentum resamplings |
 | `sampling.replicas` | 1 | 4 for `diffusion` |
 | `output.directory` | `runs/<task>` | Relative to the input file |
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | 40 for FES; 100 for the rate PMF | |
-| `analysis.bootstrap` | 20 | 0 for metadynamics and OPES; 1 is rejected |
+| `analysis.bootstrap` | 20 | A short analysis budget, not a precision target; 0 for metadynamics and OPES; 1 is rejected |
 | `analysis.min_count` | 1 | Bins with fewer samples are masked |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | `drpmd` only |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | With `auto`, no thermal rate is reported |
 | `outcomes.exit_distance` / `persistence` | R0 / `1 fs` | `drpmd` only |
 
-`pyrpmd validate INPUT --write-resolved resolved.json` writes the full configuration with every
-default resolved.
+`pyrpmd validate INPUT --write-resolved resolved.json` writes the resolved front-end input.
+Some workflow settings, including automatically prepared rate windows and adaptive plans, are
+resolved at runtime and recorded in their sampling outputs.
+
+The gas-phase `rate` workflow supplies these additional starting values when omitted:
+
+| Field | Default | Meaning |
+| --- | --- | --- |
+| `rate.pmf_method` | `ui` | Gaussian umbrella integration; `mbar` is an explicit alternative |
+| Initial umbrella centers | 23 evenly spaced points from -0.05 to 1.05 | Step 0.05 in the dimensionless reaction coordinate |
+| Umbrella stiffness | `50 / beta` | Physical harmonic stiffness, i.e. 50 kBT for the dimensionless coordinate |
+| `rate.pmf_points` | 401 | UI integration grid, not a number of sampled windows |
+| `recrossing.parent_replicas` / `parent_samples` | 2 / 4 | `sampling.parents`, if supplied, replaces the default parent-sample count |
+| `recrossing.equilibration` / `parent_interval` / `child_time` | `20 fs` / `5 fs` / `50 fs` | Must be converged for the reaction |
+| `recrossing.child_pairs` / `bootstrap` | 2 / 100 | Per parent / number of resampling draws |
+
+These are not the RPMDrate manual's production examples. The initial window spacing and stiffness
+need system-specific checks, especially with the default Gaussian UI model. Adaptive placement
+can add centers but keeps the supplied stiffness fixed.
+
+For enabled `[adaptive_umbrella]`, the following are **pilot selection criteria and resource
+limits**, not guarantees about the production PMF or rate:
+
+| Field | Default | Meaning |
+| --- | --- | --- |
+| `pilot_steps` | 1000 | Per window and replica; 100 fs at the default time step |
+| `pilot_equilibration_steps` | `sampling.equilibration_steps` | 1000 steps / 100 fs with otherwise default input |
+| `max_pilot_steps` | `16 * pilot_steps` | Per window and replica; 1.6 ps at the default time step |
+| `max_rounds` | 8 | Maximum pilot rounds |
+| `max_windows` | 128 | Insertion cap; longer pilots may still satisfy ESS/coverage at this count |
+| `target_overlap` | 0.03 | Normalized cosine overlap of MBAR weight columns in new schema-3 plans; legacy schema-1/2 plans retain their metric |
+| `min_effective_samples` | 20 | Per-window correlation-corrected ESS, summed over independent replicas |
+| `min_spacing` | `1e-6` | Distance in the dimensionless `sqrt(beta * delta.T @ K @ delta)` metric |
+| `coverage_bins` / `coverage_ranges` | Omitted | Spatial coverage is not checked unless both are supplied |
+| `min_bin_effective_samples` / `target_coverage` | 5 / 0.95 | Apply only to an explicitly enabled coverage grid |
+
+At the default 1 fs save interval, the first 100 fs pilot stores only about 100 frames per
+window/replica, before accounting for correlation. Passing ESS 20 is a screening result. Use
+independent production diagnostics and the [convergence procedure](science.md#assessing-adaptive-umbrella-results)
+to choose lengths, replicas, bead number and uncertainty precision for the actual system.
 
 ### Sections by task
 
@@ -226,14 +267,15 @@ different dimensions, write each entry as a string with units.
 
 | Command | Purpose | Common options |
 | --- | --- | --- |
-| `pyrpmd validate INPUT` | Parse the configuration and check the task | `--check-pes`, `--write-resolved FILE` |
+| `pyrpmd init DIR` | Write the bundled harmonic FES starter in a new or empty directory | Prints the input path and next commands |
+| `pyrpmd validate INPUT` | Parse the configuration and check the task | `--check-pes`, `--output DIR`, `--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | Show preparation information | `--pilot` runs the numerical preparation; `--output FILE` writes JSON |
 | `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume` |
 | `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N` |
 | `pyrpmd extend DIR` | Raise an existing dRPMD ensemble's total time budget for unresolved trajectories | `--max-time '20 ps'` (required; total time from launch) |
 | `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
 | `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below |
-| `pyrpmd report RUN [RUN ...]` | Generate figures and an HTML/JSON report | `--output DIR`, `--style`, `--formats`; [Reports](analysis-reports.md) |
+| `pyrpmd report RUN [RUN ...]` | Generate figures and an HTML/JSON report from saved results | `--output DIR`, `--style`, `--formats`, `--overwrite`; [Reports](analysis-reports.md) |
 | `pyrpmd rate-postprocess DIR` | Recompute rates from saved PMF/FES and signed fluxes | `--spec FILE`, `--output FILE`, `--bootstrap`; [Rate postprocessing](../rate-postprocessing.md) |
 | `pyrpmd project DIR` | Boltzmann-marginalize a saved CV-density FES | Required `--axes` and `--output DIR`; optional `--selection FILE`; [Materials](periodic.md) |
 | `pyrpmd study INPUT` | Plan or run temperature/isotope/convergence scans | `--plan`, `--output DIR`, `--resume`; [Rate studies](../rate-studies.md) |
@@ -247,6 +289,9 @@ different dimensions, write each entry as a string with units.
 
 - `validate --check-pes` and `prepare --pilot` run the same numerical preparation: constructing
   the PES, TS preparation, or PCET eigenstates. Without the option, only the input is checked.
+- `validate --output DIR` selects the destination to show in its report; it does not create a run.
+  `prepare --output FILE` instead writes a preparation JSON file. `--write-resolved FILE` explicitly
+  writes the resolved configuration from `validate`.
 - `--workers N` sets `parallel.trajectory_workers`; for non-MPI inputs, N>1 selects the `process`
   backend.
 - `run` refuses an existing non-empty output directory. Continue a run with `pyrpmd resume DIR`
@@ -257,6 +302,25 @@ different dimensions, write each entry as a string with units.
 Diffusion reanalysis accepts `--fit-range '10 fs' '100 fs'`, `--axes 0 1`, `--atoms 0` and
 `--max-lag N`, where the lag counts saved frames. The fit range must lie within the saved duration;
 see [Output and analysis](results.md).
+
+### Terminal output and debugging
+
+`python -m pyrpmd` accepts the same commands as the `pyrpmd` executable. Use `pyrpmd --help` for
+the command list and `pyrpmd COMMAND --help` for a command's options. Command results are JSON
+on standard output; expected input/runtime errors go to standard error and return exit code 2.
+A successful command returns 0. This is an execution status: still inspect `ready`, `warnings`,
+`converged` and task-specific diagnostics before interpreting a scientific result.
+
+For an actionable error message, run the normal command. When reporting an unexpected failure,
+add `--debug` to include its traceback, for example:
+
+```bash
+pyrpmd validate my-first-run/quickstart.inp --check-pes --debug
+pyrpmd info > environment.json
+```
+
+`--debug` is accepted before or after the subcommand. Save the command, input and environment
+report with the error; the [troubleshooting guide](troubleshooting.md) explains recovery.
 
 The full section reference is in
 [docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)*.

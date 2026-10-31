@@ -17,11 +17,26 @@ from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 | `JobSpec.resolve()` | 返回 `(config, identity)`；identity 是 `System` 或 PCET 模型 |
 | `prepare(job, numerical=False)` | 返回准备信息；`numerical=True` 执行模型准备并调用 PES |
 | `run(job, output=None, resume=False)` | 运行任务，在 root rank 返回 JSON 兼容的摘要 |
-| `resume_run(directory, parallel=None, execution=None)` | 按保存的输入与检查点续跑；`execution` 接受分块大小和后端 |
+| `resume_run(directory, parallel=None, execution=None, adaptive_budget=None)` | 按保存的输入与检查点续跑；可覆盖执行资源或增加自适应 FES/rate pilot 的预算 |
 | `analyze_run(directory, ...)` | 读取摘要，或对支持的任务离线重分析 |
 
 `job` 可以是 `JobSpec`、字典或输入文件路径。非 root 的 MPI rank 返回 `None`，因此在 root 上处理返回值。
 `resume_run` 保持保存的运行身份；新的科学设置需要新任务。
+
+续跑时可以调整执行资源：
+
+```python
+if __name__ == "__main__":
+    summary = resume_run("runs/example", parallel={"workers": 4})
+```
+
+请保存为 Python 脚本再运行，保证新建的工作进程能够导入脚本。
+在这个覆盖参数中，`workers`、`trajectory_workers` 和 `trajectory_groups` 是同义字段。
+指定其中一个会同时替换原先保存的 worker/group 数；同时指定多个时，数值必须一致。
+未知字段和不合法的资源组合会在执行前抛出 `InputError`。覆盖不会改写保存的输入或科学设置指纹，
+工作流仍会检查检查点兼容性。PCET 不接受并行或传播设置覆盖。
+热初态 dRPMD 如需在续跑时改变 worker 数，请在原始输入中显式设置 `sampling.parents`；
+旧运行的隐式母轨迹分配可能因执行布局改变而安全拒绝续跑。
 
 ```{autoclass} pyrpmd.input.JobSpec
 :members: from_file, from_mapping, with_overrides, resolve
@@ -185,5 +200,5 @@ from pyrpmd.analysis.spectroscopy import (
 
 ## 版本
 
-包、输入 schema、运行 manifest、检查点容器和 PES ABI 各有独立版本；0.2.0 包使用 PES ABI v1。以下划线开头的名称属于
+包、输入 schema、运行 manifest、检查点容器和 PES ABI 各有独立版本；0.2.0 支持分子势能 C ABI v1 和带晶胞接口的 C ABI v2。以下划线开头的名称属于
 内部实现。接口与能力协商见[公共接口约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md)。

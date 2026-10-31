@@ -55,11 +55,15 @@ pyrpmd resume runs/manual-rate
 | `kappa`、`plateau_detected` | 末端传输系数及是否找到平台 |
 | `rate_estimate_cm3_s` | 有限时间速率估计 |
 | `rate_cm3_s` | 平台与能量诊断通过时的速率，否则为 `null` |
-| `rate_standard_error_cm3_s`、`rate_percentile_95_ci_cm3_s` | 由 PMF 与回穿得到的联合采样误差和百分位区间 |
+| `rate_standard_error_cm3_s`、`rate_percentile_95_ci_cm3_s` | PMF 与回穿的联合采样误差和百分位区间；任意 PMF draw 被拒绝或误差支持不足时为 `null` |
+| `supported_draw_rate_standard_error_cm3_s`、`supported_draw_rate_percentile_95_ci_cm3_s` | PMF draw 有拒绝时的条件诊断，条件为接受 draw 具有完整 PMF 支持且拟合有效；不是无条件置信区间 |
 | `conditional_rate_standard_error_cm3_s` | 固定 QTST 因子时的回穿误差 |
-| `rate_uncertainty` | 误差是否可用、有效 bootstrap 次数与限定说明 |
+| `rate_uncertainty` | 误差是否可用、bootstrap 请求/尝试/有效/拒绝次数与限定说明 |
+| `pmf.adaptive_umbrella` | 最终摘要中的 pilot 与独立生产诊断；`rate_pmf.json` 和 `umbrella/summary.json` 中也保留 `adaptive_umbrella` |
 
 速率单位为 `cm^3 molecule^-1 s^-1`。若 PMF 重叠不连通或分割面缺少采样支持，先增加窗口或采样，再读取速率。
+自适应运行需分别查看 `pmf.adaptive_umbrella.production_target_met` 与 `pilot_target_met`。
+速率非空或 pilot 成功，都不证明生产采样充分或物理收敛。见[验收流程](science.md#评估自适应伞抽样结果)。
 
 数学定义见[速率约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md)和
 [UI / MBAR 说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md)。

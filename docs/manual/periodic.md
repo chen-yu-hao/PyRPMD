@@ -99,6 +99,11 @@ with compiled deterministic substeps; use `loop_backend="auto"` or `"python"`.
 
 ## PIMD: equilibrium properties
 
+The controls below describe the default (`sampling.engine="legacy"`) workflow. The explicit
+`sampling.engine="native"` route uses a separate native thermostat/barostat engine and checkpoint
+format; its compatible potentials, inputs and examples are documented in the
+[native PIMD guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md).
+
 ```bash
 pyrpmd validate examples/materials/pimd.inp --check-pes
 pyrpmd run examples/materials/pimd.inp --output runs/manual-pimd

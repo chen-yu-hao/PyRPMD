@@ -6,6 +6,9 @@ potential. Run every command from the repository root: `pyrpmd validate INPUT` f
 construct the PES), then `pyrpmd run` with a new `--output` directory. External models, MPI and GPU
 need the dependencies listed in [Installation](installation.md).
 
+For a first run without locating repository files, use `pyrpmd init my-first-run` and follow the
+[Quickstart](quickstart.md). The paths below refer to the source checkout.
+
 ## Examples without external models
 
 "Time" is the wall time of `run` on one CPU core with `OMP_NUM_THREADS=1`.
@@ -24,7 +27,6 @@ need the dependencies listed in [Installation](installation.md).
 | `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 2D well-tempered metadynamics | ~2 s | [Gas phase and free energy](workflows.md) |
 | `examples/opes/harmonic_2d.inp` | OPES adaptation, frozen-bias relaxation and histogram reweighting | — | [OPES](../opes.md) |
-| `examples/plumed/centroid_metadynamics.py` | Optional PLUMED centroid MetaD with explicit kernel updates | — | [PLUMED](../plumed.md) |
 | `examples/sampling/transition_interface.py` | Four interface ensembles on a confined double-well model | — | [TIS](../transition-interface-sampling.md) |
 
 ```bash
@@ -35,6 +37,10 @@ pyrpmd analyze runs/tutorial-fes2d --recompute --bins 20 20 --bootstrap 50
 
 `examples/rate/minimal.inp` (TS only) and `examples/drpmd/minimal.inp` (two reactants and a
 separation) show the smallest valid inputs, with every other setting at its pilot default.
+
+`examples/plumed/centroid_metadynamics.py` demonstrates optional PLUMED centroid metadynamics
+with explicit kernel updates. It requires a working PLUMED installation; follow the
+[PLUMED guide](../plumed.md) before running it.
 
 ## Materials, surfaces and PCET
 

@@ -10,7 +10,7 @@ cd PyRPMD
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -e '.[test]'
+python -m pip install -e .
 pyrpmd --version
 pyrpmd info
 ```
@@ -18,6 +18,10 @@ pyrpmd info
 PyRPMD 需要 **Python 3.11 或更高版本**、NumPy ≥ 1.26、SciPy ≥ 1.11 与 h5py ≥ 3.10，完整依赖见
 [`pyproject.toml`](https://github.com/chen-yu-hao/PyRPMD/blob/main/pyproject.toml)。安装时会编译 C++17
 扩展，Linux 上启用 OpenMP。Windows PowerShell 使用 `.venv\Scripts\Activate.ps1` 激活环境。
+
+上面使用 POSIX shell 语法。Windows 用户请换用 PowerShell 激活命令，并为原生构建配置 C++17 编译器；
+仓库的打包 CI 当前覆盖 Linux 与 macOS。使用下面的 NumPy 参考实现时不需要编译器。
+若 shell 找不到 `pyrpmd`，可把命令替换为 `python -m pyrpmd`，也能确保它与 `python -m pip` 使用同一 Python 环境。
 
 `pyrpmd info` 输出 JSON，关键字段如下：
 
@@ -44,6 +48,9 @@ CC=gcc CXX=g++ python -m pip install -e .
 PYRPMD_NO_NATIVE=1 python -m pip install -e .
 ```
 
+PowerShell 中先执行 `$env:PYRPMD_NO_NATIVE="1"`，再运行 `python -m pip install -e .`，最后用
+`Remove-Item Env:PYRPMD_NO_NATIVE` 移除这个构建设置。
+
 保留 C++ 内核、不使用 OpenMP：
 
 ```bash
@@ -64,7 +71,7 @@ PYRPMD_NO_OPENMP=1 python -m pip install -e .
 | `python -m pip install -e '.[ase]'` | ASE calculator 势能 | calculator 的模型或程序 |
 | `python -m pip install -e '.[mpi]'` | MPI 轨迹组与珠子分块 | 与 mpi4py 匹配的 MPI 库和启动器 |
 | `python -m pip install -e '.[gpu]'` | Torch 势能 | 与节点驱动匹配的 PyTorch/CUDA 及模型 |
-| `python -m pip install -e '.[plots]'` | Matplotlib 出图与 `pyrpmd report` | 保存的 PyRPMD 结果 |
+| `python -m pip install -e '.[plots]'` | Matplotlib 出图与 `pyrpmd report` 的 HTML/JSON 分析报告 | 保存的 PyRPMD 结果；出报告不需要外部 PES |
 | `python -m pip install -e '.[analysis]'` | PyMBAR 对照及绘图依赖 | 常规 FES 使用内置 MBAR |
 | `python -m pip install -e '.[test]'` | pytest 测试 | 缺少可选接口时相应测试跳过 |
 | `python -m pip install -e '.[docs]'` | 构建本手册 | Sphinx、MyST、PyData 主题 |
@@ -74,16 +81,22 @@ CPU 或 CUDA wheel。BKMP2 基准还需要 GNU Fortran，其构建脚本会下�
 
 ## 验证安装
 
-在仓库根目录执行：
+先用内置谐振子入门例子检查完整用户流程。安装后可在任意目录运行，无需可选模型、绘图包或测试包：
 
 ```bash
-python -m pytest -q
-pyrpmd validate examples/manual/quickstart.inp --check-pes
-python examples/manual/low_level.py
+pyrpmd init installation-check
+pyrpmd validate installation-check/quickstart.inp --check-pes --output installation-check/run
+pyrpmd run installation-check/quickstart.inp --output installation-check/run
+pyrpmd analyze installation-check/run
+pyrpmd resume installation-check/run
 ```
 
-只安装 `.[test]` 时，依赖 ASE、BKMP2、EAM 模型、PyMBAR、Torch 或 matplotlib 的测试会跳过，其余测试应全部通过。
-随后运行[快速入门](quickstart.md)，检查输出、分析与续跑。
+保存的摘要应显示 `task="fes"`、3 个窗口、6 条采样流与 120 个样本；已完成任务在 `resume` 后仍为完成状态。
+[快速入门](quickstart.md)解释诊断字段，以及为什么短 pilot 不能作为收敛检验。重复检查时请选择另一个入门目录。
+
+开发者可安装 `.[test]`，再从仓库根目录运行 `python -m pytest -q`。
+缺少依赖时，可选接口与外部模型的测试可能跳过，请阅读具体原因。编译器、socket、MPI 与真实模型的验证要求见
+[开发者指南](development.md)。
 
 ## 构建本手册
 

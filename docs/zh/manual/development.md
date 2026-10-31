@@ -23,6 +23,9 @@
 [实现与使用指南审查记录](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/implementation-guide-audit-2026-10-31.md)
 列出审查范围、按优先级排序的待办事项、已落实修复与尚需验证的边界。
 
+[2026-10-31 用户体验审查](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/ux-review-2026-10-31.md)
+记录本次审查范围、按优先级排列的待办事项、已实施的修复与后续工作。
+
 ## 运行测试
 
 ```bash

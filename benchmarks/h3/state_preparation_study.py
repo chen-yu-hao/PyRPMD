@@ -23,11 +23,71 @@ import numpy as np
 
 from benchmarks.h3 import state_selected_reproduction as driver
 from benchmarks.h3.state_selected_sensitivity import _source_snapshot, _verify_snapshot
-from pyrpmd.constants import EV_TO_AU
+from pyrpmd.constants import EV_TO_AU, FS_TO_AU
+from pyrpmd.dynamics import normalize_integrator
 
 ORIGINAL_PREPARE = driver.prepare_paper_state
 _SPEC = _SWITCHER = _ORBIT = None
 _KEEP_TRACE = False
+_QCT_PLACEHOLDER_BETA = 1500.0
+
+
+def _integer(value, name, *, minimum=0):
+    if isinstance(value, bool) or not isinstance(value, int) or value < minimum:
+        raise ValueError(f"{name} must be an integer >= {minimum}")
+
+
+def _finite_number(value, name, *, positive=False, nonnegative=False):
+    # Keep the persisted dataclasses JSON-serializable, and never treat True
+    # as a scientific parameter or coerce a string into one.
+    try:
+        valid = (not isinstance(value, bool) and isinstance(value, (int, float))
+                 and math.isfinite(value))
+    except OverflowError:
+        valid = False
+    if not valid:
+        raise ValueError(f"{name} must be a finite number")
+    if (positive and value <= 0) or (nonnegative and value < 0):
+        bound = "positive" if positive else "nonnegative"
+        raise ValueError(f"{name} must be {bound}")
+
+
+def _grid_steps(value, dt, name, *, positive=False):
+    """Match the native preparation grid without silently rounding budgets."""
+    ratio = value / dt
+    if not math.isfinite(ratio) or ratio > 2**52:
+        raise ValueError(f"{name} contains too many steps")
+    steps = round(ratio)
+    tolerance = max(1e-9, 8*np.finfo(float).eps*abs(ratio))
+    if ((positive and steps < 1) or abs(ratio-steps) > tolerance
+            or (value > 0 and steps == 0)):
+        raise ValueError(f"{name} must be an integer multiple of its timestep")
+    return steps
+
+
+def _validate_propagation(config):
+    """Check the existing sampler/integrator's numerical domain without a PES."""
+    beta = config.beta
+    try:
+        scale = 2*config.beads/beta
+        maximum_frequency = scale*math.sin(math.pi*(config.beads//2)/config.beads)
+        variance = config.beads/beta/driver.OMEGA**2
+    except OverflowError as exc:
+        raise ValueError("beads/beta overflows the propagation domain") from exc
+    _finite_number(scale, "Ring frequency scale", nonnegative=True)
+    _finite_number(maximum_frequency*maximum_frequency,
+                   "Squared ring frequency", positive=config.beads > 1, nonnegative=True)
+    _finite_number(variance, "Harmonic initial variance", positive=True)
+    if config.beads > 1:
+        minimum_frequency = scale*math.sin(math.pi/config.beads)
+        squared_minimum = minimum_frequency*minimum_frequency
+        _finite_number(squared_minimum, "Squared lowest ring frequency", positive=True)
+        _finite_number(config.beads/(beta*squared_minimum),
+                       "Free fragment ring variance", positive=True)
+    phase = config.dt_fs*FS_TO_AU*maximum_frequency
+    _finite_number(phase, "Ring propagation phase", nonnegative=True)
+    if normalize_integrator(config.integrator) == "velocity-verlet" and phase >= 2:
+        raise ValueError("velocity-Verlet ring stability requires dt*max(omega_k) < 2")
 
 
 @dataclass(frozen=True)
@@ -37,10 +97,47 @@ class LaunchConfig(driver.Config):
     collision_energy_override_au: float | None = None
 
     @property
+    def beta(self):
+        # Preserve the published runs' exact paper-beta values.  A positive
+        # full-PES collision energy can nevertheless occur below the harmonic
+        # threshold in P=1 action QCT.  In that case beta is only a required API
+        # placeholder: there are no internal ring modes or spring forces.
+        if self.beta_override is not None:
+            _finite_number(self.beta_override, "beta_override", positive=True)
+            return float(self.beta_override)
+        _finite_number(self.total_energy_ev, "total_energy_ev", positive=True)
+        total = self.total_energy_ev * EV_TO_AU
+        paper_domain = (total > (self.v+.5)*driver.OMEGA
+                        and 0 < .01*total < driver.OMEGA/2)
+        if self.method == "qct" and self.beads == 1 and not paper_domain:
+            # A placeholder must never hide a nonpositive physical launch.
+            _ = self.collision_energy
+            return _QCT_PLACEHOLDER_BETA
+        return super().beta
+
+    @property
+    def auxiliary_beta(self):
+        value = self.beta
+        if self.beta_override is not None:
+            convention = "explicit_override"
+        else:
+            total = self.total_energy_ev * EV_TO_AU
+            paper_domain = (total > (self.v+.5)*driver.OMEGA
+                            and 0 < .01*total < driver.OMEGA/2)
+            convention = ("paper_2021" if paper_domain else
+                          "qct_single_bead_placeholder_1500_au")
+        return {"value_au": value, "convention": convention,
+                "physical_role": (
+                    "Auxiliary API parameter only: P=1 QCT has no internal ring modes or spring forces; this is not a physical temperature"
+                    if self.method == "qct" and self.beads == 1 else
+                    "Auxiliary NE-RPMD inverse energy controlling the initial ring ensemble and spring frequencies")}
+
+    @property
     def collision_energy(self):
         value = (super().collision_energy if self.collision_energy_override_au is None
                  else self.collision_energy_override_au)
-        if not math.isfinite(value) or value <= 0:
+        if (isinstance(value, bool) or not isinstance(value, (int, float))
+                or not math.isfinite(value) or value <= 0):
             raise ValueError("The actual collision energy must be positive and finite")
         return float(value)
 
@@ -56,18 +153,30 @@ class PreparationSpec:
     energy_convention: str = "fixed_collision"
 
     def validate(self, config):
+        _integer(config.beads, "beads", minimum=1)
         if self.kind not in ("direct", "switch", "action_qct"):
             raise ValueError("Unknown preparation kind")
         if self.conditioning not in ("paper", "none"):
             raise ValueError("Conditioning must be paper or none")
         if self.energy_convention not in ("fixed_collision", "fixed_total"):
             raise ValueError("Unknown collision-energy convention")
-        values = (self.switch_time_fs, self.hold_time_fs,
-                  self.preparation_dt_fs, self.trace_stride_fs)
-        if not all(math.isfinite(x) for x in values) or min(values) < 0:
-            raise ValueError("Preparation times must be finite and nonnegative")
-        if self.preparation_dt_fs <= 0 or self.trace_stride_fs <= 0:
-            raise ValueError("Preparation timestep and trace stride must be positive")
+        for name in ("switch_time_fs", "hold_time_fs"):
+            _finite_number(getattr(self, name), name, nonnegative=True)
+        for name in ("preparation_dt_fs", "trace_stride_fs"):
+            _finite_number(getattr(self, name), name, positive=True)
+        _finite_number(self.preparation_dt_fs*FS_TO_AU,
+                       "preparation_dt_fs in atomic units", positive=True)
+        switching = _grid_steps(self.switch_time_fs, self.preparation_dt_fs,
+                                "switch_time_fs")
+        holding = _grid_steps(self.hold_time_fs, self.preparation_dt_fs,
+                             "hold_time_fs")
+        stride = _grid_steps(self.trace_stride_fs, self.preparation_dt_fs,
+                            "trace_stride_fs", positive=True)
+        if switching or holding:
+            if config.beads > 1000000:
+                raise ValueError("Isolated preparation supports at most 1000000 beads")
+            if (switching+holding)//stride+4 > 10000000:
+                raise ValueError("Requested trace is too large; increase trace_stride_fs")
         if (self.kind == "switch") != (self.switch_time_fs > 0):
             raise ValueError("Only switch preparation has a positive switch duration")
         if self.kind == "action_qct":
@@ -79,6 +188,62 @@ class PreparationSpec:
             raise ValueError("Direct/switch comparisons require a multi-bead NE-RPMD ensemble")
         elif self.energy_convention != "fixed_collision":
             raise ValueError("NE comparisons retain the original collision energy; no retuning")
+
+
+def validate_request(config, spec, *, workers=8, audit=False):
+    """Reject invalid requests before PES loading, native builds or output.
+
+    A fixed-total action orbit's actual collision energy is surface-dependent;
+    ``run`` checks that after solving the orbit and before creating output or
+    launching workers.  Every other input is checked here without computing it.
+    """
+    for name in ("samples", "beads"):
+        _integer(getattr(config, name), name, minimum=1)
+    for name in ("seed", "id_offset", "v"):
+        _integer(getattr(config, name), name)
+    _integer(workers, "workers", minimum=1)
+    if not isinstance(audit, bool):
+        raise ValueError("audit must be a boolean")
+    if config.v not in (0, 1):
+        raise ValueError("This benchmark supports v=0 or v=1")
+    if config.method not in ("qct", "ne_rpmd"):
+        raise ValueError("method must be qct or ne_rpmd")
+    for name in ("total_energy_ev", "bmax", "dt_fs", "time_cap_fs",
+                 "extended_cap_fs", "initial_axial_bohr", "exit_bohr",
+                 "bond_cutoff_bohr", "check_fs"):
+        _finite_number(getattr(config, name), name, positive=True)
+    for name in ("bmin", "persistence_fs", "dmin_bohr"):
+        _finite_number(getattr(config, name), name, nonnegative=True)
+    for name in ("beta_override", "collision_energy_override_au"):
+        value = getattr(config, name)
+        if value is not None:
+            _finite_number(value, name, positive=True)
+    if not config.bmin < config.bmax:
+        raise ValueError("Require 0 <= bmin < bmax")
+    area = math.pi*(config.bmax*config.bmax-config.bmin*config.bmin)
+    _finite_number(area, "Impact-parameter sampling area", positive=True)
+    _finite_number(config.total_energy_ev*1_000_000,
+                   "total_energy_ev RNG label", positive=True)
+    _finite_number(config.dt_fs*FS_TO_AU, "dt_fs in atomic units", positive=True)
+    if not config.dt_fs <= config.time_cap_fs <= config.extended_cap_fs:
+        raise ValueError("Require 0 < dt_fs <= time_cap_fs <= extended_cap_fs")
+    if not config.bond_cutoff_bohr < config.exit_bohr:
+        raise ValueError("Require 0 < bond_cutoff_bohr < exit_bohr")
+    normalize_integrator(config.integrator)
+    for name in ("time_cap_fs", "extended_cap_fs", "check_fs", "persistence_fs"):
+        _grid_steps(getattr(config, name), config.dt_fs, name,
+                    positive=name != "persistence_fs")
+    spec.validate(config)
+    if spec.energy_convention == "fixed_collision" and config.collision_energy_override_au is not None:
+        nominal = config.total_energy_ev*EV_TO_AU-(config.v+.5)*driver.OMEGA
+        if (nominal <= 0 or not math.isclose(config.collision_energy_override_au, nominal,
+                                           rel_tol=2e-12, abs_tol=1e-14)):
+            raise ValueError("fixed_collision requires the original harmonic collision energy; an override cannot retune it")
+    if spec.kind != "action_qct" or spec.energy_convention != "fixed_total":
+        _ = config.collision_energy
+        _validate_propagation(config)
+    elif config.beta_override is not None:
+        _validate_propagation(config)
 
 
 def _json(path, value):
@@ -150,6 +315,7 @@ def prepare_variant(config, prepared, trajectory_id):
     initial = _diagnostics(radial, momentum, config, potential)
     metadata = {"kind": _SPEC.kind, "conditioning": _SPEC.conditioning,
                 "before": initial, "energy_convention": _SPEC.energy_convention,
+                "auxiliary_beta": config.auxiliary_beta,
                 "separation_policy": "Keep the pre-switch draw's axial separation and incoming atom ring; paired only within the same conditioning rule",
                 "collision_energy_ev": config.collision_energy / EV_TO_AU,
                 "nominal_internal_label_ev": (config.v + .5) * driver.OMEGA / EV_TO_AU}
@@ -231,13 +397,7 @@ def summarize_audit(rows):
 
 
 def run(config, spec, output, *, workers=8, audit=False):
-    spec.validate(config)
-    if (config.samples < 1 or workers < 1 or config.id_offset < 0 or config.seed < 0
-            or config.v not in (0, 1) or not all(math.isfinite(x) for x in
-                (config.total_energy_ev, config.bmin, config.bmax, config.dt_fs))
-            or not 0 <= config.bmin < config.bmax
-            or not 0 < config.dt_fs <= config.time_cap_fs <= config.extended_cap_fs):
-        raise ValueError("Invalid sample count, RNG identity, energy, area or timestep/budget")
+    validate_request(config, spec, workers=workers, audit=audit)
     potential = driver.BKMP2Potential()
     orbit_metadata = None
     if spec.kind == "action_qct":
@@ -247,6 +407,8 @@ def run(config, spec, output, *, workers=8, audit=False):
         if spec.energy_convention == "fixed_total":
             config = replace(config, collision_energy_override_au=config.total_energy_ev*EV_TO_AU-orbit.energy_hartree)
     _ = config.collision_energy
+    _validate_propagation(config)
+    auxiliary_beta = config.auxiliary_beta
     native_preparation = None
     if spec.switch_time_fs or spec.hold_time_fs:
         from benchmarks.h3.diatomic_switch import DiatomicSwitcher
@@ -268,6 +430,7 @@ def run(config, spec, output, *, workers=8, audit=False):
     snapshot["study_spec"] = asdict(spec)
     snapshot["orbit"] = orbit_metadata
     snapshot["native_preparation"] = native_preparation
+    snapshot["auxiliary_beta"] = auxiliary_beta
     snapshot["seed_pairing"] = (
         "Original RNG identity and launch b/orientation retained. Within a conditioning rule, "
         "direct/switch variants share the atom ring and separation. Removing the cutoff uses "
@@ -296,6 +459,7 @@ def run(config, spec, output, *, workers=8, audit=False):
     _verify_snapshot(snapshot["files"])
     summary = summarize_audit(rows) if audit else driver.summarize(config, rows)
     summary.update(config=asdict(config), preparation=asdict(spec), audit_only=audit,
+                   auxiliary_beta=auxiliary_beta,
                    elapsed_seconds=time.perf_counter()-start, workers=workers,
                    source_sha256=_sha(__file__), created_utc=datetime.now(timezone.utc).isoformat())
     _json(output/"summary.json", summary)

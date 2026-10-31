@@ -28,8 +28,9 @@ block_steps = 256
 `Dynamics.loop_stats` 给出同样的计数。
 
 对 `pimd`，`sampling.engine="native"` 选择单独的 C++ 系综引擎，使用自己的恒温器、势能和检查点约定。
-它支持 NVT 固定原子和兼容模型的周期 NVT/NPT，不提供 Python 势能回退。事务大小由检查点间隔控制，
-`dynamics.block_steps` 不覆盖这一间隔。切换引擎需要新建运行；见[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)。
+它支持 NVT 固定原子和使用兼容编译势能的周期 NVT/NPT，NPT 还要求受支持的恒压器；不提供 Python 势能回退。
+事务大小由检查点间隔控制，`dynamics.block_steps` 不覆盖这一间隔。只设置 `loop_backend="native"` 不会选择这个采样引擎。
+这条路径有独立的检查点身份与输入限制，切换引擎需要新建运行；见[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)。
 
 [NRPMD](nonadiabatic.md) 在 CPU 上用 NumPy 推进电子矩阵，可串行或使用本机轨迹进程；其核自由环子步骤使用编译内核。
 

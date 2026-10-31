@@ -277,6 +277,80 @@ def resolve_umbrellas(config, system):
     return cv, selected, centers, stiffness
 
 
+def _analysis_ranges(options, cv):
+    """Convert every declared range; never silently drop extra CV axes."""
+    ranges = options.get("ranges")
+    if ranges is None:
+        return None
+    if not isinstance(ranges, (list, tuple, np.ndarray)) or len(ranges) != cv.dimension:
+        raise ValueError("analysis.ranges must contain one [lower, upper] pair per CV")
+    converted = []
+    for limits, unit in zip(ranges, cv.units):
+        if not isinstance(limits, (list, tuple, np.ndarray)) or len(limits) != 2:
+            raise ValueError("analysis.ranges must contain one [lower, upper] pair per CV")
+        converted.append([parse_quantity(x, _dimension(unit)) for x in limits])
+    return converted
+
+
+def validate_fes_request(config, system):
+    """Reject static window/analysis mistakes before allocating a run directory.
+
+    This only constructs CV definitions and checks the declared recording and
+    histogram settings. It neither initializes a PES nor evaluates a geometry.
+    Sampling-dependent support, overlap and convergence remain analysis checks.
+    """
+    cv, specs, centers, stiffness = resolve_umbrellas(config, system)
+    sampling = config["sampling"]
+    production = checked_integer(sampling["production_steps"], "sampling.production_steps")
+    interval = checked_integer(
+        sampling.get("sample_interval", sampling.get("interval_steps", 1)),
+        "sampling.sample_interval",
+    )
+    if production // interval < 2:
+        raise ValueError(
+            "sampling.production_steps must include at least two saved samples per umbrella; "
+            "increase production_steps or reduce sample_interval"
+        )
+    options = config.get("analysis", {})
+    bootstrap = checked_integer(
+        options.get("bootstrap", options.get("bootstrap_replicates", options.get("bootstrap_samples", 20))),
+        "analysis.bootstrap", 0,
+    )
+    if bootstrap == 1:
+        raise ValueError("analysis.bootstrap must be zero or at least two")
+    checked_integer(options.get("min_count", 1), "analysis.min_count")
+    overlap = options.get("overlap_threshold", 1e-6)
+    if (isinstance(overlap, (bool, np.bool_)) or not isinstance(overlap, (int, float, np.number))
+            or np.iscomplexobj(overlap) or not np.isfinite(overlap) or overlap < 0):
+        raise ValueError("analysis.overlap_threshold must be finite and nonnegative")
+    bins = options.get("bins", 40)
+    if np.isscalar(bins):
+        bins = [bins] * cv.dimension
+    if not isinstance(bins, (list, tuple, np.ndarray)) or len(bins) != cv.dimension:
+        raise ValueError("analysis.bins must contain one bin count or edge array per CV")
+    ranges = _analysis_ranges(options, cv)
+    for axis, (spec, period) in enumerate(zip(bins, cv.periods)):
+        if np.isscalar(spec):
+            checked_integer(spec, "analysis.bins", 2)
+            bounds = None if ranges is None else ranges[axis]
+            if bounds is not None and bounds[1] <= bounds[0]:
+                raise ValueError("analysis.ranges must contain increasing limits")
+        else:
+            raw_edges = np.asarray(spec)
+            if raw_edges.dtype.kind not in "iuf":
+                raise ValueError("analysis.bins edges must contain at least three increasing finite numbers")
+            edges = np.asarray(raw_edges, dtype=float)
+            if (edges.ndim != 1 or len(edges) < 3 or not np.isfinite(edges).all()
+                    or np.any(np.diff(edges) <= 0)):
+                raise ValueError("analysis.bins edges must contain at least three increasing finite numbers")
+            bounds = edges[[0, -1]]
+        if bounds is not None and period is not None:
+            span = bounds[1] - bounds[0]
+            if span > period and not np.isclose(span, period, rtol=1e-10, atol=1e-12):
+                raise ValueError("a periodic FES axis may span at most one period")
+    return cv, specs, centers, stiffness
+
+
 def steer_to_center(q, cv, target, masses, max_steps=250, tolerance=1e-7, *, fixed_atoms=()):
     """Mass-weighted geometric continuation; no dynamics samples are taken here."""
     q = np.asarray(q, float).copy()
@@ -691,6 +765,12 @@ def _write_fes(output, data, streams, cv, config):
         warnings.append(
             "Some supported bins have fewer than two valid bootstrap draws; their errors are unavailable."
         )
+    if (data.get("bootstrap_requested", 0) and data["connected"]
+            and np.any((~data["mask"]) & (data["bootstrap_valid_per_bin"] < data["bootstrap_requested"]))):
+        warnings.append(
+            "Some supported bins lack complete bootstrap support; their main standard errors are unavailable. "
+            "supported_draw_standard_error describes surviving draws only and is a conditional diagnostic."
+        )
     summary = {
         "task": "fes",
         "status": "sampled" if data["connected"] else "disconnected_overlap",
@@ -712,6 +792,7 @@ def _write_fes(output, data, streams, cv, config):
         "bootstrap_requested": data.get("bootstrap_requested", 0),
         "bootstrap_attempted": data.get("bootstrap_attempted", 0),
         "bootstrap_reference_bin": data.get("bootstrap_reference_bin"),
+        "standard_error_scope": "complete_bootstrap_support_per_bin_fixed_reference",
         "bootstrap_diagnostics": data.get("bootstrap_diagnostics", []),
         "bootstrap_block_plan": data.get("bootstrap_block_plan", {}),
         "warnings": warnings,
@@ -725,7 +806,7 @@ def _write_fes(output, data, streams, cv, config):
     return summary
 
 
-def _analyze_streams(streams, config, system, output, return_data):
+def _analyze_streams(streams, config, system, output, return_data, _postprocess=None):
     # External executors return a one-shot map iterator. Analysis and exports
     # traverse these streams repeatedly, so retain every window once.
     streams = list(streams)
@@ -744,12 +825,7 @@ def _analyze_streams(streams, config, system, output, return_data):
         raise ValueError(
             "umbrella_integration is the 1D rate PMF estimator; generic FES uses mbar"
         )
-    ranges = options.get("ranges")
-    if ranges is not None:
-        ranges = [
-            [parse_quantity(x, _dimension(unit)) for x in limits]
-            for limits, unit in zip(ranges, cv.units)
-        ]
+    ranges = _analysis_ranges(options, cv)
     data = reconstruct_fes(
         [s["samples"] for s in streams],
         [s["center"] for s in streams],
@@ -779,12 +855,15 @@ def _analyze_streams(streams, config, system, output, return_data):
     )
     data["measure"] = options.get("measure", "cv_density")
     summary = _write_fes(output, data, streams, cv, config)
-    if return_data:
-        return {"summary": summary, "data": data, "streams": streams}
-    return summary
+    result = {"summary": summary, "data": data, "streams": streams}
+    if _postprocess is not None:
+        # Adaptive production diagnostics reuse this fit on root, before a
+        # summary-only request discards arrays or broadcasts its result.
+        result = _postprocess(result)
+    return result if return_data else result["summary"]
 
 
-def run_fes(config, system, output, executor=None, return_data=False):
+def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None):
     fes_sampler(config)
     if config.get("replica_exchange"):
         from .replica_exchange import exchange_options, run_replica_exchange_fes
@@ -825,11 +904,11 @@ def run_fes(config, system, output, executor=None, return_data=False):
         else run_tasks(_sample_window, tasks, config.get("parallel", {}))
     )
     return root_call(
-        _analyze_streams, streams, config, system, str(output), return_data
+        _analyze_streams, streams, config, system, str(output), return_data, _postprocess
     )
 
 
-def reanalyze_fes(config, system, output, return_data=False):
+def reanalyze_fes(config, system, output, return_data=False, *, _postprocess=None):
     """Reconstruct with new bins/bootstrap settings without propagating PESs.
 
     Completed window checkpoint arrays are the authoritative sampled data;
@@ -883,6 +962,6 @@ def reanalyze_fes(config, system, output, return_data=False):
                             "checkpoint": str(checkpoint),
                         }
                     )
-        return _analyze_streams(streams, config, system, str(output), return_data)
+        return _analyze_streams(streams, config, system, str(output), return_data, _postprocess)
 
     return root_call(analyze)

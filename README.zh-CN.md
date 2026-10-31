@@ -36,7 +36,9 @@ git clone https://github.com/chen-yu-hao/PyRPMD.git PyRPMD
 cd PyRPMD
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[test]'
+python -m pip install --upgrade pip
+python -m pip install -e .
+pyrpmd --version
 pyrpmd info
 ```
 
@@ -58,18 +60,22 @@ PYRPMD_NO_NATIVE=1 python -m pip install -e .
 
 ## 第一次运行
 
-在内置谐振势上做一次可续跑的一维自由能计算，约两秒：
+在内置谐振势上做一次可续跑的一维自由能短测试。安装完成后可在任意工作目录开始；`init` 提供输入文件，
+无需依赖源码目录中的示例或下载外部模型：
 
 ```bash
-pyrpmd validate examples/manual/quickstart.inp --check-pes   # 检查输入、单位和 PES
-pyrpmd run examples/manual/quickstart.inp --output runs/first  # 结果在 runs/first/results/summary.json
-pyrpmd analyze runs/first --recompute --bins 8 --bootstrap 10  # 新分箱与误差棒，不重新做动力学
-pyrpmd resume runs/first                                       # 从最后一个检查点继续
+pyrpmd init my-first-run
+pyrpmd validate my-first-run/quickstart.inp --check-pes --output my-first-run/run
+pyrpmd run my-first-run/quickstart.inp --output my-first-run/run
+pyrpmd analyze my-first-run/run
+pyrpmd resume my-first-run/run
 ```
 
 所有任务都使用同样的 `validate` → `run` → `analyze` → `resume` 流程。`--check-pes` 还会评估势能，对只给 TS 的速率输入还会
 执行数值准备。每个新计算使用新的输出目录；`resume`（或对原输入使用 `run --resume`）继续已有运行。
-[快速入门](docs/zh/manual/quickstart.md)逐行讲解输入与输出。
+入门例子产生 3 个窗口、6 条采样流和 120 个保存样本，摘要位于 `my-first-run/run/results/summary.json`。
+这个小样本用于检查工作流，不代表物理结果已收敛。`init` 拒绝写入非空目录。若 shell 找不到 `pyrpmd`，
+可以用 `python -m pyrpmd` 加相同参数。[快速入门](docs/zh/manual/quickstart.md)逐行讲解输入、输出与离线重分析。
 
 ## 可以计算什么
 
@@ -255,6 +261,8 @@ python benchmarks/h3/solver_check.py --run runs/h3-pmf/k400-a/run \
 
 开展正式研究前，请阅读[使结果收敛](docs/zh/manual/science.md#使结果收敛)，其中说明如何把计算从 pilot 推进到正式生产。
 
+[自适应伞抽样可靠性审查](docs/validation/umbrella-reliability-2026-10-31/README.md)记录了可复现的重叠与误差报告缺陷、对应修复、实际默认预算，以及仍须针对具体体系完成的收敛检查。pilot 达标不代表精度已经得到保证。
+
 ## 原生传播
 
 `Dynamics.propagate()` 以整块为单位原子提交；`Dynamics.propagate_block()` 逐步提交，提供观测 mask、完整 q/p 快照和原生质心
@@ -284,6 +292,8 @@ python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
 ```
 
 GitHub **Documentation** 工作流构建两个版本、运行入门示例，并上传 `pyrpmd-manual-html` 产物。
+
+[用户体验审查与 to-do list](docs/ux-review-2026-10-31.md)记录当前上手流程的审查结果及后续工作。
 
 运行目录包含 `manifest.json`、`input/`、`checkpoints/`、工作流数据和 `results/summary.json`。FES 另有
 `fes.h5`/`fes.npz`/`fes.csv`；dRPMD 保存每条轨迹的初态、碰撞轨迹和分类记录。不同 MPI rank 不共同写一个 HDF5 文件。

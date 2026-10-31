@@ -132,6 +132,9 @@ bool observe(const std::vector<double>& r, const std::vector<double>& p,
     row[17] = step >= o.switch_steps ? energy-hold_reference
                                           : std::numeric_limits<double>::quiet_NaN();
     for (int j = 0; j < WIDTH-1; ++j) if (!std::isfinite(row[j])) return false;
+    // The switch endpoint defines its own hold reference after observation.
+    // Every subsequent accepted hold endpoint must have a finite drift.
+    if (step > o.switch_steps && !std::isfinite(row[17])) return false;
     return true;
 }
 
@@ -233,7 +236,11 @@ extern "C" int pyrpmd_diatomic_switch_v1(
         double work = o.switch_steps == 0 ? endpoint.full-endpoint.harmonic : 0.;
         double hold_reference = o.switch_steps == 0 ? row[6]
             : std::numeric_limits<double>::quiet_NaN();
-        observe(r, p, endpoint, o, 0, work, reference, hold_reference, row);
+        if (!std::isfinite(reference) || !std::isfinite(work)
+                || !observe(r, p, endpoint, o, 0, work, reference, hold_reference, row)) {
+            message(error, error_capacity, "Nonfinite initial diatomic energy reference or switching work");
+            output->status = 2; return 2;
+        }
         output->initial_harmonic_energy = reference;
         output->hold_initial_energy = hold_reference;
         update_extrema(row, *output, o.switch_steps == 0);
@@ -262,14 +269,30 @@ extern "C" int pyrpmd_diatomic_switch_v1(
                 hold_reference = next_row[6]; next_row[17] = 0.;
                 output->hold_initial_energy = hold_reference;
             }
+            double next_hold_integrals[HOLD_FIELDS];
+            const double next_hold_duration = (step-o.switch_steps)*o.dt;
             if (step > o.switch_steps) {
-                for (int j = 0; j < HOLD_FIELDS; ++j)
-                    output->hold_integrals[j] += .5*o.dt*(row[hold_indices[j]]+next_row[hold_indices[j]]);
-                output->hold_duration = (step-o.switch_steps)*o.dt;
+                bool finite_hold = std::isfinite(next_hold_duration) && next_hold_duration > 0.;
+                for (int j = 0; j < HOLD_FIELDS; ++j) {
+                    // Average before multiplying by dt so a representable
+                    // trapezoid does not overflow while adding its endpoints.
+                    next_hold_integrals[j] = output->hold_integrals[j]
+                        + o.dt*(.5*row[hold_indices[j]]+.5*next_row[hold_indices[j]]);
+                    finite_hold = finite_hold && std::isfinite(next_hold_integrals[j])
+                        && std::isfinite(next_hold_integrals[j]/next_hold_duration);
+                }
+                if (!finite_hold) {
+                    message(error, error_capacity, "Nonfinite diatomic hold time integral or average");
+                    output->status = 2; break;
+                }
             }
             r.swap(trial_r); p.swap(trial_p); f.swap(f_next);
             endpoint = next_endpoint; work = next_work;
             std::copy(next_row, next_row+WIDTH, row);
+            if (step > o.switch_steps) {
+                std::copy(next_hold_integrals, next_hold_integrals+HOLD_FIELDS, output->hold_integrals);
+                output->hold_duration = next_hold_duration;
+            }
             output->completed_steps = step;
             update_extrema(row, *output, step >= o.switch_steps);
             if (step%o.trace_stride == 0 || step == o.switch_steps || step == total) {

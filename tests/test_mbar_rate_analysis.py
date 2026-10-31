@@ -264,6 +264,7 @@ class MBARRatePMFTests(unittest.TestCase):
             bootstrap=30,
             seed=8,
             min_count=1,
+            compare_ui=True,
         )
         self.assertTrue(result["ready"])
         boot = result["bootstrap"]
@@ -277,6 +278,25 @@ class MBARRatePMFTests(unittest.TestCase):
             )
         )
         self.assertEqual(sum(boot["failure_counts"].values()), len(boot["failures"]))
+        # The selected draws do not form an unconditional bootstrap interval.
+        self.assertIsNone(result["barrier_standard_error_hartree"])
+        self.assertIsNone(result["barrier_percentile_95_ci_hartree"])
+        self.assertTrue(np.isnan(result["standard_error"]).all())
+        self.assertGreater(result["supported_draw_barrier_standard_error_hartree"], 0)
+        self.assertIsNotNone(result["supported_draw_barrier_percentile_95_ci_hartree"])
+        self.assertFalse(result["barrier_uncertainty"]["available"])
+        self.assertEqual(result["barrier_uncertainty"]["bootstrap_rejected"], len(boot["failures"]))
+        self.assertIn("conditional on", result["barrier_uncertainty"]["supported_draw_condition"])
+        contrast = np.array([-1., 1.])
+        self.assertAlmostEqual(
+            contrast @ boot["endpoint_covariance_hartree_squared"] @ contrast,
+            result["supported_draw_barrier_standard_error_hartree"] ** 2,
+        )
+        ui = result["ui_comparison"]
+        self.assertTrue(ui["ready"])
+        self.assertFalse(ui["uncertainty"]["available"])
+        self.assertIsNone(ui["paired_difference_statistics"]["standard_error_hartree"])
+        self.assertIsNotNone(ui["supported_draw_paired_difference_statistics"]["standard_error_hartree"])
         no_error = mbar_rate_pmf(
             [x],
             [1.5],
@@ -306,6 +326,39 @@ class MBARRatePMFTests(unittest.TestCase):
         self.assertEqual(one_draw["bootstrap"]["valid"], 1)
         self.assertIsNone(one_draw["barrier_standard_error_hartree"])
         self.assertIsNone(one_draw["barrier_percentile_95_ci_hartree"])
+
+    def test_bootstrap_cannot_promote_an_originally_masked_bin(self):
+        x = np.r_[np.full(120, .5), np.full(120, 1.5), np.full(120, 2.5), 3.5]
+        np.random.default_rng(7).shuffle(x)
+        result = mbar_rate_pmf(
+            [x], [1.5], 1e-12, 2., bins=[0., 1., 2., 3., 4.],
+            reference=.5, xi_star=2.5, bootstrap=40, seed=52, min_count=2,
+        )
+        self.assertTrue(result["ready"])
+        self.assertEqual(result["bootstrap"]["valid"], 40)
+        self.assertTrue(result["barrier_uncertainty"]["available"])
+        self.assertGreater(result["barrier_standard_error_hartree"], 0)
+        np.testing.assert_array_equal(result["mask"], [False, False, False, True])
+        self.assertTrue(np.isnan(result["standard_error"][-1]))
+        self.assertEqual(result["bootstrap"]["curve_valid_draws"][-1], 0)
+        self.assertTrue(np.isfinite(result["standard_error"][:3]).all())
+
+    def test_complete_barrier_draws_do_not_certify_sparse_outer_curve_bins(self):
+        x = np.r_[np.full(120, .5), np.full(120, 1.5), np.full(120, 2.5), 3.5]
+        np.random.default_rng(7).shuffle(x)
+        result = mbar_rate_pmf(
+            [x], [1.5], 1e-12, 2., bins=[0., 1., 2., 3., 4.],
+            reference=.5, xi_star=2.5, bootstrap=40, seed=52, min_count=1,
+        )
+        self.assertTrue(result["ready"])
+        self.assertFalse(result["mask"].any())
+        self.assertEqual(result["bootstrap"]["valid"], 40)
+        self.assertTrue(result["barrier_uncertainty"]["available"])
+        self.assertGreater(result["barrier_standard_error_hartree"], 0)
+        self.assertTrue(np.isnan(result["standard_error"][-1]))
+        self.assertGreater(result["supported_draw_standard_error"][-1], 0)
+        self.assertLess(result["bootstrap"]["curve_valid_draws"][-1], 40)
+        self.assertTrue(np.isfinite(result["standard_error"][:3]).all())
 
     def test_disconnected_rate_and_wrong_measure_do_not_produce_a_barrier(self):
         rng = np.random.default_rng(23)

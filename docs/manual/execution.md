@@ -30,11 +30,12 @@ run in the Python outer loop with compiled deterministic substeps. The `pimd`, `
 native and Python step counts with fallback reasons under `propagation`; in the API,
 `Dynamics.loop_stats` gives the same counters.
 
-For `pimd`, `sampling.engine="native"` selects a separate C++ ensemble engine with its own
+For equilibrium `pimd`, `sampling.engine="native"` selects a separate C++ ensemble engine with its own
 thermostat, PES and checkpoint contracts. It supports fixed atoms in NVT and supported periodic
 NVT/NPT models; no Python-PES fallback is available. Its checkpoint cadence controls transaction
 size, and `dynamics.block_steps` does not override that cadence. Changing the engine requires a
 new run. See the [native PIMD guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md).
+Selecting `loop_backend="native"` alone does not select this sampling engine.
 
 [NRPMD](nonadiabatic.md) propagates the electronic matrix with CPU NumPy, serially or with local
 trajectory processes; its nuclear free-ring substeps use the compiled kernels.
