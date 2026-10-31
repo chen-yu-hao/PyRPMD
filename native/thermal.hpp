@@ -345,6 +345,13 @@ private:
         row[7]=std::numeric_limits<double>::quiet_NaN();
         if(c.has_cell){Mat stress=stress_volume();row[7]=(stress[0]+stress[4]+stress[8])/(3*c.beads*row[6]);}
         std::copy(s.cell.begin(),s.cell.end(),row+8);row[17]=kinetic;
+        // Finite coordinates/momenta do not guarantee finite reductions (for
+        // example p*p can overflow). Reject the observation inside run's
+        // transaction so neither the state nor a partial stream is accepted.
+        for(size_t i=0;i<ncolumns;++i){
+            if(!c.has_cell&&(i==6||i==7))continue; // undefined molecular volume/pressure
+            require(std::isfinite(row[i]),"nonfinite ensemble observation; reduce timestep or check initial state");
+        }
         if(cq){
             std::copy(centroid_q.begin(),centroid_q.end(),cq);
             if(moments){
@@ -355,6 +362,8 @@ private:
                     cq[2*d+j/3]+=delta*delta/c.beads;
                 }
             }
+            const size_t width=moments?2*d+c.atoms:d;
+            for(size_t i=0;i<width;++i)require(std::isfinite(cq[i]),"nonfinite centroid observation; check trajectory moments");
         }
     }
 public:
@@ -423,6 +432,7 @@ public:
         const size_t width=moments?2*d+c.atoms:d;
         require(width<=static_cast<size_t>(std::numeric_limits<std::streamsize>::max())/sizeof(double),"record width overflow");
         require(stride>0,"stride must be positive");require(steps<=UINT64_MAX-s.step,"step counter overflow");
+        require(std::isfinite(static_cast<double>(s.step+steps)*c.dt),"trajectory time overflow");
         // Absolute observation clock. Splitting a run never inserts extra frames.
         auto observations=[&](uint64_t step){return step>sample_start?(step-sample_start)/stride:uint64_t(0);};
         uint64_t count=observations(s.step+steps)-observations(s.step);

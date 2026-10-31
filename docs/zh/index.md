@@ -46,7 +46,8 @@ pyrpmd analyze runs/job                 # 读取摘要；FES、metadynamics、OP
 pyrpmd resume runs/job                  # 从检查点续跑，科学设置保持不变
 ```
 
-全部选项见[输入与命令行](manual/input.md#命令行参考)。对应的 Python 入口是 `prepare`、`run`、
+命令索引与常用选项见[输入与命令行](manual/input.md#命令行参考)；`pyrpmd COMMAND --help` 列出当前安装版本的全部选项。
+对应的 Python 入口是 `prepare`、`run`、
 `analyze_run` 和 `resume_run`，见[快速入门](manual/quickstart.md)。
 
 ## 章节

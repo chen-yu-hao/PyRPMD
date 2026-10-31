@@ -8,7 +8,7 @@ PyRPMD 支持周期体系、带冻结层的 slab，以及各向同性 NPT PIMD�
 | --- | --- | --- | --- | --- |
 | `pimd` | 平衡量子统计，可选 BZP 恒压 | 支持 | 固定晶胞时支持 | 能量估计量、回转半径 |
 | `diffusion` | 连续质心轨迹与输运 | 支持 | 支持 | MSD、VACF、D 与诊断 |
-| `site_rate` | 全原子可动材料中的有向出口 | 支持 | 不支持 | 沿单一恒定梯度 CV 的盆地速率 |
+| `site_rate` | 全原子可动材料中的有向出口 | 支持 | 不支持 | 沿单一受支持平滑质心 CV 的盆地速率 |
 | `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
 | `surface_rate` | 表面上的有向出口，可含固定层 | 支持，也可为有限团簇 | 支持 | 以可动原子质量度量计算的一阶速率 |
 
@@ -54,7 +54,8 @@ H、D、T 在电子 PES 上都对应氢，差别在于核质量。可用 `symbol
 | `surface_lateral` | 展开 COM 沿面内方向 | 表面迁移自由能与有向出口 |
 
 `periodic_bond_difference` 也接受别名 `periodic_difference`。最近镜像 CV 在镜像切换处有导数分支，偏置范围应避开该处。
-`site_rate` 接受其支持的线性质心 CV；`surface_rate` 还接受具有恒定端点质量度量的展开 `distance`。
+`site_rate` 接受受支持的线性质心 CV，以及按[广义坐标速率](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md)
+处理质量度量的平滑非线性坐标；`surface_rate` 还接受具有恒定端点质量度量的展开 `distance`。
 `periodic_distance` 的分割面须小于周期晶格基最小奇异值的一半，以远离最小镜像切换边界。
 键差和变质量度量坐标不自动适用这一表面速率公式。
 
@@ -72,10 +73,10 @@ Python 周期插件使用以下两种契约之一：
 对新的 calculator 先运行 `validate --check-pes`，再独立检查力和周期平移。
 
 i-PI 在 POSDATA 中发送真实晶胞及其逆矩阵，采用协议的列向量约定。POSDATA 不含 PBC 标志，因此 slab 需设置与体系一致的
-`potential.params.init.pbc`，服务端需读取这一 INIT 字段。周期模型请通过 ASE、Python 或 i-PI 接口连接；C ABI v1、
-RPMDrate/f2py 和 Torch 适配器用于分子体系。
+`potential.params.init.pbc`，服务端需读取这一 INIT 字段。周期 provider 包括 ASE、兼容的 Python 和 i-PI 接口、
+C ABI v2，以及显式支持晶胞的 Torch 模型。C ABI v1 与 RPMDrate/f2py 仍用于分子体系；各 provider 的晶胞与 virial 约定见[势能](potentials.md)。
 
-周期与固定原子体系在 Python 时间步循环中运行，并使用编译的确定性子步骤；使用 `loop_backend="auto"` 或 `"python"`。
+默认工作流引擎下，周期与固定原子体系在 Python 时间步循环中运行，并使用编译的确定性子步骤；使用 `loop_backend="auto"` 或 `"python"`。
 
 ## PIMD：平衡性质
 
@@ -113,6 +114,13 @@ pyrpmd resume runs/manual-pimd
 `output.trajectory_storage="stream"`、`output.chunk_frames=256`；`"memory"` 保留旧的单 NPZ 格式。
 已完成的旧任务可在不加载 PES 的情况下迁移。离线相关分析仍加载标量或所选原子的历史，需要单独预算内存。
 详见[流式存储](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md)。输运性质使用 `diffusion`。
+
+### 原生 PIMD 引擎
+
+`sampling.engine="native"` 选择单独的 C++ 系综引擎。它要求兼容的内置或编译势能，提供更多恒温器、NVT 固定原子支持，
+以及各有适用限制的 BZP、MTTK、RGB 或 SCR barostat。输出使用事务式 `samples/native_pimd_NNNN/journal.json`
+和不可变数据块，不使用默认的材料检查点布局。切换引擎会改变运行身份。完整输入输出约定及示例见
+[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)；下方 BZP 参数表属于默认引擎。
 
 ### 恒压 PIMD
 
@@ -185,7 +193,9 @@ $$
 
 ## 位点与表面速率
 
-两个局部速率工作流都使用恒定质量度量的线性质心坐标 s，并从同一位置密度得到分割面值与盆地概率：
+对恒定质量度量的线性质心坐标 s，两个局部速率工作流都从同一位置密度得到分割面值与盆地概率。
+非线性 `site_rate` 还需对受约束母链的质量度量取平均，见[广义坐标速率](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md)；
+`surface_rate` 也接受前述非线性距离坐标。恒定质量度量情况下：
 
 $$
 k_{\mathrm{QTST}}=
@@ -208,7 +218,7 @@ pyrpmd analyze runs/manual-site-rate
 ```
 
 [例子](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)使用展开的 `fractional`
-质心坐标。支持的 CV 为 `cartesian`、`projection` 和 `fractional`，后两者可相对于一组晶格原子。`site_rate.cv`
+质心坐标。内置线性 CV 为 `cartesian`、`projection` 和 `fractional`，后两者可相对于一组晶格原子；平滑非线性 CV 使用上述广义坐标方法。`site_rate.cv`
 指定伞抽样 CV，`basin=[lo,hi]` 定义有限盆地；`direction=1` 时分割面在 hi，`direction=-1` 时在 lo。
 
 窗口与分析范围覆盖整个盆地并越过出口。窗口和受约束母链使用 Andersen 恒温器，±p 子轨迹不恒温。有限样本的 κ 保留其符号。

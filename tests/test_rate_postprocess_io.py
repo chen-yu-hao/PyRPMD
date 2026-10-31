@@ -8,6 +8,7 @@ import pytest
 from pyrpmd.analysis.rate_io import postprocess_rate
 from pyrpmd.cli import main
 from pyrpmd.constants import AU_RATE_TO_CM3_S
+from pyrpmd.checkpoint import CheckpointError, atomic_savez
 
 
 def _dump(path, value):
@@ -57,6 +58,56 @@ def _saved_fes(tmp_path):
         "method": "flux_slice_2d", "beta": 1., "surface": 1., "reference": 0.,
         "reference_rate_au": 7., "reference_definition": "Test entrance with known flux",
     }
+
+
+@pytest.mark.parametrize("sealed", [False, True])
+def test_saved_fes_postprocessing_accepts_legacy_and_checked_archives(tmp_path, sealed):
+    spec = _saved_fes(tmp_path)
+    path = tmp_path / "fes.npz"
+    if sealed:
+        with np.load(path, allow_pickle=False) as saved:
+            arrays = dict(saved.items())
+        atomic_savez(path, **arrays)
+    result = postprocess_rate(tmp_path, spec=spec, bootstrap=0)
+    assert result["static"]["k_tst_au"] == pytest.approx(7 * np.exp(-1))
+    assert result["rate_cm3_s"] is None
+
+
+def test_saved_fes_postprocessing_rejects_failed_array_integrity_before_publication(tmp_path):
+    spec = _saved_fes(tmp_path)
+    path = tmp_path / "fes.npz"
+    with np.load(path, allow_pickle=False) as saved:
+        arrays = dict(saved.items())
+    atomic_savez(path, **arrays)
+    postprocess_rate(tmp_path, spec=spec, bootstrap=0)
+    previous = (tmp_path / "rate_postprocess.json").read_bytes()
+    with np.load(path, allow_pickle=False) as saved:
+        damaged = dict(saved.items())
+    damaged["free_energy"][1] += .25
+    np.savez(path, **damaged)
+    with pytest.raises(CheckpointError, match="integrity check failed for array 'free_energy'"):
+        postprocess_rate(tmp_path, spec=spec, bootstrap=0)
+    assert (tmp_path / "rate_postprocess.json").read_bytes() == previous
+
+
+@pytest.mark.parametrize("filename,member", [
+    ("rate_pmf.npz", "standard_error"), ("recrossing.npz", "bootstrap_kappa"),
+])
+def test_saved_rate_postprocessing_checks_even_unconsumed_members(tmp_path, filename, member):
+    expected = _saved_rate(tmp_path)
+    path = tmp_path / filename
+    with np.load(path, allow_pickle=False) as saved:
+        arrays = dict(saved.items())
+    arrays[member] = np.array([.1, .2])
+    atomic_savez(path, **arrays)
+    result = postprocess_rate(tmp_path, bootstrap=20)
+    assert result["rate_estimate_cm3_s"] == pytest.approx(expected)
+    with np.load(path, allow_pickle=False) as saved:
+        damaged = dict(saved.items())
+    damaged[member][0] += .5
+    np.savez(path, **damaged)
+    with pytest.raises(CheckpointError, match="integrity check failed"):
+        postprocess_rate(tmp_path, bootstrap=20)
 
 
 def test_saved_rate_is_recomputed_without_upgrading_failed_energy_check(tmp_path):

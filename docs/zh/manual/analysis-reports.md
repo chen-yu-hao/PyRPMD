@@ -3,11 +3,11 @@
 用一条命令把保存的 PyRPMD 结果整理为报告：
 
 ```bash
-python -m pip install -e '.[analysis]'
+python -m pip install -e '.[plots]'
 pyrpmd report runs/my-run --output reports/my-run
 ```
 
-可选 `analysis` 依赖包含绘图所需的 Matplotlib。完成后用浏览器打开
+`plots` 安装绘图所需的 Matplotlib；`analysis` 也包含它，并额外安装用于独立估计器对照的 PyMBAR。完成后用浏览器打开
 `reports/my-run/index.html`。报告读取 PyRPMD 原生结果文件，不调用势能、不重新传播轨迹，
 也不执行保存的 Python 输入文件。
 

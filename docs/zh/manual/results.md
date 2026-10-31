@@ -67,6 +67,10 @@ bootstrap 给出保存样本的统计误差。没有有效误差时该字段为 
 
 ## 反应速率：PMF 与回穿
 
+保存的气相速率结果可用 `pyrpmd rate-postprocess RUN --bootstrap 200` 重分析。
+[速率后处理指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-postprocessing.md)说明二维分割曲线积分、
+参考归一化和有符号通量。后处理结果单独写出，并保留原始能量与收敛诊断。
+
 气相 `rate` 遵循 Bennett–Chandler 流程：静态 PMF/QTST 因子与动态传输系数共同给出速率。检查 PMF 测度、分割面、
 反应物归一化、受约束母链和回穿平台。`site_rate` 与 `surface_rate` 使用显式反应物盆地和一个有向边界，给出单位为
 `s^-1` 的一阶速率。
@@ -84,10 +88,13 @@ bootstrap 给出保存样本的统计误差。没有有效误差时该字段为 
 ## PIMD 与扩散
 
 PIMD 的 primitive 和 centroid-virial 估计量给出物理热力学能量；环 Hamiltonian 是传播诊断。PIMD 缺省使用固定晶胞，
-显式设置受支持的恒压器时使用 NPT；请阅读报告的系综，NPT 运行还需检查保存的体积与压力。
+显式设置受支持的恒压器时执行 NPT 并保存变化的晶胞与体积。请阅读报告的系综，NPT 运行还需检查保存的体积与压力。
+动能估计量只计入可动原子；[材料章节](periodic.md)说明默认和原生采样引擎的区别。
 
 扩散保存连续、展开的质心位置和速度。MSD 拟合需要长时扩散区，`analysis_status` 标出弹道运动和不稳定的拟合。
 VACF 积分和副本间误差提供另外两项检查。
+
+普通扩散生产段不恒温；启用 `[electronic_friction]` 后，电子浴能量交换取代 NVE 能量守恒诊断。
 
 ```bash
 pyrpmd analyze runs/diffusion --recompute \

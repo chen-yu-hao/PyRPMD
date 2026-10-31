@@ -1,0 +1,196 @@
+{
+  "cli_commands": [
+    "run",
+    "validate",
+    "prepare",
+    "state-check",
+    "resume",
+    "extend",
+    "analyze",
+    "rate-postprocess",
+    "project",
+    "report",
+    "info",
+    "study",
+    "checkpoint",
+    "pes"
+  ],
+  "cli_reference_missing": {
+    "docs/manual/input.md": [],
+    "docs/zh/manual/input.md": []
+  },
+  "separate_entrypoint_schemas": [
+    "examples/ensembles/native_npt.toml",
+    "examples/ensembles/native_nvt.toml",
+    "examples/pes/pes.toml",
+    "examples/pesgen/water.toml"
+  ],
+  "toml_job_examples": [
+    {
+      "path": "examples/drpmd/free_scattering.inp",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/drpmd/minimal.inp",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/electrochemistry/fes2d.inp",
+      "task": "fes"
+    },
+    {
+      "path": "examples/ensembles/pimd_native.inp",
+      "task": "pimd"
+    },
+    {
+      "path": "examples/ensembles/pimd_native_npt.inp",
+      "task": "pimd"
+    },
+    {
+      "path": "examples/fes/adaptive_harmonic.inp",
+      "task": "fes"
+    },
+    {
+      "path": "examples/fes/harmonic2d.inp",
+      "task": "fes"
+    },
+    {
+      "path": "examples/fes/replica_exchange_2d.inp",
+      "task": "fes"
+    },
+    {
+      "path": "examples/manual/quickstart.inp",
+      "task": "fes"
+    },
+    {
+      "path": "examples/materials/diffusion.inp",
+      "task": "diffusion"
+    },
+    {
+      "path": "examples/materials/fixed_slab.inp",
+      "task": "pimd"
+    },
+    {
+      "path": "examples/materials/npt_free.inp",
+      "task": "pimd"
+    },
+    {
+      "path": "examples/materials/pimd.inp",
+      "task": "pimd"
+    },
+    {
+      "path": "examples/materials/site_rate.inp",
+      "task": "site_rate"
+    },
+    {
+      "path": "examples/metadynamics/grid_fixed_slab.inp",
+      "task": "metadynamics"
+    },
+    {
+      "path": "examples/metadynamics/standard.inp",
+      "task": "metadynamics"
+    },
+    {
+      "path": "examples/metadynamics/well_tempered_2d.inp",
+      "task": "metadynamics"
+    },
+    {
+      "path": "examples/nonadiabatic/exchange.inp",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/nonadiabatic/friction_surface.inp",
+      "task": "diffusion"
+    },
+    {
+      "path": "examples/opes/harmonic_2d.inp",
+      "task": "opes"
+    },
+    {
+      "path": "examples/pcet/harmonic_scan.inp",
+      "task": "pcet"
+    },
+    {
+      "path": "examples/potentials/periodic_torch.inp",
+      "task": "pimd"
+    },
+    {
+      "path": "examples/rate/general_coordinate.inp",
+      "task": "site_rate"
+    },
+    {
+      "path": "examples/rate/minimal.inp",
+      "task": "rate"
+    },
+    {
+      "path": "examples/rate/pilot.inp",
+      "task": "rate"
+    },
+    {
+      "path": "examples/state_selected/ne_rpmd.inp",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/state_selected/qct.inp",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/surface/diffusion.inp",
+      "task": "surface_rate"
+    },
+    {
+      "path": "examples/surface/fes2d.inp",
+      "task": "fes"
+    }
+  ],
+  "python_job_examples": [
+    {
+      "path": "examples/drpmd/bead.py",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/drpmd/gpu.py",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/drpmd/mpi.py",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/drpmd/mpi_dynamic.py",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/drpmd/python_pes.py",
+      "task": "drpmd"
+    },
+    {
+      "path": "examples/fes/custom_input.py",
+      "task": "fes"
+    },
+    {
+      "path": "examples/network/two_entrances.py",
+      "task": "network"
+    },
+    {
+      "path": "examples/surface/pt111/pilot.py",
+      "task": "metadynamics"
+    },
+    {
+      "path": "examples/surface/pt111/production.py",
+      "task": "metadynamics"
+    }
+  ],
+  "default_production_steps": {
+    "examples/manual/quickstart.inp": 2000,
+    "examples/metadynamics/well_tempered_2d.inp": 10000,
+    "examples/fes/adaptive_harmonic.inp": 10000
+  },
+  "production_retains_defaults": {
+    "integrator": "cayley-bcb",
+    "production_steps": 2000
+  },
+  "three_dimensional_umbrella_rejected": "umbrella FES supports one or two CV dimensions",
+  "markdown_files_checked": 136,
+  "audit_report_links_resolved": true
+}

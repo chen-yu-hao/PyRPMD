@@ -33,7 +33,7 @@ also selects the same Python environment used by `python -m pip`.
 | --- | --- |
 | `native.available`, `native.openmp` | The C++ extension and OpenMP are loaded |
 | `native.integrators` | Compiled integrators: `cayley-bcb`, `normal-mode-bab`, `velocity-verlet` |
-| `workflows` | The 11 available `task` values, including OPES |
+| `workflows` | The 11 available `task` values, including `opes` |
 | `input_schema_version` | Current input schema version (1) |
 
 Optional features such as ASE, MPI, Torch and external potential libraries need their own
@@ -68,10 +68,10 @@ loaded.
 
 Two input settings control the compiled code at run time. `dynamics.native="required"` demands
 compiled integrator kernels. `dynamics.loop_backend="native"` demands that the whole propagation
-loop runs in the fused native path. With the default sampling engine, a custom Python potential or
-a periodic/fixed-atom system uses compiled integrator substeps inside a Python outer loop. The
-separate native PIMD sampling engine has explicit capabilities and restrictions; see
-[Execution and parallelism](execution.md).
+loop runs in the fused native path. With the default workflow engine, a custom Python potential or
+a periodic/fixed-atom system uses compiled integrator substeps inside a Python outer loop.
+The separately selected native PIMD engine has its own PES and execution requirements;
+see [Execution and parallelism](execution.md).
 
 ## Optional dependencies
 
@@ -80,8 +80,8 @@ separate native PIMD sampling engine has explicit capabilities and restrictions;
 | `python -m pip install -e '.[ase]'` | ASE calculator potentials | The calculator's model or program |
 | `python -m pip install -e '.[mpi]'` | MPI trajectory groups and bead splitting | An MPI library and launcher matching mpi4py |
 | `python -m pip install -e '.[gpu]'` | Torch potentials | A PyTorch/CUDA build matching the node driver, and a model |
-| `python -m pip install -e '.[analysis]'` | PyMBAR cross-checks | Nothing else; routine FES uses the built-in MBAR |
-| `python -m pip install -e '.[plots]'` | Figures and HTML analysis reports | Matplotlib; no external PES is needed to report saved runs |
+| `python -m pip install -e '.[plots]'` | Matplotlib figures and HTML/JSON analysis reports | Saved PyRPMD results; no external PES is needed |
+| `python -m pip install -e '.[analysis]'` | PyMBAR cross-checks and the plotting dependencies | Routine FES uses the built-in MBAR |
 | `python -m pip install -e '.[test]'` | pytest suite | Tests for optional interfaces skip when those are missing |
 | `python -m pip install -e '.[docs]'` | Building this manual | Sphinx, MyST, PyData theme |
 

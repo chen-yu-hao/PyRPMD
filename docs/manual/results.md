@@ -104,11 +104,16 @@ observed contributions are reported. See [Nonadiabatic NRPMD](nonadiabatic.md).
 
 The PIMD primitive and centroid-virial estimators give physical thermodynamic energies; the ring
 Hamiltonian is a propagation diagnostic. PIMD uses a fixed cell unless an explicit supported
-barostat selects NPT; read the reported ensemble and, for NPT, the saved volume and pressure.
+barostat selects NPT; read the reported ensemble and, for NPT, the saved cell, volume and pressure.
+Kinetic-energy estimators count mobile atoms only. The [materials chapter](periodic.md)
+distinguishes the default and native sampling engines.
 
 Diffusion saves continuous, unwrapped centroid positions and velocities. The MSD fit needs the
 long-time diffusive regime, and `analysis_status` flags ballistic motion and unstable fits. The VACF
 integral and the between-replica error give two further checks.
+
+Ordinary diffusion production is unthermostatted. With `[electronic_friction]`, energy exchange
+with the electronic bath replaces the NVE conservation diagnostic.
 
 ```bash
 pyrpmd analyze runs/diffusion --recompute \
