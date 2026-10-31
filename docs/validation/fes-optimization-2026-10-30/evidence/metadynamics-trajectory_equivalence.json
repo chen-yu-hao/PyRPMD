@@ -1,0 +1,22 @@
+[
+  {
+    "mode": "standard",
+    "beads": 4,
+    "integration_steps": 6200,
+    "hills": 100,
+    "samples": 600,
+    "final_q_p_exactly_equal": true,
+    "samples_energies_bias_exactly_equal": true,
+    "rng_hills_propagation_exactly_equal": true
+  },
+  {
+    "mode": "well_tempered",
+    "beads": 4,
+    "integration_steps": 6200,
+    "hills": 100,
+    "samples": 600,
+    "final_q_p_exactly_equal": true,
+    "samples_energies_bias_exactly_equal": true,
+    "rng_hills_propagation_exactly_equal": true
+  }
+]

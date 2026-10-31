@@ -1,0 +1,319 @@
+{
+  "schema": "pyrpmd.brhcl.leps1-verification.v1",
+  "passed": true,
+  "source": {
+    "model": "BrHCl_LEPS1 historical ground-state Br-H-Cl London-Eyring-Polanyi-Sato PES",
+    "repository": "https://github.com/shuyinan/chempotpy",
+    "commit": "4716d22e87ae01770cad9ec995c4a02a8e479296",
+    "path": "chempotpy/BrHCl/BrHCl_LEPS1.f",
+    "url": "https://raw.githubusercontent.com/shuyinan/chempotpy/4716d22e87ae01770cad9ec995c4a02a8e479296/chempotpy/BrHCl/BrHCl_LEPS1.f",
+    "sha256": "55df493416823e16ea26309b474353381e36b982aea95dcc4aaf39097ba02f5e",
+    "bytes": 58274,
+    "upstream_license": "ChemPotPy repository Apache-2.0; preserve upstream attribution. Source is fetched into ignored build/, not bundled or relicensed as PyRPMD MIT.",
+    "license_url": "https://github.com/shuyinan/chempotpy/blob/4716d22e87ae01770cad9ec995c4a02a8e479296/LICENSE",
+    "atomic_numbers": [
+      35,
+      1,
+      17
+    ],
+    "atomic_order": [
+      "Br",
+      "H",
+      "Cl"
+    ],
+    "charge": 0,
+    "multiplicity": 2,
+    "energy_zero": "Br + HCl at the model HCl equilibrium distance and infinite Br separation",
+    "distance_unit": "bohr",
+    "energy_unit": "hartree",
+    "minimum_pair_distance_bohr": 0.2,
+    "legacy_kcal_mol_per_hartree": 627.5095,
+    "legacy_angstrom_per_bohr": 0.529177106,
+    "legacy_sqrt_two": 1.41421356,
+    "morse_dissociation_kcal_mol": [
+      90.24,
+      106.4,
+      52.09
+    ],
+    "morse_equilibrium_angstrom": [
+      1.414,
+      1.275,
+      2.136
+    ],
+    "morse_beta_inverse_angstrom": [
+      1.851,
+      1.867,
+      1.923
+    ],
+    "sato_parameters": [
+      0.154,
+      0.154,
+      0.154
+    ],
+    "morse_reference": "D. J. Douglas, J. C. Polanyi, J. J. Sloan, Chem. Phys. 13, 15-31 (1976), doi:10.1016/0301-0104(76)80121-8",
+    "sato_reference": "J. A. Kaye, A. Kuppermann, Chem. Phys. Lett. 92, 574-580 (1982), doi:10.1016/0009-2614(82)83653-1",
+    "scope": "A published historical analytic reaction model with HBr, HCl and BrCl asymptotic arrangements. Its original parameter studies focused on Br+HCl hydrogen transfer; this does not establish modern quantitative accuracy for H+BrCl branching.",
+    "precision_note": "The unchanged upstream DOUBLE PRECISION source is compiled with ordinary GNU Fortran kinds, without default-real promotion. The wrapper calls PREPOT/POT in atomic units and avoids the ChemPotPy pes entry's rounded angstrom/eV conversions. Its rounded internal sqrt(2)=1.41421356 is preserved; the nominal equilibrium asymptote zero consequently differs by less than 1e-9 hartree."
+  },
+  "build": {
+    "schema": "pyrpmd.brhcl.leps1-build.v1",
+    "created_utc": "2026-10-30T16:25:04.201508+00:00",
+    "source": {
+      "model": "BrHCl_LEPS1 historical ground-state Br-H-Cl London-Eyring-Polanyi-Sato PES",
+      "repository": "https://github.com/shuyinan/chempotpy",
+      "commit": "4716d22e87ae01770cad9ec995c4a02a8e479296",
+      "path": "chempotpy/BrHCl/BrHCl_LEPS1.f",
+      "url": "https://raw.githubusercontent.com/shuyinan/chempotpy/4716d22e87ae01770cad9ec995c4a02a8e479296/chempotpy/BrHCl/BrHCl_LEPS1.f",
+      "sha256": "55df493416823e16ea26309b474353381e36b982aea95dcc4aaf39097ba02f5e",
+      "bytes": 58274,
+      "upstream_license": "ChemPotPy repository Apache-2.0; preserve upstream attribution. Source is fetched into ignored build/, not bundled or relicensed as PyRPMD MIT.",
+      "license_url": "https://github.com/shuyinan/chempotpy/blob/4716d22e87ae01770cad9ec995c4a02a8e479296/LICENSE",
+      "atomic_numbers": [
+        35,
+        1,
+        17
+      ],
+      "atomic_order": [
+        "Br",
+        "H",
+        "Cl"
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "Br + HCl at the model HCl equilibrium distance and infinite Br separation",
+      "distance_unit": "bohr",
+      "energy_unit": "hartree",
+      "minimum_pair_distance_bohr": 0.2,
+      "legacy_kcal_mol_per_hartree": 627.5095,
+      "legacy_angstrom_per_bohr": 0.529177106,
+      "legacy_sqrt_two": 1.41421356,
+      "morse_dissociation_kcal_mol": [
+        90.24,
+        106.4,
+        52.09
+      ],
+      "morse_equilibrium_angstrom": [
+        1.414,
+        1.275,
+        2.136
+      ],
+      "morse_beta_inverse_angstrom": [
+        1.851,
+        1.867,
+        1.923
+      ],
+      "sato_parameters": [
+        0.154,
+        0.154,
+        0.154
+      ],
+      "morse_reference": "D. J. Douglas, J. C. Polanyi, J. J. Sloan, Chem. Phys. 13, 15-31 (1976), doi:10.1016/0301-0104(76)80121-8",
+      "sato_reference": "J. A. Kaye, A. Kuppermann, Chem. Phys. Lett. 92, 574-580 (1982), doi:10.1016/0009-2614(82)83653-1",
+      "scope": "A published historical analytic reaction model with HBr, HCl and BrCl asymptotic arrangements. Its original parameter studies focused on Br+HCl hydrogen transfer; this does not establish modern quantitative accuracy for H+BrCl branching.",
+      "precision_note": "The unchanged upstream DOUBLE PRECISION source is compiled with ordinary GNU Fortran kinds, without default-real promotion. The wrapper calls PREPOT/POT in atomic units and avoids the ChemPotPy pes entry's rounded angstrom/eV conversions. Its rounded internal sqrt(2)=1.41421356 is preserved; the nominal equilibrium asymptote zero consequently differs by less than 1e-9 hartree."
+    },
+    "source_file": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/BrHCl_LEPS1.f",
+    "wrapper_sha256": {
+      "wrapper.f90": "aa190a7ffc2f13651b37b4851e0f1e28a0052830a093d41bbc7685780b367141",
+      "wrapper.cpp": "00c8b47901ecc4fcda97158e5f3ebb1e7fa9c3f5f5560183446351ff11199622",
+      "exports.map": "cc6dd065b6641216d493ea7db94bef7511cedf694aec5199e79200a1bfcf4a24"
+    },
+    "library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/libbrhcl.so",
+    "library_sha256": "2989ae703c7f9ad5d08d2058309a047863a97ef8c26ce81f22cb1da2b87de339",
+    "fortran_compiler": "GNU Fortran (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "cxx_compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0\nCopyright (C) 2023 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+    "commands": [
+      [
+        "gfortran",
+        "-O3",
+        "-fPIC",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-c",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/BrHCl_LEPS1.f",
+        "-o",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/brhcl-build-r4rev_vu/legacy.o"
+      ],
+      [
+        "gfortran",
+        "-O3",
+        "-fPIC",
+        "-ffree-line-length-none",
+        "-c",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/wrapper.f90",
+        "-o",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/brhcl-build-r4rev_vu/fortran.o"
+      ],
+      [
+        "g++",
+        "-O3",
+        "-fPIC",
+        "-std=c++17",
+        "-pthread",
+        "-I/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/native/include",
+        "-c",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/wrapper.cpp",
+        "-o",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/brhcl-build-r4rev_vu/cabi.o"
+      ],
+      [
+        "gfortran",
+        "-shared",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/brhcl-build-r4rev_vu/legacy.o",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/brhcl-build-r4rev_vu/fortran.o",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/brhcl-build-r4rev_vu/cabi.o",
+        "-lstdc++",
+        "-pthread",
+        "-Wl,--version-script=/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/exports.map",
+        "-o",
+        "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/brhcl-build-r4rev_vu/libbrhcl.so"
+      ]
+    ],
+    "compiler_output": [
+      {
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "asymptotic_oracles": [
+      {
+        "arrangement": "HBr+Cl",
+        "distances_bohr": [
+          2.6720732699271386,
+          99.0,
+          99.0
+        ],
+        "energy_hartree": 0.02575259791450074,
+        "reference_hartree": 0.02575259816783652,
+        "absolute_error_hartree": 2.5333577943764674e-10,
+        "tolerance_hartree": 1e-09,
+        "note": "The unchanged source uses rounded sqrt(2)=1.41421356."
+      },
+      {
+        "arrangement": "HCl+Br",
+        "distances_bohr": [
+          99.0,
+          2.4094012865326033,
+          99.0
+        ],
+        "energy_hartree": -2.9870267370668557e-10,
+        "reference_hartree": 0.0,
+        "absolute_error_hartree": 2.9870267370668557e-10,
+        "tolerance_hartree": 1e-09,
+        "note": "The unchanged source uses rounded sqrt(2)=1.41421356."
+      },
+      {
+        "arrangement": "BrCl+H",
+        "distances_bohr": [
+          99.0,
+          99.0,
+          4.036455802379327
+        ],
+        "energy_hartree": 0.08654849035470548,
+        "reference_hartree": 0.08654849050094063,
+        "absolute_error_hartree": 1.462351489900371e-10,
+        "tolerance_hartree": 1e-09,
+        "note": "The unchanged source uses rounded sqrt(2)=1.41421356."
+      }
+    ],
+    "precision": "ordinary DOUBLE PRECISION; no real/integer kind promotion"
+  },
+  "asymptotic_oracles": [
+    {
+      "arrangement": "HBr+Cl",
+      "distances_bohr": [
+        2.6720732699271386,
+        99.0,
+        99.0
+      ],
+      "energy_hartree": 0.02575259791450074,
+      "reference_hartree": 0.02575259816783652,
+      "absolute_error_hartree": 2.5333577943764674e-10,
+      "tolerance_hartree": 1e-09,
+      "note": "The unchanged source uses rounded sqrt(2)=1.41421356."
+    },
+    {
+      "arrangement": "HCl+Br",
+      "distances_bohr": [
+        99.0,
+        2.4094012865326033,
+        99.0
+      ],
+      "energy_hartree": -2.9870267370668557e-10,
+      "reference_hartree": 0.0,
+      "absolute_error_hartree": 2.9870267370668557e-10,
+      "tolerance_hartree": 1e-09,
+      "note": "The unchanged source uses rounded sqrt(2)=1.41421356."
+    },
+    {
+      "arrangement": "BrCl+H",
+      "distances_bohr": [
+        99.0,
+        99.0,
+        4.036455802379327
+      ],
+      "energy_hartree": 0.08654849035470548,
+      "reference_hartree": 0.08654849050094063,
+      "absolute_error_hartree": 1.462351489900371e-10,
+      "tolerance_hartree": 1e-09,
+      "note": "The unchanged source uses rounded sqrt(2)=1.41421356."
+    }
+  ],
+  "formula_points": 40,
+  "formula_max_absolute_error_hartree": 4.440892098500626e-16,
+  "force_check": {
+    "max_absolute_force_error": 1.8027757064942307e-10,
+    "rms_force_error": 2.0509304674838334e-11,
+    "force_unit": "hartree/bohr",
+    "finite_difference_step_bohr": 1e-05
+  },
+  "radial_max_absolute_derivative_error": 4.990376167857136e-12,
+  "rotation_translation_energy_error_hartree": 3.552713678800501e-15,
+  "rotation_translation_force_error_hartree_per_bohr": 6.661338147750939e-15,
+  "net_force_max_hartree_per_bohr": 2.992397996059992e-16,
+  "net_torque_max_hartree": 3.5453411040275995e-16,
+  "batch_scalar_exact": true,
+  "confined_bare_isolation": true,
+  "common_pair_wall": {
+    "radius_bohr": 11.338356755446696,
+    "kappa_hartree_per_bohr2": 0.008925077046121556,
+    "enabled": true,
+    "retained_in_target_pmf": true,
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        0,
+        2
+      ]
+    ]
+  },
+  "wall_force_check": {
+    "max_absolute_force_error": 9.125804278919958e-12,
+    "rms_force_error": 3.523066211416308e-12,
+    "force_unit": "hartree/bohr",
+    "finite_difference_step_bohr": 1e-05
+  },
+  "benchmark_frames": 4000,
+  "microseconds_per_frame": 49.27663299895357,
+  "scope": "Pinned historical LEPS model and adapter verification; not a claim of quantitative H+BrCl branching accuracy."
+}

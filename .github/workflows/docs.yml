@@ -41,6 +41,14 @@ jobs:
           pyrpmd run examples/nonadiabatic/exchange.inp --workers 2 --output "$RUNNER_TEMP/manual-nrpmd"
           pyrpmd resume "$RUNNER_TEMP/manual-nrpmd" --block-steps 32
           pyrpmd analyze "$RUNNER_TEMP/manual-nrpmd"
+      - name: Run nonadiabatic model APIs and electronic-friction tutorial
+        run: |
+          python examples/nonadiabatic/soc_and_rpsh.py
+          python examples/nonadiabatic/thermal_rates.py
+          python examples/nonadiabatic/method_models.py
+          pyrpmd validate examples/nonadiabatic/friction_surface.inp --check-pes
+          pyrpmd run examples/nonadiabatic/friction_surface.inp --output "$RUNNER_TEMP/manual-ef-rpmd"
+          pyrpmd resume "$RUNNER_TEMP/manual-ef-rpmd"
       - uses: actions/upload-artifact@v4
         with:
           name: pyrpmd-manual-html

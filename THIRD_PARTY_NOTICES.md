@@ -65,6 +65,32 @@ SOFTWARE.
 
 ## Scientific citations
 
+### Electrode sampling references (independent implementation)
+
+The `pyrpmd.electrochemistry` additions reuse PyRPMD's existing PES validation,
+ring-polymer propagator and sampling conventions. New electrode-specific code
+is independently written from the stated statistical definitions. No source
+code or trained potential is redistributed from the following reference projects:
+
+- [GC-Constrained-PIHMC](https://github.com/sxu39/GC-Constrained-PIHMC/tree/94337e7e87eeb5f3776bd364145f9650333b156b),
+  commit `94337e7e87eeb5f3776bd364145f9650333b156b`: shared electron number,
+  mean-bead-energy grand canonical sampling and DeePMD frame-parameter design.
+  No license file was present in the inspected tree. PyRPMD uses a symmetric
+  additive proposal with out-of-domain rejection, rather than the source's
+  truncated proposal and proposal-width correction.
+- [TP-RPMD](https://github.com/sxu39/TP-RPMD/tree/ae3d6f0dd0b66401094548f394c99e17e1f2a7a1),
+  commit `ae3d6f0dd0b66401094548f394c99e17e1f2a7a1`: number-dependent energy and
+  dE/dN interfaces. Modified LAMMPS files retain GPL notices. PyRPMD does not
+  reproduce or redistribute that extended electronic dynamics implementation.
+- [pyPCET](https://github.com/shsgroup/pyPCET/tree/031a679eab50e210aa7f76698ef5f302de31a460),
+  commit `031a679eab50e210aa7f76698ef5f302de31a460`, GPLv3: independent reference
+  for the already-existing local golden-rule PCET model and its documented
+  cross-validation; no new copy of this functionality is added here.
+
+Full model definitions and limitations: `docs/electrochemistry.md`.
+
+### General methods
+
 - Suleimanov, Allen and Green, *RPMDrate*, CPC 184, 833–840 (2013),
   https://doi.org/10.1016/j.cpc.2012.10.017
 - Steffen, *Caracal*, JCTC 19, 5334–5355 (2023),
@@ -74,3 +100,18 @@ SOFTWARE.
 - Suleimanov et al., *Direct RPMD trajectories*, JPCL 9, 2133–2137 (2018),
   https://doi.org/10.1021/acs.jpclett.8b00783
 
+
+## Optional native Caracal PES generation
+
+`pyrpmd.pesgen` builds a user-supplied Caracal checkout pinned to
+`7f95ce9818b7f6d81d7cb3b634f360373c090820`; upstream source and compiled binaries are
+not shipped in the PyRPMD wheel. New orchestration, IPC wrapper and reference-data
+code is PyRPMD MIT code. The archived safety patch changes charge-input handling
+and an allocation, not the original energy equations. Caracal's core copyright
+(Julien Steffen; Stefan Grimme for QMDFF) and MIT notice, and all separately bundled
+third-party license/header notices, remain applicable. Generated native bundles
+include collected notices and identify the full upstream source commit; they do
+not relicense dependency code under PyRPMD's license. PySCF is an optional separately
+installed dependency. Cite the reference electronic-structure method and software
+as well as QMDFF (10.1021/ct500573f), dE-EVB (10.1039/C5CP02580J), TREQ
+(10.1063/1.5092589), and Caracal (10.1021/acs.jctc.3c00568), as applicable.

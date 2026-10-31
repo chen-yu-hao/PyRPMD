@@ -2,7 +2,7 @@ name: Installed source and platform wheel
 on:
   push:
     branches: [main, 'feat/**', 'integration/**']
-    paths: ['src/**', 'native/**', 'tests/**', 'examples/**', 'docs/**', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.github/workflows/packages.yml']
+    paths: ['src/**', 'native/**', 'tests/**', 'examples/**', 'docs/**', 'tools/export_jaxpip_onnx.py', 'tools/requirements-jaxpip-export.txt', 'pyproject.toml', 'setup.py', 'MANIFEST.in', '.github/workflows/packages.yml']
   pull_request:
   workflow_dispatch:
 permissions:
@@ -73,6 +73,30 @@ jobs:
               'benchmarks/efficiency/audit_optimization.py',
               'benchmarks/efficiency/README.md',
               'native/include/pyrpmd/pes_api_v1.h',
+              'native/include/pyrpmd/pes_api_v2.h',
+              'native/include/pyrpmd/thermal_pes.h',
+              'native/CMakeLists.txt', 'native/thermal.cpp', 'native/thermal.hpp',
+              'native/thermal-NOTICE.md', 'THIRD_PARTY_NOTICES.md',
+              'native/onnx/CMakeLists.txt', 'native/onnx/README.md',
+              'native/onnx/onnx_pes.cpp', 'native/onnx/context_test.cpp',
+              'tools/export_jaxpip_onnx.py', 'tools/requirements-jaxpip-export.txt',
+              'tests/onnx/jaxpip_roundtrip.py',
+              'src/pyrpmd/pesgen/_native/bridge.cpp',
+              'src/pyrpmd/pesgen/_native/worker.f90',
+              'src/pyrpmd/pesgen/_native/pes_api_v1.h',
+              'src/pyrpmd/pesgen/jaxpip_data.py',
+              'src/pyrpmd/pesgen/jaxpip_fit.py',
+              'src/pyrpmd/pesgen/jaxpip_export.py',
+              'examples/pesgen/jaxpip/h2_pipeline.py',
+              'docs/manual/jaxpip-generation.md',
+              'docs/zh/manual/jaxpip-generation.md',
+              'tests/test_jaxpip_pesgen.py', 'tests/test_jaxpip_export_link.py',
+              'benchmarks/brhcl/build_pes.py', 'benchmarks/brhcl/source.json',
+              'benchmarks/brhcl/SOURCE.md', 'benchmarks/brhcl/wrapper.cpp',
+              'benchmarks/brhcl/wrapper.f90', 'benchmarks/brhcl/exports.map',
+              'benchmarks/fes_methods/ogre_models.c',
+              'benchmarks/pmf_accuracy/render_validation.py',
+              'docs/validation/brhcl-multichannel-2026-10-30/evidence/pytest-full.xml',
               'examples/network/two_entrances.py',
               'examples/rate/toy_exchange.py',
               'examples/fes/adaptive_harmonic.inp',
@@ -95,8 +119,18 @@ jobs:
           for name in required:
               assert (roots[0] / name).is_file(), name
           with zipfile.ZipFile(wheels[0]) as archive:
-              assert any(n.startswith('pyrpmd/_native') and n.endswith(('.so', '.pyd'))
-                         for n in archive.namelist())
+              names = archive.namelist()
+              for module in ('_native', '_thermal'):
+                  assert any(n.startswith('pyrpmd/' + module) and n.endswith(('.so', '.pyd'))
+                             for n in names), module
+              for header in ('pes_api_v1.h', 'pes_api_v2.h', 'thermal_pes.h'):
+                  assert any(n.endswith('/include/pyrpmd/' + header) for n in names), header
+              for name in ('bridge.cpp', 'worker.f90', 'pes_api_v1.h'):
+                  assert 'pyrpmd/pesgen/_native/' + name in names, name
+              for name in ('jaxpip_data.py', 'jaxpip_fit.py', 'jaxpip_export.py'):
+                  assert 'pyrpmd/pesgen/' + name in names, name
+              for notice in ('LICENSE', 'THIRD_PARTY_NOTICES.md', 'native/thermal-NOTICE.md'):
+                  assert any(n.endswith('.dist-info/licenses/' + notice) for n in names), notice
           assert not wheels[0].name.endswith('none-any.whl'), wheels[0]
           receipt = {
               'commit': os.environ['GITHUB_SHA'],

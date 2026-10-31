@@ -1,0 +1,73 @@
+{
+  "case_id": "h_h2_bkmp2_rpmd_300k",
+  "reaction": "H + H2 -> H2 + H",
+  "pes": "BKMP2",
+  "method": "RPMD",
+  "temperature_K": 300.0,
+  "beads": 128,
+  "timestep_fs": 0.10000000000000002,
+  "rinf_bohr": 30.0,
+  "isotope_masses_au": [
+    1837.1526474396187,
+    1837.1526474396187,
+    1837.1526474396187
+  ],
+  "nuclear_spin_convention": "distinguishable_nuclei",
+  "electronic_convention": "single_adiabatic_surface",
+  "electronic_weight": 1.0,
+  "symmetry_convention": "equivalent_product_channels_included",
+  "symmetry_factor": 1.0,
+  "rate_unit": "cm3 molecule-1 s-1",
+  "rate_cm3_molecule_s": 1.927575511516218e-20,
+  "qtst_rate_cm3_molecule_s": 3.122995471957565e-20,
+  "transmission_coefficient": 0.6172200788712542,
+  "convergence": {
+    "beads": false,
+    "timestep": false,
+    "rinf": false,
+    "sampling": false,
+    "plateau": true
+  },
+  "uncertainty": {
+    "includes_pmf": true,
+    "includes_recrossing": true,
+    "standard_error_cm3_molecule_s": 5.9425951176415114e-18,
+    "independent_parent_chains": 2,
+    "method": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed"
+  },
+  "profile": "pilot",
+  "seed": 831072,
+  "elapsed_seconds": 161.42560922300072,
+  "workflow_status": "pilot_requires_convergence",
+  "physical_converged": false,
+  "provenance": {
+    "source": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff/run/summary.json",
+    "settings": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff/settings.json",
+    "driver_sha256": "a36ee36adeb95a1a2b1cf7263561c273404664c45133108dc265e4a3a6a2b73e",
+    "pes": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "83a35e84b9212c4010d4d9541dc6115d8c1d7fbd6e6477d7066558b26bba9c03"
+    }
+  },
+  "notes": [
+    "Source-matched temperature, PES, bead count, timestep, Rinf and channel convention.",
+    "Short independent pilot budget; no bead/time-step/Rinf or statistical convergence assertion.",
+    "A numerical ratio against the published rate is not a physical-validation pass."
+  ]
+}

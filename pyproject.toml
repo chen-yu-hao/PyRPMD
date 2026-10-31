@@ -16,12 +16,21 @@ dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10", "threadpoolctl>=3.1"
 mpi = ["mpi4py>=3.1"]
 gpu = ["torch>=2.2"]
 ase = ["ase>=3.23"]
+mace = ["mace-torch>=0.3.10", "ase>=3.23"]
+nequip = ["nequip>=0.7", "ase>=3.23"]
+deepmd = ["deepmd-kit>=3"]
+fairchem = ["fairchem-core>=2", "ase>=3.23"]
+tblite = ["tblite>=0.4"]
+xtb = ["tblite>=0.4"]
+pyscf = ["pyscf>=2.6"]
 analysis = ["pymbar>=4"]
 test = ["pytest>=8"]
+pesgen = ["pyscf>=2.8,<3"]
 docs = ["sphinx>=8.2,<9", "myst-parser>=4,<5", "pydata-sphinx-theme>=0.16,<0.17"]
 
 [project.scripts]
 pyrpmd = "pyrpmd.cli:main"
+pyrpmd-native = "pyrpmd.native_ensemble:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -30,3 +39,6 @@ where = ["src"]
 testpaths = ["tests"]
 addopts = "-ra"
 
+
+[tool.setuptools.package-data]
+"pyrpmd.pesgen" = ["_native/*.cpp", "_native/*.f90", "_native/*.h"]

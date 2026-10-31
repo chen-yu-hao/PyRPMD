@@ -1,6 +1,6 @@
 # 示例索引与学习路线
 
-所有命令从仓库根目录执行：先运行 `pyrpmd validate INPUT`（加 `--check-pes` 以构造 PES），再用新的 `--output` 目录运行
+每类任务都有基于解析模型的可运行示例，单核几秒到约一分钟即可完成，便于在接入自己的势能之前看到完整的工作流与输出。所有命令从仓库根目录执行：先运行 `pyrpmd validate INPUT`（加 `--check-pes` 以构造 PES），再用新的 `--output` 目录运行
 `pyrpmd run`。外部模型、MPI 和 GPU 需要[安装](installation.md)中列出的依赖。
 
 ## 无需外部模型的示例

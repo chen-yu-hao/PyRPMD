@@ -177,6 +177,75 @@ def test_single_frame_cannot_define_two_plateau_halves(recwarn):
     assert not recwarn
 
 
+def transmission_records(levels):
+    """Admissible indicator differences approximate a specified ensemble curve."""
+    records = []
+    for i in range(80):
+        record = child(i // 20, i % 20, 0)
+        record["numerator"] = (levels > (i + .5) / 80).astype(float)
+        records.append(record)
+    return records
+
+
+def summarize(records, *, bootstrap=100):
+    return summarize_recrossing(
+        records, child_steps=len(records[0]["numerator"]), plateau_fraction=.5,
+        plateau_tolerance=.1, bootstrap=bootstrap, rng=np.random.default_rng(71),
+    )
+
+
+def test_repeated_oscillations_are_not_a_plateau_even_when_both_halves_agree():
+    cycle = .5 + .4 * np.cos(2 * np.pi * np.arange(25) / 25)
+    result = summarize(transmission_records(np.tile(cycle, 16)))
+    assert abs(result["drift"]) < 1e-14
+    assert result["curve"].max() - result["curve"].min() > .75
+    assert not result["plateau_detected"]
+    assert "tail_variation_exceeds_tolerance" in result["plateau_diagnostics"]["reasons"]
+
+
+@pytest.mark.parametrize("task", ["rate", "surface_rate", "site_rate"])
+def test_all_rate_workflows_use_the_shared_oscillation_diagnostic(task, tmp_path):
+    levels = np.tile(.5 + .4 * np.cos(2*np.pi*np.arange(10)/10), 4)
+    result, unit = aggregate(task, transmission_records(levels), tmp_path)
+    assert not result["plateau_detected"]
+    assert not result["plateau_diagnostics"]["passed"]
+    assert result["rate_estimate_" + unit] > 0
+    assert result["rate_" + unit] is None
+
+
+def test_unresolved_opposite_chain_drift_cannot_pass_as_a_flat_ensemble():
+    levels = np.linspace(.1, .9, 200)
+    records = transmission_records(levels)[:40]
+    # The ensemble is exactly constant, but each bootstrap can select chains
+    # with opposite unresolved trends. Large uncertainty must not relax the
+    # plateau threshold as it did under max(tolerance, 2*drift_error).
+    for i, record in enumerate(records):
+        forward = (levels > (i % 20 + .5) / 20).astype(float)
+        record["numerator"] = forward if i < 20 else 1 - forward
+    result = summarize(records)
+    np.testing.assert_array_equal(result["curve"], .5)
+    assert result["drift"] == 0
+    assert result["drift_standard_error"] > .05
+    assert not result["plateau_detected"]
+    assert "tail_drift_exceeds_tolerance" in result["plateau_diagnostics"]["reasons"]
+
+
+def test_flat_shape_with_uncertain_height_passes_the_tail_diagnostic():
+    records = [child(i // 10, i % 10, 0, remains_product=i % 4 != 0) for i in range(40)]
+    result = summarize(records)
+    assert result["standard_error"] > 0
+    assert result["plateau_detected"]
+    assert result["plateau_diagnostics"]["maximum_tail_deviation_bound"] < 1e-14
+
+
+def test_disabled_bootstrap_retains_a_point_estimate_without_claiming_a_plateau():
+    result = summarize([child(0, 0, 0), child(1, 0, 0)], bootstrap=0)
+    assert result["kappa"] == 1
+    assert not result["plateau_detected"]
+    assert result["plateau_diagnostics"]["maximum_tail_deviation_bound"] is None
+    assert "recrossing_uncertainty_unavailable" in result["plateau_diagnostics"]["reasons"]
+
+
 @pytest.mark.parametrize("task, expected_error, expected_draws", [
     ("surface_rate", 2.1898652271619694, [
         0.7398373983739839, 0.5, 0.43700787401574803, 0.5916666666666667,

@@ -17,13 +17,23 @@ go straight to your task:
 | Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
 | Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
 | 1D/2D free-energy surface | `fes` | [Quickstart](manual/quickstart.md), [Gas phase and free energy](manual/workflows.md) |
+| Postprocess saved PMF/FES rates and branching | `rate-postprocess` command | [2D rate postprocessing](rate-postprocessing.md) |
 | Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
 | Standard or well-tempered metadynamics | `metadynamics` | [Gas phase and free energy](manual/workflows.md) |
+| OPES probability-based sampling | `opes` | [OPES](opes.md) |
+| Replica-exchange umbrellas | `fes` + `[replica_exchange]` | [Replica exchange](replica-exchange.md) |
+| Optional PLUMED centroid biases | Python API | [PLUMED bridge](plumed.md) |
+| Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
 | Equilibrium nuclear quantum statistics and energy estimators | `pimd` | [Materials and surfaces](manual/periodic.md) |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | [Materials and surfaces](manual/periodic.md) |
 | Directed site-to-site hop in a material | `site_rate` | [Materials and surfaces](manual/periodic.md) |
 | Directed escape on a fixed substrate | `surface_rate` | [Materials and surfaces](manual/periodic.md) |
 | Electrochemical PCET in the weak vibronic-coupling limit | `pcet` | [PCET](manual/pcet.md) |
+| Constant-potential effective PES, electron-number sampling and HER current | `fes` / Python API | [Electrode models](manual/electrochemistry.md) |
+| Smooth nonlinear centroid escape coordinate | `site_rate` | [General-coordinate rates](general-coordinate-rates.md) |
+| Temperature, isotope and numerical convergence scans | `pyrpmd study` | [Rate studies](rate-studies.md) |
+| Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
+| Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 
 The examples use analytic model potentials so they run in seconds. Before a production study,
 work through [Scientific conventions and convergence](manual/science.md).
@@ -50,6 +60,7 @@ Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 | Getting started | [Installation](manual/installation.md) · [Quickstart](manual/quickstart.md) · [Input and CLI](manual/input.md) · [Scientific conventions](manual/science.md) |
 | Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
 | Models and runs | [Potentials and plugins](manual/potentials.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) |
+| Dynamics extensions | [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
 | Reference | [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
 
 ```{toctree}
@@ -71,11 +82,34 @@ Science <manual/science>
 Gas phase <manual/workflows>
 Materials and surfaces <manual/periodic>
 PCET <manual/pcet>
+Electrode models <manual/electrochemistry>
 Nonadiabatic NRPMD <manual/nonadiabatic>
 Potentials and plugins <manual/potentials>
+PES generation <manual/pes-generation>
+JaxPIP fitting and native execution <manual/jaxpip-generation>
 Execution <manual/execution>
+Expensive potentials <performance-dynamics>
+Trajectory batching <batched-dynamics>
+RPC/MTS <rpc-mts>
+TRPMD and spectra <trpmd-spectroscopy>
 Output and analysis <manual/results>
+rate-postprocessing
 Examples <manual/examples>
+General-coordinate rates <general-coordinate-rates>
+Rate studies <rate-studies>
+Instantons <instanton>
+Quantum statistics <quantum-statistics>
+```
+
+```{toctree}
+:maxdepth: 1
+:caption: Enhanced sampling
+:hidden:
+
+Replica exchange <replica-exchange>
+OPES <opes>
+PLUMED bridge <plumed>
+Transition-interface sampling <transition-interface-sampling>
 ```
 
 ```{toctree}
@@ -86,13 +120,16 @@ Examples <manual/examples>
 Python API <manual/api>
 Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>
+Dynamics validation <validation/tier1-2026-10-31/README>
+PMF diagnostic replay <validation/tier1-2026-10-31/pmf-replay>
 ```
 
 ## About this manual
 
 The manual is available in English and [Chinese](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/index.md)
-with matching chapters; in the HTML build, the language button in the navigation bar opens the
-same page in the other language. Detailed reference specifications, such as the
+with matching core chapters. In the HTML build, the language button opens the
+corresponding translated page. Extension guides and validation reports currently
+available only in English link to the Chinese manual contents instead. Detailed reference specifications, such as the
 [input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)* and
 [public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md),
 and the [validation records](https://github.com/chen-yu-hao/PyRPMD/tree/main/docs/validation)

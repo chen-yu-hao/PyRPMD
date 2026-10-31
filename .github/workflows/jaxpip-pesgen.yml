@@ -1,0 +1,58 @@
+name: PySCF to JaxPIP PES
+on:
+  push:
+    branches: [main, 'integration/**', 'feat/jaxpip-pesgen-link-20261031']
+    paths: ['src/pyrpmd/pesgen/**', 'native/onnx/**', 'tools/export_jaxpip_onnx.py', 'tools/requirements-jaxpip-export.txt', 'tests/test_jaxpip*', 'examples/pesgen/jaxpip/**', '.github/workflows/jaxpip-pesgen.yml']
+  pull_request:
+    paths: ['src/pyrpmd/pesgen/**', 'native/onnx/**', 'tools/export_jaxpip_onnx.py', 'tools/requirements-jaxpip-export.txt', 'tests/test_jaxpip*', 'examples/pesgen/jaxpip/**', '.github/workflows/jaxpip-pesgen.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: jaxpip-pesgen-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      JAX_ENABLE_X64: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install actual quantum and fitting runtimes
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y nlohmann-json3-dev
+          python -m pip install -e '.[test]' 'pyscf==2.14.0'
+          python -m pip install -r tools/requirements-jaxpip-export.txt
+          python -m pip check
+          python -c 'import pyscf, jaxpip, jax, equinox, jax2onnx, onnxruntime'
+          python -m pip freeze > generation-environment.txt
+      - name: Build the existing native ONNX plugin
+        run: |
+          curl --fail --location --retry 3 https://github.com/microsoft/onnxruntime/releases/download/v1.24.1/onnxruntime-linux-x64-1.24.1.tgz -o "$RUNNER_TEMP/ort.tgz"
+          echo "9142552248b735920f9390027e4512a2cacf8946a1ffcbe9071a5c210531026f  $RUNNER_TEMP/ort.tgz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/ort.tgz" -C "$RUNNER_TEMP"
+          cmake -S native/onnx -B build/onnx -DCMAKE_BUILD_TYPE=Release -DONNXRUNTIME_ROOT="$RUNNER_TEMP/onnxruntime-linux-x64-1.24.1"
+          cmake --build build/onnx --parallel 2
+      - name: Dataset, fitting, units and integrity regressions
+        run: python -m pytest -q tests/test_jaxpip_pesgen.py tests/test_jaxpip_export_link.py --junitxml=jaxpip-tests.xml
+      - name: Actual PySCF to linear PIP to native dynamics
+        run: python examples/pesgen/jaxpip/h2_pipeline.py --output build/h2-linear --kind linear --exporter tools/export_jaxpip_onnx.py --library build/onnx/libpyrpmd_onnx.so
+      - name: Actual PySCF to PIP-NN to native dynamics
+        run: python examples/pesgen/jaxpip/h2_pipeline.py --output build/h2-nn --kind nn --exporter tools/export_jaxpip_onnx.py --library build/onnx/libpyrpmd_onnx.so
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jaxpip-generation-validation
+          path: |
+            jaxpip-tests.xml
+            generation-environment.txt
+            build/h2-linear/
+            build/h2-nn/
+          retention-days: 14

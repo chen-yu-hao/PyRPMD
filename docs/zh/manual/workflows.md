@@ -107,6 +107,31 @@ pyrpmd resume runs/manual-scattering
 不写 `[collision]` 时，pilot 以 `max_time="100 fs"` 和 `bmax=R0/4` 运行 4 条 `thermal_flux` 轨迹，不报告热速率；
 缺省值见[输入](input.md#缺省值)。
 
+### 振动初态选择
+
+`initial_ensemble.method = "ne_rpmd"` 从谐振环聚合物分布出发，在质心正常模上加入随机相位的振动激发。
+`method = "qct"` 准备单珠子的准经典对照。两者都独立准备初态、采用固定碰撞能，并跳过热母链采样。
+这是实验性的入射振动态近似，首版只支持片段质心角动量为零；产物不自动获得严格的转振量子态标签。
+
+```bash
+pyrpmd validate examples/state_selected/ne_rpmd.inp
+pyrpmd state-check examples/state_selected/ne_rpmd.inp --time '10 fs' --samples 8 --output runs/state-check.json
+pyrpmd run examples/state_selected/ne_rpmd.inp --output runs/selected
+pyrpmd extend runs/selected --max-time '4 fs'
+```
+
+NE-RPMD 必须显式提供 `initial_ensemble.beta`，并省略顶层 `temperature`：这里的 beta 是初态分布和环弹簧参数，
+不代表选定振动态气体的真实温度。输入各片段 Hessian 或质量加权正常模、实际同位素质量和 `vibrational_quanta`。
+QCT 要求一个珠子，NE-RPMD 至少两个。仓库示例使用不发生交换反应的 Morse 教学势，只验证程序流程。
+
+`state-check` 不赋碰撞速度，在完整 PES 上传播分离反应物，并在稀疏观测帧进行正常模投影。
+`extend` 只提高轨迹从发射开始的总时间上限，保留未结束轨迹的完整 q/p 和分类持续性状态；
+已结束和数值失败轨迹不会重新发射。所有已发射轨迹始终留在截面分母中，未知结局上下界与满足条件的统计置信区间分别报告。
+原生 PES 的实际碰撞仍由现有 C++ 连续 block 传播。
+
+公式、文献与适用边界见[态选择方法说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/state-selected.md)，
+可运行配置及原生 PES 用法见[示例说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/state_selected/README.md)。
+
 ## 一维与二维自由能：`fes`
 
 `fes` 在一个或两个 CV 上做伞抽样，用 MBAR 去偏置，得到这些坐标上的概率密度自由能。
@@ -169,8 +194,9 @@ PES 按全局 → 入口 → TS 继承，更具体的 `potential` 表整体替�
 
 ## Metadynamics
 
-`task="metadynamics"` 在一维/二维 CV 上支持 standard 和 well-tempered 模式，多个副本各自积累偏置历史。
-CV 可以声明周期。该工作流用于不含 PBC 和固定原子的分子体系。
+`task="metadynamics"` 在一至三维 CV 上支持 standard 和 well-tempered 模式，多个副本各自积累偏置历史。
+CV 可以声明周期。该工作流支持分子体系、固定晶胞的周期体系，以及 `system.fixed_atoms` 指定的固定基底原子。
+采样可选择 Andersen、Nosé–Hoover 链或 PILE-L，并可对长度 CV 添加二次软墙。
 
 ```bash
 pyrpmd validate examples/metadynamics/well_tempered_2d.inp
@@ -181,12 +207,13 @@ pyrpmd resume runs/manual-meta
 
 | 参数 | 含义 |
 | --- | --- |
-| `metadynamics.cvs` | 一个或两个已声明 CV 的名称 |
+| `metadynamics.cvs` | 一至三个已声明 CV 的名称 |
 | `mode` | `standard` 或 `well_tempered` |
 | `sigma` | 各 CV 的 Gaussian 宽度，带单位 |
 | `height` | hill 高度 |
 | `pace` | 两次沉积之间完成的生产步数 |
 | `bias_factor` | WT 模式的 $\gamma>1$；standard 模式省略 |
+| `grid.ranges`、`grid.bins` | 可选的一维/二维 Hermite 偏置网格范围与区间数 |
 | `analysis.method` | `bias_estimate` |
 | `analysis.bootstrap` | 0 |
 
@@ -196,5 +223,7 @@ hills 从生产段开始：第 `pace` 步完成后沉积第一个 hill，同一�
 standard 模式的自由能估计为 $F\approx -V+C$，WT 模式为 $F\approx-\gamma V/(\gamma-1)+C$。`fes.npz` / `fes.csv`
 保存有限时间估计与支持 mask。各副本在共同支持区域上对齐后比较，`replica_spread` 给出副本之间的离散程度。
 
-历史偏置在 Python 时间步循环中运行并使用编译子步骤，因此拒绝 `loop_backend="native"`；计算量随 hill 数增长。
+历史偏置在 Python 时间步循环中运行并使用编译子步骤，因此拒绝 `loop_backend="native"`。直接求和的计算量随 hill 数增长；
+可选的[网格偏置](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)通过局部插值使每步偏置查询量与历史长度无关。
+网格默认间距不超过 `sigma/5`；网格加密需要独立检查，非周期 CV 超出范围会报错并回滚该步。
 Metadynamics 只输出自由能估计。方法与续跑时序见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。

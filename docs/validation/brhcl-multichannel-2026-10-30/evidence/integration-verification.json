@@ -1,0 +1,630 @@
+{
+  "schema": "pyrpmd.brhcl.integration-verification.v1",
+  "created_utc": "2026-10-30T17:07:49.891560+00:00",
+  "passed": true,
+  "original_sampling_core_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+  "integrated_main_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+  "execution_head": "35b477bd21b31f38096c22c0159cbcc7ab193878",
+  "native_library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+  "native_library_sha256": "3219fd019ae60ebb3bc4bf0f96c63ad77d9d06eba800c6d549c27b5e6db2f1a3",
+  "pes_library_sha256": "2989ae703c7f9ad5d08d2058309a047863a97ef8c26ce81f22cb1da2b87de339",
+  "protocol": "Independently initialize and replay one complete window 60 / compact stream for each final P1, P8 and P16 case, using the unchanged original plan, model and PES binary. Replays start in new directories; no original run files are written.",
+  "native_steps_replayed": 310000,
+  "stored_sample_frames_compared": 3000,
+  "payload_arrays_compared": 54,
+  "all_payload_arrays_bitwise_equal": true,
+  "maximum_numeric_difference": 0.0,
+  "rng_clock_mc_and_propagation_bitwise_equal": true,
+  "original_run_streams_unchanged": true,
+  "pes_library_unchanged": true,
+  "all_replays_use_rebuilt_native_extension": true,
+  "cases": [
+    {
+      "schema": "pyrpmd.brhcl.integration-replay-case.v1",
+      "case": "p1-final",
+      "window": 60,
+      "family": "compact",
+      "created_utc": "2026-10-30T17:06:55.932830+00:00",
+      "source_sampling_core_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+      "execution_head": "35b477bd21b31f38096c22c0159cbcc7ab193878",
+      "integrated_main_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+      "native_library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "native_library_sha256": "3219fd019ae60ebb3bc4bf0f96c63ad77d9d06eba800c6d549c27b5e6db2f1a3",
+      "pes_library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/libbrhcl.so",
+      "pes_library_sha256": "2989ae703c7f9ad5d08d2058309a047863a97ef8c26ce81f22cb1da2b87de339",
+      "beads": 1,
+      "temperature_K": 2000.0,
+      "timestep_fs": 0.1,
+      "equilibration_steps": 20000,
+      "production_steps": 100000,
+      "orientation_mc_trials": 64,
+      "original_stream": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/runs/brhcl-validation-20261030/p1-final/streams/w0060_compact.npz",
+      "replay_stream": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/runs/brhcl-validation-20261030/integration-replay/p1-final/streams/w0060_compact.npz",
+      "original_stream_sha256": "2bee37d61ccf2c58d1b911de0503a1d8f75b535efa556b2342cb2c4297eb0ca9",
+      "replay_stream_sha256": "2bee37d61ccf2c58d1b911de0503a1d8f75b535efa556b2342cb2c4297eb0ca9",
+      "elapsed_seconds": 1.753175251003995,
+      "sample_summary": {
+        "window": 60,
+        "family": "compact",
+        "samples": 1000,
+        "native_steps": 120000
+      },
+      "comparison": {
+        "fingerprint": {
+          "shape": [],
+          "dtype": "<U64",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true
+        },
+        "center": {
+          "shape": [
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "stiffness": {
+          "shape": [
+            2,
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "window": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "family": {
+          "shape": [],
+          "dtype": "<U7",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true
+        },
+        "q": {
+          "shape": [
+            1,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "p": {
+          "shape": [
+            1,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "step": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "time": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "elapsed": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "rng": {
+          "shape": [],
+          "dtype": "<U167",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "propagation": {
+          "shape": [],
+          "dtype": "<U67",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "orientation_mc": {
+          "shape": [],
+          "dtype": "<U59",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "samples": {
+          "shape": [
+            1000,
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "centroids": {
+          "shape": [
+            1000,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "ring_radii": {
+          "shape": [
+            1000
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "initial_minimized_energy": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "maximum_block_energy_drift_kbt": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      },
+      "all_payload_arrays_bitwise_equal": true,
+      "original_stream_unchanged": true,
+      "pes_library_unchanged": true,
+      "native_library_unchanged_during_replay": true,
+      "scope": "Fresh full single-stream initialization, equilibration and production replay; one representative window per P, not a new global convergence study."
+    },
+    {
+      "schema": "pyrpmd.brhcl.integration-replay-case.v1",
+      "case": "p8-final",
+      "window": 60,
+      "family": "compact",
+      "created_utc": "2026-10-30T17:06:57.725190+00:00",
+      "source_sampling_core_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+      "execution_head": "35b477bd21b31f38096c22c0159cbcc7ab193878",
+      "integrated_main_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+      "native_library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "native_library_sha256": "3219fd019ae60ebb3bc4bf0f96c63ad77d9d06eba800c6d549c27b5e6db2f1a3",
+      "pes_library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/libbrhcl.so",
+      "pes_library_sha256": "2989ae703c7f9ad5d08d2058309a047863a97ef8c26ce81f22cb1da2b87de339",
+      "beads": 8,
+      "temperature_K": 2000.0,
+      "timestep_fs": 0.1,
+      "equilibration_steps": 20000,
+      "production_steps": 100000,
+      "orientation_mc_trials": 64,
+      "original_stream": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/runs/brhcl-validation-20261030/p8-final/streams/w0060_compact.npz",
+      "replay_stream": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/runs/brhcl-validation-20261030/integration-replay/p8-final/streams/w0060_compact.npz",
+      "original_stream_sha256": "d3423f7606222eaa48538dfb25232f81c36b0cdb76d2679b9856f76459420c26",
+      "replay_stream_sha256": "d3423f7606222eaa48538dfb25232f81c36b0cdb76d2679b9856f76459420c26",
+      "elapsed_seconds": 3.435797967002145,
+      "sample_summary": {
+        "window": 60,
+        "family": "compact",
+        "samples": 1000,
+        "native_steps": 120000
+      },
+      "comparison": {
+        "fingerprint": {
+          "shape": [],
+          "dtype": "<U64",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true
+        },
+        "center": {
+          "shape": [
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "stiffness": {
+          "shape": [
+            2,
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "window": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "family": {
+          "shape": [],
+          "dtype": "<U7",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true
+        },
+        "q": {
+          "shape": [
+            8,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "p": {
+          "shape": [
+            8,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "step": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "time": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "elapsed": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "rng": {
+          "shape": [],
+          "dtype": "<U166",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "propagation": {
+          "shape": [],
+          "dtype": "<U67",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "orientation_mc": {
+          "shape": [],
+          "dtype": "<U59",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "samples": {
+          "shape": [
+            1000,
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "centroids": {
+          "shape": [
+            1000,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "ring_radii": {
+          "shape": [
+            1000
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "initial_minimized_energy": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "maximum_block_energy_drift_kbt": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      },
+      "all_payload_arrays_bitwise_equal": true,
+      "original_stream_unchanged": true,
+      "pes_library_unchanged": true,
+      "native_library_unchanged_during_replay": true,
+      "scope": "Fresh full single-stream initialization, equilibration and production replay; one representative window per P, not a new global convergence study."
+    },
+    {
+      "schema": "pyrpmd.brhcl.integration-replay-case.v1",
+      "case": "p16-final",
+      "window": 60,
+      "family": "compact",
+      "created_utc": "2026-10-30T17:06:57.364455+00:00",
+      "source_sampling_core_commit": "6fde29d2039c01921f00393bf17830b939af131b",
+      "execution_head": "35b477bd21b31f38096c22c0159cbcc7ab193878",
+      "integrated_main_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+      "native_library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "native_library_sha256": "3219fd019ae60ebb3bc4bf0f96c63ad77d9d06eba800c6d549c27b5e6db2f1a3",
+      "pes_library": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/benchmarks/brhcl/build/libbrhcl.so",
+      "pes_library_sha256": "2989ae703c7f9ad5d08d2058309a047863a97ef8c26ce81f22cb1da2b87de339",
+      "beads": 16,
+      "temperature_K": 2000.0,
+      "timestep_fs": 0.1,
+      "equilibration_steps": 20000,
+      "production_steps": 50000,
+      "orientation_mc_trials": 64,
+      "original_stream": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/runs/brhcl-validation-20261030/p16-final/streams/w0060_compact.npz",
+      "replay_stream": "/workspace/scratch/f9fff2fed395/PyRPMD-multichannel/runs/brhcl-validation-20261030/integration-replay/p16-final/streams/w0060_compact.npz",
+      "original_stream_sha256": "3459ea964406b7349ac0b12abccf6e26609fbe7c63b4c1b33a19a86e52db5e02",
+      "replay_stream_sha256": "3459ea964406b7349ac0b12abccf6e26609fbe7c63b4c1b33a19a86e52db5e02",
+      "elapsed_seconds": 3.0667401009995956,
+      "sample_summary": {
+        "window": 60,
+        "family": "compact",
+        "samples": 1000,
+        "native_steps": 70000
+      },
+      "comparison": {
+        "fingerprint": {
+          "shape": [],
+          "dtype": "<U64",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true
+        },
+        "center": {
+          "shape": [
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "stiffness": {
+          "shape": [
+            2,
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "window": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "family": {
+          "shape": [],
+          "dtype": "<U7",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true
+        },
+        "q": {
+          "shape": [
+            16,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "p": {
+          "shape": [
+            16,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "step": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "time": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "elapsed": {
+          "shape": [],
+          "dtype": "<i8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "rng": {
+          "shape": [],
+          "dtype": "<U166",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "propagation": {
+          "shape": [],
+          "dtype": "<U66",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "orientation_mc": {
+          "shape": [],
+          "dtype": "<U59",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "parsed_json_equal": true
+        },
+        "samples": {
+          "shape": [
+            1000,
+            2
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "centroids": {
+          "shape": [
+            1000,
+            3,
+            3
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "ring_radii": {
+          "shape": [
+            500
+          ],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "initial_minimized_energy": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "maximum_block_energy_drift_kbt": {
+          "shape": [],
+          "dtype": "<f8",
+          "same_shape": true,
+          "same_dtype": true,
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      },
+      "all_payload_arrays_bitwise_equal": true,
+      "original_stream_unchanged": true,
+      "pes_library_unchanged": true,
+      "native_library_unchanged_during_replay": true,
+      "scope": "Fresh full single-stream initialization, equilibration and production replay; one representative window per P, not a new global convergence study."
+    }
+  ],
+  "scope": "Actual full-stream cross-main replay of three representative windows, in addition to the earlier checkpoint/MBAR read-only comparison. This verifies integration reproducibility, not global PMF convergence."
+}

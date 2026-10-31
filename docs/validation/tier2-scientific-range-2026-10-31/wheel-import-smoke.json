@@ -1,0 +1,10 @@
+{
+  "wheel": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+  "included_modules": [
+    "pyrpmd/studies.py",
+    "pyrpmd/instanton.py",
+    "pyrpmd/path_integral.py",
+    "pyrpmd/quantum_statistics.py"
+  ],
+  "outside_checkout_import_passed": true
+}

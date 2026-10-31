@@ -1,0 +1,9 @@
+{
+  "suite": "tests/test_brhcl_pes.py",
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 .venv/bin/python -m pytest tests/test_brhcl_pes.py -q",
+  "passed": 13,
+  "failed": 0,
+  "skipped": 0,
+  "elapsed_seconds": 0.62,
+  "scope": "Real checksum-pinned BrHCl_LEPS1 library, source oracles, analytic forces, common native wall, provenance and native/Python dynamics parity"
+}

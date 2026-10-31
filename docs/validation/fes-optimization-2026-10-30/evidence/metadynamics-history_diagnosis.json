@@ -1,0 +1,290 @@
+[
+  {
+    "mode": "standard",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 0.25,
+    "rmse_supported_kjmol": 1.85654653947685,
+    "diagnostic_fullgrid_rmse_kjmol": 2.297870911924347
+  },
+  {
+    "mode": "standard",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.5086679367855294,
+    "diagnostic_fullgrid_rmse_kjmol": 1.9247272702592466
+  },
+  {
+    "mode": "standard",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.294323430538589,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6747110860540486
+  },
+  {
+    "mode": "standard",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 1.0,
+    "rmse_supported_kjmol": 1.081417812879138,
+    "diagnostic_fullgrid_rmse_kjmol": 1.4300389632750419
+  },
+  {
+    "mode": "standard",
+    "seed": 4101,
+    "kind": "average",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.2748991619904806,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6659129671627977
+  },
+  {
+    "mode": "standard",
+    "seed": 4101,
+    "kind": "average",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.1528819887143327,
+    "diagnostic_fullgrid_rmse_kjmol": 1.5249449246671978
+  },
+  {
+    "mode": "standard",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 0.25,
+    "rmse_supported_kjmol": 1.8312167457746773,
+    "diagnostic_fullgrid_rmse_kjmol": 2.3098975487223354
+  },
+  {
+    "mode": "standard",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.4772408787670464,
+    "diagnostic_fullgrid_rmse_kjmol": 1.9331580189020634
+  },
+  {
+    "mode": "standard",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.2443425401056991,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6668337255793473
+  },
+  {
+    "mode": "standard",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 1.0,
+    "rmse_supported_kjmol": 0.9770567678842954,
+    "diagnostic_fullgrid_rmse_kjmol": 1.3609815967756522
+  },
+  {
+    "mode": "standard",
+    "seed": 4102,
+    "kind": "average",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.2265201017896696,
+    "diagnostic_fullgrid_rmse_kjmol": 1.65177142592367
+  },
+  {
+    "mode": "standard",
+    "seed": 4102,
+    "kind": "average",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.094109102556717,
+    "diagnostic_fullgrid_rmse_kjmol": 1.511483325721401
+  },
+  {
+    "mode": "standard",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 0.25,
+    "rmse_supported_kjmol": 1.8694475994195119,
+    "diagnostic_fullgrid_rmse_kjmol": 2.2756071016965462
+  },
+  {
+    "mode": "standard",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.7040656012330528,
+    "diagnostic_fullgrid_rmse_kjmol": 2.0783054604694255
+  },
+  {
+    "mode": "standard",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.4580418803332855,
+    "diagnostic_fullgrid_rmse_kjmol": 1.825179977626201
+  },
+  {
+    "mode": "standard",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 1.0,
+    "rmse_supported_kjmol": 1.2650505823509086,
+    "diagnostic_fullgrid_rmse_kjmol": 1.5559691869642112
+  },
+  {
+    "mode": "standard",
+    "seed": 4103,
+    "kind": "average",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.4689526294763011,
+    "diagnostic_fullgrid_rmse_kjmol": 1.8154663407208311
+  },
+  {
+    "mode": "standard",
+    "seed": 4103,
+    "kind": "average",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.3600111195437599,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6903778631848865
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 0.25,
+    "rmse_supported_kjmol": 1.7628770256701596,
+    "diagnostic_fullgrid_rmse_kjmol": 2.2171855506307927
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.4255516320547306,
+    "diagnostic_fullgrid_rmse_kjmol": 1.8243761897155766
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.2368321473113302,
+    "diagnostic_fullgrid_rmse_kjmol": 1.5816616429883439
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4101,
+    "kind": "prefix",
+    "fraction": 1.0,
+    "rmse_supported_kjmol": 1.0947381374049316,
+    "diagnostic_fullgrid_rmse_kjmol": 1.358416712886916
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4101,
+    "kind": "average",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.2338203220273551,
+    "diagnostic_fullgrid_rmse_kjmol": 1.5762770234143553
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4101,
+    "kind": "average",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.142745081855556,
+    "diagnostic_fullgrid_rmse_kjmol": 1.444021582551655
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 0.25,
+    "rmse_supported_kjmol": 1.9069591539605537,
+    "diagnostic_fullgrid_rmse_kjmol": 2.2735314479421636
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.5843570918817353,
+    "diagnostic_fullgrid_rmse_kjmol": 1.8907820698624165
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.3354555913653612,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6222942688604505
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4102,
+    "kind": "prefix",
+    "fraction": 1.0,
+    "rmse_supported_kjmol": 1.0513599220472523,
+    "diagnostic_fullgrid_rmse_kjmol": 1.310070047098003
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4102,
+    "kind": "average",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.3074826538369826,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6007169529760072
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4102,
+    "kind": "average",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.1756411250814764,
+    "diagnostic_fullgrid_rmse_kjmol": 1.4609314107363969
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 0.25,
+    "rmse_supported_kjmol": 1.8557006277720176,
+    "diagnostic_fullgrid_rmse_kjmol": 2.219146206646339
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.580174561008889,
+    "diagnostic_fullgrid_rmse_kjmol": 1.9302694975850596
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.358427955427787,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6643672309154462
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4103,
+    "kind": "prefix",
+    "fraction": 1.0,
+    "rmse_supported_kjmol": 1.2204772571555453,
+    "diagnostic_fullgrid_rmse_kjmol": 1.4348012378561623
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4103,
+    "kind": "average",
+    "fraction": 0.5,
+    "rmse_supported_kjmol": 1.370336070090924,
+    "diagnostic_fullgrid_rmse_kjmol": 1.6673808994950599
+  },
+  {
+    "mode": "well_tempered",
+    "seed": 4103,
+    "kind": "average",
+    "fraction": 0.75,
+    "rmse_supported_kjmol": 1.306648518070114,
+    "diagnostic_fullgrid_rmse_kjmol": 1.5583534425118195
+  }
+]

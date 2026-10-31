@@ -1,0 +1,8 @@
+{
+  "reason": "Bind actual PES source/binary and full reaction coordinate to channel artifacts",
+  "old_identity": "4a946c5564eaac994c2f10b9824f9a3dd4ffa5601a04b7ab50ecd6bc5be99313",
+  "new_identity": "59780750fd71b2cdd1080d7ff2977e4bfae622ce7c6483e6f79fc3ca8db334c9",
+  "numeric_sha256_before": "5ceee637ef4876f7f01335b08706a0c0f3bfef711877bac7d5a72ca1c49fb497",
+  "numeric_sha256_after": "5ceee637ef4876f7f01335b08706a0c0f3bfef711877bac7d5a72ca1c49fb497",
+  "physical_samples_recomputed": false
+}

@@ -1,0 +1,410 @@
+{
+  "schema": "pyrpmd.h3.rate-postprocess-validation.v1",
+  "base_commit": "3dc82c399a7701d19d636ee78b43f2e8ba7659f9",
+  "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+  "converged": false,
+  "scope": "Actual BKMP2 ring-polymer runs plus mathematical rate-postprocessing regression; no converged physical rate claim.",
+  "runs": {
+    "quick": {
+      "temperature_K": 1500.0,
+      "beads": 8,
+      "timestep_fs": 0.10000000000000002,
+      "streams": 96,
+      "samples": 19200,
+      "overlap_connected": true,
+      "k_tst_cm3_molecule_s": 4.818519203916103e-12,
+      "kappa": [
+        0.5112764295780327,
+        0.4418330634225637
+      ],
+      "total_kappa": 0.9531094930005963,
+      "candidate_total_rate_cm3_molecule_s": 4.592576395458114e-12,
+      "candidate_channel_rates_cm3_molecule_s": [
+        2.4635952944314095e-12,
+        2.1289811010267047e-12
+      ],
+      "finite_time_branch_estimates": [
+        0.5364298995369599,
+        0.46357010046304015
+      ],
+      "branch_conditional_standard_error": [
+        0.3571523917616687,
+        0.3571523917616687
+      ],
+      "channel_plateau_detected": [
+        true,
+        true
+      ],
+      "rate_uncertainty": {
+        "available": true,
+        "reasons": [],
+        "scope": "independent_parent_chains",
+        "conditional_quantity": "joint channel recrossing uncertainty with the common static TST rate held fixed",
+        "static_uncertainty_included": false,
+        "joint_channel_resampling": true,
+        "bootstrap_requested": 200,
+        "bootstrap_valid": 200,
+        "bootstrap_nonpositive_total": 0,
+        "bootstrap_negative_channel_draws": 0,
+        "effective_parent_blocks": {
+          "0": 16.0,
+          "1": 16.0
+        }
+      },
+      "parent_configurations": 32,
+      "child_trajectories": 128,
+      "terminal_commitment": {
+        "bond_threshold_bohr": 2.5,
+        "separation_threshold_bohr": 5.0,
+        "requires_outward_motion": true,
+        "positive_side_endpoint_count": 57,
+        "not_committed_endpoint_count": 0,
+        "positive_side_endpoint_abs_flux_weight": 138.7842967221179,
+        "not_committed_endpoint_abs_flux_weight": 0.0,
+        "scope": "Endpoint separation diagnostic only; no persistence or long-time commitment proof. Reported branches are finite-time union-side partitions, not validated asymptotic product branching fractions."
+      },
+      "maximum_endpoint_error_kbt": 0.01428210548853062,
+      "independent_same_sample_1d_marginal": {
+        "k_tst_au": 0.0007865481187389112,
+        "k_tst_cm3_s": 4.818519203916104e-12,
+        "free_energy_barrier_hartree": 0.03389316447651328,
+        "reference_bin": 0,
+        "surface_bin": 20,
+        "reference_density": 2.1574213105372078,
+        "surface_density": 0.001718741575570196,
+        "maximum_density_marginal_error": 1.7763568394002505e-15,
+        "transverse_sample_fraction_outside": 0.0,
+        "transverse_weight_fraction_outside": 0.0,
+        "scope": "Algebraically independent same-trajectory weighted histogram; not independent physical sampling"
+      },
+      "relative_2d_vs_1d_error": 1.1102230246251565e-16,
+      "single_channel_curve_identity": true,
+      "offline_postprocess_status": "channel_estimates_require_physical_validation",
+      "source_artifact_sha256": {
+        "run/fes.npz": "25ec87f061e5e6eb60bd5adb74244b0b67cf6d11783a516dc798ad728c23d79a",
+        "run/fes.h5": "6f700f84b9bb997fb09ba4bb14a132a5578bc255a0cdda70290091a122604a1e",
+        "dynamics/channel_recrossing.npz": "ac3b282996b8272e296cbf3a272fd79feae66fb5201fd7df256f1356c9dfe283",
+        "rate-postprocess-spec.json": "6ae7f2015c9bd6ac09e559e66e579ceb0bb6ec4e007dc9307133f8b34300da2e"
+      },
+      "passed_implementation_regression": true,
+      "converged": false,
+      "surface_identity": "86f6443c2832fc013ef521f7df166ffdfce2c04a0503fb25fb0e2f66b494762c",
+      "surface_identity_payload": {
+        "schema": "pyrpmd.h3.surface-physics.v1",
+        "coordinate": {
+          "kind": "centroid_rpmdrate_xi",
+          "formula": "xi=s0/(s0-s1)",
+          "dividing_surface": 1.0,
+          "reaction": {
+            "fragments": [
+              [
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "forming_bonds": [
+              [
+                0,
+                1
+              ]
+            ],
+            "breaking_bonds": [
+              [
+                1,
+                2
+              ]
+            ],
+            "equivalent_paths": [
+              [
+                0,
+                2,
+                1
+              ]
+            ],
+            "rinf": 10.0,
+            "electronic_weight": 1.0,
+            "symmetry_factor": 1.0,
+            "rinf_au": 10.0
+          },
+          "sampling_measure": "xi_rate_flux",
+          "flux_axis": 0,
+          "equivalent_paths_already_explicit": true
+        },
+        "system": {
+          "symbols": [
+            "H",
+            "H",
+            "H"
+          ],
+          "masses": [
+            1837.1526474396187,
+            1837.1526474396187,
+            1837.1526474396187
+          ],
+          "geometry": [
+            [
+              -1.7570000251,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.7570000251,
+              0.0,
+              0.0
+            ]
+          ],
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "charge": 0,
+          "multiplicity": 2
+        },
+        "temperature_K": 1500.0,
+        "beta_au": 210.51668320265807,
+        "beads": 8,
+        "timestep_au": 4.134137333517016,
+        "integrator": "cayley-bcb",
+        "potential": {
+          "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+          "pinned_source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+          "pinned_source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+          "library_sha256": "831083f56dd4ac10eda631f5c5044e5d49258402e1c2f48a12f8b630801f9bba",
+          "wrapper_sha256": "57ce0ff2acdcc657f51693d9c7fbca5e7bed26e60ee2b446cd2c51eb4250d3a9"
+        }
+      },
+      "provenance_metadata_update": {
+        "reason": "Bind actual PES source/binary and full reaction coordinate to channel artifacts",
+        "old_identity": "ae291de4fefb0b2afb018d1139886501999c0c60f0b12e54a645ff6d0c913b66",
+        "new_identity": "86f6443c2832fc013ef521f7df166ffdfce2c04a0503fb25fb0e2f66b494762c",
+        "numeric_sha256_before": "6456a12bd025ec528d03ffcd679051e35a5159b953277bec4a74467a576ccda5",
+        "numeric_sha256_after": "6456a12bd025ec528d03ffcd679051e35a5159b953277bec4a74467a576ccda5",
+        "physical_samples_recomputed": false
+      },
+      "replay_artifact_sha256": {
+        "run/fes.npz": "4783589f0eeb86b7b4f0d05188c9a2a4b9f73cabb29353ef540b23763ac8acab",
+        "dynamics/channel_recrossing.npz": "ac3b282996b8272e296cbf3a272fd79feae66fb5201fd7df256f1356c9dfe283",
+        "rate-postprocess-spec.json": "6ae7f2015c9bd6ac09e559e66e579ceb0bb6ec4e007dc9307133f8b34300da2e",
+        "replay-subset.json": "c995231cc021cf3e870102c5d76544cbf0587c7475a9e0e7962204f7efd11e6e"
+      },
+      "replay_artifact_note": "The committed replay FES removes only weights, overlap and _pyrpmd_checkpoint, which are not inputs to rate postprocessing. All remaining arrays are byte-identical to the full source FES. source_artifact_sha256 retains the full original file hashes; replay-subset.json records the packaging transformation."
+    },
+    "pilot": {
+      "temperature_K": 1500.0,
+      "beads": 16,
+      "timestep_fs": 0.10000000000000002,
+      "streams": 144,
+      "samples": 86400,
+      "overlap_connected": true,
+      "k_tst_cm3_molecule_s": 9.385762579084539e-12,
+      "kappa": [
+        0.44728817588816094,
+        0.4358762148151478
+      ],
+      "total_kappa": 0.8831643907033088,
+      "candidate_total_rate_cm3_molecule_s": 8.289171289443113e-12,
+      "candidate_channel_rates_cm3_molecule_s": [
+        4.198140623318084e-12,
+        4.091030666125028e-12
+      ],
+      "finite_time_branch_estimates": [
+        0.5064608362798262,
+        0.49353916372017376
+      ],
+      "branch_conditional_standard_error": [
+        0.34757218889725283,
+        0.34757218889725283
+      ],
+      "channel_plateau_detected": [
+        true,
+        true
+      ],
+      "rate_uncertainty": {
+        "available": true,
+        "reasons": [],
+        "scope": "independent_parent_chains",
+        "conditional_quantity": "joint channel recrossing uncertainty with the common static TST rate held fixed",
+        "static_uncertainty_included": false,
+        "joint_channel_resampling": true,
+        "bootstrap_requested": 200,
+        "bootstrap_valid": 200,
+        "bootstrap_nonpositive_total": 0,
+        "bootstrap_negative_channel_draws": 0,
+        "effective_parent_blocks": {
+          "0": 10.666666666666666,
+          "1": 32.0
+        }
+      },
+      "parent_configurations": 64,
+      "child_trajectories": 256,
+      "terminal_commitment": {
+        "bond_threshold_bohr": 2.5,
+        "separation_threshold_bohr": 5.0,
+        "requires_outward_motion": true,
+        "positive_side_endpoint_count": 123,
+        "not_committed_endpoint_count": 0,
+        "positive_side_endpoint_abs_flux_weight": 250.62385385018663,
+        "not_committed_endpoint_abs_flux_weight": 0.0,
+        "scope": "Endpoint separation diagnostic only; no persistence or long-time commitment proof. Reported branches are finite-time union-side partitions, not validated asymptotic product branching fractions."
+      },
+      "maximum_endpoint_error_kbt": 0.02779410894025968,
+      "independent_same_sample_1d_marginal": {
+        "k_tst_au": 0.0015320793768984534,
+        "k_tst_cm3_s": 9.38576257908454e-12,
+        "free_energy_barrier_hartree": 0.030726065081184018,
+        "reference_bin": 0,
+        "surface_bin": 20,
+        "reference_density": 1.1646320303987168,
+        "surface_density": 0.0018072586761118485,
+        "maximum_density_marginal_error": 2.4424906541753444e-15,
+        "transverse_sample_fraction_outside": 0.0,
+        "transverse_weight_fraction_outside": 0.0,
+        "scope": "Algebraically independent same-trajectory weighted histogram; not independent physical sampling"
+      },
+      "relative_2d_vs_1d_error": 1.1102230246251565e-16,
+      "single_channel_curve_identity": true,
+      "offline_postprocess_status": "channel_estimates_require_physical_validation",
+      "source_artifact_sha256": {
+        "run/fes.npz": "9fe1fbbf352698174202b617f4510f2bf72e439f1ed2e8753c6279999736d1d3",
+        "run/fes.h5": "9c8f96e06a773f26e2999173daa0b20e7eca7e2937fe179fbfd7bf31a21d06ec",
+        "dynamics/channel_recrossing.npz": "1d7b46bea26446735a52d0d9670ebc87e332cc24b99b107dc2ed0a71b5b1a6b7",
+        "rate-postprocess-spec.json": "adda2e41d294ddd4f47d535045c8cd1afc4c6541ab6dc4ed0aa9b71c8b0aadf4"
+      },
+      "passed_implementation_regression": true,
+      "converged": false,
+      "surface_identity": "59780750fd71b2cdd1080d7ff2977e4bfae622ce7c6483e6f79fc3ca8db334c9",
+      "surface_identity_payload": {
+        "schema": "pyrpmd.h3.surface-physics.v1",
+        "coordinate": {
+          "kind": "centroid_rpmdrate_xi",
+          "formula": "xi=s0/(s0-s1)",
+          "dividing_surface": 1.0,
+          "reaction": {
+            "fragments": [
+              [
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "forming_bonds": [
+              [
+                0,
+                1
+              ]
+            ],
+            "breaking_bonds": [
+              [
+                1,
+                2
+              ]
+            ],
+            "equivalent_paths": [
+              [
+                0,
+                2,
+                1
+              ]
+            ],
+            "rinf": 10.0,
+            "electronic_weight": 1.0,
+            "symmetry_factor": 1.0,
+            "rinf_au": 10.0
+          },
+          "sampling_measure": "xi_rate_flux",
+          "flux_axis": 0,
+          "equivalent_paths_already_explicit": true
+        },
+        "system": {
+          "symbols": [
+            "H",
+            "H",
+            "H"
+          ],
+          "masses": [
+            1837.1526474396187,
+            1837.1526474396187,
+            1837.1526474396187
+          ],
+          "geometry": [
+            [
+              -1.7570000251,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              1.7570000251,
+              0.0,
+              0.0
+            ]
+          ],
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "charge": 0,
+          "multiplicity": 2
+        },
+        "temperature_K": 1500.0,
+        "beta_au": 210.51668320265807,
+        "beads": 16,
+        "timestep_au": 4.134137333517016,
+        "integrator": "cayley-bcb",
+        "potential": {
+          "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+          "pinned_source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+          "pinned_source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+          "library_sha256": "831083f56dd4ac10eda631f5c5044e5d49258402e1c2f48a12f8b630801f9bba",
+          "wrapper_sha256": "57ce0ff2acdcc657f51693d9c7fbca5e7bed26e60ee2b446cd2c51eb4250d3a9"
+        }
+      },
+      "provenance_metadata_update": {
+        "reason": "Bind actual PES source/binary and full reaction coordinate to channel artifacts",
+        "old_identity": "4a946c5564eaac994c2f10b9824f9a3dd4ffa5601a04b7ab50ecd6bc5be99313",
+        "new_identity": "59780750fd71b2cdd1080d7ff2977e4bfae622ce7c6483e6f79fc3ca8db334c9",
+        "numeric_sha256_before": "5ceee637ef4876f7f01335b08706a0c0f3bfef711877bac7d5a72ca1c49fb497",
+        "numeric_sha256_after": "5ceee637ef4876f7f01335b08706a0c0f3bfef711877bac7d5a72ca1c49fb497",
+        "physical_samples_recomputed": false
+      },
+      "replay_artifact_sha256": {
+        "run/fes.npz": "c0ed40083cc8cb979a888448466627fed51368171eac72b34e60da5a957611ab",
+        "dynamics/channel_recrossing.npz": "1d7b46bea26446735a52d0d9670ebc87e332cc24b99b107dc2ed0a71b5b1a6b7",
+        "rate-postprocess-spec.json": "adda2e41d294ddd4f47d535045c8cd1afc4c6541ab6dc4ed0aa9b71c8b0aadf4",
+        "replay-subset.json": "f3314d6cb0ede5dab9e6cd68bc973b1820f36a228bd85569862ebcd82a02eacb"
+      },
+      "replay_artifact_note": "The committed replay FES removes only weights, overlap and _pyrpmd_checkpoint, which are not inputs to rate postprocessing. All remaining arrays are byte-identical to the full source FES. source_artifact_sha256 retains the full original file hashes; replay-subset.json records the packaging transformation."
+    }
+  },
+  "interpretation": [
+    "Quick and pilot vary bead number and sampling simultaneously; they do not isolate bead convergence.",
+    "The candidate total rate changes substantially between the two short runs. Neither value is a converged prediction.",
+    "The 23 by 2 histogram validates transverse integration, not high-resolution channel topology.",
+    "Product branches are finite-time atom-labelled union-side partitions. Endpoint checks are not sustained commitment proofs.",
+    "Branch standard errors are conditional on the fixed static factor and are large because only two parent chains were used. PMF uncertainty was not included."
+  ]
+}

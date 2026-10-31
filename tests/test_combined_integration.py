@@ -83,17 +83,18 @@ def test_both_explicit_periodic_python_contracts_agree_in_provider_units_and_vir
 
 
 @pytest.mark.parametrize("task", ["pimd", "diffusion", "site_rate"])
-def test_materials_reject_fixed_atoms_before_output_and_in_direct_workflow(task, tmp_path):
+def test_materials_reject_fully_fixed_system_before_output_and_in_direct_workflow(task, tmp_path):
     system = System(("H",), [1837.0], [[0.0, 0.0, 0.0]], fixed_atoms=[0])
     mapping = {"task": task, "system": system.to_dict(), "beads": 2,
                "potential": {"provider": "free"},
                "sampling": {"production_steps": 40, "interval_steps": 2}}
     target = tmp_path / task
-    with pytest.raises(ValueError, match="all atoms mobile"):
+    message = "all atoms mobile" if task == "site_rate" else "at least one mobile atom"
+    with pytest.raises(ValueError, match=message):
         run(mapping, output=target)
     assert not target.exists()
     guard = validate_site_rate if task == "site_rate" else resolve_materials
-    with pytest.raises(ValueError, match="all atoms mobile"):
+    with pytest.raises(ValueError, match=message):
         guard({"task": task}, system)
 
 

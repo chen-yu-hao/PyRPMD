@@ -19,7 +19,7 @@ def _positive_integer(value, name):
 
 @dataclass
 class DiabaticResult:
-    """V[B,S,S] in hartree and positive dV/dq[B,S,S,N,3]."""
+    """Hermitian V[B,S,S] and positive dV/dq[B,S,S,N,3], in atomic units."""
     matrix: np.ndarray
     gradients: np.ndarray
     status: np.ndarray | None = None
@@ -27,7 +27,7 @@ class DiabaticResult:
 
 
 def validate_diabatic_result(result, shape, nstates=None):
-    """Reject complex, asymmetric, failed or malformed matrix evaluations."""
+    """Validate real-symmetric or complex-Hermitian matrix evaluations."""
     if isinstance(result, (tuple, list)) and 2 <= len(result) <= 4:
         result = DiabaticResult(*result)
     if not isinstance(result, DiabaticResult):
@@ -36,8 +36,8 @@ def validate_diabatic_result(result, shape, nstates=None):
         result = DiabaticResult(result.matrix, result.gradients,
                                 getattr(result, "status", None), getattr(result, "messages", None))
     matrix, gradients = np.asarray(result.matrix), np.asarray(result.gradients)
-    if matrix.dtype.kind not in "fiu" or gradients.dtype.kind not in "fiu":
-        raise PotentialError("diabatic matrix and gradients must be real numerical arrays")
+    if matrix.dtype.kind not in "fciu" or gradients.dtype.kind not in "fciu":
+        raise PotentialError("diabatic matrix and gradients must be numerical arrays")
     if len(shape) != 3 or shape[-1] != 3 or min(shape) < 1:
         raise PotentialError("expected nonempty coordinates [B,N,3]")
     if matrix.ndim != 3 or matrix.shape[0] != shape[0] or matrix.shape[1] < 1 or matrix.shape[1] != matrix.shape[2]:
@@ -58,12 +58,13 @@ def validate_diabatic_result(result, shape, nstates=None):
         raise PotentialError("diabatic PES returned nonfinite values")
     # A fixed absolute tolerance prevents a large common energy offset from
     # masking a physically meaningful antisymmetric coupling.
-    if not np.allclose(matrix, matrix.swapaxes(1, 2), rtol=0, atol=1e-12):
-        raise PotentialError("diabatic matrix must be symmetric")
-    if not np.allclose(gradients, gradients.swapaxes(1, 2), rtol=0, atol=1e-12):
-        raise PotentialError("diabatic gradients must be symmetric")
-    return DiabaticResult(np.ascontiguousarray(0.5*(matrix+matrix.swapaxes(1, 2)), dtype=float),
-                         np.ascontiguousarray(0.5*(gradients+gradients.swapaxes(1, 2)), dtype=float),
+    if not np.allclose(matrix, matrix.swapaxes(1, 2).conj(), rtol=0, atol=1e-12):
+        raise PotentialError("diabatic matrix must be Hermitian (real symmetric is allowed)")
+    if not np.allclose(gradients, gradients.swapaxes(1, 2).conj(), rtol=0, atol=1e-12):
+        raise PotentialError("diabatic gradients must be Hermitian (real symmetric is allowed)")
+    dtype = complex if np.iscomplexobj(matrix) or np.iscomplexobj(gradients) else float
+    return DiabaticResult(np.ascontiguousarray(0.5*(matrix+matrix.swapaxes(1, 2).conj()), dtype=dtype),
+                         np.ascontiguousarray(0.5*(gradients+gradients.swapaxes(1, 2).conj()), dtype=dtype),
                          status.copy(), messages)
 
 
@@ -81,8 +82,8 @@ class DiagonalPotential(Potential):
     def evaluate(self, q):
         q = coordinates(q)
         result = validate_diabatic_result(self.matrix_potential.evaluate(q), q.shape, self.nstates)
-        return PESResult(result.matrix[:, self.state, self.state],
-                         -result.gradients[:, self.state, self.state])
+        return PESResult(result.matrix[:, self.state, self.state].real.copy(),
+                         -result.gradients[:, self.state, self.state].real)
 
     def close(self):
         # Borrowed provider: the workflow owns and closes the matrix PES.
@@ -130,17 +131,22 @@ def _mint(state, result, duration):
     """Exact fixed-q flow, including integrated nuclear momentum impulse."""
     energies, vectors = np.linalg.eigh(result.matrix)
     z = state.mapping_q + 1j*state.mapping_p
-    ze = np.einsum("bsi,bs->bi", vectors, z)
+    ze = np.einsum("bsi,bs->bi", vectors.conj(), z)
     gaps = energies[:, :, None] - energies[:, None, :]
     phase = 0.5 * duration * gaps
     integral = duration * np.sinc(phase/np.pi) * np.exp(1j*phase)
-    density_integral = np.real(ze.conj()[:, :, None] * ze[:, None, :] * integral)
+    density_integral = ze.conj()[:, :, None] * ze[:, None, :] * integral
+    if np.isrealobj(result.matrix) and np.isrealobj(result.gradients):
+        # Preserve the cheaper real basis transform for existing providers.
+        density_integral = density_integral.real
     # Contract in the original diabatic basis; no eigenvector derivatives.
     # Two matrix products keep this basis transform cubic in the electronic
     # state count; a direct three-input einsum contracts four state indices.
-    density = (vectors @ density_integral) @ vectors.swapaxes(1, 2)
-    impulse = 0.5*np.einsum("bij,bijac->bac", density, result.gradients)
-    impulse -= 0.5*duration*np.einsum("biiac->bac", result.gradients)
+    # This is the integrated z* outer z, so the left transform is U*, not U.
+    # Taking its real part before contraction would discard the SOC force.
+    density = (vectors.conj() @ density_integral) @ vectors.swapaxes(1, 2)
+    impulse = 0.5*np.einsum("bij,bijac->bac", density, result.gradients).real
+    impulse -= 0.5*duration*np.einsum("biiac->bac", result.gradients).real
     state.p -= impulse
     rotated = np.einsum("bsi,bi->bs", vectors, ze*np.exp(-1j*duration*energies))
     state.mapping_q[:] = rotated.real
@@ -186,21 +192,21 @@ class NRPMDDynamics:
         _mint(trial, self._evaluate(trial.q), 0.5*self.dt)
         self.integrator.free_step(trial.q, trial.p)
         _mint(trial, self._evaluate(trial.q), 0.5*self.dt)
+        trial.step = int(trial.step) + 1
+        trial.time += self.dt
         self._check(trial)
         for key in ("q", "p", "mapping_q", "mapping_p"):
             getattr(state, key)[:] = getattr(trial, key)
-        state.step += 1
-        state.time += self.dt
+        state.step, state.time = trial.step, trial.time
         return state
 
     def energy(self, state):
         """Sum-bead propagation Hamiltonian, not a quantum thermal estimator."""
         self._check(state)
         result = self._evaluate(state.q)
-        x, y = state.mapping_q, state.mapping_p
-        electronic = 0.5*(np.einsum("bi,bij,bj->", x, result.matrix, x)
-                          + np.einsum("bi,bij,bj->", y, result.matrix, y)
-                          - np.trace(result.matrix, axis1=1, axis2=2).sum())
+        z = state.mapping_q + 1j*state.mapping_p
+        electronic = 0.5*(np.einsum("bi,bij,bj->", z.conj(), result.matrix, z)
+                          - np.trace(result.matrix, axis1=1, axis2=2).sum()).real
         kinetic = np.sum(state.p**2/(2*self.masses[None, :, None]))
         dq = state.q-np.roll(state.q, -1, axis=0)
         spring = 0.5*(self.nbeads/self.beta)**2*np.sum(self.masses[None, :, None]*dq**2)

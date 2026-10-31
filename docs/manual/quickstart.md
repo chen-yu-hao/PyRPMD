@@ -1,8 +1,8 @@
 # Quickstart: a restartable free-energy calculation
 
-This walkthrough uses the built-in harmonic potential, so it needs no external model and finishes
-in a few seconds. You will validate an input, run umbrella sampling, read the results, restart and
-reanalyze.
+In a few seconds you will go through the full PyRPMD cycle that every task shares: validate an
+input, run umbrella sampling, read the results, restart and reanalyze without rerunning dynamics.
+The built-in harmonic potential means no external model is needed.
 
 ## 1. Run your first task
 
@@ -74,9 +74,10 @@ for key in ("task", "dimension", "windows", "streams", "samples",
 
 The summary reports `task="fes"`, a one-dimensional CV, 3 windows, 6 sampling streams and 120
 saved samples; `effective_samples_per_stream` gives the number of statistically independent ones.
-`overlap_connected=true` means all windows share one global normalization. `warnings` lists too
-few effective samples and unsampled grid cells. `converged` is always `false` in a single run;
-convergence comes from the series of runs described in [Scientific conventions](science.md).
+`overlap_connected=true` means all windows share one global normalization. `warnings` flags
+windows with too few effective samples and unsampled grid cells. `converged` stays `false` for a
+single run by design: convergence is established across the series of runs described in
+[Scientific conventions](science.md).
 
 `summary["files"]` holds the paths of the data files. In the FES table, `free_energy_hartree` is a
 relative free energy, `raw_count` the number of samples per cell, and `masked` marks cells without

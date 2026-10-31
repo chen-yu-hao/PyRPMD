@@ -1,23 +1,25 @@
 # Periodic materials, diffusion and surface reactions
 
-PyRPMD handles fixed-cell periodic systems and slabs with frozen layers. This chapter covers
+PyRPMD handles periodic systems and slabs with frozen layers, plus isotropic NPT PIMD. This chapter covers
 equilibrium PIMD, thermostat-free RPMD transport and basin-normalized local hop rates.
 
 ## Tasks and boundary conditions
 
 | Task | Purpose | Periodic cell | `fixed_atoms` | Main result |
 | --- | --- | --- | --- | --- |
-| `pimd` | Equilibrium quantum statistics | Yes | No | Energy estimators, radius of gyration |
-| `diffusion` | Continuous centroid trajectories and transport | Yes | No | MSD, VACF, D and diagnostics |
+| `pimd` | Equilibrium quantum statistics; optional BZP NPT | Yes | Yes at fixed cell | Energy estimators, radius of gyration |
+| `diffusion` | Continuous centroid trajectories and transport | Yes | Yes | MSD, VACF, D and diagnostics |
 | `site_rate` | A directed exit in a fully mobile material | Yes | No | Basin rate along one constant-gradient CV |
 | `fes` | 1D/2D geometric free energy | Yes | Yes | Position-density FES, overlap, mask |
 | `surface_rate` | A directed exit on a surface, optionally with fixed layers | Yes, or a finite cluster | Yes | First-order rate with the mass metric of the mobile atoms |
 
-The `pimd`, `diffusion` and `site_rate` estimators require all atoms to be mobile; for frozen bottom
-layers use surface `fes` and `surface_rate`. Gas-phase `rate`, `drpmd`, `network` and `metadynamics`
+Fixed atoms are supported by `pimd`, `diffusion`, `fes`, `metadynamics` and `surface_rate`; they keep
+reference positions on every bead and zero momenta. Materials kinetic-energy estimators count only
+mobile atoms. `site_rate` still requires all atoms mobile. Gas-phase `rate`, `drpmd` and `network`
 take molecular systems without PBC or fixed atoms.
+Metadynamics accepts one to three CVs, with independent CV and atomic periodicity.
 
-All mobile atoms use the same bead number, and the cell is fixed (constant volume).
+All mobile atoms use the same bead number. Cells are fixed unless `pimd` explicitly uses `[barostat]`.
 
 ## Cells, coordinates and isotopes
 
@@ -62,7 +64,11 @@ and equilibration time for each isotope.
 
 `periodic_bond_difference` also accepts the alias `periodic_difference`. A nearest-image CV has a
 derivative branch where the nearest image switches; keep the biased range away from it.
-`site_rate` and `surface_rate` accept only the linear centroid CVs listed in their sections below.
+`site_rate` accepts its supported linear centroid CVs. `surface_rate` also accepts unwrapped
+`distance` with its constant endpoint mass metric and full curved constraint. For
+`periodic_distance`, the dividing surface must be below half the smallest singular value
+of the periodic lattice basis, keeping it away from image switches. Bond differences and
+variable-metric coordinates are outside this surface-rate formula.
 
 ## Periodic potentials
 
@@ -120,13 +126,43 @@ estimators; the last is a propagation diagnostic. Each has a `mean` and a
 `standard_error_between_replicas`, which is `null` with a single replica.
 `radius_of_gyration_squared_bohr2` gives each atom's mean squared ring radius of gyration.
 
-`samples/materials_XXXX.npz` holds centroid `positions` and `velocities`, `times`, `observables` and
-`radii_gyration_squared`. `checkpoints/materials_XXXX.npz` holds the restart state. For transport
-properties use the `diffusion` task.
+`samples/materials_XXXX/manifest.json` describes immutable NPZ chunks containing centroid positions,
+velocities, sample steps, energy estimators and radii of gyration. `checkpoints/materials_XXXX.npz`
+holds the state and the authoritative committed prefix. `[output] trajectory_storage="stream"`
+is the default; `chunk_frames=256` bounds the staging buffer. `trajectory_storage="memory"` retains
+the earlier single-NPZ layout. Old completed runs can migrate without loading the PES. Correlation
+analysis still loads scalar or selected-atom histories; budget that memory separately. See
+[streaming and recovery](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/streaming-trajectories.md).
+For transport properties use the `diffusion` task.
+
+### Constant-pressure PIMD
+
+```toml
+[barostat]
+method = "bzp"
+pressure = "1 bar"
+time_constant = "1000 fs"
+```
+
+The isotropic Bussi–Zykova–Parrinello barostat scales centroids and the cell while preserving the
+internal ring modes. It requires a fully periodic 3D cell, all atoms mobile, and a variable-cell
+PES returning physical configurational virials. ASE, i-PI and compatible Python models are
+supported. Independent trajectory processes are supported; bead pools, MPI and GPU execution are
+not supported for NPT. Pressure accepts Pa, kPa, MPa, GPa, bar, atm and atomic pressure.
+The optional `friction` defaults to the inverse time constant. Samples include cells, pressures
+and volumes; checkpoint state includes the cell piston. See the
+[BZP method and example](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/materials-npt.md).
+RPMD diffusion production remains fixed-cell and thermostat-free by default.
 
 ## Diffusion: MSD and D from continuous trajectories
 
-`task="diffusion"` saves t=0 after thermalization and then propagates RPMD without thermostat,
+The optional `[electronic_friction]` table selects a physical Markovian centroid EF-RPMD
+production bath, including fixed substrates. These trajectories exchange energy and do not
+receive an NVE conservation verdict. This approximation has no non-Markovian memory or bath
+renormalization of the imaginary-time distribution; see the
+[electronic-friction guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md).
+
+`task="diffusion"` saves t=0 after thermalization and by default propagates RPMD without thermostat,
 umbrella or metadynamics. It saves the centroid positions and velocities of every atom, so the
 measured atoms, reference frame and fit can be changed afterwards.
 
@@ -180,8 +216,11 @@ replica. Confirm D against the fit window, production length, number of replicas
 
 ## Site and surface rates
 
-Both local-rate workflows use a linear centroid coordinate s with a constant mass metric, and take
-the dividing-surface value and basin probability from the same position density:
+For a linear centroid coordinate s with constant mass metric, both local-rate workflows take
+the dividing-surface value and basin probability from the same position density. Nonlinear
+`site_rate` additionally averages the constrained-parent mass metric; see
+[general-coordinate rates](../general-coordinate-rates.md). `surface_rate` also accepts
+the nonlinear distance coordinates described above. For the constant-metric case:
 
 $$
 k_{\mathrm{QTST}}=
@@ -207,8 +246,10 @@ pyrpmd analyze runs/manual-site-rate
 ```
 
 The [example](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/materials/site_rate.inp)
-uses an unwrapped `fractional` centroid coordinate. Supported CVs are `cartesian`, `projection` and
-`fractional`, the last two optionally relative to a group of lattice atoms. `site_rate.cv` names the
+uses an unwrapped `fractional` centroid coordinate. The constant-metric route supports `cartesian`, `projection` and
+`fractional`, the last two optionally relative to a group of lattice atoms. Smooth distances, bond
+differences, angles and compatible Python centroid CVs use the nonlinear metric route described in
+[general-coordinate rates](../general-coordinate-rates.md). `site_rate.cv` names the
 umbrella CV, `basin=[lo,hi]` defines a finite basin, and `direction=1` places the dividing surface
 at hi, `direction=-1` at lo.
 

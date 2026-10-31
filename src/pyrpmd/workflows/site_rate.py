@@ -1,9 +1,11 @@
-"""Basin-normalized, fixed-cell RPMD site escape rates for linear centroid CVs.
+"""Basin-normalized RPMD escape rates for differentiable scalar centroid CVs.
 
-The umbrella measure is ordinary CV density. For a constant mass metric z,
-the constrained configuration measure differs from delta(s-s*) by a constant,
-which cancels in the paired-child transmission coefficient. No gas-phase
-volume, electronic weight, or distance Jacobian is part of this workflow.
+The umbrella measure is ordinary CV density. Constrained RATTLE parents have
+the positional measure delta(s-s*) sqrt(z) exp(-beta_P H_P). The inverse metric
+weight z**(-1/2) converts their child fluxes to the conditional delta measure;
+the QTST surface speed is 1 / (sqrt(2*pi*beta) <z**(-1/2)>_constrained).
+See Sprik and Ciccotti, JCP 109, 7737 (1998), doi:10.1063/1.477419.
+No gas-phase volume, electronic weight, or extra distance Jacobian is used.
 
 Positions and all CV values remain continuous and unwrapped. A basin names
 one explicit local interval, even when the physical potential is periodic.
@@ -29,7 +31,7 @@ from ..constants import ATOMIC_TIME_S
 from ..cv import Cartesian
 from ..cv_periodic import FractionalCoordinate, LinearProjection
 from ..dynamics import Dynamics, State
-from ..parallel import make_task_potential, root_call, run_tasks
+from ..parallel import task_potential, root_call, run_tasks
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
 from .fes import (
@@ -43,25 +45,80 @@ from .fes import (
 )
 from .rate import (
     _recrossing_options,
+    _recrossing_dynamics,
+    _recrossing_spec,
     constrained_step,
     project_momenta,
     project_positions,
 )
 
 
+_CONSTANT_CV_METHODS = {
+    cls: {name: getattr(cls, name, None) for name in (
+        "value", "value_and_jacobian", "centroid_value_gradient",
+        "centroid_value_gradient_hessian", "_affine_gradient",
+    )}
+    for cls in (Cartesian, LinearProjection, FractionalCoordinate)
+}
+
+
 class SiteSurface:
-    """Shift a supported linear centroid CV to a zero-level constraint."""
+    """Shift a scalar differentiable centroid CV to a zero-level constraint."""
 
     def __init__(self, cv, value):
         self.cv = cv
         self.value = float(value)
 
     def centroid_value_gradient(self, q):
-        value, gradient = self.cv.centroid_value_gradient(q)
+        value, gradient = _centroid_value_gradient(self.cv, q)
         return value - self.value, gradient
 
 
+def _centroid_value_gradient(cv, q):
+    """Evaluate the centroid contract, including a scalar Python CV plugin."""
+    q = np.asarray(q, dtype=float)
+    method = getattr(cv, "centroid_value_gradient", None)
+    if callable(method):
+        value, gradient = method(q)
+    else:
+        # A plugin declaring estimator='centroid' supplies its centroid
+        # derivative through the same full-ring protocol at one bead.
+        result = cv.value_and_jacobian(q[None])
+        value, gradient = result.value[0], result.jacobian[0, 0]
+    gradient = np.asarray(gradient, dtype=float)
+    if (np.ndim(value) != 0 or not np.isfinite(value)
+            or gradient.shape != q.shape or not np.isfinite(gradient).all()):
+        raise ValueError("site CV must supply a finite scalar value and Cartesian centroid gradient")
+    return float(value), gradient
+
+
+def _mass_metric(cv, q, masses):
+    _, gradient = _centroid_value_gradient(cv, q)
+    metric = float(np.sum(gradient * gradient / np.asarray(masses)[:, None]))
+    if not np.isfinite(metric) or metric <= 1e-28:
+        raise ValueError("site CV has a singular mass metric")
+    return metric
+
+
+def _validate_centroid_contract(cv, geometry, beads):
+    """Reject inconsistent plugin values/Jacobians before either sampler runs."""
+    count = max(2, int(beads))
+    offsets = np.arange(count, dtype=float) - (count - 1) / 2
+    direction = np.sin(np.arange(geometry.size) + 1).reshape(geometry.shape)
+    probe = geometry[None] + 1e-4 * offsets[:, None, None] * direction[None] / count
+    value, gradient = _centroid_value_gradient(cv, probe.mean(axis=0))
+    result = cv.value_and_jacobian(probe)
+    if (np.shape(result.value) != (1,) or np.shape(result.jacobian) != (1,) + probe.shape
+            or not np.allclose(result.value, [value], rtol=1e-9, atol=1e-10)
+            or not np.allclose(result.jacobian, gradient[None, None] / count, rtol=1e-8, atol=1e-10)):
+        raise ValueError("site CV must obey its declared centroid value/Jacobian contract")
+
+
 def _setup(config, system):
+    if _recrossing_dynamics(config)[0] != "rpmd":
+        raise ValueError("site_rate does not yet support TRPMD recrossing")
+    if _recrossing_spec(config).get("child_batch_pairs", 1) != 1:
+        raise ValueError("site_rate does not yet support batched recrossing checkpoints")
     if system.fixed_atoms:
         raise ValueError("site_rate requires all atoms mobile; use surface_rate for fixed layers")
     table = config.get("site_rate", {})
@@ -86,13 +143,16 @@ def _setup(config, system):
     if stack.dimension != 1 or len(stack.cvs) != 1:
         raise ValueError("site_rate requires exactly one umbrella CV dimension")
     cv = stack.cvs[0]
-    if type(cv) not in (Cartesian, LinearProjection, FractionalCoordinate):
-        raise ValueError("site_rate supports only Cartesian, projection or fractional constant-gradient CVs")
-    if any(name in cv.__dict__ for name in (
+    builtin_affine = type(cv) in _CONSTANT_CV_METHODS
+    constant_metric = builtin_affine and all(
+        getattr(type(cv), name, None) is original
+        for name, original in _CONSTANT_CV_METHODS[type(cv)].items()
+    )
+    if builtin_affine and any(name in cv.__dict__ for name in (
         "value", "value_and_jacobian", "centroid_value_gradient",
         "centroid_value_gradient_hessian", "_affine_gradient",
     )):
-        raise ValueError("site_rate does not accept overridden CV methods; the mass metric must be constant")
+        raise ValueError("site_rate does not accept overridden CV methods on built-ins; use a custom centroid CV")
     if cv.estimator != "centroid" or cv.periods != (None,):
         raise ValueError("site_rate requires a continuous centroid CV and nonperiodic local umbrella bias")
     declared = config.get("cvs", [])
@@ -133,10 +193,8 @@ def _setup(config, system):
     if not np.isclose(surface, endpoint, rtol=1e-12, atol=1e-12 * (basin[1] - basin[0])):
         raise ValueError("site dividing surface must be the upper basin boundary for +1 or lower for -1")
     surface = endpoint
-    _, gradient = cv.centroid_value_gradient(system.geometry)
-    metric = float(np.sum(gradient * gradient / system.masses[:, None]))
-    if not np.isfinite(metric) or metric <= 1e-28:
-        raise ValueError("site CV has a singular mass metric")
+    _validate_centroid_contract(cv, system.geometry, config["beads"])
+    metric = _mass_metric(cv, system.geometry, system.masses)
     beta = float(config["beta"])
     if not np.isfinite(beta) or beta <= 0:
         raise ValueError("site_rate requires positive finite beta")
@@ -186,14 +244,22 @@ def _setup(config, system):
         "basin": basin,
         "dividing_surface": surface,
         "direction": int(direction),
-        "mass_metric": metric,
-        "flux_prefactor_au": float(np.sqrt(metric / (2 * np.pi * beta))),
+        "mass_metric": metric if constant_metric else None,
+        "flux_prefactor_au": float(np.sqrt(metric / (2 * np.pi * beta))) if constant_metric else None,
         "normalization": "density(s*) / integral_basin density(s) ds",
         "coordinate_images": "continuous unwrapped local interval",
-        "constraint_measure": "constant mass metric; no position-dependent Fixman correction",
+        "constraint_measure": (
+            "constant mass metric; no position-dependent Fixman correction" if constant_metric
+            else "delta(s-s*) sqrt(z); child fluxes reweighted by z^(-1/2)"
+        ),
         "rate_unit": "s^-1",
         "umbrella_windows": len(centers),
     }
+    # Keep the historical metadata/fingerprints unchanged for the established
+    # linear-coordinate route. Nonlinear checkpoints have a distinct identity.
+    if not constant_metric:
+        metadata.update(metric_estimator="constrained_parent_inverse_sqrt",
+                        reference_mass_metric=metric)
     return cv, metadata, options
 
 
@@ -208,7 +274,7 @@ def _pmf_bootstrap_count(config):
     return checked_integer(value, "analysis.bootstrap", 0)
 
 
-def estimate_site_qtst(data, beta, mass_metric, basin, dividing_surface):
+def estimate_site_qtst(data, beta, mass_metric, basin, dividing_surface, *, constrained_mass_metrics=None):
     """Estimate a local QTST rate from a supported, connected 1D histogram.
 
     Basin probability integrates the piecewise-constant *bin density* using
@@ -217,8 +283,24 @@ def estimate_site_qtst(data, beta, mass_metric, basin, dividing_surface):
     This is a finite-bin estimator: it does not evaluate a mathematical delta
     function exactly, extrapolate tails, or fill a missing histogram bin.
     Both density and basin mass use the same MBAR normalization.
+
+    For a nonlinear coordinate pass ``mass_metric=None`` and the per-parent
+    ``constrained_mass_metrics``. These must come from the canonical RATTLE
+    surface ensemble, not unconstrained or biased umbrella configurations.
     """
-    beta, metric = float(beta), float(mass_metric)
+    beta = float(beta)
+    if constrained_mass_metrics is not None:
+        if mass_metric is not None:
+            raise ValueError("specify a constant mass metric or constrained metric samples, not both")
+        metrics = np.asarray(constrained_mass_metrics, dtype=float)
+        if metrics.ndim != 1 or not metrics.size or not np.isfinite(metrics).all() or np.any(metrics <= 1e-28):
+            raise ValueError("constrained mass metrics must be a nonempty positive finite vector")
+        inverse_mean = float(np.mean(1 / np.sqrt(metrics)))
+        metric = 1 / inverse_mean**2
+    elif mass_metric is not None:
+        metric = float(mass_metric)
+    else:
+        raise ValueError("QTST requires a constant mass metric or constrained metric samples")
     if not np.isfinite(beta) or beta <= 0 or not np.isfinite(metric) or metric <= 0:
         raise ValueError("QTST requires positive finite beta and mass metric")
     limits = np.asarray(basin, dtype=float)
@@ -259,6 +341,10 @@ def estimate_site_qtst(data, beta, mass_metric, basin, dividing_surface):
         "surface_estimator": "linear interpolation of neighboring bin-average densities at bin centers",
         "basin_estimator": "piecewise-constant density integrated over the declared basin",
     }
+    if constrained_mass_metrics is not None:
+        result.update(mass_metric=None, effective_surface_mass_metric=metric,
+                      surface_inverse_sqrt_metric_mean=inverse_mean,
+                      metric_estimator="constrained_parent_inverse_sqrt")
     if not data.get("connected", False):
         result["status"] = "disconnected_overlap"
         result["reasons"].append("umbrella_overlap_disconnected")
@@ -302,7 +388,9 @@ def estimate_site_qtst(data, beta, mass_metric, basin, dividing_surface):
 def _estimate_pmf(sampled, config, system, output):
     cv, metadata, options = _setup(config, system)
     data = sampled["data"]
-    estimate = estimate_site_qtst(data, config["beta"], metadata["mass_metric"],
+    general = metadata["mass_metric"] is None
+    metric = 1.0 if general else metadata["mass_metric"]
+    estimate = estimate_site_qtst(data, config["beta"], metric,
                                   metadata["basin"], metadata["dividing_surface"])
     estimate["preparation"] = metadata
     estimate["warnings"] = list(sampled["summary"].get("warnings", []))
@@ -345,7 +433,7 @@ def _estimate_pmf(sampled, config, system, output):
                 trial = estimate_site_qtst(
                     {"edges": data["edges"], "density": density, "probability_mass": mass,
                      "mask": mask, "connected": True, "measure": "cv_density"},
-                    config["beta"], metadata["mass_metric"], metadata["basin"], metadata["dividing_surface"])
+                    config["beta"], metric, metadata["basin"], metadata["dividing_surface"])
                 if trial["ready"]:
                     draws.append(trial["k_qtst_s"])
                     record.update(valid=True, k_qtst_s=trial["k_qtst_s"])
@@ -374,10 +462,26 @@ def _estimate_pmf(sampled, config, system, output):
         "percentile_95_ci_s": np.quantile(draws, [.025, .975]).tolist() if complete else None,
     }
     estimate["_bootstrap_qtst_s"] = draws
+    if general:
+        # The histogram determines rho(s*) / P(basin), but the nonlinear
+        # surface speed is unknown until constrained parents are available.
+        speed = float(np.sqrt(1 / (2 * np.pi * config["beta"])))
+        estimate["_bootstrap_density_ratio"] = np.asarray(draws) * ATOMIC_TIME_S / speed
+        estimate["_density_uncertainty_available"] = complete
+        estimate["mass_metric"] = None
+        estimate["flux_prefactor_au"] = None
+        estimate["k_qtst_au"] = estimate["k_qtst_s"] = None
+        estimate["surface_metric_status"] = "awaiting_constrained_parents" if estimate["ready"] else "histogram_unsupported"
+        estimate["metric_estimator"] = "constrained_parent_inverse_sqrt"
+        estimate["pmf_uncertainty"].update(available=False, standard_error_s=None, percentile_95_ci_s=None)
+        for record in draw_records:
+            if "k_qtst_s" in record:
+                record["density_ratio"] = record.pop("k_qtst_s") * ATOMIC_TIME_S / speed
+        estimate["_bootstrap_qtst_s"] = []
     write_json(Path(output) / "site_qtst.json", _public_pmf(estimate))
     atomic_savez(Path(output) / "site_qtst.npz", kind="site_rate_qtst",
                  edges=data["edges"][0], density=data["density"], mask=data["mask"],
-                 probability_mass=data["probability_mass"], bootstrap_qtst_s=np.asarray(draws))
+                 probability_mass=data["probability_mass"], bootstrap_qtst_s=np.asarray(estimate["_bootstrap_qtst_s"]))
     tasks = []
     if estimate["ready"]:
         streams = sorted(sampled["streams"], key=lambda stream: (
@@ -411,8 +515,8 @@ def _parent_task(task):
     identity = _fingerprint(config, system, {
         "workflow_version": 1, "stage": "site_parent", "chain": chain,
         "surface": metadata, "options": options, "initial_q": task["initial_q"]})
-    provider = make_task_potential(config["potential"], system)
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         dyn = _dynamics(config, system, provider, 1211, chain)
         elapsed, snapshots = 0, []
         target = options["equilibration_steps"] + options["parent_samples"] * options["parent_interval_steps"]
@@ -437,13 +541,15 @@ def _parent_task(task):
                     raise ValueError("site parent checkpoint is not on its dividing surface")
             _, gradient = surface.centroid_value_gradient(state.q.mean(axis=0))
             normal_velocity = float(np.sum(gradient * state.p.mean(axis=0) / system.masses[:, None]))
-            if abs(normal_velocity) > 1e-10 * max(1., np.sqrt(metadata["mass_metric"] / config["beta"])):
+            metric = _mass_metric(cv, state.q.mean(axis=0), system.masses)
+            if abs(normal_velocity) > 1e-10 * max(1., np.sqrt(metric / config["beta"])):
                 raise ValueError("site parent checkpoint momentum is not tangent to the surface")
         else:
             q = np.array(task["initial_q"], dtype=float, copy=True)
             value, gradient = surface.centroid_value_gradient(q.mean(axis=0))
-            # Exact linear shift avoids the nonlinear projector's step cap.
-            q -= value * gradient[None] / (metadata["mass_metric"] * system.masses[None, :, None])
+            if metadata["mass_metric"] is not None:
+                # Exact linear shift avoids the nonlinear projector's cap.
+                q -= value * gradient[None] / (metadata["mass_metric"] * system.masses[None, :, None])
             q = project_positions(q, surface, system.masses, options["constraint_tolerance"])
             state = State(q, dyn.sample_momenta())
             project_momenta(state.p, state.q, surface, system.masses)
@@ -484,8 +590,6 @@ def _parent_task(task):
         save()
         return {"chain": chain, "snapshots": np.asarray(snapshots), "checkpoint": str(checkpoint),
                 "propagation": dyn.propagation_stats}
-    finally:
-        provider.close()
 
 
 def _child_task(task):
@@ -495,14 +599,16 @@ def _child_task(task):
     chain, parent, pair = (int(task[key]) for key in ("chain", "parent", "pair"))
     nsteps = options["child_steps"]
     q0 = np.asarray(task["q"], dtype=float)
-    if q0.shape != (config["beads"], system.natoms, 3) or abs(surface.centroid_value_gradient(q0.mean(axis=0))[0]) > max(1e-8, 10 * options["constraint_tolerance"]):
+    if q0.shape != (config["beads"], system.natoms, 3) or not np.isfinite(q0).all() or abs(surface.centroid_value_gradient(q0.mean(axis=0))[0]) > max(1e-8, 10 * options["constraint_tolerance"]):
         raise ValueError("site child must start on the declared surface")
+    metric = _mass_metric(cv, q0.mean(axis=0), system.masses)
+    weight = 1.0 if metadata["mass_metric"] is not None else 1 / np.sqrt(metric)
     checkpoint = Path(task["output"]) / "checkpoints" / f"site_child_{chain:04d}_{parent:05d}_{pair:04d}.npz"
     identity = _fingerprint(config, system, {
         "workflow_version": 1, "stage": "site_child", "chain": chain, "parent": parent,
         "pair": pair, "surface": metadata, "child_steps": nsteps, "q": q0})
-    provider = make_task_potential(config["potential"], system)
-    try:
+    with task_potential(config["potential"], system,
+                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
         dyn = _dynamics(config, system, provider, 1307, chain, parent, pair)
         if checkpoint.exists():
             with load_checkpoint(checkpoint, expected_kind="site_rate_child") as saved:
@@ -572,14 +678,15 @@ def _child_task(task):
             save()
             raise
         endpoint = float(np.max(np.abs(final - initial)) / config["beads"])
-        return {"chain": chain, "parent": parent, "pair": pair,
+        result = {"chain": chain, "parent": parent, "pair": pair,
                 "surface": metadata["dividing_surface"], "direction": metadata["direction"],
-                "numerator": numerator.sum(axis=0), "denominator": abs(velocity),
+                "numerator": weight * numerator.sum(axis=0), "denominator": weight * abs(velocity),
                 "endpoint_energy_error_hartree_per_bead": endpoint,
                 "endpoint_energy_error_kbt": endpoint * config["beta"],
                 "checkpoint": str(checkpoint), "propagation": dyn.propagation_stats}
-    finally:
-        provider.close()
+        if metadata["mass_metric"] is None:
+            result.update(mass_metric=metric, configuration_weight=float(weight))
+        return result
 
 
 def _child_tasks(parents, config, system, output):
@@ -590,8 +697,63 @@ def _child_tasks(parents, config, system, output):
             for pair in range(options["child_pairs"])]
 
 
+def _metric_reweighted_children(children):
+    """Validate inverse-metric records and give every parent equal mass."""
+    weights, counts = {}, {}
+    for child in children:
+        key = (child["chain"], child["parent"])
+        metric = float(child.get("mass_metric", np.nan))
+        weight = float(child.get("configuration_weight", np.nan))
+        if (not np.isfinite(metric) or metric <= 1e-28 or not np.isfinite(weight)
+                or not np.isclose(weight, 1 / np.sqrt(metric), rtol=1e-12, atol=0)):
+            raise ValueError("invalid nonlinear site child mass metric or inverse-metric weight")
+        if key in weights and not np.isclose(weight, weights[key], rtol=1e-12, atol=0):
+            raise ValueError("children of one parent have inconsistent mass metrics")
+        weights[key] = weight
+        counts[key] = counts.get(key, 0) + 1
+    normalized = []
+    for child in children:
+        count = counts[(child["chain"], child["parent"])]
+        normalized.append({**child, "numerator": np.asarray(child["numerator"]) / count,
+                           "denominator": child["denominator"] / count})
+    return normalized, weights
+
+
+def _complete_surface_qtst(pmf, weights, beta):
+    """Combine ordinary CV density with the constrained surface measure."""
+    pmf = copy.deepcopy(pmf)
+    values = np.asarray(list(weights.values()), dtype=float)
+    inverse_mean = float(values.mean())
+    speed = 1 / (np.sqrt(2 * np.pi * beta) * inverse_mean)
+    rate = speed * pmf["surface_density"] / pmf["basin_probability"]
+    pmf.update(flux_prefactor_au=float(speed), k_qtst_au=float(rate),
+               k_qtst_s=float(rate / ATOMIC_TIME_S), surface_metric_status="estimated",
+               effective_surface_mass_metric=float(1 / inverse_mean**2),
+               surface_inverse_sqrt_metric_mean=inverse_mean)
+    pmf["surface_metric"] = {
+        "parent_configurations": len(values), "inverse_sqrt_mean": inverse_mean,
+        "inverse_sqrt_minimum": float(values.min()), "inverse_sqrt_maximum": float(values.max()),
+        "reweighting_effective_samples": float(values.sum()**2 / np.dot(values, values)),
+        "ensemble": "canonical constrained RATTLE parents",
+        "uncertainty": "joint chain/block resampling with transmission coefficient",
+    }
+    conditional_draws = np.asarray(pmf["_bootstrap_density_ratio"]) * speed / ATOMIC_TIME_S
+    pmf["_bootstrap_qtst_s"] = conditional_draws.tolist()
+    density_available = pmf["_density_uncertainty_available"]
+    pmf["pmf_uncertainty"].update(
+        available=density_available,
+        conditional_density_standard_error_s=float(conditional_draws.std(ddof=1)) if density_available else None,
+    )
+    return pmf
+
+
 def _aggregate(children, pmf, config, output):
     options = _recrossing_options(config)
+    general = pmf.get("metric_estimator") == "constrained_parent_inverse_sqrt"
+    metric_weights = {}
+    if general and children and pmf["ready"]:
+        children, metric_weights = _metric_reweighted_children(children)
+        pmf = _complete_surface_qtst(pmf, metric_weights, config["beta"])
     public_pmf = _public_pmf(pmf)
     warnings = list(pmf.get("warnings", []))
     result = {
@@ -617,6 +779,7 @@ def _aggregate(children, pmf, config, output):
     rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 1503]))
     statistics = summarize_recrossing(
         children, rng=rng,
+        **({"extra_parent_observables": metric_weights, "return_bootstrap_indices": True} if general else {}),
         **{key: options[key] for key in (
             "child_steps", "plateau_fraction", "plateau_tolerance", "bootstrap"
         )},
@@ -635,16 +798,51 @@ def _aggregate(children, pmf, config, output):
     curve_error = statistics["curve_standard_error"] if recrossing_complete else np.full_like(curve, np.nan)
     kappa_error = statistics["standard_error"] if recrossing_complete else None
     drift_error = statistics["drift_standard_error"] if recrossing_complete else None
-    threshold = max(options["plateau_tolerance"] * abs(kappa), 2 * (drift_error or 0))
-    plateau = bool(len(curve) - start >= 10 and abs(drift) <= threshold and kappa > 0)
+    plateau = statistics["plateau_detected"]
     candidate = pmf["k_qtst_s"] * kappa
     complete = recrossing_complete and pmf["pmf_uncertainty"]["available"]
     rate_draws = np.array([])
+    qtst_draws = np.array([])
     reasons = list(pmf["pmf_uncertainty"]["reasons"]) + recrossing_uncertainty["reasons"]
     if independent_chains < 2:
         reasons.append("fewer_than_two_independent_parent_chains")
     if complete:
-        rate_draws = kappa_draws * rng.choice(pmf["_bootstrap_qtst_s"], size=len(kappa_draws), replace=True)
+        if general:
+            # The same constrained configuration controls both the QTST
+            # metric and kappa. Independent draws of these two factors would
+            # destroy their covariance and misstate the rate uncertainty.
+            parent_weights = np.asarray([metric_weights[key] for key in keys])
+            inverse_means = np.asarray([parent_weights[ix].mean()
+                                       for ix in statistics["bootstrap_parent_indices"]])
+            density_draws = rng.choice(pmf["_bootstrap_density_ratio"], size=len(kappa_draws), replace=True)
+            qtst_draws = density_draws / (np.sqrt(2 * np.pi * config["beta"]) * inverse_means * ATOMIC_TIME_S)
+            rate_draws = kappa_draws * qtst_draws
+            pmf["pmf_uncertainty"].update(
+                standard_error_s=float(qtst_draws.std(ddof=1)),
+                percentile_95_ci_s=np.quantile(qtst_draws, [.025, .975]).tolist(),
+                method="independent umbrella blocks and joint constrained-parent chain/block metric resampling",
+            )
+        else:
+            rate_draws = kappa_draws * rng.choice(pmf["_bootstrap_qtst_s"], size=len(kappa_draws), replace=True)
+    if general:
+        pmf["pmf_uncertainty"]["available"] = complete
+        pmf["pmf_uncertainty"]["surface_metric_reasons"] = (
+            recrossing_uncertainty["reasons"]
+            + (["fewer_than_two_independent_parent_chains"] if independent_chains < 2 else [])
+        )
+        if not complete:
+            pmf["pmf_uncertainty"].update(standard_error_s=None, percentile_95_ci_s=None)
+        result["pmf"] = _public_pmf(pmf)
+        write_json(Path(output) / "site_qtst.json", result["pmf"])
+        histogram_path = Path(output) / "site_qtst.npz"
+        if histogram_path.exists():
+            with load_checkpoint(histogram_path, expected_kind="site_rate_qtst") as saved:
+                histogram = {name: np.array(saved[name], copy=True)
+                             for name in ("edges", "density", "mask", "probability_mass")}
+            atomic_savez(histogram_path, kind="site_rate_qtst", **histogram,
+                         bootstrap_qtst_s=qtst_draws,
+                         metric_parent_ids=np.asarray(keys),
+                         parent_inverse_sqrt_metric=np.asarray([metric_weights[key] for key in keys]))
     energy_error = max(child["endpoint_energy_error_kbt"] for child in children)
     if not plateau:
         warnings.append("The selected finite-time tail does not pass the positive-plateau diagnostic.")
@@ -676,7 +874,10 @@ def _aggregate(children, pmf, config, output):
         ),
         "rate_uncertainty": {
             "available": complete, "reasons": reasons,
-            "method": "independent PMF block-bootstrap and chain/parent-cluster bootstrap draws, fixed basin and surface",
+            "method": (
+                "independent PMF blocks with jointly resampled parent metric and transmission, fixed basin and surface"
+                if general else "independent PMF block-bootstrap and chain/parent-cluster bootstrap draws, fixed basin and surface"
+            ),
             "conditional_quantity": "recrossing uncertainty holding QTST fixed",
             "pmf_bootstrap_valid": len(pmf["_bootstrap_qtst_s"]), "recrossing_bootstrap_valid": len(bootstrap),
             "parent_block_lengths": blocks,
@@ -684,6 +885,7 @@ def _aggregate(children, pmf, config, output):
             "recrossing_support": recrossing_uncertainty,
         },
         "plateau_detected": plateau, "plateau_start_au": float(times[start]),
+        "plateau_diagnostics": statistics["plateau_diagnostics"],
         "plateau_drift": drift, "plateau_drift_standard_error": drift_error,
         "child_time_fs": float(times[-1] * ATOMIC_TIME_S / 1e-15),
         "parent_chains": statistics["parent_chains"], "parent_configurations": len(keys),

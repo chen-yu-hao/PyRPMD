@@ -25,9 +25,12 @@ jobs:
       - run: pyrpmd info
       - run: python -m pytest -q
       - run: mpiexec -n 4 python tests/mpi_integration.py
+      - run: mpiexec -n 5 python tests/mpi_dynamic_integration.py
       - run: mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-workflows"
+      - run: mpiexec -n 4 python tests/mpi_opes_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-opes"
       - run: mpiexec -n 4 python tests/mpi_materials_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-materials"
       - run: mpiexec -n 4 python tests/mpi_surface_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface"
+      - run: mpiexec -n 4 python tests/mpi_surface_extensions_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface-extensions"
       - run: python -m pip install build && python -m build
   torch-cpu:
     runs-on: ubuntu-latest
@@ -38,4 +41,17 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e '.[test]'
       - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pytest -q tests/test_potentials.py
+      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py
+  electronic-structure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[test,ase,tblite,pyscf]'
+      - run: python -m pytest -q tests/test_potential_adapters.py

@@ -1,0 +1,56 @@
+{
+  "schema": "pyrpmd.fes-replay-subset.v1",
+  "profile": "pilot",
+  "purpose": "Compact offline rate-postprocessing replay package; only arrays unused by rate postprocessing were removed. No retained array or numerical value was changed.",
+  "source_path": "runs/h3-rate-postprocess-pilot/run/fes.npz",
+  "source_file_sha256": "9fe1fbbf352698174202b617f4510f2bf72e439f1ed2e8753c6279999736d1d3",
+  "source_size_bytes": 701370,
+  "replay_path": "docs/validation/rate-postprocess-2026-10-31/pilot/run/fes.npz",
+  "replay_file_sha256": "c0ed40083cc8cb979a888448466627fed51368171eac72b34e60da5a957611ab",
+  "replay_size_bytes": 7973,
+  "array_sha256_definition": "SHA256 of numpy.ndarray.tobytes(order=\"C\"); dtype and shape are recorded separately.",
+  "removed_arrays": {
+    "weights": {
+      "shape": [
+        86400
+      ],
+      "dtype": "<f8",
+      "sha256": "9a4313346a2d0d82ae885dfaf684f8e9093573da11bca2234932df2c86da2147"
+    },
+    "overlap": {
+      "shape": [
+        144,
+        144
+      ],
+      "dtype": "<f8",
+      "sha256": "dfc8c6b1537bb8d0358b87b3ccf5a45770e5e3c51bfd2251b21f4011c42db0f3"
+    },
+    "_pyrpmd_checkpoint": {
+      "shape": [],
+      "dtype": "<U2667",
+      "sha256": "2a929012d90875c00ce442864eda324cfd51e12946f03c871e15a45c42d19e7e"
+    }
+  },
+  "retained_arrays": [
+    "free_energy",
+    "probability_mass",
+    "density",
+    "standard_error",
+    "mask",
+    "raw_count",
+    "components",
+    "window_free_energies",
+    "statistical_inefficiency",
+    "effective_samples_per_stream",
+    "bootstrap_valid_per_bin",
+    "edges_0",
+    "edges_1",
+    "measure",
+    "energy_unit",
+    "cv_units",
+    "beta",
+    "flux_axis"
+  ],
+  "retained_array_shapes_dtypes_and_bytes_verified_identical": true,
+  "full_source_file_preserved": true
+}

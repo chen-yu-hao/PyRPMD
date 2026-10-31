@@ -80,9 +80,11 @@ each page's counterpart. Build output is ignored by Git. The GitHub **Documentat
 both editions strictly, runs the getting-started examples and uploads the `pyrpmd-manual-html`
 artifact.
 
-Both editions keep the same chapter files, headings, commands and tables; update both in the same
-commit. Links between the editions use full GitHub URLs, because each Sphinx project contains only
-its own language.
+Both editions keep the same core chapter files, headings, commands and tables; update both in the
+same commit. Extension guides and validation reports can be published in English, with a concise
+entry in the Chinese API chapter. The language switcher sends those guides to the Chinese contents
+until a translated counterpart exists. Links between the editions use full GitHub URLs, because
+each Sphinx project contains only its own language.
 
 ## Writing conventions
 

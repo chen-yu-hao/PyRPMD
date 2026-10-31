@@ -1,10 +1,9 @@
-# Electrochemical PCET: displaced-harmonic teaching model
+# Electrochemical PCET: displaced-harmonic model
 
-`harmonic_scan.inp` runs a one-proton, two-state, weak-coupling PCET model for
-one local electrode–reactant complex. It scans three temperatures and three
-electrode potentials for both H and D, and reports reduction and oxidation
-rate constants in **s⁻¹**. The electrode is an ideal wide-band electron
-reservoir; the environment has a classical Gaussian reorganization energy.
+`harmonic_scan.inp` computes reduction and oxidation rate constants in **s⁻¹** for one local
+electrode–reactant complex with one transferring proton, two electronic states and weak vibronic
+coupling. In about two seconds it scans three temperatures and three electrode potentials for
+both H and D, and reports H/D kinetic isotope effects and per-vibronic-pair contributions.
 
 ```bash
 pyrpmd validate examples/pcet/harmonic_scan.inp
@@ -12,41 +11,38 @@ pyrpmd run examples/pcet/harmonic_scan.inp --output runs/pcet-harmonic
 pyrpmd analyze runs/pcet-harmonic
 ```
 
-The displaced harmonic wells have different force constants. They provide a
-small deterministic example in which isotopic substitution changes the
-proton vibrational spectrum, overlaps and the relative proton partition
-functions. **These parameters are artificial. They do not describe H + H₂,
-any particular molecular PCET reaction, or a real electrode material.**
+The electrode is an ideal wide-band electron reservoir and the environment has a classical
+Gaussian reorganization energy. On this harmonic model at 300 K, PyRPMD matches a pinned pyPCET
+commit to within 0.062% across 12 forward and reverse rates
+([validation record](../../docs/validation/pcet-model-2026-10-30/README.md)).
 
-`driving_force = "0.0 eV"` is the reduced-minus-oxidized minimum free-energy
-difference at `reference_potential_V`. It excludes the transferring proton's
-zero-point and thermal vibrational contributions. Each proton potential is
-referenced to its own minimum; adding its zero-point energy again to
-`driving_force` would count it twice. A more positive voltage raises the
-reduction driving free energy by `e * (U - U_ref)` under this convention.
+> **Scope.** The displaced harmonic wells are artificial parameters chosen so that isotopic
+> substitution visibly changes the proton spectrum, overlaps and partition functions. They do not
+> describe H + H₂, a specific molecular PCET reaction or a real electrode material.
 
-`potential_reference = "SHE"` records a reference label. The example does not
-compute a real SHE calibration, convert to RHE, or infer pH dependence.
-The two directions use the same electronic coupling and density of states,
-with Fermi occupation for reduction and empty electrode states for oxidation.
+## Conventions
 
-Inspect `rates.csv`, `proton_spectra.json`, `pcet_details.json` and
-`results/summary.json` for the rate table, proton spectra, individual vibrational-pair
-contributions and numerical diagnostics. Repeat with a wider/finer proton
-grid, more retained states and tighter adaptive-quadrature tolerances before relying on a
-model result. Passing numerical checks validates this specified model and
-the checked discretizations; it does not validate weak coupling, Gaussian
-solvent response or the parameters for a chemical system.
+- **Driving force.** `driving_force = "0.0 eV"` is the reduced-minus-oxidized minimum free-energy
+  difference at `reference_potential_V`, excluding the transferring proton's zero-point and
+  thermal vibrational contributions. Each proton potential is referenced to its own minimum, so
+  do not add the zero-point energy to `driving_force` again.
+- **Potential.** A more positive voltage raises the reduction driving free energy by
+  `e * (U - U_ref)`.
+- **Reference electrode.** `potential_reference = "SHE"` is a recorded label; the example does not
+  calibrate to SHE, convert to RHE or add pH dependence.
+- **Directions.** Both directions share the electronic coupling and density of states, with Fermi
+  occupation for reduction and empty electrode states for oxidation.
 
-This workflow does not propagate RPMD trajectories, sample an explicit
-constant-potential interface, average over a donor–acceptor distance
-distribution, or predict current density. See the
-[PCET method, input and limitations](../../docs/pcet.md) for the equations,
-output interpretation and supported scope.
+## Output
 
-## Illustrative output
+| File | Contents |
+| --- | --- |
+| `rates.csv` | Rate table for every condition |
+| `proton_spectra.json` | Proton vibrational spectra |
+| `pcet_details.json` | Individual vibrational-pair contributions |
+| `results/summary.json` | Summary and numerical diagnostics |
 
-For the supplied artificial parameters, the 300 K slice gives approximately:
+For the supplied parameters, the 300 K slice gives approximately:
 
 | U (V, declared SHE label) | H reduction (s⁻¹) | H oxidation (s⁻¹) | Reduction H/D KIE | Oxidation H/D KIE |
 | --- | ---: | ---: | ---: | ---: |
@@ -54,16 +50,25 @@ For the supplied artificial parameters, the 300 K slice gives approximately:
 | 0.0 | 1.435 × 10⁵ | 1.932 × 10⁵ | 1.550 | 1.677 |
 | +0.2 | 1.976 × 10³ | 6.091 × 10⁶ | 1.460 | 1.580 |
 
-The asymmetric force constants produce different proton free energies in
-the two electronic states, so reduction and oxidation need not have equal
-rates at the reference voltage even when `driving_force` is zero. Increasing
-voltage suppresses reduction and favors oxidation with the declared sign
-convention. These are deterministic model reference values, not experimental
-rate predictions.
+Because the two electronic states have different force constants, their proton free energies
+differ, so reduction and oxidation rates differ at the reference voltage even with zero
+`driving_force`. Raising the voltage suppresses reduction and favors oxidation, as the sign
+convention requires. These are deterministic model reference values.
 
-In the checked 18-point scan, the largest grid-refinement change in a rate
-was about 0.035%, and increasing from 12 to 24 states changed rates by less
-than 2 × 10⁻¹¹ relatively. All configured numerical checks passed; the output
-still has `physical_applicability_unverified = true`. The automatic check
-keeps the physical coordinate interval fixed, so an independent grid-extent
-study remains separate.
+## Numerical checks
+
+Across the 18-point scan, the largest grid-refinement change in a rate is about 0.035%, and going
+from 12 to 24 retained states changes rates by less than 2 × 10⁻¹¹ relative. All configured
+numerical checks pass. The automatic check holds the physical coordinate interval fixed; study the
+grid extent separately when you adapt the model.
+
+These checks validate the specified model and its discretization. The summary keeps
+`physical_applicability_unverified = true` because weak coupling, Gaussian solvent response and
+the parameters themselves are your modeling choices to justify for a chemical system. Before
+relying on a new model, repeat with a wider and finer proton grid, more retained states and
+tighter adaptive-quadrature tolerances.
+
+The workflow computes golden-rule rates; it does not propagate RPMD trajectories, sample an
+explicit constant-potential interface, average over a donor–acceptor distance distribution or
+predict current density. The [PCET method, input and scope](../../docs/pcet.md) gives the
+equations and output interpretation.

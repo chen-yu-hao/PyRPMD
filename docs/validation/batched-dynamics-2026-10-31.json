@@ -1,0 +1,59 @@
+{
+  "model": "analytic harmonic reference with explicit optional synthetic call latency",
+  "physical_accuracy_claim": false,
+  "gpu_benchmark": false,
+  "settings": {
+    "trajectories": 16,
+    "beads": 32,
+    "atoms": 3,
+    "steps": 128,
+    "repeats": 3,
+    "native_requested": true,
+    "synthetic_call_latency_us": 0.0,
+    "seed": 48391
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "native": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    }
+  },
+  "scalar": {
+    "pes_calls": 4096,
+    "pes_frames": 131072,
+    "seconds": [
+      0.26137035099964123,
+      0.29107357199973194,
+      0.25394704100108356
+    ],
+    "median_seconds": 0.26137035099964123
+  },
+  "batch": {
+    "pes_calls": 129,
+    "pes_frames": 66048,
+    "seconds": [
+      0.1499605259996315,
+      0.12637503299993114,
+      0.13144109199856757
+    ],
+    "median_seconds": 0.13144109199856757
+  },
+  "median_speedup": 1.9884980185837897,
+  "pes_call_reduction": 31.751937984496124,
+  "maximum_q_error_bohr": 0.0,
+  "maximum_p_error_au": 0.0,
+  "notes": [
+    "Both paths use the same ring integrator; scalar uses current Python PES orchestration.",
+    "Batch uses block-local force reuse, so frame count falls by almost two in this comparison.",
+    "No real ML model, GPU, ab initio PES or transfer-residency speedup is established.",
+    "Batch orchestration/observation remains Python; the free-ring map may use native C++."
+  ]
+}

@@ -69,6 +69,25 @@ def test_two_dimensional_adaptive_workflow(tmp_path):
     assert result["summary"]["samples"] == result["summary"]["windows"] * 40
 
 
+def test_external_thread_executor_preserves_pilot_and_production_streams(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+
+    cfg = _config(dimension=2)
+    expected = run_fes(cfg, _system(), tmp_path / "serial", return_data=True)
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        actual = run_fes(cfg, _system(), tmp_path / "threads", executor=executor,
+                         return_data=True)
+    plans = [json.loads((tmp_path / path / "adaptive-plan.json").read_text())
+             for path in ("serial", "threads")]
+    assert plans[0] == plans[1]
+    assert actual["summary"]["samples"] == expected["summary"]["samples"] == 160
+    assert len(actual["streams"]) == len(expected["streams"]) == 4
+    np.testing.assert_array_equal(actual["data"]["free_energy"], expected["data"]["free_energy"])
+    for a, b in zip(actual["streams"], expected["streams"]):
+        for key in ("samples", "last_q", "last_p", "energies"):
+            np.testing.assert_array_equal(a[key], b[key])
+
+
 def test_saved_pilot_decision_resumes_production_exactly(tmp_path, monkeypatch):
     cfg = _config(dimension=2)
     full = run_fes(cfg, _system(), tmp_path / "full", return_data=True)
@@ -96,6 +115,117 @@ def test_adaptation_budget_exhaustion_does_not_start_production(tmp_path):
     assert plan["status"] == "incomplete"
     assert not (tmp_path / "checkpoints").exists()
     assert json.loads((tmp_path / "summary.json").read_text())["production_started"] is False
+
+
+def test_default_budget_accepts_a_96_window_reference():
+    cfg = _config()
+    cfg["adaptive_umbrella"] = {"enabled": True}
+    cfg["umbrella"]["centers"] = np.linspace(-1, 1, 96).tolist()
+    adaptive.validate_adaptive_umbrella(cfg, _system())
+    options = adaptive_options(cfg)
+    assert options["max_windows"] >= 96
+    assert options["max_pilot_steps"] >= options["pilot_steps"]
+
+
+def test_enhanced_sampling_default_is_longer_and_explicit_lengths_win():
+    from pyrpmd.input import JobSpec
+    spec = JobSpec.from_file("examples/fes/adaptive_harmonic.inp")
+    spec.data["sampling"].pop("production_steps")
+    enhanced, _ = spec.resolve()
+    spec.data["adaptive_umbrella"]["enabled"] = False
+    ordinary, _ = spec.resolve()
+    assert enhanced["sampling"]["production_steps"] == 5 * ordinary["sampling"]["production_steps"]
+    spec.data["adaptive_umbrella"]["enabled"] = True
+    spec.data["sampling"]["production_steps"] = 100
+    explicit, _ = spec.resolve()
+    assert explicit["sampling"]["production_steps"] == 100
+
+
+def test_pilot_duration_tracks_ess_deficit_and_respects_the_cap():
+    options = {**adaptive_options(_config()), "min_effective_samples": 20., "max_pilot_steps": 250}
+    report = {"effective_samples_target_met": True, "effective_samples_per_window": [40., 25.]}
+    assert adaptive._next_pilot_steps(100, report, options) == 100
+    report.update(effective_samples_target_met=False, effective_samples_per_window=[2., 25.])
+    assert adaptive._next_pilot_steps(100, report, options) == 200
+    assert adaptive._next_pilot_steps(200, report, options) == 250
+    assert adaptive._next_pilot_steps(250, report, options) == 250
+
+
+def test_pilot_cap_stops_unproductive_ess_rounds(tmp_path):
+    cfg = _config(dimension=2)
+    cfg["adaptive_umbrella"].update(max_pilot_steps=150, min_effective_samples=1e6)
+    with pytest.raises(RuntimeError, match="max_pilot_steps"):
+        run_fes(cfg, _system(), tmp_path)
+    plan = json.loads((tmp_path / "adaptive-plan.json").read_text())
+    assert len(plan["rounds"]) == 1
+    assert not (tmp_path / "checkpoints").exists()
+    summary = json.loads((tmp_path / "summary.json").read_text())
+    assert summary["minimum_effective_samples"] < 1e6
+
+
+def test_production_ess_is_not_inferred_from_pilot_success(tmp_path):
+    summary = {"effective_samples_per_stream": [1., 2., 30., 40.], "warnings": []}
+    plan = {"centers": [[0.], [1.]], "options": {"min_effective_samples": 20.},
+            "rounds": [{"pilot": {"production_steps": 1000}}], "production_seed": 123}
+    adaptive._annotate(summary, plan, tmp_path, False)
+    assert summary["adaptive_umbrella"]["target_met"]
+    assert not summary["adaptive_umbrella"]["production_effective_samples_target_met"]
+    assert summary["adaptive_umbrella"]["production_effective_samples_per_window"] == [3., 70.]
+    assert any("Frozen production" in warning for warning in summary["warnings"])
+
+
+def test_legacy_plan_keeps_its_saved_defaults(tmp_path):
+    cfg = _config()
+    cfg["adaptive_umbrella"] = {"enabled": True}
+    options = adaptive_options(cfg)
+    cv, _, centers, stiffness = adaptive.resolve_umbrellas(cfg, _system())
+    plan = adaptive._open_plan(cfg, _system(), tmp_path, centers, stiffness, options)
+    plan["schema_version"] = 1
+    plan.pop("next_pilot_steps")
+    plan["options"].update(max_rounds=4, max_windows=64)
+    plan["options"].pop("max_pilot_steps")
+    adaptive._save_plan(tmp_path, plan)
+    reopened = adaptive._open_plan(cfg, _system(), tmp_path, centers, stiffness, options)
+    assert reopened["options"]["max_rounds"] == 4
+    assert "next_pilot_steps" not in reopened
+
+
+def test_public_resume_extends_budget_without_resampling_completed_rounds(tmp_path):
+    from pyrpmd.runner import run_resolved, resume_run
+    from pyrpmd.checkpoint import load_checkpoint
+    cfg = _config()
+    full = run_fes(cfg, _system(), tmp_path / "full", return_data=True)
+    cfg["adaptive_umbrella"]["max_rounds"] = 1
+    output = tmp_path / "resume"
+    with pytest.raises(RuntimeError, match="production was not started"):
+        run_resolved(cfg, _system(), output=output)
+    manifest = (output / "manifest.json").read_bytes()
+    checkpoints = {p: p.read_bytes() for p in (output / "adaptation").rglob("*.npz")}
+    resumed = resume_run(output, adaptive_budget={"max_rounds": 4})
+    assert resumed["adaptive_umbrella"]["target_met"]
+    assert (output / "manifest.json").read_bytes() == manifest
+    assert all(p.read_bytes() == data for p, data in checkpoints.items())
+    for stream in full["streams"]:
+        path = output / "checkpoints" / f'window_{stream["window"]:05d}_replica_{stream["replica"]:04d}.npz'
+        with load_checkpoint(path) as saved:
+            np.testing.assert_array_equal(saved["values"], stream["samples"])
+            np.testing.assert_array_equal(saved["q"], stream["last_q"])
+    plan = json.loads((output / "adaptive-plan.json").read_text())
+    assert plan["budget_extensions"][0]["previous"]["max_rounds"] == 1
+    with pytest.raises(RuntimeError, match="incomplete"):
+        resume_run(output, adaptive_budget={"max_rounds": 8})
+
+
+@pytest.mark.parametrize("limits", [{"max_rounds": 0}, {"max_windows": 1}, {"target_overlap": .001}, {"max_rounds": True}])
+def test_resume_budget_cannot_change_science_or_decrease_limits(tmp_path, limits):
+    cfg = _config()
+    cfg["adaptive_umbrella"]["max_rounds"] = 1
+    with pytest.raises(RuntimeError):
+        run_fes(cfg, _system(), tmp_path)
+    original = (tmp_path / "adaptive-plan.json").read_bytes()
+    with pytest.raises(ValueError):
+        adaptive.extend_adaptive_budget(tmp_path, limits)
+    assert (tmp_path / "adaptive-plan.json").read_bytes() == original
 
 
 def test_rate_flux_measure_is_retained_in_pilot_and_production_config():
@@ -142,3 +272,177 @@ def test_adaptive_plan_corruption_is_rejected(tmp_path):
     path.write_text(json.dumps(plan))
     with pytest.raises(RuntimeError, match="checksum"):
         run_fes(cfg, _system(), tmp_path)
+
+
+def test_connected_overlap_does_not_hide_two_dimensional_coverage_holes():
+    # All windows explore the same central basin; their overlap graph is
+    # excellent, but it gives no evidence of the surrounding declared domain.
+    rng = np.random.default_rng(721)
+    centers = np.array([[-1., -1.], [-1., 1.], [1., -1.], [1., 1.]])
+    streams = [{"window": i, "samples": rng.normal(0, .03, (500, 2))} for i in range(4)]
+    cfg = _config(2)
+    cfg["adaptive_umbrella"].update(coverage_bins=[3, 3], coverage_ranges=[[-1.5, 1.5]] * 2,
+                                    min_bin_effective_samples=5, target_coverage=1.)
+    options = adaptive_options(cfg)
+    report = diagnose_and_refine(streams, centers, np.eye(2) * .1, 1., (None, None), options)
+    assert report["overlap_connected_at_target"]
+    assert report["effective_samples_target_met"]
+    assert not report["target_met"]
+    assert report["coverage"]["fraction"] == pytest.approx(1 / 9)
+    assert len(report["inserted"]) == 4  # other four deficient cells already have centers
+    assert all(item["reason"] == "coverage" for item in report["inserted"])
+    assert report == diagnose_and_refine(streams, centers, np.eye(2) * .1, 1., (None, None), options)
+
+
+def test_coverage_local_ess_accounts_for_weights_and_correlations():
+    options = {"coverage_bins": [2], "coverage_ranges": [[-1., 1.]],
+               "min_bin_effective_samples": 1.55, "target_coverage": 1.}
+    values = np.array([[-.5]] * 3 + [[.5]] * 3)
+    weights = np.array([1., 1., 2., 3., 3., 3.])
+    factors = np.array([1., 1., 2., 2., 2., 2.])
+    report, _, _, _ = adaptive._coverage_diagnostic(values, weights, factors, [None], options)
+    np.testing.assert_allclose(report["effective_samples"], [1.6, 1.5])
+    assert report["sample_counts"] == [3, 3]
+    assert report["fraction"] == .5 and not report["target_met"]
+    # ESS is independent of the arbitrary normalization of target weights.
+    scaled = adaptive._coverage_diagnostic(values, 7 * weights, factors, [None], options)[0]
+    np.testing.assert_allclose(scaled["effective_samples"], report["effective_samples"])
+
+
+def test_coverage_wraps_periodic_samples_into_the_declared_domain():
+    options = {"coverage_bins": [2], "coverage_ranges": [[-np.pi, np.pi]],
+               "min_bin_effective_samples": 1., "target_coverage": 1.}
+    values = np.array([[-np.pi + .1], [np.pi + .1]])
+    report = adaptive._coverage_diagnostic(values, np.ones(2), np.ones(2), [2 * np.pi], options)[0]
+    assert report["sample_counts"] == [2, 0]
+    assert report["effective_samples"] == [2., 0.]
+    assert not report["target_met"]
+
+
+def test_coverage_cannot_relax_per_window_ess_or_exceed_window_budget():
+    cfg = _config()
+    cfg["adaptive_umbrella"].update(coverage_bins=[3], coverage_ranges=[[-1.5, 1.5]],
+                                    min_bin_effective_samples=1., target_coverage=1.,
+                                    min_effective_samples=1000, max_windows=3)
+    rng = np.random.default_rng(3)
+    centers = np.array([[-.1], [.1]])
+    streams = [{"window": i, "samples": rng.normal(0, .03, (100, 1))} for i in range(2)]
+    report = diagnose_and_refine(streams, centers, np.eye(1), 1., [None], adaptive_options(cfg))
+    assert report["overlap_connected_at_target"]
+    assert not report["effective_samples_target_met"]
+    assert not report["target_met"]
+    assert len(report["next_centers"]) == 3
+    assert any(item["reason"] == "max_windows" for item in report["rejected_insertions"])
+
+
+@pytest.mark.parametrize("periodic", [False, True])
+def test_ess_detects_slow_amplitudes_hidden_by_fast_sign_changes(periodic):
+    rng = np.random.default_rng(73)
+    time = np.arange(4000)
+    signs = rng.choice([-1., 1.], len(time))
+    if periodic:
+        # Opposite circular directions switch rapidly; their common axis drifts slowly.
+        values = (.7 * np.sin(2 * np.pi * time / 2000) + np.pi * (signs > 0))[:, None]
+        periods = [2 * np.pi]
+    else:
+        values = (signs * (1 + .8 * np.sin(2 * np.pi * time / 2000)))[:, None]
+        periods = [None]
+    cfg = _config()
+    cfg["adaptive_umbrella"]["min_effective_samples"] = 100
+    streams = [{"window": 0, "samples": values}]
+    report = diagnose_and_refine(streams, [[0.]], np.eye(1), 1., periods, adaptive_options(cfg))
+    assert report["effective_samples_per_window"][0] < 100
+    assert not report["target_met"]
+
+
+@pytest.mark.parametrize("extra, message", [
+    ({"coverage_bins": [2, 2]}, "supplied together"),
+    ({"coverage_ranges": [[0., 1.]]}, "supplied together"),
+    ({"coverage_bins": [2, True], "coverage_ranges": [[0., 1.]] * 2}, "integer"),
+    ({"coverage_bins": [1001, 1000], "coverage_ranges": [[0., 1.]] * 2}, "million"),
+    ({"coverage_bins": [2, 2], "coverage_ranges": [[0., 1.]]}, "dimension"),
+    ({"target_coverage": 1.1}, "exceed one"),
+    ({"min_bin_effective_samples": 0}, "positive"),
+])
+def test_coverage_options_are_validated(extra, message):
+    cfg = _config(2)
+    cfg["adaptive_umbrella"].update(extra)
+    with pytest.raises(ValueError, match=message):
+        adaptive_options(cfg)
+
+
+def test_coverage_bounds_resolve_units_and_reject_wrong_dimensions():
+    cfg = _config(2)
+    cfg["adaptive_umbrella"].update(coverage_bins=[2, 3],
+                                    coverage_ranges=[["-1 bohr", "1 bohr"], ["0 bohr", "2 bohr"]])
+    cv, _, _, _ = adaptive.resolve_umbrellas(cfg, _system())
+    options = adaptive._resolve_coverage_options(adaptive_options(cfg), cv)
+    assert options["coverage_ranges"] == [[-1., 1.], [0., 2.]]
+    cfg["adaptive_umbrella"].update(coverage_bins=[2], coverage_ranges=[[0., 1.]])
+    with pytest.raises(ValueError, match="selected CVs"):
+        adaptive.validate_adaptive_umbrella(cfg, _system())
+    cfg["adaptive_umbrella"].update(coverage_bins=[2, 2], coverage_ranges=[[0., 1.], [2., 1.]])
+    with pytest.raises(ValueError, match="lower < upper"):
+        adaptive.validate_adaptive_umbrella(cfg, _system())
+
+
+def test_optional_coverage_workflow_and_reanalysis_preserve_frozen_production(tmp_path):
+    cfg = _config(2)
+    cfg["adaptive_umbrella"].update(coverage_bins=[2, 2], coverage_ranges=[[-.6, .6]] * 2,
+                                    min_bin_effective_samples=.1, target_coverage=1.)
+    result = run_fes(cfg, _system(), tmp_path, return_data=True)
+    plan = json.loads((tmp_path / "adaptive-plan.json").read_text())
+    assert plan["status"] == "frozen"
+    assert plan["rounds"][-1]["coverage"]["target_met"]
+    assert result["summary"]["adaptive_umbrella"]["coverage"]["target_met"]
+    assert result["summary"]["samples"] == len(plan["centers"]) * 40
+    again = reanalyze_fes(cfg, _system(), tmp_path, return_data=True)
+    np.testing.assert_array_equal(result["data"]["free_energy"], again["data"]["free_energy"])
+
+
+def test_incomplete_coverage_does_not_start_production(tmp_path):
+    cfg = _config(2)
+    cfg["adaptive_umbrella"].update(coverage_bins=[4, 4], coverage_ranges=[[-10., 10.]] * 2,
+                                    min_bin_effective_samples=5., target_coverage=1., max_rounds=1)
+    with pytest.raises(RuntimeError, match="production was not started"):
+        run_fes(cfg, _system(), tmp_path)
+    plan = json.loads((tmp_path / "adaptive-plan.json").read_text())
+    assert plan["rounds"][0]["overlap_connected_at_target"]
+    assert plan["rounds"][0]["effective_samples_target_met"]
+    assert not plan["rounds"][0]["coverage"]["target_met"]
+
+
+def test_coverage_shortfall_extends_pilots_and_stops_at_sampling_cap(tmp_path):
+    # Every existing window has adequate global ESS, but a deliberately broad
+    # declared domain has unsupported cells. With no spare window slots the
+    # only permitted adaptation is a longer pilot, bounded by max_pilot_steps.
+    cfg = _config(2)
+    cfg["adaptive_umbrella"].update(
+        coverage_bins=[4, 4], coverage_ranges=[[-10., 10.]] * 2,
+        min_bin_effective_samples=5., target_coverage=1.,
+        min_effective_samples=.1, max_windows=4, max_rounds=8,
+        pilot_steps=50, max_pilot_steps=200,
+    )
+    with pytest.raises(RuntimeError, match="max_pilot_steps before coverage target"):
+        run_fes(cfg, _system(), tmp_path)
+    plan = json.loads((tmp_path / "adaptive-plan.json").read_text())
+    assert [r["pilot"]["production_steps"] for r in plan["rounds"]] == [50, 100, 200]
+    assert all(r["effective_samples_target_met"] for r in plan["rounds"])
+    assert all(not r["inserted"] and not r["coverage"]["target_met"] for r in plan["rounds"])
+    assert plan["status"] == "incomplete"
+    assert not (tmp_path / "checkpoints").exists()
+    assert not (tmp_path / "checkpoints").exists()
+
+
+def test_legacy_frozen_plan_preserves_samples_and_labels_its_original_ess_rule(tmp_path):
+    cfg = _config(2)
+    original = run_fes(cfg, _system(), tmp_path, return_data=True)
+    plan = json.loads((tmp_path / "adaptive-plan.json").read_text())
+    for report in plan["rounds"]:
+        report.pop("effective_sample_observables")
+    adaptive._save_plan(tmp_path, plan)  # emulate a checksum-valid pre-enhancement plan
+    resumed = reanalyze_fes(cfg, _system(), tmp_path, return_data=True)
+    np.testing.assert_array_equal(resumed["data"]["free_energy"], original["data"]["free_energy"])
+    summary = resumed["summary"]
+    assert summary["adaptive_umbrella"]["effective_sample_observables"].startswith("Legacy saved pilot")
+    assert any("legacy coordinate-only pilot ESS" in warning for warning in summary["warnings"])

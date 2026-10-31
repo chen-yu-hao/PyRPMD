@@ -73,6 +73,11 @@ field is `null`.
 
 ## Reaction rates: PMF and recrossing
 
+Saved gas-phase rate runs can be reanalyzed with `pyrpmd rate-postprocess RUN --bootstrap 200`.
+[2D rate postprocessing](../rate-postprocessing.md) describes dividing-curve integration,
+reference normalization and signed channel fluxes. Results are written separately while preserving
+the original energy and convergence diagnostics.
+
 Gas-phase `rate` follows the Bennett–Chandler procedure: the static PMF/QTST factor and the dynamic
 transmission coefficient together give the rate. Check the PMF measure, dividing surface, reactant
 normalization, constrained parents and recrossing plateau. `site_rate` and `surface_rate` use an

@@ -130,6 +130,41 @@ Without a `[collision]` section, a pilot runs 4 `thermal_flux` trajectories with
 `max_time="100 fs"` and `bmax=R0/4` and reports no thermal rate; see the defaults in
 [Input](input.md#defaults).
 
+### Selected vibrational initial states
+
+`initial_ensemble.method = "ne_rpmd"` prepares a harmonic ring-polymer ensemble
+with a random-phase centroid excitation. `method = "qct"` prepares a one-bead
+quasi-classical control. Both use independent initial conditions at a fixed
+collision energy and skip the thermal parent chain. This experimental method
+selects approximate incoming vibrational states with zero centroid angular
+momentum; it does not assign final quantum rovibrational states.
+
+```bash
+pyrpmd validate examples/state_selected/ne_rpmd.inp
+pyrpmd state-check examples/state_selected/ne_rpmd.inp --time '10 fs' --samples 8 --output runs/state-check.json
+pyrpmd run examples/state_selected/ne_rpmd.inp --output runs/selected
+pyrpmd extend runs/selected --max-time '4 fs'
+```
+
+For NE-RPMD, supply `initial_ensemble.beta` explicitly and omit top-level
+`temperature`: beta is an auxiliary preparation/ring parameter here. Provide
+fragment Hessians or explicit mass-weighted normal modes, actual isotope masses
+and `vibrational_quanta`. QCT requires one bead; NE-RPMD requires at least two.
+The examples use a nonreactive Morse model and demonstrate mechanics only.
+
+`state-check` propagates separated reactants on the full PES without collision
+velocity, then projects sparse observations onto the reference. `extend` changes
+only the allowed total propagation time, retaining saved q/p and classifier
+persistence for unresolved trajectories. Finished or failed trajectories are not
+relaunched. All launches stay in cross-section denominators; unknown-outcome
+bounds and eligible statistical intervals are reported separately. Native
+production uses the same C++ blocks as thermal dRPMD.
+
+The [state-selected method reference](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/state-selected.md)
+gives equations, approximation limits and literature; the
+[example notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/state_selected/README.md)
+explain configuration and native PES use.
+
 ## One- and two-dimensional free energies: `fes`
 
 `fes` runs umbrella sampling on one or two CVs and unbiases the samples with MBAR, giving the
@@ -154,6 +189,26 @@ size of each time series and the weighted ESS. Cells without support are masked 
 `analyze --recompute` rebuilds the analysis from the saved window checkpoints with new bins, count
 thresholds or bootstrap settings, without calling the PES.
 
+### PILE-L and replica-exchange umbrellas
+
+FES keeps Andersen as its default thermostat. Set `sampling.thermostat="pile-l"`
+to use the existing BCOCB/BAOAB integrator. For fixed windows, add
+`[replica_exchange]`, `enabled=true`, and `interval_steps=50` to exchange
+complete ring configurations and momenta at the same temperature.
+
+Here, `sampling.replicas` counts independent exchange ensembles. Windows in
+one ensemble propagate sequentially, and analysis resamples their time blocks
+synchronously. Checkpoints save and restore the whole ensemble together.
+Exchange trajectories do not represent physical reaction times. Adaptive
+window insertion and the `rate_flux` measure cannot be combined with REUS.
+See [replica exchange](../replica-exchange.md) for the accepted input and
+method limits.
+
+```bash
+pyrpmd run examples/fes/replica_exchange_2d.inp --output runs/manual-reus
+pyrpmd resume runs/manual-reus
+```
+
 ### Adaptive umbrella sampling
 
 The adaptive workflow inserts windows and lengthens pilots according to the pilot overlap and
@@ -168,6 +223,13 @@ pyrpmd analyze runs/manual-adaptive --recompute --bins 30 --bootstrap 20
 `adaptive-plan.json` records each round's decisions, windows, seeds and checksums. Production uses
 only its own samples. If `max_rounds` or `max_windows` runs out before the targets are met, the task
 stops without starting production and records `failure_reason` in the plan.
+
+Defaults allow 8 rounds and 128 windows. Insufficient effective samples increase the pilot
+length up to `max_pilot_steps`; pure placement changes keep the current length. An exhausted
+pilot can continue with increased limits, for example
+`pyrpmd resume runs/manual-adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192`,
+while retaining completed checkpoints. Production ESS is reported separately. Enhanced sampling
+uses a 1000 fs production budget when omitted; inspect the resulting statistics before increasing it.
 
 Adaptive umbrellas work for `fes`, surface `fes` and the `rate` PMF, and refine windows inside the
 declared domain; `surface_rate` and `site_rate` use fixed windows. Parameters are in the
@@ -206,9 +268,10 @@ Fluxes through different dividing surfaces can overlap, so PyRPMD reports each T
 
 ## Metadynamics
 
-`task="metadynamics"` supports standard and well-tempered modes on 1D/2D CVs, with several replicas
-that each build their own bias history. CVs may declare a period. The workflow runs on molecular
-systems without PBC or fixed atoms.
+`task="metadynamics"` supports standard and well-tempered modes on one to three CVs, with
+several replicas that each build their own bias history. Periodic cells and fixed atoms
+are supported; CV periodicity and atomic PBC are declared separately. Sampling uses
+Andersen, Nosé–Hoover chains or PILE-L, with optional quadratic walls on length CVs.
 
 ```bash
 pyrpmd validate examples/metadynamics/well_tempered_2d.inp
@@ -219,12 +282,13 @@ pyrpmd resume runs/manual-meta
 
 | Parameter | Meaning |
 | --- | --- |
-| `metadynamics.cvs` | Names of one or two declared CVs |
+| `metadynamics.cvs` | Names of one to three declared CVs |
 | `mode` | `standard` or `well_tempered` |
 | `sigma` | Gaussian width per CV, with units |
 | `height` | Hill height |
 | `pace` | Completed production steps between depositions |
 | `bias_factor` | $\gamma>1$ in WT mode; omitted in standard mode |
+| `grid.ranges`, `grid.bins` | Optional bounded bias domain and interval counts for 1D/2D Hermite grid acceleration |
 | `analysis.method` | `bias_estimate` |
 | `analysis.bootstrap` | 0 |
 
@@ -238,6 +302,8 @@ aligned on their common support and compared there; `replica_spread` measures th
 replicas.
 
 The history-dependent bias runs in a Python time-step loop with compiled substeps, so
-`loop_backend="native"` is rejected; the cost grows with the number of hills. Metadynamics outputs
-free-energy estimates only. Methods and restart timing are in the
+`loop_backend="native"` is rejected. Direct summation costs grow with the number of hills; the
+optional [grid backend](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)
+keeps lookup work independent of history length. Grid resolution introduces a numerical approximation
+that needs its own refinement check. Metadynamics outputs free-energy estimates only. Methods and restart timing are in the
 [enhanced-sampling specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md).

@@ -26,7 +26,7 @@
 | 原子相距过远或重叠 | 核对内联 bohr 与 XYZ angstrom，以及 `geometry_unit` / `cell_unit` |
 | 原子索引越界 | 索引从 0 开始；坐标、质量、分类器和模型须使用同一原子顺序 |
 | 周期 provider 被拒绝 | 使用支持晶胞/PBC 的 provider（ASE、周期 Python 插件、i-PI） |
-| `pimd` / `diffusion` / `site_rate` 拒绝固定原子 | 这些任务要求全部原子可动；固定层使用表面 `fes` 或 `surface_rate` |
+| `site_rate` 或 BZP NPT 拒绝固定原子 | 这两者要求全部原子可动；固定晶胞的 `pimd`、`diffusion`、`metadynamics`、`fes` 和 `surface_rate` 支持固定层 |
 
 对外部程序使用 `--check-pes` 前，先启动 i-PI driver 或准备好 calculator 的模型文件。
 

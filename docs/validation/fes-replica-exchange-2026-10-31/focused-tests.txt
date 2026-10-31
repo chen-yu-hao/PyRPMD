@@ -1,0 +1,6 @@
+........................................................................ [ 47%]
+............................s................................. [ 88%]
+..................                                                       [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+151 passed, 1 skipped, 10 subtests passed in 25.44s

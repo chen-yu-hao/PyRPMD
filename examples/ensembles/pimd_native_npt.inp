@@ -1,0 +1,40 @@
+# Ideal-gas NPT numerical control, not a production material input.
+task = "pimd"
+preset = "pilot"
+temperature = "300 K"
+beads = 8
+seed = 52
+
+[system]
+symbols = ["H", "H"]
+geometry = [[0.0, 0.0, 0.0], [5.0, 5.0, 5.0]]
+geometry_unit = "bohr"
+cell = [[25.0, 0.0, 0.0], [0.0, 25.0, 0.0], [0.0, 0.0, 25.0]]
+cell_unit = "bohr"
+pbc = [true, true, true]
+
+[potential]
+provider = "free"
+
+[dynamics]
+integrator = "normal-mode-bab"
+loop_backend = "native"
+timestep = "0.1 fs"
+
+[sampling]
+engine = "native"
+thermostat = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+equilibration = "100 fs"
+production = "500 fs"
+interval = "1 fs"
+
+[barostat]
+mode = "bzp"
+pressure = "100 bar"
+tau = "100 fs"
+gamma = "0.01 fs^-1"
+
+[output]
+directory = "runs/pimd-native-npt"
+checkpoint_interval = "100 fs"

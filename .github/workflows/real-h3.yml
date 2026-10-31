@@ -82,6 +82,9 @@ jobs:
       - name: RPMD umbrella sampling and recrossing
         if: matrix.stage != 'drpmd'
         run: python benchmarks/h3/rpmd.py --stage ${{ matrix.stage }} --output validation/${{ matrix.stage }} --workers 2 --profile ci
+      - name: Recompute the saved gas rate without new dynamics
+        if: matrix.stage == 'rate'
+        run: pyrpmd rate-postprocess validation/rate/run --output validation/rate/offline-rate.json
       - name: Plot measured data
         run: python benchmarks/h3/render.py validation/${{ matrix.stage }}
       - name: Preserve inputs, raw samples, checkpoints and diagnostics

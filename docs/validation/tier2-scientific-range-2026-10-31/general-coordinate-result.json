@@ -1,0 +1,170 @@
+{
+  "task": "site_rate",
+  "rate_unit": "s^-1",
+  "converged": false,
+  "status": "finite_time_plateau_estimate",
+  "rate_s": 1.6587545557694696e+16,
+  "rate_estimate_s": 1.6587545557694696e+16,
+  "rate_standard_error_s": null,
+  "rate_percentile_95_ci_s": null,
+  "kappa": 0.8797034113098692,
+  "pmf": {
+    "ready": true,
+    "status": "ready",
+    "reasons": [],
+    "k_qtst_au": 0.45610092504134214,
+    "k_qtst_s": 1.8855838620650584e+16,
+    "rate_unit": "s^-1",
+    "surface_density": 0.4098222010799548,
+    "basin_probability": 0.23913604446063652,
+    "mass_metric": null,
+    "flux_prefactor_au": 0.26614022081235333,
+    "basin": [
+      -0.75,
+      0.0
+    ],
+    "dividing_surface": 0.0,
+    "measure": "cv_density",
+    "estimator": "finite_bin_mbar_density",
+    "surface_estimator": "linear interpolation of neighboring bin-average densities at bin centers",
+    "basin_estimator": "piecewise-constant density integrated over the declared basin",
+    "support_bins": [
+      2,
+      5
+    ],
+    "surface_bins": [
+      4,
+      5
+    ],
+    "preparation": {
+      "ready": true,
+      "cv": "transfer",
+      "cv_type": "BondDifference",
+      "unit": "bohr",
+      "estimator": "centroid",
+      "measure": "cv_density",
+      "basin": [
+        -0.75,
+        0.0
+      ],
+      "dividing_surface": 0.0,
+      "direction": 1,
+      "mass_metric": null,
+      "flux_prefactor_au": null,
+      "normalization": "density(s*) / integral_basin density(s) ds",
+      "coordinate_images": "continuous unwrapped local interval",
+      "constraint_measure": "delta(s-s*) sqrt(z); child fluxes reweighted by z^(-1/2)",
+      "rate_unit": "s^-1",
+      "umbrella_windows": 4,
+      "metric_estimator": "constrained_parent_inverse_sqrt",
+      "reference_mass_metric": 2.6000000000000005
+    },
+    "warnings": [
+      "Unsampled/insufficient-count bins are masked; no extrapolation is reported.",
+      "QTST uses finite histogram bins; bin-size convergence has not been established."
+    ],
+    "pmf_uncertainty": {
+      "available": false,
+      "reasons": [
+        "fewer_than_two_requested_pmf_bootstrap_draws"
+      ],
+      "requested": 0,
+      "valid": 0,
+      "attempted": 0,
+      "draws": [],
+      "failures": [],
+      "failure_counts": {},
+      "block_lengths": [
+        18,
+        15,
+        11,
+        50
+      ],
+      "blocks_per_stream": [
+        55.55555555555556,
+        66.66666666666667,
+        90.9090909090909,
+        20.0
+      ],
+      "method": "independent circular correlated-block resampling within each umbrella stream",
+      "standard_error_s": null,
+      "percentile_95_ci_s": null,
+      "conditional_density_standard_error_s": null,
+      "surface_metric_reasons": []
+    },
+    "surface_metric_status": "estimated",
+    "metric_estimator": "constrained_parent_inverse_sqrt",
+    "effective_surface_mass_metric": 1.33512569893704,
+    "surface_inverse_sqrt_metric_mean": 0.8654439021873739,
+    "surface_metric": {
+      "parent_configurations": 8,
+      "inverse_sqrt_mean": 0.8654439021873739,
+      "inverse_sqrt_minimum": 0.7408935063777804,
+      "inverse_sqrt_maximum": 0.9884443005304466,
+      "reweighting_effective_samples": 7.850398624660958,
+      "ensemble": "canonical constrained RATTLE parents",
+      "uncertainty": "joint chain/block resampling with transmission coefficient"
+    }
+  },
+  "k_qtst_s": 1.8855838620650584e+16,
+  "warnings": [
+    "Unsampled/insufficient-count bins are masked; no extrapolation is reported.",
+    "QTST uses finite histogram bins; bin-size convergence has not been established.",
+    "Fewer than 20 parent configurations; statistical diagnostics are preliminary.",
+    "Complete rate uncertainty is unavailable: fewer_than_two_requested_pmf_bootstrap_draws."
+  ],
+  "convergence_note": "A finite-time plateau is not bead, timestep, cell-size or statistical convergence.",
+  "kappa_standard_error": 0.1103962007927702,
+  "conditional_kappa_standard_error": 0.1103962007927702,
+  "conditional_rate_standard_error_s": 2081612946481413.0,
+  "rate_uncertainty": {
+    "available": false,
+    "reasons": [
+      "fewer_than_two_requested_pmf_bootstrap_draws"
+    ],
+    "method": "independent PMF blocks with jointly resampled parent metric and transmission, fixed basin and surface",
+    "conditional_quantity": "recrossing uncertainty holding QTST fixed",
+    "pmf_bootstrap_valid": 0,
+    "recrossing_bootstrap_valid": 16,
+    "parent_block_lengths": {
+      "0": 1,
+      "1": 1
+    },
+    "recrossing_scope": "independent_parent_chains",
+    "recrossing_support": {
+      "available": true,
+      "reasons": [],
+      "scope": "independent_parent_chains",
+      "condition": null,
+      "independent_parent_chains": 2,
+      "nonzero_flux_parent_configurations": 8,
+      "effective_parent_blocks": {
+        "0": 4.0,
+        "1": 4.0
+      },
+      "bootstrap_requested": 16,
+      "bootstrap_valid": 16,
+      "bootstrap_rejected": 0
+    }
+  },
+  "plateau_detected": true,
+  "plateau_start_au": 0.63,
+  "plateau_drift": -0.0730788249118014,
+  "plateau_drift_standard_error": 0.0982810108086725,
+  "child_time_fs": 0.029026611919036795,
+  "parent_chains": 2,
+  "parent_configurations": 8,
+  "child_pairs": 16,
+  "child_trajectories": 32,
+  "maximum_endpoint_energy_error_kbt": 9.181016922096213e-05,
+  "software": "PyRPMD",
+  "version": "0.2.0",
+  "preset": "pilot",
+  "input_warnings": [],
+  "physical_converged": false,
+  "capture": {
+    "example": "examples/rate/general_coordinate.inp",
+    "original_summary_sha256": "7bb474af5e52397c52d1786a5c8f6b2fe9ba73b86a18f31bd7ccc18460044a16",
+    "note": "Numerical summary retained; temporary run-directory/file locations removed. Trajectories and checkpoint arrays are not part of this compact dossier."
+  }
+}

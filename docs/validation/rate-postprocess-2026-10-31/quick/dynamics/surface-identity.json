@@ -1,0 +1,100 @@
+{
+  "surface_identity": "86f6443c2832fc013ef521f7df166ffdfce2c04a0503fb25fb0e2f66b494762c",
+  "payload": {
+    "schema": "pyrpmd.h3.surface-physics.v1",
+    "coordinate": {
+      "kind": "centroid_rpmdrate_xi",
+      "formula": "xi=s0/(s0-s1)",
+      "dividing_surface": 1.0,
+      "reaction": {
+        "fragments": [
+          [
+            0
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "forming_bonds": [
+          [
+            0,
+            1
+          ]
+        ],
+        "breaking_bonds": [
+          [
+            1,
+            2
+          ]
+        ],
+        "equivalent_paths": [
+          [
+            0,
+            2,
+            1
+          ]
+        ],
+        "rinf": 10.0,
+        "electronic_weight": 1.0,
+        "symmetry_factor": 1.0,
+        "rinf_au": 10.0
+      },
+      "sampling_measure": "xi_rate_flux",
+      "flux_axis": 0,
+      "equivalent_paths_already_explicit": true
+    },
+    "system": {
+      "symbols": [
+        "H",
+        "H",
+        "H"
+      ],
+      "masses": [
+        1837.1526474396187,
+        1837.1526474396187,
+        1837.1526474396187
+      ],
+      "geometry": [
+        [
+          -1.7570000251,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          1.7570000251,
+          0.0,
+          0.0
+        ]
+      ],
+      "fragments": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "charge": 0,
+      "multiplicity": 2
+    },
+    "temperature_K": 1500.0,
+    "beta_au": 210.51668320265807,
+    "beads": 8,
+    "timestep_au": 4.134137333517016,
+    "integrator": "cayley-bcb",
+    "potential": {
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "pinned_source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "pinned_source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "831083f56dd4ac10eda631f5c5044e5d49258402e1c2f48a12f8b630801f9bba",
+      "wrapper_sha256": "57ce0ff2acdcc657f51693d9c7fbca5e7bed26e60ee2b446cd2c51eb4250d3a9"
+    }
+  }
+}

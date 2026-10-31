@@ -1,0 +1,40 @@
+# Ideal-gas NPT validation; no fitted material interaction is implied.
+# For N=2 at T=300 K and p=1 GPa, <V>=(N+1)*kBT/p = 83.84 bohr^3.
+task = "pimd"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 681
+
+[system]
+symbols = ["H", "H"]
+geometry = [[1.0, 1.0, 1.0], [3.0, 3.0, 3.0]]
+geometry_unit = "bohr"
+cell = [[4.377, 0.0, 0.0], [0.0, 4.377, 0.0], [0.0, 0.0, 4.377]]
+cell_unit = "bohr"
+pbc = [true, true, true]
+
+[potential]
+provider = "builtin"
+name = "free"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.2 fs"
+
+[barostat]
+method = "bzp"
+pressure = "1 GPa"
+time_constant = "50 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.02 fs^-1"
+equilibration = "100 fs"
+production = "400 fs"
+interval = "1 fs"
+replicas = 2
+
+[output]
+directory = "runs/materials-npt-free"
+checkpoint_interval = "20 fs"

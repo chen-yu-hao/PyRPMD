@@ -67,6 +67,8 @@ current directory. Move referenced files together with the input and keep the at
 | `sampling` | Equilibration, sampling interval, production length, thermostat, replicas or parents |
 | `parallel` | Process/MPI topology, bead splitting and threads |
 | `output.checkpoint_steps` | Checkpoint interval in steps; `checkpoint_interval` takes a time |
+| `output.trajectory_storage` / `chunk_frames` | Materials trajectory storage: `"stream"` (default) or `"memory"`; default chunk buffer 256 frames |
+| `barostat` | Optional BZP NPT settings for fully periodic, all-mobile `pimd`: pressure, time constant and friction |
 
 Each task accepts only its own sections. PCET uses a separate `[pcet]` model with no molecular
 `system` or beads; see [PCET](pcet.md). Unknown fields and invalid combinations raise an error.
@@ -98,7 +100,7 @@ and `[sampling]`.
 | `output.directory` | `runs/<task>` | Relative to the input file |
 | `output.checkpoint_interval` | `10 fs` | |
 | `analysis.bins` | 40 for FES; 100 for the rate PMF | |
-| `analysis.bootstrap` | 20 | 0 for metadynamics; 1 is rejected |
+| `analysis.bootstrap` | 20 | 0 for metadynamics and OPES; 1 is rejected |
 | `analysis.min_count` | 1 | Bins with fewer samples are masked |
 | `collision.trajectories` / `max_time` | 4 / `100 fs` | `drpmd` only |
 | `collision.sampling` / `bmax` | `thermal_flux` / `auto` = R0/4 | With `auto`, no thermal rate is reported |
@@ -112,16 +114,21 @@ default resolved.
 | Section | Used by | Main fields |
 | --- | --- | --- |
 | `[system]` | All except `pcet` | `geometry`, `transition_state`, `reactants`, `separation`, `symbols`, `masses`, `masses_amu`, `isotopes`, `geometry_unit`, `fragments`, `charge`, `multiplicity`, `cell`, `cell_unit`, `pbc`, `fixed_atoms` |
-| `[potential]` | All except `pcet` | `provider`, `factory`, `library`, `manifest`, `params`, `units`, `derivative`, `device`, …; see [Potentials](potentials.md) |
+| `[potential]` | All except `pcet` | `provider`, `factory`, `library`, `manifest`, `params`, `units`, `derivative`, `device`, `abi_version`, `periodic`, `virial`, …; see [Potentials](potentials.md) |
 | `[dynamics]`, `[sampling]`, `[parallel]` | All except `pcet` | See above and [Execution and parallelism](execution.md) |
-| `[[cvs]]`, `[umbrella]`, `[analysis]` | `fes`, `rate`, `network`, `site_rate`, `surface_rate`; `metadynamics` uses `cvs` and `analysis` | See below |
+| `[[cvs]]`, `[umbrella]`, `[analysis]` | `fes`, `rate`, `network`, `site_rate`, `surface_rate`; `metadynamics` and `opes` use `cvs` and `analysis` | See below |
 | `[reaction]` | `rate` (`drpmd` may use `electronic_weight`) | `fragments`, `forming_bonds`, `breaking_bonds`, `rinf`, `symmetry_factor`, `equivalent_paths` |
 | `[rate]` | `rate` | `pmf_method`, `dividing_surface`, `pmf_search_range`, `compare_ui` |
 | `[recrossing]` | `rate`, `network`, `site_rate`, `surface_rate` | Parent count, parent interval, child pairs, child time, bootstrap |
 | `[collision]`, `[outcomes]` | `drpmd` | Launch distribution, `bmax`, total trajectories, maximum time; product classification |
 | `[nonadiabatic]` | `drpmd` (experimental NRPMD) | See [Nonadiabatic NRPMD](nonadiabatic.md) |
+| `[electronic_friction]` | `diffusion` | `method = "centroid"`, `provider`, `gamma` or `tensor`, or Python `factory` and `params`; see [electronic friction](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
+| `[initial_ensemble]` | `drpmd` (experimental nuclear state selection) | `method = "ne_rpmd"` or `"qct"`, explicit NE `beta`, fragment Hessians/modes and `vibrational_quanta`; see [Direct collisions](workflows.md) |
 | `[adaptive_umbrella]` | `fes`, `rate` | See [Gas phase and free energy](workflows.md) |
-| `[metadynamics]` | `metadynamics` | |
+| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` optionally select a bias grid |
+| `[opes]` | `opes` | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
+| `[replica_exchange]` | `fes` | Fixed-window same-temperature exchange interval and optional graph; [REUS guide](../replica-exchange.md) |
+| `[barostat]` | `pimd` | `method="bzp"`, `pressure`, `time_constant`, `friction` |
 | `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md) |
 | `[network]` | `network` | Entrances, channels, transition states |
 | `[pcet]` | `pcet` | PCET accepts only `schema_version`, `task`, `preset`, `description`, `temperature`, `pcet`, `output` |
@@ -220,6 +227,8 @@ different dimensions, write each entry as a string with units.
 | `pyrpmd prepare INPUT` | Show preparation information | `--pilot` runs the numerical preparation; `--output FILE` writes JSON |
 | `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume` |
 | `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N` |
+| `pyrpmd extend DIR` | Raise an existing dRPMD ensemble's total time budget for unresolved trajectories | `--max-time '20 ps'` (required; total time from launch) |
+| `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
 | `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below |
 | `pyrpmd checkpoint FILE` | Verify a checkpoint container | `--require-integrity` rejects legacy containers without checksums |
 | `pyrpmd info` | Show version and native capabilities | |
@@ -236,7 +245,7 @@ different dimensions, write each entry as a string with units.
 - `run` refuses an existing non-empty output directory. Continue a run with `pyrpmd resume DIR`
   or with `pyrpmd run INPUT --resume`.
 - `--bins` and `--bootstrap` imply `--recompute`. Offline reanalysis is available for `fes`,
-  `metadynamics` and `diffusion`; for other tasks, `analyze` reads the saved summary.
+  `metadynamics`, `opes` and `diffusion`; for other tasks, `analyze` reads the saved summary.
 
 Diffusion reanalysis accepts `--fit-range '10 fs' '100 fs'`, `--axes 0 1`, `--atoms 0` and
 `--max-lag N`, where the lag counts saved frames. The fit range must lie within the saved duration;

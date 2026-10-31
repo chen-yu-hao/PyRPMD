@@ -1,0 +1,65 @@
+{
+  "model": "V(x)=V0*sech(a*x)^2; one active Cartesian coordinate",
+  "mass_electron_masses": 1822.0,
+  "barrier_hartree": 0.01,
+  "inverse_width_bohr_inverse": 0.5,
+  "crossover_temperature_kelvin": 83.25469319046067,
+  "temperature_kelvin": 41.627346595230335,
+  "rate_normalization": "one-dimensional flux velocity in m/s, not cm^3 molecule^-1 s^-1",
+  "analytic_continuum_instanton_action_hbar": 56.89319346791626,
+  "analytic_continuum_instanton_energy_hartree": 0.002499999991666667,
+  "analytic_continuum_instanton_rate_m_per_s": 7.09245952975453e-22,
+  "exact_quantum_rate_m_per_s": 7.56939844241569e-22,
+  "quantum_quadrature_relative_error_estimate": 4.394151722035811e-10,
+  "continuum_instanton_relative_semiclassical_error": -0.06300882643310157,
+  "cases": [
+    {
+      "beads": 32,
+      "action_hbar": 56.81259374056468,
+      "absolute_action_discretization_error": 0.08059972735158283,
+      "energy_hartree": 0.0024805292670093235,
+      "rate_m_per_s": 7.694516518969835e-22,
+      "relative_rate_discretization_error": 0.08488691217616884,
+      "relative_difference_from_exact_quantum": 0.016529461027317227,
+      "gradient_max": 3.0655855631778195e-10,
+      "negative_modes": 1,
+      "phase_mode_relative_residual": 0.08088829696897712,
+      "beta_derivative_relative_difference": 0.00014939255216058793,
+      "numerical_converged": true
+    },
+    {
+      "beads": 64,
+      "action_hbar": 56.8731632508349,
+      "absolute_action_discretization_error": 0.020030217081362878,
+      "energy_hartree": 0.002495207857747829,
+      "rate_m_per_s": 7.23746437749765e-22,
+      "relative_rate_discretization_error": 0.020444931287205925,
+      "relative_difference_from_exact_quantum": -0.043852106272808,
+      "gradient_max": 7.684097802496126e-11,
+      "negative_modes": 1,
+      "phase_mode_relative_residual": 3.3970494266323706e-05,
+      "beta_derivative_relative_difference": 0.00014985319038007065,
+      "numerical_converged": true
+    },
+    {
+      "beads": 128,
+      "action_hbar": 56.88819309011514,
+      "absolute_action_discretization_error": 0.0050003778011245,
+      "energy_hartree": 0.0024988063215612534,
+      "rate_m_per_s": 7.12850802754468e-22,
+      "relative_rate_discretization_error": 0.00508265117889195,
+      "relative_difference_from_exact_quantum": -0.058246427140160484,
+      "gradient_max": 3.220979039042504e-11,
+      "negative_modes": 1,
+      "phase_mode_relative_residual": 2.225232630742153e-08,
+      "beta_derivative_relative_difference": 0.0001499790716165641,
+      "numerical_converged": true
+    }
+  ],
+  "physical_converged": false,
+  "scope": "Analytic numerical validation; not a real-reaction rate or exact-dynamics replacement",
+  "references": [
+    "https://doi.org/10.1063/1.4943866",
+    "https://arxiv.org/html/2509.01454v1#A3"
+  ]
+}

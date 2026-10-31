@@ -474,6 +474,56 @@ struct Outcome {
     }
 };
 
+// Optional observations share the accepted-step transaction and the caller's
+// sparse observation mask. They never call a PES or a Python observable.
+struct NuclearDiagnostics {
+    std::unique_ptr<Buffer> energy_parts,ring_radii;
+
+    NuclearDiagnostics(PyObject* spec,Py_ssize_t rows,Py_ssize_t natoms) {
+        if(!spec || spec==Py_None)return;
+        if(!PyDict_Check(spec))throw std::invalid_argument("diagnostics must be a buffer dictionary");
+        Py_ssize_t position=0;PyObject *key,*value;
+        while(PyDict_Next(spec,&position,&key,&value)){
+            const auto name=text(key);
+            if(name=="energy_parts")energy_parts=std::make_unique<Buffer>(value,product(product(rows,4),sizeof(double)),"d",true);
+            else if(name=="ring_radii")ring_radii=std::make_unique<Buffer>(value,product(product(rows,natoms),sizeof(double)),"d",true);
+            else throw std::invalid_argument("unsupported nuclear diagnostic");
+        }
+    }
+
+    void write(Py_ssize_t row,const Vec& q,const Vec& p,const Vec& center,
+               const Vec& momentum,const PES& pes,const Cayley& c) const {
+        const auto P=c.beads,nd=c.nd;
+        if(energy_parts){
+            // H_P/P = V/P + K_centroid + K_noncentroid/P + S/P.
+            // Noncentroid refers to bead momenta, not molecular normal modes.
+            double centroid_energy=0,internal_energy=0,spring_energy=0;
+            for(Py_ssize_t i=0;i<nd;++i)centroid_energy+=momentum[i]*momentum[i]/(2*c.mass[i/3]);
+            for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i){
+                const auto j=b*nd+i;
+                const double dp=p[j]-momentum[i],dq=q[j]-q[((b+1)%P)*nd+i];
+                internal_energy+=dp*dp/(2*c.mass[i/3]);
+                spring_energy+=.5*c.omega2*c.mass[i/3]*dq*dq;
+            }
+            auto* values=energy_parts->doubles()+4*row;
+            values[0]=std::accumulate(pes.energies.begin(),pes.energies.end(),0.)/P;
+            values[1]=centroid_energy;values[2]=internal_energy/P;values[3]=spring_energy/P;
+            for(int i=0;i<4;++i)if(!std::isfinite(values[i]))throw std::runtime_error("nonfinite nuclear energy diagnostics");
+        }
+        if(ring_radii){
+            auto* values=ring_radii->doubles()+row*(nd/3);
+            for(Py_ssize_t a=0;a<nd/3;++a){
+                double square=0;
+                for(Py_ssize_t b=0;b<P;++b)for(int k=0;k<3;++k){
+                    const double dq=q[b*nd+3*a+k]-center[3*a+k];square+=dq*dq;
+                }
+                values[a]=std::sqrt(square/P);
+                if(!std::isfinite(values[a]))throw std::runtime_error("nonfinite ring radius diagnostics");
+            }
+        }
+    }
+};
+
 static PyObject* advance(PyObject*,PyObject* args) {
     PyObject *capsule,*binding,*qo,*po,*options,*mo,*ro,*so;
     if(!PyArg_ParseTuple(args,"OOOOOOOO",&capsule,&binding,&qo,&po,&options,&mo,&ro,&so))return nullptr;
@@ -495,8 +545,10 @@ static PyObject* advance(PyObject*,PyObject* args) {
         auto* previous_obj=PyDict_GetItemString(options,"previous");
         if(previous_obj && previous_obj!=Py_None)
             previous=std::make_unique<Buffer>(previous_obj,product(product(2,S),sizeof(double)),"d",true);
-        const Buffer* buffers[]={&q,&p,&mask,&records,states.get(),previous.get()};
-        for(int i=0;i<6;++i)for(int j=i+1;j<6;++j)if(buffers[i]&&buffers[j]&&overlap(*buffers[i],*buffers[j]))throw std::invalid_argument("native buffers must not overlap");
+        NuclearDiagnostics diagnostics(PyDict_GetItemString(options,"diagnostics"),rows,nd/3);
+        const Buffer* buffers[]={&q,&p,&mask,&records,states.get(),previous.get(),
+                                 diagnostics.energy_parts.get(),diagnostics.ring_radii.get()};
+        for(int i=0;i<8;++i)for(int j=i+1;j<8;++j)if(buffers[i]&&buffers[j]&&overlap(*buffers[i],*buffers[j]))throw std::invalid_argument("native buffers must not overlap");
         std::unique_ptr<Outcome> outcome;
         auto* outcome_obj=PyDict_GetItemString(options,"outcome");
         if(outcome_obj && outcome_obj!=Py_None)outcome=std::make_unique<Outcome>(outcome_obj,nd/3,steps);
@@ -572,7 +624,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
                     // Fragment projection can change last-bit coordinates after the
                     // final force. Re-evaluate only when a physical energy is requested.
                     double energy=std::numeric_limits<double>::quiet_NaN();
-                    if(check_energy || (record_energy && observed[step])){
+                    if(check_energy || ((record_energy || diagnostics.energy_parts) && observed[step])){
                         if(!fragments.empty())eb=evaluate(trial_q);
                         energy=total_energy(trial_q,trial_p,eb);
                     }
@@ -581,6 +633,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
                         auto* row=records.doubles()+written*width;row[0]=clock+c->dt;row[1]=std::numeric_limits<double>::quiet_NaN();
                         if(record_energy)row[1]=energy;
                         std::copy(center.begin(),center.end(),row+2);std::copy(pc.begin(),pc.end(),row+2+nd);
+                        diagnostics.write(written,trial_q,trial_p,center,pc,pes,*c);
                         for(size_t i=0;i<observations.size();++i){auto d=observations[i].ring(trial_q,center,P);if(!std::isfinite(d.v))throw std::runtime_error("nonfinite CV observation");row[2+2*nd+i]=d.v;}
                         if(states){auto* dest=states->doubles()+written*2*S;std::copy(trial_q.begin(),trial_q.end(),dest);std::copy(trial_p.begin(),trial_p.end(),dest+S);}
                     }

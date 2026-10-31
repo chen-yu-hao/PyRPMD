@@ -77,6 +77,119 @@ def test_tempering_uses_physical_bias_without_an_extra_bead_factor():
         assert standard.deposit([0.0], step=i + 1, time=0.1 * (i + 1))["height"] == 0.4
 
 
+def test_bias_history_append_restore_and_rollback_keep_exact_gaussian_sum():
+    cv = CVStack([Cartesian(0, 0), Cartesian(0, 1)])
+    sigma = np.array([0.13, 0.29])
+    bias = MetadynamicsBias(cv, sigma, 0.05, 2.0, mode="standard")
+    rng = np.random.default_rng(731)
+    points = rng.normal(size=(3, 4, 2))
+
+    def check_sum():
+        energy, gradient = bias.physical_energy_gradient(points)
+        expected_energy = np.zeros(points.shape[:-1])
+        expected_gradient = np.zeros_like(points)
+        for hill in bias.hills:
+            delta = points - hill["center"]
+            contribution = hill["height"] * np.exp(-0.5 * np.sum((delta / sigma)**2, axis=-1))
+            expected_energy += contribution
+            expected_gradient -= contribution[..., None] * delta / sigma**2
+        np.testing.assert_allclose(energy, expected_energy, atol=1e-15)
+        np.testing.assert_allclose(gradient, expected_gradient, atol=1e-15)
+        np.testing.assert_array_equal(bias.physical_energy(points), energy)
+
+    check_sum()
+    for step in range(1, 8):
+        bias.deposit(rng.normal(size=2), step=step, time=step * 0.1)
+        check_sum()
+    bias.truncate_history(3)
+    check_sum()
+    bias.deposit([0.3, -0.1], step=4, time=0.4)
+    check_sum()
+    restored = MetadynamicsBias(cv, sigma, 0.05, 2.0, mode="standard", hills=bias.hills)
+    for actual, expected in zip(restored.physical_energy_gradient(points), bias.physical_energy_gradient(points)):
+        np.testing.assert_array_equal(actual, expected)
+    bias.truncate_history(0)
+    check_sum()
+
+
+@pytest.mark.parametrize("count", [-1, 1, 0.5, True])
+def test_invalid_history_truncation_is_rejected(count):
+    bias = MetadynamicsBias(CVStack([Cartesian(0, 0)]), [0.5], 0.4, 2.0)
+    with pytest.raises(ValueError, match="history count"):
+        bias.truncate_history(count)
+
+
+def test_history_snapshot_and_deposition_record_cannot_mutate_force_cache():
+    bias = MetadynamicsBias(CVStack([Cartesian(0, 0)]), [0.5], 0.4, 2.0)
+    record = bias.deposit([0.2], step=1, time=0.1)
+    expected = bias.physical_energy_gradient([0.1])
+    snapshot = bias.hills
+    snapshot[0]["center"][0] = 7.0
+    snapshot[0]["height"] = 10.0
+    record["center"][0] = 9.0
+    snapshot.clear()
+    assert bias.hill_count == 1
+    assert bias.hills[0]["center"] == [0.2]
+    for actual, original in zip(bias.physical_energy_gradient([0.1]), expected):
+        np.testing.assert_array_equal(actual, original)
+
+def test_numeric_history_matches_direct_sum_after_growth_rollback_and_restore():
+    cv = CVStack([Cartesian(0, 0), Cartesian(0, 1)])
+    bias = MetadynamicsBias(cv, [0.3, 0.7], 0.1, 2., mode="standard")
+    rng = np.random.default_rng(81)
+    for i, center in enumerate(rng.normal(size=(70, 2))):
+        bias.deposit(center, step=i + 1, time=(i + 1) * 0.1)
+    bias.truncate_hills(31)
+    bias.deposit([0.7, -0.2], step=32, time=3.2)
+    values = rng.normal(size=(9, 2))
+    centers = np.array([h["center"] for h in bias.hills])
+    heights = np.array([h["height"] for h in bias.hills])
+    delta = values[:, None] - centers
+    terms = heights * np.exp(-0.5 * np.sum((delta / bias.sigma) ** 2, axis=-1))
+    energy, gradient = bias.physical_energy_gradient(values)
+    np.testing.assert_allclose(energy, terms.sum(axis=1), atol=1e-15)
+    np.testing.assert_allclose(gradient, np.sum(-delta / bias.sigma**2 * terms[..., None], axis=1), atol=1e-15)
+    restored = MetadynamicsBias(cv, bias.sigma, 0.1, 2., mode="standard", hills=bias.hills)
+    np.testing.assert_array_equal(restored.physical_energy_gradient(values)[0], energy)
+    np.testing.assert_array_equal(restored.physical_energy_gradient(values)[1], gradient)
+    bias.truncate_hills(0)
+    assert bias.hill_count == 0
+    np.testing.assert_array_equal(bias.physical_energy(values), np.zeros(len(values)))
+
+
+def test_deposition_and_history_snapshots_cannot_mutate_active_forces():
+    bias = MetadynamicsBias(CVStack([Cartesian(0, 0)]), [0.5], 0.4, 2.)
+    deposited = bias.deposit([0.], step=1, time=0.1)
+    before = bias.physical_energy([0.])
+    deposited["center"][0] = 99.
+    saved = bias.hills
+    saved[0]["height"] = 100.
+    saved[0]["center"][0] = -99.
+    saved.clear()
+    assert bias.hill_count == 1
+    assert bias.physical_energy([0.]) == before
+
+
+def test_failure_after_deposition_rolls_back_numeric_history(tmp_path, monkeypatch):
+    cfg = config()
+    full = _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path / "full"), "replica": 0})
+    original = MetadynamicsBias.deposit
+    def fail_after_deposit(self, *args, **kwargs):
+        result = original(self, *args, **kwargs)
+        if kwargs["step"] == 12:
+            raise RuntimeError("after deposit")
+        return result
+    task = {"config": cfg, "system": system(), "output": str(tmp_path / "resume"), "replica": 0}
+    with monkeypatch.context() as patch:
+        patch.setattr(MetadynamicsBias, "deposit", fail_after_deposit)
+        with pytest.raises(RuntimeError, match="after deposit"):
+            _sample_replica(task)
+    resumed = _sample_replica(task)
+    assert resumed["hills"] == full["hills"]
+    np.testing.assert_array_equal(resumed["state"].q, full["state"].q)
+    np.testing.assert_array_equal(resumed["sample_bias"], full["sample_bias"])
+
+
 @pytest.mark.parametrize("width", [0.2, 1.4, 5.0])
 def test_periodic_gaussians_are_smooth_and_match_finite_difference(width):
     axis = Cartesian(0, 0)
@@ -98,18 +211,21 @@ def test_periodic_gaussians_are_smooth_and_match_finite_difference(width):
 
 
 @pytest.mark.parametrize("mode", ["standard", "well_tempered"])
-def test_failure_at_a_deposition_boundary_resumes_exactly_without_duplicate_hills(tmp_path, monkeypatch, mode):
+@pytest.mark.parametrize("failure_after", ["step", "deposit"])
+def test_failure_at_a_deposition_boundary_resumes_exactly_without_duplicate_hills(tmp_path, monkeypatch, mode, failure_after):
     cfg = config(mode)
     ref = _sample_replica({"config": cfg, "system": system(), "output": str(tmp_path / "full"), "replica": 0})
-    original = Dynamics.step
-    def fail_after_a_successful_map(self, state, bias=None):
-        result = original(self, state, bias)
-        if state.step == 12:
-            raise RuntimeError("injected interruption just before deposition")
+    target = Dynamics if failure_after == "step" else MetadynamicsBias
+    original = getattr(target, failure_after)
+    def fail_after_a_successful_map(self, *args, **kwargs):
+        result = original(self, *args, **kwargs)
+        step = args[0].step if failure_after == "step" else kwargs["step"]
+        if step == 12:
+            raise RuntimeError("injected interruption at deposition boundary")
         return result
     task = {"config": cfg, "system": system(), "output": str(tmp_path / "resumed"), "replica": 0}
     with monkeypatch.context() as patch:
-        patch.setattr(Dynamics, "step", fail_after_a_successful_map)
+        patch.setattr(target, failure_after, fail_after_a_successful_map)
         with pytest.raises(RuntimeError, match="injected interruption"):
             _sample_replica(task)
     with load_checkpoint(tmp_path / "resumed/checkpoints/metadynamics_0000.npz") as cp:
@@ -139,11 +255,35 @@ def test_two_dimensional_workflow_and_saved_reanalysis(tmp_path):
     assert result["data"]["bias_per_replica"].shape == (2, 6, 6)
     assert result["streams"][0]["hills"] != result["streams"][1]["hills"]
     assert np.isnan(result["data"]["standard_error"]).all()
+    diagnostics = result["summary"]["sampling_diagnostics"]
+    assert diagnostics["common_supported_grid_fraction"] == np.mean(~result["data"]["mask"])
+    assert diagnostics["samples_in_grid_fraction_per_replica"] == [1., 1.]
     again = reanalyze_metadynamics(cfg, system(), tmp_path, return_data=True)
     np.testing.assert_array_equal(result["data"]["free_energy"], again["data"]["free_energy"])
     cfg["analysis"]["bins"] = [4, 5]
     changed = reanalyze_metadynamics(cfg, system(), tmp_path, return_data=True)
     assert changed["data"]["free_energy"].shape == (4, 5)
+
+
+def test_requested_grid_does_not_constrain_or_hide_outside_samples(tmp_path):
+    cfg = config()
+    cfg["analysis"]["ranges"] = [[10., 11.]]
+    result = run_metadynamics(cfg, system(), tmp_path, return_data=True)
+    diagnostics = result["summary"]["sampling_diagnostics"]
+    assert diagnostics["samples_in_grid_fraction_per_replica"] == [0.]
+    assert diagnostics["common_supported_grid_fraction"] == 0.
+    assert np.all(result["data"]["mask"])
+    assert any("do not confine" in warning for warning in result["summary"]["warnings"])
+
+
+def test_metadynamics_default_production_budget():
+    from pyrpmd.input import JobSpec
+    from pyrpmd.constants import AU_TIME_FS
+    spec = JobSpec.from_file("examples/metadynamics/standard.inp")
+    for key in ("production_steps", "production"):
+        spec.data["sampling"].pop(key, None)
+    cfg, _ = spec.resolve()
+    assert cfg["sampling"]["production_steps"] == round(1000 / (cfg["dt_au"] * AU_TIME_FS))
 
 
 def test_bias_fes_uses_distinct_standard_and_tempered_factors_and_masks_unsampled_bins():
@@ -191,7 +331,8 @@ def test_unsupported_analysis_and_native_history_are_rejected_before_sampling():
     {"cell": np.diag([6.0, 6.0, 12.0]).tolist(), "pbc": [True, True, False]},
     {"fixed_atoms": [0]},
 ])
-def test_surface_metadynamics_is_rejected_before_any_trajectory(tmp_path, extra):
+def test_invalid_periodic_provider_and_fully_fixed_metadynamics_are_rejected(tmp_path, extra):
+    from pyrpmd.potentials import PotentialError
     slab = System.from_dict({**system().to_dict(), **extra})
     for operation in (
         lambda: resolve_metadynamics(config(), slab),
@@ -199,7 +340,7 @@ def test_surface_metadynamics_is_rejected_before_any_trajectory(tmp_path, extra)
         lambda: _sample_replica({"config": config(), "system": slab,
                                 "output": str(tmp_path), "replica": 0}),
     ):
-        with pytest.raises(ValueError, match="periodic systems or fixed atoms"):
+        with pytest.raises((ValueError, PotentialError), match="nonperiodic|mobile atom"):
             operation()
     assert not list(tmp_path.iterdir())
 

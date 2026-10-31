@@ -1,0 +1,1 @@
+PASS: periodic 3D NHC MetaD + conditional surface rate; 19 NPZ files match serial exactly; completed resumes pass.

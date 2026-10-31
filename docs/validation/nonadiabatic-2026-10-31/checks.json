@@ -1,0 +1,48 @@
+{
+  "schema": "pyrpmd.nonadiabatic.local-validation",
+  "schema_version": 1,
+  "date": "2026-10-31",
+  "base_commit": "76dd6ad24adc6c244f775857987cd2f0e119845f",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pytest": "9.2.0"
+  },
+  "pytest": {
+    "passed": 1759,
+    "skipped": 23,
+    "subtests_passed": 153,
+    "failed": 0,
+    "seconds": 176.9,
+    "local_socket_access": true
+  },
+  "documentation": {
+    "en_html": true,
+    "zh_html": true,
+    "en_singlehtml": true,
+    "zh_singlehtml": true,
+    "warnings_as_errors": true
+  },
+  "packaging": {
+    "wheel": true,
+    "sdist": true,
+    "runtime_files_match_checkout": 59,
+    "new_modules_present": 7,
+    "new_guides_in_sdist": 4,
+    "new_examples_in_sdist": 4,
+    "isolated_new_api_imports": 26,
+    "isolated_all_public_imports": 39,
+    "native_extension": true,
+    "openmp": true
+  },
+  "examples": {
+    "soc_and_rpsh": true,
+    "thermal_rates": true,
+    "method_models": true,
+    "friction_surface_validate_run_resume": true
+  },
+  "remote_ci": "See PR checks; not asserted by this local record.",
+  "physical_converged": false,
+  "real_system_chemistry_validated": false
+}

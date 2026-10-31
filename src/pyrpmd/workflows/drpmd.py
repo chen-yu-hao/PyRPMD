@@ -1,4 +1,4 @@
-"""Thermal direct-collision RPMD, including persistent parallel parent chains.
+"""Direct-collision RPMD with thermal or independently prepared initial states.
 
 Collision assembly, centroid connectivity and flux-estimator logic are adapted
 from chen-yu-hao/RPMDrate, commit 9a44d6b378d8bf835d67e1b3b7f78b27bdc84a78,
@@ -690,6 +690,13 @@ def _physics_hash(config, system, parents):
         if k not in ("parallel", "output", "resume", "_resume")
         and not k.startswith("_")
     }
+    if config.get("initial_ensemble"):
+        # Independent draws are keyed by global trajectory ID. Work allocation
+        # is not a physical parent chain and must not affect their identity.
+        scientific["sampling"] = {
+            k: v for k, v in scientific.get("sampling", {}).items() if k != "parents"
+        }
+        parents = 0
     payload = {
         "config": scientific,
         "system": _jsonable(system),
@@ -915,8 +922,12 @@ def _trajectory(
     launch,
     physics_hash,
     resume,
+    *,
+    extend_unresolved=False,
 ):
     if config.get("nonadiabatic"):
+        if extend_unresolved:
+            raise ValueError("Controlled extension is not implemented for NRPMD mapping states")
         return _nrpmd_trajectory(dynamics, state, classifier, config, out,
                                  trajectory_id, parent_id, launch, physics_hash, resume)
     c, outcomes = config["collision"], config.get("outcomes", {})
@@ -938,6 +949,7 @@ def _trajectory(
     result_path, checkpoint = base.with_suffix(".json"), base.with_suffix(
         ".checkpoint.npz"
     )
+    previous_wall_seconds = 0.0
     if resume and result_path.exists():
         result = json.loads(result_path.read_text())
         if (
@@ -945,7 +957,12 @@ def _trajectory(
             or result.get("trajectory_id") != trajectory_id
         ):
             raise ValueError("Completed trajectory does not match this restart")
-        return result
+        if not (extend_unresolved and result.get("status") == "unresolved"
+                and result.get("steps", max_steps) < max_steps):
+            return result
+        if not checkpoint.exists():
+            raise ValueError("Extending an unresolved trajectory requires its full checkpoint")
+        previous_wall_seconds = float(result.get("wall_seconds", 0.0))
     if result_path.exists() and not resume:
         raise FileExistsError(
             f"Trajectory already exists: {result_path}; use resume explicitly"
@@ -953,7 +970,14 @@ def _trajectory(
     initial = final = drift = None
     candidate, candidate_since, done = None, None, 0
     status, channel, reason = "unresolved", None, "maximum_propagation_time"
+    from pyrpmd.block_propagation import ENERGY_PARTS, state_diagnostics
+
+    diagnostic_spec = output_config.get("diagnostics")
+    if diagnostic_spec is None and config.get("initial_ensemble"):
+        diagnostic_spec = {"energy_parts": True, "ring_radii": True}
+    diagnostic_spec = {k: v for k, v in (diagnostic_spec or {}).items() if v}
     trace_steps, trace_q, trace_energy = [], [], []
+    diagnostic_traces = {key: [] for key in diagnostic_spec}
     previous_propagation = {"native_steps": 0, "python_steps": 0}
     if resume and checkpoint.exists():
         meta, arrays = _load_npz(
@@ -978,6 +1002,30 @@ def _trajectory(
         trace_steps = list(arrays["trace_steps"])
         trace_q = list(arrays["trace_centroid"])
         trace_energy = list(arrays["trace_energy"])
+        _integer(done, "checkpoint.done", 0)
+        length = len(trace_steps)
+        if (done > max_steps or state.step != done
+                or not math.isclose(state.time, done * config["dt_au"],
+                                    rel_tol=1e-11, abs_tol=1e-12)
+                or state.q.shape != (config["beads"], len(dynamics.masses), 3)
+                or state.p.shape != state.q.shape
+                or arrays["trace_centroid"].shape != (length, *state.q.shape[1:])
+                or arrays["trace_energy"].shape != (length,)
+                or arrays["trace_steps"].dtype.kind not in "iu"
+                or (length and (trace_steps[0] != 0 or trace_steps[-1] > done))
+                or np.any(np.diff(trace_steps) <= 0)
+                or any(not np.isfinite(arrays[key]).all()
+                       for key in ("q", "p", "trace_centroid", "trace_energy"))):
+            raise ValueError("Trajectory checkpoint has inconsistent clocks, shapes or traces")
+        if meta.get("diagnostics", {}) != diagnostic_spec:
+            raise ValueError("Cannot change trajectory diagnostics when resuming an existing trace")
+        for key in diagnostic_spec:
+            name = "trace_" + key
+            expected_shape = (length, 4 if key == "energy_parts" else state.q.shape[1])
+            if (name not in arrays or arrays[name].shape != expected_shape
+                    or not np.isfinite(arrays[name]).all()):
+                raise ValueError(f"Checkpoint has missing or invalid {key} diagnostics")
+            diagnostic_traces[key] = list(arrays[name])
         if "propagation" in meta:
             previous_propagation.update(meta["propagation"])
         elif done:
@@ -986,6 +1034,8 @@ def _trajectory(
             previous_propagation["untracked_steps"] = done
     else:
         try:
+            if launch.get("initial_validation_error"):
+                raise ValueError(launch["initial_validation_error"])
             initial = float(dynamics.energy(state)) / config["beads"]
             if not math.isfinite(initial):
                 raise FloatingPointError("Nonfinite initial total ring energy")
@@ -995,12 +1045,18 @@ def _trajectory(
                 [state.q.mean(axis=0).copy()],
                 [initial],
             )
+            for key, value in state_diagnostics(
+                    dynamics, state, diagnostic_spec, energy_per_bead=initial).items():
+                diagnostic_traces[key].append(value)
         except Exception as exc:
             # A valid parent may launch outside a PES domain after rotation or
             # rearrangement. Preserve its q/p and count this collision as failed.
             initial = final = drift = None
+            trace_steps, trace_q, trace_energy = [], [], []
+            diagnostic_traces = {key: [] for key in diagnostic_spec}
             status, channel = "failed", None
-            reason = f"initial_energy: {type(exc).__name__}: {exc}"
+            stage = "initial_preparation" if launch.get("initial_validation_error") else "initial_energy"
+            reason = f"{stage}: {type(exc).__name__}: {exc}"
     started = time.perf_counter()
     stats_before = copy.deepcopy(dynamics.propagation_stats)
 
@@ -1009,6 +1065,13 @@ def _trajectory(
         for key in ("native_steps", "python_steps"):
             counts[key] += dynamics.propagation_stats[key] - stats_before[key]
         return counts
+
+    def diagnostic_arrays(prefix=""):
+        return {
+            prefix + key: np.asarray(values, dtype=float).reshape(
+                (-1, 4 if key == "energy_parts" else state.q.shape[1]))
+            for key, values in diagnostic_traces.items()
+        }
 
     def save_checkpoint():
         _atomic_npz(
@@ -1031,12 +1094,14 @@ def _trajectory(
                 "reason": reason,
                 "launch": launch,
                 "propagation": trajectory_propagation(),
+                "diagnostics": diagnostic_spec,
             },
             q=state.q,
             p=state.p,
             trace_steps=np.asarray(trace_steps, dtype=np.int64),
             trace_centroid=np.asarray(trace_q).reshape((-1, *state.q.shape[1:])),
             trace_energy=np.asarray(trace_energy),
+            **diagnostic_arrays("trace_"),
         )
 
     # Optional native outcome observers preserve the same check clock and
@@ -1065,6 +1130,8 @@ def _trajectory(
         start_done = done
         stats_before_block = copy.deepcopy(dynamics.propagation_stats)
         options = {"record_states": record_states, "raise_on_error": False}
+        if diagnostic_spec:
+            options["diagnostics"] = diagnostic_spec
         if record_previous:
             options["record_previous"] = True
         if native_events:
@@ -1141,6 +1208,8 @@ def _trajectory(
             trace_steps.extend(numbers[selected].tolist())
             trace_q.extend(block.centroids[selected].copy())
             trace_energy.extend(energy[selected].tolist())
+            for key in diagnostic_spec:
+                diagnostic_traces[key].extend(block.diagnostics[key][selected].copy())
             done += valid
         if failure:
             status, channel, reason = "failed", None, failure
@@ -1169,6 +1238,9 @@ def _trajectory(
             },
             "hamiltonian_convention": "sum_beads_beta_over_P",
             "launch": launch,
+            "diagnostics": diagnostic_spec,
+            "energy_parts_columns": list(ENERGY_PARTS) if "energy_parts" in diagnostic_spec else None,
+            "energy_parts_convention": "unbiased_H_P_over_P" if "energy_parts" in diagnostic_spec else None,
         },
         final_q=state.q,
         final_p=state.p,
@@ -1176,6 +1248,7 @@ def _trajectory(
         time_au=np.asarray(trace_steps) * config["dt_au"],
         centroid=np.asarray(trace_q).reshape((-1, *state.q.shape[1:])),
         energy_per_bead=np.asarray(trace_energy),
+        **diagnostic_arrays(),
     )
     record = {
         "trajectory_id": trajectory_id,
@@ -1193,11 +1266,84 @@ def _trajectory(
         "final_energy_per_bead": final,
         "max_energy_drift_per_bead": drift,
         "launch": launch,
-        "wall_seconds": time.perf_counter() - started,
+        "wall_seconds": previous_wall_seconds + time.perf_counter() - started,
         "propagation": trajectory_propagation(),
     }
+    if "initial_state" in launch:
+        record["initial_state"] = launch["initial_state"]
+    if "initial_diagnostics" in launch:
+        record["initial_diagnostics"] = launch["initial_diagnostics"]
     _atomic_json(result_path, record)
     return record
+
+
+def _production_dynamics(config, system, potential, parent_id):
+    """Use identical propagation settings for inline and queued collisions."""
+    masses = np.asarray(_field(system, "masses"), dtype=float)
+    options = loop_options(config)
+    native = config.get("native", config.get("dynamics", {}).get("native", True))
+    threads = execution_plan(config.get("parallel")).threads
+    na = config.get("nonadiabatic")
+    if na:
+        from pyrpmd.nonadiabatic import NRPMDDynamics
+
+        return NRPMDDynamics(potential, masses, config["beta"], config["beads"],
+                             config["dt_au"], na["nstates"], native=native,
+                             threads=threads, integrator=options["integrator"])
+    return Dynamics(
+        potential, masses, config["beta"], config["beads"], config["dt_au"],
+        seed=np.random.SeedSequence([int(config.get("seed", 0)), 3, parent_id]),
+        native=native, threads=threads, **options,
+    )
+
+
+def _saved_collision(task, production, classifier):
+    """Replay one already sampled launch without advancing its thermal chain."""
+    config, system = task["config"], task["system"]
+    trajectory_id, parent_id = task["trajectory_id"], task["parent_id"]
+    out = Path(task["output"])
+    meta, arrays = _load_npz(out / "states" / f"initial-{trajectory_id:08d}.npz",
+                             expected_kind="PyRPMD.drpmd.launch.v1")
+    if (meta.get("physics_hash") != task["physics_hash"]
+            or meta.get("trajectory_id") != trajectory_id
+            or meta.get("parent_id") != parent_id):
+        raise ValueError("Saved collision launch does not match this task")
+    expected_shape = (config["beads"], len(_field(system, "masses")), 3)
+    if any(arrays[key].shape != expected_shape or not np.isfinite(arrays[key]).all()
+           for key in ("q", "p")):
+        raise ValueError("Saved collision launch has invalid nuclear state")
+    na = config.get("nonadiabatic")
+    if na:
+        from pyrpmd.nonadiabatic import NRPMDState
+
+        for key in ("mapping_q", "mapping_p"):
+            if (key not in arrays or arrays[key].shape != (config["beads"], na["nstates"])
+                    or not np.isfinite(arrays[key]).all()):
+                raise ValueError("Saved collision launch has invalid electronic state")
+        child = NRPMDState(arrays["q"], arrays["p"], 0, 0.0,
+                           arrays["mapping_q"], arrays["mapping_p"])
+    else:
+        child = State(arrays["q"], arrays["p"])
+    record = _trajectory(
+        production, child, classifier, config, out, trajectory_id, parent_id,
+        meta["launch"], task["physics_hash"],
+        bool(config.get("resume", config.get("_resume", False))),
+    )
+    record["parent_sample_step"] = meta["parent_step"]
+    return record
+
+
+def _collision_task(task):
+    """Independent collision unit for the dynamic MPI work queue."""
+    potential = make_task_potential(task["config"]["potential"], task["system"])
+    try:
+        production = _production_dynamics(task["config"], task["system"],
+                                         potential, task["parent_id"])
+        return _saved_collision(task, production,
+                                _make_classifier(task["config"], task["system"]))
+    finally:
+        if hasattr(potential, "close"):
+            potential.close()
 
 
 def _parent_task(task):
@@ -1208,6 +1354,7 @@ def _parent_task(task):
         task["physics_hash"],
     )
     out = Path(task["output"])
+    sample_only = bool(task.get("sample_only", False))
     masses = np.asarray(_field(system, "masses"), dtype=float)
     fragments = validate_fragments(_field(system, "fragments"), len(masses))
     beads, beta, dt = config["beads"], config["beta"], config["dt_au"]
@@ -1237,7 +1384,7 @@ def _parent_task(task):
     parent_seed = np.random.SeedSequence([seed, 1, parent_id])
     na = config.get("nonadiabatic")
     if na:
-        from pyrpmd.nonadiabatic import DiagonalPotential, NRPMDDynamics, NRPMDState
+        from pyrpmd.nonadiabatic import DiagonalPotential, NRPMDState
         thermal_potential = DiagonalPotential(potential, na["initial_state"], na["nstates"])
     else:
         thermal_potential = potential
@@ -1252,21 +1399,7 @@ def _parent_task(task):
         threads=plan.threads,
         **options,
     )
-    if na:
-        production = NRPMDDynamics(potential, masses, beta, beads, dt, na["nstates"],
-                                   native=native, threads=plan.threads, integrator=method)
-    else:
-        production = Dynamics(
-            potential,
-            masses,
-            beta,
-            beads,
-            dt,
-            seed=np.random.SeedSequence([seed, 3, parent_id]),
-            native=native,
-            threads=plan.threads,
-            **options,
-        )
+    production = None if sample_only else _production_dynamics(config, system, potential, parent_id)
     classifier = _make_classifier(config, system)
     parent_path = out / "checkpoints" / f"parent-{parent_id:06d}.npz"
     resume = bool(config.get("resume", config.get("_resume", False)))
@@ -1324,6 +1457,17 @@ def _parent_task(task):
         )
 
     try:
+        if not sample_only:
+            # Dynamic runs checkpoint the sampling clock before their queued
+            # children finish. A later static resume must replay those launches
+            # without resampling, including after a partially finished queue.
+            complete = {record["trajectory_id"] for record in records}
+            for trajectory_id in ids[:next_index]:
+                if trajectory_id not in complete:
+                    record = _saved_collision(dict(task, trajectory_id=trajectory_id),
+                                              production, classifier)
+                    records.append(record)
+                    save_parent()
         while burn_done < equil:
             count = min(checkpoint_steps, equil - burn_done)
             start = time.perf_counter()
@@ -1389,20 +1533,21 @@ def _parent_task(task):
                 **_mapping_arrays(child),
                 masses=masses,
             )
-            record = _trajectory(
-                production,
-                child,
-                classifier,
-                config,
-                out,
-                trajectory_id,
-                parent_id,
-                launch,
-                physics_hash,
-                resume,
-            )
-            record["parent_sample_step"] = parent.step
-            records.append(record)
+            if not sample_only:
+                record = _trajectory(
+                    production,
+                    child,
+                    classifier,
+                    config,
+                    out,
+                    trajectory_id,
+                    parent_id,
+                    launch,
+                    physics_hash,
+                    resume,
+                )
+                record["parent_sample_step"] = parent.step
+                records.append(record)
             next_index, pending = index + 1, None
             save_parent()
         return {
@@ -1411,6 +1556,107 @@ def _parent_task(task):
             "thermal_steps": parent.step,
             "thermal_seconds": thermal_seconds,
         }
+    finally:
+        if hasattr(potential, "close"):
+            potential.close()
+
+
+def _initial_ensemble_task(task):
+    """Prepare independent nuclear states and reuse one PES for a work group.
+
+    Work groups share a model instance, not a thermal parent trajectory. Every
+    complete initial condition has RNG streams indexed by global trajectory ID.
+    A restart reads the saved launch and checkpoint without drawing a new state.
+    """
+    from pyrpmd.initial_states import prepare_initial_ensemble
+
+    config, system = task["config"], task["system"]
+    out, group = Path(task["output"]), task["parent_id"]
+    physics_hash = task["physics_hash"]
+    resume = bool(config.get("resume", config.get("_resume", False)))
+    masses = np.asarray(_field(system, "masses"), dtype=float)
+    fragments = validate_fragments(_field(system, "fragments"), len(masses))
+    beads, beta = config["beads"], config["beta"]
+    ensemble = prepare_initial_ensemble(config["initial_ensemble"], system, beads, beta)
+    labels = {"method": ensemble.method,
+              "vibrational_quanta": ensemble.vibrational_quanta, "rotation": "j0"}
+    plan = execution_plan(config.get("parallel"))
+    seed = int(config.get("seed", 0))
+    potential = make_task_potential(config["potential"], system)
+    records = []
+    try:
+        production = Dynamics(
+            potential, masses, beta, beads, config["dt_au"],
+            seed=np.random.SeedSequence([seed, 3, group]),
+            native=config.get("native", config.get("dynamics", {}).get("native", True)),
+            threads=plan.threads, **loop_options(config),
+        )
+        classifier = _make_classifier(config, system)
+        for trajectory_id in task["trajectory_ids"]:
+            result_path = out / "trajectories" / f"trajectory-{trajectory_id:08d}.json"
+            initial_path = out / "states" / f"initial-{trajectory_id:08d}.npz"
+            checkpoint = result_path.with_suffix(".checkpoint.npz")
+            if result_path.exists():
+                if not resume:
+                    raise FileExistsError(f"Trajectory already exists: {result_path}; use resume explicitly")
+                record = json.loads(result_path.read_text())
+                if (record.get("physics_hash") != physics_hash
+                        or record.get("trajectory_id") != trajectory_id
+                        or record.get("initial_state") != labels):
+                    raise ValueError("Completed state-selected trajectory does not match this restart")
+                records.append(record)
+                continue
+            if resume and initial_path.exists():
+                metadata, arrays = _load_npz(
+                    initial_path, expected_kind="PyRPMD.drpmd.launch.v1")
+                if (metadata.get("physics_hash") != physics_hash
+                        or metadata.get("trajectory_id") != trajectory_id
+                        or metadata.get("initial_state") != labels):
+                    raise ValueError("Saved state-selected launch does not match this restart")
+                child, launch = State(arrays["q"], arrays["p"]), metadata["launch"]
+                # Keep the original execution-group label after rescheduling.
+                parent_id = metadata["parent_id"]
+            else:
+                if checkpoint.exists():
+                    raise ValueError("State-selected trajectory checkpoint has no saved launch")
+                if initial_path.exists():
+                    raise FileExistsError(f"Initial state already exists: {initial_path}; use resume explicitly")
+                prepared = ensemble.sample(np.random.default_rng(
+                    np.random.SeedSequence([seed, 5, trajectory_id])))
+                child, launch = launch_collision(
+                    prepared, masses, fragments, beta,
+                    config["collision"]["bmax_au"], config["system"]["separation_au"],
+                    np.random.default_rng(np.random.SeedSequence([seed, 2, trajectory_id])),
+                    sampling="fixed_energy", energy=config["collision"]["energy_au"],
+                    orientation=config["collision"].get("orientation", "isotropic"),
+                )
+                parent_id = group
+                launch["initial_state"] = labels
+                launch["initial_diagnostics"] = ensemble.diagnostics(child)
+                if classifier is not None and hasattr(classifier, "validate_reactants"):
+                    try:
+                        classifier.validate_reactants(child.q)
+                    except Exception as exc:
+                        # Retain invalid preparations as failed launches. Rejecting
+                        # and redrawing would change the ensemble and denominator.
+                        launch["initial_validation_error"] = f"{type(exc).__name__}: {exc}"
+                _atomic_npz(initial_path, {
+                    "format": "PyRPMD.drpmd.launch.v1", "physics_hash": physics_hash,
+                    "trajectory_id": trajectory_id, "parent_id": parent_id,
+                    "initial_state": labels, "initialization_mode": "independent",
+                    "rng_streams": {"state": [seed, 5, trajectory_id],
+                                    "collision": [seed, 2, trajectory_id]},
+                    "launch": launch, "beta": beta, "beads": beads,
+                    "fragments": fragments, "symbols": _field(system, "symbols"),
+                }, prepared_q=prepared.q, prepared_p=prepared.p,
+                    q=child.q, p=child.p, masses=masses)
+            records.append(_trajectory(
+                production, child, classifier, config, out, trajectory_id,
+                parent_id, launch, physics_hash, resume,
+            ))
+        return {"parent_id": group, "records": records,
+                "thermal_steps": 0, "thermal_seconds": 0.0,
+                "initial_ensemble": ensemble.metadata}
     finally:
         if hasattr(potential, "close"):
             potential.close()
@@ -1597,7 +1843,7 @@ def summarize(records, config, system):
         "counts": {s: counts[s] for s in _STATUSES},
         "parents": len(parent_ids),
         "all_trajectories_resolved": not bool(unknown.any()),
-        "temperature_K": config["temperature_K"],
+        "temperature_K": None if config.get("initial_ensemble") else config["temperature_K"],
         "beads": config["beads"],
         "sampling": sampling,
         "electronic_weight": electronic_weight,
@@ -1632,6 +1878,40 @@ def summarize(records, config, system):
         "convergence_note": "Check timestep, bead count, thermalization, sample autocorrelation, R0, bmax, maximum time and classification. Fixed-energy data are not a thermal rate.",
     }
 
+    if config.get("initial_ensemble"):
+        summary["initialization_mode"] = "independent"
+        summary["beta_au"] = beta
+        summary["temperature_interpretation"] = config.get(
+            "temperature_interpretation", "auxiliary_ring_parameter_not_thermal_temperature")
+        summary["convergence_note"] = (
+            "Approximate specified-initial-vibrational-state scattering. Check the "
+            "harmonic reference, preparation beta, beads, timestep, precollision "
+            "state stability, R0, bmax, maximum time and classifier. These are "
+            "initial-state-resolved cross sections, not final quantum state-to-state "
+            "probabilities or a thermal rate.")
+    else:
+        summary["initialization_mode"] = "parent_chain"
+    if sampling == "fixed_energy":
+        from pyrpmd.analysis.scattering import summarize_fixed_energy_scattering
+
+        scattering = summarize_fixed_energy_scattering(
+            records, area_bohr2=area, initialization_mode=summary["initialization_mode"],
+            channels=channels, collision_energy_au=config["collision"].get("energy_au"),
+            classifier_validated=not classifier_unvalidated,
+            cutoff_validated=not cutoff_unvalidated,
+            impact_sampling=config["collision"].get("impact_sampling", "uniform_area"),
+            bootstrap_seed=int(config.get("seed", 0)),
+        )
+        summary["fixed_energy_scattering"] = scattering
+        summary["total_reaction"].update(scattering["total_reaction"])
+        for channel, entry in scattering["channels"].items():
+            summary["channels"][channel].update(entry)
+        summary["uncertainty_note"] = (
+            "Outcome-assignment bounds retain every launched trajectory and are not "
+            "confidence limits. IID Wilson intervals require independent complete "
+            "initial conditions; parent-chain samples use eligible cluster bootstrap "
+            "intervals. Availability and reasons are recorded in fixed_energy_scattering.")
+
     if config.get("nonadiabatic"):
         summary["nonadiabatic"] = _electronic_summary(
             records, config, weights, channels,
@@ -1648,6 +1928,18 @@ def _prepare_output(output):
 
 def _write_summary(results, config, system, output, expected):
     records = [record for parent in results for record in parent["records"]]
+    out = Path(output)
+    # Per-trajectory commits are authoritative after controlled extensions or a
+    # crash before a parent ledger update. Preserve parent-only sampling fields.
+    for i, record in enumerate(records):
+        path = out / "trajectories" / f"trajectory-{record['trajectory_id']:08d}.json"
+        if path.exists():
+            current = json.loads(path.read_text())
+            if (current.get("physics_hash") != record.get("physics_hash")
+                    or current.get("trajectory_id") != record["trajectory_id"]
+                    or current.get("steps", -1) < record.get("steps", 0)):
+                raise ValueError("Trajectory result conflicts with its parent ledger")
+            records[i] = {**record, **current}
     records.sort(key=lambda record: record["trajectory_id"])
     if [r["trajectory_id"] for r in records] != list(range(expected)):
         raise RuntimeError("Trajectory ledger has missing or duplicate global IDs")
@@ -1656,7 +1948,22 @@ def _write_summary(results, config, system, output, expected):
         str(p["parent_id"]): p["thermal_steps"] for p in results
     }
     summary["records"] = records
-    out = Path(output)
+    extension_path = out / "results" / "extensions.json"
+    if extension_path.exists():
+        ledger = json.loads(extension_path.read_text())
+        if (ledger.get("format") != "PyRPMD.drpmd.extensions.v1"
+                or ledger.get("physics_hash") != records[0].get("physics_hash")
+                or not ledger.get("requests")):
+            raise ValueError("Extension ledger does not match this trajectory ensemble")
+        summary["original_max_steps"] = ledger["original_max_steps"]
+        summary["effective_max_steps"] = ledger["requests"][-1]["max_steps"]
+        summary["extensions"] = ledger
+    if config.get("initial_ensemble"):
+        from pyrpmd.initial_states import prepare_initial_ensemble
+        metadata = prepare_initial_ensemble(
+            config["initial_ensemble"], system, config["beads"], config["beta"]).metadata
+        summary["initial_ensemble"] = metadata
+        _atomic_json(out / "states" / "initial-ensemble.json", metadata)
     _atomic_json(out / "results" / "summary.json", summary)
     with (out / "results" / "channels.csv").open(
         "w", newline="", encoding="utf-8"
@@ -1669,6 +1976,13 @@ def _write_summary(results, config, system, output, expected):
                 "rate_cm3_molecule_s",
                 "observed_lower_cm3_molecule_s",
                 "possible_upper_cm3_molecule_s",
+                "cross_section_bohr2",
+                "observed_lower_bohr2",
+                "possible_upper_bohr2",
+                "iid_wilson95_lower_bohr2",
+                "iid_wilson95_upper_bohr2",
+                "parent_cluster_bootstrap95_lower_bohr2",
+                "parent_cluster_bootstrap95_upper_bohr2",
             ]
         )
         for channel, entry in {
@@ -1682,6 +1996,11 @@ def _write_summary(results, config, system, output, expected):
                     entry["rate_cm3_molecule_s"],
                     entry["observed_lower_cm3_molecule_s"],
                     entry["possible_upper_cm3_molecule_s"],
+                    entry.get("cross_section_bohr2"),
+                    entry.get("observed_lower_bohr2"),
+                    entry.get("possible_upper_bohr2"),
+                    *(entry.get("iid_wilson95_bohr2") or [None, None]),
+                    *(entry.get("parent_cluster_bootstrap95_bohr2") or [None, None]),
                 ]
             )
     if "nonadiabatic" in summary:
@@ -1698,8 +2017,34 @@ def _write_summary(results, config, system, output, expected):
     return summary
 
 
+def _deferred_collision_tasks(parent_tasks, sampled):
+    complete = {record["trajectory_id"] for parent in sampled for record in parent["records"]}
+    return [dict(task, trajectory_id=trajectory_id)
+            for task in parent_tasks for trajectory_id in task["trajectory_ids"]
+            if trajectory_id not in complete]
+
+
+def _write_dynamic_summary(sampled, collisions, config, system, output, expected):
+    by_parent = {parent["parent_id"]: parent for parent in sampled}
+    for record in collisions:
+        by_parent[record["parent_id"]]["records"].append(record)
+    # The coordinator alone updates ledgers after all child writers have
+    # stopped. Before this point, completed trajectory files remain sufficient
+    # for recovery even if a queue or the job is interrupted.
+    for parent in sampled:
+        parent["records"].sort(key=lambda record: record["trajectory_id"])
+        path = Path(output) / "checkpoints" / f"parent-{parent['parent_id']:06d}.npz"
+        meta, arrays = _load_npz(path, expected_kind="PyRPMD.drpmd.parent-checkpoint.v1")
+        actual_ids = [record["trajectory_id"] for record in parent["records"]]
+        if actual_ids != meta["trajectory_ids"]:
+            raise RuntimeError("Dynamic collision ledger has missing or duplicate global IDs")
+        meta["records"] = parent["records"]
+        _atomic_npz(path, meta, **arrays)
+    return _write_summary(sampled, config, system, output, expected)
+
+
 def run_drpmd(config, system, output, executor=None):
-    """Run N total collisions from persistent independent thermal parent chains.
+    """Run N collisions from thermal parents or independent selected states.
 
     Each parent gets N//n collisions plus one for the first N%n parents. A parent
     equilibrates once, advances by interval_steps before every child, and is
@@ -1712,6 +2057,15 @@ def run_drpmd(config, system, output, executor=None):
     if pbc.any() or boundary.get("fixed_atoms"):
         raise ValueError("Gas-phase dRPMD does not support periodic/fixed-atom systems; use a surface workflow")
     config = copy.deepcopy(config)
+    state_selected = bool(config.get("initial_ensemble"))
+    if state_selected:
+        if config.get("nonadiabatic"):
+            raise ValueError("State-selected nuclear ensembles currently require a single adiabatic PES")
+        if config["collision"].get("sampling") != "fixed_energy":
+            raise ValueError("State-selected scattering requires collision.sampling='fixed_energy'")
+        _positive(config["collision"].get("energy_au"), "collision.energy_au")
+        from pyrpmd.initial_states import prepare_initial_ensemble
+        prepare_initial_ensemble(config["initial_ensemble"], system, config["beads"], config["beta"])
     if ("nonadiabatic" in config
             or config.get("potential", {}).get("provider", config.get("potential", {}).get("type")) == "diabatic_python"):
         from pyrpmd.input import validate_nonadiabatic
@@ -1756,9 +2110,22 @@ def run_drpmd(config, system, output, executor=None):
             }
         )
         start += count
+    worker = _initial_ensemble_task if state_selected else _parent_task
+    # Independent selected states already sample and propagate in one task;
+    # only thermal parents need a separate collision queue after sampling.
+    dynamic = (plan.backend == "mpi" and plan.scheduling == "dynamic"
+               and not state_selected)
+    if dynamic:
+        for task in tasks:
+            task["sample_only"] = True
     results = (
-        executor.map(_parent_task, tasks)
+        executor.map(worker, tasks)
         if executor is not None
-        else run_tasks(_parent_task, tasks, config.get("parallel"))
+        else run_tasks(worker, tasks, config.get("parallel"))
     )
+    if dynamic:
+        collisions = root_call(_deferred_collision_tasks, tasks, results)
+        records = (executor.map(_collision_task, collisions) if executor is not None
+                   else run_tasks(_collision_task, collisions, config.get("parallel")))
+        return root_call(_write_dynamic_summary, results, records, config, system, directory, n)
     return root_call(_write_summary, results, config, system, directory, n)

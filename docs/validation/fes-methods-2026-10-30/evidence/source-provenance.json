@@ -1,0 +1,32 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/README.md",
+    "sha256": "a685921c20d2c9945948328ebe60b418d9fe07c2dfdaed28b7c52c27815854e7",
+    "local": "/workspace/work/rpmd-fes-review/literature/ogre-source/2023_TBD_OGRe__README.md"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/double_well/potential.py",
+    "sha256": "68882850312bc7aed4d36e0369dd8404a026d6cc24d2acb7a1367b7c4032c2fd",
+    "local": "/workspace/work/rpmd-fes-review/literature/ogre-source/2023_TBD_OGRe__benchmarking__2D__double_well__potential.py"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/double_well/database_init.py",
+    "sha256": "aa69b9b667f3f057b95ebe53cad1d8742443db5381b1b677f30c7d3067af9377",
+    "local": "/workspace/work/rpmd-fes-review/literature/ogre-source/2023_TBD_OGRe__benchmarking__2D__double_well__database_init.py"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/ackley/potential.py",
+    "sha256": "8f4a6c1a53fd72778b568eb482d7bace28aac7b91eb0337af5565de54f7bdf3a",
+    "local": "/workspace/work/rpmd-fes-review/literature/ogre-source/2023_TBD_OGRe__benchmarking__2D__ackley__potential.py"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/ackley/database_init.py",
+    "sha256": "c3b47f833c2008503be8511f938d5ba4814e26dcee63cf9a45cbc4f8db89ede1",
+    "local": "/workspace/work/rpmd-fes-review/literature/ogre-source/2023_TBD_OGRe__benchmarking__2D__ackley__database_init.py"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/SanderBorgmans/SupportingInformation/e7511c7dd48be80230c3cc4afc660696584712b1/2023_TBD_OGRe/benchmarking/2D/scripts/error_plots.py",
+    "sha256": "de8d56929b1d004bea3a3f01d079fea3d2d036963c49d4871b07792b3f2e0022",
+    "local": "/workspace/work/rpmd-fes-review/literature/ogre-source/2023_TBD_OGRe__benchmarking__2D__scripts__error_plots.py"
+  }
+]

@@ -178,10 +178,10 @@ class PeriodicToy:
 
 def test_periodic_pes_requires_explicit_contract_and_receives_system():
     system = slab()
-    # The direct public constructor must reject PBC before loading a library.
+    # An explicitly selected v1 constructor rejects PBC before loading a library.
     for source in (system, system.to_dict()):
         with pytest.raises(PotentialError, match="nonperiodic"):
-            CABIPotential("does-not-exist.so", system=source)
+            CABIPotential("does-not-exist.so", system=source, abi_version=1)
     provider = make_potential(PeriodicToy(), system)
     assert provider.system is system
     wrapped = make_potential(PythonPotential(PeriodicToy()), system)
@@ -191,7 +191,7 @@ def test_periodic_pes_requires_explicit_contract_and_receives_system():
     with pytest.raises(NativeUnavailableError, match="periodic"):
         wrapped.native_binding()
     for provider in (
-        {"provider": "cabi", "library": "does-not-exist.so"},
+        {"provider": "cabi", "abi_version": 1, "library": "does-not-exist.so"},
         {"provider": "torch", "model": "does-not-exist.pt"},
         lambda q: (np.zeros(len(q)), np.zeros_like(q)),
     ):

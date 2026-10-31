@@ -117,6 +117,8 @@ def main():
         "pyrpmd.workflows.adaptive_umbrella", "pyrpmd.workflows.metadynamics",
         "pyrpmd.analysis.metadynamics",
         "pyrpmd.pcet", "pyrpmd.pcet_input", "pyrpmd.workflows.pcet",
+        "pyrpmd.pesgen.jaxpip_data", "pyrpmd.pesgen.jaxpip_fit",
+        "pyrpmd.pesgen.jaxpip_export",
     ]
     for module in modules:
         importlib.import_module(module)

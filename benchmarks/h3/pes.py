@@ -43,6 +43,7 @@ class BKMP2Potential(Potential):
         self.metadata = {
             "provider": "BKMP2", "model": SOURCE["model"], "execution_device": "cpu",
             "thread_safety": "process_serial", "native_batch": True, "dtype": "float64",
+            "trajectory_batch_safe": True,
             "atomic_numbers": [1, 1, 1], "charge": 0, "multiplicity": 2,
             "energy_zero": SOURCE["energy_zero"], "source_commit": SOURCE["commit"],
             "source_sha256": SOURCE["sha256"], "library_sha256": binary_hash,

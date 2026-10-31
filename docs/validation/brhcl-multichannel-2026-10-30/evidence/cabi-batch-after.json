@@ -1,0 +1,14 @@
+{
+  "batch": 4096,
+  "timings_seconds": [
+    0.009536518999084365,
+    0.008946941001340747,
+    0.008147366999764927
+  ],
+  "median_seconds": 0.008946941001340747,
+  "energy": 0.08704116832218702,
+  "all_success": true,
+  "empty_messages": true,
+  "speedup": 63.975891415348485,
+  "same_energy": true
+}

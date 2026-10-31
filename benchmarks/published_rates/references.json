@@ -1,0 +1,1067 @@
+{
+  "schema_version": 1,
+  "created_date": "2026-10-31",
+  "rate_unit": "cm3 molecule-1 s-1",
+  "scope": "Source-verified published values and explicit missing-reference records; no PyRPMD reproduction is asserted.",
+  "factor_convention": "electronic_weight and symmetry_factor describe the published convention; never multiply a published final rate again. Null means unresolved, not unity.",
+  "matching_requirements": [
+    "same reaction, isotope masses and channel definition",
+    "same PES and version/parameterization",
+    "same temperature and rate units",
+    "matching nuclear-spin/electronic/symmetry convention",
+    "bead, timestep, PMF overlap, sampling and transmission-plateau convergence",
+    "use RPMD references for implementation agreement and exact-QM references separately for method error"
+  ],
+  "sources": {
+    "rpmdrate_2013": {
+      "doi": "10.1016/j.cpc.2012.10.017",
+      "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+      "repository_url": "https://dspace.mit.edu/entities/publication/a4555c62-26a0-4500-8953-5dd1905583cc",
+      "retrieval_url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+      "kind": "original_author_manuscript",
+      "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics"
+    },
+    "h3_qm_2005": {
+      "doi": "10.1063/1.1946740",
+      "url": "https://www.osti.gov/servlets/purl/862319",
+      "retrieval_url": "https://www.osti.gov/servlets/purl/862319",
+      "publisher_pdf": "https://pubs.aip.org/aip/jcp/article-pdf/doi/10.1063/1.1946740/15369929/054108_1_online.pdf",
+      "kind": "original_research_manuscript",
+      "title": "Quantum-instanton evaluation of the kinetic isotope effects"
+    },
+    "h3_isotopes_2013": {
+      "doi": "10.1039/C2CP44364C",
+      "url": "https://pubs.rsc.org/en/content/articlelanding/2013/cp/c2cp44364c",
+      "kind": "original_research_article",
+      "title": "A ring polymer molecular dynamics study of the isotopologues of the H + H2 reaction"
+    },
+    "oh_h2_2017": {
+      "doi": "10.1039/C7CP05266A",
+      "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+      "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction",
+      "kind": "original_author_manuscript",
+      "title": "A ring polymer molecular dynamics study of the OH + H2(D2) reaction"
+    },
+    "oh_h2_2018": {
+      "doi": "10.1039/C8CP06037A",
+      "url": "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a",
+      "retrieval_url": "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a",
+      "kind": "original_research_article",
+      "title": "Automated calculation of thermal rate coefficients using ring polymer molecular dynamics and machine-learning interatomic potentials with active learning"
+    },
+    "h_ch4_2013": {
+      "doi": "10.1063/1.4793394",
+      "url": "https://dspace.mit.edu/entities/publication/2ccd972a-f59c-4564-8ecc-90680e7e0b16",
+      "kind": "original_author_manuscript",
+      "title": "Rate coefficients and kinetic isotope effects of the X + CH4 -> CH3 + HX (X = H, D, Mu) reactions from ring polymer molecular dynamics"
+    },
+    "cl_ch4_2014": {
+      "doi": "10.1021/jp501043z",
+      "url": "https://dspace.mit.edu/entities/publication/d2be363b-deb3-45fb-826a-ecd2db1818ae",
+      "kind": "original_author_manuscript",
+      "title": "Quantum rate coefficients and kinetic isotope effect for the reaction Cl + CH4 -> HCl + CH3 from ring polymer molecular dynamics"
+    },
+    "fh2_2009": {
+      "doi": "10.1063/1.3127145",
+      "url": "https://doi.org/10.1063/1.3127145",
+      "kind": "original_research_article",
+      "title": "Bimolecular reaction rates from ring polymer molecular dynamics",
+      "erratum_doi": "10.1063/1.3464477"
+    },
+    "muh2_2012": {
+      "doi": "10.1021/jz201702q",
+      "url": "https://pubs.acs.org/doi/10.1021/jz201702q",
+      "kind": "original_research_article",
+      "title": "Chemical reaction rates from ring polymer molecular dynamics: Zero point energy conservation in Mu + H2 -> MuH + H"
+    }
+  },
+  "cases": [
+    {
+      "id": "h_h2_bkmp2_rpmd_300k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "RPMD",
+      "temperature_K": 300.0,
+      "nbeads": 128,
+      "rate_cm3_molecule_s": 1.95e-16,
+      "source": {
+        "id": "rpmdrate_2013",
+        "doi": "10.1016/j.cpc.2012.10.017",
+        "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+        "table": "Table 2, H+H2 row, RPMD column",
+        "retrieval_url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "single_adiabatic_surface",
+      "electronic_weight": 1.0,
+      "symmetry_convention": "equivalent_product_channels_included",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Table 1 specifies 128 beads, Rinf=30 bohr, dt=0.1 fs, two equivalent product arrangements.",
+        "The final tabulated rate already includes the product-channel definition; symmetry_factor=1 means no additional multiplier.",
+        "The paper reports approximately 5 percent statistical convergence; this is not a supplied confidence interval or a claim that RPMD equals exact QM."
+      ],
+      "qtst_rate_cm3_molecule_s": 2.51e-16,
+      "transmission_coefficient": 0.776,
+      "equivalent_product_channels": 2
+    },
+    {
+      "id": "h_ch4_eg_rpmd_300k",
+      "reaction": "H + CH4 -> H2 + CH3",
+      "pes": "Espinosa-Garcia modified/recalibrated Jordan-Gilbert, CPC2013 Ref.49",
+      "reference_method": "RPMD",
+      "temperature_K": 300.0,
+      "nbeads": 128,
+      "rate_cm3_molecule_s": 1.13e-19,
+      "source": {
+        "id": "rpmdrate_2013",
+        "doi": "10.1016/j.cpc.2012.10.017",
+        "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+        "table": "Table 2, H+CH4 row, RPMD column",
+        "retrieval_url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "single_adiabatic_surface",
+      "electronic_weight": 1.0,
+      "symmetry_convention": "equivalent_product_channels_included",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Table 1 specifies four equivalent abstraction channels; no additional factor of four is to be applied.",
+        "This historical POTLIB potential is different from modern PIP-NN methane surfaces. Match the exact Ref.49 implementation before comparison."
+      ],
+      "qtst_rate_cm3_molecule_s": 1.71e-19,
+      "transmission_coefficient": 0.659,
+      "equivalent_product_channels": 4
+    },
+    {
+      "id": "h_h2_bkmp2_qm_200k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 200.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 2.01e-18,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_250k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 250.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 3.67e-17,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_300k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 300.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 3.24e-16,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_350k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 350.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.71e-15,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_400k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 400.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 6.3e-15,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_450k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 450.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.79e-14,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_500k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 500.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 4.21e-14,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_600k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 600.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.57e-13,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_800k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 800.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 8.87e-13,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_1000k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 1000.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 2.69e-12,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_1200k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 1200.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 5.89e-12,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "h_h2_bkmp2_qm_1500k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 1500.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.35e-11,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, H+H2 column; Sec. VI and Eqs. (6.1)-(6.3)",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Table I and Figure 4 use para/even-j labels; the nuclear-rovibrational population convention must be matched before an automatic comparison.",
+        "Do not relabel an exact QM value as an RPMD implementation target; RPMD has physical approximation error."
+      ]
+    },
+    {
+      "id": "d_d2_bkmp2_qm_300k",
+      "reaction": "D + D2 -> D2 + D",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 300.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 4.65e-17,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, D+D2 column",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Source parity and nuclear-spin partition conventions require separate verification; this is not D+H2."
+      ]
+    },
+    {
+      "id": "d_d2_bkmp2_qm_1000k",
+      "reaction": "D + D2 -> D2 + D",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 1000.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.03e-12,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, D+D2 column",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Source parity and nuclear-spin partition conventions require separate verification; this is not D+H2."
+      ]
+    },
+    {
+      "id": "d_d2_bkmp2_qm_1500k",
+      "reaction": "D + D2 -> D2 + D",
+      "pes": "BKMP2",
+      "reference_method": "QM",
+      "temperature_K": 1500.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 5.96e-12,
+      "source": {
+        "id": "h3_qm_2005",
+        "doi": "10.1063/1.1946740",
+        "url": "https://www.osti.gov/servlets/purl/862319",
+        "table": "Table VII, D+D2 column",
+        "retrieval_url": "https://www.osti.gov/servlets/purl/862319"
+      },
+      "nuclear_spin_convention": "source_specific_parity_resolution_unmatched",
+      "electronic_convention": "source_electronic_partition_ratio",
+      "electronic_weight": null,
+      "symmetry_convention": "both_product_arrangements_in_QM_sum",
+      "symmetry_factor": null,
+      "status": "verified_table",
+      "comparison_role": "quantum_accuracy_reference_pending_convention_match",
+      "notes": [
+        "Source parity and nuclear-spin partition conventions require separate verification; this is not D+H2."
+      ]
+    },
+    {
+      "id": "oh_h2_yzcl2_rpmd_corrected_300k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "YZCL2",
+      "reference_method": "RPMD",
+      "temperature_K": 300.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 7.22e-15,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + H2, RPMD YZCL2 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_h2_yzcl2_rpmd_corrected_200k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "YZCL2",
+      "reference_method": "RPMD",
+      "temperature_K": 200.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 7.3e-16,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + H2, RPMD YZCL2 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_h2_yzcl2_rpmd_corrected_150k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "YZCL2",
+      "reference_method": "RPMD",
+      "temperature_K": 150.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.37e-16,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + H2, RPMD YZCL2 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_h2_nn1_rpmd_corrected_300k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 300.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 8.28e-15,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + H2, RPMD NN1 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_h2_nn1_rpmd_corrected_200k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 200.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 7.06e-16,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + H2, RPMD NN1 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_h2_nn1_rpmd_corrected_150k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 150.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.73e-16,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + H2, RPMD NN1 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_d2_yzcl2_rpmd_corrected_300k",
+      "reaction": "OH + D2 -> HDO + D",
+      "pes": "YZCL2",
+      "reference_method": "RPMD",
+      "temperature_K": 300.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.16e-15,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + D2, RPMD YZCL2 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_d2_yzcl2_rpmd_corrected_200k",
+      "reaction": "OH + D2 -> HDO + D",
+      "pes": "YZCL2",
+      "reference_method": "RPMD",
+      "temperature_K": 200.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 3.63e-17,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + D2, RPMD YZCL2 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_d2_yzcl2_rpmd_corrected_150k",
+      "reaction": "OH + D2 -> HDO + D",
+      "pes": "YZCL2",
+      "reference_method": "RPMD",
+      "temperature_K": 150.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 2.36e-18,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + D2, RPMD YZCL2 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_d2_nn1_rpmd_corrected_300k",
+      "reaction": "OH + D2 -> HDO + D",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 300.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 1.5e-15,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + D2, RPMD NN1 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_d2_nn1_rpmd_corrected_200k",
+      "reaction": "OH + D2 -> HDO + D",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 200.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 4.26e-17,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + D2, RPMD NN1 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_d2_nn1_rpmd_corrected_150k",
+      "reaction": "OH + D2 -> HDO + D",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 150.0,
+      "nbeads": null,
+      "rate_cm3_molecule_s": 2.94e-18,
+      "source": {
+        "id": "oh_h2_2017",
+        "doi": "10.1039/C7CP05266A",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "table": "Table 3, OH + D2, RPMD NN1 row",
+        "retrieval_url": "https://www.researchgate.net/publication/320300566_A_ring_polymer_molecular_dynamics_study_of_the_OH_H_2_D_2_reaction"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "OH_spin_orbit_corrected_delta_140_cm-1",
+      "electronic_weight": null,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Final spin-orbit-corrected rate from Table 3; do not apply the Eq. (3) correction again.",
+        "Table 2 of the same paper reports different, uncorrected quantities. Bead count and isotope masses must be recovered from the corresponding input before production validation."
+      ],
+      "electronic_weight_formula": "1/(1+exp(-hc*140_cm^-1/(kB*T)))"
+    },
+    {
+      "id": "oh_h2_nn1_rpmd_uncorrected_300k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 300.0,
+      "nbeads": 128,
+      "rate_cm3_molecule_s": 1.25e-14,
+      "source": {
+        "id": "oh_h2_2018",
+        "doi": "10.1039/C8CP06037A",
+        "url": "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a",
+        "table": "Table 1, AI/NN1 k_RPMD row",
+        "retrieval_url": "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "single_adiabatic_surface",
+      "electronic_weight": 1.0,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Use the NN1 reference column, not the MTP approximation.",
+        "Reported k_RPMD equals the tabulated QTST factor times transmission coefficient; OH electronic correction has not been applied to this column."
+      ],
+      "qtst_rate_cm3_molecule_s": 2.37e-14,
+      "transmission_coefficient": 0.528
+    },
+    {
+      "id": "oh_h2_nn1_rpmd_uncorrected_1000k",
+      "reaction": "OH + H2 -> H2O + H",
+      "pes": "NN1",
+      "reference_method": "RPMD",
+      "temperature_K": 1000.0,
+      "nbeads": 16,
+      "rate_cm3_molecule_s": 2.23e-12,
+      "source": {
+        "id": "oh_h2_2018",
+        "doi": "10.1039/C8CP06037A",
+        "url": "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a",
+        "table": "Table 1, AI/NN1 k_RPMD row",
+        "retrieval_url": "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "single_adiabatic_surface",
+      "electronic_weight": 1.0,
+      "symmetry_convention": "published_total_rate",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "notes": [
+        "Use the NN1 reference column, not the MTP approximation.",
+        "Reported k_RPMD equals the tabulated QTST factor times transmission coefficient; OH electronic correction has not been applied to this column."
+      ],
+      "qtst_rate_cm3_molecule_s": 3.72e-12,
+      "transmission_coefficient": 0.599
+    },
+    {
+      "id": "d_h2_rpmd_pending",
+      "reaction": "D + H2 -> HD + H",
+      "pes": null,
+      "reference_method": "RPMD",
+      "temperature_K": null,
+      "nbeads": null,
+      "rate_cm3_molecule_s": null,
+      "source": {
+        "id": "h3_isotopes_2013",
+        "doi": "10.1039/C2CP44364C",
+        "url": "https://pubs.rsc.org/en/content/articlelanding/2013/cp/c2cp44364c",
+        "table": null,
+        "retrieval_url": "https://pubs.rsc.org/en/content/articlelanding/2013/cp/c2cp44364c"
+      },
+      "nuclear_spin_convention": null,
+      "electronic_convention": null,
+      "electronic_weight": null,
+      "symmetry_convention": null,
+      "symmetry_factor": null,
+      "status": "not_available",
+      "comparison_role": "pending_source_verification",
+      "notes": [
+        "Article and reaction identified; full numerical table and PES identity not retrieved. No graph values were digitized."
+      ]
+    },
+    {
+      "id": "mu_h2_rpmd_pending",
+      "reaction": "Mu + H2 -> MuH + H",
+      "pes": null,
+      "reference_method": "RPMD",
+      "temperature_K": null,
+      "nbeads": null,
+      "rate_cm3_molecule_s": null,
+      "source": {
+        "id": "muh2_2012",
+        "doi": "10.1021/jz201702q",
+        "url": "https://pubs.acs.org/doi/10.1021/jz201702q",
+        "table": null,
+        "retrieval_url": "https://pubs.acs.org/doi/10.1021/jz201702q"
+      },
+      "nuclear_spin_convention": null,
+      "electronic_convention": null,
+      "electronic_weight": null,
+      "symmetry_convention": null,
+      "symmetry_factor": null,
+      "status": "not_available",
+      "comparison_role": "pending_source_verification",
+      "notes": [
+        "Article identified. Numerical RPMD/QM rows, exact Mu mass and PES version remain to be verified."
+      ]
+    },
+    {
+      "id": "cl_ch4_rpmd_pending",
+      "reaction": "Cl + CH4 -> HCl + CH3",
+      "pes": null,
+      "reference_method": "RPMD",
+      "temperature_K": null,
+      "nbeads": null,
+      "rate_cm3_molecule_s": null,
+      "source": {
+        "id": "cl_ch4_2014",
+        "doi": "10.1021/jp501043z",
+        "url": "https://dspace.mit.edu/entities/publication/d2be363b-deb3-45fb-826a-ecd2db1818ae",
+        "table": null,
+        "retrieval_url": "https://dspace.mit.edu/entities/publication/d2be363b-deb3-45fb-826a-ecd2db1818ae"
+      },
+      "nuclear_spin_convention": null,
+      "electronic_convention": null,
+      "electronic_weight": null,
+      "symmetry_convention": null,
+      "symmetry_factor": null,
+      "status": "not_available",
+      "comparison_role": "pending_source_verification",
+      "notes": [
+        "Article treats two PESs; separate surface identities and numerical tables must be retrieved, along with chlorine electronic/spin-orbit convention."
+      ]
+    },
+    {
+      "id": "f_h2_rpmd_pending",
+      "reaction": "F + H2 -> HF + H",
+      "pes": null,
+      "reference_method": "RPMD",
+      "temperature_K": null,
+      "nbeads": null,
+      "rate_cm3_molecule_s": null,
+      "source": {
+        "id": "fh2_2009",
+        "doi": "10.1063/1.3127145",
+        "url": "https://doi.org/10.1063/1.3127145",
+        "table": null,
+        "retrieval_url": "https://doi.org/10.1063/1.3127145"
+      },
+      "nuclear_spin_convention": null,
+      "electronic_convention": null,
+      "electronic_weight": null,
+      "symmetry_convention": null,
+      "symmetry_factor": null,
+      "status": "not_available",
+      "comparison_role": "pending_source_verification",
+      "notes": [
+        "Retrieve numerical tables and check the 2010 erratum DOI 10.1063/1.3464477 before using original values; spin-orbit and PES conventions must be matched."
+      ]
+    },
+    {
+      "id": "h_ch4_qm_pending",
+      "reaction": "H + CH4 -> H2 + CH3",
+      "pes": null,
+      "reference_method": "QM",
+      "temperature_K": null,
+      "nbeads": null,
+      "rate_cm3_molecule_s": null,
+      "source": {
+        "id": "h_ch4_2013",
+        "doi": "10.1063/1.4793394",
+        "url": "https://dspace.mit.edu/entities/publication/2ccd972a-f59c-4564-8ecc-90680e7e0b16",
+        "table": null,
+        "retrieval_url": "https://dspace.mit.edu/entities/publication/2ccd972a-f59c-4564-8ecc-90680e7e0b16"
+      },
+      "nuclear_spin_convention": null,
+      "electronic_convention": null,
+      "electronic_weight": null,
+      "symmetry_convention": null,
+      "symmetry_factor": null,
+      "status": "not_available",
+      "comparison_role": "pending_source_verification",
+      "notes": [
+        "Paper compares RPMD to same-PES MCTDH; no verified numerical MCTDH table has been entered."
+      ]
+    }
+  ]
+}

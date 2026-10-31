@@ -33,10 +33,25 @@ def validate_periodic_spec(config, system=None):
     _, pbc = validate_cell_pbc(get("cell"), get("pbc"))
     periodic = bool(pbc.any())
     kind = config.get("provider", config.get("type", "builtin"))
-    if periodic and kind in ("rpmdrate", "f2py", "cabi", "native", "torch", "diabatic_python"):
+    if kind in ("cabi", "native") and config.get("abi_version") is not None:
+        version = config["abi_version"]
+        if isinstance(version, (bool, np.bool_)) or not isinstance(version, (int, np.integer)) or version not in (1, 2):
+            raise PotentialError("C ABI abi_version must be 1 or 2")
+    if kind == "torch":
+        if not isinstance(config.get("periodic", False), (bool, np.bool_)):
+            raise PotentialError("Torch periodic must be a boolean")
+        if config.get("virial", "auto") not in ("auto", "autograd", "provided", "none"):
+            raise PotentialError("Torch virial must be auto, autograd, provided, or none")
+    if periodic and kind in ("rpmdrate", "f2py", "diabatic_python", "pyscf"):
         raise PotentialError(
-            f"Provider {kind!r} has no cell/PBC contract; use ASE, i-PI, or an explicitly periodic Python provider"
+            f"Provider {kind!r} has no periodic cell/PBC contract"
         )
+    if periodic and kind in ("cabi", "native") and config.get("abi_version") == 1:
+        raise PotentialError("C ABI v1 is nonperiodic; use a cell-aware C ABI v2 library")
+    if periodic and kind == "torch" and config.get("periodic") is not True:
+        raise PotentialError("Periodic Torch models require potential.periodic=true and a cell/PBC contract")
+    if periodic and kind == "deepmd" and not pbc.all():
+        raise PotentialError("DeePMD requires all or no periodic axes; partial PBC is unsupported")
     if kind in ("builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"):
         model = config.get("name", config.get("model", kind if kind != "builtin" else "harmonic"))
         if periodic and model not in ("free", "periodic_cosine"):
@@ -126,6 +141,11 @@ def _make_potential(config, system=None):
         if model == "double_well":
             return DoubleWellPotential(**params)
         raise ValueError(f"unknown builtin PES {model}")
+    if kind == "native_periodic":
+        from ..native_ensemble import NativePeriodicPES
+        if params:
+            raise ValueError("native_periodic input does not accept opaque context parameters")
+        return NativePeriodicPES(spec["library"], spec.get("function", "evaluate"), len(get("masses")))
     if kind == "diabatic_python":
         from .diabatic import DiabaticPythonPotential
 
@@ -138,10 +158,18 @@ def _make_potential(config, system=None):
             obj = import_object(spec["function"])
         else:
             raise ValueError("Python PES requires factory or function")
-        return PythonPotential(
-            obj, units=spec.get("units"), derivative=spec.get("derivative", "force"),
-            cell=cell, pbc=pbc,
-        )
+        try:
+            return PythonPotential(
+                obj, units=spec.get("units"), derivative=spec.get("derivative", "force"),
+                cell=cell, pbc=pbc,
+            )
+        except BaseException:
+            # A constructed model may own a socket, accelerator or calculator.
+            # Constructor-level contract errors happen before make_potential's
+            # binding cleanup, so release factory-owned providers here too.
+            if "factory" in spec and callable(getattr(obj, "close", None)):
+                obj.close()
+            raise
     if kind in ("rpmdrate", "f2py"):
         return RPMDratePotential(
             spec.get("module", spec.get("library")),
@@ -154,7 +182,8 @@ def _make_potential(config, system=None):
         )
     if kind in ("cabi", "native"):
         return CABIPotential(
-            spec["library"], config=params, system=system, manifest=spec.get("manifest")
+            spec["library"], config=params, system=system, manifest=spec.get("manifest"),
+            abi_version=spec.get("abi_version"),
         )
     if kind == "ase":
         from .optional import ASEPotential
@@ -172,6 +201,22 @@ def _make_potential(config, system=None):
             device=spec.get("device", "cuda"),
             units=spec.get("units"),
             dtype=spec.get("dtype", params.get("dtype", "float64")),
+            cell=cell, pbc=pbc, periodic=spec.get("periodic", False),
+            virial=spec.get("virial", "auto"),
+        )
+    if kind in ("mace", "nequip", "deepmd", "fairchem", "tblite", "xtb", "pyscf"):
+        from .adapters import make_named_potential
+
+        if "units" in spec:
+            if kind != "deepmd":
+                raise ValueError(f"{kind} has fixed backend units; potential.units is unsupported")
+            if "units" in params:
+                raise ValueError("Specify DeePMD units in potential.units or params.units, not both")
+            params["units"] = spec["units"]
+        return make_named_potential(
+            kind, symbols=get("symbols"), model=spec.get("model"),
+            device=spec.get("device", "cpu"), params=params, cell=cell, pbc=pbc,
+            charge=get("charge", 0), multiplicity=get("multiplicity", 1),
         )
     if kind in ("ipi", "socket"):
         from .socket import IPIPotential

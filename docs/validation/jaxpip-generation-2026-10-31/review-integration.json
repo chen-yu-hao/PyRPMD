@@ -1,0 +1,242 @@
+{
+  "schema": "pyrpmd.jaxpip-integration-review/1",
+  "recorded_at_utc": "2026-10-31T10:54:22.382669+00:00",
+  "source_commit": "6a2dd9e596929b137ca6a817584edf3fa5adac33",
+  "reviewed_owner_head": "ae490fbef2a36daebfedad1e6a89e7f6be99c8a7",
+  "integrated_base": "e936bb5d9064f692555277e4ffc199f0f97c160d",
+  "exporter_fix": "5c7c55aa7622dbadc37c47a8ed65c6b666eade02",
+  "source_sha256": {
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "0d1f33baf73012c541708c327602c92cbb2546cceeee36a6202e6b7254f69661",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "01302208546121eb5a1c5ca896f1a5ca18d6808bce1c2d14fb93a1f44647dc52",
+    "tools/export_jaxpip_onnx.py": "166e0d60a9461a4acb950fc71dc5251bb610f39c7cb30da3526b26721c256499",
+    "tools/requirements-jaxpip-export.txt": "180afa471bfb489a6ea86f84c2389583cd506cb27755a9ddd6ebd664477a074b",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "examples/pesgen/jaxpip/h2_pipeline.py": "88d67d45b9827167a935cdd1781bfcfcababaaf864e555e84e703b5a5bb04b38",
+    "tests/test_jaxpip_pesgen.py": "c5a924db0494ffc882980ddf7f092b7bd6a1b683130eec9c9e9b2705f69f0f89",
+    "tests/test_jaxpip_export_link.py": "6ffaaa93afb5aa4eb4d767db8772ddd977e703b4d723c02d4e6a699127162457"
+  },
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.18.1",
+      "pyscf": "2.14.0",
+      "jax": "0.9.0",
+      "jaxlib": "0.9.0",
+      "jaxpip": "1.0.0",
+      "equinox": "0.13.2",
+      "onnx": "1.20.1",
+      "onnxruntime": "1.24.1",
+      "jax2onnx": "0.17.1",
+      "onnx-ir": "1.1.0"
+    }
+  },
+  "sdk_sha256": "9142552248b735920f9390027e4512a2cacf8946a1ffcbe9071a5c210531026f",
+  "tests": {
+    "command": "python -m pytest -q tests/test_jaxpip_pesgen.py tests/test_jaxpip_export_link.py",
+    "passed": 44,
+    "skipped": 0,
+    "log_sha256": "11924c176f6be19c9fcfa766e4f96fcb8906f15b5097dac93ac3813fe8d20935"
+  },
+  "models": {
+    "linear": {
+      "metrics": {
+        "test": {
+          "count": 4,
+          "energy_max_hartree": 5.326028142960126e-07,
+          "energy_rmse_hartree": 3.4835907640525133e-07,
+          "force_max_hartree_per_bohr": 7.183293056295392e-06,
+          "force_rmse_hartree_per_bohr": 2.6706386578741493e-06
+        },
+        "train": {
+          "count": 16,
+          "energy_max_hartree": 6.392875002703136e-07,
+          "energy_rmse_hartree": 3.2419359299352894e-07,
+          "force_max_hartree_per_bohr": 1.0441109738995591e-05,
+          "force_rmse_hartree_per_bohr": 2.8108398066393117e-06
+        },
+        "validation": {
+          "count": 4,
+          "energy_max_hartree": 4.504979880248783e-07,
+          "energy_rmse_hartree": 2.513737104944492e-07,
+          "force_max_hartree_per_bohr": 1.076005041394934e-05,
+          "force_rmse_hartree_per_bohr": 3.6428097279129036e-06
+        }
+      },
+      "optimizer": {
+        "features": 8,
+        "optimizer": "weighted augmented SVD least squares",
+        "rank": 8,
+        "regularization": 1e-14,
+        "singular_values": [
+          102.52066300162193,
+          17.42156586809739,
+          2.5123950703002893,
+          0.27193996874580334,
+          0.0252511021313818,
+          0.0019336042779227287,
+          0.00010744800411690951,
+          3.620545779583777e-06
+        ]
+      },
+      "within_requested_test_bounds": true,
+      "physical_validation": false,
+      "native": {
+        "steps": 100,
+        "beads": 8,
+        "python_pes_calls": 0,
+        "q_max_error_bohr": 0.0,
+        "p_max_error_au": 0.0,
+        "energy_range_hartree": 4.857483304476773e-10
+      },
+      "export": {
+        "sha256": "b636aaaf1816c3d55f4bc02d760092798479bb935f5a9b143a03c092f77a5dac",
+        "batches_checked": [
+          1,
+          3,
+          32
+        ],
+        "max_energy_error_model_units": 0.0,
+        "max_force_error_model_units": 0.0,
+        "force_fd_max_error_model_units": 1.0670170302873316e-10,
+        "metadata": {
+          "atomic_numbers": [
+            1,
+            1
+          ],
+          "batch_independent": true,
+          "constants": {
+            "bohr_angstrom": 0.5291772105439999,
+            "ev_to_hartree": 0.03674932217566422
+          },
+          "derivative": "force",
+          "energy_unit": "hartree",
+          "export_strategy": "vmap-pretraced-single-energy-forces-jaxpr",
+          "export_versions": {
+            "equinox": "0.13.2",
+            "jax": "0.9.0",
+            "jax2onnx": "0.17.1",
+            "jaxpip": "1.0.0",
+            "onnx": "1.20.1",
+            "onnx-ir": "1.1.0",
+            "onnxruntime": "1.24.1"
+          },
+          "export_workarounds": [
+            "jax2onnx-0.17.1-symbolic-pad-metadata"
+          ],
+          "force_unit": "hartree/bohr",
+          "position_unit": "bohr",
+          "schema": "pyrpmd.onnx/1",
+          "source_sha256": {
+            "basis": "40b7dfd4aff3ed11618a19f04ebba3f0e506aecd6d95b23067757365a524f446",
+            "checkpoint": "2a39cfe607da8c81e11c7d8d73c4f2bc9a754c32b555cc242bdef937039ed320"
+          },
+          "state": {
+            "charge": 0,
+            "multiplicity": 1
+          }
+        }
+      },
+      "source_report_sha256": "26dc867d6ab4d4f383ca68c76f81c7fc3829a8fda6f62875b1c84fd929763c4a",
+      "export_report_sha256": "a0d816db580c7fd25114faa68a8af48f5cf48eef15f5fa19bd271112b3b97ded"
+    },
+    "nn": {
+      "metrics": {
+        "test": {
+          "count": 4,
+          "energy_max_hartree": 1.5313760308943714e-05,
+          "energy_rmse_hartree": 8.271872341345815e-06,
+          "force_max_hartree_per_bohr": 0.00026217427573782537,
+          "force_rmse_hartree_per_bohr": 8.001336118470982e-05
+        },
+        "train": {
+          "count": 16,
+          "energy_max_hartree": 4.831012334660656e-05,
+          "energy_rmse_hartree": 1.3394025420004752e-05,
+          "force_max_hartree_per_bohr": 0.00011541633035794252,
+          "force_rmse_hartree_per_bohr": 3.359820331662297e-05
+        },
+        "validation": {
+          "count": 4,
+          "energy_max_hartree": 2.2641856532112925e-05,
+          "energy_rmse_hartree": 1.1563979406126698e-05,
+          "force_max_hartree_per_bohr": 0.001410141321492142,
+          "force_rmse_hartree_per_bohr": 0.0004086068103395428
+        }
+      },
+      "optimizer": {
+        "final_loss": 1.308239183056868e-05,
+        "gradient_max": 0.0012789751963913467,
+        "initial_loss": 128.51084491668576,
+        "iterations": 250,
+        "message": "STOP: TOTAL NO. OF ITERATIONS REACHED LIMIT",
+        "optimizer": "L-BFGS-B on layers only; frozen train-only scaler",
+        "success": false
+      },
+      "within_requested_test_bounds": true,
+      "physical_validation": false,
+      "native": {
+        "steps": 100,
+        "beads": 8,
+        "python_pes_calls": 0,
+        "q_max_error_bohr": 0.0,
+        "p_max_error_au": 0.0,
+        "energy_range_hartree": 4.849631807246624e-10
+      },
+      "export": {
+        "sha256": "5c28ccbbdbee56ad1c60d9c0a2d8720b0e825182379bdcb5c834377bc7f1822a",
+        "batches_checked": [
+          1,
+          3,
+          32
+        ],
+        "max_energy_error_model_units": 0.0,
+        "max_force_error_model_units": 6.661338147750939e-16,
+        "force_fd_max_error_model_units": 2.1923868276374492e-10,
+        "metadata": {
+          "atomic_numbers": [
+            1,
+            1
+          ],
+          "batch_independent": true,
+          "constants": {
+            "bohr_angstrom": 0.5291772105439999,
+            "ev_to_hartree": 0.03674932217566422
+          },
+          "derivative": "force",
+          "energy_unit": "hartree",
+          "export_strategy": "vmap-pretraced-single-energy-forces-jaxpr",
+          "export_versions": {
+            "equinox": "0.13.2",
+            "jax": "0.9.0",
+            "jax2onnx": "0.17.1",
+            "jaxpip": "1.0.0",
+            "onnx": "1.20.1",
+            "onnx-ir": "1.1.0",
+            "onnxruntime": "1.24.1"
+          },
+          "export_workarounds": [
+            "jax2onnx-0.17.1-symbolic-pad-metadata"
+          ],
+          "force_unit": "hartree/bohr",
+          "position_unit": "bohr",
+          "schema": "pyrpmd.onnx/1",
+          "source_sha256": {
+            "basis": "40b7dfd4aff3ed11618a19f04ebba3f0e506aecd6d95b23067757365a524f446",
+            "checkpoint": "44879e48cb83958372343cdc421ba884749c2562e5bfdae2843d8b07f36fd854"
+          },
+          "state": {
+            "charge": 0,
+            "multiplicity": 1
+          }
+        }
+      },
+      "source_report_sha256": "a60f97f665ea0d55737700e945c09d9e8ba0ad73ac70cae07b742c3e3e04a44f",
+      "export_report_sha256": "be5ad68de6542e4fc505c2d3c7921a53ccfe2ec1ab269cf952776bf19c1cdc28"
+    }
+  },
+  "physical_validation": false,
+  "scope": "H2 RHF/STO-3G local bond scan and export/native interface verification; no global reactive potential or converged physical RPMD rate is established."
+}

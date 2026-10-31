@@ -90,11 +90,11 @@ class PeriodicPotentialTests(unittest.TestCase):
         system = System(("H", "H"), [1837, 1837], q[0], cell=cell, pbc=[True, True, False])
         made = make_potential({"provider": "builtin", "name": "periodic_cosine", "params": {"height": .02}}, system)
         self.assertIsInstance(made, PeriodicCosinePotential)
-        for spec in ({"provider": "harmonic"}, {"provider": "cabi", "library": "missing.so"}, {"provider": "torch", "model": "missing.pt"}, {"provider": "f2py", "module": "missing"}):
+        for spec in ({"provider": "harmonic"}, {"provider": "cabi", "abi_version": 1, "library": "missing.so"}, {"provider": "torch", "model": "missing.pt"}, {"provider": "f2py", "module": "missing"}):
             with self.subTest(spec=spec), self.assertRaisesRegex(PotentialError, "periodic|cell/PBC"):
                 make_potential(spec, system)
         with self.assertRaisesRegex(PotentialError, "nonperiodic"):
-            CABIPotential("missing.so", system=system)
+            CABIPotential("missing.so", system=system, abi_version=1)
 
     def test_python_periodic_contract_and_units(self):
         cell = np.diag([8., 9., 10.])

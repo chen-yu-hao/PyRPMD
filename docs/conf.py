@@ -26,7 +26,15 @@ extensions = [
 ]
 source_suffix = {".md": "markdown"}
 root_doc = "index"
-include_patterns = ["index.md", "manual/*.md"]
+include_patterns = [
+    "index.md", "manual/*.md", "replica-exchange.md", "opes.md",
+    "plumed.md", "transition-interface-sampling.md", "rate-postprocessing.md",
+    "general-coordinate-rates.md", "rate-studies.md", "instanton.md",
+    "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
+    "rpc-mts.md", "trpmd-spectroscopy.md",
+    "validation/tier1-2026-10-31/README.md",
+    "validation/tier1-2026-10-31/pmf-replay.md",
+]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 myst_enable_extensions = ["dollarmath", "colon_fence"]
 myst_heading_anchors = 4
@@ -53,6 +61,13 @@ html_context = {
     "github_repo": "PyRPMD",
     "github_version": "main",
     "doc_path": "docs",
+    # English-only extension guides return to the Chinese contents rather than
+    # claiming a translation at a nonexistent same-name page.
+    "bilingual_pages": ["index", "genindex", "search", "replica-exchange"] + [
+        "manual/" + path.stem
+        for path in sorted((ROOT / "docs" / "manual").glob("*.md"))
+        if (ROOT / "docs" / "zh" / "manual" / path.name).is_file()
+    ],
 }
 html_show_sourcelink = True
 

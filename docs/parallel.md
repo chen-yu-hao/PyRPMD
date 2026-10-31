@@ -30,7 +30,7 @@ PyRPMD 分开配置任务传输方式 `parallel.backend` 和单条轨迹的势�
 
 ## MPI 拓扑
 
-当前实现要求 `MPI world size = G × B`，其中
+静态调度要求 `MPI world size = G × B`，其中
 `G = trajectory_groups`，`B = bead_workers`。组首 rank 推进积分与轨迹状态；
 其余 rank 持续服务珠子 PES 请求。一次力调用使用本次提交坐标的结果，保持珠子
 顺序，不复用过期的异步力。时间步只在所属组内同步，不插入 world barrier。
@@ -47,15 +47,84 @@ coordinator_ranks = 0
 scheduling = "static"
 ```
 
-以上配置需要 8 个 MPI rank。当前只支持 `pes_ranks=1`、静态任务分配和
-`coordinator_ranks=0`；专用动态调度器和单次 PES 内部再嵌套 MPI 的 Q 层
-没有实现，请勿把预留字段视作已有能力。不支持的值会明确报错。
+以上静态配置需要 8 个 MPI rank。`pes_ranks=1` 仍是唯一支持的值；单次 PES
+内部再嵌套 MPI 的 Q 层没有实现。静态调度仍是默认行为。
 
 跨节点运行需要所有节点使用兼容的 MPI/mpi4py、Python、PyRPMD 和势能库。
 Python factory 必须能在每个执行进程中导入，数据文件须位于相同路径；输出目录
 须是各节点共同可见的共享存储。仅组首写该组轨迹文件，最终统计由 world rank 0
 完成，再广播阶段结果。Slurm 模板见 `examples/slurm/`；实际 `srun --mpi`
 插件、模块环境和节点分配需与集群匹配。
+
+### Dynamic MPI scheduling
+
+Set `scheduling="dynamic"` to give the next independent task to whichever
+trajectory group finishes first. World rank 0 becomes a dedicated coordinator;
+the remaining ranks form `G` fixed groups of `B` bead ranks. Consequently,
+**world size must be `1 + G × B`**. For example:
+
+```toml
+[parallel]
+backend = "mpi"
+mode = "bead"
+trajectory_groups = 4
+bead_workers = 2
+coordinator_ranks = 1
+scheduling = "dynamic"
+
+[sampling]
+parents = 4
+```
+
+This needs nine ranks: `mpiexec -n 9 pyrpmd run input.inp`. Dynamic scheduling
+defaults `coordinator_ranks` to 1; explicitly requesting 0 is an error. Static
+scheduling requires 0. The coordinator does not integrate trajectories or
+evaluate forces. Each worker group retains its own bead communicator, and an
+integration step never waits at a world barrier.
+
+For dRPMD, dynamic mode first samples the persistent parent chains and writes
+the usual `states/initial-*.npz` launch files. It then queues **individual
+collisions**, rather than whole parent chains. A group whose collision stops
+early can immediately take another launch. The two phases reuse the same
+thermalization, launch, propagation, classification and checkpoint routines as
+static execution. Sampling finishes before collision propagation starts; this
+is a finite two-phase queue, not streaming thermalization and collision overlap.
+Sampling memory does not grow with the number of nuclear frames: launches stay
+on shared storage, and tasks carry their IDs and configuration.
+
+Global trajectory IDs, parent IDs and their RNG seeds do not depend on which
+group receives a collision. Results return in input order. With an explicit
+`sampling.parents`, static and dynamic jobs can resume each other's checkpoints,
+including a job stopped after sampling but before all collisions finish.
+Completed trajectory files are replayed once; unsampled parent clocks are
+advanced only as needed. Model state that is not a function of the saved
+coordinates/configuration still requires its own reproducible checkpoint
+contract; scheduling cannot make arbitrary stateful external engines portable.
+
+A Python task/PES exception stops new dispatch. The coordinator drains tasks
+already running, all groups close their live MPI PES contexts, and every rank
+receives the collective error. A result that cannot be serialized is also
+reported collectively. This does not recover from a process/node crash, a hung
+external engine, or an MPI transport failure. Long-running tasks already in
+flight must return before a controlled failure can finish.
+
+MPI GPU placement counts only worker ranks in each node-local communicator;
+the coordinator does not consume a GPU slot. A coordinator-only node is allowed.
+Worker nodes still require `len(devices) × trajectories_per_gpu` worker ranks,
+with `B=1`. Keep the coordinator CPU and the worker CPUs/GPUs in the allocated
+resource budget.
+
+The dispatcher uses mpi4py's documented
+[`Comm.send`, `Comm.recv`, `Comm.Dup` and `Comm.Split`](https://mpi4py.readthedocs.io/en/stable/reference/mpi4py.MPI.Comm.html)
+interfaces. Control messages use a private communicator; bead force traffic
+stays within each group.
+
+An i-PI server's several client connections belong to that single potential
+instance. Distinct trajectory groups or bead-process providers still need
+distinct TCP ports/Unix paths; the executor does not silently offset endpoints.
+For a single shared i-PI server, use one trajectory slot with provider-side
+client parallelism. A custom group-aware factory can configure separate servers
+when several trajectory groups are required.
 
 ## GPU 设备与每卡多轨迹
 
@@ -122,3 +191,13 @@ FES，以及 rate 的 PMF、parent、child 多阶段广播与各自的续跑。
 GPU 设备分配测试使用 mock provider 检查每卡 1 个或多个
 进程和 MPI 节点本地路由；没有实际 CUDA 设备计算测试，也没有多物理节点的
 性能或扩展性测量。Slurm 文件是可检查的提交模板，不代表已在目标集群提交运行。
+
+`tests/mpi_dynamic_integration.py` runs with five ranks (`C=1, G=2, B=2`). A
+rendezvous verifies that a free group starts the third task before a slow first
+task finishes; it is an ordering check rather than a wall-clock speed claim.
+The script checks ordered bead forces, empty/underfilled queues, task and
+initialization failure, unpicklable results, resource cleanup, mock GPU routing,
+and exact free-PES dRPMD agreement with static scheduling and resumed jobs.
+`tests/test_dynamic_scheduling.py` also tests interruption between the sampling
+and collision phases and changing scheduling mode on resume. These checks do
+not establish multi-node scaling or a speedup for a particular physical PES.

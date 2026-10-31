@@ -1,0 +1,37 @@
+# Runnable fixed-cell toy model. This short run is not a convergence study.
+task = "pimd"
+preset = "pilot"
+temperature = "300 K"
+beads = 4
+seed = 482
+
+[system]
+symbols = ["H"]
+geometry = [[0.2, 0.3, 0.4]]
+geometry_unit = "bohr"
+cell = [[10.0, 0.0, 0.0], [1.0, 10.0, 0.0], [0.5, 0.2, 10.0]]
+cell_unit = "bohr"
+pbc = [true, true, true]
+
+[potential]
+provider = "torch"
+factory = "periodic_torch.py:build"
+periodic = true
+virial = "autograd"
+device = "cpu"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+equilibration_steps = 20
+production_steps = 40
+interval_steps = 2
+replicas = 1
+
+[output]
+directory = "runs/periodic-torch"
+checkpoint_steps = 20

@@ -78,6 +78,10 @@ class PythonPotential(Potential):
         self.length_factor, self.energy_factor = unit_factors(units)
         self.sign = -1 if derivative == "gradient" else 1
         self.metadata = dict(getattr(obj, "metadata", {}) or {})
+        if self.metadata.get("requires_atomic_units") is True and (
+            self.length_factor != 1 or self.energy_factor != 1 or self.sign != 1
+        ):
+            raise PotentialError("This Python provider requires atomic units and derivative='force'")
         self.metadata.setdefault("thread_safety", "context_serial")
         self.metadata.setdefault("execution_device", "cpu")
         self.cell, self.pbc = validate_cell_pbc(cell, pbc)
@@ -110,6 +114,24 @@ class PythonPotential(Potential):
         bind = getattr(self.obj, "bind_system", None)
         if callable(bind):
             bind(system)
+
+    def set_cell(self, cell):
+        """Update a fully periodic cell without reinitializing the provider.
+
+        The keyword evaluation contract receives the new provider-unit cell
+        on its next call. An object bound through ``supports_pbc`` must also
+        implement an explicit canonical-AU ``set_cell(cell_bohr)`` callback;
+        rebinding the full System each step could reset stateful models.
+        """
+        new_cell, _ = validate_cell_pbc(cell, self.pbc)
+        if new_cell is None or not self.pbc.all():
+            raise PotentialError("variable-cell Python PES requires full periodicity")
+        if not self._periodic_kwargs:
+            setter = getattr(self.obj, "set_cell", None)
+            if not callable(setter):
+                raise PotentialError("bound Python PES must implement set_cell(cell_bohr) for NPT")
+            setter(new_cell.copy())
+        self.cell = new_cell
 
     def native_binding(self):
         from ..propagation import NativeUnavailableError

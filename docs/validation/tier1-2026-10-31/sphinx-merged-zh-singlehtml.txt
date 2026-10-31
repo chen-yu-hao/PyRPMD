@@ -1,0 +1,69 @@
+Running Sphinx v8.2.3
+loading translations [zh_CN]... done
+making output directory... done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'dollarmath', 'colon_fence'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output...
+building [singlehtml]: all documents
+updating environment: [new config] 16 added, 0 changed, 0 removed
+reading sources... [  6%] index
+reading sources... [ 12%] manual/api
+reading sources... [ 19%] manual/development
+reading sources... [ 25%] manual/examples
+reading sources... [ 31%] manual/execution
+reading sources... [ 38%] manual/input
+reading sources... [ 44%] manual/installation
+reading sources... [ 50%] manual/nonadiabatic
+reading sources... [ 56%] manual/pcet
+reading sources... [ 62%] manual/periodic
+reading sources... [ 69%] manual/potentials
+reading sources... [ 75%] manual/quickstart
+reading sources... [ 81%] manual/results
+reading sources... [ 88%] manual/science
+reading sources... [ 94%] manual/troubleshooting
+reading sources... [100%] manual/workflows
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets...
+copying static files...
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/zh/_static/basic.css
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/zh/_static/documentation_options.js
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/zh/_static/language_data.js
+copying static files: done
+copying extra files...
+copying extra files: done
+copying assets: done
+assembling single document...
+index
+ manual/installation
+ manual/quickstart
+ manual/input
+ manual/science
+  manual/workflows
+  manual/periodic
+  manual/pcet
+  manual/nonadiabatic
+  manual/potentials
+  manual/execution
+  manual/results
+  manual/examples
+   manual/api
+   manual/troubleshooting
+   manual/development
+assembling single document: done
+writing... done
+writing additional files... done
+copying static files...
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/zh/_static/basic.css
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/zh/_static/documentation_options.js
+Writing evaluated template result to /tmp/pyrpmd-merged-docs-singlehtml/zh/_static/language_data.js
+copying static files: done
+copying extra files...
+copying extra files: done
+dumping object inventory... done
+build succeeded.
+
+The HTML page is in ../../../../tmp/pyrpmd-merged-docs-singlehtml/zh.

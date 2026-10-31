@@ -1,0 +1,86 @@
+{
+  "task": "metadynamics",
+  "status": "bias_estimate",
+  "estimator": "bias_estimate",
+  "mode": "well_tempered",
+  "bias_factor": 39.0,
+  "fes_formula": "F=-gamma/(gamma-1)*V+C",
+  "fes_factor": 1.0263157894736843,
+  "measure": "cv_density",
+  "energy_unit": "hartree",
+  "dimension": 3,
+  "units": [
+    "bohr",
+    "bohr",
+    "bohr"
+  ],
+  "replicas": 1,
+  "thermostat": "nose-hoover-chain",
+  "fixed_atoms": [
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38
+  ],
+  "pbc": [
+    true,
+    true,
+    true
+  ],
+  "wall_ensemble": true,
+  "hills_per_replica": [
+    2
+  ],
+  "samples": 40,
+  "common_support": true,
+  "reference_bin": [
+    9,
+    3,
+    6
+  ],
+  "converged": false,
+  "propagation": [
+    {
+      "native_steps": 0,
+      "python_steps": 900,
+      "fallback_reasons": {
+        "history-dependent metadynamics bias": 900
+      }
+    }
+  ],
+  "warnings": [
+    "Finite-time bias estimate only: CV sufficiency, deposition width/pace, sampling, bead and timestep convergence remain unverified.",
+    "Biased trajectory times do not provide reaction rates; no infrequent-metadynamics rate estimator or time-dependent reweighting is implemented.",
+    "Unsampled bins are masked. Replica spread is descriptive, not a calibrated free-energy error bar."
+  ],
+  "sample_bias_convention": "physical MetaD V before deposition; energies include P*(V+walls); FES includes the wall-defined ensemble",
+  "files": {
+    "data": "/workspace/PyRPMD/runs/surface-pr-20261031/pt111/fes.npz",
+    "table": "/workspace/PyRPMD/runs/surface-pr-20261031/pt111/fes.csv",
+    "hills": [
+      "/workspace/PyRPMD/runs/surface-pr-20261031/pt111/replicas/0000/HILLS.csv"
+    ],
+    "checkpoints": [
+      "/workspace/PyRPMD/runs/surface-pr-20261031/pt111/checkpoints/metadynamics_0000.npz"
+    ]
+  },
+  "software": "PyRPMD",
+  "version": "0.2.0",
+  "output": "/workspace/PyRPMD/runs/surface-pr-20261031/pt111",
+  "preset": "pilot",
+  "input_warnings": []
+}

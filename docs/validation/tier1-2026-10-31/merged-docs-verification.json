@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-31T08:06:50.416737+00:00",
+  "scope": "documentation merge and packaging manifest; no runtime code changes",
+  "incoming_main": "76dd6ad24adc6c244f775857987cd2f0e119845f",
+  "feature_parent": "c75daae36e1557e2f91cb2b23fe8446b6ac71ca7",
+  "resolved_conflicts": [
+    "MANIFEST.in",
+    "README.md",
+    "docs/index.md",
+    "docs/manual/api.md"
+  ],
+  "english_default_preserved": true,
+  "large_npz_exclusion_preserved": true,
+  "core_chapter_filename_parity": {
+    "passed": true,
+    "chapter_count_each": 15
+  },
+  "builds": [
+    {
+      "language": "en",
+      "builder": "html",
+      "command": "PYTHONPATH=src:/tmp/pyrpmd-testdeps:/tmp/pyrpmd-docdeps python -m sphinx -W --keep-going -b html docs /tmp/pyrpmd-merged-docs-html",
+      "exit_code": 0,
+      "log": "docs/validation/tier1-2026-10-31/sphinx-merged-en-html.txt",
+      "log_sha256": "a945429f5bb46e470123e81bb5fd31a1c3db091b672f4cdcb0162c166a6bcf29",
+      "output_directory": "/tmp/pyrpmd-merged-docs-html",
+      "raw_log_sha256": "c9f518ec58058096550e0c9450f87e304354ae1f52d5b311b4aa11d640b14c58"
+    },
+    {
+      "language": "en",
+      "builder": "singlehtml",
+      "command": "PYTHONPATH=src:/tmp/pyrpmd-testdeps:/tmp/pyrpmd-docdeps python -m sphinx -W --keep-going -b singlehtml docs /tmp/pyrpmd-merged-docs-singlehtml",
+      "exit_code": 0,
+      "log": "docs/validation/tier1-2026-10-31/sphinx-merged-en-singlehtml.txt",
+      "log_sha256": "4eb834ed9468a74d6d77cb2be856d229300e1c5670af32ee151134fb7da35253",
+      "output_directory": "/tmp/pyrpmd-merged-docs-singlehtml",
+      "raw_log_sha256": "b8b556206b40e0628e3f245dcfa0737fcacf234b6f76ffc296223a63089241a3"
+    },
+    {
+      "language": "zh",
+      "builder": "html",
+      "command": "PYTHONPATH=src:/tmp/pyrpmd-testdeps:/tmp/pyrpmd-docdeps python -m sphinx -W --keep-going -b html docs/zh /tmp/pyrpmd-merged-docs-html/zh",
+      "exit_code": 0,
+      "log": "docs/validation/tier1-2026-10-31/sphinx-merged-zh-html.txt",
+      "log_sha256": "294ddb62b7f88afe42cd603d004afc844010c829fe47c0a5e9a3095dd682abfa",
+      "output_directory": "/tmp/pyrpmd-merged-docs-html/zh",
+      "raw_log_sha256": "f5ec0d5bbc623703dc7cf13c0928002821530c791d09285600d80da3bd021700"
+    },
+    {
+      "language": "zh",
+      "builder": "singlehtml",
+      "command": "PYTHONPATH=src:/tmp/pyrpmd-testdeps:/tmp/pyrpmd-docdeps python -m sphinx -W --keep-going -b singlehtml docs/zh /tmp/pyrpmd-merged-docs-singlehtml/zh",
+      "exit_code": 0,
+      "log": "docs/validation/tier1-2026-10-31/sphinx-merged-zh-singlehtml.txt",
+      "log_sha256": "c387a31ca15c270bb604c7d2baad632946214d97223c54879b3c85948130a4b2",
+      "output_directory": "/tmp/pyrpmd-merged-docs-singlehtml/zh",
+      "raw_log_sha256": "24c049f0d1a51bce3418a126273bce36e199c85b17f202b79049b7fa981fc15b"
+    }
+  ],
+  "language_switcher_audit": [
+    {
+      "builder": "html",
+      "checked_links": 84,
+      "missing_targets": [],
+      "examples": [
+        {
+          "source": "index.html",
+          "href": "zh/index.html",
+          "label": "中文",
+          "target": "zh/index.html"
+        },
+        {
+          "source": "manual/api.html",
+          "href": "../zh/manual/api.html",
+          "label": "中文",
+          "target": "zh/manual/api.html"
+        },
+        {
+          "source": "rpc-mts.html",
+          "href": "zh/index.html",
+          "label": "中文目录",
+          "target": "zh/index.html"
+        },
+        {
+          "source": "validation/tier1-2026-10-31/README.html",
+          "href": "../../zh/index.html",
+          "label": "中文目录",
+          "target": "zh/index.html"
+        },
+        {
+          "source": "zh/index.html",
+          "href": "../index.html",
+          "label": "English",
+          "target": "index.html"
+        },
+        {
+          "source": "zh/manual/api.html",
+          "href": "../../manual/api.html",
+          "label": "English",
+          "target": "manual/api.html"
+        }
+      ]
+    },
+    {
+      "builder": "singlehtml",
+      "checked_links": 4,
+      "missing_targets": [],
+      "examples": [
+        {
+          "source": "index.html",
+          "href": "zh/index.html",
+          "label": "中文",
+          "target": "zh/index.html"
+        },
+        {
+          "source": "zh/index.html",
+          "href": "../index.html",
+          "label": "English",
+          "target": "index.html"
+        }
+      ]
+    }
+  ],
+  "git_diff_check": {
+    "exit_code": 0,
+    "output": ""
+  },
+  "edited_sources_sha256": {
+    "MANIFEST.in": "5b8398dceb7bb657c0315885080b99ea831b52122f74b66e616a8a03f38d5116",
+    "README.md": "739d017ff748ce7a236436ff56062c8ba54d927b79f535e0c3b6242c23ecc784",
+    "README.zh-CN.md": "0ef7a0a66018684476e10f2ea3812f1f5418ceb5c5d9cfb4fac23c1754f73ba5",
+    "docs/index.md": "82aeadec692ba9def9e051e6c63d2c64d761d5e15979925ab7140d30ccdf202f",
+    "docs/manual/api.md": "293de7df4b6c8b863e791eebba2c537a282dc489cbc853fd9e28a728a5e68de7",
+    "docs/zh/manual/api.md": "4777d866d5c7f50b014686b4d8c1617de92e0f150fd6d9604ddbbf62439bc474",
+    "docs/conf.py": "a76d78e76a0cd05c609d6d56c8487c22032e1ac168d01681d16bb8218389337c",
+    "docs/_templates/language-switcher.html": "a64703ea6c69a47c359e9395c8cd44e34374125b4bf90ffedfe7f53e084bf2d5",
+    "docs/zh/index.md": "eb53ddc610d57a5716b7223146142d46c0d1ce21a19cbb84e2f91d5d86a716fa",
+    "docs/manual/development.md": "fc182b4f7529a75037c2d6d10eaf6b39472d2eebf1b32b3605a91140a715cac3",
+    "docs/zh/manual/development.md": "b039fdf469e5a199859b6af0dd0763db75ac3fbdfe7563217f30d70638234777"
+  },
+  "runtime_tests_repeated": false,
+  "notes": [
+    "Language fallback uses the other manual contents when no translated core page exists; no placeholder translations were created.",
+    "Git index was not staged and no commit was created by the documentation merge task.",
+    "Archived Sphinx logs have trailing whitespace stripped; raw_log_sha256 preserves the original output digest."
+  ]
+}

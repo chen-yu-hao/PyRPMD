@@ -1,23 +1,27 @@
-# 固定晶胞中的氢扩散、PIMD 与位点跃迁
+# 材料中的氢扩散、PIMD 与位点跃迁
 
 此开发分支增加三个独立任务：`pimd`、`diffusion` 和 `site_rate`。
-它们使用真实原子质量、固定晶胞和连续未包装坐标；材料的相互作用仍由用户提供的
+它们使用真实原子质量和连续未包装坐标；材料的相互作用仍由用户提供的
 势能模型决定。`periodic_cosine` 与 `free` 是算法验证模型，不能预测特定金属或质子导体。
 
 ## 当前范围
 
 | 任务/接口 | 已实现的含义 | 需要单独验证的内容 |
 | --- | --- | --- |
-| `pimd` | 固定晶胞平衡路径积分采样；物理能量估计器和环聚合物回转半径 | 平衡时间、采样误差、珠子数、步长 |
+| `pimd` | 固定晶胞或各向同性 BZP 恒压平衡采样；物理能量估计器和回转半径 | 平衡时间、压力/体积分布、珠子数、步长 |
 | `diffusion` | PIMD 热化后无恒温 RPMD；质心 MSD、扩散张量、VACF 积分和独立副本误差 | 长时扩散区间、有限尺寸、势模型、H/D 收敛 |
-| `site_rate` | 一个线性质心坐标、一个有限反应物盆地、一个有向分割面的 QTST 与回穿 | PMF 支持、窗口重叠、回穿平台、盆地定义 |
+| `site_rate` | 一个光滑标量质心坐标、一个有限反应物盆地、一个有向分割面的 QTST 与回穿 | PMF 支持、窗口重叠、回穿平台、盆地定义、非线性度量 |
 | 周期结构 | 正交/倾斜固定晶胞；三维体相或部分周期 slab | 各材料的晶格、表面、缺陷、浓度与电荷态 |
-| 周期 PES | ASE、显式声明周期能力的 Python 插件、带真实晶胞的 i-PI socket | 每个 calculator/服务实际支持的 PBC、元素、力与应力 |
+| 周期 PES | C ABI v2、ASE/命名 ML、显式周期 Python/Torch、tblite、带真实晶胞的 i-PI | 每个 calculator/服务实际支持的 PBC、元素、力与应力 |
 
-当前所有原子均可运动，使用同一个珠子数。没有 NPT/barostat、固定原子约束、
-机器学习模型训练、一般非线性约束速率、长时 kMC 网络、集体电导率或电子摩擦模型。
-周期 Torch/C ABI v1/f2py 入口会明确拒绝；不能因为这些入口支持分子计算就假定
-它们接收晶胞。旧的气相 `rate`/`drpmd` 也拒绝周期系统。
+`pimd`、`diffusion` 和 `metadynamics` 支持 `system.fixed_atoms`；固定原子在所有珠子上
+保持参考位置与零动量，量子动能估计量只计入可动原子。`site_rate` 仍要求全部原子可动。
+各向同性 BZP 恒压采样限于三维完全周期、全部原子可动的 `pimd`；`diffusion` 的生产段
+保持固定晶胞，默认无恒温器，或显式选择质心电子摩擦模型。所有可动原子使用同一个珠子数。
+光滑非线性质心坐标的 `site_rate` 已提供质量度量修正，见[通用坐标速率](general-coordinate-rates.md)。
+尚未提供模型训练、任意全环坐标约束速率、长时 kMC 网络或集体电导率。
+周期 Torch 须显式开启 cell/PBC 契约，C ABI v2 支持晶胞批处理和 virial；C ABI v1/f2py
+仍拒绝周期请求。命名势能的边界条件限制见[适配器指南](potential-adapters.md)。旧的气相 `rate`/`drpmd` 也拒绝周期系统。
 
 ## 结构、晶胞和坐标约定
 
@@ -27,6 +31,7 @@ geometry = "slab.xyz"
 cell = [[10.0, 0.0, 0.0], [1.5, 9.0, 0.0], [0.0, 0.0, 25.0]]
 cell_unit = "angstrom"
 pbc = [true, true, false]
+fixed_atoms = [0, 1, 2, 3]
 ```
 
 晶胞的**每一行是一个晶格矢量**，笛卡尔坐标满足 `r = s @ cell`。
@@ -108,6 +113,29 @@ K_{\mathrm{cv}}=\frac{3N}{2\beta}
 -\frac1{2P}\sum_{bi}(q_{bi}-\bar q_i)\cdot F_{bi},\qquad
 E_{\mathrm{cv}}=\langle V\rangle_P+K_{\mathrm{cv}}.
 \]
+
+有固定原子时，上式的 $N$ 为可动原子数，弹簧与力求和只涉及可动原子；
+物理势能仍包含固定基底及其相互作用。至少保留一个可动原子。
+
+### BZP 恒压采样
+
+在三维完全周期的 `pimd` 输入中增加：
+
+```toml
+[barostat]
+method = "bzp"
+pressure = "1 bar"
+time_constant = "1000 fs"
+```
+
+这使用质心耦合的各向同性 Bussi–Zykova–Parrinello barostat，内部环模不随晶胞缩放。
+PES 必须实现动态 `set_cell(cell_bohr)` 并返回物理构型 virial。支持 ASE、i-PI、具备
+相应契约的 Python 模型及验证用自由粒子；不使用 `q·F` 猜测周期应力。可用独立副本
+进程并行，暂不支持珠子进程池、MPI 或 GPU 模式。`friction` 可显式设置，缺省为
+时间常数的倒数。压力支持 Pa/kPa/MPa/GPa/bar/atm 或 hartree/bohr³，裸数为原子单位。
+各向异性晶胞、固定原子 NPT 和恒压 RPMD 输运不在此接口范围。
+
+算法、势能契约和可运行示例见 [恒压说明](materials-npt.md)。
 
 物理内能不使用虚拟环动量的瞬时动能。`ring_polymer_hamiltonian` 单独用于
 传播诊断。独立副本均值之间的标准误不包含珠子数或步长系统误差；PIMD
@@ -292,11 +320,23 @@ pyrpmd run examples/materials/site_rate.inp --output runs/materials-site
 
 ## 保存、并行与验证
 
-每个副本单独保存 `checkpoints/materials_XXXX.npz`，原子提交 q/p、RNG、
-阶段时钟、采样时钟与全部观测数据。`samples/materials_XXXX.npz` 是可重建的
-导出数据；物理状态以上述 checkpoint 为准。完整性校验、科学指纹和原子
-替换沿用 checkpoint v2 容器，内部类型为 `PyRPMD.materials.v1`。
-长轨迹当前将全部保存帧保留在内存/checkpoint，尚无分块流式存储后端。
+新材料计算默认流式保存：每个副本的 `checkpoints/materials_XXXX.npz` 原子提交 q/p、
+RNG、阶段时钟、barostat 状态及已提交轨迹链的描述符。实际数据保存在
+`samples/materials_XXXX/` 中不可变且有校验的 NPZ 分块；`manifest.json` 是可重建的导出索引。
+轨迹分块先持久化，再提交轻量检查点；续跑只读取检查点引用的前缀，忽略中断产生的孤立块。
+
+```toml
+[output]
+trajectory_storage = "stream"
+chunk_frames = 256
+checkpoint_steps = 1000
+```
+
+传播进程只缓冲有限数量的帧。`trajectory_storage="memory"` 保留旧的全历史 NPZ 布局。
+旧检查点可在续跑时迁移；已完成任务的迁移不构建 PES、不消耗随机数。修改分块大小
+不会改变科学指纹。完整性校验沿用 checkpoint v2 容器，流式类型为
+`PyRPMD.materials-stream.v1`。详见 [流式轨迹说明](streaming-trajectories.md)。
+离线相关分析仍需要标量历史；扩散分析加载所选原子及参考原子的历史，内存随帧数增加。
 
 serial/process/MPI 使用相同稳定副本 ID。允许改变执行分块/进程布局续跑；
 温度、质量、晶胞、势模型和科学时间参数不能静默改变。分析参数可离线
@@ -306,8 +346,12 @@ serial/process/MPI 使用相同稳定副本 ID。允许改变执行分块/进程
 共同使用。缓存拥有坐标及返回数组的副本，失败或事务结束即清空，不跨步或续跑
 复用。Python 确定性传播且该步保存观测量时，原来的五次 provider 调用减少为
 两次；PILE-L 对应步骤由三次减为两次。原生传播仍使用 provider 原有绑定。
-轨迹导出统一在分析阶段执行一次，checkpoint 格式和逐步提交/回滚语义保持不变。
-这些改动没有解决上述全历史 checkpoint 的长轨迹存储开销。
+轨迹导出统一在分析阶段执行一次；流式索引不重复导出完整轨迹。原子状态、随机流、
+barostat 和观测记录在同一个成功步上提交或回滚。改变晶胞时清空势能缓存。
+
+固定晶胞的材料 metadynamics 也支持固定原子，以及可选的 1D/2D Gaussian 偏置网格。
+网格插值能量与解析梯度保持一致；域外停止并回滚，不自动外推。网格间距需独立收敛。
+设置和数值误差见 [网格 metadynamics](grid-metadynamics.md)。
 
 实际材料验证见 [`benchmarks/materials`](../benchmarks/materials/README.md)：
 使用可核对来源和 SHA256 的 Ni–Al–H EAM，运行 Ni(100) slab 上 H/D 的

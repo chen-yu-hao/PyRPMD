@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "created_date": "2026-10-31",
+  "status": "unconverged_pilot_diagnostic",
+  "physical_validation": false,
+  "source_reference": {
+    "doi": "10.1016/j.cpc.2012.10.017",
+    "table": "Table 2, H+H2,300K,128beads",
+    "qtst_rate_cm3_molecule_s": 2.51e-16
+  },
+  "records": [
+    {
+      "pilot": "broad-pilot",
+      "data_source": "/workspace/scratch/bb7406a4ed41/h3-published-pilot/run/umbrella/checkpoints",
+      "checkpoint_count": 222,
+      "checkpoint_digest_algorithm": "SHA256(concat(sorted_filename + NUL + SHA256(file_bytes).digest()))",
+      "checkpoint_digest": "322af1255ccbc2ab979012eb0f472a81e0a840f84b2fef44eab187b5fd511012",
+      "temperature_K": 300.0,
+      "nbeads": 128,
+      "beta_hartree_inverse": 1052.5834160132904,
+      "umbrella_k_hartree": 0.0950043469036922,
+      "flat_free_energy_gaussian_sigma_xi": 0.1,
+      "samples_per_stream": [
+        200
+      ],
+      "effective_samples": {
+        "minimum": 2.381527701247355,
+        "mean": 4.77851291628177,
+        "streams_below_20": 222
+      },
+      "saved_barrier_hartree": 0.010725824550285028,
+      "same_prefactor_barrier_implied_by_published_QTST_hartree": 0.017471400547235772,
+      "recomputed_barriers": {
+        "all_samples": {
+          "barrier_hartree": 0.010725824550285028,
+          "xi_star": 0.9922500000000001,
+          "barrier_at_original_xi_star_hartree": 0.010725824550285028
+        },
+        "first_half": {
+          "barrier_hartree": 0.021043653806945124,
+          "xi_star": 0.9922500000000001,
+          "barrier_at_original_xi_star_hartree": 0.021043653806945124
+        },
+        "second_half": {
+          "barrier_hartree": 0.01832250710778241,
+          "xi_star": 0.9975,
+          "barrier_at_original_xi_star_hartree": 0.017648347917152668
+        },
+        "replica_0": {
+          "barrier_hartree": 0.010951016779914174,
+          "xi_star": 0.9870000000000001,
+          "barrier_at_original_xi_star_hartree": 0.010479187703588203
+        },
+        "replica_1": {
+          "barrier_hartree": 0.01141120410246988,
+          "xi_star": 1.0001250000000002,
+          "barrier_at_original_xi_star_hartree": 0.010937501314117956
+        }
+      },
+      "interpretation": "Split halves and replicas are stationarity diagnostics from the existing short trajectories, not independent convergence evidence or reliable uncertainty estimates."
+    },
+    {
+      "pilot": "stiff-pilot",
+      "data_source": "/workspace/scratch/bb7406a4ed41/h3-published-pilot-stiff/run/umbrella/checkpoints",
+      "checkpoint_count": 222,
+      "checkpoint_digest_algorithm": "SHA256(concat(sorted_filename + NUL + SHA256(file_bytes).digest()))",
+      "checkpoint_digest": "4d0881a3f7110d48312b9fdd93844b82eeb56cea4b3e41bb4c7fa1ad54557af4",
+      "temperature_K": 300.0,
+      "nbeads": 128,
+      "beta_hartree_inverse": 1052.5834160132904,
+      "umbrella_k_hartree": 30.0,
+      "flat_free_energy_gaussian_sigma_xi": 0.005627443081414868,
+      "samples_per_stream": [
+        200
+      ],
+      "effective_samples": {
+        "minimum": 2.934283029189093,
+        "mean": 10.54437609603054,
+        "streams_below_20": 213
+      },
+      "saved_barrier_hartree": 0.026014030385333054,
+      "same_prefactor_barrier_implied_by_published_QTST_hartree": 0.01747140054723577,
+      "recomputed_barriers": {
+        "all_samples": {
+          "barrier_hartree": 0.026014030385333054,
+          "xi_star": 0.9922500000000001,
+          "barrier_at_original_xi_star_hartree": 0.026014030385333054
+        },
+        "first_half": {
+          "barrier_hartree": 0.02731599113526149,
+          "xi_star": 0.9922500000000001,
+          "barrier_at_original_xi_star_hartree": 0.02731599113526149
+        },
+        "second_half": {
+          "barrier_hartree": 0.025720543176699646,
+          "xi_star": 1.008,
+          "barrier_at_original_xi_star_hartree": 0.025587536824598828
+        },
+        "replica_0": {
+          "barrier_hartree": 0.0230143274742983,
+          "xi_star": 1.0001250000000002,
+          "barrier_at_original_xi_star_hartree": 0.022881959706822413
+        },
+        "replica_1": {
+          "barrier_hartree": 0.03053517908856463,
+          "xi_star": 0.9896250000000001,
+          "barrier_at_original_xi_star_hartree": 0.030500985736493354
+        }
+      },
+      "interpretation": "Split halves and replicas are stationarity diagnostics from the existing short trajectories, not independent convergence evidence or reliable uncertainty estimates."
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "beta_hbar_omega": 4.0,
+  "dt": 0.04,
+  "reference": "Finite-P normal-mode Gaussian integral; quantum limit coth(beta*hbar*omega/2)/(2*m*omega)",
+  "uncertainty": "100 sequential batches of 100 thermostat intervals; diagnostic standard errors, no molecular convergence claim",
+  "rows": [
+    {
+      "beads": 1,
+      "bead_second_moment": 0.24868046792244614,
+      "centroid_second_moment": 0.24868046792244614,
+      "bead_batch_se": 0.003661166113615992,
+      "centroid_batch_se": 0.003661166113615992,
+      "finite_P_exact_bead_second_moment": 0.25,
+      "infinite_P_exact_bead_second_moment": 0.5186573603637741,
+      "exact_centroid_second_moment": 0.25,
+      "integration_steps": 408000,
+      "saved_states": 10000,
+      "deterministic_stationary_checks": [
+        {
+          "dt": 0.04,
+          "stationary_bead_second_moment": 0.25010004001600644,
+          "relative_error_vs_finite_P": 0.0004001600640257674,
+          "spectral_radius": 0.029306162515621827
+        },
+        {
+          "dt": 0.02,
+          "stationary_bead_second_moment": 0.2500250025002505,
+          "relative_error_vs_finite_P": 0.00010001000100201551,
+          "spectral_radius": 0.6966971441069127
+        }
+      ]
+    },
+    {
+      "beads": 4,
+      "bead_second_moment": 0.45570811254935706,
+      "centroid_second_moment": 0.2464703774022736,
+      "bead_batch_se": 0.007367483684285202,
+      "centroid_batch_se": 0.003578391913965563,
+      "finite_P_exact_bead_second_moment": 0.4666666666666667,
+      "infinite_P_exact_bead_second_moment": 0.5186573603637741,
+      "exact_centroid_second_moment": 0.25,
+      "integration_steps": 408000,
+      "saved_states": 10000,
+      "deterministic_stationary_checks": [
+        {
+          "dt": 0.04,
+          "stationary_bead_second_moment": 0.4668534080298791,
+          "relative_error_vs_finite_P": 0.0004001600640266556,
+          "spectral_radius": 0.9320140840325251
+        },
+        {
+          "dt": 0.02,
+          "stationary_bead_second_moment": 0.46671333800046505,
+          "relative_error_vs_finite_P": 0.0001000100009964644,
+          "spectral_radius": 0.6966971441069115
+        }
+      ]
+    },
+    {
+      "beads": 8,
+      "bead_second_moment": 0.48510278420066644,
+      "centroid_second_moment": 0.2462592363529803,
+      "bead_batch_se": 0.008696070865143558,
+      "centroid_batch_se": 0.0033783014478981008,
+      "finite_P_exact_bead_second_moment": 0.5039349072962518,
+      "infinite_P_exact_bead_second_moment": 0.5186573603637741,
+      "exact_centroid_second_moment": 0.25,
+      "integration_steps": 408000,
+      "saved_states": 10000,
+      "deterministic_stationary_checks": [
+        {
+          "dt": 0.04,
+          "stationary_bead_second_moment": 0.5041365619209939,
+          "relative_error_vs_finite_P": 0.0004001600639733649,
+          "spectral_radius": 0.9858521247926866
+        },
+        {
+          "dt": 0.02,
+          "stationary_bead_second_moment": 0.5039853058268536,
+          "relative_error_vs_finite_P": 0.00010001000103820878,
+          "spectral_radius": 0.9967862599181826
+        }
+      ]
+    },
+    {
+      "beads": 16,
+      "bead_second_moment": 0.5202805326788245,
+      "centroid_second_moment": 0.2504807550430239,
+      "bead_batch_se": 0.010512414422902256,
+      "centroid_batch_se": 0.0039266589645520255,
+      "finite_P_exact_bead_second_moment": 0.5148483509615613,
+      "infinite_P_exact_bead_second_moment": 0.5186573603637741,
+      "exact_centroid_second_moment": 0.25,
+      "integration_steps": 408000,
+      "saved_states": 10000,
+      "deterministic_stationary_checks": [
+        {
+          "dt": 0.04,
+          "stationary_bead_second_moment": 0.5150543727084159,
+          "relative_error_vs_finite_P": 0.0004001600596947874,
+          "spectral_radius": 0.9999241746286298
+        },
+        {
+          "dt": 0.02,
+          "stationary_bead_second_moment": 0.5148998409456427,
+          "relative_error_vs_finite_P": 0.00010001000097448198,
+          "spectral_radius": 0.9994949944747835
+        }
+      ]
+    },
+    {
+      "beads": 32,
+      "bead_second_moment": 0.5147120690384615,
+      "centroid_second_moment": 0.24834141298170634,
+      "bead_batch_se": 0.00973058955052213,
+      "centroid_batch_se": 0.0035254852921524117,
+      "finite_P_exact_bead_second_moment": 0.5176966927723852,
+      "infinite_P_exact_bead_second_moment": 0.5186573603637741,
+      "exact_centroid_second_moment": 0.25,
+      "integration_steps": 408000,
+      "saved_states": 10000,
+      "deterministic_stationary_checks": [
+        {
+          "dt": 0.04,
+          "stationary_bead_second_moment": 0.5179038543141958,
+          "relative_error_vs_finite_P": 0.0004001600641898584,
+          "spectral_radius": 0.99752399258588
+        },
+        {
+          "dt": 0.02,
+          "stationary_bead_second_moment": 0.517748467619163,
+          "relative_error_vs_finite_P": 0.00010001000103088131,
+          "spectral_radius": 0.9960944961587452
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-31",
+  "base_commit": "347facf9b57d281ba7b3c78bc6a06dcc0c138149",
+  "python": "3.12.14",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "full_suite": {
+    "passed": 1577,
+    "skipped": 13,
+    "subtests_passed": 153,
+    "duration_seconds": 119.32
+  },
+  "targeted_suite": {
+    "passed": 146
+  },
+  "mpi": {
+    "ranks": 4,
+    "layout": "G2 B2",
+    "matching_array_checkpoint_files": 27,
+    "new_diagnostics_equal": true,
+    "completed_resume_passed": true
+  },
+  "audit_replay": "Saved PMF draws and integrity-checked child-pair records; no new propagation. Point estimates and standard errors exactly retained.",
+  "source_sha256": {
+    "src/pyrpmd/analysis/recrossing.py": "8662e85c8b033d1c45e685b4eebc75b240ec7ab7404cd8ba785765123ab44fd6",
+    "src/pyrpmd/analysis/surface.py": "d7568a04e8dcd218fc4f25f9abfa272932c6e837cb6920c3601a7dcb30a7d28f",
+    "src/pyrpmd/input.py": "006c44eee7ebaa2c658604e952188511fb87f7db26184dc19ace1d44e71384d9",
+    "src/pyrpmd/workflows/rate.py": "22e2b52df63085a4885ebc76ad282c6ea616d5fc293c00a74f601c67ed5af873",
+    "src/pyrpmd/workflows/site_rate.py": "ea5695e6342495a6c3a322854c0cf84789a0c01d4d5694b9a821447f4eb50399",
+    "src/pyrpmd/workflows/surface.py": "b10dc372e55949fb64294611cab1ef5f0b2c275abe893cda43a04087328d0b3b",
+    "benchmarks/surface/accuracy.py": "4408450d4fb49b78e70c38a5ff644b42f8b708fde57a1ab7fc9a9e5e7fac9c42",
+    "tests/test_recrossing_statistics.py": "15b0629c8e05b6ebb0d5fa069081127c950aca09e27d5f1ae3671912fe6c6ed4",
+    "tests/test_surface_uncertainty.py": "2f45de3a508d006d7af0571f8ca4106840e156d18f142113a05cc4c80e9d48a0",
+    "tests/test_surface_workflow.py": "a796283e3a855b2a52b6c14c9da46e15b403892cd86782610f446d508cb01db2",
+    "tests/mpi_surface_smoke.py": "2ccfc7ecb84f3d224a10adfc076dec9ec5cd9b3684b0f7667aa8b0d24daf3d84"
+  },
+  "packaging": {
+    "sdist_built": true,
+    "wheel_built": true,
+    "surface_benchmark_in_sdist": true,
+    "wheel_implementation_matches_source": true
+  }
+}

@@ -1,0 +1,387 @@
+{
+  "experiment": "synthetic standard-MetaD CPU scalar energy-and-gradient lookup",
+  "numpy": "2.5.4",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "queries_per_repeat": 100,
+  "repeats": 5,
+  "seed": 17031,
+  "timing_statistic": "median of repeats; perf_counter wall time and process_time CPU time",
+  "bias_source_sha256": "78c7ac69b6a72c80f004485b40f36370ba9613a7a1173ba009341be818641e3e",
+  "benchmark_source_sha256": "d4fb7e8854216b0c5e0a7475d6e74e2a9981949e99947cf0f2684a0a08605e17",
+  "scope": "CPU bias only; excludes PES/integrator, IO, checkpoint and molecular convergence",
+  "results": [
+    {
+      "dimension": 1,
+      "hills": 100,
+      "sigma": [
+        0.4
+      ],
+      "grid_bins": [
+        80
+      ],
+      "grid_ranges": [
+        [
+          -2,
+          2
+        ]
+      ],
+      "direct_build_cpu_seconds": 0.0006126330000000291,
+      "direct_build_seconds": 0.0006191499996930361,
+      "direct_lookup_seconds": 6.698830000459566e-05,
+      "direct_lookup_repeats_seconds": [
+        6.769231000362196e-05,
+        5.198950000703917e-05,
+        6.0186319988133615e-05,
+        6.937550000657211e-05,
+        6.698830000459566e-05
+      ],
+      "direct_lookup_cpu_seconds": 6.679168000000013e-05,
+      "direct_lookup_repeats_cpu_seconds": [
+        0.00011470266000000007,
+        5.1950829999999335e-05,
+        6.016778e-05,
+        6.934556000000036e-05,
+        6.679168000000013e-05
+      ],
+      "grid_build_cpu_seconds": 0.005709717999999975,
+      "grid_build_seconds": 0.005714264998459839,
+      "grid_lookup_seconds": 4.860628998358152e-05,
+      "grid_lookup_repeats_seconds": [
+        4.860628998358152e-05,
+        5.0140410003223224e-05,
+        5.0251700013177466e-05,
+        4.678802000853466e-05,
+        4.848655999012408e-05
+      ],
+      "grid_lookup_cpu_seconds": 4.85707599999996e-05,
+      "grid_lookup_repeats_cpu_seconds": [
+        4.85707599999996e-05,
+        5.011620999999966e-05,
+        5.022876000000065e-05,
+        4.6769330000000496e-05,
+        4.84649199999998e-05
+      ],
+      "energy_max_abs_error_hartree": 1.4368834122535645e-07,
+      "gradient_max_abs_error_hartree_per_bohr": 8.788682795402708e-06,
+      "energy_max_abs_error_over_max_abs_reference": 4.815750378398368e-07,
+      "gradient_max_abs_error_over_max_abs_reference": 2.8534594283995077e-05,
+      "lookup_speedup": 1.3781817132561096,
+      "lookup_cpu_speedup": 1.375141751951188,
+      "grid_replay_seconds_per_hill": 5.7142649984598394e-05
+    },
+    {
+      "dimension": 1,
+      "hills": 1000,
+      "sigma": [
+        0.4
+      ],
+      "grid_bins": [
+        80
+      ],
+      "grid_ranges": [
+        [
+          -2,
+          2
+        ]
+      ],
+      "direct_build_cpu_seconds": 0.005007667999999965,
+      "direct_build_seconds": 0.005014277001464507,
+      "direct_lookup_seconds": 0.00031427084000824836,
+      "direct_lookup_repeats_seconds": [
+        0.0003352457199980563,
+        0.00035328091000337737,
+        0.00029179293000197503,
+        0.00031406886999320706,
+        0.00031427084000824836
+      ],
+      "direct_lookup_cpu_seconds": 0.00031419797999999945,
+      "direct_lookup_repeats_cpu_seconds": [
+        0.0003352326299999997,
+        0.00035328201999999977,
+        0.0002917871799999994,
+        0.00031406641000000015,
+        0.00031419797999999945
+      ],
+      "grid_build_cpu_seconds": 0.035155119999999984,
+      "grid_build_seconds": 0.03515542400054983,
+      "grid_lookup_seconds": 4.6112729996821145e-05,
+      "grid_lookup_repeats_seconds": [
+        4.799757000000682e-05,
+        4.474557001231006e-05,
+        3.977914000643068e-05,
+        4.9203700000362006e-05,
+        4.6112729996821145e-05
+      ],
+      "grid_lookup_cpu_seconds": 4.607640000000135e-05,
+      "grid_lookup_repeats_cpu_seconds": [
+        4.7968929999999684e-05,
+        4.47230799999998e-05,
+        3.975872000000047e-05,
+        4.918384999999859e-05,
+        4.607640000000135e-05
+      ],
+      "energy_max_abs_error_hartree": 1.0034507380574098e-06,
+      "gradient_max_abs_error_hartree_per_bohr": 6.18724863148401e-05,
+      "energy_max_abs_error_over_max_abs_reference": 3.7328882853226255e-07,
+      "gradient_max_abs_error_over_max_abs_reference": 2.1182753060777007e-05,
+      "lookup_speedup": 6.81527291986211,
+      "lookup_cpu_speedup": 6.819065291559025,
+      "grid_replay_seconds_per_hill": 3.515542400054983e-05
+    },
+    {
+      "dimension": 1,
+      "hills": 10000,
+      "sigma": [
+        0.4
+      ],
+      "grid_bins": [
+        80
+      ],
+      "grid_ranges": [
+        [
+          -2,
+          2
+        ]
+      ],
+      "direct_build_cpu_seconds": 0.05238398500000008,
+      "direct_build_seconds": 0.052385299999514245,
+      "direct_lookup_seconds": 0.003324460900003032,
+      "direct_lookup_repeats_seconds": [
+        0.003361922570002207,
+        0.003324460900003032,
+        0.003273075480010448,
+        0.003286809639994317,
+        0.0036989074599841844
+      ],
+      "direct_lookup_cpu_seconds": 0.0033190640699999998,
+      "direct_lookup_repeats_cpu_seconds": [
+        0.003362210270000001,
+        0.0033190640699999998,
+        0.003273293239999999,
+        0.00328711089,
+        0.0036909860000000007
+      ],
+      "grid_build_cpu_seconds": 0.46366083100000033,
+      "grid_build_seconds": 0.4636441559996456,
+      "grid_lookup_seconds": 8.101078999970923e-05,
+      "grid_lookup_repeats_seconds": [
+        7.618449999426957e-05,
+        7.062841999868397e-05,
+        8.101078999970923e-05,
+        9.3458940009441e-05,
+        9.49840799876256e-05
+      ],
+      "grid_lookup_cpu_seconds": 8.098015000000291e-05,
+      "grid_lookup_repeats_cpu_seconds": [
+        7.611260000000009e-05,
+        7.060041999999989e-05,
+        8.098015000000291e-05,
+        9.342852000000069e-05,
+        9.495729999999813e-05
+      ],
+      "energy_max_abs_error_hartree": 8.503533276638109e-06,
+      "gradient_max_abs_error_hartree_per_bohr": 0.0005291229223161054,
+      "energy_max_abs_error_over_max_abs_reference": 3.188530937895185e-07,
+      "gradient_max_abs_error_over_max_abs_reference": 1.96704135548779e-05,
+      "lookup_speedup": 41.03726059226141,
+      "lookup_cpu_speedup": 40.98614376485942,
+      "grid_replay_seconds_per_hill": 4.636441559996456e-05
+    },
+    {
+      "dimension": 2,
+      "hills": 100,
+      "sigma": [
+        0.4,
+        0.4
+      ],
+      "grid_bins": [
+        80,
+        80
+      ],
+      "grid_ranges": [
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "direct_build_cpu_seconds": 0.002523279000000045,
+      "direct_build_seconds": 0.0025325420010631206,
+      "direct_lookup_seconds": 0.00010816137999427156,
+      "direct_lookup_repeats_seconds": [
+        0.00011295701000562985,
+        0.00010460493000209681,
+        9.899480999592925e-05,
+        0.00010816137999427156,
+        0.00012499641999966116
+      ],
+      "direct_lookup_cpu_seconds": 0.00010813419999999851,
+      "direct_lookup_repeats_cpu_seconds": [
+        0.00011289925999999895,
+        0.00010457684999999995,
+        9.896384000000146e-05,
+        0.00010813419999999851,
+        0.00012496691000000394
+      ],
+      "grid_build_cpu_seconds": 0.029695236999999874,
+      "grid_build_seconds": 0.029698071000893833,
+      "grid_lookup_seconds": 0.0003065944199988735,
+      "grid_lookup_repeats_seconds": [
+        0.00035014672999750474,
+        0.0003866903400012234,
+        0.0002936742700148898,
+        0.0002986070800034213,
+        0.0003065944199988735
+      ],
+      "grid_lookup_cpu_seconds": 0.0003065616700000007,
+      "grid_lookup_repeats_cpu_seconds": [
+        0.000350107959999999,
+        0.00038667553000000244,
+        0.0002936554700000027,
+        0.0002985930900000033,
+        0.0003065616700000007
+      ],
+      "energy_max_abs_error_hartree": 9.238445936032846e-08,
+      "gradient_max_abs_error_hartree_per_bohr": 5.624981894897935e-06,
+      "energy_max_abs_error_over_max_abs_reference": 8.818751465389157e-07,
+      "gradient_max_abs_error_over_max_abs_reference": 5.1580474068625675e-05,
+      "lookup_speedup": 0.35278326329183995,
+      "lookup_cpu_speedup": 0.35273229037406495,
+      "grid_replay_seconds_per_hill": 0.0002969807100089383
+    },
+    {
+      "dimension": 2,
+      "hills": 1000,
+      "sigma": [
+        0.4,
+        0.4
+      ],
+      "grid_bins": [
+        80,
+        80
+      ],
+      "grid_ranges": [
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "direct_build_cpu_seconds": 0.010138550999999829,
+      "direct_build_seconds": 0.010144793999643298,
+      "direct_lookup_seconds": 0.0005875169099999766,
+      "direct_lookup_repeats_seconds": [
+        0.0005758408000110649,
+        0.0006799031099944842,
+        0.0005875169099999766,
+        0.0005587179199937963,
+        0.0006193976199938333
+      ],
+      "direct_lookup_cpu_seconds": 0.0005873284500000065,
+      "direct_lookup_repeats_cpu_seconds": [
+        0.0005758242400000002,
+        0.0006799007299999982,
+        0.0005873284500000065,
+        0.0005586091800000048,
+        0.0006193936300000047
+      ],
+      "grid_build_cpu_seconds": 0.2353632610000007,
+      "grid_build_seconds": 0.23535645499941893,
+      "grid_lookup_seconds": 0.0001945432699903904,
+      "grid_lookup_repeats_seconds": [
+        0.000365445239986002,
+        0.00036023782000484063,
+        0.0001945432699903904,
+        0.00018475388998922426,
+        0.0001827333599976555
+      ],
+      "grid_lookup_cpu_seconds": 0.00019451945000000136,
+      "grid_lookup_repeats_cpu_seconds": [
+        0.0003654050799999986,
+        0.0003602240299999959,
+        0.00019451945000000136,
+        0.00018472182000000003,
+        0.00018271251999999906
+      ],
+      "energy_max_abs_error_hartree": 4.5435917161995576e-07,
+      "gradient_max_abs_error_hartree_per_bohr": 2.2649358641158024e-05,
+      "energy_max_abs_error_over_max_abs_reference": 5.588957203371763e-07,
+      "gradient_max_abs_error_over_max_abs_reference": 2.9276175914088877e-05,
+      "lookup_speedup": 3.019980645071903,
+      "lookup_cpu_speedup": 3.019381609396913,
+      "grid_replay_seconds_per_hill": 0.00023535645499941893
+    },
+    {
+      "dimension": 2,
+      "hills": 10000,
+      "sigma": [
+        0.4,
+        0.4
+      ],
+      "grid_bins": [
+        80,
+        80
+      ],
+      "grid_ranges": [
+        [
+          -2,
+          2
+        ],
+        [
+          -2,
+          2
+        ]
+      ],
+      "direct_build_cpu_seconds": 0.052410414999999766,
+      "direct_build_seconds": 0.05241455099894665,
+      "direct_lookup_seconds": 0.004011462480011687,
+      "direct_lookup_repeats_seconds": [
+        0.003978621910009679,
+        0.00401453002999915,
+        0.004011462480011687,
+        0.005217097709992231,
+        0.0039950930499981045
+      ],
+      "direct_lookup_cpu_seconds": 0.004011663189999997,
+      "direct_lookup_repeats_cpu_seconds": [
+        0.003978766770000002,
+        0.0040146433399999995,
+        0.004011663189999997,
+        0.004370328600000004,
+        0.003995455420000003
+      ],
+      "grid_build_cpu_seconds": 1.5536644409999996,
+      "grid_build_seconds": 1.5537322810014302,
+      "grid_lookup_seconds": 0.00019958278999183677,
+      "grid_lookup_repeats_seconds": [
+        0.00019977900001322269,
+        0.00018096830999638768,
+        0.00019958278999183677,
+        0.00019351056000232347,
+        0.00025105665001319723
+      ],
+      "grid_lookup_cpu_seconds": 0.00019955788000000752,
+      "grid_lookup_repeats_cpu_seconds": [
+        0.0001997349100000001,
+        0.00018095243000001204,
+        0.00019955788000000752,
+        0.00019349862000000328,
+        0.00025104083000000444
+      ],
+      "energy_max_abs_error_hartree": 2.736920188262104e-06,
+      "gradient_max_abs_error_hartree_per_bohr": 0.00016025385568063655,
+      "energy_max_abs_error_over_max_abs_reference": 3.774094019983447e-07,
+      "gradient_max_abs_error_over_max_abs_reference": 2.22761131935625e-05,
+      "lookup_speedup": 20.099240421359784,
+      "lookup_cpu_speedup": 20.10275510042423,
+      "grid_replay_seconds_per_hill": 0.000155373228100143
+    }
+  ]
+}
