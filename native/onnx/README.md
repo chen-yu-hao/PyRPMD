@@ -13,7 +13,9 @@ C++ propagation blocks. No change to PyRPMD's integrator mathematics is needed.
   energy `[B]` and negative Cartesian gradient `[B,N,3]`, all float64.
 - The ABI accepts bohr/hartree; models can use angstrom/bohr and eV/hartree.
   The plugin converts positions, energies and forces together, without a `1/P`
-  factor. Conversion constants travel with the exported model.
+  factor. Conversion constants travel with the exported model. For an eV/angstrom
+  model, `q_model=q_AU*BOHR_ANGSTROM`, `E_AU=E_model*EV_TO_AU`, and
+  `F_AU=F_model*EV_TO_AU*BOHR_ANGSTROM`.
 - CPU is the default. `device="cuda:0"` explicitly requests a CUDA-enabled ORT
   SDK and its installed CUDA/cuDNN dependencies. Missing CUDA is an error.
   `allow_cpu_fallback=false` (default) rejects unsupported GPU graph partitioning;
@@ -37,20 +39,20 @@ cmake --build build/onnx --parallel 2
 
 CMake locates `onnxruntime_cxx_api.h` and `libonnxruntime` below that directory.
 Keep the matching runtime libraries installed and on the dynamic-loader search
-path. Linux CPU CI uses SDK/Python runtime 1.23.2; GPU execution is not covered by
-hosted CPU CI. OpenVINO is not implemented by this plugin.
+path. Linux CPU CI targets SDK/Python runtime 1.24.1, verifies the publisher's
+SDK archive SHA256, and saves the Python dependency environment as an artifact.
+GPU execution is not covered by hosted CPU CI. OpenVINO is not implemented.
 
 ## Export a real model once
 
 The fitted checkpoint alone is insufficient: keep its matching PIP/FI basis,
 atom ordering, electronic state, units and representative nondegenerate
-geometries. The model's units are declared explicitly, never inferred from a
-file name. This exporter supports JaxPIP linear and neural-network checkpoints.
-The pinned export CI stack is JaxPIP commit
-`a18c8cca1e795202194d4082919ebd71722df125`, JAX 0.9.0, Equinox 0.13.2,
-jax2onnx 0.11.2, ONNX 1.20.1 and ONNX Runtime 1.23.2.
+geometries. Units are declared explicitly, never inferred from a file name.
+This exporter supports JaxPIP linear and neural-network checkpoints. Install the
+pinned offline environment separately from a production dynamics environment:
 
 ```sh
+python -m pip install -r tools/requirements-jaxpip-export.txt
 python tools/export_jaxpip_onnx.py \
   --basis /absolute/path/basis.json.gz --checkpoint /absolute/path/model.eqx \
   --kind nn --geometries /absolute/path/validation.npy \
@@ -58,6 +60,12 @@ python tools/export_jaxpip_onnx.py \
   --position-unit angstrom --energy-unit eV \
   --output /absolute/path/model.onnx > export-report.json
 ```
+
+The pinned stack includes JaxPIP commit
+`a18c8cca1e795202194d4082919ebd71722df125`, JAX 0.9.0, Equinox 0.13.2,
+jax2onnx 0.17.1, ONNX 1.20.1 and ONNX Runtime 1.24.1. Earlier testing with
+jax2onnx 0.11.2 found a force-graph reshape failure when the dynamic batch grew
+from 1 to 3. A successful single-frame export is **not** sufficient validation.
 
 `validation.npy` is a numeric array `[M>=2,N,3]` in the model's length unit.
 The example atomic numbers specify H,H,O **in that order**, not a generic model

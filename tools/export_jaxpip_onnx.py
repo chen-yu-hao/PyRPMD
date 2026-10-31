@@ -31,6 +31,7 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
     jax.config.update("jax_enable_x64", True)
     import equinox as eqx
     import jax.numpy as jnp
+    from jax.extend.core import jaxpr_as_fun
     from jaxpip.model import PolynomialLinearModel, PolynomialNeuralNetwork
     from pyrpmd.constants import BOHR_ANGSTROM, EV_TO_AU
 
@@ -53,16 +54,19 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
     if model.descriptor.basis_info.num_atoms != n or jnp.dtype(model.dtype) != jnp.float64:
         raise ValueError("model atom count/float64 precision mismatch")
 
-    @eqx.filter_jit
-    def batch_fn(q):
+    def raw_batch(q):
         return jax.vmap(model.get_energy_and_forces)(q)
+
+    batch_fn = eqx.filter_jit(raw_batch)
 
     @eqx.filter_jit
     def energy_fn(q):
         return model.get_energy(q)
 
-    # Compute the references BEFORE importing jax2onnx; some converter versions
-    # instrument JAX operations during import/tracing.
+    # Compute references and differentiate BEFORE importing the converter.
+    # Its Equinox plugins replace nn.Linear with a lowering primitive which
+    # does not have JAX AD rules. Warming filter_jit alone is insufficient:
+    # to_onnx can unwrap the jitted callable and retrace the Python model.
     batches = [xyz[np.arange(b) % len(xyz)] for b in (1, 3, 32)]
     reference = []
     for q in batches:
@@ -70,7 +74,6 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
         if e.shape != (len(q),) or f.shape != q.shape or not (np.isfinite(e).all() and np.isfinite(f).all()):
             raise ValueError("JaxPIP returned invalid energies/forces")
         reference.append((np.asarray(e), np.asarray(f)))
-    # Check sign and force/energy consistency at one nondegenerate geometry.
     numerical = np.empty_like(xyz[0])
     for a in range(n):
         for c in range(3):
@@ -81,11 +84,22 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
     np.testing.assert_allclose(reference[0][1][0], numerical, atol=1e-5, rtol=1e-4,
                                err_msg="JaxPIP forces fail finite differences in model units")
 
+    # Freeze the already differentiated primitive graph, not Python layer
+    # implementations. The symbolic-batch converter traces with B=1, then
+    # carries its symbolic B through the graph; multi-batch checks below are
+    # mandatory before publishing a model. No model math is reimplemented here.
+    closed = jax.make_jaxpr(raw_batch)(jnp.asarray(batches[0]))
+    primitives = jaxpr_as_fun(closed)
+
+    def export_fn(q):
+        energy, forces = primitives(q)
+        return energy, forces
+
     import jax2onnx
     import onnx
     import onnxruntime as ort
 
-    graph = jax2onnx.to_onnx(fn=batch_fn, inputs=[("B", n, 3)], enable_double_precision=True)
+    graph = jax2onnx.to_onnx(fn=export_fn, inputs=[("B", n, 3)], enable_double_precision=True)
     if not isinstance(graph, onnx.ModelProto):
         raise TypeError("jax2onnx must return an ONNX ModelProto")
     io = list(graph.graph.input) + list(graph.graph.output)
@@ -106,8 +120,9 @@ def export_model(*, basis: Path, checkpoint: Path, geometries: Path, output: Pat
         "force_unit": f"{energy_unit}/{position_unit}", "derivative": "force",
         "constants": {"bohr_angstrom": float(BOHR_ANGSTROM), "ev_to_hartree": float(EV_TO_AU)},
         "source_sha256": {"basis": _digest(basis), "checkpoint": _digest(checkpoint)},
+        "export_strategy": "pretraced-energy-forces-jaxpr",
         "export_versions": {name: importlib.metadata.version(name)
-                            for name in ("jaxpip", "jax", "equinox", "jax2onnx", "onnx", "onnxruntime")},
+                            for name in ("jaxpip", "jax", "equinox", "jax2onnx", "onnx", "onnxruntime", "onnx-ir")},
     }
     props = {p.key: p.value for p in graph.metadata_props}
     props["pyrpmd.onnx"] = json.dumps(spec, sort_keys=True)
