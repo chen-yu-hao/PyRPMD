@@ -1,26 +1,27 @@
-# 开发、验证与维护手册
+# Development, validation and maintenance
 
-## 源码结构
+## Source layout
 
-| 路径 | 职责 |
+| Path | Responsibility |
 | --- | --- |
-| `src/pyrpmd/input.py`, `units.py`, `system.py` | 严格输入、单位、分子/周期身份 |
-| `src/pyrpmd/runner.py`, `cli.py` | Python 与 CLI 公共入口、工作流分派 |
-| `src/pyrpmd/dynamics.py`, `native/` | 环积分器、热化、约束、C++17/OpenMP |
-| `src/pyrpmd/potentials/` | provider 生命周期、单位与 batch 契约 |
-| `src/pyrpmd/cv.py`, `bias.py` | CV/Jacobian、偏置和测度 |
-| `src/pyrpmd/workflows/` | rate、FES、材料、表面、PCET 等工作流 |
-| `src/pyrpmd/analysis/` | 自由能、扩散和统计分析 |
-| `src/pyrpmd/pcet.py`, `pcet_input.py` | 局域 PCET 数值核与模型输入 |
-| `src/pyrpmd/nonadiabatic.py`, `potentials/diabatic.py` | 实验 NRPMD 映射变量、矩阵势与 MInt 传播 |
-| `src/pyrpmd/checkpoint.py`, `io.py` | 原子提交、校验与科学身份 |
-| `src/pyrpmd/parallel/` | 任务进程、珠子池、MPI 与 GPU 放置 |
-| `examples/`, `tests/`, `benchmarks/` | 可运行使用例、回归、来源固定的体系验证 |
+| `src/pyrpmd/input.py`, `units.py`, `system.py` | Input validation, units, molecular and periodic identity |
+| `src/pyrpmd/runner.py`, `cli.py` | Python and CLI entry points, workflow dispatch |
+| `src/pyrpmd/dynamics.py`, `native/` | Ring integrators, thermostats, constraints, C++17/OpenMP |
+| `src/pyrpmd/potentials/` | Provider lifecycle, units and the batch contract |
+| `src/pyrpmd/cv.py`, `bias.py` | CVs and Jacobians, biases and measures |
+| `src/pyrpmd/workflows/` | rate, FES, materials, surface, PCET and the other workflows |
+| `src/pyrpmd/analysis/` | Free-energy, diffusion and statistical analysis |
+| `src/pyrpmd/pcet.py`, `pcet_input.py` | PCET kernels and model input |
+| `src/pyrpmd/nonadiabatic.py`, `potentials/diabatic.py` | NRPMD mapping variables, matrix potentials and MInt propagation |
+| `src/pyrpmd/checkpoint.py`, `io.py` | Atomic commits, verification and scientific identity |
+| `src/pyrpmd/parallel/` | Task processes, bead pools, MPI and GPU placement |
+| `examples/`, `tests/`, `benchmarks/` | Runnable examples, regression tests, source-pinned benchmarks |
 
-修改公共接口时同时更新文档、相关示例与真正检验数值/状态行为的测试。
-采样测度、力、约束、随机流或恢复身份的更改必须有相应科学依据与回归。
+A change to a public interface updates the documentation, the examples and tests that check the
+numerical and state behavior in the same commit. Changes to sampling measures, forces, constraints,
+random streams or restart identity come with their scientific reasoning and regression tests.
 
-## 本地回归
+## Running the tests
 
 ```bash
 python -m pip install -e '.[test,ase]'
@@ -28,73 +29,83 @@ python -m pytest -q
 git diff --check
 ```
 
-原生测试需要构建扩展；没有可选依赖而跳过的测试不算通过。
-Socket 测试需要本地 loopback 权限。MPI 环境中进一步执行：
+Native tests need the compiled extension, and socket tests need loopback access. Skipped tests did
+not run; install the optional dependency to cover them. With MPI available, also run:
 
 ```bash
 mpiexec -n 4 python tests/mpi_integration.py
 mpiexec -n 4 python tests/mpi_workflow_smoke.py runs/mpi-workflow-check
 ```
 
-材料和表面专用 MPI 脚本、真实模型基准及其环境设置见各自验证记录。
-测试在单机多 rank 上通过不自动证明跨节点性能或真实 CUDA 路径。
+The materials and surface MPI scripts and the real-model benchmarks are described in their
+validation records. These scripts run on one machine; multi-node and CUDA runs need their own checks.
 
-## 包构建
+## Building packages
 
 ```bash
 python -m pip install build
 python -m build
 ```
 
-检查 sdist 包含源码、原生头文件、手册源文件、示例和来源说明；wheel 包含当前平台
-编译扩展及公开 ABI 头文件。安装构建出的 wheel 到独立环境并离开源码目录验证，
-可避免 editable install 掩盖漏打包模块。wheel 文件名与 Python/平台有关，安装时选择实际生成的文件。
+The sdist contains the sources, native headers, manual sources, examples and provenance notes; the
+wheel contains the compiled extension and the public ABI header. Install the wheel into a separate
+environment and test it outside the source tree, so an editable install cannot mask a missing
+module. Wheel names depend on Python and the platform; install the file that was built.
 
-## 手册的结构与构建
+## The manual
 
-综合手册入口是 `docs/index.md`，章节为 `docs/manual/*.md`。
-采用 [Sphinx](https://www.sphinx-doc.org/)、[MyST](https://myst-parser.readthedocs.io/) 和
-[PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/)。
-组织方式参考 [PySCF](https://pyscf.org/user/index.html) 的 Quickstart / User Guide / API / Contributor Guide，
-内容依据本项目实现，保留其自身命令和对象约定。
+The manual has two editions, each its own Sphinx project:
+
+| Edition | Entry and chapters | Configuration |
+| --- | --- | --- |
+| English (default) | `docs/index.md`, `docs/manual/*.md` | `docs/conf.py` |
+| Chinese | `docs/zh/index.md`, `docs/zh/manual/*.md` | `docs/zh/conf.py` (reuses the English settings, sets language and title) |
+
+Both use `docs/_static/manual.css` and `docs/_templates/language-switcher.html`, and are built with
+[Sphinx](https://www.sphinx-doc.org/), [MyST](https://myst-parser.readthedocs.io/) and the
+[PyData Sphinx Theme](https://pydata-sphinx-theme.readthedocs.io/). The chapter structure follows the
+Quickstart / User Guide / API / Contributor Guide layout of [PySCF](https://pyscf.org/user/index.html).
 
 ```bash
 python -m pip install -e '.[docs]'
 python -m sphinx -W --keep-going -b html docs docs/_build/html
+python -m sphinx -W --keep-going -b html docs/zh docs/_build/html/zh
 python -m sphinx -W --keep-going -b singlehtml docs docs/_build/singlehtml
+python -m sphinx -W --keep-going -b singlehtml docs/zh docs/_build/singlehtml/zh
 ```
 
-普通 HTML 提供导航、搜索和独立章节；singlehtml 将正文集中到一页。
-生成文件在忽略目录，不提交到源码。GitHub 的 **Documentation** 工作流执行严格构建与
-入门示例 smoke，并上传 `pyrpmd-manual-html` 构建产物。
+The HTML build has navigation, search and one page per chapter; singlehtml puts everything on one
+page. Build the Chinese edition into `zh/` under the English output so the language switcher finds
+each page's counterpart. Build output is ignored by Git. The GitHub **Documentation** workflow builds
+both editions strictly, runs the getting-started examples and uploads the `pyrpmd-manual-html`
+artifact.
 
-专题规范和历史验证仍留在原 `docs/` 路径，通过仓库链接引用。
-Sphinx 只把当前综合手册纳入导航，避免将针对旧提交的实验记录混作当前教程。
-源码分发保留全部这些原始证据。
+Both editions keep the same chapter files, headings, commands and tables; update both in the same
+commit. Links between the editions use full GitHub URLs, because each Sphinx project contains only
+its own language.
 
-## 写作与验证约定
+## Writing conventions
 
-每个教程应明确：所解决的问题、可直接运行的输入、必要环境、输出路径和单位、
-关键参数，以及该示例不能证明的物理结论。真实代码用 `literalinclude` 包含；
-新增 API 签名用 autodoc 从源码生成，避免手写签名随版本漂移。
+Each tutorial gives the problem it solves, a runnable input, the required environment, the output
+paths and units, and the key parameters. Include real code with `literalinclude` and generate API
+signatures with autodoc so they follow the source.
 
-公共例子至少能通过当前输入解析。关键入门例应执行完整 run、读取结果和完成后 resume。
-文档链接分两类：当前手册内部使用相对 `.md`；历史报告、示例源码和既有规范使用
-GitHub 完整路径。示例中的占位符必须明确标记。
+Write direct, task-first prose: say what a command does and what it produces. State each limitation
+once, where the reader acts on it, as a plain description of behavior.
 
-改变周期几何、固定原子支持或模型身份时，先比较旧 checkpoint 的语义；
-可以迁移的状态应先验证旧身份，无法无歧义解释的状态应明确拒绝。
-不能仅因为数组形状相同就接受物理意义变化后的恢复。
+Public examples pass the input parser, and the getting-started examples run, read their results and
+resume. Links inside the manual are relative `.md` paths; links to validation reports, example
+sources and specifications are full GitHub URLs. Placeholders in examples are marked as such.
 
-## 来源、许可与科学证据
+When periodic geometry, fixed-atom support or model identity changes, check how old checkpoints are
+interpreted: migrate states whose old identity can be verified, and reject the others explicitly.
 
-项目许可证和第三方通知分别见
-[LICENSE](https://github.com/chen-yu-hao/PyRPMD/blob/main/LICENSE)及
-[THIRD_PARTY_NOTICES.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/THIRD_PARTY_NOTICES.md)。
-改写或移植 RPMDrate 等来源时保留来源 commit、作者和许可。
-外部电子结构程序、机器学习模型和 EAM/PES 数据有各自的许可与适用域。
+## Provenance and licenses
 
-在提交说明中报告实际测试结果、跳过项、硬件和已知限制。
-代码回归、独立数值对照、有限样本体系验证与最终物理预测是不同层次的证据。
-不要把历史分支的统计结果换成新提交的结果，也不要将模型 pilot 写成收敛材料常数。
+The project license and third-party notices are in
+[LICENSE](https://github.com/chen-yu-hao/PyRPMD/blob/main/LICENSE) and
+[THIRD_PARTY_NOTICES.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/THIRD_PARTY_NOTICES.md).
+Code adapted from sources such as RPMDrate keeps its source commit, authors and license. External
+electronic-structure programs, machine-learning models and EAM/PES data carry their own licenses.
 
+Commit descriptions report the tests run, skips, hardware and known limitations.

@@ -1,11 +1,12 @@
-# 快速入门：从输入到可恢复的自由能计算
+# Quickstart: a restartable free-energy calculation
 
-这一节使用包内谐振子势能，不需要外部模型。目标是完成一次输入检查、采样、分析和续跑，
-并学会判断输出。**短轨迹只演示程序流程，不能作为收敛的自由能结果。**
+This walkthrough uses the built-in harmonic potential, so it needs no external model and finishes
+in a few seconds. You will validate an input, run umbrella sampling, read the results, restart and
+reanalyze.
 
-## 1. 运行第一个任务
+## 1. Run your first task
 
-在安装好的源码仓库根目录执行，`runs/manual-first` 必须是新的空目录：
+From the repository root:
 
 ```bash
 pyrpmd validate examples/manual/quickstart.inp --check-pes
@@ -13,36 +14,52 @@ pyrpmd run examples/manual/quickstart.inp --output runs/manual-first
 pyrpmd analyze runs/manual-first
 ```
 
-`validate` 检查输入、单位、任务限制及资源设置；`--check-pes` 还会实例化势能并进行数值准备。
-`run` 执行计算，终端显示 JSON 摘要，运行目录保存配置、样本和检查点。
-`analyze` 默认读取已保存的摘要，不增加轨迹。
+`validate` checks the input, units, task restrictions and resources; `--check-pes` also constructs
+the potential and performs the numerical preparation. `run` performs the calculation, prints a JSON
+summary and writes the run directory. `analyze` reads the saved summary.
 
-## 2. 阅读完整输入
+The run directory looks like this:
 
-例子研究一个 H 核在三维谐势中的 **x 方向质心概率密度**。三个伞窗口各有两个独立副本；
-每个副本先平衡 20 步，再生产 100 步，每 5 步保存一个样本。四个珠子和 0.1 fs 步长
-都是教学选择。
+```text
+runs/manual-first/
+├── manifest.json          # software, dependencies, native capabilities, physics fingerprint
+├── input/                 # original.inp, resolved.json (resolved config), system.json
+├── checkpoints/           # window_00000_replica_0000.npz … (one per window and replica)
+├── samples/  logs/
+├── fes.csv  fes.npz  fes.h5
+├── summary.json           # summary written by the workflow
+└── results/summary.json   # public summary: adds software version, output path, preset, input notes
+```
+
+`analyze` and the Python API read `results/summary.json`. `run` refuses an existing non-empty
+directory, so pick a new `--output` each time you start over.
+
+## 2. The input
+
+The example computes the **x-component centroid probability density** of one H nucleus in a 3D
+harmonic potential. Three umbrella windows each run two independent replicas: 20 equilibration
+steps, then 100 production steps with a sample every 5 steps, using four beads and a 0.1 fs step.
 
 ```{literalinclude} ../../examples/manual/quickstart.inp
 :language: toml
 ```
 
-源文件：[quickstart.inp](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/manual/quickstart.inp)。
+Source file: [quickstart.inp](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/manual/quickstart.inp).
 
-| 字段 | 这个例子中的意义 |
+| Field | Meaning |
 | --- | --- |
-| `task="fes"` | 对保存的伞抽样样本做 MBAR 重建 |
-| `beads=4` | 每个原子以四个环珠子表示 |
-| `potential.params.k=0.002` | 谐势 $V=\tfrac12 k\lvert q\rvert^2$ 的原子单位力常数 |
-| `cvs.estimator="centroid"` | CV 作用于环质心，不能与珠子平均非线性 CV 混用 |
-| `umbrella.stiffness` | 物理伞势的力常数；程序处理环 Hamiltonian 的珠子缩放 |
-| `sampling.replicas=2` | 每个窗口的独立随机流数，不是珠子数 |
-| `analysis.bootstrap=0` | 此例未估计 bootstrap 误差条；缺失误差不是零误差 |
+| `task="fes"` | MBAR reconstruction from the saved umbrella samples |
+| `beads=4` | Each atom is a ring of four beads |
+| `potential.params.k=0.002` | Force constant of $V=\tfrac12 k\lvert q\rvert^2$ in atomic units |
+| `cvs.estimator="centroid"` | The CV is evaluated at the ring centroid |
+| `umbrella.stiffness` | Force constant of the physical umbrella; PyRPMD applies the bead scaling |
+| `sampling.replicas=2` | Independent random streams per window |
+| `analysis.bootstrap=0` | No bootstrap error bars for this run |
 
-温度、长度、时间和力常数尽量写成带单位的字符串。原子索引从 0 开始；
-完整规则见[输入](input.md)与[科学约定](science.md)。
+Write temperatures, lengths, times and force constants as strings with units. Atom indices start
+at 0. The full rules are in [Input](input.md) and [Scientific conventions](science.md).
 
-## 3. 检查结果，而不仅是退出码
+## 3. Read the results
 
 ```python
 import json
@@ -55,32 +72,34 @@ for key in ("task", "dimension", "windows", "streams", "samples",
     print(key, summary.get(key))
 ```
 
-此例应报告 `task="fes"`、一维 CV、3 个窗口、6 条采样流、120 个保存样本。
-样本总数不等于独立样本数。`overlap_connected` 检查窗口是否可以建立全局归一化；
-`warnings` 可能包含有效样本不足和未采样网格。`converged` 保持 `false`，因为没有执行
-珠子数、时间步、轨迹长度和窗口覆盖的收敛系列。
+The summary reports `task="fes"`, a one-dimensional CV, 3 windows, 6 sampling streams and 120
+saved samples; `effective_samples_per_stream` gives the number of statistically independent ones.
+`overlap_connected=true` means all windows share one global normalization. `warnings` lists too
+few effective samples and unsampled grid cells. `converged` is always `false` in a single run;
+convergence comes from the series of runs described in [Scientific conventions](science.md).
 
-数据文件路径以 `summary["files"]` 为准。FES 表格的 `free_energy_hartree` 为相对自由能，
-`masked` 标记未支持的区域，`raw_count` 是原始计数。被屏蔽的区域不能补成零势垒。
-详见[输出与分析](results.md)。
+`summary["files"]` holds the paths of the data files. In the FES table, `free_energy_hartree` is a
+relative free energy, `raw_count` the number of samples per cell, and `masked` marks cells without
+sampling support, which hold NaN. See [Output and analysis](results.md).
 
-## 4. 续跑与重新分析
+## 4. Restart and reanalyze
 
 ```bash
 pyrpmd resume runs/manual-first
 pyrpmd analyze runs/manual-first --recompute --bins 8 --bootstrap 10
 ```
 
-已完成运行的 `resume` 应保持终态，不再增加生产步。断点运行则从已提交状态继续。
-`--recompute` 只重新分析保存样本，可修改 FES 分箱与 bootstrap 次数；它不会改善采样覆盖，
-也不会延长动力学。新的分析结果会写回结果文件，重要版本应另外保存。
+`resume` continues an interrupted run from its last committed state; a finished run stays as it is.
+`--recompute` rebuilds the analysis from the saved samples with new bins or bootstrap settings,
+without running dynamics. `--bins` and `--bootstrap` imply `--recompute`. The new analysis
+overwrites `fes.*` and `results/summary.json`; copy them first if you want to keep the old version.
 
-如要改变珠子数、温度、势能、时间步或采样方案，请创建新运行目录。为了运行更长的任务而
-直接修改已保存 `resolved.json` 或检查点，会破坏运行身份；不要用这种方式延长任务。
+The saved input defines the run identity. To change the bead number, temperature, potential, time
+step or sampling, start a new run directory.
 
-## 5. 同一任务的 Python 入口
+## 5. The same task from Python
 
-把下列程序保存为仓库根目录下的 `my_first_run.py`，使用一个新的输出目录：
+Save as `my_first_run.py` in the repository root:
 
 ```python
 from pyrpmd import JobSpec, prepare, run, analyze_run, resume_run
@@ -100,12 +119,12 @@ if __name__ == "__main__":
     main()
 ```
 
-`if __name__ == "__main__"` 保护执行入口，便于以后启用 spawn 进程并行。
-Python 和命令行调用的是同一套输入解析与工作流。PyRPMD 的高层入口是 `run`、`prepare`、
-`resume_run`、`analyze_run`；不要将 PySCF 的 `kernel()` 用法套到本项目。
+The `if __name__ == "__main__"` guard lets PyRPMD use spawn-based worker processes. Python and the
+command line share the same parser and workflows; `run`, `prepare`, `resume_run` and `analyze_run`
+are the high-level entry points.
 
-## 下一步
+## Next steps
 
-需要自由控制积分步骤时，阅读 [API](api.md)中的完整低层示例。
-需要真实模型时，先学习[连接势能](potentials.md)，然后选择[气相工作流](workflows.md)、
-[材料与表面](periodic.md)或 [PCET](pcet.md)。
+For step-by-step control of the integrator, see the low-level example in the [API](api.md). To use a
+real model, [connect a potential](potentials.md) and pick a workflow:
+[gas phase](workflows.md), [materials and surfaces](periodic.md) or [PCET](pcet.md).

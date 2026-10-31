@@ -5,6 +5,7 @@ are not a chemical PES validation or an H + HO2 PMF calculation.
 """
 import copy
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 
@@ -135,6 +136,10 @@ def test_manifest_rejects_wrong_atom_order_or_changed_source(synthetic_model):
         scan.load_model(path)
 
 
+@pytest.mark.skipif(
+    not importlib.util.find_spec("matplotlib"),
+    reason="optional matplotlib is required for the rendered scan figure",
+)
 def test_actual_synthetic_stream_analysis_and_masked_channel_fractions(tmp_path, synthetic_model):
     _, _, model = synthetic_model
     settings, output, path = _run(tmp_path, model)

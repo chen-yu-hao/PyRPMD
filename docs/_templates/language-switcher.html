@@ -1,0 +1,9 @@
+{#- Link to the same page in the other edition. The English manual is built
+    into <out>/ and the Chinese manual into <out>/zh/ (see docs.yml). -#}
+{%- if language.startswith("zh") %}
+<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('../' + pagename + '.html', 1) }}"
+   hreflang="en" lang="en" title="Switch to the English edition">English</a>
+{%- else %}
+<a class="nav-link pyrpmd-language-switcher" href="{{ pathto('zh/' + pagename + '.html', 1) }}"
+   hreflang="zh-CN" lang="zh-CN" title="切换到中文版">中文</a>
+{%- endif %}
