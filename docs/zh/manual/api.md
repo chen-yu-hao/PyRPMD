@@ -6,7 +6,7 @@
 ## 高层入口
 
 ```python
-from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
+from pyrpmd import JobSpec, prepare, run, resume_run, extend_run, analyze_run
 ```
 
 | 对象/函数 | 输入与返回值 |
@@ -18,6 +18,7 @@ from pyrpmd import JobSpec, prepare, run, resume_run, analyze_run
 | `prepare(job, numerical=False)` | 返回准备信息；`numerical=True` 执行模型准备并调用 PES |
 | `run(job, output=None, resume=False)` | 运行任务，在 root rank 返回 JSON 兼容的摘要 |
 | `resume_run(directory, parallel=None, execution=None, adaptive_budget=None)` | 按保存的输入与检查点续跑；可覆盖执行资源或增加自适应 FES/rate pilot 的预算 |
+| `extend_run(directory, *, max_time=None, production_steps=None)` | 必须且只能授权一种总预算：dRPMD 从发射计的时限，或固定窗口气相速率中每窗口、每副本的生产步数 |
 | `analyze_run(directory, ...)` | 读取摘要，或对支持的任务离线重分析 |
 
 `job` 可以是 `JobSpec`、字典或输入文件路径。非 root 的 MPI rank 返回 `None`，因此在 root 上处理返回值。
@@ -38,6 +39,20 @@ if __name__ == "__main__":
 热初态 dRPMD 如需在续跑时改变 worker 数，请在原始输入中显式设置 `sampling.parents`；
 旧运行的隐式母轨迹分配可能因执行布局改变而安全拒绝续跑。
 
+扩展固定窗口气相速率的生产采样：
+
+```python
+if __name__ == "__main__":
+    summary = extend_run("runs/rate", production_steps=200000)
+```
+
+`production_steps` 是每窗口、每副本的生产总步数，不含平衡阶段。
+必须且只能提供 `production_steps` 或 `max_time`，后者保留 dRPMD 总时限语义。
+原始输入与 manifest 保持不变。重复最近已授权的目标具有幂等性，`resume_run` 可识别中断或已完成的扩展。
+更大的速率目标会生成新一代 PMF/回穿结果，并保留之前的结果。首版适用于使用本地伞抽样的一维固定窗口气相速率；
+母链/子轨迹预算与研究层级汇总刷新不在扩展范围内。完整约定见
+[扩展固定窗口速率生产采样](workflows.md#扩展固定窗口速率生产采样)。
+
 ```{autoclass} pyrpmd.input.JobSpec
 :members: from_file, from_mapping, with_overrides, resolve
 ```
@@ -49,6 +64,9 @@ if __name__ == "__main__":
 ```
 
 ```{autofunction} pyrpmd.runner.resume_run
+```
+
+```{autofunction} pyrpmd.runner.extend_run
 ```
 
 ```{autofunction} pyrpmd.runner.analyze_run

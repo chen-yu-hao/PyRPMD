@@ -262,10 +262,17 @@ def _parent_task(task):
     chain = int(task["chain"])
     method = _pmf_method(config)
     checkpoint = Path(task["output"]) / "checkpoints" / f"parent_{chain:04d}.npz"
+    stream_identity = {"stage": "parent", "chain": chain, "xi": task["xi_star"], "options": options}
+    if "generation_identity" in task:
+        # An extended PMF starts a fresh constrained ensemble, including when
+        # its dividing surface is unchanged. Authenticate the actual origin so
+        # copying an older, otherwise valid cache cannot impersonate this chain.
+        stream_identity.update(generation_identity=task["generation_identity"],
+                               initial_q=task["initial_q"])
     identity = _fingerprint(
         config,
         system,
-        {"stage": "parent", "chain": chain, "xi": task["xi_star"], "options": options},
+        stream_identity,
     )
     with task_potential(config["potential"], system,
                         reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
@@ -546,10 +553,12 @@ def _child_task(task):
         }
 
 
-def _prepare(config, system, output):
+def _prepare(config, system, output, *, _preparation=None, _write=True):
     pmf_options = rate_pmf_options(config)
-    prepared = prepare_rate(config, system, numerical=True)
-    write_json(Path(output) / "preparation.json", prepared)
+    prepared = (prepare_rate(config, system, numerical=True)
+                if _preparation is None else copy.deepcopy(_preparation))
+    if _write:
+        write_json(Path(output) / "preparation.json", prepared)
     if not prepared["ready"]:
         raise ValueError(
             "TS-only reaction preparation is ambiguous: "

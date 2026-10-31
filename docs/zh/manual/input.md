@@ -252,7 +252,7 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 | `pyrpmd prepare INPUT` | 显示准备信息 | `--pilot` 执行数值准备；`--output FILE` 写出 JSON |
 | `pyrpmd run INPUT` | 开始运行，或按输入继续 | `--output DIR`、`--resume` |
 | `pyrpmd resume DIR` | 按保存的配置续跑 | `--workers N`、`--loop-backend auto`、`--block-steps N` |
-| `pyrpmd extend DIR` | 为已有 dRPMD 系综中未结束的轨迹提高总时间上限 | 必填 `--max-time '20 ps'`，从发射时刻计时 |
+| `pyrpmd extend DIR` | 提高已有 dRPMD 时间预算或固定窗口气相速率的生产预算 | 必须且只能指定 `--max-time '20 ps'` 或 `--production-steps 200000`；二者均为新的总目标 |
 | `pyrpmd state-check INPUT` | 无碰撞赋速演化已准备核初态，检查谐振模式稳定性 | `--time '100 fs'`、`--samples 8`、`--stride 10`、`--output report.json` |
 | `pyrpmd analyze DIR` | 读取结果或离线重分析 | `--recompute`、`--bins`、`--bootstrap`；扩散选项见下文 |
 | `pyrpmd report RUN [RUN ...]` | 从保存结果生成图片和 HTML/JSON 报告 | `--output DIR`、`--style`、`--formats`、`--overwrite`；[报告](analysis-reports.md) |
@@ -265,6 +265,11 @@ stiffness = "0.002 hartree/bohr^2"      # 也可写 kappa
 
 `validate`、`prepare`、`state-check` 和 `run` 接受适用于该任务的覆盖选项 `--pes`、`--pes-manifest`、`--temperature`、
 `--beads` 和 `--workers`；PCET 只接受 `--temperature` 和 `--output`。`pyrpmd COMMAND --help` 列出当前安装版本的选项。
+
+`extend --max-time` 指 dRPMD 中未结束轨迹从发射时刻计的总时限。
+`--production-steps` 指一维固定窗口气相 `rate` 中每个窗口、每个副本的生产总步数，不含平衡阶段。
+重复最近已授权的目标具有幂等性；`resume` 可恢复中断的目标，并保留最近完成的扩展结果。
+适用范围、结果代次与运行身份见[扩展固定窗口速率生产采样](workflows.md#扩展固定窗口速率生产采样)。
 
 - `validate --check-pes` 与 `prepare --pilot` 执行同样的数值准备：构造 PES、TS 准备或 PCET 本征态求解。
   不加该选项时只检查输入。

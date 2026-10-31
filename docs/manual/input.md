@@ -272,7 +272,7 @@ different dimensions, write each entry as a string with units.
 | `pyrpmd prepare INPUT` | Show preparation information | `--pilot` runs the numerical preparation; `--output FILE` writes JSON |
 | `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume` |
 | `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N` |
-| `pyrpmd extend DIR` | Raise an existing dRPMD ensemble's total time budget for unresolved trajectories | `--max-time '20 ps'` (required; total time from launch) |
+| `pyrpmd extend DIR` | Raise a saved dRPMD time budget or fixed-window gas-phase rate production budget | Exactly one of `--max-time '20 ps'` or `--production-steps 200000`; both specify a new total |
 | `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
 | `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below |
 | `pyrpmd report RUN [RUN ...]` | Generate figures and an HTML/JSON report from saved results | `--output DIR`, `--style`, `--formats`, `--overwrite`; [Reports](analysis-reports.md) |
@@ -286,6 +286,13 @@ different dimensions, write each entry as a string with units.
 `validate`, `prepare`, `state-check` and `run` accept the overrides `--pes`, `--pes-manifest`, `--temperature`,
 `--beads` and `--workers`, where they apply to the task; PCET accepts only `--temperature` and
 `--output`. `pyrpmd COMMAND --help` lists the options of the installed version.
+
+For `extend`, `--max-time` is the dRPMD duration from launch for unresolved trajectories.
+`--production-steps` is the total per window and replica for a fixed-window, one-dimensional
+gas-phase `rate`, excluding equilibration. Repeating the latest authorized target is idempotent;
+`resume` recovers that target after interruption and retains the latest completed extension.
+See [extending rate production](workflows.md#extending-fixed-window-rate-production) for scope,
+result generations and preserved run identity.
 
 - `validate --check-pes` and `prepare --pilot` run the same numerical preparation: constructing
   the PES, TS preparation, or PCET eigenstates. Without the option, only the input is checked.
