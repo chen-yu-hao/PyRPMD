@@ -1,0 +1,22 @@
+{
+  "adoption_or_registration_created": false,
+  "created_utc": "2026-11-01T21:40:22.730352+00:00",
+  "file_count": 2,
+  "files": [
+    {
+      "bytes": 4325,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-timestep-outcome/README.md",
+      "sha256": "0fac815bb228c9bb853664cf59377a0318b898232e5fe5e0eeee172d7e228d04"
+    },
+    {
+      "bytes": 5466,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-timestep-outcome/outcome.json",
+      "sha256": "3ebbc54d623650becf72692106ee2d632f6f29a42cf09b8f42c7f5768d3309c6"
+    }
+  ],
+  "integration_tree_modified": false,
+  "new_physical_steps": 0,
+  "schema": "pyrpmd.water-next-stage-control-outcome-publication-inventory.v1",
+  "scope": "Additive unadopted-design consequence of complete failed paired equivalence; preserves all old gates and proposals.",
+  "total_bytes": 9791
+}

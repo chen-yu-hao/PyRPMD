@@ -1,0 +1,14 @@
+{
+  "command": [
+    ".venv/bin/python",
+    "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/run-diagnostic.py"
+  ],
+  "execution_log_sha256": "b481784f09a934420a36d52229c45f0f8c5695063bb1b02fd36c69673f8aa6fc",
+  "execution_receipt_sha256": "8a75c9ac8bd36d169168b89743aaa41608ef9b47d70ea67875d00109e7fe6f01",
+  "observed_exit_code": 0,
+  "report_sha256": "4628c0bde8b433d3908efda4e44e85d0183b60d654409970189f3c16736ec9b0",
+  "schema": "pyrpmd.water-vacf-msd-identity-observed-exit.v1",
+  "tool_final_chunk_id": "ac362c",
+  "tool_session_id": 66807,
+  "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD"
+}

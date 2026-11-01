@@ -1,0 +1,124 @@
+{
+  "cause": "Unexplained. A new inode carrying the prior owner bytes is observed after the recorded immediate absence. This does not establish a filesystem-wide defect, an active sampler, or a specific creating process. The owner PID is not a sufficient cross-namespace liveness test.",
+  "new_old_path_observation": {
+    "directory": {
+      "ctime_ns": 1793568373130252631,
+      "device": 27,
+      "inode": 537353,
+      "mode": 16877,
+      "mtime_ns": 1793558091123781806,
+      "size": 4096
+    },
+    "owner": {
+      "ctime_ns": 1793568372938248514,
+      "device": 27,
+      "inode": 537354,
+      "mode": 33152,
+      "mtime_ns": 1793558091123781806,
+      "size": 68
+    },
+    "owner_fields": {
+      "created_utc": "2026-11-01T18:34:51.123630+00:00",
+      "pid": 4
+    },
+    "owner_identity": {
+      "bytes": 68,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+      "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+    }
+  },
+  "observed_facts": {
+    "analysis_completion_independently_observed_by_this_review": false,
+    "current_path_observation_stable_during_this_review": true,
+    "durable_old_path_absence_established": false,
+    "global_completion_and_drain_journal_hashes_remain_exact": true,
+    "new_directory_inode_differs": true,
+    "new_owner_inode_differs": true,
+    "normal_scheduler_exit_already_attested": true,
+    "owner_bytes_equal_exactly": true,
+    "quarantined_original_inodes_preserved": true,
+    "root_reports_existing_waiter_1094_already_admitted_analysis": true
+  },
+  "observed_utc": "2026-11-01T21:28:49.756116+00:00",
+  "operational_conclusion": {
+    "additional_retirement_attempt_authorized_by_this_receipt": false,
+    "existing_read_only_analysis": "Preserve the already admitted single analysis and its eventual real exit/source/input identities. No replacement analyzer or data writer is started by this review.",
+    "frozen_archive_runner_admission": "Currently unsatisfied: frozen runner requires absence of the sampling lease. Do not claim this condition holds or silently bypass it. Any separately reviewed read-only archive exception requires explicit root adoption and recorded immutable input guards.",
+    "future_sampling_admission": "Not established by the completed prior cohort or by this anomalous lease. No new or legacy writer may be admitted on the basis of this review.",
+    "prior_receipts": "Retain unchanged: the original retirement receipt accurately records its immediate observation; this additive receipt limits any claim of persistent absence.",
+    "status": "postcondition_failed_after_immediate_success"
+  },
+  "prior_evidence": [
+    {
+      "bytes": 1667,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/retirement.json",
+      "sha256": "a60007a053b4d0dc2e649f3dabeba189d090653630870e0bd58926813799c6cb"
+    },
+    {
+      "bytes": 2497,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/root-adoption.json",
+      "sha256": "3b14ff43e39e91776d1f400a5c74d5f114ac6ce840dab00a0088ceb7a4f1702a"
+    },
+    {
+      "bytes": 8334,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/independent-review.json",
+      "sha256": "8147f3f39ddb126cf290a9c6c2699c03d7ba81486b2deaba1303b9c165c94672"
+    },
+    {
+      "bytes": 30117,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py",
+      "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+    },
+    {
+      "bytes": 401,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000-root-observation.json",
+      "sha256": "66082b68f9e6240677c93b1bf86ab6bd28c0defa8434bed05ccd13fa6d5939d3"
+    },
+    {
+      "bytes": 46138,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/stage-100000.json",
+      "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317"
+    },
+    {
+      "bytes": 2042,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/events.jsonl",
+      "sha256": "3a836dc6ad0fadd33129eef27db96e2e5eb6be2463cb87ff2d3d1e5c475c6053"
+    }
+  ],
+  "quarantined_original_observation": {
+    "directory": {
+      "ctime_ns": 1793568363069482337,
+      "device": 27,
+      "inode": 530697,
+      "mode": 16877,
+      "mtime_ns": 1793558091123781806,
+      "size": 4096
+    },
+    "owner": {
+      "ctime_ns": 1793567758720821670,
+      "device": 27,
+      "inode": 530698,
+      "mode": 33152,
+      "mtime_ns": 1793558091123781806,
+      "size": 68
+    },
+    "owner_fields": {
+      "created_utc": "2026-11-01T18:34:51.123630+00:00",
+      "pid": 4
+    },
+    "owner_identity": {
+      "bytes": 68,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+      "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+    }
+  },
+  "retirement_scope": {
+    "immediate_observation_is_not_a_durable_absence_claim": true,
+    "operation": "One root-owned renameat2 RENAME_NOREPLACE",
+    "root_recorded_immediate_completion_utc": "2026-11-01T21:26:03.070839+00:00",
+    "root_recorded_immediate_old_path_absence": true,
+    "root_recorded_returncode": 0
+  },
+  "schema": "pyrpmd.h3.umbrella100000-lease-postcondition-independent-review.v1",
+  "scope": "Read-only owned campaign metadata and lease path observation; no process probes, raw checkpoint arrays, numerical rate analysis, new sampler, lease mutation, or analyzer invocation."
+}

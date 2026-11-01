@@ -1,0 +1,9 @@
+{"event": "seed_analyzed", "seed": 211017, "stage": 100000}
+{"event": "seed_analyzed", "seed": 211019, "stage": 100000}
+{"event": "seed_analyzed", "seed": 211021, "stage": 100000}
+{"event": "seed_analyzed", "seed": 211023, "stage": 100000}
+{"event": "seed_analyzed", "seed": 211027, "stage": 100000}
+{"event": "seed_analyzed", "seed": 211031, "stage": 100000}
+{"event": "seed_analyzed", "seed": 211033, "stage": 100000}
+{"event": "seed_analyzed", "seed": 211039, "stage": 100000}
+{"qtst": 2.5873968041771664e-16, "relative_difference_from_paper": 0.030835380150267877, "criteria": {"complete_registered_cohort": true, "wham_residual_and_overlap": true, "bin_refinement": true, "local_fit_refinement": true, "statistical_precision": false, "temporal_half_consistency": true, "independent_seed_consistency": true, "paper_point_agreement": true}}

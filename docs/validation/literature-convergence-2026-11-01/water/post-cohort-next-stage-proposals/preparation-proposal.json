@@ -1,0 +1,328 @@
+{
+  "all_eight_starting_states": {
+    "bytes": 35929,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/starting-state-bindings.json",
+    "sha256": "4e14a86f6c533409fbf90fdc1949faf1ee65db75a24f8b42f255a856833c0cfc"
+  },
+  "all_original_preparation_changes": [
+    {
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.03609124738646585,
+      "preparation_delta_OH_angstrom": 0.00020935614124906188,
+      "preparation_delta_T_K": -0.1394566027690871,
+      "preparation_delta_U_kcal_mol_water": -0.009007497058994974,
+      "seed": 1101
+    },
+    {
+      "original_U_gate_passed": false,
+      "preparation_delta_HOH_degrees": -0.08591944287195474,
+      "preparation_delta_OH_angstrom": 0.0005161995580053036,
+      "preparation_delta_T_K": -0.4708190529551075,
+      "preparation_delta_U_kcal_mol_water": -0.15744222030008717,
+      "seed": 1102
+    },
+    {
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.0383329161744399,
+      "preparation_delta_OH_angstrom": 0.00012144441896499991,
+      "preparation_delta_T_K": 1.5315888128264419,
+      "preparation_delta_U_kcal_mol_water": -0.03463591409736435,
+      "seed": 1103
+    },
+    {
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.008845536809928944,
+      "preparation_delta_OH_angstrom": -7.841397158592223e-05,
+      "preparation_delta_T_K": 0.018435447421040863,
+      "preparation_delta_U_kcal_mol_water": -0.020865984010081755,
+      "seed": 1104
+    },
+    {
+      "original_U_gate_passed": false,
+      "preparation_delta_HOH_degrees": 0.008238186240163259,
+      "preparation_delta_OH_angstrom": -0.0002784462858561598,
+      "preparation_delta_T_K": 0.6262112755433691,
+      "preparation_delta_U_kcal_mol_water": 0.056427216586422815,
+      "seed": 1105
+    },
+    {
+      "original_U_gate_passed": false,
+      "preparation_delta_HOH_degrees": 0.008921785639770974,
+      "preparation_delta_OH_angstrom": 0.0003170210431554521,
+      "preparation_delta_T_K": -0.1868477635539989,
+      "preparation_delta_U_kcal_mol_water": -0.10859990236062417,
+      "seed": 1106
+    },
+    {
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": 0.055520661653403636,
+      "preparation_delta_OH_angstrom": -8.647200205624817e-05,
+      "preparation_delta_T_K": -1.0332562273172812,
+      "preparation_delta_U_kcal_mol_water": -0.0017258874983002337,
+      "seed": 1107
+    },
+    {
+      "original_U_gate_passed": true,
+      "preparation_delta_HOH_degrees": -0.02047726739763789,
+      "preparation_delta_OH_angstrom": -0.00014388640522478013,
+      "preparation_delta_T_K": -1.5140144041289432,
+      "preparation_delta_U_kcal_mol_water": -0.021319449690310032,
+      "seed": 1108
+    }
+  ],
+  "conditional_admission": {
+    "additional_requirements": [
+      "Independent review of this concrete proposal and its offline preparation analysis policy.",
+      "Root creates a separate explicit preparation-only adoption binding these documents, the final paired-control evidence and actual available resources.",
+      "All8 selected raw checkpoint/model/integrator/manifest/source/environment identities still match.",
+      "No runtime failure latch is cleared or ignored; no existing output directory is overwritten."
+    ],
+    "control_failure_or_inconclusive_policy": "Do not adopt this unchanged0.25fs continuation automatically. Retain every control branch and seek a separate scientific decision; no seed or branch can be dropped to make the gate pass.",
+    "current_blocker": "Root reports paired timestep launcher session91496 active and holding the original leases. This document did not probe or acquire them.",
+    "enforcement_boundary": "The frozen coordinator mechanically enforces original-cohort proof/source identity and original lease exclusion. It predates this new paired-control outcome condition. The later root admission/launcher must explicitly verify and hash-bind the paired normal-exit, complete report, fixed gate outcome and cumulative resource budget before calling it; no such adoption or launcher is created here.",
+    "fixed_control_fields_required": {
+      "all_eight_pairs_complete": true,
+      "energy_limits_pass": true,
+      "overall_numerical_control_pass": true,
+      "schema": "pyrpmd.water-paired-timestep-analysis.v1"
+    },
+    "lease_and_lifecycle_sequence": [
+      "Observe the entire root paired-control launcher normal exit0, complete all16 branches and the final analysis, and freeze their source/input/report identities; no unfinished dispatcher may remain.",
+      "Confirm the paired control.lock can be acquired and released after its launcher is retired. Do not hold the original11 locks externally while invoking the frozen registration command.",
+      "The frozen preparation register operation must itself acquire all11 original leases together, recheck source/manifest/selected-checkpoint bytes and publish the new registration last. This blocks overlap even if an unexpected old writer exists.",
+      "The later frozen preparation coordinator reacquires the original11 plus its own global/eight-seed leases and inherits the defined subset into children."
+    ],
+    "old_final_exit_proof_is_not_current_lease_release_proof": true,
+    "paired_control_protocol": {
+      "bytes": 6568,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+      "sha256": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747"
+    },
+    "paired_control_registration": {
+      "bytes": 15572,
+      "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+      "sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365"
+    },
+    "paired_control_root_adoption": {
+      "bytes": 9131,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption/root-adoption.json",
+      "sha256": "caf55f255f0100818ffc94378b65b9fbe4a533d1df3718f4f6f550cf31f6086c"
+    },
+    "required_future_complete_paired_report": null,
+    "required_future_normal_exit_receipt": null
+  },
+  "created_utc": "2026-11-01T21:22:55.547095+00:00",
+  "diffusion_computed_for_preparation_stopping": false,
+  "failure_and_budget_policy": {
+    "nonzero_child_exit": "Stop further admission, drain owned children normally, retain failure and prefixes; no automatic replacement.",
+    "original_or_paired_data_replaced": false,
+    "resource_end": "Checkpoint and retain unfinished work; no analysis claim requiring completion until all8 reach the fixed endpoint.",
+    "scientific_failure": "Report all eight and every failed fixed screen. No automatic extension, latest-window search, or production launch."
+  },
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "fixed_work": {
+    "NVE_steps": 0,
+    "absolute_end_step": 2000000,
+    "absolute_start_step": 400000,
+    "additional_ps_per_seed": 400.0,
+    "additional_steps_per_seed": 1600000,
+    "all8_additional_ps": 3200.0,
+    "checkpoints_ps": 1.0,
+    "early_success_stopping": false,
+    "latest_good_window_selection": false,
+    "new_output_root_proposed": "/workspace/scratch/a5e4820daedd/water-preparation-extension-400ps-2026-11-01",
+    "observations_fs": 100.0,
+    "old_production_trajectories_used_as_starting_states": false,
+    "total_preparation_ps_per_seed": 500.0
+  },
+  "frozen_preexisting_proposal": {
+    "bytes": 10526,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/equilibration-extension-proposal-v2.json",
+    "sha256": "e17bd58c303e7f14f1023a458cd59a004c83185a6864f1587ec93d2787737b12"
+  },
+  "late_window_preparation_assessment": {
+    "absolute_windows_ps": [
+      [
+        300,
+        400
+      ],
+      [
+        400,
+        500
+      ]
+    ],
+    "all32_scalar_screens_required": true,
+    "autocorrelation_definition": "Within each fixed100ps window subtract that window mean, use lag-wise N-k covariance normalization, and retain normalized covariance through50ps. A zero variance yields an explicitly undefined normalized curve, not a pass. No automatic correlation-time cutoff or iid sample-count claim.",
+    "autocorrelation_report": "Retain each scalar correlation through50ps for each100ps window and the raw fixed-window histories; no adaptive truncation or effective-independent-sample claim is required. An unresolved slow mode prevents an equilibrium claim.",
+    "automatic_equilibrium_certification": false,
+    "block_estimates": "For every scalar and fixed RDF bin, retain all contiguous block means at each fixed size and their sample SD/SEM within each window. Do not select a favorable block size. These within-chain estimates are descriptive and may understate error when correlations extend beyond20ps.",
+    "blocks_per100ps_window": [
+      20,
+      10,
+      5
+    ],
+    "boundary_convention": "Each window is left-open/right-closed, matching the original scalar analysis convention.",
+    "equal_chain_mean_difference_uncertainty": "Eight differences, nominal Student-t df7; the across-chain mean cannot hide a failed individual scalar screen.",
+    "every_individual_failure_reported": true,
+    "expected_scalar_observations_per_window_per_seed": 1000,
+    "fixed_block_sizes_ps": [
+      5,
+      10,
+      20
+    ],
+    "per_seed_abs_half_mean_thresholds_unchanged": {
+      "HOH_degrees": 0.1,
+      "OH_angstrom": 0.001,
+      "potential_kcal_mol_water": 0.05,
+      "temperature_K": 5.0
+    }
+  },
+  "original_0p5_1ps_failure_can_be_cured_by_this_proposal": false,
+  "original_eligibility_checks_preserved": {
+    "MSD_VACF_compatibility": true,
+    "MSD_window_compatibility": false,
+    "VACF_cutoff_compatibility": true,
+    "energy_envelope": true,
+    "energy_linear_drift": true,
+    "fixed_stage_complete": true,
+    "paired_equivalence": false,
+    "precision": true,
+    "sampling_mean_HOH_degrees": true,
+    "sampling_mean_OH_angstrom": true,
+    "sampling_potential_per_molecule_hartree": false,
+    "sampling_temperature_momenta_K": true
+  },
+  "original_failed_preparation_U_seeds": [
+    1102,
+    1105,
+    1106
+  ],
+  "original_literature_comparison_preserved": null,
+  "original_short_MSD_window_failure_preserved": {
+    "compatibility_interpretation": "Failure-to-detect-difference screen; a wide CI is not evidence of equivalence.",
+    "compatible": false,
+    "equivalence_interpretation": "The complete paired-chain 95% CI must lie inside the prespecified symmetric absolute margin.",
+    "equivalence_margin_angstrom2_ps": 0.01,
+    "equivalent_within_margin": false,
+    "paired_difference": {
+      "CI95": [
+        0.01197285526041471,
+        0.022263548280737996
+      ],
+      "CI95_halfwidth": 0.005145346510161642,
+      "chains": 8,
+      "degrees_of_freedom": 7,
+      "mean": 0.017118201770576352,
+      "standard_deviation": 0.006154566682531672,
+      "standard_error": 0.0021759679182414694
+    },
+    "threshold_angstrom2_ps": 0.01
+  },
+  "phase_and_restart": {
+    "CPU_force_RMS_relative_max": 1e-06,
+    "CPU_force_cache_atol_kJ_mol_nm": 0.005,
+    "CPU_force_cache_rtol": 2e-06,
+    "CPU_raw_positions_and_half_step_velocities": "strict exact identity",
+    "bitwise_future_CPU_trajectory_claimed": false,
+    "canonical_delta_p_conversion_residual_au_max": 2e-13,
+    "checkpoint_contract_version": 2,
+    "expected_new_refresh_count_at_end": 4000,
+    "pending_normal_preparation_draw_at_step400000": true,
+    "preserve_saved_NumPy_RNG": true,
+    "refresh_period_steps": 400,
+    "remove_COM_during_preparation": false,
+    "selected_pre_NVE_active_segment": -1,
+    "terminal_NVE_draw_consumed": false,
+    "terminal_next_refresh_step": 2000000
+  },
+  "production_authorized": false,
+  "purpose": "Test whether the fixed additional400ps resolves the complete original cohort preparation failures; this is not a repair of its transport-window failure.",
+  "resource_estimates": {
+    "bytes": 3750,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/resource-estimates.json",
+    "sha256": "f59162d0b9565ebaf47af1a78ac856b89e73be99015610945e2e07d1c87ee234"
+  },
+  "schema": "pyrpmd.water-complete-cohort-preparation-adoption-proposal.v1",
+  "source_and_evidence": {
+    "bytes": 6336,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/source-and-evidence-bindings.json",
+    "sha256": "014cc4c5d5288bab9a1787f36f078002a6a081bf9253a5cf406870e29829dec2"
+  },
+  "status": "proposed_only_not_adopted_not_registered_not_launched",
+  "structural_reporting_policy_proposed_for_review": {
+    "OH_HOH_distributions": {
+      "HOH_edges_degrees": {
+        "start": 60.0,
+        "step": 0.25,
+        "stop": 150.0
+      },
+      "OH_edges_angstrom": {
+        "start": 0.7,
+        "step": 0.002,
+        "stop": 1.3
+      },
+      "counts_per_window_per_seed": {
+        "HOH_angles": 21600,
+        "OH_bonds": 43200,
+        "checkpoint_frames": 100
+      },
+      "hard_gate": null,
+      "normalization": "Density in each fixed bin plus explicit underflow/overflow counts and fractions; no out-of-range geometry is discarded.",
+      "sampling": "Every1ps full-state checkpoint in the two left-open/right-closed late windows; all216molecules, both OH bonds and one HOH angle per molecule."
+    },
+    "absolute_windows_ps": [
+      [
+        300,
+        400
+      ],
+      [
+        400,
+        500
+      ]
+    ],
+    "all_seed_curves_and_block_means_retained": true,
+    "bin_width_angstrom": 0.02,
+    "coordination_definition": "Twice unordered OO pairs within3.5angstrom divided by frames*N.",
+    "fixed_coordination_radius_angstrom": 3.5,
+    "fixed_descriptive_comparison_range_angstrom": [
+      2.3,
+      6.0
+    ],
+    "histogram_edges": "OO edges start at 0, use full0.02angstrom increments below L/2, and append the exact stored L/2 if needed; normalize any final partial shell by its exact volume.",
+    "mandatory_new_RDF_equivalence_gate": null,
+    "mandatory_new_coordination_equivalence_gate": null,
+    "max_bin_difference_and_0p1_reference": "Descriptive only, preserving v2; never a new mandatory pass rule.",
+    "normalization": "Unordered minimum-image OO pairs divided by frames*N*(N-1)/2 times shell_volume/V.",
+    "oxygen_RDF_sampling_fs": 500.0,
+    "range": "0 to half the unchanged fixed cubic box; preserve all bins.",
+    "review_before_any_long_preparation": "The offline scalar/RDF analysis definitions and implementation must be independently reviewed and frozen before launch; no hard RDF gate is adopted by this document.",
+    "uncertainty": "Per-seed5/10/20ps block diagnostics plus pointwise nominal df7 intervals across the eight fixed-window differences. No simultaneous coverage, equivalence or calibrated liquid false-alarm rate is claimed."
+  },
+  "unchanged_physics": {
+    "beads": 1,
+    "constraints": false,
+    "density_g_cm3": 0.997,
+    "dispersion_correction": false,
+    "dt_fs": 0.25,
+    "electrostatics": "full PME, 9 angstrom cutoff, requested tolerance1e-5",
+    "first_extension_operation": "At absolute step400000, perform exactly one normal preparation Maxwell draw with remove_com=False using the saved RNG, then advance. The original NVE COM-projected draw is not performed.",
+    "force_factory_sha256": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "isotope": "H2O",
+    "molecules": 216,
+    "native_source_sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "platform": "CPU",
+    "subsequent_refresh_phase": "Absolute multiples of400 integration steps; retain absolute step/time.",
+    "temperature_K": 298.0,
+    "thermostat": "original periodic global Maxwell refresh every100 fs; no COM removal in preparation",
+    "threads": 1
+  }
+}

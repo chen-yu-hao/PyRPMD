@@ -1,0 +1,11 @@
+{
+  "actual_testcase_XML_elements": 7430,
+  "junit_testsuite_tests_attribute": 7916,
+  "note": "The JUnit tests attribute includes subtest accounting. There are 7430 distinct testcase elements, not 7916 distinct tests. This full run overlaps earlier selections and adds no independent case-union count.",
+  "primary_distinct_testcase_identities": 7430,
+  "primary_passed": 7285,
+  "primary_skipped": 145,
+  "schema": "pyrpmd.pytest-count-interpretation.v1",
+  "separately_reported_passed_subtests": 486,
+  "warning_count": 985
+}

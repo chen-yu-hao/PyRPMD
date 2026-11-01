@@ -1,0 +1,125 @@
+{
+  "builds": 0,
+  "created_before_execution_utc": "2026-11-01T21:21:07.219196+00:00",
+  "frozen_inventories": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/publication-inventory.json",
+      "sha256": "a547ecba7890116439f7bfd8f908805751d1ce72c68b1716cc67ac2d16d693b2"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-cohort-archive-replay/publication-inventory.json",
+      "sha256": "ed81dc97c108549006bda497f9832c64102e2309d798897f010e533610e43ac6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/publication-inventory.json",
+      "sha256": "ef17405ea42c3068196c5f6d630a2819bcbef51ef862c6128cea2ed3fed799d9"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/publication-inventory.json",
+      "sha256": "c16c2d38582639169cb707b85a956686e89cdf1c604a33ad2d3be32c50328cb5"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/publication-inventory.json",
+      "sha256": "83d73d906ff8e345ee39761029ad36b889426c7c2c01b7b2ae7781718040511f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-efficiency-execution-guide/publication-inventory.json",
+      "sha256": "fcfb67a0b5db02a1ce50aa3ebf57e888b1182d5c7a3815cc6c55a2c612680272"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/publication-inventory.json",
+      "sha256": "cffb2e44d4a5f5dd874246d3b04bf1907ef64c2a05a4c279332230f5a2d10d46"
+    }
+  ],
+  "installs": 0,
+  "native_products": {
+    "py312": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+      }
+    },
+    "py313": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a"
+      }
+    },
+    "py314": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+      }
+    }
+  },
+  "new_case_families": {
+    "HCH4_efficiency": 85,
+    "P256_complete_analysis_admission": 43,
+    "water_VACF_MSD_identity": 7
+  },
+  "per_interpreter": {
+    "py312": {
+      "expected": 135,
+      "files": [
+        "tests/test_h3_p256_complete_analysis.py",
+        "tests/test_hch4_efficiency_pilot.py",
+        "tests/test_water_vacf_msd_identity.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+    },
+    "py313": {
+      "expected": 135,
+      "files": [
+        "tests/test_h3_p256_complete_analysis.py",
+        "tests/test_hch4_efficiency_pilot.py",
+        "tests/test_water_vacf_msd_identity.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python"
+    },
+    "py314": {
+      "expected": 135,
+      "files": [
+        "tests/test_h3_p256_complete_analysis.py",
+        "tests/test_hch4_efficiency_pilot.py",
+        "tests/test_water_vacf_msd_identity.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python"
+    }
+  },
+  "previous_596_cases_rerun": false,
+  "prior_coverage": {
+    "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility-v2/case-coverage.json",
+    "sha256": "e5044d5670511f7011b220c2fa328b1fd4788432ce8aa842dcbf70fd52df0124"
+  },
+  "required_cpu_affinity": [
+    8
+  ],
+  "schema": "pyrpmd.fifth-stage-integration-selection.v1",
+  "source_head": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "source_state_note": "Published head plus the separately validated synthetic wall-fixture correction and the exact additive frozen files in copy-receipt.json. Original active scientific sources remain unchanged.",
+  "test_scope": "Synthetic identities, lifecycle, statistical integrals and analytic VACF/MSD oracles; no actual PES evaluation, real dynamics or live campaign analysis."
+}

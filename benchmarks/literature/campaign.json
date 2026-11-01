@@ -33,14 +33,15 @@
       ],
       "status": "not_reproduced",
       "blockers": [
-        "Converged methane thermal-rate sampling has not been run; the fixed 0.1 fs short P128 NVE energy gate fails while smaller-step diagnostics remain separate.",
-        "The bounded independent reference pilot has severe importance-weight concentration and unresolved geometric-domain tails. A useful estimator needs a separately reviewed design before production."
+        "Converged methane thermal-rate sampling has not been run; the fixed0.1fs shortP128 NVE energy gate fails while smaller-step diagnostics remain separate.",
+        "The improved excluded importance pilot still fails its xi1.007 pooled maximum-weight screen and channel2 ESS/maximum-weight screens. Absolute classical normalization, finite-domain tails and a fresh production cohort require separate validation."
       ],
       "available_evidence": [
         "Exact RPMDrate CBE PES-2008 source/build pinned; barrier 15.0142843 kcal/mol versus published 15.01; native/Python maps, unit checks and short umbrella/checkpoint probes pass.",
-        "All 768 excluded independent-reference pilot draws retained, including 127 geometric zeros; importance ESS is only 4.33, 7.18 and 6.14 across the three full ensembles. No rate estimate is promoted."
+        "All 768 excluded independent-reference pilot draws retained, including 127 geometric zeros; importance ESS is only 4.33, 7.18 and 6.14 across the three full ensembles. No rate estimate is promoted.",
+        "The second excluded pilot completed800 calibration,3072 main and128 matched control draws with3672 successfulPES evaluations. Pooled ESS is336.17,165.49,704.02; xi1.007 pooled maxweight0.045147 exceeds0.025, and channel2 ESS27.53<32/maxweight0.15743>0.10. Independent calculation and fresh archive-extraction replay agree; no physical rate is promoted."
       ],
-      "evidence_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/README.md"
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/FINAL_STATUS.md"
     },
     {
       "id": "oh_h2",
@@ -152,12 +153,13 @@
       "blockers": [
         "Supplementary parent-time-half kappa equivalence still fails: 95% interval [-0.0231007344,+0.0362553622] is not wholly within +/-0.03.",
         "P128-to-P256 equilibrium refinement passes. All eight fixed P256 parent chains are complete and their raw archive is independently verified; the full dynamic bead comparison is not yet complete. The P64 equilibrium control remains a recorded failure.",
-        "Independent MC umbrella sampling fails precision at the complete 30000-sweep stage and is continuing the fixed 100000-sweep prefix. Independent surface-reference agreement does not validate the production MD umbrella workflow."
+        "Independent MC umbrella sampling fails the unchanged precision gate at complete30000 and100000 sweeps. At100000, logSE0.0508737487 exceeds0.03. A300000 continuation requires separate adoption from a new isolated verified restore; the anomalous original campaign remains unchanged. This MC/reference evidence does not validate production MD umbrella sampling."
       ],
       "available_evidence": [
         "Complete independent classical reference rate 1.5454063761e-18 agrees with paper 1.55e-18 within its stated approximately 5% precision.",
         "Complete P128 four-pair quantum rate 1.9678563652801757e-16 has nominal 95% CI [1.9329386067562914e-16,2.003404899068246e-16], +0.915711% from paper 1.95e-16. All eleven fixed-P primary criteria pass; kappa relative half-width 2.317249% is below the unchanged 3% threshold.",
-        "All eight chains and 800 raw child chunks were independently reconstructed and exactly replayed after actual base-plus-increment archive extraction. Same-chain partition/transmission covariance is retained."
+        "All eight chains and 800 raw child chunks were independently reconstructed and exactly replayed after actual base-plus-increment archive extraction. Same-chain partition/transmission covariance is retained.",
+        "Complete100000-sweep all-eight umbrella QTST2.5873968041771664e-16, nominal95%CI[2.294132956321048e-16,2.918149187395823e-16], +3.083538% from paperQTST. Seven criteria pass but statistical_precision fails. All checkpoint/RNG/prefix bytes and scientific analysis exactly replay after actual archive extraction."
       ],
       "evidence_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/README.md"
     },
@@ -321,12 +323,16 @@
       ],
       "status": "not_reproduced",
       "blockers": [
-        "Complete the original eight-chain equilibrium and transport assessment before adopting any separately registered all-chain preparation extension. Existing failed preparation gates are retained.",
-        "Long quantum production, matched isotope/mass conventions, finite-size comparison and PyRPMD-own long-time transport validation remain incomplete. Tiny pilots do not establish those results."
+        "Complete original classical cohort fails preparation potential-energy stationarity for seeds1102,1105,1106 and the short-lag MSD-window equivalence screen. These outcomes remain unchanged despite a paper-near diffusion point.",
+        "Complete paired0.25/0.125fs timestep control passes energy checks but neither VACF norMSD95% difference interval lies inside+/-0.01A2/ps. The500ps preparation and longer-lag proposals remain unadopted because their timestep prerequisite is unmet.",
+        "Long quantum production, exact source isotope masses, finite-size comparison and PyRPMD-own long-time transport validation remain incomplete."
       ],
       "available_evidence": [
-        "An eight-seed 216-molecule classical OpenMM full-PME reference campaign is running; original preparation and production prefixes are retained. Force, checkpoint, cadence and extension/coordinator contracts are separately tested."
-      ]
+        "All8 original OpenMM reference seeds and200 NVE segments complete:216 flexible molecules,298K,fullPME,100ps preparation+100ps production perchain. VACFD0.1978089161, nominal95%CI[0.1856114149,0.2100064173]A2/ps; MSDD0.1979215878,CI[0.1867404812,0.2091026944]. Literature comparison remainsnull andphysical_converged=false.",
+        "All8 paired timestep seeds complete:16branches64ps. Fine-minus-coarse VACFmean-0.0141245323,95%CI[-0.0412683731,0.0130193084]; MSDmean-0.0248398419,95%CI[-0.0491920712,-0.0004876125]A2/ps. Both equivalence screens unresolved at+/-0.01; energy checks pass.",
+        "Both original and paired datasets pass actual raw-archive extraction and complete scientific replay. A separately tested VACF-MSD integral identity explains early-time curvature while preserving every failed gate."
+      ],
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/README.md"
     },
     {
       "id": "qtip4pf_d2o_diffusion",

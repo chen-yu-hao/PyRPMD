@@ -1,0 +1,1078 @@
+{
+  "archive": {
+    "bytes": 474212366,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.tar.gz",
+    "sha256": "f02c799907993143533a570e1862bbb2772f9b8994344c50982b102b02d5603d"
+  },
+  "category_counts": {
+    "actual_root_exec_observation": 2,
+    "complete100000_checkpoint_or_metadata": 32,
+    "complete100000_restart_state": 16,
+    "complete_original_analysis": 19,
+    "final_scheduling_control": 1,
+    "fixed_protocol_or_prior_identity": 7,
+    "full_retained_sampling_stdout": 8,
+    "global_stage_manifest": 2,
+    "historical_prefix_state": 16,
+    "read_only_lease_anomaly_evidence": 7,
+    "root_archive_adoption": 1,
+    "root_execution_metadata": 3,
+    "scheduler_execution": 2
+  },
+  "lease_absence_claimed": false,
+  "member_bytes": 474508661,
+  "member_count": 116,
+  "members": [
+    {
+      "category": "scheduler_execution",
+      "member": "data/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/events.jsonl",
+      "source": {
+        "bytes": 2042,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/events.jsonl",
+        "sha256": "3a836dc6ad0fadd33129eef27db96e2e5eb6be2463cb87ff2d3d1e5c475c6053"
+      }
+    },
+    {
+      "category": "scheduler_execution",
+      "member": "data/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/plan.json",
+      "source": {
+        "bytes": 4059,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/plan.json",
+        "sha256": "b2a8f0c8c0a80e0c1d5ffff6cc2767fd326e6b374b2127256ea432f8d3b3d572"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211017-sampling.log",
+      "source": {
+        "bytes": 22811,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017-sampling.log",
+        "sha256": "4423977eb59c0d94401781d848a980f5d5d46960f427d47c6d6e71f67938aa9d"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211017/checkpoint.npz",
+      "source": {
+        "bytes": 58564689,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/checkpoint.npz",
+        "sha256": "1b2b4b10c0b26985938615ffda9449b76602081495622a44b933503c2d7b8b46"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211017/progress.json",
+      "source": {
+        "bytes": 342,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/progress.json",
+        "sha256": "5cac48c6ed437c03e0ae0b1b6627b1d9999164a0a504193ff2cf977bbf82624a"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211017/run-report.json",
+      "source": {
+        "bytes": 889,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/run-report.json",
+        "sha256": "8bd6d7c123d0f30ef6ec27ad20db257354e361bb7f888ddd5c78d0790d53ba49"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211017/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/settings.json",
+        "sha256": "aa951e9e77e35948132f813aabf5dd8e036ecf262bb68fe554629824048b0289"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211017/stages/100000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/stages/100000/stage.json",
+        "sha256": "8b199080c4a02a053699ed2d2d69a2acec7cfc6e80e5053a8bd69c215322c2e1"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211017/stages/100000/state.npz",
+      "source": {
+        "bytes": 284977,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/stages/100000/state.npz",
+        "sha256": "a038307fb9b85ca617e38c97a786dfb6e79bc4690be8e646eb11a3010ee536e6"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211017/stages/30000/stage.json",
+      "source": {
+        "bytes": 913,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/stages/30000/stage.json",
+        "sha256": "7d92ea5057c6522c265f6a3c74d0698149c3bac03a5a3d659f740a3a4b795709"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211017/stages/30000/state.npz",
+      "source": {
+        "bytes": 284934,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211017/stages/30000/state.npz",
+        "sha256": "568e7caa9b7d5b35d599151937dbe9f3bc3b092451501c4ba6252f61054578c9"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211019-sampling.log",
+      "source": {
+        "bytes": 22805,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019-sampling.log",
+        "sha256": "ea4d5fd8dd8dd0e4c7f83815a38abc3fbfd19c38f88458be66ec6540eff8ff21"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211019/checkpoint.npz",
+      "source": {
+        "bytes": 58557739,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/checkpoint.npz",
+        "sha256": "c74aa897c48d1c7db21c6e23ed965a4c05659aad22cab62a5313d3beff9d6963"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211019/progress.json",
+      "source": {
+        "bytes": 352,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/progress.json",
+        "sha256": "20c9b30bd383c3d3922089e38d835d5612f04c480845e755992a0ee4977cbc15"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211019/run-report.json",
+      "source": {
+        "bytes": 898,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/run-report.json",
+        "sha256": "30d3a5b86cb3c285be9bc92e12ca6d4d5bd61cbbcb5974dc54afd9f0345af9e5"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211019/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/settings.json",
+        "sha256": "7a9886140efbda6816281f39d36a0d6dadda40be39d477f30ea0fab486464d29"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211019/stages/100000/stage.json",
+      "source": {
+        "bytes": 911,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/stages/100000/stage.json",
+        "sha256": "74cd162f96214f8ca2644092f5401c80d0434d624f06618f210e374b5a00af0c"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211019/stages/100000/state.npz",
+      "source": {
+        "bytes": 285295,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/stages/100000/state.npz",
+        "sha256": "e19621ee690764d343aedca7d65945a152a1c037d22abe5348d18f8e86a53c07"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211019/stages/30000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/stages/30000/stage.json",
+        "sha256": "e7f85e4a870e737b70d3300dafacedfcae00b780487a5f11ee15b6d206706a24"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211019/stages/30000/state.npz",
+      "source": {
+        "bytes": 285097,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211019/stages/30000/state.npz",
+        "sha256": "bb6287224056e1c289372234779d397230d9c5a5644b6fc65c8ba6f34bf52da7"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211021-sampling.log",
+      "source": {
+        "bytes": 22750,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021-sampling.log",
+        "sha256": "ef0cc2781e7030f1dfc925001b218dca204c12b4df0853f8dc72fef498d5268f"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211021/checkpoint.npz",
+      "source": {
+        "bytes": 58565983,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/checkpoint.npz",
+        "sha256": "d6ac7e99e78eae16e16a95769799c4bf78cfa5a38b12c8dac510f7355ea0f055"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211021/progress.json",
+      "source": {
+        "bytes": 351,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/progress.json",
+        "sha256": "f804ff943103e1e567913d230cdb447a01df027258774a9a6dd6b641d227b34f"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211021/run-report.json",
+      "source": {
+        "bytes": 897,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/run-report.json",
+        "sha256": "a5e714c271a26eeb934dc0db6238d1d758422c036903fe373db42413f81afff5"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211021/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/settings.json",
+        "sha256": "453a2e2add9dd4eb480472927f86b9fe8a8dc3d149c36865ba1d44418115349e"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211021/stages/100000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/stages/100000/stage.json",
+        "sha256": "90ad838c8c1fee753150dd6cc5c0e4999ed227e27ebe2d7b33adba5c0b9d5427"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211021/stages/100000/state.npz",
+      "source": {
+        "bytes": 285150,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/stages/100000/state.npz",
+        "sha256": "72c9bb995206d31b0949134c7fa997694c3cd1f4be6e1d023f3c219dfd1ff02f"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211021/stages/30000/stage.json",
+      "source": {
+        "bytes": 913,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/stages/30000/stage.json",
+        "sha256": "11fe6fe3919f8dcdd4f8d92d37a5cdd6d43a3a2f1e7e021ad0a79a31ca35b506"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211021/stages/30000/state.npz",
+      "source": {
+        "bytes": 284985,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211021/stages/30000/state.npz",
+        "sha256": "c0b1f42541ff57ff4b7d47d0bacfdff331ba73824b75be92538be3d6b5bc84e4"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211023-sampling.log",
+      "source": {
+        "bytes": 22852,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023-sampling.log",
+        "sha256": "9253ef623c0d606b7d661965f95e0141dbd6476379a1cf8e936689234786f1fd"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211023/checkpoint.npz",
+      "source": {
+        "bytes": 58562253,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/checkpoint.npz",
+        "sha256": "b5916059f6757c5be427bd67c413457b0cfc03e395035248cbcf4d7802965045"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211023/progress.json",
+      "source": {
+        "bytes": 353,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/progress.json",
+        "sha256": "66425d2c5ee3760ed05e9b2a4a8178e43bef29e37c735aa47508f8536d75f182"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211023/run-report.json",
+      "source": {
+        "bytes": 899,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/run-report.json",
+        "sha256": "00b507d4c150a9279132f173fa838be6994c9641164688790dfe7827ae8902a3"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211023/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/settings.json",
+        "sha256": "09be3243da4fbdcd183f544ff3fed36447a3ec5320f826e3b543fc787a654208"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211023/stages/100000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/stages/100000/stage.json",
+        "sha256": "feecadbe23dcf3f708193213d09a127f3435a80f8f7c23b0b43dda5f8d4353fc"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211023/stages/100000/state.npz",
+      "source": {
+        "bytes": 285028,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/stages/100000/state.npz",
+        "sha256": "910e77ab96ec2941a8a90b9624bf7f58dceaefcf6badfe6af14ae5a777d0b367"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211023/stages/30000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/stages/30000/stage.json",
+        "sha256": "f2b0a498ef2a1f22a55681e3312edbd103ed52e06fa2348b5d76d89f93433125"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211023/stages/30000/state.npz",
+      "source": {
+        "bytes": 285169,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211023/stages/30000/state.npz",
+        "sha256": "e2dd9df08b8b5c7812b97b022ce20fda7975a8adefbd57040353e6c707201e44"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211027-sampling.log",
+      "source": {
+        "bytes": 22819,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027-sampling.log",
+        "sha256": "50607df7180f255f2febef378cfa524b160c1d19d81a3b7e72132405131b87e7"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211027/checkpoint.npz",
+      "source": {
+        "bytes": 58563284,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/checkpoint.npz",
+        "sha256": "32cde2044091a4832b9ca86c4a62ce38153ec22d0b9f38c7714861fbb388df15"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211027/progress.json",
+      "source": {
+        "bytes": 352,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/progress.json",
+        "sha256": "391ce6d372927a882c340b2cdb56d3b98149d957e83eca604fe0573e11cbb179"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211027/run-report.json",
+      "source": {
+        "bytes": 898,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/run-report.json",
+        "sha256": "8f63da41aa044e3094f72393c43e0669e7cf43a219b432be4f4812475773bdf7"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211027/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/settings.json",
+        "sha256": "e8efb68f252a6496062d6426e33dc4b7c2da69ad95025ac7097c9b320540e81f"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211027/stages/100000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/stages/100000/stage.json",
+        "sha256": "ace2a42db076f65dcf65ff63d1a1fee3c758b4d534cf9ab91ccb9dcb58ad56fa"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211027/stages/100000/state.npz",
+      "source": {
+        "bytes": 285348,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/stages/100000/state.npz",
+        "sha256": "3a6549588a98a6fbc7d9cfba630c58e8e984dde747fd294f0691cbe2d72e340a"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211027/stages/30000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/stages/30000/stage.json",
+        "sha256": "c20a1017c33cb38e61f88e9cf757a73d2f892695c6b307195b5fa352b3cd2c89"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211027/stages/30000/state.npz",
+      "source": {
+        "bytes": 285173,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211027/stages/30000/state.npz",
+        "sha256": "d90f9b82969c38bc0f2ba0550bf1b62ddffc4c5d06a83876c8be6079c0dbd5bb"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211031-sampling.log",
+      "source": {
+        "bytes": 22826,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031-sampling.log",
+        "sha256": "7770418987951514b60cd4f7878777f66ae6e4a6aaafae206d66a3bfa05783d6"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211031/checkpoint.npz",
+      "source": {
+        "bytes": 58555233,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/checkpoint.npz",
+        "sha256": "b57cff6e9a8538a156c253e3579172d1e1ef9840fbb37bf7cf8cf179adfffb10"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211031/progress.json",
+      "source": {
+        "bytes": 353,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/progress.json",
+        "sha256": "0de5b609c6d4dc7696ecf8447ddc6b22f4419e17db473370e4371e00b43e7c11"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211031/run-report.json",
+      "source": {
+        "bytes": 895,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/run-report.json",
+        "sha256": "66c1d0f1f549e26c857f18bc77570dc736c96120e589ab7901bc5a189efbae03"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211031/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/settings.json",
+        "sha256": "35c4568aaa4eaa60e7ef0c3573030a0fdc9377cb1c8460e90c9f9f72a2cda90d"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211031/stages/100000/stage.json",
+      "source": {
+        "bytes": 915,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/stages/100000/stage.json",
+        "sha256": "a292f7fd9ffec1895b3707b0131eebf407aacd51c5af9a020a58c70915ee1a38"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211031/stages/100000/state.npz",
+      "source": {
+        "bytes": 285277,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/stages/100000/state.npz",
+        "sha256": "462299f9b0397753a2e19b8bb88b03252b1ebd814a5b56faefa722351ddc65be"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211031/stages/30000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/stages/30000/stage.json",
+        "sha256": "acdb50930920cc0f031b89be90bb75afcf15942a42445e5acffdcb905e87dbee"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211031/stages/30000/state.npz",
+      "source": {
+        "bytes": 284859,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211031/stages/30000/state.npz",
+        "sha256": "41785469a58ace9769a8f1f3c2558cf3815fd360c631d4630f8a7fe929639785"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211033-sampling.log",
+      "source": {
+        "bytes": 22851,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033-sampling.log",
+        "sha256": "794616e346fe0871f9622fbc919126fa9dd5b857a8580ace817bdb112eb2060a"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211033/checkpoint.npz",
+      "source": {
+        "bytes": 58552266,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/checkpoint.npz",
+        "sha256": "a605190580ee93d9a57493769eb9e7a8c51015b9d1b5a7c7911bcb7657457d0b"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211033/progress.json",
+      "source": {
+        "bytes": 352,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/progress.json",
+        "sha256": "13f63415e5222dac73bf291f037908ab704709912c0efe3d1dbe7d5e6f427f35"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211033/run-report.json",
+      "source": {
+        "bytes": 897,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/run-report.json",
+        "sha256": "702c6da8e130239561318898b56536404a42019e96f7565228ac94ad951d72b3"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211033/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/settings.json",
+        "sha256": "1172d394959fa44dfc54d550191c09d2aae7be41fc58c9ce967cab4065033e03"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211033/stages/100000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/stages/100000/stage.json",
+        "sha256": "2b910ca6d69aaa9e1f7bbd494ba699d516ade60b577932a78fef9ca808e38661"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211033/stages/100000/state.npz",
+      "source": {
+        "bytes": 285121,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/stages/100000/state.npz",
+        "sha256": "8bb6640d3f976bdd48d2d120cfd2930c42c0db9c6df852c95a8164a6e53335d7"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211033/stages/30000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/stages/30000/stage.json",
+        "sha256": "2c9f6cd5bc08d6d163142791f018b6a39e853666f5841b9a9d4aae6bef65f6e0"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211033/stages/30000/state.npz",
+      "source": {
+        "bytes": 284778,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211033/stages/30000/state.npz",
+        "sha256": "e216d9ffd18179ef315d4c54186fd93c3414dbc8cf286867ba50352232f75cc5"
+      }
+    },
+    {
+      "category": "full_retained_sampling_stdout",
+      "member": "data/campaign-run/seed-211039-sampling.log",
+      "source": {
+        "bytes": 22845,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039-sampling.log",
+        "sha256": "a86c021c93b451dd27ea36fee9ff39a23fe28182509a0143f9da7717b84040a8"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211039/checkpoint.npz",
+      "source": {
+        "bytes": 58564563,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/checkpoint.npz",
+        "sha256": "c73a062568a608939314013f19860fc0701c7d798381309e49ca3eecbc6905b0"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211039/progress.json",
+      "source": {
+        "bytes": 353,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/progress.json",
+        "sha256": "3254ba6bf231b93ad8cd1e52c1735f8a0b90c503cdd629c02cdc378dbca01c51"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211039/run-report.json",
+      "source": {
+        "bytes": 898,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/run-report.json",
+        "sha256": "f4d5475c985baf9095f1543b8f84631e657561d4affa8f1beb05eb3aabba3faf"
+      }
+    },
+    {
+      "category": "complete100000_checkpoint_or_metadata",
+      "member": "data/campaign-run/seed-211039/settings.json",
+      "source": {
+        "bytes": 2495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/settings.json",
+        "sha256": "47a0c395480dbf206fdd714bee37d28c175f9f6ce2a0fedb48308d5e9f4c00d3"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211039/stages/100000/stage.json",
+      "source": {
+        "bytes": 915,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/stages/100000/stage.json",
+        "sha256": "eb02498aa41112d04f613b4e88b9b248092ec9b869fcb4cad084873cb46654f6"
+      }
+    },
+    {
+      "category": "complete100000_restart_state",
+      "member": "data/campaign-run/seed-211039/stages/100000/state.npz",
+      "source": {
+        "bytes": 285072,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/stages/100000/state.npz",
+        "sha256": "58ba89a7ec381987649b2a5e15f64fd147e5282921542637bf36fac684d0c127"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211039/stages/30000/stage.json",
+      "source": {
+        "bytes": 914,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/stages/30000/stage.json",
+        "sha256": "c2d2e41373f8d97f0e93b5daaf768d4dceb3919619454862183943bfdeb4de84"
+      }
+    },
+    {
+      "category": "historical_prefix_state",
+      "member": "data/campaign-run/seed-211039/stages/30000/state.npz",
+      "source": {
+        "bytes": 284798,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/seed-211039/stages/30000/state.npz",
+        "sha256": "8b4695d19dbb9d04fc3184087f344eecca5dac030793aaadc87de64b462d4596"
+      }
+    },
+    {
+      "category": "global_stage_manifest",
+      "member": "data/campaign-run/stage-100000.json",
+      "source": {
+        "bytes": 46138,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/stage-100000.json",
+        "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317"
+      }
+    },
+    {
+      "category": "global_stage_manifest",
+      "member": "data/campaign-run/stage-30000.json",
+      "source": {
+        "bytes": 392,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/stage-30000.json",
+        "sha256": "7ad0d0e974b173b9236e928d8b6b5991454d647631f0779fc94351bca5351f29"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/campaign-comparison.json",
+      "source": {
+        "bytes": 12059,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/campaign-comparison.json",
+        "sha256": "db76aa53b848e9b24ee32c6e4ad7b199c151c3547f28d7954c9f49388d8bb16a"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/execution.json",
+      "source": {
+        "bytes": 2074,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/execution.json",
+        "sha256": "a84f0a0434199c7897e99c9f4e55fbe40a641fe78f8cdea27bd08d194bbd54cb"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/pooled-wham.npz",
+      "source": {
+        "bytes": 124815,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/pooled-wham.npz",
+        "sha256": "c11ba34d588baba942bdb7b9d7effb0ee155c94e8bda9abf57d4c88f50df8871"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211017-wham.npz",
+      "source": {
+        "bytes": 113077,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211017-wham.npz",
+        "sha256": "eb2d7a1cef2f52d411bc19b7df8f9217403dfd104da804f0ee1e4f958fc1d36b"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211017.json",
+      "source": {
+        "bytes": 5060,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211017.json",
+        "sha256": "74438a8405cfd0e03725116336b8aa16098e817a00e258f7fc97bc9befb6f5d0"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211019-wham.npz",
+      "source": {
+        "bytes": 113211,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211019-wham.npz",
+        "sha256": "be24831c2c2385f6d12a76da9e7b39b15ce3242586a11fc7fa4a57b0e317d6ad"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211019.json",
+      "source": {
+        "bytes": 5059,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211019.json",
+        "sha256": "59379e0ffd323ae9ec0a166411e32543493e0360fb547317c9fc07831beddec3"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211021-wham.npz",
+      "source": {
+        "bytes": 113244,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211021-wham.npz",
+        "sha256": "9d25dd8601d3af19e9c1c224228e1e40858eabc7d71f014630ae9a2e7a7bb756"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211021.json",
+      "source": {
+        "bytes": 5058,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211021.json",
+        "sha256": "7df18037fa9d29eb4ca35924482dd31400c8fbba0c1a5d1789e950ee250fc4b8"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211023-wham.npz",
+      "source": {
+        "bytes": 113387,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211023-wham.npz",
+        "sha256": "8edd43d870a70649f0ab0fbdf52aa09485b4a83bd0130a74a06c9cfa018c9485"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211023.json",
+      "source": {
+        "bytes": 5053,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211023.json",
+        "sha256": "8b08051500c6f5edd1f152d323c0e99fa3c2e236823eefb25a74ece17d46339e"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211027-wham.npz",
+      "source": {
+        "bytes": 113050,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211027-wham.npz",
+        "sha256": "34144bddcf22ce0ac9eff8a1c42fbafd88b90d7731bac9c76a0fb0e50a18994c"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211027.json",
+      "source": {
+        "bytes": 5057,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211027.json",
+        "sha256": "0a34e0c9ba27d60267294bea1c8ed41fe2254e34805a33ca94e896c83df546d6"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211031-wham.npz",
+      "source": {
+        "bytes": 113316,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211031-wham.npz",
+        "sha256": "6bc996f3ce009ce54661922267f0388c203e4422ab94e3c5e94610bd5634615c"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211031.json",
+      "source": {
+        "bytes": 5067,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211031.json",
+        "sha256": "fb9ba0326890a41ef300e2cb2528ea4b93e6ba5c59dc7e7ac67244e69b6658d9"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211033-wham.npz",
+      "source": {
+        "bytes": 113544,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211033-wham.npz",
+        "sha256": "e6447b5c7cdaaa2cb27825f8055dd4756b7f7b413de1c8a19b3cdfc14a3becca"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211033.json",
+      "source": {
+        "bytes": 5064,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211033.json",
+        "sha256": "985245f15e3618e6b583f7cc77f113250b82af2801dfa7289e9fafdd036e179c"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211039-wham.npz",
+      "source": {
+        "bytes": 113386,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211039-wham.npz",
+        "sha256": "b3b23de81eadf9eb23436215eaf8bcd0bf39e2b62e3c855d6c92acaba20171f2"
+      }
+    },
+    {
+      "category": "complete_original_analysis",
+      "member": "data/full-cohort-stage-100000/seed-211039.json",
+      "source": {
+        "bytes": 5055,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/seed-211039.json",
+        "sha256": "b6628168c39430f0b485da544ad4de90884e2fa1734e63e8da02961bd7c8a0c3"
+      }
+    },
+    {
+      "category": "final_scheduling_control",
+      "member": "data/umbrella-worker-control.json",
+      "source": {
+        "bytes": 26,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-control.json",
+        "sha256": "2240b30838ae0e5e47e7006a4a319c322893911baf27da6229b9328478e26974"
+      }
+    },
+    {
+      "category": "actual_root_exec_observation",
+      "member": "execution/analysis_exit-tool-observation.json",
+      "source": {
+        "bytes": 367,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-analysis-100000-root-observation.json",
+        "sha256": "dd83c17b1dfbca5246cdf4103d03fd396098b9f9f61bdb559d1243e49744f5a3"
+      }
+    },
+    {
+      "category": "root_execution_metadata",
+      "member": "execution/analysis_stdout.log",
+      "source": {
+        "bytes": 844,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-analysis-100000.log",
+        "sha256": "7350f25ec077d7f89f59cd57f4510b7b1dfe7a02a5f8e7827a2b48aa67f6549d"
+      }
+    },
+    {
+      "category": "read_only_lease_anomaly_evidence",
+      "member": "execution/lease-anomaly/archive-readonly-policy-v2.json",
+      "source": {
+        "bytes": 8887,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/policy.json",
+        "sha256": "e73a940695fdfe86460c76b1d3ade84555867d85f4ca115fe103b44c233dbfe0"
+      }
+    },
+    {
+      "category": "read_only_lease_anomaly_evidence",
+      "member": "execution/lease-anomaly/immediate-retirement-receipt.json",
+      "source": {
+        "bytes": 1667,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/retirement.json",
+        "sha256": "a60007a053b4d0dc2e649f3dabeba189d090653630870e0bd58926813799c6cb"
+      }
+    },
+    {
+      "category": "read_only_lease_anomaly_evidence",
+      "member": "execution/lease-anomaly/postcondition-independent-review.json",
+      "source": {
+        "bytes": 6001,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-postcondition-review/independent-review.json",
+        "sha256": "53784f09d4e14017a7c7c62dd52de21b840e7dae2b277991f1fbc23c59b86da0"
+      }
+    },
+    {
+      "category": "read_only_lease_anomaly_evidence",
+      "member": "execution/lease-anomaly/prior-independent-lifecycle-review.json",
+      "source": {
+        "bytes": 8334,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/independent-review.json",
+        "sha256": "8147f3f39ddb126cf290a9c6c2699c03d7ba81486b2deaba1303b9c165c94672"
+      }
+    },
+    {
+      "category": "read_only_lease_anomaly_evidence",
+      "member": "execution/lease-anomaly/quarantined-original-owner.json",
+      "source": {
+        "bytes": 68,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471/owner.json",
+        "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+      }
+    },
+    {
+      "category": "read_only_lease_anomaly_evidence",
+      "member": "execution/lease-anomaly/reappeared-owner.json",
+      "source": {
+        "bytes": 68,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+        "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+      }
+    },
+    {
+      "category": "read_only_lease_anomaly_evidence",
+      "member": "execution/lease-anomaly/retirement-root-adoption.json",
+      "source": {
+        "bytes": 2497,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/root-adoption.json",
+        "sha256": "3b14ff43e39e91776d1f400a5c74d5f114ac6ce840dab00a0088ceb7a4f1702a"
+      }
+    },
+    {
+      "category": "root_archive_adoption",
+      "member": "execution/root-archive-adoption.json",
+      "source": {
+        "bytes": 5464,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-adoption.json",
+        "sha256": "39c27db548b74e21a6351d70d117a328bcbc2fccdeb3e66af6593eec855c9d57"
+      }
+    },
+    {
+      "category": "actual_root_exec_observation",
+      "member": "execution/sampling_exit-tool-observation.json",
+      "source": {
+        "bytes": 401,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000-root-observation.json",
+        "sha256": "66082b68f9e6240677c93b1bf86ab6bd28c0defa8434bed05ccd13fa6d5939d3"
+      }
+    },
+    {
+      "category": "root_execution_metadata",
+      "member": "execution/sampling_stdout.log",
+      "source": {
+        "bytes": 1083,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000.log",
+        "sha256": "7c18e9bc31960d0fe15bdcca723b1e457bf2430dddfa28d2ceb42d345b09627e"
+      }
+    },
+    {
+      "category": "root_execution_metadata",
+      "member": "execution/worker_control_change.json",
+      "source": {
+        "bytes": 1509,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-admission-2-to-4.json",
+        "sha256": "94d0a3d49450db0571e59391cc78a9d84dfb016da257f7732c859d97a888ddd0"
+      }
+    },
+    {
+      "category": "fixed_protocol_or_prior_identity",
+      "member": "reference/analysis_prespecification.json",
+      "source": {
+        "bytes": 1608,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/analysis-prespecification.json",
+        "sha256": "48748596ec5af335bbae0c66d7fbde40ff3da2244e67bd590d2e69af63f5ae51"
+      }
+    },
+    {
+      "category": "fixed_protocol_or_prior_identity",
+      "member": "reference/launch_plan.json",
+      "source": {
+        "bytes": 2470,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/launch-plan.json",
+        "sha256": "e8479c402ac27af41bcc05cc4a693b5a6e439bd05f14ccb7075c26f719e6f663"
+      }
+    },
+    {
+      "category": "fixed_protocol_or_prior_identity",
+      "member": "reference/launch_receipt.json",
+      "source": {
+        "bytes": 3307,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000-launch.json",
+        "sha256": "a31ac94e0c3b50fa8b84c85e3dace16c510480e8527cabcb4c0ac8226711ca10"
+      }
+    },
+    {
+      "category": "fixed_protocol_or_prior_identity",
+      "member": "reference/precision_continuation_decision.json",
+      "source": {
+        "bytes": 2487,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/continuation-decision.json",
+        "sha256": "c96255a6eea63023f4eefe9450daa8fc4d67399d55a3143769bd83aa41169c16"
+      }
+    },
+    {
+      "category": "fixed_protocol_or_prior_identity",
+      "member": "reference/prior_snapshot.json",
+      "source": {
+        "bytes": 38119,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/stage-snapshot.json",
+        "sha256": "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4"
+      }
+    },
+    {
+      "category": "fixed_protocol_or_prior_identity",
+      "member": "reference/protocol.json",
+      "source": {
+        "bytes": 2888,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json",
+        "sha256": "5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a"
+      }
+    },
+    {
+      "category": "fixed_protocol_or_prior_identity",
+      "member": "reference/schedule.json",
+      "source": {
+        "bytes": 8109,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-classical/umbrella-schedule.json",
+        "sha256": "0799d38f37bb75aaee74e1f24d802d32365f9537fd327ef530097e52bd63e9ae"
+      }
+    }
+  ],
+  "raw_NPZ_count": 33,
+  "read_only_lease_exception_policy": {
+    "bytes": 8887,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/policy.json",
+    "sha256": "e73a940695fdfe86460c76b1d3ade84555867d85f4ca115fe103b44c233dbfe0"
+  },
+  "schema": "pyrpmd.h3.quantum-umbrella-archive-members.v3"
+}

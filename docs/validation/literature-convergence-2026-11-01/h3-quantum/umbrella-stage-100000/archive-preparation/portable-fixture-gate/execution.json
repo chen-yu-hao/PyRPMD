@@ -1,0 +1,47 @@
+{
+  "CPU_affinity": [
+    5
+  ],
+  "CPU_seconds": 0.565982,
+  "PES_or_dynamics_calls": 0,
+  "actual_analyzer_invocations": 0,
+  "actual_raw_or_partial_scientific_reads": 0,
+  "change_from_initial_gate": "Only metadata test fixture now constructs independent inert routes instead of borrowing original-tree absolute paths. Runner bytes unchanged.",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_quantum_umbrella_archive.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T21:17:51.217638+00:00",
+  "exit_code": 0,
+  "junit": {
+    "bytes": 4223,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/pytest.xml",
+    "sha256": "48b1901447ce9e85a4ec7d094c53245863312c30c5222d5b75e257bf709aa43b"
+  },
+  "log": {
+    "bytes": 99,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/portable-fixture-gate/pytest.log",
+    "sha256": "ca353677ff9c39fc0b3f1bd3a8c9661fe22c2a2e9a3e014d1b0c916fc4184ba4"
+  },
+  "schema": "pyrpmd.h3.umbrella-archive.synthetic-gate.v1",
+  "source_files": [
+    {
+      "bytes": 28830,
+      "path": "benchmarks/h3/quantum_umbrella_archive.py",
+      "sha256": "8423a01fe5a2bd7e5822eaf4e459a94e64890a178b784613f574ae0fd60275da"
+    },
+    {
+      "bytes": 10977,
+      "path": "tests/test_h3_quantum_umbrella_archive.py",
+      "sha256": "1e255600db6b0229e33ae81708a8762392d92cd671245a1f5fb570391acf2d77"
+    }
+  ],
+  "source_unchanged": true,
+  "temporary_inert_fixtures_only": true,
+  "threads": 1,
+  "wall_seconds": 0.6179310680017807
+}

@@ -1,0 +1,111 @@
+{
+  "additional_preparation_adopted": false,
+  "adopted_utc": "2026-11-01T20:56:38.558318+00:00",
+  "archive_verified": {
+    "bytes": 1476697324,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-water-classical-eight-chain-2026-11-01-raw.tar.gz",
+    "sha256": "b3dc0faf5ddb84d06182ebf788edc73dfa1a0ec674069f01e61eaa62918d21af"
+  },
+  "control_output": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01",
+  "decision": "adopted_fixed_numerical_control",
+  "fixed_original_failures_retained": {
+    "MSD_VACF_compatibility": true,
+    "MSD_window_compatibility": false,
+    "VACF_cutoff_compatibility": true,
+    "energy_envelope": true,
+    "energy_linear_drift": true,
+    "fixed_stage_complete": true,
+    "paired_equivalence": false,
+    "precision": true,
+    "sampling_mean_HOH_degrees": true,
+    "sampling_mean_OH_angstrom": true,
+    "sampling_potential_per_molecule_hartree": false,
+    "sampling_temperature_momenta_K": true
+  },
+  "input_and_source_guards": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/raw-data-index.json": "355e72b3fb035940693c685ef6d12dda01a7557851c5415be4fc5243fb176472",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/README.md": "7ad77b471601f48c833d9d7ab7712af7b4b86573a7d44e904850570393aa64c0",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/pending-adoption.json": "36bd3fea357df4f37d81f45956af85ba01ce2314387914ea89c6aa121d61db40",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/publication-inventory.json": "3dc6fd9739e4d6b22b1a3beb01e6b3aa2d24fc0cf0079aef43fe9060b0407564",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/selected-inputs.json": "7218d5d0bf79b71210c29a729d7ea2a05cca4fc410da14969c13ca772511f56a",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "/workspace/scratch/a5e4820daedd/launch_water_paired_control.py": "bff5ab38b2efb6d6d33ab429793b62a24ef67057c814b945a3b2e26dfed0767f",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101/chunk-000099.npz": "0b9ed7afffa6286b5f89d2a994f0f8747ac09b622e44900ed576b63aafcbd071",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101/manifest.json": "5d32b200e8073dc9818696fe2c77611c0539379fd494418bfc8fc191bbb777bd",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102/chunk-000099.npz": "0b151153c8223824b5188e1635c00afa5a2c783f051ead4f862029a18a061a60",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102/manifest.json": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103/chunk-000099.npz": "b7df140f0bbee88db6bbfc4bb4f91a6180f83cc8971f6d9db6986d9ba54ee124",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103/manifest.json": "dcd638e3052964747fc6d22ebc40ab6eafd33519e2c6caf790d7a686435a45b3",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104/chunk-000099.npz": "ca9c20aed155f396441544d6cf55501a15ff347998ef7170da8b6e9b8e619ede",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104/manifest.json": "02d5eaa6bf6aff7cc4a56459279087efcf07b1ca36d589379c33b5aae0107ebf",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105/chunk-000099.npz": "e900bfcaec5455ee3c5397aabbb9d1881a4c517c6f3fc6e110c1e20bd1570cbe",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105/manifest.json": "3dfdf5dff6f8d03c65e29f9b87d0d4b14ef8c40cb592a38577a363a8bfee64ac",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106/chunk-000099.npz": "58fdb04cd5c44c351f00f82ec773050175a660568845367199be1faecac2fe66",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106/manifest.json": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107/chunk-000099.npz": "e1ed293fba1612583a92a3e117afc0065c318977a39cf2b1c154ce043830940f",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107/manifest.json": "12ebe411009ce33f0e7a5aba12128dc1bb9b73d6ebf5b5c573eddaf242bd7cb0",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108/chunk-000099.npz": "86e63aa2de12c48d5fa780a8b2aa38964bff009cde41ff4b6be55611eef6ab89",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108/manifest.json": "affbd97b119bbcceb0dc2f0b865b21876417ab0f13424d80ae9f065d769a2f2a"
+  },
+  "launcher_sha256": "bff5ab38b2efb6d6d33ab429793b62a24ef67057c814b945a3b2e26dfed0767f",
+  "original_data_overwritten": false,
+  "pending_adoption": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/pending-adoption.json",
+    "sha256": "36bd3fea357df4f37d81f45956af85ba01ce2314387914ea89c6aa121d61db40"
+  },
+  "physical_parameters_changed": false,
+  "quantum_campaign_adopted": false,
+  "reason": "The complete original cohort has exited and been archived. Its preparation and early-MSD failures remain unchanged. Execute the independently preregistered all-eight paired timestep property check before considering a separate preparation extension.",
+  "resources": {
+    "CPU_affinity": [
+      4
+    ],
+    "bounded_invocation_wall_seconds": 1800,
+    "checkpoint_boundary_budget_semantics_retained": true,
+    "environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OPENMM_CPU_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "src:."
+    },
+    "integration_workers": 1,
+    "library_threads": 1,
+    "maximum_invocations": 4,
+    "original_water_workers": 0,
+    "other_registered_long_workers": {
+      "P256_children": 2,
+      "umbrella_remaining": 2
+    },
+    "separate_bounded_nonphysical_work": "Current-head pytest and archive replay may use their previously assigned short-work resources.",
+    "total_admission_wall_seconds": 7200,
+    "total_long_worker_ceiling": 5,
+    "umbrella_complete_seed_observation": [
+      211017,
+      211019,
+      211021,
+      211023,
+      211027,
+      211031
+    ],
+    "umbrella_pending_seed_observation": [
+      211033,
+      211039
+    ]
+  },
+  "schema": "pyrpmd.root-water-paired-timestep-adoption.v1"
+}

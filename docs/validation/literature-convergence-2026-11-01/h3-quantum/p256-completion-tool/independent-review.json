@@ -1,0 +1,78 @@
+{
+  "approved_for_complete_analysis_once": true,
+  "created_utc": "2026-11-01T21:00:01.163923+00:00",
+  "limits": [
+    "No current campaign completion, numeric result, uncertainty result, literature agreement or bead-control pass is asserted by this review.",
+    "The policy allows a separate 12-hour metadata-only waiting phase; its 600-second budget applies after completion admission. The work timer fires with 10 seconds reserved for bounded owned-process drain and finalization. OS scheduling, timer and filesystem failure granularity remain ordinary operational limits.",
+    "Handled SIGINT/SIGTERM are deferred through cleanup. An uncatchable waiter kill cannot promise a final receipt; the independent child alarm and permanent attempt claim prevent unbounded analyzer continuation or silent retry.",
+    "The dedicated Linux wrapper/child process and frozen single-thread environment are part of the reviewed execution contract.",
+    "A scientific-control false result is still a valid complete analysis outcome and is retained; the wrapper never launches another calculation to improve it."
+  ],
+  "observed_JUnit_suites": [
+    {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "13d968332fed",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "43",
+      "time": "3.586",
+      "timestamp": "2026-11-01T15:58:45.475757-05:00"
+    }
+  ],
+  "observed_author_gate": {
+    "bytes": 2134,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/resource-gate/execution.json",
+    "sha256": "314434e5dc2ea51bf128f23916902b53fdf38fdb511b5adb164bd4129d3c14f7"
+  },
+  "policy": {
+    "bytes": 36234,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/policy.json",
+    "sha256": "ff5be96fe6412a4d98f03019d5c7107bf7bbd7a7dfcb2426455412562bb30858"
+  },
+  "policy_sha256": "ff5be96fe6412a4d98f03019d5c7107bf7bbd7a7dfcb2426455412562bb30858",
+  "remaining_blockers": [],
+  "resolved_findings": [
+    {
+      "candidate_source_sha256": "c1ec5e8db041a048ae6316d065a3c462e0bff3bdc72801d038515a4e1eb2c19e",
+      "finding": "The initial 600-second deadline was cooperative and the prelaunch whole-input hash loop had no internal budget checkpoint. A slow verification could overrun, and a forcibly killed waiter did not impose a separate analyzer timer.",
+      "resolution": "Final source checks time/stop per file and per 1 MiB hash block, installs a work alarm at the 590-second work deadline, installs a default-SIGALRM child timer before exec, defers the wrapper alarm across Popen/reference capture, and reconfirms owned-child drain after the work alarm context disarms. Five added inert fixtures cover these paths; prior candidate and 38-case gate remain preserved.",
+      "status": "resolved in reviewed source"
+    }
+  ],
+  "review_method": "Read-only source, policy, fixture and preserved gate inspection. No new test execution by reviewer.",
+  "reviewer": "distribution agent; independent of wrapper author",
+  "reviewer_activity": {
+    "PES_evaluations": 0,
+    "active_raw_files_read": 0,
+    "actual_completed_rate_data_read": 0,
+    "dynamics_steps": 0,
+    "real_analyzer_invocations": 0,
+    "source_or_protocol_edits": 0
+  },
+  "schema": "pyrpmd.h3.p256-completion-wrapper.independent-review.v1",
+  "scope": [
+    "Future admission only after complete root launch receipt, exact root-observed exec session 30588 normal exit, released child lease and fixed complete global cohort.",
+    "Exact eight seeds, two timesteps, two pair batches, 32 branch report/settings identities, 800 distinct raw chunk paths and 76800000 native steps.",
+    "Full source/runtime/model/parent/baseline identities, successful one-start/one-reap worker journal, and all final input hashes before and after unchanged analyzer execution.",
+    "Permanent execution-directory/RUN_ONCE claim including failure; no replacement output, automatic retry, resume, extension, partial-data analyzer or alternate scientific estimator.",
+    "Owned analyzer process group, signal deferral, post-Popen journal failure cleanup, exact invocation count even on failure, and retained unconfirmed-drain state.",
+    "Independent child kernel wall alarm, chunked hash budget checks, post-ready work alarm and reserved final drain."
+  ],
+  "source": {
+    "bytes": 28609,
+    "path": "benchmarks/h3/p256_complete_analysis.py",
+    "sha256": "67e4e3eb1b7a7cc875fd14c74829c71be265a8171c516b7b10af5dca461d7b7e"
+  },
+  "source_sha256": "67e4e3eb1b7a7cc875fd14c74829c71be265a8171c516b7b10af5dca461d7b7e",
+  "tests": {
+    "bytes": 29968,
+    "path": "tests/test_h3_p256_complete_analysis.py",
+    "sha256": "749761e01e3d4e347611d289a360977cca4e2c7a854f36625888922a6099934e"
+  },
+  "trust_boundary": {
+    "adoption": "The approved_for_complete_analysis_once field is an implementation-review decision only. A separate exact root adoption and all future completion predicates are still mandatory.",
+    "root_actual_exit_attestation": "The root-created receipt explicitly attests actual session 30588, normal tool exit and all workers drained. It hash-binds the original saved tool-observation bytes. This wrapper verifies that attestation and the bytes but does not independently interpret an arbitrary tool-response schema or contact the execution service.",
+    "worker_scientific_completeness": "The frozen child coordinator and unchanged analyzer are the scientific/raw-array validators. This wrapper additionally checks exact complete membership, receipt consistency and all file identities. This review does not itself inspect active raw arrays."
+  }
+}

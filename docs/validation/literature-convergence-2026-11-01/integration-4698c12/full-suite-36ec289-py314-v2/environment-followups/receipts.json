@@ -1,0 +1,56 @@
+{
+  "corrections": {
+    "affinity": "Four allowed CPUs satisfy the explicit initial-BLAS-thread fixture; the original two-CPU run could not create four initial threads.",
+    "local_IPC": "Authorized local loopback/Unix sockets and a short basetemp remove EPERM and Unix socket-path-length failures. No external service is contacted.",
+    "wall_only_fixture": "One synthetic HCH4 wall-time fixture pins its CPU clock. Production whole-invocation CPU accounting and the actual monotonic wall deadline are unchanged."
+  },
+  "created_utc": "2026-11-01T21:19:24.359432+00:00",
+  "earlier_failure_inventory_sha256": "90b510624794d3b87529250639d2f6cbec5bbf8ad3f9cc665859780989ec2179",
+  "no_production_source_edit": true,
+  "observations": [
+    {
+      "actual_session_id_observed_earlier_in_this_conversation": 46716,
+      "junit": {
+        "bytes": 526,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-worker-affinity-followup.xml",
+        "sha256": "802eecabadfb68196e1cc9f6a4304f7b62761365975a8cd95ec0cbd857616087"
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 2
+      },
+      "log": {
+        "bytes": 98,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-worker-affinity-followup.log",
+        "sha256": "fbf834ed000ff63cef6aba584945158c33adb38b91e49939db4a9c3b9f3ed6bd"
+      },
+      "name": "full-suite-worker-affinity-followup",
+      "observed_terminal_exit_code": 0
+    },
+    {
+      "actual_session_id_observed_earlier_in_this_conversation": 31019,
+      "junit": {
+        "bytes": 3032,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-ipc-followup.xml",
+        "sha256": "b290eb54870b0610c39a1d5b520e29627b46a92b3ed40ec436df6c326268cc50"
+      },
+      "junit_counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 22
+      },
+      "log": {
+        "bytes": 99,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/environment-followups/full-suite-ipc-followup.log",
+        "sha256": "0b84182d2fb719266800649f3bbc7a26497ef292ba354a9c76ddfb69e6cbe112"
+      },
+      "name": "full-suite-ipc-followup",
+      "observed_terminal_exit_code": 0
+    }
+  ],
+  "schema": "pyrpmd.full-suite-environment-followups.v1",
+  "scope": "Previously completed targeted followups, retained without another execution."
+}

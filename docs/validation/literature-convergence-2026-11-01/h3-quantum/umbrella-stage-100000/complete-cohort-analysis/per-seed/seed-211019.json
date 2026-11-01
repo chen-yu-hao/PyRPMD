@@ -1,0 +1,164 @@
+{
+  "seed": 211019,
+  "production_sweeps": 100000,
+  "bin_refinement": [
+    {
+      "width": 0.001,
+      "xi_star": 1.0,
+      "log_density_ratio": -18.273328711915074,
+      "barrier_hartree": 0.017360456600319787,
+      "qtst_cm3_molecule_s": 2.8209127753364026e-16,
+      "prefactor_cm3_molecule_s": 2.4344198651175944e-08,
+      "reactant_fit": {
+        "value": 0.0,
+        "log_density": 0.5194533124210461,
+        "halfwidth": 0.004,
+        "polynomial_coefficients": [
+          0.5194533124210461,
+          -0.0007489530504381674,
+          -0.0012857401591513447
+        ],
+        "bins": 9,
+        "raw_count": 22692.0,
+        "weighted_residual_rms": 0.015816017764334233
+      },
+      "transition_fit": {
+        "value": 1.0,
+        "log_density": -17.753875399494028,
+        "halfwidth": 0.004,
+        "polynomial_coefficients": [
+          -17.753875399494028,
+          -0.002190343556710684,
+          0.0368953591498275
+        ],
+        "bins": 9,
+        "raw_count": 150624.0,
+        "weighted_residual_rms": 0.005170199208066187
+      }
+    },
+    {
+      "width": 0.0005,
+      "xi_star": 1.0,
+      "log_density_ratio": -18.27464402636588,
+      "barrier_hartree": 0.017361706206223505,
+      "qtst_cm3_molecule_s": 2.8172048270920703e-16,
+      "prefactor_cm3_molecule_s": 2.4344198651175944e-08,
+      "reactant_fit": {
+        "value": 0.0,
+        "log_density": 0.519962559026059,
+        "halfwidth": 0.004,
+        "polynomial_coefficients": [
+          0.519962559026059,
+          -0.0066743325312923,
+          0.005088536130270835
+        ],
+        "bins": 17,
+        "raw_count": 21507.0,
+        "weighted_residual_rms": 0.03849829462615625
+      },
+      "transition_fit": {
+        "value": 1.0,
+        "log_density": -17.75468146733982,
+        "halfwidth": 0.004,
+        "polynomial_coefficients": [
+          -17.75468146733982,
+          -0.0028535511390581584,
+          0.03649843071837837
+        ],
+        "bins": 17,
+        "raw_count": 142322.0,
+        "weighted_residual_rms": 0.008752565808886817
+      }
+    },
+    {
+      "width": 0.00025,
+      "xi_star": 1.0,
+      "log_density_ratio": -18.273012718024177,
+      "barrier_hartree": 0.01736015639238748,
+      "qtst_cm3_molecule_s": 2.8218043073920857e-16,
+      "prefactor_cm3_molecule_s": 2.4344198651175944e-08,
+      "reactant_fit": {
+        "value": 0.0,
+        "log_density": 0.5205770812911302,
+        "halfwidth": 0.004,
+        "polynomial_coefficients": [
+          0.5205770812911302,
+          -0.0074625467171439185,
+          0.005841257451066259
+        ],
+        "bins": 33,
+        "raw_count": 20863.0,
+        "weighted_residual_rms": 0.054077680225718974
+      },
+      "transition_fit": {
+        "value": 1.0,
+        "log_density": -17.752435636733047,
+        "halfwidth": 0.004,
+        "polynomial_coefficients": [
+          -17.752435636733047,
+          -0.004264864718172817,
+          0.03277672592350661
+        ],
+        "bins": 33,
+        "raw_count": 138154.0,
+        "weighted_residual_rms": 0.01702867777163648
+      }
+    }
+  ],
+  "time_half_log_rates": [
+    -35.82987781298629,
+    -35.77842719306569
+  ],
+  "block_log_rates": {
+    "4": [
+      -35.50360137681129,
+      -36.161849882264356,
+      -35.60643776279722,
+      -35.954805677515324
+    ],
+    "8": [
+      -35.73583038282689,
+      -35.28030873072295,
+      -36.27193842963695,
+      -36.05830714052003,
+      -35.50396214827027,
+      -35.71683909297613,
+      -35.69655705494681,
+      -36.22674121737942
+    ]
+  },
+  "within_ladder_log_variance": 0.023336705570079882,
+  "cv_inefficiency_quantiles": [
+    3.2972468911954835,
+    9.840772408407476,
+    11.772143150369837,
+    12.174416323879749,
+    19.62061726056442
+  ],
+  "cv_effective_sample_quantiles": [
+    5096.6796136934245,
+    8213.972284306083,
+    8494.643279333177,
+    10315.9634985513,
+    30328.332484602928
+  ],
+  "receipt": {
+    "schema": "pyrpmd.h3.quantum-campaign-stage.v1",
+    "seed": 211019,
+    "production_sweeps": 100000,
+    "warmup_sweeps": 5000,
+    "samples_prefix_sha256": "d2a4c94e7e6bdf19f49dda0d0e27956cf8ef152a6b55d2f0ffc3eb755eb2dee1",
+    "diagnostics_prefix_sha256": "c5e7812505536a7e0ba4ddc3dbfedc4ae989dd19d1005e0788cce239fc21ccdd",
+    "samples_storage": "all observations retained as ordered prefix of checkpoint.npz",
+    "previous_prefixes_verified": true,
+    "protocol_sha256": "5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a",
+    "checkpoint_sha256": "c74aa897c48d1c7db21c6e23ed965a4c05659aad22cab62a5313d3beff9d6963",
+    "state_sha256": "e19621ee690764d343aedca7d65945a152a1c037d22abe5348d18f8e86a53c07",
+    "driver_sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50",
+    "elapsed_seconds_this_call": 3225.815217067,
+    "physical_converged": false,
+    "literature_reproduced": false
+  },
+  "checkpoint_sha256": "c74aa897c48d1c7db21c6e23ed965a4c05659aad22cab62a5313d3beff9d6963",
+  "receipt_sha256": "74cd162f96214f8ca2644092f5401c80d0434d624f06618f210e374b5a00af0c"
+}

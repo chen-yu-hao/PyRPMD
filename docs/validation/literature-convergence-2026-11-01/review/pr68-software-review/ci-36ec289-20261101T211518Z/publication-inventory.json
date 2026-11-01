@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-11-01T21:20:01.615682+00:00",
+  "excluded": [
+    "Complete GitHub job response files outside the repository, retained at exact paths/hashes in failure-classification.json."
+  ],
+  "files": [
+    {
+      "bytes": 5012,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/README.md",
+      "sha256": "e453a5ce6e8f0774126800c3edc1010b85d912b0545a4d4d226529496dea414f"
+    },
+    {
+      "bytes": 13529,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/failure-classification.json",
+      "sha256": "693897313c8122ab9476209725e26639de850cea93e26048ea102bb036b6be67"
+    },
+    {
+      "bytes": 3700,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973258623-failure.txt",
+      "sha256": "44f2a5ddc9a9b3e6dedda80d6b1d98e014b6e94d3a767b3022a6f36330144d0e"
+    },
+    {
+      "bytes": 3708,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261478-failure.txt",
+      "sha256": "5492c8c6e539edcbfc91592e2a860027e9dec183627810e9c44e2b98d428ad4f"
+    },
+    {
+      "bytes": 3708,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261515-failure.txt",
+      "sha256": "f9d212e0d620d15163d8a31f8d6252bb8cbf3f9901d0b79ddecae6a5f3ca00fb"
+    },
+    {
+      "bytes": 3708,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261538-failure.txt",
+      "sha256": "73914df21b32b8837dea9fbdcbd471f51d217ef92c49aa1862228c51ed57a5f7"
+    },
+    {
+      "bytes": 3707,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261632-failure.txt",
+      "sha256": "cb92e3b649d19190f7de4eac85eca837efc3acad35e574dc250c54d4bf5ba0d4"
+    },
+    {
+      "bytes": 8386,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/observation.json",
+      "sha256": "019ad411efa6e18809516cc46c4c3b423f35318c2b441155d5c8d6a6d0919730"
+    },
+    {
+      "bytes": 41858,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/selected-workflow-jobs.json",
+      "sha256": "7b3e3fafe6075ea1934396b4b2f4eece649ec16d4aa58349ae53bd23223858de"
+    }
+  ],
+  "head_sha": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "listed_file_count": 9,
+  "listed_total_bytes": 87316,
+  "observation_utc": "2026-11-01T21:15:18.824Z",
+  "schema": "pyrpmd.ci-readonly-observation-publication-inventory.v1",
+  "scope": "One read-only status observation plus completed failed-job log diagnosis; no workflow mutation or source edit."
+}

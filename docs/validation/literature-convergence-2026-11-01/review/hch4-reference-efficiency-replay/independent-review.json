@@ -1,0 +1,92 @@
+{
+  "approved_within_reviewed_scope": true,
+  "authorizes_new_physical_execution": false,
+  "created_utc": "2026-11-01T21:33:13.505042+00:00",
+  "findings": {
+    "archive": "Independently streamed all36 members and rechecked each size/SHA against the fixed member inventory, including all16 actual pilot files. Safe regular-member whitelist excludes producer/PES source and native libraries. The supplied extraction receipt and fresh-replay command route numerical inputs to the extracted data/reference directories and report exact scientific-field equality.",
+    "cohort_and_uncertainty": "All3072 main and128 control draws are retained, including328 geometric zero weights in unconditional denominators. Exactly eight full paired seed vectors determine df7. The ratio is of pooled integral means; paired influence A_i/mean(A)-B_i/mean(B) preserves observed covariance. The t/delta interval remains a conditional small-sample approximation, not a physical-rate or tail guarantee.",
+    "failure_and_concentration": "The aggregate efficiency screen remains false. Surface1.007 pooled maximum weight0.0451470 exceeds0.025; its channel2 also fails ESS/maximum-weight criteria. Observed outer-shell ESS near1 cannot establish absence of unsampled tails or validate the domain. Passing reconstruction does not change these failures.",
+    "geometry_and_measure": "The independent Cartesian gradients give the mass-weighted positive flux metric. Radial delta integration divides by the absolute radial surface derivative, and the r1^2*r2^2 chart Jacobian and one entry sphere are retained. Four active TS channel means are summed once; no extra entry degeneracy is introduced.",
+    "mixture_and_saved_calibration": "Normal/Student/uniform fractions total one, reflection components are equally weighted, and density conversion divides by the stereographic sphere Jacobian. Saved-energy central Hessians, covariance back-transform and Newton shift are reconstructed without producer calls. The additive audit checks all711 tag-to-y displacements,89 followup labels and actual-registration-bound reference shapes/scales/masses/beta, closing the initial placement-check scope gap."
+  },
+  "inputs": [
+    {
+      "bytes": 33919,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/replay_saved.py",
+      "sha256": "1bb77ef43718a57c160d477cac206bf851ee71425cdd93090a4578299666825d"
+    },
+    {
+      "bytes": 5338,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/test_replay_saved.py",
+      "sha256": "433411bb2319a6b8b716e3abb25af5c25c9b9717cd9cdd490627e64622205d24"
+    },
+    {
+      "bytes": 943,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/initial-synthetic-gate/gate.json",
+      "sha256": "2e080666b7f83039605c5cdd0aa6b68a5191ab5fb9360c871498597d71108036"
+    },
+    {
+      "bytes": 29745,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/replay-result.json",
+      "sha256": "8b61927e30eb89ce45ad8f978d1399ffff6b62bf6a8d37a3bff481afdd026d94"
+    },
+    {
+      "bytes": 537,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/execution.json",
+      "sha256": "c3ea3a7e30aeec20976a603a1fbcb3a69be8fb7cc0cf75e5e4b1ddaf6c722cb6"
+    },
+    {
+      "bytes": 6265,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/audit_calibration_inputs.py",
+      "sha256": "af21de340a1b25dc17f220c7e6e978b85a0f1fc67c0c3d4602400d6a4a486e8a"
+    },
+    {
+      "bytes": 3089,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/calibration-input-audit/audit.json",
+      "sha256": "799f07eb77a926a104b05f0347cc121b872f33dab977b7b7b589d1cddbffed6e"
+    },
+    {
+      "bytes": 9078,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/package_saved_archive.py",
+      "sha256": "1c607fb28b7f58d4abeca1fd2b276ab1906aff4fbfaf81d03ce22cd8b0f59fe4"
+    },
+    {
+      "bytes": 15277,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/raw-archive-members.json",
+      "sha256": "cdc8329b62f9cd1439057e918056cfcb37027b9b295edfbcfe702b07249bef11"
+    },
+    {
+      "bytes": 2469,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/fresh-extraction-verification.json",
+      "sha256": "e43515a0335704abd629a2638eb5e25ae1fc88258ad864c51b64c87feee825b9"
+    },
+    {
+      "bytes": 10488,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/README.md",
+      "sha256": "b6851e5e04ca76c7f949cf7ab92b745cda75d82c5f0cdf55b3a4abf46371a707"
+    }
+  ],
+  "limitations": [
+    "No new energy evaluation, physical dynamics, quantum calculation or absolute-rate normalization was independently executed by this reviewer.",
+    "Method agreement checks the saved finite-domain P1 calculation, not domain adequacy, equilibrium, unseen weights, reference-separation convergence or paper agreement.",
+    "The actual replay is independent in implementation, not in authorship; this source/receipt review does not convert it into an independently sampled physical benchmark.",
+    "No current source, old evidence, archive, failed gate or integration checkout was modified."
+  ],
+  "observed_evidence": {
+    "archive_bytes": 1136325,
+    "archive_sha256": "9a259292ec15c17171e999256ffa96c0aec6b7885e28ad40c78904ab8742cd3b",
+    "original_saved_PES_calls": 3672,
+    "reviewer_PES_calls": 0,
+    "reviewer_RNG_draws": 0,
+    "reviewer_dynamics_steps": 0,
+    "reviewer_numerical_replay_runs": 0,
+    "reviewer_streamed_actual_data_members": 16,
+    "reviewer_streamed_archive_members": 36,
+    "reviewer_tests_run": 0,
+    "saved_calibration_geometries": 800,
+    "synthetic_cases_reported": 14
+  },
+  "remaining_blockers": [],
+  "reviewer_role": "Independent agent, read-only source/receipt/method review and streamed archive-member checksum verification. The standalone numerical replay remains authored/executed by the producer author.",
+  "schema": "pyrpmd.hch4-efficiency-replay-independent-method-and-archive-review.v1"
+}

@@ -1,0 +1,45 @@
+{
+  "PES_evaluations": 0,
+  "active_raw_files_read": 0,
+  "created_utc": "2026-11-01T20:49:55.623152+00:00",
+  "failed": 0,
+  "inert_processes_only": true,
+  "junit": {
+    "bytes": 4560,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/initial-gate/pytest.xml",
+    "sha256": "61c1c93d450df3a588420c78b3c4115d946f6f870f8917f9b9f429d7b633fd98"
+  },
+  "passed": 30,
+  "pytest_reported_seconds": 2.76,
+  "real_analyzer_invocations": 0,
+  "schema": "pyrpmd.h3.p256-completion-wrapper.synthetic-gate.v1",
+  "skipped": 0,
+  "source": {
+    "bytes": 25228,
+    "path": "benchmarks/h3/p256_complete_analysis.py",
+    "sha256": "c1ec5e8db041a048ae6316d065a3c462e0bff3bdc72801d038515a4e1eb2c19e"
+  },
+  "source_snapshot": {
+    "bytes": 25228,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/initial-gate/p256_complete_analysis.py",
+    "sha256": "c1ec5e8db041a048ae6316d065a3c462e0bff3bdc72801d038515a4e1eb2c19e"
+  },
+  "test_snapshot": {
+    "bytes": 20078,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/initial-gate/test_h3_p256_complete_analysis.py",
+    "sha256": "c7eeec22ab9758a5cb7cb4af4d4330cf0a173b66e19e4d2d76d5b20f5657b968"
+  },
+  "tests": {
+    "bytes": 20078,
+    "path": "tests/test_h3_p256_complete_analysis.py",
+    "sha256": "c7eeec22ab9758a5cb7cb4af4d4330cf0a173b66e19e4d2d76d5b20f5657b968"
+  },
+  "tool_sessions": [
+    {
+      "completion_chunk": "524c57",
+      "exit_code": 0,
+      "initial_chunk": "fda868",
+      "session_id": 38613
+    }
+  ]
+}

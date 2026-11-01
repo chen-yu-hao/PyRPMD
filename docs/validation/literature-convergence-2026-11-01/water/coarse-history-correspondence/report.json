@@ -1,0 +1,910 @@
+{
+  "CPU_affinity": [
+    4
+  ],
+  "CPU_seconds_before_write": 1.29069015,
+  "all8_complete_first_segments_checked": true,
+  "all_frames_per_seed": 801,
+  "chains": [
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 7.883899329819144e-06,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.00033453934768745697,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 9.741720567266128,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.238518579391872,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.0009224538625888918,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.001103463496691319,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 9.888631744903783,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.371723830921965,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 0.3180549576996121,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 0.08759495998339517,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 24.017222040630593,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 6.616279698145676,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 28.561607472821763,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 9.871061596749161,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 27.667017715691557,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 10.281496908239312,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.00023147018511500327,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.001374985390953043,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1101
+    },
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 7.705286908654685e-05,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.000509936200534522,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 9.479447137589833,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.092359266185225,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.0007295302959156819,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.0010756990228446477,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 9.64992094387339,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.201644695827854,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 0.4711737215877001,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 0.0460684378699554,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 28.38627358879595,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 5.155633641391793,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 23.336128288716985,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 8.263397627443128,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 26.593373808261443,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 9.649921010782315,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.00024824316336485364,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.001708984375,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1102
+    },
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 7.290073878341019e-05,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.0004991466222996621,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 2,
+          "final_frame_max_abs_difference_native_units": 15.148873511938412,
+          "first_mismatching_time_fs": 10.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 15.148873511938412,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.000876343994662097,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.0011158165346090078,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 15.276830894707487,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 15.276830894707487,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 0.23768552927617637,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 0.045943686568916675,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 26.35118027198476,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 6.013168114803065,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 23.998350522319804,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 10.546858306266827,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 28.642976588915516,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 15.276830940255676,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.0002413582051411312,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.0015869140625,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1103
+    },
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 8.291138508198515e-05,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.0004375724444285467,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 8.524313545608905,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 8.983906031152836,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.0007573035436200114,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.00115078171918208,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 2,
+          "final_frame_max_abs_difference_native_units": 8.623757351715863,
+          "first_mismatching_time_fs": 10.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 9.194713423156458,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 0.9323203137898229,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 0.15018071812663258,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 21.818309728637175,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 6.149276774470245,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 28.059508727291757,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 7.523131509379439,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 22.22626511198766,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 9.104720475751268,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.00025623452934578545,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.0013682080079888692,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1104
+    },
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 5.436484164267341e-05,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.00038376115780680564,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 9.374724655558584,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.095099518199294,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.0007229123046597786,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.0012565285411692043,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 9.548095011726168,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.244114334982253,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 0.1209391723576052,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 0.01817526966641303,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 33.34699226480569,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 6.922761161610877,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 21.650416110475895,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 11.780033991708002,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 23.486571639487224,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 10.810988717171618,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.000233589154873731,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.00146484375,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1105
+    },
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 1.4609061639525578e-05,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.0003703282170985922,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 7.549255073322948,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 8.878064328378402,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.0007751217431450054,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.0010520192875998978,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 7.63614607779711,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 8.982456866288807,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 2.237435678862368,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 0.5470503416450185,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 22.851163229362278,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 5.53220833920253,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 23.95724187304758,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 7.718461767763072,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 26.13011274241569,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 7.912336920288748,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.0002362569154064513,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.0013910913635299949,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1106
+    },
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 0.00016925423777758297,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.00039329931059040035,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 11.310955473949992,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 11.310955473949992,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.0006659960568391911,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.0010265467600700311,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 11.095567366136407,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 11.095567366136407,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 1.093798306437351,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 0.12234501077097448,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 23.290648250124743,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 6.266881752277666,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 26.16851115499656,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 9.759635554436429,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 21.413953431481453,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 13.8112533579663,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.0002405847602369871,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.001708984375,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1107
+    },
+    {
+      "all_four_full_precision_q_p_checkpoints_exact": false,
+      "all_saved_coarse_observations_exact_after_dtype_cast": false,
+      "fields": {
+        "hamiltonian_per_bead_hartree": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 0,
+          "final_frame_max_abs_difference_native_units": 2.4599668785985074e-05,
+          "first_mismatching_time_fs": 0.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": false,
+          "maximum_abs_difference_native_units": 0.00039111697517046906,
+          "original_dtype": "float64"
+        },
+        "molecular_com_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 10.104750782251669,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.673160477533841,
+          "original_dtype": "float32"
+        },
+        "molecular_velocity_au": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 0.0007635523782865626,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 0.0010191083184138737,
+          "original_dtype": "float32"
+        },
+        "oxygen_centroid_bohr": {
+          "control_dtype": "float64",
+          "exact_after_cast_to_original_dtype": false,
+          "exact_frames_after_cast": 1,
+          "final_frame_max_abs_difference_native_units": 10.15270985007924,
+          "first_mismatching_time_fs": 5.0,
+          "frames": 801,
+          "initial_frame_equal_after_cast": true,
+          "maximum_abs_difference_native_units": 10.710723455231559,
+          "original_dtype": "float32"
+        }
+      },
+      "frames": 801,
+      "full_original_post_draw_p0_separately_saved": false,
+      "full_precision_checkpoints": [
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 11.63367574881636,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 1.983783607077246,
+          "time_fs": 1000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 23.87312164874678,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 12.294709036786735,
+          "time_fs": 2000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 26.58275943314501,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 11.099729450166322,
+          "time_fs": 3000.0
+        },
+        {
+          "p_exact": false,
+          "p_max_abs_difference_au": 23.455843053725523,
+          "q_exact": false,
+          "q_max_abs_difference_bohr": 10.967971190505757,
+          "time_fs": 4000.0
+        }
+      ],
+      "initial_rebuilt_force_RMS_difference_kj_mol_nm": 0.0002479834194024089,
+      "initial_rebuilt_force_max_abs_difference_kj_mol_nm": 0.0013427734375,
+      "new_RNG_draws_performed": 0,
+      "original_absolute_step_origin": 400000,
+      "original_preparation_record_interval_fs": 100,
+      "record_interval_fs_control": 5,
+      "record_interval_fs_original": 5,
+      "same_after_draw_RNG_state_all_original_first_segment_checkpoints": true,
+      "same_before_draw_RNG_state": true,
+      "same_saved_start_q_bitwise": true,
+      "seed": 1108
+    }
+  ],
+  "coarse_reuse_eligible_under_requested_exact_correspondence_condition": false,
+  "created_utc": "2026-11-01T21:42:06.328258+00:00",
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "input_files_unchanged": true,
+  "inputs": {
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/analysis/report.json": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/registration.json": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/dt025/chunk-000000.npz": "a69f416dad040041014bc2246a0818f355474c2aa5838d7e4dabbd31db69ca73",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/dt025/chunk-000001.npz": "41382de81bf1f63f17e2fe58d412f98db874007da5fd9ddd4041b502aa6375e4",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/dt025/chunk-000002.npz": "5dbb04aafbb28b91486703ec552966e4f543456428970213febf43c6c3f5aed1",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/dt025/chunk-000003.npz": "09f7f671c3eef36aa410f7aacab9aece2f91e8ce0650ca3c24d1a8586b81c40a",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/dt025/chunk-000004.npz": "a1e66522090c15085d0e1feafbeae6dba1a04c0545bd717657d0dce85806e857",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/dt025/manifest.json": "5febdd4214628baf1de8bc1795b386d6adabf48f0831ee2f7ca944567bad6a6c",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/initial/initial.json": "0ea4d3fb08812d84432ed3fb1c64612284a5660dfca6c77f50d294f8d341ea5a",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1101/initial/initial.npz": "323fd1114a6abc9c3efad2e0edb05a05b1d18793cc875acaee275fd00fd2f871",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/dt025/chunk-000000.npz": "4388c57ac461f92d41052e1a8abffb7215b38c4e5ef6a117c7b537ae694da3cb",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/dt025/chunk-000001.npz": "0842890a8bfd3e6b6a8cfb57c970eb0cbcda474b234722b2ec747157e68245ab",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/dt025/chunk-000002.npz": "f3091e3848a5d8128c997a1a375acac9e1e513be910225d572ccdab67994b6b7",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/dt025/chunk-000003.npz": "284fd8a287bb24f5cce88613a3a4da61d14568eeea55b4c603e241f3814eb686",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/dt025/chunk-000004.npz": "6321f4722eb64ac2398d3b7994accb8d2c9376e0b488ed013ea2df58af3f2f92",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/dt025/manifest.json": "cc6dab97b6bc3b8822798e7ae00846f5ce16a4757761f0c73a2b2fc049d3b657",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/initial/initial.json": "0aa02f6bd50b762ba1aebc48dd5b63bf952f2f4b7368a5c365f79411560e6f26",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1102/initial/initial.npz": "3e14b2209c8c45d27ef1b99ed8ed247673889e57efa549217cffc86c0be6c1a1",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/dt025/chunk-000000.npz": "f9f744a5e33964791318f480729c7c8cbf4a874f84d0b062eb5054eaa0fbf6dc",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/dt025/chunk-000001.npz": "4a4a48ef47d22592894dc4451302e0345ee7c1d16b9a7cd3410ca13d9ab5d365",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/dt025/chunk-000002.npz": "57667481c752c963ec341f396a9487ad66a8de07ed9b94f47bdfb6dc71a71f8e",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/dt025/chunk-000003.npz": "61e18cc81b1002e8dc0192002b2dca46fb41eb4ecad1e2e766c946dc09b4e424",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/dt025/chunk-000004.npz": "d5a947ab257d1c1b20bd110ad16ae482b07db575bd8aaa55366713ab4d299bc1",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/dt025/manifest.json": "920537b1b27711606392ee4183e643b871529162eb1f0fd606521873b1e8df68",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/initial/initial.json": "e27446363ba3e6fd2d29268cb9f4bd3b4485b7efe03b3098abbade3c957df1a8",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1103/initial/initial.npz": "a9aa4a4c9b8b8625213214017cdeb339db7fe1e3687ee6da52d748f49411e104",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/dt025/chunk-000000.npz": "6adbd44da2da03ecbe8c0dc3f8775d1b207881fddf1b972f6adf3b1cb3d8939b",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/dt025/chunk-000001.npz": "d8dda1225201ae6ce4f5055d5f1434dc644e2da310bec22a43b05464e0b2cd7a",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/dt025/chunk-000002.npz": "97985e885b916fcc0c4749b6c121d0be2d484ed27aabaa606dcc195bd61cd90f",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/dt025/chunk-000003.npz": "f500850a6b97ac06f06bd3e1c56e8b393c3d5f1836bf27810b52b85b573728bf",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/dt025/chunk-000004.npz": "f3ac00cb485c37dc2b69b3da246e7f91a1ace260843e63dc7e5b2105180c434b",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/dt025/manifest.json": "6c1c2be838c1562f46a827d24c3e7e51e1a406885c92f0c1c4f5796312ae270d",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/initial/initial.json": "93ba9d55cb07c888bde7ce3938d22b86492d34c67e8653e47e6476fd82e76c05",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1104/initial/initial.npz": "5ac73748284db2262ee68dbc3bace7597c8f09cfdf07a9d7abca78a12e7b8d1e",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/dt025/chunk-000000.npz": "c45a5ef88d06e9c90728145e44bf585b89fb8d15b15f20a32927354c19b53871",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/dt025/chunk-000001.npz": "6840e4c54f2d708089bd54665e021418f5dc1665d22898b66a2b0dc317ccc392",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/dt025/chunk-000002.npz": "d180bc691b196952c09a60dc60bcce94127711c4932a712494fde6d067b1061a",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/dt025/chunk-000003.npz": "62a765d7f4d5da4dfaa234db275027d47d2efd688bd87eb4de4fc95db25a889f",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/dt025/chunk-000004.npz": "40d46655361d6c66855c064edf9b18f621acb82e15b2e7fa4b42b9788008242e",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/dt025/manifest.json": "3ca6a5c5e8f86de2ecdb30f41fba7c8f2ffa0064cad4a6847935dfeb9dff03cc",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/initial/initial.json": "6e4b7912fc5c41f7171f4da439a534be8b7c1c1ad327bd06ff88e1de94df88a5",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1105/initial/initial.npz": "7c79c775c598cd06e75d390a84d6b9fa1cc5024d5761862b72339ab4d6cf889c",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/dt025/chunk-000000.npz": "9b4e896f9e2e023380096e95c65f498e90a0e49f589270651cd029c115e0b520",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/dt025/chunk-000001.npz": "4e12a94b9f826f131f39613613698fa3444f7af704f92fa7d7635e894eb22cd8",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/dt025/chunk-000002.npz": "4082c7a2e5eeac641c62b9eeeef430cd37a8f46eea0b748cccc437a340fa3de0",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/dt025/chunk-000003.npz": "c3f6aa974bf67151e36391dd9f57c24f7d8b90dacd64a3f1244f2d8291a1a886",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/dt025/chunk-000004.npz": "8808365697c26fc5ecaa393e376ecfbc7ed436e2aa62520c106ba91c80438be0",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/dt025/manifest.json": "b7b6b298447ead810401245d3f3fe725f6aeba8bc39c99e4f13dad78e2218ac8",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/initial/initial.json": "356f986381302c647309a085d6d061c3d6791c8878deef3d8a3e32322d03fb40",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1106/initial/initial.npz": "55cf44acb6b273e17df8b808b935f53c7e1572ff1ede63ef6782e8965a134af0",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/dt025/chunk-000000.npz": "39c87fc330b9078b79f2e6305e1e3fb308b3ea4ef7cb29ea882ae5db3cb1a009",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/dt025/chunk-000001.npz": "2e0d549c73e3c824a400bd55ff6a2aee73de0997250c6d3e06d6c1fb453d3e9d",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/dt025/chunk-000002.npz": "26d2d637974d6db2ac8ba0436cc0b63cb5fb5244342548287839f12d8e55f095",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/dt025/chunk-000003.npz": "a040ff113196fafc407683a5c1d72508040870721c2147f3b4ddb7ba371325f0",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/dt025/chunk-000004.npz": "0536d83e6f93e2cc943ab459251321e629f254861fadefbdedcca31f854c81e4",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/dt025/manifest.json": "1e7424b072a8808b0ab2c7e16b5dedd3b6dcd2a15db2591e0d44bd2f71671a80",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/initial/initial.json": "324dbb3d1f04b763e2cfcda06bc7a2af0f224c4b9af56f12146183ce2c3673b1",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1107/initial/initial.npz": "41a5b876151a43f39b710a9cd5dce4a4687896d38522182f853957f61435d867",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/dt025/chunk-000000.npz": "d63cb44b1570c66d8590a331e6d30475b28695474a5752695621a2020d2113f8",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/dt025/chunk-000001.npz": "d4e78a25871f17089dc78fecffc8b2bda82cb5765916054ae98dd5108e396ead",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/dt025/chunk-000002.npz": "3d410f0e4b7846a59239f491dacee64e32bcc4b72240a47e181e9e2547d16ccf",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/dt025/chunk-000003.npz": "07c4669842fceacd0cdf3691945f133566658a93c572c105048da62e5456bc50",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/dt025/chunk-000004.npz": "47bbc4c5688062102f2b6f8813165a878c63f19cf225d54a4c838cc1c25766ed",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/dt025/manifest.json": "ac6c6e68c958386c64c8163b111757865ed29606bdb605e54a4cceee1635a1e0",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/initial/initial.json": "b29827c37873efb02998cee65d19ba5f42289df25dacac0c23e2fd8f50a655e1",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/runs/seed-1108/initial/initial.npz": "572e1bfa22843c220e752bb31fafaf116c769e63ac48fb5eba7f355a23114df0",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1101/chunk-000099.npz": "0b9ed7afffa6286b5f89d2a994f0f8747ac09b622e44900ed576b63aafcbd071",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1101/chunk-000100.npz": "f0535fb8249e0eedb4abcd15863b566eb3971e78332fec2e7c294e1e7b3db8d7",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1101/chunk-000101.npz": "53274dbadd9c7e7a222037159e93445872347cca69bd0e0669404a779daff709",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1101/chunk-000102.npz": "db5d43b72e5f295db5d0dbe6341c504a19b5713063c498f2bc15079936449d65",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1101/chunk-000103.npz": "7148f59a17a93de1279a2d3b04db3929dd56d6b71a512c71c2995103e69c34e4",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1101/manifest.json": "5d32b200e8073dc9818696fe2c77611c0539379fd494418bfc8fc191bbb777bd",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1102/chunk-000099.npz": "0b151153c8223824b5188e1635c00afa5a2c783f051ead4f862029a18a061a60",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1102/chunk-000100.npz": "40cd371b8b4f0867fd910756e199ef107b1168eddbda873f94dec16de07e5dd8",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1102/chunk-000101.npz": "550e26a22609bbbdaaab14f1d447458806b31db3a7b47d8be3efbbd81b773c98",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1102/chunk-000102.npz": "e3e0b23d59ad9cd53c1def73588df1635f266e7c0715d94612c6b3f14c86cf40",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1102/chunk-000103.npz": "4c0518811248e9ca51828f1e3f240e21ed1fc5d651a2506042f7e901769d363b",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1102/manifest.json": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1103/chunk-000099.npz": "b7df140f0bbee88db6bbfc4bb4f91a6180f83cc8971f6d9db6986d9ba54ee124",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1103/chunk-000100.npz": "84b014ce374cb94e030290bd97e87475400276a3c94dbdc93e9b49e215dd9380",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1103/chunk-000101.npz": "04b1d58827138ebd94883753d0579b705b86686d09b115191698f3aa70cf8b51",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1103/chunk-000102.npz": "4632f7ecbe549d215ad6b6c551a7b963706c18ff4869e13364e4d435d9e1192e",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1103/chunk-000103.npz": "a809abad6438e58d4477a91df1211400cc303acd3f8915d47ffd746e4dc85825",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1103/manifest.json": "dcd638e3052964747fc6d22ebc40ab6eafd33519e2c6caf790d7a686435a45b3",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1104/chunk-000099.npz": "ca9c20aed155f396441544d6cf55501a15ff347998ef7170da8b6e9b8e619ede",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1104/chunk-000100.npz": "58e6147290ec50ecebcece21bf3c276e295536381a4d8c4d20d35e9d24240ebb",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1104/chunk-000101.npz": "b2c6ca1c4fe0a7cbe0f43aa213a97e47fedd0f1785da609fbbb91a2feb7852cf",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1104/chunk-000102.npz": "c3993cede317c94e2c0106157dc66847cce122cbd49f89ade5360fadd1f3fbbd",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1104/chunk-000103.npz": "e04296116b08803342d5656cac0f179675b53faf067b0310e600b014ecd55116",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1104/manifest.json": "02d5eaa6bf6aff7cc4a56459279087efcf07b1ca36d589379c33b5aae0107ebf",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1105/chunk-000099.npz": "e900bfcaec5455ee3c5397aabbb9d1881a4c517c6f3fc6e110c1e20bd1570cbe",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1105/chunk-000100.npz": "1e9bb2f9d53a7a1192d01836209823ee80960c34a5beb1ecf26dcd851875584e",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1105/chunk-000101.npz": "53b2b3e6ced60927dd4cead1263303d49e4e4da6babaf7b02d9cf07bd3fb6098",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1105/chunk-000102.npz": "a57e126d28b2757b3921987044e30031fbe904ed6272264aacc0b75e864c0af3",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1105/chunk-000103.npz": "31a34ecf03a6b1819f750622b044adc6c8b7c6f0e7bb391059932a0637ce5a1e",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1105/manifest.json": "3dfdf5dff6f8d03c65e29f9b87d0d4b14ef8c40cb592a38577a363a8bfee64ac",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1106/chunk-000099.npz": "58fdb04cd5c44c351f00f82ec773050175a660568845367199be1faecac2fe66",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1106/chunk-000100.npz": "875e89f022318b9c4837b8149973ed5e410379b01aba34ed6405817e388dd0af",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1106/chunk-000101.npz": "a41ec96061d9aa58b592d5845b61f8bf0562ff2e417081d50e018fba381605b9",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1106/chunk-000102.npz": "4800420096121ecd658904f99a6491fea0821e1ec883ccc54986462785fa24d8",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1106/chunk-000103.npz": "fa2851e198f44aa3b75ad1b1452bb98cc8aa30e2f2800a1cd9eabf84d4d186e5",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1106/manifest.json": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1107/chunk-000099.npz": "e1ed293fba1612583a92a3e117afc0065c318977a39cf2b1c154ce043830940f",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1107/chunk-000100.npz": "9f4c6803eef0d335851ad7cb65c8c41f056f6c0f0ade9619ba5840f24150b1fb",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1107/chunk-000101.npz": "ca1e87611067522a978267ca78908c674ab3b3853e9262c62dd1582ea0367f3b",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1107/chunk-000102.npz": "184114263b7cca1ba8df6bc4c03656271c166be4f11246b16968d66ed03bd89b",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1107/chunk-000103.npz": "3554080b9d6a75905b6b7f31e2fd725bafb830234340a1d8dca40afe30f05ca2",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1107/manifest.json": "12ebe411009ce33f0e7a5aba12128dc1bb9b73d6ebf5b5c573eddaf242bd7cb0",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1108/chunk-000099.npz": "86e63aa2de12c48d5fa780a8b2aa38964bff009cde41ff4b6be55611eef6ab89",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1108/chunk-000100.npz": "3f6ac37294c7a409220285e04a65b861cda3d08689bb2aff1f33aafbe680eac0",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1108/chunk-000101.npz": "716b332ddeeb7ffbebf71c7f100fe739ad26f778da092e33abb609293a7b4b50",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1108/chunk-000102.npz": "02a2683a4cee93e9316f142e2b52080b91ea5cd9a79a74a535d8281d54596b23",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1108/chunk-000103.npz": "5ff1013329882bce0a5d9e2636a6a212d1fb4c210c07d0c1a64a2421b9155d55",
+    "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01/raw/runs/classical-1108/manifest.json": "affbd97b119bbcceb0dc2f0b865b21876417ab0f13424d80ae9f065d769a2f2a"
+  },
+  "interpolation_or_alignment_transform": false,
+  "interpretation": "The comparison tests saved-history identity, not statistical timestep equivalence. Shared source q/RNG and initial rounded observables cannot imply bitwise future CPU trajectories. No approximate or favorable-subset reuse is authorized.",
+  "maximum_RSS_KiB": 85160,
+  "new_PES_calls": 0,
+  "new_RNG_draws": 0,
+  "new_all25_segment_reuse_study_proposed_or_adopted": false,
+  "new_dynamics_steps": 0,
+  "numeric_equality_rule": "Exact array equality after only float64-to-original-dtype casting, plus exact float64 q/p at each1ps checkpoint. No numerical tolerance is used for correspondence.",
+  "original64ps_control_failures_reclassified": false,
+  "schema": "pyrpmd.water-all-eight-saved-coarse-history-correspondence.v1",
+  "source_files_unchanged": true,
+  "source_hashes": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/check_saved.py": "e2d302e36c652a507fe91cbf69383202b3cf2457ca0d192c7cca3b09593606f7",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "threads": 1,
+  "transport_estimates_recomputed": false,
+  "wall_seconds_before_write": 1.3355345710006077
+}

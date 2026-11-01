@@ -1,0 +1,57 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "actual_pilot_registration_or_execution": false,
+  "command": [
+    "taskset",
+    "-c",
+    "8",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_hch4_efficiency_pilot.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/efficiency-admission-guard-synthetic",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T21:07:09.365284+00:00",
+  "exit_code": 0,
+  "pytest.log": {
+    "bytes": 180,
+    "sha256": "6c99d2635c6ad07e71158029f56c917966ab3465ca186db5e6ba020c22680a95"
+  },
+  "pytest.xml": {
+    "bytes": 13394,
+    "sha256": "be91d897b3212a99dd46f2e2d3b08788d363a99c109e053eddccda0c557c8fc8"
+  },
+  "real_PES_evaluations": 0,
+  "real_dynamics_steps": 0,
+  "schema": "pyrpmd.hch4.efficiency-pilot.synthetic-gate.v1",
+  "source_files": {
+    "benchmarks/hch4/efficiency_pilot.py": {
+      "bytes": 65143,
+      "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+    },
+    "tests/test_hch4_efficiency_pilot.py": {
+      "bytes": 47526,
+      "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+    }
+  },
+  "source_unchanged": true,
+  "synthetic_RNG_used": true,
+  "testsuites": [
+    {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "13d968332fed",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "85",
+      "time": "10.815",
+      "timestamp": "2026-11-01T16:06:58.292085-05:00"
+    }
+  ],
+  "threads": 1,
+  "wall_seconds": 11.258949591996497
+}

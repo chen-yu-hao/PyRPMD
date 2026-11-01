@@ -1,0 +1,19 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "CPU_seconds": 2.4014960000000003,
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "actual_pilot_files_unchanged": true,
+  "created_utc": "2026-11-01T21:28:01.248264+00:00",
+  "external_source_count": 129,
+  "external_sources_unchanged": true,
+  "input_count": 16,
+  "returncode": 0,
+  "schema": "pyrpmd.hch4-independent-replay-execution.v1",
+  "source_sha256": "1bb77ef43718a57c160d477cac206bf851ee71425cdd93090a4578299666825d",
+  "source_unchanged": true,
+  "threads": 1,
+  "wall_seconds": 2.423393049990409
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "pyrpmd.root-actual-exec-observation.v1",
+  "observed_utc": "2026-11-01 21:17:10 UTC",
+  "command_role": "HCH4 efficiency prepare",
+  "tool_result": {
+    "chunk_id": "f58aac",
+    "wall_time_seconds": 0.105011995,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  "observation_source": "Actual exec_command terminal response; no running session was returned."
+}

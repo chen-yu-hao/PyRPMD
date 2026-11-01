@@ -31,7 +31,10 @@ software-test results remain historical observations, not overwritten runs.
 | Complete initial P=128 quantum rate | 1.97196035 × 10⁻¹⁶, 95% CI [1.91141982, 2.03441839] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | +1.126% from paper 1.95 × 10⁻¹⁶; whole interval inside its ±5% band; fixed-P aggregate gate still false because of κ precision |
 | P=128 quantum transmission κ, complete four-pair cohort | 0.77121022, 95% CI [0.75333936, 0.78908108] | 2.317% relative half-width passes the unchanged 3.000% criterion |
 | Complete four-pair P=128 quantum rate | 1.96785637 × 10⁻¹⁶, 95% CI [1.93293861, 2.00340490] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | +0.916% from paper; all eleven fixed-P primary criteria pass; supplementary parent-time-half equivalence remains unresolved |
-| Separate P=128 umbrella MC, 30,000 production sweeps per ladder | 2.80072503 × 10⁻¹⁶, 95% CI [2.33507586, 3.35923162] × 10⁻¹⁶ | All eight ladders complete; precision and paper-point criteria fail; registered 100,000-sweep continuation selected |
+| Separate P=128 umbrella MC, 30,000 production sweeps per ladder | 2.80072503 × 10⁻¹⁶, 95% CI [2.33507586, 3.35923162] × 10⁻¹⁶ | Retained earlier complete cohort; precision and paper-point criteria fail |
+| Separate P=128 umbrella MC, 100,000 production sweeps per ladder | 2.58739680 × 10⁻¹⁶, 95% CI [2.29413296, 2.91814919] × 10⁻¹⁶ | +3.084% from paper QTST; primary log SE 0.050874 still exceeds 0.03 |
+| Original eight-chain classical water VACF diffusion | 0.19780892 Å²/ps, nominal 95% CI [0.18561141, 0.21000642] | Paper classical 0.199(2); preparation and short-lag eligibility checks fail, so no reproduction claim |
+| Paired water timestep VACF difference, 0.125 fs minus 0.25 fs | −0.01412453 Å²/ps, nominal 95% CI [−0.04126837, +0.01301931] | All eight pairs complete; interval exceeds ±0.01 equivalence margin; energy checks pass |
 
 The classical paper point is slightly outside the much narrower new rate
 interval. Agreement here means agreement within the paper's approximately
@@ -85,9 +88,17 @@ cm³ molecule⁻¹ s⁻¹.
 - [Quantum equilibrium archive and exact-parent reconstruction](surface-partition/raw-archive/README.md).
   The completed local archive contains every equilibrium/control raw file;
   all 1,600 primary parent geometries were extracted and verified exactly.
-- [Water reference-engine, recording and checkpoint evidence](water/README.md).
-  The fixed classical transport stage is still running; the complete quantum
-  job specification is prepared but has not been launched.
+- [Complete original water cohort](water/original-fixed-cohort/README.md),
+  [actual extracted-archive replay](water/original-cohort-archive-replay/README.md),
+  and [paired timestep control](water/timestep-paired-control/completed-original-cohort/README.md).
+  Both datasets are complete and exactly replayable; preparation, short-lag
+  and paired diffusion checks retain their failed or unresolved outcomes.
+  The [VACF–MSD identity diagnostic](water/vacf-msd-identity/README.md) explains
+  short-time curvature without changing the fixed gate. Quantum water is unrun.
+- [Complete 100,000-sweep quantum umbrella cohort](h3-quantum/umbrella-stage-100000/complete-cohort-analysis/README.md)
+  and [exact archive replay](h3-quantum/umbrella-stage-100000/raw-archive-v2/README.md).
+  The point criterion passes but statistical precision remains insufficient;
+  every earlier prefix, independent ladder and failed result is retained.
 - [H + CH₄ model and native workflow](other-reactions/hch4/README.md).
   The paper's PES-2008 is now pinned, built and checked. Its published barrier
   and native/Python force workflow are reproduced; the thermal rate is unrun.
@@ -121,12 +132,12 @@ cm³ molecule⁻¹ s⁻¹.
   completed parents, resource allocation and reviewed coordinator. The full
   eight-chain 200 fs child campaign has started; its bead-convergence result
   remains pending.
-- [Methane reference pilot](review/hch4-reference-pilot/README.md).
-  All 768 planned draws are retained, but their concentrated weights and
-  unresolved domain tails do not establish a useful rate estimate. The
-  [next efficiency design](review/hch4-reference-efficiency-design/README.md)
-  has a separate measure/support review and a fixed excluded-sample budget;
-  that design is not a new executed rate result.
+- [Initial methane reference pilot](review/hch4-reference-pilot/README.md)
+  and [complete improved-proposal pilot](review/hch4-reference-efficiency-replay/FINAL_STATUS.md).
+  The new fixed excluded pilot makes 3,672 PES calls within its 4,000 cap;
+  effective sampling improves, but ξ=1.007 still fails the pooled maximum-weight
+  and channel-2 screens. Saved calculations and actual archive extraction
+  replay agree. Neither pilot supplies a promoted physical rate.
 - [OH cross-source discrepancy](other-reactions/oh-source-consistency/README.md).
   The two author tables agree at 300 K and differ at 1000 K; neither the
   registry nor a surface identity is changed to resolve that difference.
@@ -259,31 +270,50 @@ It therefore still fails its equivalence criterion even though the interval
 contains zero. The paired timestep comparison and primary-step energy screen
 pass. This fixed-P result does not establish dynamic bead convergence or
 validate production MD umbrella sampling. The separate MC umbrella stage
-still fails precision after all eight 30,000-sweep ladders; its continuation
-retains every chain and the original thresholds.
+still fails precision after all eight 100,000-sweep ladders: its QTST
+point now differs from the paper by +3.084%, but log SE 0.050874 exceeds
+0.03. The exact archived replay retains every chain and earlier prefix.
+The predeclared 300,000 endpoint is not an automatic extension; a new
+isolated-restore adoption is required.
 
 ## Water and other requested systems
 
 The independently integrated OpenMM water reference retains 216 flexible
 q-TIP4P/F molecules, 298 K, the declared density and full PME. Eight fixed
-independent seeds are scheduled
-for 100 ps preparation plus 25 × 4 ps NVE segments each. No converged new
-diffusion coefficient is claimed in this snapshot. CPU checkpoint restoration
-and momentum conventions are audited separately from physical equilibration.
+independent seeds have completed
+100 ps preparation plus 25 × 4 ps NVE segments each. The full-cohort VACF
+estimate is 0.19780892 Å²/ps, interval [0.18561141, 0.21000642]; MSD
+gives 0.19792159 Å²/ps, interval [0.18674048, 0.20910269]. These are
+nominal t intervals over eight independent chains, not 200 independent
+segments. No physically converged diffusion coefficient is claimed.
+CPU checkpoint and momentum conventions remain separate from equilibration.
 Short native MTS/RPC checks establish mathematical map/force agreement only;
 they do not establish equivalent long-time diffusion.
 
 The [four-worker handoff](water/scheduling-v2/README.md) retains the original
 random streams, configurations, physical integrator and complete committed
 prefixes. The initial preparation audit of seed 1102 fails its predefined
-potential-energy stationarity threshold; this failure remains part of the
-fixed cohort. Completing the OpenMM reference would still require a separate
-long-time comparison of PyRPMD's own production transport workflow.
+potential-energy stationarity threshold. The complete assessment also
+fails this gate for seeds 1105 and 1106. The short-lag MSD contrast is
++0.0171182 Å²/ps, interval [0.0119729, 0.0222635], outside ±0.01.
+All 200 production segments remain included. The paper-near point does not
+override those failures, and a separate long-time PyRPMD comparison is unrun.
+
+The complete paired timestep study halves 0.25 fs to 0.125 fs from each
+seed's exact same saved state and momentum draw. All 16 branches (64 ps)
+complete and pass their energy checks. Fine-minus-coarse VACF is
+−0.0141245 Å²/ps, interval [−0.0412684, +0.0130193]; MSD is
+−0.0248398 Å²/ps, interval [−0.0491921, −0.0004876]. Neither interval
+fits inside ±0.01. This unresolved equivalence does not establish a converged
+smaller timestep. The original and paired raw archives both pass actual
+extraction and unchanged-analyzer replay, including their failures.
 
 The separate [preparation-only continuation tools](water/preparation-continuation-gate/README.md)
 pass exact phase/RNG and Reference/CPU checkpoint tests. The proposed
 additional 400 ps of canonical preparation has not yet been adopted or
-launched for the cohort. The original potential-energy, temperature and
+launched for the cohort. The [completed timestep outcome](water/post-cohort-next-stage-timestep-outcome/README.md)
+does not meet the prerequisite in the separately frozen preparation/long-lag
+proposals. The original potential-energy, temperature and
 intramolecular-geometry thresholds remain fixed. An analytic toy audit
 shows why a new maximum-over-many-RDF-bins rule needs an explicit
 uncertainty design; the proposal retains those structural diagnostics
@@ -332,6 +362,18 @@ of only 4.33, 7.18 and 6.14; the most concentrated individual channel gives
 94.22% of its weight to one draw. The pilot is a proposal-efficiency
 diagnosis, not a thermal-rate estimate. See the
 [complete pilot and independent arithmetic replay](review/hch4-reference-pilot/README.md).
+
+The next excluded proposal pilot is now complete: 800 calibration draws,
+3,072 fresh main draws and 128 matched separation-control draws, with 3,672
+successful PES evaluations in total. Its pooled ESS values are 336.17,
+165.49 and 704.02 out of 1,024 draws. The ξ=1.007 pooled ESS passes its
+minimum, but maximum normalized weight 0.045147 exceeds 0.025; channel 2
+also fails ESS 27.53 < 32 and maximum weight 0.15743 > 0.10. The aggregate
+efficiency screen therefore remains false. Independent arithmetic and fresh
+archive-extraction replay agree, with a separate reviewer checking the method
+and archive. These are finite-domain dimensionless diagnostics. Absolute
+rate normalization, unseen-tail bounds and fresh production are still
+required; no calibration sample becomes production evidence.
 
 The OH, F, isotope, Pd and Ni targets remain separately identified in the
 [benchmark inventory](../../../benchmarks/literature/README.md). The isotope

@@ -1,0 +1,31 @@
+{
+  "created_utc": "2026-11-01T21:45:35.584356+00:00",
+  "excluded_PES_and_native_binaries": true,
+  "excluded_raw_NPZ": true,
+  "file_count": 4,
+  "files": [
+    {
+      "bytes": 2409,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/README.md",
+      "sha256": "3b3120dc8610c439ec070174d2cedc26604b1c0b6de34b26721a5932a9ae6eca"
+    },
+    {
+      "bytes": 5889,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/independent-review.json",
+      "sha256": "07a061f3ceb5d7b776d86cb34b366a4c75ff9b115053d267375c0df90e7e487a"
+    },
+    {
+      "bytes": 196322,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/checks.json",
+      "sha256": "2ba5400a9807207722d058bf8d6106baa8f10de90c43f67ea8c1a29f92189968"
+    },
+    {
+      "bytes": 14364,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/check_small_files.py",
+      "sha256": "e51017c330e3a04d13d4463ed3f4e4961d08bef3c7874be85255e1bff887b3bf"
+    }
+  ],
+  "schema": "pyrpmd.review.publication-inventory.v1",
+  "scope": "New completed-archive read-only review only; no frozen predecessor modified.",
+  "total_bytes": 218984
+}

@@ -1,0 +1,1610 @@
+{
+  "generated_members": {
+    "README.md": {
+      "bytes": 1350,
+      "sha256": "a1d894f876d8c68c0d02b20930c0769bb59c8fb36c8c43cbf4fcc6d6e842f415"
+    },
+    "SHA256SUMS": {
+      "bytes": 22305,
+      "sha256": "a1501700d2ff7062f901b58bbc32eac217d1b5a2d5554dad2eb82562caa5c80d"
+    },
+    "references/source-identities.json": {
+      "bytes": 2742,
+      "sha256": "8a964772c7c2391794b5b4af26b918edaf4a9febd566ab762d68d304439535e4"
+    }
+  },
+  "original_files": [
+    {
+      "member": "control/analysis/curves.npz",
+      "source": {
+        "bytes": 106689,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/analysis/curves.npz",
+        "sha256": "5b66d8e9e3dc4c964044b390bc743d7d3121fd492777dd37241d52d1b072eedb"
+      }
+    },
+    {
+      "member": "control/analysis/report.json",
+      "source": {
+        "bytes": 10600,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/analysis/report.json",
+        "sha256": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370"
+      }
+    },
+    {
+      "member": "control/registration.json",
+      "source": {
+        "bytes": 15572,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+        "sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138523,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/chunk-000000.npz",
+        "sha256": "51b61a35e4b67446a87c6c1399392cb5aa63637c7342d0126a873847cdbcff5b"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3105958,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/chunk-000001.npz",
+        "sha256": "d48526e1bad9b3575d1c5d6c8a7b9b2fb2ebbe00bf166462ea5929964d2ac617"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3105595,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/chunk-000002.npz",
+        "sha256": "288881faaaa75aa3fdb91d32ac37bab53faec7d0ce02f444ea4a29250874d99b"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3104907,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/chunk-000003.npz",
+        "sha256": "3ac5dd599c628393986604d0bca2cd11e6966a443c6775f67c4f3a94e0dad0fa"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3105444,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/chunk-000004.npz",
+        "sha256": "507d5046bfa6ffd6dc0d8ec137292a97bea0ef9b431809a7c1401ea3b9059fc4"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/manifest.json",
+      "source": {
+        "bytes": 3706,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/manifest.json",
+        "sha256": "5e761c5e2555e2fffaa0cc7e3ee78f2a2cfc8a13803a4af6aba1d17b3559c79d"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138539,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/chunk-000000.npz",
+        "sha256": "a69f416dad040041014bc2246a0818f355474c2aa5838d7e4dabbd31db69ca73"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3106246,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/chunk-000001.npz",
+        "sha256": "41382de81bf1f63f17e2fe58d412f98db874007da5fd9ddd4041b502aa6375e4"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3105694,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/chunk-000002.npz",
+        "sha256": "5dbb04aafbb28b91486703ec552966e4f543456428970213febf43c6c3f5aed1"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3104815,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/chunk-000003.npz",
+        "sha256": "09f7f671c3eef36aa410f7aacab9aece2f91e8ce0650ca3c24d1a8586b81c40a"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3104909,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/chunk-000004.npz",
+        "sha256": "a1e66522090c15085d0e1feafbeae6dba1a04c0545bd717657d0dce85806e857"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/manifest.json",
+      "source": {
+        "bytes": 3702,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/manifest.json",
+        "sha256": "5febdd4214628baf1de8bc1795b386d6adabf48f0831ee2f7ca944567bad6a6c"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/initial/initial.json",
+      "source": {
+        "bytes": 2160,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/initial/initial.json",
+        "sha256": "0ea4d3fb08812d84432ed3fb1c64612284a5660dfca6c77f50d294f8d341ea5a"
+      }
+    },
+    {
+      "member": "control/runs/seed-1101/initial/initial.npz",
+      "source": {
+        "bytes": 31517,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1101/initial/initial.npz",
+        "sha256": "323fd1114a6abc9c3efad2e0edb05a05b1d18793cc875acaee275fd00fd2f871"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138459,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/chunk-000000.npz",
+        "sha256": "cd69e4c466eb174ad8f680b872491c4f8d0b96678c768001b1600cd153d3c109"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3103256,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/chunk-000001.npz",
+        "sha256": "ee72348a2a6909938c5242ff26b188d433cc8c9c670c6be947298fb2dc0069a4"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3103287,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/chunk-000002.npz",
+        "sha256": "eff8f8980910da0351a4ab7837228744d1e3f1daa5ec92aef6c3a488e1096e0f"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3104074,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/chunk-000003.npz",
+        "sha256": "1822e1b67705ca8d144957afaf865edf2bacf6a1083688d3f2d2b6195f3daa2b"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3105218,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/chunk-000004.npz",
+        "sha256": "2c4a0c8d4d034e38bb0e25fa9edcdc66fcae76a74c8dcff834f3bba26a5ba4dc"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/manifest.json",
+      "source": {
+        "bytes": 3706,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/manifest.json",
+        "sha256": "8754e6e5f7562a210fc0fd110a11544a5c87d7e5aab4fedc029f2b3752d8b4ff"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138465,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/chunk-000000.npz",
+        "sha256": "4388c57ac461f92d41052e1a8abffb7215b38c4e5ef6a117c7b537ae694da3cb"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3103600,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/chunk-000001.npz",
+        "sha256": "0842890a8bfd3e6b6a8cfb57c970eb0cbcda474b234722b2ec747157e68245ab"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3105369,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/chunk-000002.npz",
+        "sha256": "f3091e3848a5d8128c997a1a375acac9e1e513be910225d572ccdab67994b6b7"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3105989,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/chunk-000003.npz",
+        "sha256": "284fd8a287bb24f5cce88613a3a4da61d14568eeea55b4c603e241f3814eb686"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3106512,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/chunk-000004.npz",
+        "sha256": "6321f4722eb64ac2398d3b7994accb8d2c9376e0b488ed013ea2df58af3f2f92"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/manifest.json",
+      "source": {
+        "bytes": 3702,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/manifest.json",
+        "sha256": "cc6dab97b6bc3b8822798e7ae00846f5ce16a4757761f0c73a2b2fc049d3b657"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/initial/initial.json",
+      "source": {
+        "bytes": 2159,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/initial/initial.json",
+        "sha256": "0aa02f6bd50b762ba1aebc48dd5b63bf952f2f4b7368a5c365f79411560e6f26"
+      }
+    },
+    {
+      "member": "control/runs/seed-1102/initial/initial.npz",
+      "source": {
+        "bytes": 31496,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1102/initial/initial.npz",
+        "sha256": "3e14b2209c8c45d27ef1b99ed8ed247673889e57efa549217cffc86c0be6c1a1"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138431,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/chunk-000000.npz",
+        "sha256": "7aae849870366dc5cef29354faf1f75b3b29e1a468c7a83fb9ee9a803aa07a11"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3102445,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/chunk-000001.npz",
+        "sha256": "53a83de1be61f3cc9f69d03c9d1b4c6676787550a333ad89bcea1cf5cfec395d"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3102280,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/chunk-000002.npz",
+        "sha256": "2cdd9229bd29b45e45959d7eb2b67388c65cfbf1b9937b02b02b1a22932b83cc"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3102511,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/chunk-000003.npz",
+        "sha256": "68511a01339a405c02cda9d2461f4f8829c7beb707bec94370e324e8eb9f72e3"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3102254,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/chunk-000004.npz",
+        "sha256": "33b7ea01548a0b86ecbcc5c2c8bbfc8ce79cf973599e96a5b5d98b2d84235815"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/manifest.json",
+      "source": {
+        "bytes": 3707,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/manifest.json",
+        "sha256": "09f8aac12e85c123887a57e945b4d366d8baa619da8f5e4156651e19f7d3b454"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138420,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/chunk-000000.npz",
+        "sha256": "f9f744a5e33964791318f480729c7c8cbf4a874f84d0b062eb5054eaa0fbf6dc"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3102513,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/chunk-000001.npz",
+        "sha256": "4a4a48ef47d22592894dc4451302e0345ee7c1d16b9a7cd3410ca13d9ab5d365"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3102515,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/chunk-000002.npz",
+        "sha256": "57667481c752c963ec341f396a9487ad66a8de07ed9b94f47bdfb6dc71a71f8e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3103548,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/chunk-000003.npz",
+        "sha256": "61e18cc81b1002e8dc0192002b2dca46fb41eb4ecad1e2e766c946dc09b4e424"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3104009,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/chunk-000004.npz",
+        "sha256": "d5a947ab257d1c1b20bd110ad16ae482b07db575bd8aaa55366713ab4d299bc1"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/manifest.json",
+      "source": {
+        "bytes": 3702,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/manifest.json",
+        "sha256": "920537b1b27711606392ee4183e643b871529162eb1f0fd606521873b1e8df68"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/initial/initial.json",
+      "source": {
+        "bytes": 2161,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/initial/initial.json",
+        "sha256": "e27446363ba3e6fd2d29268cb9f4bd3b4485b7efe03b3098abbade3c957df1a8"
+      }
+    },
+    {
+      "member": "control/runs/seed-1103/initial/initial.npz",
+      "source": {
+        "bytes": 31509,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1103/initial/initial.npz",
+        "sha256": "a9aa4a4c9b8b8625213214017cdeb339db7fe1e3687ee6da52d748f49411e104"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138474,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/chunk-000000.npz",
+        "sha256": "a93baaaf850d35675bddcecf8b59f72621d2b06d6cc6db05154811e2ec4aedaa"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3105339,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/chunk-000001.npz",
+        "sha256": "95ae8a767484df9c991e8ecaa72563ebdc63f3bdc6cfc8277d81df6011e36dfb"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3105615,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/chunk-000002.npz",
+        "sha256": "a372ad1d141c21f9db7e7ad86cbe7ccf81f5a7be80e03fa772b819868533a5d2"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3105053,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/chunk-000003.npz",
+        "sha256": "3ec6981484fe9431c31a2e72b955feadf302ff0f965834af30a55f068749c423"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3104853,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/chunk-000004.npz",
+        "sha256": "cf5018469e340b2cbd2e498063315bbb8bafd5438b1d7901437ffd21030a83f2"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/manifest.json",
+      "source": {
+        "bytes": 3707,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/manifest.json",
+        "sha256": "8e3dbf80c9e7fcc856b25be72b5b9b42a74a13237bf17f871c7703069bbfee45"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138502,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/chunk-000000.npz",
+        "sha256": "6adbd44da2da03ecbe8c0dc3f8775d1b207881fddf1b972f6adf3b1cb3d8939b"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3105626,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/chunk-000001.npz",
+        "sha256": "d8dda1225201ae6ce4f5055d5f1434dc644e2da310bec22a43b05464e0b2cd7a"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3106462,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/chunk-000002.npz",
+        "sha256": "97985e885b916fcc0c4749b6c121d0be2d484ed27aabaa606dcc195bd61cd90f"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3107062,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/chunk-000003.npz",
+        "sha256": "f500850a6b97ac06f06bd3e1c56e8b393c3d5f1836bf27810b52b85b573728bf"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3106209,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/chunk-000004.npz",
+        "sha256": "f3ac00cb485c37dc2b69b3da246e7f91a1ace260843e63dc7e5b2105180c434b"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/manifest.json",
+      "source": {
+        "bytes": 3702,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/manifest.json",
+        "sha256": "6c1c2be838c1562f46a827d24c3e7e51e1a406885c92f0c1c4f5796312ae270d"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/initial/initial.json",
+      "source": {
+        "bytes": 2158,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/initial/initial.json",
+        "sha256": "93ba9d55cb07c888bde7ce3938d22b86492d34c67e8653e47e6476fd82e76c05"
+      }
+    },
+    {
+      "member": "control/runs/seed-1104/initial/initial.npz",
+      "source": {
+        "bytes": 31528,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1104/initial/initial.npz",
+        "sha256": "5ac73748284db2262ee68dbc3bace7597c8f09cfdf07a9d7abca78a12e7b8d1e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138572,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/chunk-000000.npz",
+        "sha256": "f4cb004721fe4c49bbaf2609b5bfd241e8f0ef1bf946e21e0c99d8592300a681"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3107559,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/chunk-000001.npz",
+        "sha256": "11745a44f50083110891189e9401d5a544155ae06adf31a9f7889d9a62f843b3"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3107880,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/chunk-000002.npz",
+        "sha256": "d5d4cdcd0654147a5799ad5941520770e9fec0d27f6de21b9cad7e633a47da84"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3107427,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/chunk-000003.npz",
+        "sha256": "b26c6e0813f10c3e50f66e1db5b0e21089fd431941d471a00627481ecbe0c7bb"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3107799,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/chunk-000004.npz",
+        "sha256": "82c305bf120fd250d26c7c225cbe473b2f5e99d4eae74f2071078e01f12579eb"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/manifest.json",
+      "source": {
+        "bytes": 3706,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/manifest.json",
+        "sha256": "d2e6cb1926b0c7896ebe9622060268b8a5266e80bdf4051a3d4bb1bac377313f"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138580,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/chunk-000000.npz",
+        "sha256": "c45a5ef88d06e9c90728145e44bf585b89fb8d15b15f20a32927354c19b53871"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3107701,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/chunk-000001.npz",
+        "sha256": "6840e4c54f2d708089bd54665e021418f5dc1665d22898b66a2b0dc317ccc392"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3107729,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/chunk-000002.npz",
+        "sha256": "d180bc691b196952c09a60dc60bcce94127711c4932a712494fde6d067b1061a"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3108053,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/chunk-000003.npz",
+        "sha256": "62a765d7f4d5da4dfaa234db275027d47d2efd688bd87eb4de4fc95db25a889f"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3107715,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/chunk-000004.npz",
+        "sha256": "40d46655361d6c66855c064edf9b18f621acb82e15b2e7fa4b42b9788008242e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/manifest.json",
+      "source": {
+        "bytes": 3701,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/manifest.json",
+        "sha256": "3ca6a5c5e8f86de2ecdb30f41fba7c8f2ffa0064cad4a6847935dfeb9dff03cc"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/initial/initial.json",
+      "source": {
+        "bytes": 2159,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/initial/initial.json",
+        "sha256": "6e4b7912fc5c41f7171f4da439a534be8b7c1c1ad327bd06ff88e1de94df88a5"
+      }
+    },
+    {
+      "member": "control/runs/seed-1105/initial/initial.npz",
+      "source": {
+        "bytes": 31538,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1105/initial/initial.npz",
+        "sha256": "7c79c775c598cd06e75d390a84d6b9fa1cc5024d5761862b72339ab4d6cf889c"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138456,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/chunk-000000.npz",
+        "sha256": "adf5db943caa86bd5b4b3c352c9580a12c2adcf6ad377e674de8ebf4b1d6ca7e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3101654,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/chunk-000001.npz",
+        "sha256": "c390c5be14d476cff21b35bb497fc8ec11167e89386de8fea5a256f768352778"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3103042,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/chunk-000002.npz",
+        "sha256": "e87a3939fcfa0e9475a67cb0be0f0a891a98cb2498ad43f19a3c686da917851c"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3102603,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/chunk-000003.npz",
+        "sha256": "eeaec2e86c4d092f89913a7f572ef98c2851fd67d503e4dd55e797b78ecb4679"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3102848,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/chunk-000004.npz",
+        "sha256": "7027d6b6fa3d537cbf8648f1fee88383e65cc7936a7aa0e9455a7b8d20e1fef9"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/manifest.json",
+      "source": {
+        "bytes": 3707,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/manifest.json",
+        "sha256": "54a1103551ea1054a3935d793c502e5e4d355ca75b78d876c2ce62036db4b1ea"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138429,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/chunk-000000.npz",
+        "sha256": "9b4e896f9e2e023380096e95c65f498e90a0e49f589270651cd029c115e0b520"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3102096,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/chunk-000001.npz",
+        "sha256": "4e12a94b9f826f131f39613613698fa3444f7af704f92fa7d7635e894eb22cd8"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3103744,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/chunk-000002.npz",
+        "sha256": "4082c7a2e5eeac641c62b9eeeef430cd37a8f46eea0b748cccc437a340fa3de0"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3103819,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/chunk-000003.npz",
+        "sha256": "c3f6aa974bf67151e36391dd9f57c24f7d8b90dacd64a3f1244f2d8291a1a886"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3103458,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/chunk-000004.npz",
+        "sha256": "8808365697c26fc5ecaa393e376ecfbc7ed436e2aa62520c106ba91c80438be0"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/manifest.json",
+      "source": {
+        "bytes": 3701,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/manifest.json",
+        "sha256": "b7b6b298447ead810401245d3f3fe725f6aeba8bc39c99e4f13dad78e2218ac8"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/initial/initial.json",
+      "source": {
+        "bytes": 2161,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/initial/initial.json",
+        "sha256": "356f986381302c647309a085d6d061c3d6791c8878deef3d8a3e32322d03fb40"
+      }
+    },
+    {
+      "member": "control/runs/seed-1106/initial/initial.npz",
+      "source": {
+        "bytes": 31513,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1106/initial/initial.npz",
+        "sha256": "55cf44acb6b273e17df8b808b935f53c7e1572ff1ede63ef6782e8965a134af0"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138515,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/chunk-000000.npz",
+        "sha256": "ff6eba880bbd9f157ad085220b29504b30060604d7e184f3b86b3067b4cba610"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3105616,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/chunk-000001.npz",
+        "sha256": "670c6ab69044f00d46ffda25f7451436d4cbbff97576d2230de4ba89aafa19ce"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3105009,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/chunk-000002.npz",
+        "sha256": "87be235f254dc8877c376050c663ad3f9873c557adfdf05449178ec10d7b0710"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3104775,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/chunk-000003.npz",
+        "sha256": "19744d7f452ac1621eac34ec37574c81efbd5836e7e815b230ea30597fbb7454"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3105518,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/chunk-000004.npz",
+        "sha256": "940be721711d703de2335d108136804110ce3631dfa877ed17aa597be8ce1e3a"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/manifest.json",
+      "source": {
+        "bytes": 3707,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/manifest.json",
+        "sha256": "2cc67e3e86bf07cf6b38434a81b299dd56fe22c691969a54a3e31bb56fb12102"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138505,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/chunk-000000.npz",
+        "sha256": "39c87fc330b9078b79f2e6305e1e3fb308b3ea4ef7cb29ea882ae5db3cb1a009"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3105600,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/chunk-000001.npz",
+        "sha256": "2e0d549c73e3c824a400bd55ff6a2aee73de0997250c6d3e06d6c1fb453d3e9d"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3105326,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/chunk-000002.npz",
+        "sha256": "26d2d637974d6db2ac8ba0436cc0b63cb5fb5244342548287839f12d8e55f095"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3105923,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/chunk-000003.npz",
+        "sha256": "a040ff113196fafc407683a5c1d72508040870721c2147f3b4ddb7ba371325f0"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3106727,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/chunk-000004.npz",
+        "sha256": "0536d83e6f93e2cc943ab459251321e629f254861fadefbdedcca31f854c81e4"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/manifest.json",
+      "source": {
+        "bytes": 3702,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/manifest.json",
+        "sha256": "1e7424b072a8808b0ab2c7e16b5dedd3b6dcd2a15db2591e0d44bd2f71671a80"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/initial/initial.json",
+      "source": {
+        "bytes": 2161,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/initial/initial.json",
+        "sha256": "324dbb3d1f04b763e2cfcda06bc7a2af0f224c4b9af56f12146183ce2c3673b1"
+      }
+    },
+    {
+      "member": "control/runs/seed-1107/initial/initial.npz",
+      "source": {
+        "bytes": 31528,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1107/initial/initial.npz",
+        "sha256": "41a5b876151a43f39b710a9cd5dce4a4687896d38522182f853957f61435d867"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/chunk-000000.npz",
+      "source": {
+        "bytes": 138455,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/chunk-000000.npz",
+        "sha256": "475770fcbdb02e590289b5b3e602ec325fdebe8f907cb05dc75fd183e02ffb7a"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/chunk-000001.npz",
+      "source": {
+        "bytes": 3102195,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/chunk-000001.npz",
+        "sha256": "3ed56d37aa8a2438fc374dbf787a89ff7a19ceb41e659541ad1874faa03b245c"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/chunk-000002.npz",
+      "source": {
+        "bytes": 3103197,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/chunk-000002.npz",
+        "sha256": "136890f2acf34a6decddcecc0460a76dc4ccb0cf21d0144281d86c6a91e69172"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/chunk-000003.npz",
+      "source": {
+        "bytes": 3104313,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/chunk-000003.npz",
+        "sha256": "1ae969171a65d0ca8f4d6b27ef77f21fe3822383642f66efc991b9c88d5b1601"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/chunk-000004.npz",
+      "source": {
+        "bytes": 3104276,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/chunk-000004.npz",
+        "sha256": "1d5266fc46dfbd7c0825f0269cb3d39abe9cb88246531a778bcd5e518e80595a"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/integrator.xml",
+      "source": {
+        "bytes": 148,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/integrator.xml",
+        "sha256": "3cabe4d31e266937f37a6da69a299fe95a6b2954307f387ce47d8eb9b540233e"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/manifest.json",
+      "source": {
+        "bytes": 3706,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/manifest.json",
+        "sha256": "b25d63237597ee777ef58b7c2aceec21dcddf64e14ef5e6d49a5ac1db0c4ad65"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt0125/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt0125/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/chunk-000000.npz",
+      "source": {
+        "bytes": 138436,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/chunk-000000.npz",
+        "sha256": "d63cb44b1570c66d8590a331e6d30475b28695474a5752695621a2020d2113f8"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/chunk-000001.npz",
+      "source": {
+        "bytes": 3102649,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/chunk-000001.npz",
+        "sha256": "d4e78a25871f17089dc78fecffc8b2bda82cb5765916054ae98dd5108e396ead"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/chunk-000002.npz",
+      "source": {
+        "bytes": 3103050,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/chunk-000002.npz",
+        "sha256": "3d410f0e4b7846a59239f491dacee64e32bcc4b72240a47e181e9e2547d16ccf"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/chunk-000003.npz",
+      "source": {
+        "bytes": 3103454,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/chunk-000003.npz",
+        "sha256": "07c4669842fceacd0cdf3691945f133566658a93c572c105048da62e5456bc50"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/chunk-000004.npz",
+      "source": {
+        "bytes": 3102782,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/chunk-000004.npz",
+        "sha256": "47bbc4c5688062102f2b6f8813165a878c63f19cf225d54a4c838cc1c25766ed"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/manifest.json",
+      "source": {
+        "bytes": 3702,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/manifest.json",
+        "sha256": "ac6c6e68c958386c64c8163b111757865ed29606bdb605e54a4cceee1635a1e0"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/dt025/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/dt025/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/initial/initial.json",
+      "source": {
+        "bytes": 2161,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/initial/initial.json",
+        "sha256": "b29827c37873efb02998cee65d19ba5f42289df25dacac0c23e2fd8f50a655e1"
+      }
+    },
+    {
+      "member": "control/runs/seed-1108/initial/initial.npz",
+      "source": {
+        "bytes": 31512,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/runs/seed-1108/initial/initial.npz",
+        "sha256": "572e1bfa22843c220e752bb31fafaf116c769e63ac48fb5eba7f355a23114df0"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1101/manifest.json",
+      "source": {
+        "bytes": 43873,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101/manifest.json",
+        "sha256": "5d32b200e8073dc9818696fe2c77611c0539379fd494418bfc8fc191bbb777bd"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1101/chunk-000099.npz",
+      "source": {
+        "bytes": 195101,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101/chunk-000099.npz",
+        "sha256": "0b9ed7afffa6286b5f89d2a994f0f8747ac09b622e44900ed576b63aafcbd071"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1101/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1101/manifest.before-checkpoint-contract-v2.json",
+      "source": {
+        "bytes": 10815,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101/manifest.before-checkpoint-contract-v2.json",
+        "sha256": "cdf07967c7a7419d7ee331da71d7d8132c2abe7f1728f44a235d9159e5e60bbb"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1101/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1102/manifest.json",
+      "source": {
+        "bytes": 43885,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102/manifest.json",
+        "sha256": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1102/chunk-000099.npz",
+      "source": {
+        "bytes": 194956,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102/chunk-000099.npz",
+        "sha256": "0b151153c8223824b5188e1635c00afa5a2c783f051ead4f862029a18a061a60"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1102/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1102/manifest.before-checkpoint-contract-v2.json",
+      "source": {
+        "bytes": 10814,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102/manifest.before-checkpoint-contract-v2.json",
+        "sha256": "65fd89597579a268c9682a012605d031bff017eafebe1a6d45c45ead95f0a662"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1102/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1103/manifest.json",
+      "source": {
+        "bytes": 40210,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103/manifest.json",
+        "sha256": "dcd638e3052964747fc6d22ebc40ab6eafd33519e2c6caf790d7a686435a45b3"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1103/chunk-000099.npz",
+      "source": {
+        "bytes": 194900,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103/chunk-000099.npz",
+        "sha256": "b7df140f0bbee88db6bbfc4bb4f91a6180f83cc8971f6d9db6986d9ba54ee124"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1103/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1103/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1104/manifest.json",
+      "source": {
+        "bytes": 40206,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104/manifest.json",
+        "sha256": "02d5eaa6bf6aff7cc4a56459279087efcf07b1ca36d589379c33b5aae0107ebf"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1104/chunk-000099.npz",
+      "source": {
+        "bytes": 195019,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104/chunk-000099.npz",
+        "sha256": "ca9c20aed155f396441544d6cf55501a15ff347998ef7170da8b6e9b8e619ede"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1104/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1104/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1105/manifest.json",
+      "source": {
+        "bytes": 40208,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105/manifest.json",
+        "sha256": "3dfdf5dff6f8d03c65e29f9b87d0d4b14ef8c40cb592a38577a363a8bfee64ac"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1105/chunk-000099.npz",
+      "source": {
+        "bytes": 195073,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105/chunk-000099.npz",
+        "sha256": "e900bfcaec5455ee3c5397aabbb9d1881a4c517c6f3fc6e110c1e20bd1570cbe"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1105/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1105/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1106/manifest.json",
+      "source": {
+        "bytes": 40211,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106/manifest.json",
+        "sha256": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1106/chunk-000099.npz",
+      "source": {
+        "bytes": 194961,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106/chunk-000099.npz",
+        "sha256": "58fdb04cd5c44c351f00f82ec773050175a660568845367199be1faecac2fe66"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1106/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1106/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1107/manifest.json",
+      "source": {
+        "bytes": 39544,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107/manifest.json",
+        "sha256": "12ebe411009ce33f0e7a5aba12128dc1bb9b73d6ebf5b5c573eddaf242bd7cb0"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1107/chunk-000099.npz",
+      "source": {
+        "bytes": 195035,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107/chunk-000099.npz",
+        "sha256": "e1ed293fba1612583a92a3e117afc0065c318977a39cf2b1c154ce043830940f"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1107/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1107/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1108/manifest.json",
+      "source": {
+        "bytes": 39545,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108/manifest.json",
+        "sha256": "affbd97b119bbcceb0dc2f0b865b21876417ab0f13424d80ae9f065d769a2f2a"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1108/chunk-000099.npz",
+      "source": {
+        "bytes": 194993,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108/chunk-000099.npz",
+        "sha256": "86e63aa2de12c48d5fa780a8b2aa38964bff009cde41ff4b6be55611eef6ab89"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1108/integrator.xml",
+      "source": {
+        "bytes": 147,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108/integrator.xml",
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      }
+    },
+    {
+      "member": "original-selection/runs/classical-1108/model.xml",
+      "source": {
+        "bytes": 196297,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108/model.xml",
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    {
+      "member": "original-selection/four-worker-registration.json",
+      "source": {
+        "bytes": 1940,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-registration.json",
+        "sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326"
+      }
+    },
+    {
+      "member": "original-selection/four-worker-control/events.jsonl",
+      "source": {
+        "bytes": 55590,
+        "path": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/events.jsonl",
+        "sha256": "9345c3d377762d59ae37323096f90ed0481af7885b94d34f49e29934e67fec81"
+      }
+    },
+    {
+      "member": "execution/RUN_ONCE.json",
+      "source": {
+        "bytes": 232,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/RUN_ONCE.json",
+        "sha256": "ac0817ac53fae9a103167c478c088da3a18cb3676d7e0a4918a3c9c70d4a565c"
+      }
+    },
+    {
+      "member": "execution/complete-analysis.json",
+      "source": {
+        "bytes": 792,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/complete-analysis.json",
+        "sha256": "f12ea32dc6555f6f561245a2ecdafce58e42b553fc4133caecf6888f83f161fd"
+      }
+    },
+    {
+      "member": "execution/complete-analysis.stderr.log",
+      "source": {
+        "bytes": 0,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/complete-analysis.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "member": "execution/complete-analysis.stdout.log",
+      "source": {
+        "bytes": 10600,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/complete-analysis.stdout.log",
+        "sha256": "678504ed0020e1e9f6005994ab1171e8ab3476ff8e55f53b0aec00e6fcf2c0e5"
+      }
+    },
+    {
+      "member": "execution/completion.json",
+      "source": {
+        "bytes": 3573,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/completion.json",
+        "sha256": "172f7a312bd0a0d25a17e8403bbfeb72c16f9ae9984b25cdbed142d0b7e9e86b"
+      }
+    },
+    {
+      "member": "execution/registration.json",
+      "source": {
+        "bytes": 1243,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/registration.json",
+        "sha256": "01a4cd6fe3f393d6e599cb520998ee989b07ccc43f3dacf7a71e3cda4adea581"
+      }
+    },
+    {
+      "member": "execution/registration.stderr.log",
+      "source": {
+        "bytes": 0,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/registration.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "member": "execution/registration.stdout.log",
+      "source": {
+        "bytes": 91,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/registration.stdout.log",
+        "sha256": "fa4c6abc18dffddcfe132b9e795eddfb4f0b86ba0541f9413242f83c599cb5fb"
+      }
+    },
+    {
+      "member": "execution/root-exec-observation.json",
+      "source": {
+        "bytes": 523,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/root-exec-observation.json",
+        "sha256": "ecf9be6d574c79159fc3a0af4c5b450e5f864c49244312ffdc287a43bcc44978"
+      }
+    },
+    {
+      "member": "execution/run-1.json",
+      "source": {
+        "bytes": 705,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/run-1.json",
+        "sha256": "a20ea9fd4b42ba9b2d6c4d84473e3092e5c4ea1731f425694145eb9d6a484ed8"
+      }
+    },
+    {
+      "member": "execution/run-1.stderr.log",
+      "source": {
+        "bytes": 0,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/run-1.stderr.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "member": "execution/run-1.stdout.log",
+      "source": {
+        "bytes": 89,
+        "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-execution-2026-11-01/run-1.stdout.log",
+        "sha256": "9521218d2fa44963d54f5cc9fd8f1fc1926f789b87afdc9ce7dc4bbcf32c463e"
+      }
+    },
+    {
+      "member": "references/paired-protocol.json",
+      "source": {
+        "bytes": 6568,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+        "sha256": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747"
+      }
+    },
+    {
+      "member": "references/original-report.json",
+      "source": {
+        "bytes": 247521,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+        "sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8"
+      }
+    },
+    {
+      "member": "references/original-exit.json",
+      "source": {
+        "bytes": 10085,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json",
+        "sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744"
+      }
+    },
+    {
+      "member": "references/root-adoption.json",
+      "source": {
+        "bytes": 9131,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption/root-adoption.json",
+        "sha256": "caf55f255f0100818ffc94378b65b9fbe4a533d1df3718f4f6f550cf31f6086c"
+      }
+    }
+  ]
+}

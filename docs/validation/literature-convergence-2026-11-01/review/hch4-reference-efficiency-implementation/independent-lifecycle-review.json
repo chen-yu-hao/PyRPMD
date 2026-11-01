@@ -1,0 +1,78 @@
+{
+  "approved_for_single_excluded_efficiency_pilot": true,
+  "created_utc": "2026-11-01T21:09:02.686694+00:00",
+  "design_sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962",
+  "final_gate_sha256": "7d084215e7cb4b83cfda6f2c0b8e44d227107c529bcbfcbba03eec5f7c77ed6a",
+  "independently_recomputed_source_delta": {
+    "added_function_or_class_ASTs": [
+      "validate_implementation_receipts"
+    ],
+    "all_other_existing_function_or_class_ASTs_identical": true,
+    "changed_existing_function_or_class_ASTs": [
+      "load_plan",
+      "required_sources"
+    ],
+    "protected_sources": {
+      "benchmarks/hch4/geometries.json": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+      "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+      "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+      "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+      "benchmarks/hch4/source.json": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+      "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+      "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+    }
+  },
+  "limits": [
+    "Uncatchable hard CPU/wall/process kills can prevent a final supervisor receipt or confirmed drain. Persistent attempt markers remain; the worker retains its independent CPU/wall cap. Missing final receipts are ineligible, not a reason to retry automatically.",
+    "This review does not establish actual CBE performance, actual-run completion within the cap, calibrated tail uncertainty, finite-domain physical accuracy or literature agreement.",
+    "Execution still requires root to adopt the exact final implementation/gate/review, model/runtime and an actually available single CPU. No plan, registration or physical attempt was created by this reviewer."
+  ],
+  "remaining_blockers": [],
+  "resolved_findings": [
+    {
+      "finding": "load_plan bound receipt bytes without checking approval, current source/test/design identity, or successful gate semantics.",
+      "initial_source": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598",
+      "resolution": "validate_implementation_receipts now requires explicit approval, no blockers, exact source/test/design, and a positive successful unchanged-source gate with zero errors/failures/skips. Thirteen rehashed adverse fixtures reach these semantic checks."
+    },
+    {
+      "finding": "The current transitive package inventory could overwrite protected design hashes and thereby rebaseline modified core files.",
+      "initial_source": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598",
+      "resolution": "required_sources now rejects a conflicting duplicate before retaining the frozen hash. The isolated changed-protected-package fixture confirms this admission boundary."
+    }
+  ],
+  "retained_mathematical_review": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-review.json",
+    "qualification": "Separate mathematical implementation review; its scientific functions are unchanged by the final admission-only revision.",
+    "sha256": "efbbc8ba95aa1715a0e9b262d1aacaf15dc170764b6d734e2affb11a8af48ce5"
+  },
+  "review_conclusions": [
+    "The dedicated CLI roles install resource admission before scientific imports. Preparation is capped at 2 CPU seconds; supervision keeps a 3-second default SIGXCPU soft limit while admitting a worker that independently installs its 55-second hard limit, then drops its own hard limit to 3 seconds.",
+    "The summed process CPU caps are 60 seconds. Before each PES geometry the worker conservatively charges 5 prior process-cap seconds and stops admitting at 55 combined seconds. The worker has the same absolute 120-second wall deadline and a two-second admission reserve.",
+    "Separate preparation/supervisor UUID tokens, immutable registration, RUN_ONCE and WORKER_ONCE files, parent PID/token validation and exclusive output creation prevent ordinary repeated invocation. There is no automatic resume or fallback output.",
+    "Popen assigns child ownership before later limit/log writes; all handled post-spawn errors enter the cleanup finally. SIGINT/SIGTERM handlers cover owned-child cleanup. Only the new child session is terminated and reaped, with a bounded SIGKILL fallback.",
+    "Initial calibration, follow-up calibration and diagnostic ledgers are durable before their corresponding energy evaluations. Every attempted geometry is logged before the PES call; zero draws remain in the fixed cohort, and partial data/failures remain on disk.",
+    "Current actual imported package/model paths, library hash, scientific package versions, environment and source files are checked. Protected design identities cannot be replaced by current-file inventory hashes.",
+    "Aggregate diagnostics require the fixed fresh membership; a resource stop, failed calibration, nonfinite energy, source change or incomplete cohort withholds a complete result. No physical rate or paper agreement is emitted."
+  ],
+  "reviewed_prior_source_sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598",
+  "reviewer": "providers (independent of implementation author)",
+  "reviewer_PES_evaluations": 0,
+  "reviewer_dynamics_steps": 0,
+  "reviewer_source_edits": 0,
+  "reviewer_test_runs": 0,
+  "schema": "pyrpmd.hch4-efficiency-independent-lifecycle-review.v1",
+  "scope": "Read-only source, admission, ownership, resource, staged-history and imported-identity review. This is not root resource adoption or authorization to launch.",
+  "source_sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb",
+  "synthetic_evidence_checked": {
+    "errors": 0,
+    "failures": 0,
+    "log_and_JUnit_hashes_match": true,
+    "skipped": 0,
+    "test_execution_by_reviewer": false,
+    "test_names_unique": true,
+    "testcases": 85
+  },
+  "tests_sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+}

@@ -1,0 +1,46 @@
+{
+  "PES_calls": 0,
+  "affinity": [
+    5
+  ],
+  "child_CPU_seconds": 0.49985199999999996,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_h3_quantum_umbrella_archive.py",
+    "tests/test_h3_quantum_umbrella_archive_v2.py",
+    "-q",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/initial-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T21:35:19.041461+00:00",
+  "elapsed_wall_seconds": 0.5239809159975266,
+  "real_analyzers_launched": 0,
+  "real_raw_checkpoints_opened": 0,
+  "returncode": 0,
+  "schema": "pyrpmd.inert-gate-execution.v1",
+  "source_files": [
+    {
+      "bytes": 22139,
+      "path": "benchmarks/h3/quantum_umbrella_archive_v2.py",
+      "sha256": "d7004587d6643f8a36f3b40d9d591b0d048a6d53b2233092c2e03c1c373166ad"
+    },
+    {
+      "bytes": 12130,
+      "path": "tests/test_h3_quantum_umbrella_archive_v2.py",
+      "sha256": "2b76c85450f43181d67d58825c5a5c424903ef53283061dab20f1b5a444ec88c"
+    },
+    {
+      "bytes": 29706,
+      "path": "benchmarks/h3/quantum_umbrella_archive.py",
+      "sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f"
+    },
+    {
+      "bytes": 12642,
+      "path": "tests/test_h3_quantum_umbrella_archive.py",
+      "sha256": "452df37ca98be80239857b5eff8da8c52f7fbeafa7225da7de9b4bea328ba835"
+    }
+  ],
+  "source_files_unchanged": true,
+  "threads": 1
+}

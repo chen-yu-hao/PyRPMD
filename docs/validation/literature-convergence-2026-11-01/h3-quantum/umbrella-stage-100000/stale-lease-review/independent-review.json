@@ -1,0 +1,175 @@
+{
+  "PID_identity_limit": "PID4 alone is insufficient across managed namespaces or reuse. The recommendation relies on the same exact owner bytes and creation timing, registered launch/attempt/source identities, complete drain journal and actual normal root exec return, plus root affirmation that no new writer was admitted.",
+  "actual_normal_exit": {
+    "actual_exit_code": 0,
+    "exec_session_id": 57942,
+    "observed_utc": "2026-11-01 21:17:10 UTC",
+    "source": "Actual root-retained terminal response; no process-table probe or inference from progress.",
+    "tool_chunk_id": "58df91"
+  },
+  "cause_established": false,
+  "conditional_retirement_justified": true,
+  "created_utc": "2026-11-01T21:25:07.482565+00:00",
+  "event_audit": {
+    "complete_count": 8,
+    "completion_order": [
+      211019,
+      211017,
+      211023,
+      211021,
+      211027,
+      211031,
+      211039,
+      211033
+    ],
+    "confirmed_drain_event": {
+      "event": "all_submitted_workers_drained",
+      "utc": "2026-11-01T21:15:52.588438+00:00"
+    },
+    "final_active_jobs": 0,
+    "final_complete_event": {
+      "event": "complete_cohort_verified",
+      "seeds": [
+        211017,
+        211019,
+        211021,
+        211023,
+        211027,
+        211031,
+        211033,
+        211039
+      ],
+      "utc": "2026-11-01T21:15:57.099085+00:00"
+    },
+    "maximum_registered_active_jobs": 4,
+    "no_failure_manifest": true,
+    "no_failure_or_cancel_or_unstarted_event": true,
+    "no_global300000_manifest": true,
+    "ordered_submissions": [
+      211017,
+      211019,
+      211021,
+      211023,
+      211027,
+      211031,
+      211033,
+      211039
+    ],
+    "registered_attempt": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2"
+  },
+  "input_identities": [
+    {
+      "bytes": 401,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000-root-observation.json",
+      "sha256": "66082b68f9e6240677c93b1bf86ab6bd28c0defa8434bed05ccd13fa6d5939d3"
+    },
+    {
+      "bytes": 3307,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000-launch.json",
+      "sha256": "a31ac94e0c3b50fa8b84c85e3dace16c510480e8527cabcb4c0ac8226711ca10"
+    },
+    {
+      "bytes": 68,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+      "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+    },
+    {
+      "bytes": 4059,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/plan.json",
+      "sha256": "b2a8f0c8c0a80e0c1d5ffff6cc2767fd326e6b374b2127256ea432f8d3b3d572"
+    },
+    {
+      "bytes": 2042,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/events.jsonl",
+      "sha256": "3a836dc6ad0fadd33129eef27db96e2e5eb6be2463cb87ff2d3d1e5c475c6053"
+    },
+    {
+      "bytes": 46138,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/stage-100000.json",
+      "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317"
+    },
+    {
+      "bytes": 30117,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py",
+      "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+    },
+    {
+      "bytes": 6128,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_campaign.py",
+      "sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50"
+    },
+    {
+      "bytes": 4335,
+      "path": "/workspace/scratch/a5e4820daedd/launch_umbrella_stage100k.py",
+      "sha256": "955de8875a5eed1915963801e538bcd148caa8cf95fd7265c8f38696930ac3b2"
+    },
+    {
+      "bytes": 5425,
+      "path": "/workspace/scratch/a5e4820daedd/run_complete_umbrella_100000_analysis.py",
+      "sha256": "341a00ea0a17d93e6c91b1ba040dccc37000df03516303b9372a61be469bbf8c"
+    }
+  ],
+  "managed_filesystem_deletion_failure_established": false,
+  "owner_observation": {
+    "decoded": {
+      "created_utc": "2026-11-01T18:34:51.123630+00:00",
+      "pid": 4
+    },
+    "directory_members": [
+      "owner.json"
+    ],
+    "directory_stat": {
+      "bytes": 4096,
+      "ctime_ns": 1793567758892825322,
+      "ctime_utc": "2026-11-01T21:15:58.892825+00:00",
+      "device": 27,
+      "inode": 530697,
+      "mode": "0o40755",
+      "mtime_ns": 1793558091123781806,
+      "mtime_utc": "2026-11-01T18:34:51.123782+00:00",
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock"
+    },
+    "file_stat": {
+      "bytes": 68,
+      "ctime_ns": 1793567758720821670,
+      "ctime_utc": "2026-11-01T21:15:58.720822+00:00",
+      "device": 27,
+      "inode": 530698,
+      "mode": "0o100600",
+      "mtime_ns": 1793558091123781806,
+      "mtime_utc": "2026-11-01T18:34:51.123782+00:00",
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json"
+    },
+    "owner_created_seconds_after_root_exec_handoff": 0.163033,
+    "owner_created_seconds_before_registered_attempt_plan": 1.298371,
+    "raw_identity": {
+      "bytes": 68,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+      "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+    },
+    "stable_before_after_read_only_inspection": true
+  },
+  "remaining_blockers_for_root_recorded_one_time_retirement": [],
+  "requirements_before_root_retirement": [
+    "Root must independently reaffirm no later/legacy/direct sampler writer is pending or running.",
+    "Immediately recheck exact68-byte owner SHA6e0835f4..., its sole-member directory, same global completion and actual normal-exit/drain evidence. Any changed owner or additional entry aborts.",
+    "Preserve original owner bytes/stat, event/source/exit identities and an explicit root retirement authorization before the action.",
+    "Use a single no-overwrite quarantine/retirement of only this exact owned stale lease; preserve its original bytes and distinguish any copied metadata from actual mutation.",
+    "Record actual postcondition that the original lease path is absent and the quarantined owner bytes match. If absence cannot be established, stop and retain the failure; no repeated blind cleanup.",
+    "The already authorized waiter1094 may automatically begin analysis once the path becomes absent; this consequence must be explicit. No additional analyzer is to be launched.",
+    "Keep all sampler, scheduler, protocol, checkpoint, stage receipt and numerical-output bytes unchanged."
+  ],
+  "reviewer_checkpoints_or_partial_estimates_read": false,
+  "reviewer_launched_analysis": false,
+  "reviewer_process_table_or_unrelated_processes_probed": false,
+  "reviewer_retired_or_moved_or_deleted_lease": false,
+  "reviewer_task": "/root/benchmarks",
+  "schema": "pyrpmd.h3.umbrella100000-stale-lease-independent-review.v1",
+  "scientific_scope": "This is only an execution/lease identity review. It does not establish sampling convergence or read a100000-sweep numerical rate.",
+  "source_cleanup_function_AST_sha256": {
+    "campaign_lock": "6190e7be10e4983edb92cc4c2d704fd18a55ae11b77747c786805c17168daa0d",
+    "main": "3f5cc4ee3136a52ba2a273d6a836502bfc993b41b0d4b797569da66d0680d365",
+    "run_campaign": "133321fb6884ae9770fe4226690e68a4f6b30ddbe8a852b8281182a96f0b2eb2"
+  },
+  "source_lifecycle_finding": "In the exact frozen source, confirmed pool.shutdown(wait=True,cancel_futures=True) precedes lease.release=True and the all_submitted_workers_drained event. The completed global manifest is published after final cohort/source checks. A normal return then leaves campaign_lock, whose finally unlinks owner.json and removes the directory; cleanup exceptions are not suppressed by main. The observed old owner remaining after a normal exec exit is inconsistent with the expected final filesystem state. Its cause remains unexplained."
+}

@@ -1,0 +1,32 @@
+{
+  "literature_D_used_for_stopping_or_design_selection": false,
+  "retrieved_utc": "2026-11-01T21:22:55.547095+00:00",
+  "schema": "pyrpmd.water-next-stage-primary-literature-context.v1",
+  "sources": [
+    {
+      "authors": [
+        "Scott Habershon",
+        "Thomas E. Markland",
+        "David E. Manolopoulos"
+      ],
+      "doi": "10.1063/1.3167790",
+      "relevant_fact": "The published diffusion protocol averages2ps velocity correlations from100consecutive4ps NVE trajectories with Maxwell refreshes, repeating this20times. The proposed20ps/10ps diffusion study is a new finite-time-regime check, not that published protocol.",
+      "title": "Competing quantum effects in the dynamics of a flexible water model",
+      "url": "https://arxiv.org/pdf/1011.1047",
+      "used_section": "III.B, Eq.(6) and following paragraph"
+    },
+    {
+      "authors": [
+        "Jakob Tomas Bullerjahn",
+        "Soren von Bulow",
+        "Gerhard Hummer"
+      ],
+      "doi": "10.1063/5.0008312",
+      "relevant_fact": "Short-time MSD nonlinearities and correlations between MSD values require careful estimator/uncertainty design. Here the point estimate remains fixed-window OLS for continuity, while uncertainty is taken across complete independent seed-chain means, not OLS residuals.",
+      "title": "Optimal estimates of diffusion coefficients from molecular dynamics simulations",
+      "url": "https://arxiv.org/abs/2003.09193",
+      "used_section": "Abstract and method motivation"
+    }
+  ],
+  "third_party_text_or_code_copied": false
+}

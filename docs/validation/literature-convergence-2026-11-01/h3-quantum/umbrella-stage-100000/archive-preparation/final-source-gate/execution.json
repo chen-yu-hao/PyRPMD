@@ -1,0 +1,47 @@
+{
+  "CPU_affinity": [
+    5
+  ],
+  "CPU_seconds": 0.497903,
+  "PES_or_dynamics_calls": 0,
+  "actual_analyzer_invocations": 0,
+  "actual_raw_or_partial_scientific_reads": 0,
+  "change_from_prior": "Original execution and comparison source identity maps are now checked at metadata admission before raw reads; added two stale-digest refusal cases. Earlier source/gates remain retained.",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_quantum_umbrella_archive.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T21:21:23.638535+00:00",
+  "exit_code": 0,
+  "junit": {
+    "bytes": 4724,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/pytest.xml",
+    "sha256": "b74b255b635ec98c2a5c6218a0a6f071a62c1767fadc6d47854d5551ed8000bc"
+  },
+  "log": {
+    "bytes": 99,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/final-source-gate/pytest.log",
+    "sha256": "72a4afff7c4fb00a63f086ffb31fd0e66def6b5dfdde45a3ee1ea8a93e8073c8"
+  },
+  "schema": "pyrpmd.h3.umbrella-archive.synthetic-gate.v1",
+  "source_files": [
+    {
+      "bytes": 29706,
+      "path": "benchmarks/h3/quantum_umbrella_archive.py",
+      "sha256": "af1288ec403880899a42202ae7e5c1ab6c1f44c419dad6f1c73678d7ffb9738f"
+    },
+    {
+      "bytes": 12642,
+      "path": "tests/test_h3_quantum_umbrella_archive.py",
+      "sha256": "452df37ca98be80239857b5eff8da8c52f7fbeafa7225da7de9b4bea328ba835"
+    }
+  ],
+  "source_unchanged": true,
+  "temporary_inert_fixtures_only": true,
+  "threads": 1,
+  "wall_seconds": 0.5168368400045438
+}

@@ -1,0 +1,251 @@
+{
+  "PyRPMD_production_validation": false,
+  "all_eight_pairs_complete": true,
+  "chains": [
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.1553692367334633,
+          "D_VACF_2ps_angstrom2_ps": 0.16866997497070474,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": -7.939601197470414e-05,
+          "manifest_sha256": "5e761c5e2555e2fffaa0cc7e3ee78f2a2cfc8a13803a4af6aba1d17b3559c79d",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0006060194262347209
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.17885596075153953,
+          "D_VACF_2ps_angstrom2_ps": 0.2032340661164746,
+          "frames": 801,
+          "individual_MSD_regime_status": "diffusive_regime_candidate",
+          "linear_energy_drift_kcal_mol_water_ps": 9.634208774324561e-06,
+          "manifest_sha256": "5febdd4214628baf1de8bc1795b386d6adabf48f0831ee2f7ca944567bad6a6c",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0008647606099274498
+        }
+      },
+      "seed": 1101
+    },
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.15030160887317426,
+          "D_VACF_2ps_angstrom2_ps": 0.14123853028515754,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": -9.062826000642204e-06,
+          "manifest_sha256": "8754e6e5f7562a210fc0fd110a11544a5c87d7e5aab4fedc029f2b3752d8b4ff",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0005823246434916968
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.2149997291364649,
+          "D_VACF_2ps_angstrom2_ps": 0.17088369139179352,
+          "frames": 801,
+          "individual_MSD_regime_status": "diffusive_regime_candidate",
+          "linear_energy_drift_kcal_mol_water_ps": 4.462221387299549e-06,
+          "manifest_sha256": "cc6dab97b6bc3b8822798e7ae00846f5ce16a4757761f0c73a2b2fc049d3b657",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0010604270173773548
+        }
+      },
+      "seed": 1102
+    },
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.17576269172664485,
+          "D_VACF_2ps_angstrom2_ps": 0.2346912248392862,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": 1.351748752663323e-05,
+          "manifest_sha256": "09f8aac12e85c123887a57e945b4d366d8baa619da8f5e4156651e19f7d3b454",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0005718558647064966
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.20719982802267414,
+          "D_VACF_2ps_angstrom2_ps": 0.19813251969448387,
+          "frames": 801,
+          "individual_MSD_regime_status": "diffusive_regime_candidate",
+          "linear_energy_drift_kcal_mol_water_ps": -6.201812058218023e-05,
+          "manifest_sha256": "920537b1b27711606392ee4183e643b871529162eb1f0fd606521873b1e8df68",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0009749632511282332
+        }
+      },
+      "seed": 1103
+    },
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.12500172542233934,
+          "D_VACF_2ps_angstrom2_ps": 0.15471200315598957,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": 5.905839300459555e-05,
+          "manifest_sha256": "8e3dbf80c9e7fcc856b25be72b5b9b42a74a13237bf17f871c7703069bbfee45",
+          "maximum_abs_energy_change_kcal_mol_water": 0.00068602351500888
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.1360746557268602,
+          "D_VACF_2ps_angstrom2_ps": 0.13331799170004918,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": 7.673531304446031e-05,
+          "manifest_sha256": "6c1c2be838c1562f46a827d24c3e7e51e1a406885c92f0c1c4f5796312ae270d",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0009580959499536606
+        }
+      },
+      "seed": 1104
+    },
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.2008507886448862,
+          "D_VACF_2ps_angstrom2_ps": 0.19710949180518883,
+          "frames": 801,
+          "individual_MSD_regime_status": "diffusive_regime_candidate",
+          "linear_energy_drift_kcal_mol_water_ps": 2.2646046077528193e-05,
+          "manifest_sha256": "d2e6cb1926b0c7896ebe9622060268b8a5266e80bdf4051a3d4bb1bac377313f",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0007116416703275757
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.17503425428360733,
+          "D_VACF_2ps_angstrom2_ps": 0.19751449648656857,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": 0.00011924157353525312,
+          "manifest_sha256": "3ca6a5c5e8f86de2ecdb30f41fba7c8f2ffa0064cad4a6847935dfeb9dff03cc",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0009722598197246449
+        }
+      },
+      "seed": 1105
+    },
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.11709467352989653,
+          "D_VACF_2ps_angstrom2_ps": 0.12670219015027728,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": 6.171907664701436e-05,
+          "manifest_sha256": "54a1103551ea1054a3935d793c502e5e4d355ca75b78d876c2ce62036db4b1ea",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0006802601191396197
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.17349230527483486,
+          "D_VACF_2ps_angstrom2_ps": 0.18816354944419442,
+          "frames": 801,
+          "individual_MSD_regime_status": "diffusive_regime_candidate",
+          "linear_energy_drift_kcal_mol_water_ps": -2.8493576301346606e-05,
+          "manifest_sha256": "b7b6b298447ead810401245d3f3fe725f6aeba8bc39c99e4f13dad78e2218ac8",
+          "maximum_abs_energy_change_kcal_mol_water": 0.000871942633401446
+        }
+      },
+      "seed": 1106
+    },
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.17043999153651596,
+          "D_VACF_2ps_angstrom2_ps": 0.1456648547969733,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": -6.322451637873058e-05,
+          "manifest_sha256": "2cc67e3e86bf07cf6b38434a81b299dd56fe22c691969a54a3e31bb56fb12102",
+          "maximum_abs_energy_change_kcal_mol_water": 0.000598797002603331
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.20463684545263597,
+          "D_VACF_2ps_angstrom2_ps": 0.18080867621392804,
+          "frames": 801,
+          "individual_MSD_regime_status": "diffusive_regime_candidate",
+          "linear_energy_drift_kcal_mol_water_ps": -9.8450852942998e-05,
+          "manifest_sha256": "1e7424b072a8808b0ab2c7e16b5dedd3b6dcd2a15db2591e0d44bd2f71671a80",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0013331297984732317
+        }
+      },
+      "seed": 1107
+    },
+    {
+      "branches": {
+        "dt0125": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.1744770098144049,
+          "D_VACF_2ps_angstrom2_ps": 0.17357246192102002,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": 4.82662275883815e-05,
+          "manifest_sha256": "b25d63237597ee777ef58b7c2aceec21dcddf64e14ef5e6d49a5ac1db0c4ad65",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0008415884795428311
+        },
+        "dt025": {
+          "D_MSD_1_2ps_angstrom2_ps": 0.17772288246599383,
+          "D_VACF_2ps_angstrom2_ps": 0.1833019995017498,
+          "frames": 801,
+          "individual_MSD_regime_status": "non_diffusive_window",
+          "linear_energy_drift_kcal_mol_water_ps": 2.0036741549348286e-05,
+          "manifest_sha256": "ac6c6e68c958386c64c8163b111757865ed29606bdb605e54a4cceee1635a1e0",
+          "maximum_abs_energy_change_kcal_mol_water": 0.0015303766501320022
+        }
+      },
+      "seed": 1108
+    }
+  ],
+  "curves_sha256": "5b66d8e9e3dc4c964044b390bc743d7d3121fd492777dd37241d52d1b072eedb",
+  "energy_limits_pass": true,
+  "external_OpenMM_reference": true,
+  "independence_unit": "eight paired chain differences",
+  "interpretation": "Time-step control on the fixed original configurations only. Passing cannot repair failed preparation or establish physical diffusion agreement.",
+  "literature_comparison": null,
+  "literature_reproduced": false,
+  "overall_numerical_control_pass": false,
+  "paired_comparisons": {
+    "D_MSD_1_2ps_angstrom2_ps": {
+      "CI95": [
+        -0.049192071170147296,
+        -0.00048761253817405925
+      ],
+      "CI95_halfwidth": 0.02435222931598662,
+      "chain_differences": [
+        -0.02348672401807622,
+        -0.06469812026329064,
+        -0.03143713629602929,
+        -0.011072930304520862,
+        0.02581653436127887,
+        -0.05639763174493834,
+        -0.03419685391612001,
+        -0.0032458726515889325
+      ],
+      "degrees_of_freedom": 7,
+      "equivalence_margin_angstrom2_ps": 0.01,
+      "equivalent_within_margin": false,
+      "mean": -0.024839841854160678,
+      "standard_error": 0.010298561938364302,
+      "status": "equivalence_unresolved"
+    },
+    "D_VACF_2ps_angstrom2_ps": {
+      "CI95": [
+        -0.04126837306930683,
+        0.013019308413145698
+      ],
+      "CI95_halfwidth": 0.027143840741226263,
+      "chain_differences": [
+        -0.03456409114576986,
+        -0.02964516110663598,
+        0.036558705144802334,
+        0.021394011455940387,
+        -0.00040500468137974477,
+        -0.061461359293917134,
+        -0.03514382141695474,
+        -0.00972953758072978
+      ],
+      "degrees_of_freedom": 7,
+      "equivalence_margin_angstrom2_ps": 0.01,
+      "equivalent_within_margin": false,
+      "mean": -0.014124532328080565,
+      "standard_error": 0.011479134887051285,
+      "status": "equivalence_unresolved"
+    }
+  },
+  "physical_converged": false,
+  "preparation_gate_failure_repaired": false,
+  "protocol_sha256": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747",
+  "registration_sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365",
+  "schema": "pyrpmd.water-paired-timestep-analysis.v1"
+}

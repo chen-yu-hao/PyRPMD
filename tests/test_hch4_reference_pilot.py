@@ -263,6 +263,9 @@ def test_wall_supervisor_retains_ledger_and_refuses_second_attempt(tmp_path, mon
     guard = tmp_path/"guard.txt"; guard.write_text("unchanged synthetic source")
     reg = {"output_root": str(tmp_path), "source_sha256": {str(guard): pilot.sha256(guard)},
            "prepare_hard_CPU_seconds": 1}
+    # This wall-only fixture must not inherit a long pytest process's CPU age.
+    # Keep the real monotonic deadline and owned-child cleanup below unchanged.
+    monkeypatch.setattr(pilot.time, "process_time", lambda: .1)
     monkeypatch.setattr(pilot, "load_registration", lambda path: (reg, {}, []))
     outcome = pilot.supervise(regpath, command=[sys.executable, "-c", "import time; time.sleep(5)"], wall_seconds=.1,
                               enforce_resources=False)

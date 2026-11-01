@@ -1,0 +1,20 @@
+{
+  "actual_PES_calls": 0,
+  "actual_execution_adoption_or_registration_created": false,
+  "created_utc": "2026-11-01T21:03:51.081797+00:00",
+  "files": [
+    {
+      "bytes": 63126,
+      "path": "benchmarks/hch4/efficiency_pilot.py",
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    {
+      "bytes": 42477,
+      "path": "tests/test_hch4_efficiency_pilot.py",
+      "sha256": "31a3e6de2dfbbbd64315162bcd1a3e085c17b6e4ff610f5b81f4cd53057de474"
+    }
+  ],
+  "previous_gate": "../signal-and-matched-control-gate/gate.json",
+  "reason": "Independent lifecycle review found that hash-bound gate/review receipts were not semantically required to approve the current source. Preserve tested candidate before adding that preflight guard.",
+  "scientific_functions_will_remain_unchanged": true
+}

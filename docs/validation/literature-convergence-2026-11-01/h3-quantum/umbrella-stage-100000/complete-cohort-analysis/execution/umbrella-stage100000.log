@@ -1,0 +1,34 @@
+{
+  "schema": "pyrpmd.h3.quantum-umbrella-scheduler-completion.v1",
+  "created_utc": "2026-11-01T21:15:57.099078+00:00",
+  "production": 100000,
+  "requested_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "completed_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "protocol_sha256": "5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a",
+  "decision_sha256": "c96255a6eea63023f4eefe9450daa8fc4d67399d55a3143769bd83aa41169c16",
+  "prior_snapshot_sha256": "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4",
+  "scheduler_source_sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98",
+  "attempt_directory": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2",
+  "all_submitted_workers_drained": true,
+  "prior_prefix_and_state_files_unchanged": true,
+  "physical_converged": false,
+  "analysis_recomputed": false
+}

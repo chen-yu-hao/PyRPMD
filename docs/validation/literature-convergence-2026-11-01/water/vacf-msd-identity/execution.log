@@ -1,0 +1,62 @@
+{
+  "execution": {
+    "schema": "pyrpmd.water-vacf-msd-identity-execution.v1",
+    "all_source_guards_unchanged": {
+      "benchmarks/water/vacf_msd_identity.py": "65186a8cf9f4476f025f949446f64de310ebc0f9c5f85a804e9db2d1e7f0996e",
+      "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+      "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+      "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+      "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639"
+    },
+    "report_sha256": "4628c0bde8b433d3908efda4e44e85d0183b60d654409970189f3c16736ec9b0",
+    "affinity": [
+      5
+    ],
+    "nice": 10,
+    "CPU_seconds": 2.914052,
+    "wall_seconds": 3.4251368080003886,
+    "peak_RSS_KiB": 149712,
+    "CPU_hard_limit_seconds": 60,
+    "wall_limit_seconds": 120,
+    "physical_steps": 0,
+    "PES_evaluations": 0
+  },
+  "short_minus_late_contrast": {
+    "observed": {
+      "chains": 8,
+      "mean": 0.017118201770576474,
+      "degrees_of_freedom": 7,
+      "standard_deviation": 0.006154566682531689,
+      "standard_error": 0.0021759679182414755,
+      "CI95_halfwidth": 0.005145346510161657,
+      "CI95": [
+        0.011972855260414816,
+        0.02226354828073813
+      ]
+    },
+    "reconstructed": {
+      "chains": 8,
+      "mean": 0.01687109361030361,
+      "degrees_of_freedom": 7,
+      "standard_deviation": 0.003626508307718616,
+      "standard_error": 0.001282164308208592,
+      "CI95_halfwidth": 0.0030318368177167216,
+      "CI95": [
+        0.013839256792586888,
+        0.01990293042802033
+      ]
+    },
+    "observed_minus_reconstructed": {
+      "chains": 8,
+      "mean": 0.0002471081602728638,
+      "degrees_of_freedom": 7,
+      "standard_deviation": 0.0037501816431308593,
+      "standard_error": 0.0013258894352695698,
+      "CI95_halfwidth": 0.0031352303135690853,
+      "CI95": [
+        -0.0028881221532962215,
+        0.003382338473841949
+      ]
+    }
+  }
+}

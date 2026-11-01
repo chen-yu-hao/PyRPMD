@@ -1,0 +1,23 @@
+{
+  "acquired_utc": "2026-11-01T21:36:30.962931+00:00",
+  "all12_leases_acquired_nonblocking": true,
+  "all_handles_closed_and_leases_released": true,
+  "data_file_mutations": false,
+  "lease_paths": [
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/coordinator.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/scheduler-odd.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/scheduler-even.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1101.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1102.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1103.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1104.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1105.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1106.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1107.lock",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-control/seed-1108.lock",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/control.lock"
+  ],
+  "root_exit_observation_sha256": "ecf9be6d574c79159fc3a0af4c5b450e5f864c49244312ffdc287a43bcc44978",
+  "schema": "pyrpmd.water-paired-control-post-exit-lease-proof.v1",
+  "snapshot_finished_utc": "2026-11-01T21:36:37.360124+00:00"
+}

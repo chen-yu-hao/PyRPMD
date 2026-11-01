@@ -1,0 +1,139 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "PES_evaluations": 0,
+  "created_utc": "2026-11-01T21:04:25.311774+00:00",
+  "distinct_test_cases": 1,
+  "dynamics_steps": 0,
+  "executions": [
+    {
+      "JUnit": {
+        "bytes": 387,
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py312.xml",
+        "sha256": "2a32433087bbc5762db35ae808ed57dc2a0c91ebf5b93bb81c1a05b980a1005f"
+      },
+      "command": [
+        "taskset",
+        "-c",
+        "8",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "-c",
+        "import json,platform,time,pytest; print(json.dumps({'python':platform.python_version(),'outer_CPU_clock_seconds':1000})); original=time.process_time; time.process_time=lambda: 1000.; status=pytest.main(['-q','tests/test_hch4_reference_pilot.py::test_wall_supervisor_retains_ledger_and_refuses_second_attempt','--basetemp=/workspace/scratch/a5e4820daedd/wall-fixture-aged-py312','--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py312.xml']); time.process_time=original; raise SystemExit(status)"
+      ],
+      "executable": {
+        "bytes": 30894944,
+        "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+        "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+      },
+      "exit_code": 0,
+      "log": {
+        "bytes": 153,
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py312.log",
+        "sha256": "80a1418657f03b1dae29911603641b9507e721d12df4006b8c4d9a1eaaea560b"
+      },
+      "testsuites": [
+        {
+          "errors": "0",
+          "failures": "0",
+          "hostname": "13d968332fed",
+          "name": "pytest",
+          "skipped": "0",
+          "tests": "1",
+          "time": "1.096",
+          "timestamp": "2026-11-01T16:04:22.289797-05:00"
+        }
+      ],
+      "version": "3.12",
+      "wall_seconds": 1.617060445001698
+    },
+    {
+      "JUnit": {
+        "bytes": 387,
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py313.xml",
+        "sha256": "10575bbf5c99cbe59d4f95bc9bc95b27eaaa2e323692788c7f0601b886fb48b0"
+      },
+      "command": [
+        "taskset",
+        "-c",
+        "8",
+        "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+        "-c",
+        "import json,platform,time,pytest; print(json.dumps({'python':platform.python_version(),'outer_CPU_clock_seconds':1000})); original=time.process_time; time.process_time=lambda: 1000.; status=pytest.main(['-q','tests/test_hch4_reference_pilot.py::test_wall_supervisor_retains_ledger_and_refuses_second_attempt','--basetemp=/workspace/scratch/a5e4820daedd/wall-fixture-aged-py313','--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py313.xml']); time.process_time=original; raise SystemExit(status)"
+      ],
+      "executable": {
+        "bytes": 33675544,
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python3.13",
+        "sha256": "b29eb08f745e046dd440219db8c91703867336c2450dd208e3cf9ab78bd2ef45"
+      },
+      "exit_code": 0,
+      "log": {
+        "bytes": 153,
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/py313.log",
+        "sha256": "584328762b0788459ea9f8bd92504737864680fe52517060543a94bab649e7f7"
+      },
+      "testsuites": [
+        {
+          "errors": "0",
+          "failures": "0",
+          "hostname": "13d968332fed",
+          "name": "pytest",
+          "skipped": "0",
+          "tests": "1",
+          "time": "1.086",
+          "timestamp": "2026-11-01T16:04:23.997462-05:00"
+        }
+      ],
+      "version": "3.13",
+      "wall_seconds": 1.5707274549931753
+    }
+  ],
+  "existing_py314_receipt": {
+    "bytes": 3495,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/supersession.json",
+    "sha256": "42065fe6c3f8833f0c57929603e40c475317b07e5c27dce745db2f482ba1fead"
+  },
+  "fixture_CPU_age_seconds": 0.1,
+  "guards": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py": {
+      "bytes": 36870,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    },
+    "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_hch4_reference_pilot.py": {
+      "bytes": 23126,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_hch4_reference_pilot.py",
+      "sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e"
+    },
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/reference_pilot.py": {
+      "bytes": 36870,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    },
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/publication-inventory.json": {
+      "bytes": 2717,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/publication-inventory.json",
+      "sha256": "86b1bde83db82173657684555385a8a11c8bec8da431d4d8c69c4b09a2ea6f6c"
+    },
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_hch4_reference_pilot.py": {
+      "bytes": 23349,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_hch4_reference_pilot.py",
+      "sha256": "b19e275b7b6837584afeea8f17f8038ecf162be85f2bfa97447113ee1bd267e1"
+    }
+  },
+  "guards_unchanged": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py": true,
+    "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_hch4_reference_pilot.py": true,
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/reference_pilot.py": true,
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/publication-inventory.json": true,
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_hch4_reference_pilot.py": true
+  },
+  "library_threads": 1,
+  "new_distinct_cases_added_to_prior_596_case_union": 0,
+  "no_dependencies_installed": true,
+  "outer_process_CPU_age_seconds": 1000,
+  "real_monotonic_wall_timeout": true,
+  "schema": "pyrpmd.hch4.wall-fixture.cross-python-delta.v1",
+  "scope": "Two executions of the same one corrected synthetic wall-supervisor test; no new distinct test case or scientific execution.",
+  "sequential": true
+}

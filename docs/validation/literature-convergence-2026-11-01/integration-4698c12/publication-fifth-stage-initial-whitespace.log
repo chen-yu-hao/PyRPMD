@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/a5e4820daedd/prepare_fifth_convergence_publication.py", line 259, in <module>
+    prepare()
+  File "/workspace/scratch/a5e4820daedd/prepare_fifth_convergence_publication.py", line 216, in prepare
+    raise ValueError(f'Unapproved whitespace diagnostic: {line}')
+ValueError: Unapproved whitespace diagnostic: docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973258623-failure.txt:6: trailing whitespace.

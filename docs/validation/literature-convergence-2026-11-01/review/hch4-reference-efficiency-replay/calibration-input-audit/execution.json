@@ -1,0 +1,15 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "CPU_seconds": 0.26006799999999997,
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "created_utc": "2026-11-01T21:32:19.659860+00:00",
+  "returncode": 0,
+  "schema": "pyrpmd.hch4-calibration-input-audit-execution.v1",
+  "source_sha256": "af21de340a1b25dc17f220c7e6e978b85a0f1fc67c0c3d4602400d6a4a486e8a",
+  "source_unchanged": true,
+  "threads": 1,
+  "wall_seconds": 0.2672182609967422
+}

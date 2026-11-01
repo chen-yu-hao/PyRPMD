@@ -1,0 +1,50 @@
+{
+  "active_long_scientific_workers": 5,
+  "affinity": [
+    0,
+    5,
+    6,
+    8
+  ],
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "0,5,6,8",
+    "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python",
+    "/workspace/scratch/a5e4820daedd/run_current_head_full_suite_v2.py",
+    "--worker"
+  ],
+  "created_before_execution_utc": "2026-11-01T21:07:12.984201+00:00",
+  "dependency_install": false,
+  "environment": {
+    "MKL_NUM_THREADS": "1",
+    "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314-v2/matplotlib",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src:.",
+    "TMPDIR": "/workspace/scratch/a5e4820daedd/t34tmp"
+  },
+  "explicit_test_only_source_delta": {
+    "diff_sha256": "94db702c57280e9939c30e62a627f0f2a886358f42e06fcf49f65d1eb6067aac",
+    "head": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+    "index_tree": "156571d46679cdc4fcf442e5e4b3191df0164160",
+    "supersession_sha256": "42065fe6c3f8833f0c57929603e40c475317b07e5c27dce745db2f482ba1fead",
+    "tracked_delta": {
+      "tests/test_hch4_reference_pilot.py": "b19e275b7b6837584afeea8f17f8038ecf162be85f2bfa97447113ee1bd267e1"
+    }
+  },
+  "native_rebuild": false,
+  "new_long_scientific_workers": 0,
+  "reason": "Repeat the required ordinary full CI selection after the preserved first attempt: local socket permission, short Unix paths, four-CPU BLAS fixture affinity, and one test-only synthetic CPU clock correction. All production sources and budgets are unchanged.",
+  "schema": "pyrpmd.current-head-full-suite-admission.v2",
+  "short_pytest_basetemp": "/workspace/scratch/a5e4820daedd/t34",
+  "source_head": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "source_tree": "156571d46679cdc4fcf442e5e4b3191df0164160",
+  "whole_process_group_wall_limit_seconds": 1800
+}

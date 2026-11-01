@@ -1,0 +1,211 @@
+{
+  "actual_pilot_report_sha256": "5162a97ad5e2fd981a039898020c3798e6b0ab957cd56e5ff3153c18aa0d58fc",
+  "created_utc": "2026-11-01T21:33:58.043033+00:00",
+  "entrypoint": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/FINAL_STATUS.md",
+  "excluded_from_Git_publication": [
+    "Original large coordinate/energy ledgers and calls.jsonl, present byte-for-byte in the36-member archive.",
+    "The1,136,325-byte raw archive, its fresh-extraction directory and duplicated local replay results; no upload performed.",
+    "Third-party potential source and compiled model/native libraries; they remain external hash-bound prerequisites."
+  ],
+  "files": [
+    {
+      "bytes": 1662,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/FINAL_STATUS.md",
+      "sha256": "69cc224ff5d476050ba962d96f6733385bc2f87ffe6342c23aad3708ae7d7fe4"
+    },
+    {
+      "bytes": 10488,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/README.md",
+      "sha256": "b6851e5e04ca76c7f949cf7ab92b745cda75d82c5f0cdf55b3a4abf46371a707"
+    },
+    {
+      "bytes": 22883,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/command.json",
+      "sha256": "0c56a188ab2f0427b3a117cb52d80156b694f19f06b0912f7234f1e7e934a897"
+    },
+    {
+      "bytes": 537,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/execution.json",
+      "sha256": "c3ea3a7e30aeec20976a603a1fbcb3a69be8fb7cc0cf75e5e4b1ddaf6c722cb6"
+    },
+    {
+      "bytes": 29745,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/replay-result.json",
+      "sha256": "8b61927e30eb89ce45ad8f978d1399ffff6b62bf6a8d37a3bff481afdd026d94"
+    },
+    {
+      "bytes": 336,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/replay.log",
+      "sha256": "a86bc4b1698b6e9c961a0b91598cce9bb0546f8837b42f2f7a7d084c3b06acc6"
+    },
+    {
+      "bytes": 33919,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/replay_saved.py",
+      "sha256": "1bb77ef43718a57c160d477cac206bf851ee71425cdd93090a4578299666825d"
+    },
+    {
+      "bytes": 330,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/archive-gate/archive.log",
+      "sha256": "0d17e7f08a6afd88b2fcfcfa61b3580bedec72c980c557fdb1f64c62ebd34b66"
+    },
+    {
+      "bytes": 624,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/archive-gate/command.json",
+      "sha256": "b25dda248009e9445053ef3a9a87698b9abc0cc378bdd2891ad3a879d77120fe"
+    },
+    {
+      "bytes": 531,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/archive-gate/execution.json",
+      "sha256": "449b59ee399a8a3b49aade04f1acb1d38ad371ed569ea5af6b5286e84458e14d"
+    },
+    {
+      "bytes": 6265,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/audit_calibration_inputs.py",
+      "sha256": "af21de340a1b25dc17f220c7e6e978b85a0f1fc67c0c3d4602400d6a4a486e8a"
+    },
+    {
+      "bytes": 3089,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/calibration-input-audit/audit.json",
+      "sha256": "799f07eb77a926a104b05f0347cc121b872f33dab977b7b7b589d1cddbffed6e"
+    },
+    {
+      "bytes": 331,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/calibration-input-audit/audit.log",
+      "sha256": "1a4d6e52369ff4d470546e744fe44e34b5e1d12797b3ae7d35a2eb5f3362dd29"
+    },
+    {
+      "bytes": 1085,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/calibration-input-audit/command.json",
+      "sha256": "20a77e2e5623d8610200d0b3c5ef85cba6cdd16741295f8085d0616ca7c8b4f0"
+    },
+    {
+      "bytes": 413,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/calibration-input-audit/execution.json",
+      "sha256": "55dca9a8ffb829eb8098c9c21783f570af3399e0aef24ad1c85ab6db102e9bd4"
+    },
+    {
+      "bytes": 2469,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/fresh-extraction-verification.json",
+      "sha256": "e43515a0335704abd629a2638eb5e25ae1fc88258ad864c51b64c87feee825b9"
+    },
+    {
+      "bytes": 6444,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/independent-review.json",
+      "sha256": "3266a1acda0950df1a46a128a1c9d9d88e827a412928c9e3a42ece640be3dd46"
+    },
+    {
+      "bytes": 943,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/initial-synthetic-gate/gate.json",
+      "sha256": "2e080666b7f83039605c5cdd0aa6b68a5191ab5fb9360c871498597d71108036"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/initial-synthetic-gate/pytest.log",
+      "sha256": "7ca1357b1585c9070d3286487daabd5a76755cd024e392d053dd3159aa102b37"
+    },
+    {
+      "bytes": 3314,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/initial-synthetic-gate/pytest.xml",
+      "sha256": "eedf9834455629af693d5812e9ffffa6a6407f913ccab30bd5c68035d05eecd8"
+    },
+    {
+      "bytes": 33919,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/initial-synthetic-gate/replay_saved.py",
+      "sha256": "1bb77ef43718a57c160d477cac206bf851ee71425cdd93090a4578299666825d"
+    },
+    {
+      "bytes": 5338,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/initial-synthetic-gate/test_replay_saved.py",
+      "sha256": "433411bb2319a6b8b716e3abb25af5c25c9b9717cd9cdd490627e64622205d24"
+    },
+    {
+      "bytes": 25288,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/original-report.json",
+      "sha256": "5162a97ad5e2fd981a039898020c3798e6b0ab957cd56e5ff3153c18aa0d58fc"
+    },
+    {
+      "bytes": 1536,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/original-runtime.json",
+      "sha256": "ec003996336eae09aa99b99219c2ff27fc33ebb0a43461098322dc3b9773534a"
+    },
+    {
+      "bytes": 869,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/original-supervisor.json",
+      "sha256": "75ec32d6050b52d689b559a3a09e3f94c767f21a8030ac5b089c098d9f107049"
+    },
+    {
+      "bytes": 9078,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/package_saved_archive.py",
+      "sha256": "1c607fb28b7f58d4abeca1fd2b276ab1906aff4fbfaf81d03ce22cd8b0f59fe4"
+    },
+    {
+      "bytes": 15277,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/raw-archive-members.json",
+      "sha256": "cdc8329b62f9cd1439057e918056cfcb37027b9b295edfbcfe702b07249bef11"
+    },
+    {
+      "bytes": 6842,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/replay-protocol.json",
+      "sha256": "9294ab654c7e644f0bb5eb31cdfb15da38fbba29964f4e348aba50be6dc8e930"
+    },
+    {
+      "bytes": 33919,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/replay_saved.py",
+      "sha256": "1bb77ef43718a57c160d477cac206bf851ee71425cdd93090a4578299666825d"
+    },
+    {
+      "bytes": 5338,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/test_replay_saved.py",
+      "sha256": "433411bb2319a6b8b716e3abb25af5c25c9b9717cd9cdd490627e64622205d24"
+    },
+    {
+      "bytes": 22380,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/execution-plan.json",
+      "sha256": "4683552dfd812570e492bed3aa99df8fd6467362baa454a6e5773d0637de4df5"
+    },
+    {
+      "bytes": 402,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/prepare-exec-observation.json",
+      "sha256": "49825579562713dba912385ebb47badde85f8b3f68ada041bd92ce53066ece7f"
+    },
+    {
+      "bytes": 86,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/prepare.log",
+      "sha256": "a6cf1bc9d60bbe59818468dd0c3aa60bc46154ccf0144eced8e72c912ae6db8c"
+    },
+    {
+      "bytes": 1107,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/root-adoption-verification.json",
+      "sha256": "3e286cd8ae40305999ec8191616f4ca49df5fe90f7b9194dd2bd950e477e3d93"
+    },
+    {
+      "bytes": 2900,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/root-resource-adoption.json",
+      "sha256": "a3dcce50903a5d6bc91e877c6ecbc1f8457f77ca22675b4d594c6a949cfd0b77"
+    },
+    {
+      "bytes": 407,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/run-exec-observation.json",
+      "sha256": "03cdcf2a18854023fce3d5ab7e674dce0b42d7c3aa564f013ea61ce0a3d632cd"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/run.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "independent_review_sha256": "3266a1acda0950df1a46a128a1c9d9d88e827a412928c9e3a42ece640be3dd46",
+  "listed_file_count": 37,
+  "listed_total_bytes": 290193,
+  "new_PES_calls_in_evidence_work": 0,
+  "new_RNG_draws_in_evidence_work": 0,
+  "physical_rate_or_literature_validation_claimed": false,
+  "primary_efficiency_screen_passed": false,
+  "raw_archive": {
+    "bytes": 1136325,
+    "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/pyrpmd-hch4-efficiency-pilot-2026-11-01-v1.tar.gz",
+    "sha256": "9a259292ec15c17171e999256ffa96c0aec6b7885e28ad40c78904ab8742cd3b"
+  },
+  "schema": "pyrpmd.hch4-efficiency-complete-execution-replay-publication-inventory.v1",
+  "scope": "Compact actual root execution metadata plus original report/runtime/supervisor, independent-calculation replay, additive calibration input audit, exact archive verification and separate read-only method review. All pre-existing source/design/implementation inventories remain immutable."
+}

@@ -1,0 +1,18 @@
+{
+  "bytes": 6069,
+  "file_count": 2,
+  "files": [
+    {
+      "bytes": 6001,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-postcondition-review/independent-review.json",
+      "sha256": "53784f09d4e14017a7c7c62dd52de21b840e7dae2b277991f1fbc23c59b86da0"
+    },
+    {
+      "bytes": 68,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-postcondition-review/owner-reappeared.json",
+      "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+    }
+  ],
+  "schema": "pyrpmd.additive-publication-inventory.v1",
+  "scope": "Independent post-retirement lease postcondition review; no source or original evidence modified."
+}

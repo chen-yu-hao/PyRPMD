@@ -1,0 +1,78 @@
+{
+  "PES_evaluations": 0,
+  "PES_library_loaded": false,
+  "created_utc": "2026-11-01T21:13:51.364050+00:00",
+  "execution_adopted": false,
+  "execution_launched": false,
+  "execution_registered": false,
+  "frozen_implementation_inventory_all36_members_match": true,
+  "identities": {
+    "design": {
+      "bytes": 15380,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+      "schema": "pyrpmd.hch4-reference-efficiency-design.v1",
+      "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+    },
+    "design_method_review": {
+      "bytes": 10428,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/independent-method-review.json",
+      "schema": "pyrpmd.hch4-reference-efficiency-independent-method-review.v1",
+      "sha256": "694590d63fb8d153bef43286e90bcd218271d0977e9372f6849d8d70f3247ff7"
+    },
+    "final_review_consistency": {
+      "bytes": 19779,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/final-review-consistency.json",
+      "schema": "pyrpmd.hch4.efficiency.final-review-consistency.v1",
+      "sha256": "589c56964073b8028fa7128daed47f1408702a15771c41f37ef99264b7226f99"
+    },
+    "implementation": {
+      "bytes": 65143,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/efficiency_pilot.py",
+      "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+    },
+    "implementation_inventory": {
+      "bytes": 10788,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/publication-inventory.json",
+      "schema": "pyrpmd.hch4.efficiency-implementation.publication-inventory.v1",
+      "sha256": "83d73d906ff8e345ee39761029ad36b889426c7c2c01b7b2ae7781718040511f"
+    },
+    "implementation_lifecycle_review": {
+      "bytes": 6457,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-lifecycle-review.json",
+      "schema": "pyrpmd.hch4-efficiency-independent-lifecycle-review.v1",
+      "sha256": "6fcbaa6f5ddaf4cdebe7989408dc8e6abc16901e122a93d8a14562358e087a07"
+    },
+    "implementation_method_identity_update": {
+      "bytes": 2790,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-identity-update.json",
+      "schema": "pyrpmd.hch4-efficiency.method-review-source-identity-update.v1",
+      "sha256": "c79ddaea13e71c4a2bfea3ac48621a7f8ee7cb959a763a1bf3c461bc47f4cf6c"
+    },
+    "library": {
+      "bytes": 61720,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+      "sha256": "aa33e4f55246d5b99839cd3b08702f1d091a6b3dddac1d6c97d34bb542d95aaf"
+    },
+    "library_build_receipt": {
+      "bytes": 5631,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.build.json",
+      "schema": "pyrpmd.hch4.build.v1",
+      "sha256": "e0f083d451df13d8fa46ead08f0859e2ea852b1bb7fa58fb1d50e60e1af2c84c"
+    },
+    "synthetic_gate": {
+      "bytes": 1696,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/gate.json",
+      "schema": "pyrpmd.hch4.efficiency-pilot.synthetic-gate.v1",
+      "sha256": "7d084215e7cb4b83cfda6f2c0b8e44d227107c529bcbfcbba03eec5f7c77ed6a"
+    },
+    "tests": {
+      "bytes": 47526,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_hch4_efficiency_pilot.py",
+      "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+    }
+  },
+  "read_only_file_hashes_only": true,
+  "schema": "pyrpmd.hch4.efficiency-execution-guide.input-identities.v1",
+  "scientific_RNG_draws": 0,
+  "status": "Read-only procedure proposal; not an execution plan, adoption or registration."
+}

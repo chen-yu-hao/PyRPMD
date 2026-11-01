@@ -1,0 +1,151 @@
+{
+  "artifacts": {
+    "production-half-chain-means.csv": "cfe99091d9efe0d7674b7a10247baa6378007e19091a8cbf51bec34a8de941da",
+    "production-segment-means.csv": "48e86f5fb2e5772fc7d8bb7d16b6ffb845c4cf20ea5a9012f9c2ebe7ccf09954",
+    "production-stability.png": "e40851438d3986a7af7ffb9e074a7b8d0b0924d320cafd89c08cf77610f69ff0",
+    "production-stability.svg": "f70e03c6849b5915b069d2ead692b72f8c478f0b2520696d404c275b4b28f196"
+  },
+  "external_OpenMM_reference": true,
+  "input_sha256": {
+    "curves.npz": "1555714decf9bf34b73463d05283ada6a8c5aa875798ca8834e18eb65f2e17f2",
+    "exit_proof": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744",
+    "protocol.json": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+    "report.json": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+    "supplement": "ac930daf5280da0bb1fb79fc17d51a4d2d0a83fa5db5bd8c139758ab885d1065"
+  },
+  "interpretation": "Nominal small-n paired t interval; descriptive, not a new equivalence or hard pass gate. Adjacent segments, time origins and molecules are not independent uncertainty units.",
+  "literature_reproduced": false,
+  "new_hard_gate": false,
+  "original_eligibility_checks": {
+    "MSD_VACF_compatibility": true,
+    "MSD_window_compatibility": false,
+    "VACF_cutoff_compatibility": true,
+    "energy_envelope": true,
+    "energy_linear_drift": true,
+    "fixed_stage_complete": true,
+    "paired_equivalence": false,
+    "precision": true,
+    "sampling_mean_HOH_degrees": true,
+    "sampling_mean_OH_angstrom": true,
+    "sampling_potential_per_molecule_hartree": false,
+    "sampling_temperature_momenta_K": true
+  },
+  "schema": "pyrpmd.water-production-stability-diagnostic.v1",
+  "source_sha256": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56"
+  },
+  "summaries": {
+    "MSD": {
+      "all25_chain_means": [
+        0.17079902533218225,
+        0.19928370155618397,
+        0.19573796765245458,
+        0.20972629871018783,
+        0.19239521183979943,
+        0.1945092030982056,
+        0.21309068853779117,
+        0.20783060558993405
+      ],
+      "early_chain_means": [
+        0.1737866683264074,
+        0.19917733873526197,
+        0.19428332193637762,
+        0.1981189060062136,
+        0.18627556681201293,
+        0.1711818361050967,
+        0.220522391550101,
+        0.1759117514603494
+      ],
+      "late_chain_means": [
+        0.16829756293381426,
+        0.20135337164665934,
+        0.20314784111787132,
+        0.21941194784628534,
+        0.20217771673782473,
+        0.22213708630114706,
+        0.20427812151973668,
+        0.23543450897938958
+      ],
+      "paired_chain_differences": [
+        -0.0054891053925931466,
+        0.0021760329113973687,
+        0.008864519181493696,
+        0.021293041840071747,
+        0.015902149925811793,
+        0.05095525019605035,
+        -0.016244270030364327,
+        0.05952275751904018
+      ],
+      "paired_difference": {
+        "CI95": [
+          -0.004945728488056102,
+          0.039190822525783015
+        ],
+        "CI95_halfwidth": 0.02206827550691956,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.017122547018863458,
+        "standard_deviation": 0.026396798137420296,
+        "standard_error": 0.00933267748229116
+      }
+    },
+    "VACF": {
+      "all25_chain_means": [
+        0.17260107300689975,
+        0.20296724717807016,
+        0.19401773768534367,
+        0.20637432035712544,
+        0.19781356066203454,
+        0.19208747342092475,
+        0.22391287773233814,
+        0.19269703876701338
+      ],
+      "early_chain_means": [
+        0.1808555876545331,
+        0.19700868117899853,
+        0.19365177232215147,
+        0.19958682504504732,
+        0.1957389990209748,
+        0.16949280793438795,
+        0.23652163120992006,
+        0.16465524449554894
+      ],
+      "late_chain_means": [
+        0.16750471815425907,
+        0.21258219912395027,
+        0.20211430750449497,
+        0.21186102009536964,
+        0.20313421140096632,
+        0.21695676702417985,
+        0.21093506595324632,
+        0.21814950526887275
+      ],
+      "paired_chain_differences": [
+        -0.013350869500274032,
+        0.015573517944951737,
+        0.008462535182343495,
+        0.012274195050322317,
+        0.007395212379991523,
+        0.047463959089791896,
+        -0.025586565256673743,
+        0.05349426077332381
+      ],
+      "paired_difference": {
+        "CI95": [
+          -0.009282837765584057,
+          0.03571439918152831
+        ],
+        "CI95_halfwidth": 0.022498618473556182,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.013215780707972125,
+        "standard_deviation": 0.026911549569475043,
+        "standard_error": 0.009514669596406858
+      }
+    }
+  },
+  "synthetic_data": false
+}

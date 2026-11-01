@@ -1,0 +1,52 @@
+{
+  "PES_evaluations": 0,
+  "command": [
+    "env",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "OPENMM_CPU_THREADS=1",
+    "taskset",
+    "-c",
+    "5",
+    "nice",
+    "-n",
+    "10",
+    ".venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_water_vacf_msd_identity.py",
+    "--junitxml=docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/synthetic-gate/pytest.xml"
+  ],
+  "errors": 0,
+  "evidence": {
+    "pytest.log": {
+      "bytes": 98,
+      "sha256": "63aef428b6b6cdf5d5276d6deb64de6d8cbc4b0909961118f54dc0b91dd2df15"
+    },
+    "pytest.xml": {
+      "bytes": 1264,
+      "sha256": "432a5a36764a0c02b9ca468eb4dc70e36a9baf49214d2cc90c30b276db4ee024"
+    }
+  },
+  "failures": 0,
+  "observed_exit_code": 0,
+  "physical_steps": 0,
+  "schema": "pyrpmd.water-vacf-msd-identity-analytical-gate.v1",
+  "skipped": 0,
+  "source_files": {
+    "benchmarks/water/vacf_msd_identity.py": {
+      "bytes": 15775,
+      "sha256": "65186a8cf9f4476f025f949446f64de310ebc0f9c5f85a804e9db2d1e7f0996e"
+    },
+    "tests/test_water_vacf_msd_identity.py": {
+      "bytes": 2356,
+      "sha256": "01dda60688a4981be9d9638986bbb6490cce01ad8bf5efc93060ac2fa2976243"
+    }
+  },
+  "source_identity_observation": "Source held by its owner; hashes recorded after the test execution. The subsequent actual compact-curve invocation independently records unchanged before/after source guards.",
+  "testcases": 7,
+  "tool_final_chunk_id": "c02416",
+  "tool_session_id": 25498
+}

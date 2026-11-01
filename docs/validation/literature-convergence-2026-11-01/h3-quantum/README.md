@@ -293,6 +293,22 @@ on the basis of the precision failure. Its exact first-stage checkpoint,
 RNG and sample prefixes are archived before continuation. A small window
 Rhat (maximum 1.0005765) does not establish precise integrated free energy.
 
+The [complete 100,000-sweep prefix](umbrella-stage-100000/complete-cohort-analysis/README.md)
+now retains all eight ladders and gives QTST=2.587396804e-16, nominal
+95% interval [2.294132956e-16, 2.918149187e-16], +3.084% from the paper.
+Seven registered criteria pass. Statistical precision alone still fails:
+the primary log standard error is 0.05087375, above the fixed 0.03 target.
+This is a QTST estimate; no recrossing factor or full rate is inferred.
+
+The [complete archive and extracted-data replay](umbrella-stage-100000/raw-archive-v2/README.md)
+preserve all checkpoint, RNG and sample-prefix states and reproduce every
+scientific field and saved WHAM array exactly. The original campaign's
+unexplained lease reappearance is explicitly retained in a separate reviewed
+read-only admission. No further cleanup or original-directory writer was
+admitted. Any future registered 300,000 prefix must use a new isolated
+verified restore and a separate root adoption; it cannot be selected by
+closeness to the paper.
+
 ## Reproduction and retained initialization failures
 
 Build the pinned external BKMP2 library using the repository's documented

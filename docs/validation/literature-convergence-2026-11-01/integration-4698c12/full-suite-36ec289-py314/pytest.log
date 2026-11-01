@@ -1,0 +1,947 @@
+........................................................................ [  0%]
+........................................................................ [  1%]
+............................sssss....................................... [  2%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+........................................................................ [  5%]
+........................................................................ [  6%]
+........................................................................ [  7%]
+.......sssssss................................ssssssssssssssss.ss....... [  8%]
+.............ssssssssssssssssssssssssssss............................... [  9%]
+............................................................................................... [ 10%]
+.................................................................................................... [ 12%]
+........................................................................ [ 13%]
+.............................................................. [ 14%]
+........................................................................ [ 15%]
+............................................................................................................ [ 16%]
+........................................................................ [ 17%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 20%]
+.sssss.................................................................. [ 21%]
+................................................................... [ 22%]
+........................................................................ [ 23%]
+........................................................................ [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 26%]
+........................................................................ [ 27%]
+........................................................................ [ 28%]
+........................................................................ [ 29%]
+.......................................................... [ 29%]
+........................................................................ [ 30%]
+........................................................................ [ 31%]
+........................................................................ [ 32%]
+................................................................... [ 33%]
+........................................................................ [ 34%]
+........................................................................ [ 35%]
+........................................................................ [ 36%]
+........................................ssssss...ss.................F... [ 37%]
+........................................................................ [ 38%]
+...................................................... [ 39%]
+........................................................................ [ 40%]
+................................FFFFFF.....F..FFFFF..................... [ 41%]
+..............................................sssssssss................. [ 42%]
+...........sssssssss.................................................... [ 43%]
+................s....................................................... [ 44%]
+.....................ssssssss........................................... [ 45%]
+................................................................... [ 45%]
+........................................................................ [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 64%]
+......................................................s................. [ 65%]
+.............................................................................................F.. [ 66%]
+.................ssssss.ssssssss........................................ [ 67%]
+...............................sss...................................... [ 68%]
+.....................s.................................................. [ 69%]
+.......sssssss.......................................................... [ 70%]
+........................Fss.......................................... [ 71%]
+........................................................................ [ 72%]
+.................................................................. [ 73%]
+.............................................................. [ 74%]
+........................................................................ [ 75%]
+............................................................. [ 75%]
+........................................................................ [ 76%]
+........................................................................ [ 77%]
+........................................................................ [ 78%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 81%]
+..................................... [ 82%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+........................................................................ [ 85%]
+................s.s...................... [ 85%]
+............................................... [ 86%]
+........................................................................ [ 87%]
+........................................................................ [ 88%]
+........................................................................ [ 89%]
+........................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 91%]
+..................ssssssss.............................ss............... [ 92%]
+........................................................................ [ 93%]
+........................................................................ [ 94%]
+..................................................................................................... [ 96%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+........................................................FF...            [100%]
+=================================== FAILURES ===================================
+________ test_wall_supervisor_retains_ledger_and_refuses_second_attempt ________
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314/pytest-tmp/test_wall_supervisor_retains_l0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f66dea2f000>
+
+    def test_wall_supervisor_retains_ledger_and_refuses_second_attempt(tmp_path, monkeypatch):
+        # A bounded synthetic sleeping process only; no native/MD/PES invocation.
+        regpath = tmp_path/"registration.json"
+        pilot.atomic_json(regpath, {"fixture": True})
+        guard = tmp_path/"guard.txt"; guard.write_text("unchanged synthetic source")
+        reg = {"output_root": str(tmp_path), "source_sha256": {str(guard): pilot.sha256(guard)},
+               "prepare_hard_CPU_seconds": 1}
+        monkeypatch.setattr(pilot, "load_registration", lambda path: (reg, {}, []))
+>       outcome = pilot.supervise(regpath, command=[sys.executable, "-c", "import time; time.sleep(5)"], wall_seconds=.1,
+                                  enforce_resources=False)
+
+tests/test_hch4_reference_pilot.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/hch4/reference_pilot.py:643: in supervise
+    budget = allocate_CPU_budget(reg["prepare_hard_CPU_seconds"], time.process_time())
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+benchmarks/hch4/reference_pilot.py:564: in allocate_CPU_budget
+    require(worker_cap >= 1, "preflight exhausted the total CPU budget")
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False, message = 'preflight exhausted the total CPU budget'
+
+    def require(condition, message):
+        if not condition:
+>           raise ValueError(message)
+E           ValueError: preflight exhausted the total CPU budget
+
+benchmarks/hch4/reference_pilot.py:100: ValueError
+_________ test_multiple_clients_are_concurrent_ordered_and_persistent __________
+
+    def test_multiple_clients_are_concurrent_ordered_and_persistent():
+        cell = np.array([[8., 0., 0.], [1., 9., 0.], [.3, .4, 10.]])
+>       pes = make_potential({"provider": "ipi", "params": {"port": 0, "clients": 2, "timeout": 3}},
+                             {"cell": cell, "pbc": [True] * 3})
+
+tests/test_ipi_clients.py:93: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/__init__.py:124: in make_potential
+    provider = _make_potential(config, system)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/potentials/__init__.py:318: in _make_potential
+    return IPIPotential(**params, cell=cell, pbc=pbc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+______________ test_fast_client_takes_more_work_than_slow_client _______________
+
+    def test_fast_client_takes_more_work_than_slow_client():
+>       pes = IPIPotential(port=0, clients=2, timeout=3)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:131: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+__ test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[header] ___
+
+failure = 'header'
+
+    @pytest.mark.parametrize("failure", ["header", "disconnect", "truncate"])
+    def test_bad_client_closes_entire_pool_and_cannot_return_stale_forces(failure):
+>       pes = IPIPotential(port=0, clients=2, timeout=.4)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+_ test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[disconnect] _
+
+failure = 'disconnect'
+
+    @pytest.mark.parametrize("failure", ["header", "disconnect", "truncate"])
+    def test_bad_client_closes_entire_pool_and_cannot_return_stale_forces(failure):
+>       pes = IPIPotential(port=0, clients=2, timeout=.4)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+_ test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[truncate] __
+
+failure = 'truncate'
+
+    @pytest.mark.parametrize("failure", ["header", "disconnect", "truncate"])
+    def test_bad_client_closes_entire_pool_and_cannot_return_stale_forces(failure):
+>       pes = IPIPotential(port=0, clients=2, timeout=.4)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+_______________ test_missing_clients_timeout_and_close_listener ________________
+
+    def test_missing_clients_timeout_and_close_listener():
+>       pes = IPIPotential(port=0, clients=2, timeout=.1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:188: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+__________ test_existing_unix_address_is_not_removed_on_bind_failure ___________
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314/pytest-tmp/test_existing_unix_address_is_0')
+
+    def test_existing_unix_address_is_not_removed_on_bind_failure(tmp_path):
+        address = tmp_path / "driver.sock"
+>       pes = IPIPotential(unix=address)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <pyrpmd.potentials.socket.IPIPotential object at 0x7f66e8d6c410>
+host = '127.0.0.1', port = 31415
+unix = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314/pytest-tmp/test_existing_unix_address_is_0/driver.sock')
+timeout = 60.0, init = None, cell = None, pbc = None, clients = 1
+
+    def __init__(
+        self, host="127.0.0.1", port=31415, *, unix=None, timeout=60.0,
+        init=None, cell=None, pbc=None, clients=1,
+    ):
+        if isinstance(timeout, (bool, np.bool_)) or not np.isfinite(timeout) or timeout <= 0:
+            raise ValueError("socket timeout must be positive")
+        if isinstance(clients, (bool, np.bool_)) or not isinstance(clients, (int, np.integer)) or clients < 1:
+            raise ValueError("i-PI clients must be a positive integer")
+        self.timeout = float(timeout)
+        self.clients = int(clients)
+        self.unix = unix
+        self.closed = False
+        self._lifecycle_lock = threading.Lock()
+        self._drivers = []
+        self._parameters = dict(init or {})
+        self._set_cell(cell, pbc)
+        self.init = json.dumps(self._parameters).encode()
+        self._evaluation_lock = threading.Lock()
+        self._pool = ThreadPoolExecutor(max_workers=self.clients, thread_name_prefix="pyrpmd-ipi")
+        self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+        self._owns_unix = False
+        try:
+            self.server.settimeout(self.timeout)
+            if unix:
+>               self.server.bind(str(unix))
+E               OSError: AF_UNIX path too long
+
+src/pyrpmd/potentials/socket.py:141: OSError
+______ test_close_while_accept_completes_does_not_leak_the_new_connection ______
+
+    def test_close_while_accept_completes_does_not_leak_the_new_connection():
+        """Deterministically place close between accept entry and its return."""
+>       pes = IPIPotential(port=0, timeout=1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:226: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+_ test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[bind_system] _
+
+update_method = 'bind_system'
+
+    @pytest.mark.parametrize("update_method", ["bind_system", "set_cell"])
+    def test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed(update_method):
+        cell = np.eye(3) * 8
+>       pes = IPIPotential(port=0, cell=cell)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+__ test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[set_cell] __
+
+update_method = 'set_cell'
+
+    @pytest.mark.parametrize("update_method", ["bind_system", "set_cell"])
+    def test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed(update_method):
+        cell = np.eye(3) * 8
+>       pes = IPIPotential(port=0, cell=cell)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+__________ test_evaluate_rechecks_close_after_coordinate_preparation ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f66dec42120>
+
+    def test_evaluate_rechecks_close_after_coordinate_preparation(monkeypatch):
+        from pyrpmd.potentials import socket as socket_provider
+    
+>       pes = IPIPotential(port=0)
+              ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:326: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+_________ test_accept_oserror_closes_provider_and_uses_potential_error _________
+
+    def test_accept_oserror_closes_provider_and_uses_potential_error():
+>       pes = IPIPotential(port=0)
+              ^^^^^^^^^^^^^^^^^^^^
+
+tests/test_ipi_clients.py:345: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+______ PeriodicPotentialTests.test_ipi_real_cell_inverse_and_virial_wire _______
+
+self = <test_periodic_materials.PeriodicPotentialTests testMethod=test_ipi_real_cell_inverse_and_virial_wire>
+
+    def test_ipi_real_cell_inverse_and_virial_wire(self):
+        cell = np.array([[9., 0., 0.], [2., 10., 0.], [.3, .4, 12.]])
+        with self.assertRaisesRegex(ValueError, "PBC flags"):
+            IPIPotential(port=0, cell=cell, pbc=[True, True, False])
+        flags = [True, True, False]
+>       pes = IPIPotential(port=0, timeout=4, cell=cell, pbc=flags, init={"pbc": flags})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_periodic_materials.py:163: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+________________________ SocketTests.test_ipi_protocol _________________________
+
+self = <test_potentials.SocketTests testMethod=test_ipi_protocol>
+
+    def test_ipi_protocol(self):
+>       pes = IPIPotential(port=0, timeout=5)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_potentials.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py314/lib/python3.14/socket.py:236: PermissionError
+_________ test_spawn_batches_limit_already_loaded_blas_in_each_worker __________
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314/pytest-tmp/test_spawn_batches_limit_alrea0')
+multithreaded_blas = None
+
+    def test_spawn_batches_limit_already_loaded_blas_in_each_worker(tmp_path, multithreaded_blas):
+        before = _threads()
+        environment = {key: os.environ.get(key) for key in BLAS_ENV}
+        barrier = WorkerRendezvous(tmp_path)
+        snapshots = run_tasks(_snapshot, [barrier, barrier],
+                              {"backend": "process", "trajectory_workers": 2})
+>       _check_two_workers(snapshots)
+
+tests/test_worker_thread_limits.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+snapshots = [{'pid': 1400, 'imported': {'/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-package...nment': {'OPENBLAS_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1', 'BLIS_NUM_THREADS': '1', 'VECLIB_MAXIMUM_THREADS': '1'}}]
+
+    def _check_two_workers(snapshots):
+        assert len({snapshot["pid"] for snapshot in snapshots}) == 2
+        assert all(snapshot["pid"] != os.getpid() for snapshot in snapshots)
+        for snapshot in snapshots:
+            assert snapshot["imported"]
+>           assert set(snapshot["imported"].values()) == {4}
+E           assert {2} == {4}
+E             
+E             Extra items in the left set:
+E             2
+E             Extra items in the right set:
+E             4
+E             Use -v to get more diff
+
+tests/test_worker_thread_limits.py:83: AssertionError
+______ test_persistent_bead_workers_keep_limits_for_multiple_evaluations _______
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314/pytest-tmp/test_persistent_bead_workers_k0')
+multithreaded_blas = None
+
+    def test_persistent_bead_workers_keep_limits_for_multiple_evaluations(tmp_path, multithreaded_blas):
+        before = _threads()
+        environment = {key: os.environ.get(key) for key in BLAS_ENV}
+        potential = ProcessBeadPotential(ThreadProbePotential(WorkerRendezvous(tmp_path)), None, 2)
+        try:
+            previous_pids = None
+            for _ in range(2):
+                result = potential.evaluate(np.zeros((2, 1, 3)))
+                snapshots = [json.loads(message) for message in result.messages]
+>               _check_two_workers(snapshots)
+
+tests/test_worker_thread_limits.py:108: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+snapshots = [{'pid': 1406, 'imported': {'/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-package...nment': {'OPENBLAS_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1', 'BLIS_NUM_THREADS': '1', 'VECLIB_MAXIMUM_THREADS': '1'}}]
+
+    def _check_two_workers(snapshots):
+        assert len({snapshot["pid"] for snapshot in snapshots}) == 2
+        assert all(snapshot["pid"] != os.getpid() for snapshot in snapshots)
+        for snapshot in snapshots:
+            assert snapshot["imported"]
+>           assert set(snapshot["imported"].values()) == {4}
+E           assert {2} == {4}
+E             
+E             Extra items in the left set:
+E             2
+E             Extra items in the right set:
+E             4
+E             Use -v to get more diff
+
+tests/test_worker_thread_limits.py:83: AssertionError
+=============================== warnings summary ===============================
+tests/test_andersen_schedule.py::test_geometric_free_modes_recover_from_the_periodic_resonance
+  tests/test_andersen_schedule.py:494: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    def test_geometric_free_modes_recover_from_the_periodic_resonance(tmp_path, record_property):
+
+tests/test_ase_force_consistency.py: 170 warnings
+tests/test_barostat.py: 2 warnings
+tests/test_parallel.py: 5 warnings
+tests/test_periodic_materials.py: 19 warnings
+tests/test_potential_adapters.py: 24 warnings
+tests/test_potential_energy_identity.py: 186 warnings
+tests/test_potentials.py: 45 warnings
+tests/test_surface_examples.py: 33 warnings
+tests/test_surface_geometry.py: 1 warning
+  /workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/ase/geometry/geometry.py:403: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D.shape = (-1, len(p2), 3)
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/ase/geometry/geometry.py:404: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D_len.shape = (-1, len(p2))
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/ase/atoms.py:1548: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D.shape = (-1, 3)
+
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[metadynamics]
+tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[metadynamics]
+tests/test_report_workflow_e2e.py::test_actual_workflow_exports_match_archives_and_never_execute_dynamics
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/runner.py:163: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[opes]
+tests/test_fes_entry.py::test_old_run_manifest_and_streams_migrate_without_changing_samples[opes]
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/runner.py:163: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-metadynamics]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-metadynamics]
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    resolved, _ = JobSpec.from_mapping(cfg).resolve()
+
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[nhc-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[svr-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[gle-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-g-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[ffl-opes]
+tests/test_enhanced_sampling_composition.py::test_frontend_resolves_shared_sampling_for_enhanced_biases[pile-l-opes]
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_enhanced_sampling_composition.py:140: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    resolved, _ = JobSpec.from_mapping(cfg).resolve()
+
+tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[metadynamics]
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_fes_entry.py:51: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    historical, _ = JobSpec.from_mapping(legacy).resolve()
+
+tests/test_fes_entry.py::test_nested_and_legacy_namespaces_have_same_scientific_identity[opes]
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_fes_entry.py:51: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    historical, _ = JobSpec.from_mapping(legacy).resolve()
+
+tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_grid_metadynamics.py:285: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, system = JobSpec.from_mapping(job).resolve()
+
+tests/test_grid_metadynamics.py::test_grid_frontend_explicit_and_declared_units_and_defaults
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_grid_metadynamics.py:291: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_metadynamics.py::test_metadynamics_default_production_budget
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_metadynamics.py:293: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, _ = spec.resolve()
+
+tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_metadynamics.py:365: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, sys = JobSpec.from_mapping(job).resolve()
+
+tests/test_metadynamics.py::test_frontend_resolves_width_units_and_rejects_bad_options
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_metadynamics.py:372: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_report_render.py: 3 warnings
+tests/test_report_workflow_e2e.py: 11 warnings
+tests/test_reporting.py: 1 warning
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/report_render.py:157: PendingDeprecationWarning: The set_bad function will be deprecated in a future version. Use cmap.with_extremes(bad=...) or Colormap(bad=...) instead.
+    cmap.set_bad("#D9D9D9")
+
+tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/runner.py:524: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config, system = spec.resolve()
+
+tests/test_sampling_public_api.py::test_opes_public_default_and_frozen_run_resume_offline
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/runner.py:158: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config, system = spec.resolve()
+
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[reaction]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[rate]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[recrossing]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[collision]
+tests/test_sampling_public_api.py::test_opes_rejects_irrelevant_bias_and_rate_inputs[outcomes]
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_sampling_public_api.py:77: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    JobSpec.from_mapping(job).resolve()
+
+tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_shared_metadynamics.py:305: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, _ = JobSpec.from_file(source).resolve()
+
+tests/test_shared_metadynamics.py::test_shared_input_and_cli_run_resume_and_offline_analyze
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/runner.py:158: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    config, system = spec.resolve()
+
+tests/test_surface_source.py: 13 warnings
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_surface_source.py:35: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    cfg, system = JobSpec.from_mapping(original).resolve()
+
+tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[fixed]
+tests/test_surface_workflow.py::test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell[periodic]
+  /workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_surface_workflow.py:56: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    return JobSpec.from_mapping(cluster_job() if job is None else job).resolve()
+
+tests/test_trajectory_export.py: 10 warnings
+  /workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/ase/io/ulm.py:658: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (stop - start,) + self.shape[1:]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_h3_preparation_report.py:11: could not import 'reportlab': No module named 'reportlab'
+SKIPPED [1] tests/test_onnx_native.py:20: optional native ONNX plugin not configured
+SKIPPED [1] tests/test_rpmdrate_normal_modes.py:9: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_backend.py:7: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_bcocb.py:9: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_observable_validation.py:15: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_torch_paper_validation.py:8: could not import 'torch': No module named 'torch'
+SKIPPED [3] tests/test_advanced_cv.py:150: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_advanced_cv.py:167: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_advanced_cv.py:180: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_brhcl_pes.py:45: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:57: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:71: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:91: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:102: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:126: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:147: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_reference.py:246: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [11] tests/test_brhcl_reference.py:260: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [4] tests/test_brhcl_reference.py:290: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:331: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:349: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_scan.py:50: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:83: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:100: build optional pinned BrHCl PES first
+SKIPPED [15] tests/test_brhcl_scan.py:139: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:166: build optional pinned BrHCl PES first
+SKIPPED [8] tests/test_brhcl_scan.py:186: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:209: build optional pinned BrHCl PES first
+SKIPPED [4] tests/test_electronic_backends.py:130: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_electronic_backends.py:145: could not import 'torch': No module named 'torch'
+SKIPPED [1] benchmarks/hch4/test_native.py:32: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+SKIPPED [1] benchmarks/hch4/test_native.py:23: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+SKIPPED [4] benchmarks/hch4/test_native.py:47: Set PYRPMD_CBE2008_LIBRARY; this test never downloads a PES
+SKIPPED [1] tests/test_hch4_pes.py:48: Set PYRPMD_CBE2008_LIBRARY to the locally built pinned PES; no implicit download
+SKIPPED [1] tests/test_hch4_pes.py:60: Set PYRPMD_CBE2008_LIBRARY to the locally built pinned PES; no implicit download
+SKIPPED [4] tests/test_jaxpip_pesgen.py:138: optional real JaxPIP environment
+SKIPPED [2] tests/test_jaxpip_pesgen.py:167: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:189: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:196: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:208: optional real PySCF
+SKIPPED [9] tests/test_lammps_provider.py:15: could not import 'lammps': No module named 'lammps'
+SKIPPED [1] tests/test_materials_eam.py:85: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [1] tests/test_materials_reference_eam4.py:39: opt-in exact EAM4 static library is not configured
+SKIPPED [4] tests/test_materials_reference_eam4.py:47: opt-in exact EAM4 static library is not configured
+SKIPPED [1] tests/test_materials_reference_eam4.py:54: opt-in exact EAM4 static library is not configured
+SKIPPED [1] tests/test_materials_reference_eam4.py:60: opt-in exact EAM4 static library is not configured
+SKIPPED [1] tests/test_materials_reference_eam4.py:66: opt-in exact EAM4 static library is not configured
+SKIPPED [1] tests/test_opes_initialization.py:133: optional PLUMED Python wrapper unavailable
+SKIPPED [1] tests/test_pesgen.py:86: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [3] tests/test_pesgen.py:101: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:111: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen.py:120: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_pesgen_native.py:48: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:65: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:95: explicit pinned native Caracal build/source required
+SKIPPED [2] tests/test_pesgen_native.py:110: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:149: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pesgen_native.py:158: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:174: full MPI installation for original optimizer
+SKIPPED [1] tests/test_plumed.py:379: optional PLUMED Python wrapper unavailable
+SKIPPED [2] tests/test_plumed_live_workflow.py:36: Optional real PLUMED runtime unavailable: No module named 'plumed'
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [1] tests/test_potential_adapters.py:266: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:276: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:289: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:305: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:325: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] tests/test_potential_adapters.py:339: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] ../distribution-check/unit-py314/lib/python3.14/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+SKIPPED [2] tests/test_spin_mapping.py:206: could not import 'torch': No module named 'torch'
+SKIPPED [1] tests/test_tier2_spectroscopy.py:296: could not import 'torch': No module named 'torch'
+SKIPPED [7] tests/test_torch_periodic.py:13: could not import 'torch': No module named 'torch'
+SKIPPED [2] tests/test_trajectory_export.py:92: could not import 'MDAnalysis': No module named 'MDAnalysis'
+FAILED tests/test_hch4_reference_pilot.py::test_wall_supervisor_retains_ledger_and_refuses_second_attempt
+FAILED tests/test_ipi_clients.py::test_multiple_clients_are_concurrent_ordered_and_persistent
+FAILED tests/test_ipi_clients.py::test_fast_client_takes_more_work_than_slow_client
+FAILED tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[header]
+FAILED tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[disconnect]
+FAILED tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[truncate]
+FAILED tests/test_ipi_clients.py::test_missing_clients_timeout_and_close_listener
+FAILED tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure
+FAILED tests/test_ipi_clients.py::test_close_while_accept_completes_does_not_leak_the_new_connection
+FAILED tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[bind_system]
+FAILED tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[set_cell]
+FAILED tests/test_ipi_clients.py::test_evaluate_rechecks_close_after_coordinate_preparation
+FAILED tests/test_ipi_clients.py::test_accept_oserror_closes_provider_and_uses_potential_error
+FAILED tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire
+FAILED tests/test_potentials.py::SocketTests::test_ipi_protocol - PermissionE...
+FAILED tests/test_worker_thread_limits.py::test_spawn_batches_limit_already_loaded_blas_in_each_worker
+FAILED tests/test_worker_thread_limits.py::test_persistent_bead_workers_keep_limits_for_multiple_evaluations
+17 failed, 7268 passed, 145 skipped, 982 warnings, 486 subtests passed in 564.11s (0:09:24)
+{"pytest_exit_code": 1, "junit_counts": {"tests": 7916, "failures": 17, "errors": 0, "skipped": 145}, "elapsed_seconds": 565.3925066500087, "passed": false}

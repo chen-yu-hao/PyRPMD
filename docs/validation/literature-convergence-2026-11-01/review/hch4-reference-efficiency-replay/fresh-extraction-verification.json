@@ -1,0 +1,51 @@
+{
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "all_listed_calculation_fields_equal": true,
+  "all_original_member_extracted_hashes_equal": true,
+  "archive": {
+    "bytes": 1136325,
+    "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/pyrpmd-hch4-efficiency-pilot-2026-11-01-v1.tar.gz",
+    "sha256": "9a259292ec15c17171e999256ffa96c0aec6b7885e28ad40c78904ab8742cd3b"
+  },
+  "exact_recalculated_fields": [
+    "analysis_recomputed",
+    "calibration_recomputed",
+    "comparison_counts",
+    "maximum_absolute_reconstruction_errors",
+    "staged_geometries",
+    "actual_saved_PES_calls",
+    "retained_geometric_zero_draws"
+  ],
+  "first_replay": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/actual-replay-attempt-1/replay-result.json",
+    "sha256": "8b61927e30eb89ce45ad8f978d1399ffff6b62bf6a8d37a3bff481afdd026d94"
+  },
+  "fresh_replay": {
+    "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/fresh-replay-result.json",
+    "sha256": "14ff4bde1a535acec99dc31bab40cc8dbedd25f4515fc6725efaa90dc873d675"
+  },
+  "fresh_replay_command": {
+    "actual_PES_or_RNG_calls": 0,
+    "command": [
+      "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/replay_saved.py",
+      "--data",
+      "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/fresh-extraction/data",
+      "--physics",
+      "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/fresh-extraction/reference/physics-coarea-proposal.json",
+      "--design",
+      "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/fresh-extraction/reference/efficiency-design.json",
+      "--output",
+      "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive/fresh-replay-result.json"
+    ],
+    "source": {
+      "bytes": 33919,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/replay_saved.py",
+      "sha256": "1bb77ef43718a57c160d477cac206bf851ee71425cdd93090a4578299666825d"
+    }
+  },
+  "member_count": 36,
+  "physical_rate_claimed": false,
+  "schema": "pyrpmd.hch4-exact-extraction-reconstruction-verification.v1"
+}

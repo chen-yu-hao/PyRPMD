@@ -1,0 +1,21 @@
+{
+  "all_owned_workers_drained": true,
+  "automatic_extension": false,
+  "automatic_retry": false,
+  "complete_excluded_efficiency_pilot": true,
+  "created_utc": "2026-11-01T21:17:05.793560+00:00",
+  "failure": null,
+  "fixed_whole_process_CPU_caps_sum_seconds": 60,
+  "reaped_child_CPU_seconds": 5.5543689999999994,
+  "registration_sha256": "5f4cd5b26632759a77ebbfb0a1e879fc9f32900534fdf186373a3f5c0635ae31",
+  "report_sha256": "5162a97ad5e2fd981a039898020c3798e6b0ab957cd56e5ff3153c18aa0d58fc",
+  "schema": "pyrpmd.hch4-efficiency-supervisor.v1",
+  "source_guards_unchanged": true,
+  "stop": null,
+  "supervisor_CPU_seconds_before_receipt": 0.185257113,
+  "supervisor_process_token": "d17c37f50efc4cd0bc9b431febbc0fab",
+  "wall_seconds_since_entry": 7.520177113008685,
+  "wall_seconds_since_preflight": 7.397910113999387,
+  "worker_PID": 6,
+  "worker_exit_code": 0
+}

@@ -1,0 +1,46 @@
+{
+  "created_utc": "2026-11-01T21:10:29.744029+00:00",
+  "mathematical_checks": {
+    "chain_aggregation": "Each of the25 adjacent segments contributes to its original chain mean. Eight equally weighted chain means are the uncertainty units. Paired observed-minus-reconstructed differences retain within-chain covariance; nominal Student-t df7 intervals and pointwise bands do not assume200 segments or time origins are independent.",
+    "finite_origins_and_stationarity": "The ensemble formula assumes stationary velocity correlations, while finite trajectories use lag-dependent origin sets. Their empirical MSD and VACF can therefore show residuals from finite origins/noise/nonstationarity/cadence even when the continuum identity is correct. Small residuals do not prove equilibration or rate/diffusion convergence.",
+    "fit_window_interpretation": "A constant positive long-time MSD intercept lowers the logarithmic MSD slope below1 but alone leaves the unweighted linear slope unchanged. Window-dependent linear diffusivity requires curvature/transient running integral or finite-sample effects; the existing constant-intercept test correctly enforces this distinction.",
+    "numerical_quadrature_scope": "Exactness is for the piecewise-linear interpolant of the saved VACF, not for unrecorded sub-cadence velocity motion. The separately retained double-trapezoid result is a numerical diagnostic and does not choose the physical model.",
+    "piecewise_linear_exactness": "On interval i of width h with I_i=integral_0^ti C, integral_i I(t)dt=h*I_i+h^2*(2*C_i+C_(i+1))/6. This is the implemented increment, then multiplied by2. Constant C gives C*t^2; linear C0+a*t gives C0*t^2+a*t^3/3, including a nonuniform lag grid.",
+    "stationary_trace_identity": "For the full three-dimensional velocity-dot correlation C(t), MSD(t)=2*integral_0^t (t-tau)*C(tau) dtau. The running Green-Kubo diffusivity is integral_0^t C(tau)dtau/3; the linear MSD slope is divided by6. No additional factor3 belongs in the trace MSD identity.",
+    "units": "Lag inps times VACF inangstrom^2/ps^2 yields the correct angstrom^2/ps running diffusion after division by3 and angstrom^2 displacement after the second integral. The source uses molecular-COM displacement/velocity curves from the same frozen analysis."
+  },
+  "observed_synthetic_cases": 7,
+  "observed_synthetic_junit": {
+    "bytes": 1264,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/synthetic-gate/pytest.xml",
+    "sha256": "432a5a36764a0c02b9ca468eb4dc70e36a9baf49214d2cc90c30b276db4ee024"
+  },
+  "observed_synthetic_log": {
+    "bytes": 98,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/synthetic-gate/pytest.log",
+    "sha256": "63aef428b6b6cdf5d5276d6deb64de6d8cbc4b0909961118f54dc0b91dd2df15"
+  },
+  "remaining_method_blockers": [],
+  "reviewer_PES_or_dynamics_or_RNG_calls": 0,
+  "reviewer_task": "/root/benchmarks",
+  "reviewer_trajectory_or_curve_arrays_read": false,
+  "schema": "pyrpmd.water-vacf-msd.independent-method-review.v1",
+  "scope_and_limits": [
+    "Read-only method inspection of a descriptive post hoc diagnostic, not an independent numerical replay of its saved water curves.",
+    "No new gate, segment omission, equilibrium claim or literature comparison is approved by this receipt. All original preparation and short-window failures must remain visible.",
+    "The existing source already labels its original OpenMM external-reference scope and preserves original eligibility results.",
+    "Providers owns the actual complete-cohort input binding, execution evidence and final numerical prose; this receipt does not infer that every empirical curve equality holds."
+  ],
+  "source": {
+    "bytes": 15775,
+    "path": "benchmarks/water/vacf_msd_identity.py",
+    "sha256": "65186a8cf9f4476f025f949446f64de310ebc0f9c5f85a804e9db2d1e7f0996e"
+  },
+  "source_unchanged_during_review": true,
+  "tests": {
+    "bytes": 2356,
+    "path": "tests/test_water_vacf_msd_identity.py",
+    "sha256": "01dda60688a4981be9d9638986bbb6490cce01ad8bf5efc93060ac2fa2976243"
+  },
+  "tests_independently_rerun": false
+}

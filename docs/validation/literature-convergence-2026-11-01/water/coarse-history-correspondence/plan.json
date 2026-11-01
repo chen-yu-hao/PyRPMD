@@ -1,0 +1,33 @@
+{
+  "CPU_affinity": [
+    4
+  ],
+  "CPU_limit_seconds": 30,
+  "all32_exact_float64_checkpoint_comparisons": "1,2,3,4ps for each seed",
+  "all801_times_fs": "0,5,...,4000",
+  "conditional_reuse_design": "Only if the entire fixed cohort satisfies exact correspondence; otherwise no proposed all25 coarse reuse.",
+  "control_branch": "dt025",
+  "created_utc": "2026-11-01T21:41:51.326847+00:00",
+  "exact_correspondence": "Only casting control float64 observations to original stored dtype is allowed. No interpolation, coordinate alignment, tolerance widening or frame/seed selection.",
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "inputs": "Previously checksum-verified extracted original and paired-control payloads; both original archives remain unchanged.",
+  "new_PES_calls": 0,
+  "new_RNG_draws": 0,
+  "new_dynamics_steps": 0,
+  "nice_increment": 10,
+  "original_segment": 0,
+  "same_draw_provenance": "Compare saved sourceq, RNG-before and all original first-segment RNG-after states; no new RNG draw. Original full canonical post-draw p0 was not separately checkpointed.",
+  "schema": "pyrpmd.water-coarse-history-read-only-comparison-plan.v1",
+  "source_sha256": "e2d302e36c652a507fe91cbf69383202b3cf2457ca0d192c7cca3b09593606f7",
+  "threads": 1,
+  "wall_limit_seconds": 60
+}

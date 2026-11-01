@@ -1,0 +1,103 @@
+{
+  "schema": "pyrpmd.h3.p256-final-child-raw-archive-plan.v1",
+  "status": "proposed preparation only; no active raw files copied and no archive created",
+  "policy": {
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/policy.json",
+    "sha256": "ff5be96fe6412a4d98f03019d5c7107bf7bbd7a7dfcb2426455412562bb30858"
+  },
+  "adoption_required_before_archiving": true,
+  "upload_authorized": false,
+  "no_Git_mutation": true,
+  "fixed_campaign_root": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1",
+  "proposed_archive": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-p256-recrossing-2026-11-01.tar.gz",
+  "proposed_member_inventory": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-p256-recrossing-2026-11-01.members.json",
+  "publication_evidence_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-stage/raw-archive",
+  "admission": {
+    "all_registered_seeds_complete": [825601, 825603, 825607, 825609, 825613, 825617, 825621, 825623],
+    "branch_order": [[0, 0.1], [0, 0.05], [1, 0.1], [1, 0.05]],
+    "required_branch_count": 32,
+    "required_primary_chunk_count": 800,
+    "required_native_map_steps": 76800000,
+    "required_root_exec_session": 30588,
+    "actual_root_exec_exit_required": true,
+    "root_launcher_exit_zero_and_sources_unchanged_required": true,
+    "all_owned_child_and_analysis_workers_drained_required": true,
+    "child_campaign_lease_absent_required": true,
+    "analysis_once_receipt_and_report_or_explicit_drained_failure_required": true,
+    "failed_scientific_criterion_is_preserved_without_rerun": true,
+    "no_partial_statistics_or_result_based_member_selection": true,
+    "incomplete_or_failed_child_cohort": "Stop this complete-cohort plan. Preserve existing failure files without claiming a complete archive; no automatic retry, continuation, seed removal or substitute result."
+  },
+  "whitelist": {
+    "primary_raw": "All 800 chunk-*.npz exact byte streams named by the completed registered 8-seed/4-branch manifest; no glob-based inclusion of other runs.",
+    "branch_metadata": "The 32 exact settings.json files and 32 exact final report.json files linked by the completed manifest.",
+    "cohort_metadata": "Exact child protocol, coordinator registration, global children-complete and registered attempt plan/result/events, eight worker claims, eight worker execution receipts, registered branch receipts and final worker stdout logs.",
+    "root_execution": "Exact original root launch/adoption/resource/preflight identities, original launch.json, completion.json, actual exec-observation.json, root-exec-exit.json and final captured campaign.log; distinguish observed exit time from launch and native completion.",
+    "complete_analysis": "Once-only analysis execution registration/claim, root-completion gate, verified-inputs manifest, analyzer launch/start/exit receipts and stdout, execution.json and all outputs of the single frozen complete analyzer. Preserve scientific gate failures exactly.",
+    "identity_only_prerequisites": "Compact source, compiler/build, runtime, PES, native-library, parent-archive and reference identities; no executable/source duplication.",
+    "archive_specific_metadata": "README with original-to-member path map, bounded execution receipt, every-member SHA256/size inventory, before/after source and input guards, archive whole-file checksum, and original/extracted checkpoint validation receipts."
+  },
+  "exclusions": [
+    "Third-party BKMP2 source and all PES/shared/native binaries",
+    "Git-backed source code, tests and publication images already available through the referenced repository identities",
+    "The eight parent NPZ files already preserved in the separate immutable parent archive",
+    "P128 child raw files already preserved in the base and four-pair incremental archives",
+    "Active or completed unrelated umbrella, water, classical, HCH4, materials or other cohorts",
+    "Calibration trajectories or alternate seeds not in the registered P256 primary child cohort",
+    "Any in-progress files, temporary writer files or content selected after looking at partial rates"
+  ],
+  "external_archives": [
+    {
+      "role": "exact eight P256 parent checkpoints and their registration/provenance",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-p256-parents-2026-11-01.tar.gz",
+      "bytes": 47557304,
+      "sha256": "719a52f69e778ce5e9c25c10f438e3f862e8006be49dba8b09954ccd32eb3d30",
+      "parent_manifest_sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120"
+    },
+    {
+      "role": "immutable P128 two-pair base raw cohort",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-2-2026-11-01.tar.gz",
+      "bytes": 324627489,
+      "sha256": "d3205ebc4a5210af59d03ebdbf0737708278d83f1e4cb540a18818213d78cea8"
+    },
+    {
+      "role": "immutable P128 second two-pair increment",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.tar.gz",
+      "bytes": 324840270,
+      "sha256": "a1a7cd77362925d77bf6e6947c5bfc4c98d9bd518c14b6fda6fb0db5003c7b7a"
+    }
+  ],
+  "baseline_report": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200-four-pairs/quantum-rate-comparison.json",
+    "sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720",
+    "statistical_unit": "Eight independent parent chains for each bead count; P128 and P256 are not paired merely because seed labels overlap."
+  },
+  "proposed_resources_not_yet_measured_or_adopted": {
+    "CPUs": 1,
+    "threads": 1,
+    "low_priority": true,
+    "maximum_total_input_bytes": 2147483648,
+    "maximum_single_raw_file_bytes": 16777216,
+    "target_peak_working_memory_bytes": 268435456,
+    "whole_call_wall_seconds": 600,
+    "whole_call_CPU_seconds": 180,
+    "oversize_or_budget_exhaustion": "Stop and retain the failure/partial temporary output; do not silently relax caps or omit files."
+  },
+  "preservation_and_replay": [
+    "Register the full whitelist, every original path, intended archive member path, SHA256 and size only after all source/data producers are drained.",
+    "Use exclusive creation and no overwrite for archive, sidecar, extraction directory and evidence; retain failed partial archive distinctly. This is a byte-identity/no-overwrite convention, not a claim of operating-system immutable storage.",
+    "Copy each NPZ byte-for-byte; do not recompress, regenerate or normalize the NPZ payload. Outer tar/gzip compression is permitted.",
+    "Hash every original member before copying, each archived member while reading back, and every extracted member in a new directory; require equality and reject unsafe/duplicate paths or symlink members.",
+    "Load all 800 original and extracted checkpoint integrity envelopes with the frozen loader. Apply the existing frozen coordinator.validate_chunk shapes, fingerprint, finite-value and step checks to every member.",
+    "Verify the full 32-branch Cartesian product and exact parent index/sweep/channel/keyed-momentum identities, both timesteps, both pair batches and 76,800,000 total native steps against the bound parent/settings/manifest identities.",
+    "Bind the already produced complete-analysis report and its once-only execution receipt by exact bytes. Do not execute a second primary scientific analyzer as part of archive validation.",
+    "Record source/input before-after identities, actual CPU/wall/peak-memory observations, all failures and the completed archive checksum/size.",
+    "State executable replay prerequisites explicitly: exact registered Git/source/runtime/native/PES identities and the separate parent archive are required. The raw child archive alone is not a standalone full-rate experiment."
+  ],
+  "scientific_scope": {
+    "parents": "Eight arrays of 200 static fs-weighted configurations: 1,600 configurations, not 1,600 independent chains or trajectories.",
+    "data": "Two separately keyed momentum-pair batches at both 0.1 fs and 0.05 fs, 200 fs horizon; exact fixed primary cohort only.",
+    "archive_validation": "Byte integrity, complete identity and checkpoint replay checks do not imply physical convergence.",
+    "dynamic_bead_agreement": "May be assessed only by the frozen complete P256/P128 analysis and every registered uncertainty/equivalence gate; no conclusion exists at archive-plan preparation."
+  }
+}

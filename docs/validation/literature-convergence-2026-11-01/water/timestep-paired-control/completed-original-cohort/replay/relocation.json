@@ -1,0 +1,7 @@
+{
+  "derived_path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01-attempt2/extracted/control/registration.relocated.json",
+  "derived_sha256": "f06b4520db2e84c8a4b8579e18f9dc3f2913eb6fd3481615164994a154e60b71",
+  "original_archive_bytes_preserved": true,
+  "original_sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365",
+  "registration_paths_only_changed": true
+}

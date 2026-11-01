@@ -1,0 +1,34 @@
+{
+  "changed_live_aggregate_files": {
+    "benchmarks/literature/README.md": {
+      "after_sha256": "b99ae9fcaf434932cde31e968e44536de13d0a8e6e9c14e101bb658b5fd23ab1",
+      "before_sha256": "3f5c8711a57c9f966699651569654b367253d6481a1c3c66a5bf6b52e7d719f9"
+    },
+    "benchmarks/literature/campaign.json": {
+      "after_sha256": "69986bdcd49d64ac56ca30ab4ffe4577a4b9bc5fd1823483204687bb114c666f",
+      "before_sha256": "9d292c706f1a89998d4e8d3dff0e196c8d3bf83cac6d2e9bb97ea404df05bf02"
+    },
+    "docs/literature-validation.md": {
+      "after_sha256": "02db94e2de29cdb7b3059827f56d474a182dbd18ead8eb04e8dbe88b2e27eae0",
+      "before_sha256": "5425ba03ffba3f3f604d44d49e709174d46aa434c3bb24a9068307690fcec36d"
+    },
+    "docs/validation/literature-convergence-2026-11-01/README.md": {
+      "after_sha256": "575c4c4bf851cac39b543d9c1f0b54b01746d7717d27814a369ab0efc862361e",
+      "before_sha256": "1b64a89fc5341b38e4e4e674321036c3229c8eb5f1800025d8ff8a07be19a267"
+    },
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/README.md": {
+      "after_sha256": "f5cbe283211bd19b95f970d0f7270e5bdce49ee75eb719fbfafba4d89cc294db",
+      "before_sha256": "45db30b1af5f2f8aa092f831a8a94cf6f84854f9e0e6ce86e566221187862298"
+    },
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/README.md": {
+      "after_sha256": "b3691724b2506252b12021d097aa9f53eac374fc715f221f36f4f3f2661e8b0a",
+      "before_sha256": "19f9fbf058a3605f645f431186eb1fac891441553c6da966f5b30027283a650c"
+    }
+  },
+  "created_utc": "2026-11-01T21:43:08.636965+00:00",
+  "new_method_union_per_interpreter": 796,
+  "schema": "pyrpmd.fifth-stage-post-gate-aggregate-update.v1",
+  "scope": "Live documentation and descriptive catalog only, after completed full-project and additive method gates. Every full case status remains not_reproduced. Frozen sources, thresholds, execution receipts and historical inventories unchanged.",
+  "source_or_test_code_changed_by_this_update": false,
+  "unrelated_full_suite_rerun_for_prose": false
+}

@@ -1,0 +1,36 @@
+{
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "8",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/archive-method-compatibility/run_checks.py",
+    "--label",
+    "py312"
+  ],
+  "compatibility_sha256": "a7634504a49a9ff0a9600f463666109e23c3c2863963d110f2b5df78b489d79f",
+  "declared_wall_timeout_seconds": 180,
+  "exit_code": 0,
+  "finished_utc": "2026-11-01T21:40:26.603536+00:00",
+  "label": "py312",
+  "log_sha256": "3322ee3b75048a061eb3cda7e746ec10cf1daed8f4a270b500deacba1fa5c432",
+  "owned_test_group_reaped": true,
+  "passed": true,
+  "selected_environment": {
+    "MKL_NUM_THREADS": "1",
+    "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/archive-method-compatibility/py312/matplotlib",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src:.",
+    "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/archive-method-compatibility/py312"
+  },
+  "started_utc": "2026-11-01T21:40:24.983285+00:00",
+  "timed_out": false,
+  "wall_seconds": 1.6202544580009999
+}

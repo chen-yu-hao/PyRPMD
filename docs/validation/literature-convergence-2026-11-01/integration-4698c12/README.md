@@ -187,6 +187,36 @@ skips only the rendering case if optional matplotlib is absent. All three
 selected environments provide matplotlib and execute all six water cases.
 The original physics, benchmark sources and running checkout remain unchanged.
 
+## Further completed software gates
+
+The [next additive gate](fifth-stage-compatibility/README.md) passes 135 new
+cases per interpreter: 43 complete-P256-analysis admissions, 85 methane
+efficiency cases and 7 analytic VACF–MSD identities. The subsequent
+[archive-method gate](archive-method-compatibility/README.md) passes 65 new
+cases, comprising the 28 original archive contracts and 37 explicit
+read-only anomaly-admission cases. All three selected Python versions have
+zero failures, errors or skips. The exact case-level union is **796 distinct
+passing identities per interpreter**; the earlier cases were not rerun by
+these additive gates. Imports, existing ABI products, recorded sources and
+dependencies are checked in each actual test process and a fresh child.
+
+Separately, the [corrected full-project Python 3.14 run](full-suite-36ec289-py314-v2/README.md)
+passes **7,285 primary cases**, with **145 skips** and **486 passing subtests**,
+zero failures or errors. It tests published head `36ec289` plus one validated
+synthetic wall-fixture correction, before the new additive source files were
+copied. Subtests are not counted as distinct primary test identities, and
+the full-suite count is not added to the overlapping method-case union.
+The [initial full-suite attempt](full-suite-36ec289-py314/README.md) remains
+preserved with all 17 failures and their environmental/fixture diagnoses.
+
+The test-only [wall-fixture correction](hch4-wall-fixture-supersession/README.md)
+isolates its CPU clock from the outer pytest process lifetime while preserving
+the real wall timeout, child draining and retry-refusal checks. All three
+interpreters execute it. Production resource accounting and original active
+physics sources are unchanged. Complete remote CI logs at head `36ec289`
+show that same unpatched fixture as the sole failed case in five jobs;
+those historical remote failures are retained and are not relabelled as passes.
+
 ## Documentation
 
 The changed English manual passes the strict Sphinx HTML build with

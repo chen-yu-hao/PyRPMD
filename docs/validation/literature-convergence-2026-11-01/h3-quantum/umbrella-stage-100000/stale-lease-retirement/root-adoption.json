@@ -1,0 +1,48 @@
+{
+  "action": "One Linux renameat2 RENAME_NOREPLACE of this exact completed lease; preserve bytes and identity. Never delete a checkpoint, owner byte or failure record.",
+  "adopted_by": "root, after actual session 57942 exit and independent complete-cohort lifecycle review",
+  "automatic_retry": false,
+  "before_metadata": {
+    "directory": {
+      "ctime_ns": 1793567758892825322,
+      "device": 27,
+      "inode": 530697,
+      "mode": 16877,
+      "mtime_ns": 1793558091123781806,
+      "size": 4096
+    },
+    "owner": {
+      "ctime_ns": 1793567758720821670,
+      "device": 27,
+      "inode": 530698,
+      "mode": 33152,
+      "mtime_ns": 1793558091123781806,
+      "size": 68
+    }
+  },
+  "cause_of_surviving_old_lease": "unexplained; no general filesystem-failure claim",
+  "created_before_action_utc": "2026-11-01T21:26:03.067761+00:00",
+  "exact_owner": {
+    "bytes": 68,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+    "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+  },
+  "exclusive_quarantine": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471",
+  "expected_effect": "The existing authorized metadata waiter 1094 may begin its one complete-cohort analysis. No second analyzer or new sampling is launched.",
+  "independent_review": {
+    "bytes": 8334,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/independent-review.json",
+    "sha256": "8147f3f39ddb126cf290a9c6c2699c03d7ba81486b2deaba1303b9c165c94672"
+  },
+  "root_no_new_writer_attestation": {
+    "PID_alone_used_as_proof": false,
+    "actual_57942_terminal_exit_observed": true,
+    "all_submitted_workers_drained": true,
+    "basis": "Root owns the completed launch and scheduling decisions. Exact eight-worker drain and terminal tool observation are bound by the independent review. No subsequent sampler launch is authorized or issued by root or delegated agents.",
+    "legacy_or_direct_sampler_writer_running_or_pending": false,
+    "new100000_or300000_coordinator_admitted": false
+  },
+  "schema": "pyrpmd.h3.umbrella100000-completed-lease-retirement-adoption.v1",
+  "scientific_inputs_changed": false,
+  "source_lease": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock"
+}

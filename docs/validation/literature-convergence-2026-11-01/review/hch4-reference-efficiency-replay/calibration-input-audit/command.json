@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/audit_calibration_inputs.py",
+    "--data",
+    "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1",
+    "--reference",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/geometries.json",
+    "--design",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+    "--physics",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/calibration-input-audit/audit.json"
+  ],
+  "source_sha256": "af21de340a1b25dc17f220c7e6e978b85a0f1fc67c0c3d4602400d6a4a486e8a",
+  "PES_calls": 0,
+  "RNG_draws": 0
+}

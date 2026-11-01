@@ -1,0 +1,73 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "JUnit": {
+    "bytes": 387,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/pytest-py314.xml",
+    "sha256": "60648ec59dbf2410a4a1caed754eb54473c44474c7a0b7ecedfc07419dff4d35"
+  },
+  "actual_PES_evaluations": 0,
+  "after": {
+    "bytes": 23349,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_hch4_reference_pilot.py",
+    "sha256": "b19e275b7b6837584afeea8f17f8038ecf162be85f2bfa97447113ee1bd267e1"
+  },
+  "before": {
+    "bytes": 23126,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_hch4_reference_pilot.py",
+    "sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e"
+  },
+  "changed_function_ASTs": [
+    "test_wall_supervisor_retains_ledger_and_refuses_second_attempt"
+  ],
+  "command": [
+    "taskset",
+    "-c",
+    "8",
+    "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python",
+    "-c",
+    "import time,pytest; original=time.process_time; time.process_time=lambda: 1000.; status=pytest.main(['-q','tests/test_hch4_reference_pilot.py::test_wall_supervisor_retains_ledger_and_refuses_second_attempt','--basetemp=/workspace/scratch/a5e4820daedd/wall-fixture-aged-py314','--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/pytest-py314.xml']); time.process_time=original; raise SystemExit(status)"
+  ],
+  "created_utc": "2026-11-01T21:02:30.212014+00:00",
+  "dynamics_steps": 0,
+  "emulated_outer_process_CPU_age_seconds": 1000,
+  "exit_code": 0,
+  "fixture_CPU_age_seconds": 0.1,
+  "log": {
+    "bytes": 98,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/pytest-py314.log",
+    "sha256": "acbadd455418fe405791d2d792bd1c63190d32c09dc2792bcd7909f7c0699441"
+  },
+  "original_checkout_mutated": false,
+  "owned_child_drain_and_retry_assertions_retained": true,
+  "patch": {
+    "bytes": 803,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/fixture-only.patch",
+    "sha256": "b7345b112acd60634524c80b097b41530a211915298eba9cd2a5093931eb7661"
+  },
+  "previous_inventory_mutated": false,
+  "real_monotonic_timeout_retained": true,
+  "reason": "The wall-only test used the long-lived pytest process CPU age; production whole-invocation accounting is unchanged.",
+  "schema": "pyrpmd.hch4.wall-fixture.supersession.v1",
+  "source_head_before_fixture_patch": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "testsuites": [
+    {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "13d968332fed",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "1",
+      "time": "0.884",
+      "timestamp": "2026-11-01T16:02:28.983936-05:00"
+    }
+  ],
+  "threads": 1,
+  "unchanged_guards": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py": true,
+    "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_hch4_reference_pilot.py": true,
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/reference_pilot.py": true
+  },
+  "wall_seconds": 1.520213366005919
+}

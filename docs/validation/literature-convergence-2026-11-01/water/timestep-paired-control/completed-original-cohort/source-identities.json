@@ -1,0 +1,70 @@
+{
+  "archive_replay_helper": {
+    "bytes": 23485,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/archive_and_replay.py",
+    "sha256": "bdd4af495563cc73f3d4b1b1a2d91fef821ae5ba8b006e7690ebcdac46900d69"
+  },
+  "environment": {
+    "dependencies": {
+      "numpy": "2.5.4",
+      "openmm": "8.6.1",
+      "scipy": "1.18.1"
+    },
+    "machine": "x86_64",
+    "python": "3.12.14"
+  },
+  "frozen_sources": [
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/campaign.py",
+      "sha256": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/native_campaign_schedule.py",
+      "sha256": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/native_campaign_schedule_v2.py",
+      "sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/native_preparation_coordinator.py",
+      "sha256": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/native_preparation_extension.py",
+      "sha256": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/native_reference.py",
+      "sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/paired_timestep.py",
+      "sha256": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "benchmarks/water/qtip4pf.py",
+      "sha256": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61"
+    },
+    {
+      "git_commit": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+      "path": "src/pyrpmd/analysis/diffusion.py",
+      "sha256": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e"
+    },
+    {
+      "git_commit": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+      "path": "src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    }
+  ],
+  "source_code_included": false,
+  "third_party_code_included": false
+}

@@ -1,0 +1,188 @@
+{
+  "CPU_hard_limit_seconds": 300,
+  "CPU_seconds": 29.731581,
+  "Git_reader_CPU_seconds": 0.04570199999999999,
+  "PES_evaluations": 0,
+  "actual_extraction_root": "/workspace/scratch/a5e4820daedd/water-raw-archive-replay-2026-11-01/extracted/pyrpmd-water-classical-eight-chain-2026-11-01",
+  "actual_imported_sources": {
+    "benchmarks.water.analyze_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/analyze_campaign.py",
+      "sha256": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e"
+    },
+    "benchmarks.water.analyze_native": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/analyze_native.py",
+      "sha256": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718"
+    },
+    "benchmarks.water.campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/campaign.py",
+      "sha256": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639"
+    },
+    "benchmarks.water.native_reference": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+      "sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2"
+    },
+    "pyrpmd.analysis.diffusion": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/diffusion.py",
+      "sha256": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e"
+    },
+    "pyrpmd.constants": {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    }
+  },
+  "affinity": [
+    5
+  ],
+  "all_checks_passed": true,
+  "all_physical_statistical_and_gate_fields_exactly_equal": true,
+  "archive": {
+    "all_members_stream_verified_against_SHA256": true,
+    "bytes": 1476697324,
+    "members": 1685,
+    "name": "pyrpmd-water-classical-eight-chain-2026-11-01-raw.tar.gz",
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-water-classical-eight-chain-2026-11-01-raw.tar.gz",
+    "raw_data_only": true,
+    "sha256": "b3dc0faf5ddb84d06182ebf788edc73dfa1a0ec674069f01e61eaa62918d21af",
+    "top_level_directory": "pyrpmd-water-classical-eight-chain-2026-11-01",
+    "uploaded": false
+  },
+  "completed_utc": "2026-11-01T21:02:38.578607+00:00",
+  "engine_creation_attempts": 0,
+  "extracted_files_verified_by_checksums": 1684,
+  "extracted_members": 1685,
+  "nice": 10,
+  "only_excluded_from_JSON_field_comparison": "artifacts container hashes, independently verified as identical curve arrays below",
+  "original_artifacts": {
+    "curves.npz": {
+      "sha256": "1555714decf9bf34b73463d05283ada6a8c5aa875798ca8834e18eb65f2e17f2"
+    }
+  },
+  "original_raw_access_attempts": [],
+  "original_report_sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+  "peak_RSS_KiB": 198192,
+  "physical_steps": 0,
+  "read_audit_sha256": "19215b0c05d63e55a90ca1aeab0398acfcd3627d863883ffce9c69b345fbdce2",
+  "replay_artifacts": {
+    "curves.npz": {
+      "sha256": "1555714decf9bf34b73463d05283ada6a8c5aa875798ca8834e18eb65f2e17f2"
+    }
+  },
+  "replay_report_sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+  "schema": "pyrpmd.water-original-archive-extraction-replay.v1",
+  "source_guards_unchanged": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/analyze_campaign.py": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-cohort-archive-replay/replay.py": "fe688ac3b71058711027a41550d52bb9e334745c1b442079e564389c91872275",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "source_reconstruction": [
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+      "input": "protocol.json",
+      "sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/checkpoint-contract-v2.json",
+      "input": "checkpoint-contract-v2.json",
+      "sha256": "3e05f3ecb1207673ea1cc3c375ac341fc47ac806a2ccbc0f8936ce1dacdbff16",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/paired-equivalence-preregistration.json",
+      "input": "paired-equivalence-preregistration.json",
+      "sha256": "39f528922e6ff8c0e742c9e39e7bcbc0a3964c03dcc83dd00264cef812ef8348",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1101.json",
+      "input": "configs/classical-seed-1101.json",
+      "sha256": "123f84b208215fbc6afc2f05b02f3d9ecd53a7ad2cc889ef13927113fca21d21",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1102.json",
+      "input": "configs/classical-seed-1102.json",
+      "sha256": "5e060bfbf3df471e99c2ca500521f2c23e308fa2c31f01977651dfb3970c7344",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1103.json",
+      "input": "configs/classical-seed-1103.json",
+      "sha256": "2fd50d0601b57b82837dfbc57199312f839dd7b0dfe0edd70fee3d64ac351c21",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1104.json",
+      "input": "configs/classical-seed-1104.json",
+      "sha256": "7ca1b00e7c6ff3515808beaf848f8f8ad3ff005ea9563b424d820a48e8a8246a",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1105.json",
+      "input": "configs/classical-seed-1105.json",
+      "sha256": "2282a9133e1575ec2a2989278a8cac0e50b490e7476b69480719d47b36438b2f",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1106.json",
+      "input": "configs/classical-seed-1106.json",
+      "sha256": "178aacaa81fa8887f623bee9084c3b43bd81b4f7ed7d0adb5a41899d467cc338",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1107.json",
+      "input": "configs/classical-seed-1107.json",
+      "sha256": "8e4148e80e4f3b976e21cf755c28d6c175b789f71994c112ffa90cd6e9a54653",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": true,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1108.json",
+      "input": "configs/classical-seed-1108.json",
+      "sha256": "6137814f75564a6687c87f36bb8b2e30b05495ee2d0b2e6a1404edc4b33ffe57",
+      "source_patch_reconstructed_outside_archive": false
+    },
+    {
+      "existing_extracted_payload_used": false,
+      "git_commit": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+      "git_path": "docs/validation/literature-convergence-2026-11-01/water/checkpoint-contract-v2.patch",
+      "input": "checkpoint-contract-v2.patch",
+      "sha256": "81f1f008131a07cebda1796d7c1cbcca930b7923d31c4cbecb7827d360c8d365",
+      "source_patch_reconstructed_outside_archive": true
+    }
+  ],
+  "threads": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1"
+  },
+  "wall_limit_seconds": 600,
+  "wall_seconds": 31.635716220000177,
+  "whole_report_byte_identical": true
+}
