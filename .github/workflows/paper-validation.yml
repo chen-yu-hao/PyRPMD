@@ -1,0 +1,32 @@
+name: Paper-level nonadiabatic validation pilot
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'benchmarks/paper_validation/**'
+      - '.github/workflows/paper-validation.yml'
+permissions:
+  contents: read
+concurrency:
+  group: paper-validation-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  tully-sac-p10:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e .
+      - name: Run original paper quantitative Tully SAC pilot
+        run: |
+          python benchmarks/paper_validation/tully_sac_pilot.py --n 48 --dt 8 --seed 731 --output validation_sac_p10.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tully-sac-p10-trajectory-data
+          path: validation_sac_p10.json
