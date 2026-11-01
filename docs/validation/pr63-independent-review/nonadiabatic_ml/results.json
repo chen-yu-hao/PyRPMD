@@ -1,0 +1,294 @@
+{
+  "source_commit_under_review": "3faac3aa42b5424b2711367608e0138c82f62e0a",
+  "seed": 624918,
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "representation_equivalence": [
+    {
+      "beads": 1,
+      "complex_gauge": false,
+      "dt": 0.04,
+      "coordinate_error": 1.942890293094024e-16,
+      "momentum_error": 1.3877787807814457e-15,
+      "mapping_error": 4.534364091501738e-15,
+      "energy_error": 2.220446049250313e-15
+    },
+    {
+      "beads": 1,
+      "complex_gauge": false,
+      "dt": 0.02,
+      "coordinate_error": 2.7755575615628914e-16,
+      "momentum_error": 1.5543122344752192e-15,
+      "mapping_error": 1.2287917140018453e-14,
+      "energy_error": 1.942890293094024e-14
+    },
+    {
+      "beads": 1,
+      "complex_gauge": false,
+      "dt": 0.01,
+      "coordinate_error": 1.6653345369377348e-16,
+      "momentum_error": 1.4432899320127035e-15,
+      "mapping_error": 9.983522749106562e-15,
+      "energy_error": 1.6542323066914832e-14
+    },
+    {
+      "beads": 1,
+      "complex_gauge": true,
+      "dt": 0.04,
+      "coordinate_error": 2.914335439641036e-16,
+      "momentum_error": 1.9984014443252818e-15,
+      "mapping_error": 1.0955825715574093e-14,
+      "energy_error": 1.1102230246251565e-14
+    },
+    {
+      "beads": 1,
+      "complex_gauge": true,
+      "dt": 0.02,
+      "coordinate_error": 8.326672684688674e-17,
+      "momentum_error": 8.881784197001252e-16,
+      "mapping_error": 5.691449808321056e-15,
+      "energy_error": 3.552713678800501e-15
+    },
+    {
+      "beads": 1,
+      "complex_gauge": true,
+      "dt": 0.01,
+      "coordinate_error": 6.938893903907228e-17,
+      "momentum_error": 7.216449660063518e-16,
+      "mapping_error": 5.959374814064025e-15,
+      "energy_error": 1.0769163338864018e-14
+    },
+    {
+      "beads": 4,
+      "complex_gauge": false,
+      "dt": 0.04,
+      "coordinate_error": 1.6653345369377348e-16,
+      "momentum_error": 9.43689570931383e-16,
+      "mapping_error": 6.987352464431302e-15,
+      "energy_error": 7.327471962526033e-15
+    },
+    {
+      "beads": 4,
+      "complex_gauge": false,
+      "dt": 0.02,
+      "coordinate_error": 2.220446049250313e-16,
+      "momentum_error": 9.992007221626409e-16,
+      "mapping_error": 1.485211199198368e-14,
+      "energy_error": 1.687538997430238e-14
+    },
+    {
+      "beads": 4,
+      "complex_gauge": false,
+      "dt": 0.01,
+      "coordinate_error": 1.27675647831893e-15,
+      "momentum_error": 4.6629367034256575e-15,
+      "mapping_error": 1.7899054028995038e-14,
+      "energy_error": 1.9539925233402755e-14
+    },
+    {
+      "beads": 4,
+      "complex_gauge": true,
+      "dt": 0.04,
+      "coordinate_error": 2.7755575615628914e-16,
+      "momentum_error": 7.771561172376096e-16,
+      "mapping_error": 6.702842213767638e-15,
+      "energy_error": 1.2434497875801753e-14
+    },
+    {
+      "beads": 4,
+      "complex_gauge": true,
+      "dt": 0.02,
+      "coordinate_error": 3.452099717193846e-16,
+      "momentum_error": 2.3314683517128287e-15,
+      "mapping_error": 2.2239582549658126e-14,
+      "energy_error": 1.6986412276764895e-14
+    },
+    {
+      "beads": 4,
+      "complex_gauge": true,
+      "dt": 0.01,
+      "coordinate_error": 4.996003610813204e-16,
+      "momentum_error": 3.774758283725532e-15,
+      "mapping_error": 2.0298569199779818e-14,
+      "energy_error": 1.8207657603852567e-14
+    }
+  ],
+  "prescribed_path_electronic_convergence": {
+    "reference_tolerance_change": 2.8428227448569777e-14,
+    "rows": [
+      {
+        "dt": 0.4,
+        "coefficient_error": 0.0017449755720049139,
+        "maximum_path_error": 0.0019934232617569844,
+        "norm_error": 3.552713678800501e-15
+      },
+      {
+        "dt": 0.2,
+        "coefficient_error": 0.0004354546375215534,
+        "maximum_path_error": 0.0004974798315665719,
+        "norm_error": 1.0658141036401503e-14,
+        "observed_order": 2.002612497871234
+      },
+      {
+        "dt": 0.1,
+        "coefficient_error": 0.00010881458430505357,
+        "maximum_path_error": 0.00012445320673812674,
+        "norm_error": 2.55351295663786e-14,
+        "observed_order": 2.0006505047800602
+      },
+      {
+        "dt": 0.05,
+        "coefficient_error": 2.72005827909984e-05,
+        "maximum_path_error": 3.110992799721461e-05,
+        "norm_error": 2.3092638912203256e-14,
+        "observed_order": 2.0001624648141263
+      },
+      {
+        "dt": 0.025,
+        "coefficient_error": 6.799954280493964e-06,
+        "maximum_path_error": 7.77741013820286e-06,
+        "norm_error": 7.37188088351104e-14,
+        "observed_order": 2.000040610984611
+      }
+    ]
+  },
+  "mash_exact_event_comparison": {
+    "crossing_time": 1.1291738028986542,
+    "final_time": 2.2583476057973084,
+    "exact_position": 1.8433260211694116,
+    "outgoing_momentum": 0.6324555320336759,
+    "position_convergence_order": 0.9999999999988664,
+    "rows": [
+      {
+        "dt": 0.2509275117552565,
+        "position_error": 0.04611350940309977,
+        "exact_endpoint_delay_prediction": 0.04611350940309965,
+        "coefficient_error": 0.03227615113718314,
+        "energy_error": 0.0,
+        "hops": 1
+      },
+      {
+        "dt": 0.13284397681160637,
+        "position_error": 0.024413034389875188,
+        "exact_endpoint_delay_prediction": 0.02441303438987628,
+        "coefficient_error": 0.017088633454682273,
+        "energy_error": 0.0,
+        "hops": 1
+      },
+      {
+        "dt": 0.06843477593325177,
+        "position_error": 0.012576411655390807,
+        "exact_endpoint_delay_prediction": 0.012576411655390812,
+        "coefficient_error": 0.00880342107975404,
+        "energy_error": 0.0,
+        "hops": 1
+      },
+      {
+        "dt": 0.03474380931995859,
+        "position_error": 0.00638494745581597,
+        "exact_endpoint_delay_prediction": 0.006384947455813797,
+        "coefficient_error": 0.004469454441001157,
+        "energy_error": 0.0,
+        "hops": 1
+      },
+      {
+        "dt": 0.017506570587576036,
+        "position_error": 0.003217221586260699,
+        "exact_endpoint_delay_prediction": 0.003217221586262766,
+        "coefficient_error": 0.0022520539874263646,
+        "energy_error": 0.0,
+        "hops": 1
+      },
+      {
+        "dt": 0.008787344769639332,
+        "position_error": 0.0016148699791058707,
+        "exact_endpoint_delay_prediction": 0.0016148699790968747,
+        "coefficient_error": 0.0011304088433727222,
+        "energy_error": 0.0,
+        "hops": 1
+      }
+    ],
+    "interpretation": "Documented endpoint MASH has first-order switched-trajectory error; energy conservation alone does not certify accuracy."
+  },
+  "ml_and_rpc": {
+    "rpc_rows": [
+      {
+        "beads": 4,
+        "contracted_beads": 1,
+        "finite_difference_force_error": 1.148475203827104e-10,
+        "difference_from_full_force": 0.41925233139916274
+      },
+      {
+        "beads": 4,
+        "contracted_beads": 3,
+        "finite_difference_force_error": 1.519786518855426e-10,
+        "difference_from_full_force": 0.14598466568068935
+      },
+      {
+        "beads": 4,
+        "contracted_beads": 4,
+        "finite_difference_force_error": 1.4112049723236098e-10,
+        "difference_from_full_force": 0.0
+      },
+      {
+        "beads": 7,
+        "contracted_beads": 1,
+        "finite_difference_force_error": 1.8571694182512033e-10,
+        "difference_from_full_force": 0.1761100329049049
+      },
+      {
+        "beads": 7,
+        "contracted_beads": 3,
+        "finite_difference_force_error": 1.6388682078094519e-10,
+        "difference_from_full_force": 0.18322990645311277
+      },
+      {
+        "beads": 7,
+        "contracted_beads": 7,
+        "finite_difference_force_error": 1.1675138633648885e-10,
+        "difference_from_full_force": 0.0
+      },
+      {
+        "beads": 8,
+        "contracted_beads": 1,
+        "finite_difference_force_error": 2.0121726507227322e-10,
+        "difference_from_full_force": 0.2842058978973264
+      },
+      {
+        "beads": 8,
+        "contracted_beads": 3,
+        "finite_difference_force_error": 1.400278226704188e-10,
+        "difference_from_full_force": 0.24061525164179387
+      },
+      {
+        "beads": 8,
+        "contracted_beads": 8,
+        "finite_difference_force_error": 1.177072883606911e-10,
+        "difference_from_full_force": 0.0
+      }
+    ],
+    "common_bias_witness": {
+      "force_disagreement": 0.0,
+      "absolute_force_error": 0.96,
+      "interpretation": "Committee disagreement is not a calibrated error bound."
+    }
+  },
+  "limitations": [
+    "Analytic electronic providers, not quantum-chemistry software.",
+    "Representation equivalence shares MInt, not an independent physical accuracy claim.",
+    "Electronic-path ODE holds the nuclear path fixed and excludes hopping errors.",
+    "RPC tests the contracted Hamiltonian derivative, not contraction accuracy.",
+    "Single-event MASH comparison is deterministic, not a population ensemble or rate.",
+    "No new many-trajectory MASH rate or molecular benchmark is claimed."
+  ],
+  "elapsed_seconds": 3.8764319449983304,
+  "source_sha256": {
+    "docs/validation/pr63-independent-review/nonadiabatic_ml_experiments.py": "4061a77b16293e78826621feac99c592c6562964e273e7646b5a066c58ad189c",
+    "src/pyrpmd/adiabatic.py": "c0e8df840173416c3af3b71de100e718903df5905a27d45190850b02f09379d2",
+    "src/pyrpmd/nonadiabatic.py": "68bc1c565ee795a640bcada4f21baff4083472594ad4b8eb620f62d85e9a94a6",
+    "src/pyrpmd/mash.py": "40092556c6cbfe4c6929a780ddd601302b93fc112c43766bff3b922142bcd1d1",
+    "src/pyrpmd/potentials/contraction.py": "0bdce807c94c4e628bcb2053e1446097e154e560d887267b311ce71b45dd9a17",
+    "src/pyrpmd/potentials/lifecycle.py": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2"
+  }
+}

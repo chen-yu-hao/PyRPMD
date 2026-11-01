@@ -36,7 +36,8 @@ def _fields(value, allowed, label):
 
 
 def _positive(value, label):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, float, np.number)):
+    if (isinstance(value, (bool, np.bool_))
+            or not isinstance(value, (int, float, np.number)) or np.iscomplexobj(value)):
         raise ValueError(f"{label} must be a positive finite number in atomic units")
     value = float(value)
     if not np.isfinite(value) or value <= 0:

@@ -1,0 +1,6 @@
+deterministic checks completed
+RETIS {"seed": 638361, "samples": 1200, "burn_in": 300, "dt": 0.02, "probabilities": [0.6041666666666666, 0.6316666666666667, 0.915], "product": 0.3491932291666667, "length_rejections": 0, "swaps": [412, 464], "attempts": [763, 737], "seconds": 170.83497469600115}
+RETIS {"seed": 638362, "samples": 1200, "burn_in": 300, "dt": 0.02, "probabilities": [0.5466666666666666, 0.65, 0.915], "product": 0.32513000000000003, "length_rejections": 0, "swaps": [417, 478], "attempts": [750, 750], "seconds": 172.78212065999833}
+RETIS {"seed": 638363, "samples": 1200, "burn_in": 300, "dt": 0.02, "probabilities": [0.5816666666666667, 0.6475, 0.9075], "product": 0.34179096875, "length_rejections": 0, "swaps": [412, 516], "attempts": [721, 779], "seconds": 134.225393212997}
+RETIS {"seed": 638364, "samples": 1200, "burn_in": 300, "dt": 0.02, "probabilities": [0.5375, 0.5908333333333333, 0.9216666666666666], "product": 0.2926963715277778, "length_rejections": 0, "swaps": [386, 465], "attempts": [744, 756], "seconds": 97.03200526099681}
+/workspace/scratch/276eb7a1796a/PyRPMD/docs/validation/pr63-independent-review/sampling_results_dt0.02.json

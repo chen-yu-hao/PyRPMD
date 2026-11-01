@@ -1,0 +1,9 @@
+installed pyrpmd pyrpmd/__init__.py
+installed pyrpmd._native pyrpmd/_native.cpython-312-x86_64-linux-gnu.so
+installed pyrpmd._thermal pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so
+installed pyrpmd.replica_exchange pyrpmd/replica_exchange.py
+installed pyrpmd.workflows.spectroscopy pyrpmd/workflows/spectroscopy.py
+installed pyrpmd.workflows.nonadiabatic_rate pyrpmd/workflows/nonadiabatic_rate.py
+........................................................................ [ 52%]
+................................................................         [100%]
+136 passed in 3.00s

@@ -232,6 +232,20 @@ frequency axes, spectral arrays and conventions. Frequency axes in Hz/cm⁻¹ do
 not silently change the underlying spectral density measure. Per-replica
 checkpoints include state, RNG and the complete recorded trace prefix. Offline
 reanalysis uses the saved traces without loading a PES or property model.
+The trace container records the temperature, dynamics method and parameters,
+bead count, seed, system, original model specifications and source-file hashes.
+Reanalysis rejects changed trajectory physics, including a changed temperature
+in the saved input, while allowing spectral windows, normalization, polarization
+components and the requested spectra to change. It preserves the raw trace file
+byte for byte, including properties unused by the new analysis, and retains the
+original model provenance even if those models are no longer installed.
+
+Trace containers use `PyRPMD.spectroscopy-traces.v2`. Earlier v1 traces have no
+temperature/system identity and cannot safely authenticate an offline analysis.
+Resume the original run with its authenticated per-replica checkpoints and
+unchanged model files to regenerate v2 traces; completed replicas require no new
+propagation. Missing identity is never inferred from array shape or a matching
+sampling interval.
 
 ## f-CMD fitting and QCMD/h-CMD boundary
 

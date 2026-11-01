@@ -1,0 +1,58 @@
+........................................................................ [ 20%]
+........................................................................ [ 41%]
+........................................................................ [ 62%]
+.......F............................................................. [ 82%]
+..............................................................           [100%]
+=================================== FAILURES ===================================
+________________________ SocketTests.test_ipi_protocol _________________________
+
+self = <test_potentials.SocketTests testMethod=test_ipi_protocol>
+
+    def test_ipi_protocol(self):
+>       pes = IPIPotential(port=0, timeout=5)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_potentials.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError
+=============================== warnings summary ===============================
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/276eb7a1796a/.venv/lib/python3.12/site-packages/torch/jit/_trace.py:1006: FutureWarning: `torch.jit.trace` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/276eb7a1796a/.venv/lib/python3.12/site-packages/torch/jit/_trace.py:1145: FutureWarning: `torch.jit.trace_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/276eb7a1796a/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_potentials.py::SocketTests::test_ipi_protocol - PermissionE...
+1 failed, 346 passed, 3 warnings, 3 subtests passed in 59.78s

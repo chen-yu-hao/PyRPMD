@@ -177,6 +177,18 @@ resolved hemisphere crossings within one step, and the timestep must converge
 both the electronic motion and crossing dynamics. It does not implement the
 reversible/event-localized algorithms of
 [Geuther, Asnaashari and Richardson, JCTC 21, 2179 (2025)](https://doi.org/10.1021/acs.jctc.4c01684).
+
+The [independent event comparison](https://github.com/chen-yu-hao/PyRPMD/blob/codex/tier2-review-fixes-20261101/docs/validation/pr63-independent-review/nonadiabatic_ml_report.md)
+quantifies this limitation with constant adiabatic energies, a constant NAC,
+and an analytically located single crossing. Across six timestep refinements,
+the switched nuclear coordinate has **first-order error**, even though its
+energy is conserved to the reported precision at every timestep. The error is
+exactly the displacement caused by delaying the hop to the step endpoint.
+The separate electronic propagator converges at second order on a prescribed
+smooth nuclear path; that result does not establish second-order accuracy of
+the complete trajectory across a hop. Production studies must therefore check
+timestep dependence of populations and crossing observables directly.
+
 `P=1` is the primary two-state implementation. `P>1` uses an explicitly
 experimental centroid extension with ring-energy-conserving rescaling; it is
 not advertised as a validated implementation of a particular published

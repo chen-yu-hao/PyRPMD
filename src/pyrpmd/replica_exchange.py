@@ -14,6 +14,10 @@ import numpy as np
 
 from .dynamics import Dynamics, State
 from .bias import CompositeBias
+from .potentials.cache import StepEvaluationCache
+from .potentials.contraction import DifferencePotential, SplitPotential
+from .potentials.lifecycle import CommitteePotential, DeltaLearningPotential
+from .potentials.python import PythonPotential
 
 
 def _integer(value, name, minimum=0):
@@ -24,18 +28,40 @@ def _integer(value, name, minimum=0):
 
 
 def _static(obj, _ancestors=frozenset()):
+    if id(obj) in _ancestors:
+        raise ValueError("replica exchange requires an acyclic static composition")
+    # Composite providers advertise their own execution contract. Inspect the
+    # borrowed components too: a member may be replaced or marked dynamic after
+    # construction, and four energy evaluations no longer define a static
+    # Metropolis ratio in that case. Do this before any provider is called.
+    if isinstance(obj, CompositeBias):
+        children = obj.biases
+    elif isinstance(obj, CommitteePotential):
+        children = obj.members
+    elif isinstance(obj, DeltaLearningPotential):
+        children = (obj.reference, obj.correction)
+    elif isinstance(obj, DifferencePotential):
+        children = (obj.target, obj.reference)
+    elif isinstance(obj, SplitPotential):
+        children = (obj.fast, obj.slow)
+    elif isinstance(obj, PythonPotential):
+        children = (obj.obj,)
+    elif isinstance(obj, StepEvaluationCache):
+        children = (obj._provider,)
+    else:
+        children = ()
+    # A cache forwards attribute access. Traverse known composition edges first
+    # so a cache cycle cannot recurse through metadata before cycle detection.
+    for child in children:
+        _static(child, _ancestors | {id(obj)})
     metadata = getattr(obj, "metadata", {})
     capabilities = metadata.get("capabilities", {}) if isinstance(metadata, dict) else {}
     capabilities = capabilities if isinstance(capabilities, dict) else {}
-    if (any(getattr(obj, key, False) for key in ("history_dependent", "time_dependent", "stateful"))
-            or isinstance(metadata, dict) and metadata.get("stateful", False)
-            or capabilities.get("stateful", False)):
+    markers = ("history_dependent", "time_dependent", "stateful")
+    if any(getattr(obj, key, False)
+           or isinstance(metadata, dict) and metadata.get(key, False)
+           or capabilities.get(key, False) for key in markers):
         raise ValueError("replica exchange requires time-independent Hamiltonians and biases")
-    if isinstance(obj, CompositeBias):
-        if id(obj) in _ancestors:
-            raise ValueError("replica exchange requires an acyclic static bias composition")
-        for child in obj.biases:
-            _static(child, _ancestors | {id(obj)})
 
 
 def reduced_configurational_energy(dynamics, q, bias=None):
@@ -147,6 +173,12 @@ class ReplicaExchange:
     def advance(self, steps, *, gamma_centroid=1.0):
         """Thermostat all slots, then exchange; roll back the full event on error."""
         steps = _integer(steps, "steps", 1)
+        # Reject a changed Hamiltonian across every slot before the first MD
+        # call: restoring q/p and RNG cannot undo a provider's external history.
+        for dyn, bias in zip(self.dynamics, self.biases):
+            _static(dyn.potential)
+            if bias is not None:
+                _static(bias)
         saved_states = [state.copy() for state in self.states]
         saved_rngs = [copy.deepcopy(dyn.rng.bit_generator.state) for dyn in self.dynamics]
         saved_stats = [copy.deepcopy(dyn.propagation_stats) for dyn in self.dynamics]

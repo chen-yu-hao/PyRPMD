@@ -1,0 +1,13 @@
+{
+  "source_sha256": "0b281429e79360c42f2cc7e79e484557787a01ec8f2b162b29af087aa9f8fd52",
+  "driver_sha256": "ece6064e3ddfa43e1b827783290821f387ba12e55070c3598f51018e35af6cc7",
+  "observable": "unnormalized_relative_ir",
+  "changed_temperature": {
+    "rejected": true,
+    "error": "saved spectroscopy trajectory physics or system identity changed"
+  },
+  "ir_only_reanalysis": {
+    "raw_bytes_preserved": true,
+    "polarizability_retained": true
+  }
+}

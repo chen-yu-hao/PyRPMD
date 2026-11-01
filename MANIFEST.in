@@ -30,6 +30,7 @@ recursive-include benchmarks/published_rates *.py *.json *.md
 include benchmarks/efficiency/native-ensembles-summary.json
 recursive-include benchmarks/analysis_reports *.py *.md
 recursive-include benchmarks/tier2_literature *.py *.md
+recursive-include docs/validation/pr63-independent-review *.pt
 recursive-include docs/validation/tier2-literature-2026-11-01 *.svg *.jsonl *.pt *.py.gz
 # Exclude local restart caches; explicitly retain unique raw sampling evidence.
 recursive-exclude docs/validation/tier2-literature-2026-11-01 *.npz

@@ -24,7 +24,7 @@ from ..potentials import make_potential
 from ..potentials.python import import_object
 from ..properties import CallablePropertyModel, TorchScriptPropertyModel, validate_property_result
 from ..units import parse_quantity
-from ..io import referenced_files
+from ..io import fingerprint, jsonable, referenced_files
 from .fes import _fingerprint, write_json
 
 
@@ -37,6 +37,7 @@ PROPERTY_FIELDS = {
     "position_unit", "dipole_unit", "polarizability_unit",
 }
 KIND = "PyRPMD.spectroscopy.v1"
+TRACE_KIND = "PyRPMD.spectroscopy-traces.v2"
 
 
 def resolve_spectroscopy(config, system):
@@ -347,16 +348,42 @@ def _sample_replica(config, system, output, replica, options):
             close()
 
 
-def _analyze(config, system, output, options, streams):
+def _trace_physics(config, options):
+    """Trajectory settings, independent of later spectral processing/model access."""
+    fields = ("method", "equilibration_steps", "production_steps", "sample_interval",
+              "replicas", "dt", "sampling_dt", "gamma_centroid")
+    settings = {key: options[key] for key in fields}
+    if options["method"] in ("pa-cmd", "trpmd"):
+        settings["friction_scale"] = options["friction_scale"]
+    if options["method"] == "pa-cmd":
+        settings["target_frequency"] = options["target_frequency"]
+    return {"spectroscopy_trajectory": settings, "beta": config["beta"],
+            "beads": config["beads"], "seed": int(config.get("seed", 0))}
+
+
+def _analyze(config, system, output, options, streams, *, trace_metadata=None):
     results = Path(output) / "results"
     results.mkdir(parents=True, exist_ok=True)
     traces = {key: np.stack([s[key] for s in streams]) for key in options["required_properties"]}
     dt = options["dt"] * options["sample_interval"]
     data_path = results / "spectroscopy-traces.npz"
-    atomic_savez(data_path, kind="PyRPMD.spectroscopy-traces.v1", **traces,
-                 sample_interval_au=dt, metadata=json.dumps({
-                     "estimator": "mean of per-bead property surface values",
-                     "method": options["method"], "axes": "replica,time,property_components"}))
+    if trace_metadata is None:
+        physics = _trace_physics(config, options)
+        trace_metadata = {
+            "estimator": "mean of per-bead property surface values",
+            "method": options["method"], "axes": "replica,time,property_components",
+            "physics_fingerprint": fingerprint(physics, system),
+            "trajectory_provenance": {
+                "settings": jsonable(physics), "system": jsonable(system.to_dict()),
+                "potential": jsonable(config["potential"]),
+                "properties": jsonable(config["properties"]),
+                "source_files": referenced_files(config),
+            },
+        }
+        atomic_savez(data_path, kind=TRACE_KIND, **traces,
+                     sample_interval_au=dt, metadata=json.dumps(trace_metadata))
+    # Reanalysis owns derived spectra only. In particular, an IR-only analysis
+    # must not overwrite the raw file and discard its polarizability traces.
     spectra = {}
     common = dict(normalize=options["normalize"])
     if "ir" in options["spectra"]:
@@ -392,6 +419,8 @@ def _analyze(config, system, output, options, streams):
         "production_steps": options["production_steps"],
         "production_centroid_thermostat": False, "absolute_intensity": False,
         "property_estimator": "bead-averaged total-system properties in laboratory axes",
+        "trajectory_provenance": trace_metadata["trajectory_provenance"],
+        "trace_physics_fingerprint": trace_metadata["physics_fingerprint"],
         "spectra": metadata, "files": files,
         "warnings": ["Timestep, bead, trajectory length and equilibrium sampling convergence are not certified.",
                      "Spectral intensities omit electromagnetic, system-size and experimental optical prefactors."],
@@ -422,7 +451,16 @@ def reanalyze_spectroscopy(config, system, output):
     """Reanalyze already saved averaged properties without loading PES/ML code."""
     options = resolve_spectroscopy(config, system)
     path = Path(output) / "results" / "spectroscopy-traces.npz"
-    with load_checkpoint(path, expected_kind="PyRPMD.spectroscopy-traces.v1", require_integrity=True) as data:
+    with load_checkpoint(path, require_integrity=True) as data:
+        if data.envelope.get("kind") == "PyRPMD.spectroscopy-traces.v1":
+            raise ValueError("legacy spectroscopy traces lack a physics identity; "
+                             "regenerate them by resuming the original authenticated checkpoints")
+        if data.envelope.get("kind") != TRACE_KIND:
+            raise ValueError("unsupported saved spectroscopy trace kind")
+        metadata = json.loads(str(data["metadata"]))
+        if (metadata.get("physics_fingerprint") != fingerprint(_trace_physics(config, options), system)
+                or not isinstance(metadata.get("trajectory_provenance"), dict)):
+            raise ValueError("saved spectroscopy trajectory physics or system identity changed")
         if float(data["sample_interval_au"]) != options["dt"] * options["sample_interval"]:
             raise ValueError("saved spectroscopy sampling interval differs from configuration")
         arrays = {key: np.asarray(data[key]) for key in options["required_properties"]}
@@ -432,4 +470,4 @@ def reanalyze_spectroscopy(config, system, output):
             if value.shape != (options["replicas"], expected_frames, *tail) or not np.isfinite(value).all():
                 raise ValueError("saved spectroscopy property shapes or values are invalid")
         streams = [{key: value[r].copy() for key, value in arrays.items()} for r in range(options["replicas"])]
-    return _analyze(config, system, output, options, streams)
+    return _analyze(config, system, output, options, streams, trace_metadata=metadata)
