@@ -1,0 +1,52 @@
+{
+  "schema": "pyrpmd.h3.quantum-equilibrium-archive-publishable.v1",
+  "scope": "New packaging metadata only; no changes to the frozen 243-file manifest. Raw NPZ and local archive are excluded from Git.",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/README.md",
+      "sha256": "8e0ba68532e61b128bcce7a1a48b3ed77f17e66c35601088217ca0c236afa49b",
+      "bytes": 10057
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/archive-provenance.json",
+      "sha256": "250ca0dee1f1d00f8b33da597005ae229d391601789410a2133057f43f35612c",
+      "bytes": 3569
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/member-inventory.json",
+      "sha256": "3d0ed87a1197b2b14cc769a572a2e486a5f939d041532e8280e1d6d14eae6b7b",
+      "bytes": 93147
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/package.log",
+      "sha256": "48a9a66b14fdce0238c477cbd38b385f2ccfc827754e6d3c37b3a9f85014cb98",
+      "bytes": 1856
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/package_archive.py",
+      "sha256": "e15ac94d2a02c41b7cd40d3c403846eca70ec9a92f0189351c729ac998b3d817",
+      "bytes": 25166
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/raw-data-index.json",
+      "sha256": "30e1c88d79ef711ac91163859b371f49aa0c4fcda82e6c9e0ce8ab83c927dac3",
+      "bytes": 80063
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/verification.json",
+      "sha256": "d9f748d62e9d5c4feeb3231ffa462f9b86546c407bc7cef7820acf0cf8e86ee4",
+      "bytes": 1421
+    }
+  ],
+  "file_count": 7,
+  "total_bytes": 215279,
+  "include_this_inventory_file": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/publishable-files.json",
+  "inventory_self_checksum_omitted": true,
+  "local_archive": {
+    "bytes": 83259073,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+    "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+  },
+  "external_upload_performed": false,
+  "frozen_243_file_inventory_SHA256": "f68456bddc3e340911ae91590507a2769ae0a17d67eba983325870b15ba87b68"
+}

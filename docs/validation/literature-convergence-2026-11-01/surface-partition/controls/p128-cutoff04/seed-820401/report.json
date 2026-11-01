@@ -1,0 +1,284 @@
+{
+  "schema": "pyrpmd.h3.surface-partition.v1",
+  "phase": "production",
+  "surface": "ts",
+  "seed": 820401,
+  "beads": 128,
+  "complete": true,
+  "completed_sweeps": 22000,
+  "production_samples_per_lambda": 20000,
+  "physical_converged": false,
+  "endpoint_snapshot_count": 0,
+  "endpoint_snapshot_interval": 0,
+  "endpoint_snapshot_source": "static equilibrium Monte Carlo at lambda=1; normalized total COM analytically marginalized",
+  "endpoint_snapshot_channel": "r01=r12<=r02; equivalent channel and Maxwell momenta assigned only by separate child RNG",
+  "literature_reproduced": false,
+  "elapsed_this_call_seconds": 280.46070690800116,
+  "reference": {
+    "surface": "ts",
+    "radial_order": 192,
+    "angular_order": 96,
+    "centroid_domain_bohr": [
+      0.0,
+      8.0
+    ],
+    "classical_radial_domain_bohr": [
+      0.4,
+      8.0
+    ],
+    "log_reference_shape_integral": 165.82338788326732,
+    "log_classical_shape_integral": 165.82338788326732,
+    "log_reference_over_classical": 0.0,
+    "log_plateau_shape_integral": -1624.4443644789806,
+    "log_plateau_probability": -1790.2677523622478,
+    "plateau_radial_integration": "analytic r^5/5",
+    "reference_distribution_approximation": "Gauss-Legendre centroid quadrature; domain probability needs quadrature refinement"
+  },
+  "reference_domain": {
+    "method": "independent quadrature-centroid and exact normalized free-ring draws",
+    "draws": 131072,
+    "accepted": 131057,
+    "probability": 0.9998855590820312,
+    "log_probability": -0.000114447466830246,
+    "standard_error": 2.954682713304078e-05,
+    "binomial_CI95": [
+      0.999811254122753,
+      0.9999359469174708
+    ],
+    "seed": 820401,
+    "independent_from_chain": true,
+    "uncertainty_note": "Binomial interval only; reference quadrature is a separate deterministic convergence check."
+  },
+  "analysis": {
+    "log_quantum_classical_ratio": -2.1704712690450862,
+    "quantum_classical_ratio": 0.11412382121146428,
+    "normalization_log_reference_over_classical": 0.0,
+    "normalization_log_domain_probability": -0.000114447466830246,
+    "bar_edges": [
+      {
+        "delta_f": 0.08755313639490983,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.9984683975692688,
+        "equation_residual": 3.1650415621697903e-10,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.0,
+        "lambda_right": 0.015625
+      },
+      {
+        "delta_f": 0.2353123993217923,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.9917785121410497,
+        "equation_residual": 6.366462912410498e-10,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.015625,
+        "lambda_right": 0.0625
+      },
+      {
+        "delta_f": 0.33586997688559556,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.986545467606851,
+        "equation_residual": 0.0,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.0625,
+        "lambda_right": 0.140625
+      },
+      {
+        "delta_f": 0.3936033842619797,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.9817561728194468,
+        "equation_residual": 8.731149137020111e-11,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.140625,
+        "lambda_right": 0.25
+      },
+      {
+        "delta_f": 0.4114014919431602,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.9775687576839096,
+        "equation_residual": -1.8189894035458565e-12,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.25,
+        "lambda_right": 0.390625
+      },
+      {
+        "delta_f": 0.3858095802827213,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.9705430401502979,
+        "equation_residual": 0.0,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.390625,
+        "lambda_right": 0.5625
+      },
+      {
+        "delta_f": 0.29375174098513585,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.9563345739924054,
+        "equation_residual": -6.184563972055912e-10,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.5625,
+        "lambda_right": 0.765625
+      },
+      {
+        "delta_f": 0.027055111502961453,
+        "samples_left": 20000,
+        "samples_right": 20000,
+        "overlap_logistic": 0.9028882430356407,
+        "equation_residual": -1.8189894035458565e-12,
+        "uncertainty": "Independent-chain uncertainty required; correlated sweeps are not independent observations.",
+        "lambda_left": 0.765625,
+        "lambda_right": 1.0
+      }
+    ],
+    "minimum_BAR_overlap": 0.9028882430356407,
+    "mean_delta_energy_hartree": [
+      0.005517557339758896,
+      0.005141797582461553,
+      0.0044449471712784,
+      0.003766710888791799,
+      0.003108995119371417,
+      0.0024744474285650834,
+      0.0017910576118823143,
+      0.0009118143957939391,
+      -0.0009463529597293875
+    ],
+    "TI_trapezoid_log_ratio": -2.141452466172952,
+    "TI_simpson_log_ratio": -2.16255706425953,
+    "first_half_log_ratio": -2.1706674275226527,
+    "second_half_log_ratio": -2.1702412757333502,
+    "diagnostic_energy_effective_samples": [
+      10126.176632412456,
+      12594.881810697714,
+      12679.50317848463,
+      13263.556435268714,
+      11118.627926538247,
+      9879.578546321787,
+      7254.19523227142,
+      5212.586057823052,
+      929.5475806685208
+    ],
+    "uncertainty_unit": "Independent seed chain; halves and autocorrelation estimates are diagnostics only.",
+    "physical_converged": false,
+    "literature_reproduced": false
+  },
+  "move_names": [
+    "centroid_radius",
+    "centroid_angle_ratio",
+    "R_pcn",
+    "r_pcn"
+  ],
+  "acceptance_per_lambda": [
+    [
+      0.5996363636363636,
+      0.5956818181818182,
+      0.5987727272727272,
+      0.6055909090909091,
+      0.5974545454545455,
+      0.6021363636363637,
+      0.6051818181818182,
+      0.6004545454545455,
+      0.6034545454545455
+    ],
+    [
+      0.49327272727272725,
+      0.49077272727272725,
+      0.5016818181818182,
+      0.49327272727272725,
+      0.4965909090909091,
+      0.4945909090909091,
+      0.4974090909090909,
+      0.5118636363636364,
+      0.5283636363636364
+    ],
+    [
+      0.9998181818181818,
+      0.9833636363636363,
+      0.9395,
+      0.8755,
+      0.8024545454545454,
+      0.7372272727272727,
+      0.653,
+      0.5740909090909091,
+      0.4755
+    ],
+    [
+      0.9998181818181818,
+      0.9836363636363636,
+      0.9437272727272727,
+      0.8907727272727273,
+      0.827590909090909,
+      0.7527272727272727,
+      0.6683636363636364,
+      0.5667272727272727,
+      0.43936363636363635
+    ]
+  ],
+  "swap_attempts": [
+    11003,
+    10997,
+    11003,
+    10997,
+    11003,
+    10997,
+    11003,
+    10997
+  ],
+  "swap_accepts": [
+    10619,
+    10012,
+    9662,
+    9456,
+    9181,
+    8942,
+    8499,
+    7235
+  ],
+  "endpoint_traversals_per_walker": [
+    [
+      120,
+      95,
+      125,
+      123,
+      112,
+      127,
+      120,
+      106,
+      118
+    ],
+    [
+      120,
+      96,
+      125,
+      124,
+      112,
+      127,
+      119,
+      106,
+      117
+    ]
+  ],
+  "diagnostic_columns": [
+    "centroid_radius_bohr",
+    "angle_ratio",
+    "reference_energy_hartree",
+    "mean_bead_energy_hartree",
+    "minimum_bead_pair_bohr",
+    "R_mean_coordinate_variance_bohr2",
+    "r_mean_coordinate_variance_bohr2",
+    "walker_lineage"
+  ],
+  "checkpoint_sha256": "397f1868f0d3863d1ecf6fe47b536261fc9066a189cc2cf5cf7e6f02f9fe0735",
+  "source_unchanged": true,
+  "created_utc": "2026-11-01T17:05:41.630867+00:00",
+  "limitations": [
+    "Finite-P primitive equilibrium partition, not a recrossing coefficient or a full RPMD rate.",
+    "The reactant is the asymptotic isolated diatom with the declared 99-bohr spectator convention.",
+    "Centroid quadrature, bead-domain probability, independent-seed sampling and bead-number convergence require separate checks."
+  ]
+}

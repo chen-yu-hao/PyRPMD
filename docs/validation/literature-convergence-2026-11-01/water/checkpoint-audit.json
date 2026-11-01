@@ -1,0 +1,88 @@
+{
+  "platform": "CPU",
+  "read_only": true,
+  "runs": [
+    {
+      "continued_20_step_comparison": {
+        "interpretation": "CPU checkpoint continuation preserves the raw engine state; rebuilt force caches need not give bitwise identical later trajectories.",
+        "max_p_difference_au": 1.3531134919197996e-06,
+        "max_q_difference_bohr": 2.8967875209673366e-08
+      },
+      "historical_canonical_p_RMS_difference_au": 2.2619034232792106e-08,
+      "historical_canonical_p_max_difference_au": 1.8118151245971603e-07,
+      "historical_force_difference_inferred_max_kj_mol_nm": 0.0017395214896396283,
+      "historical_force_note": "Pre-save force inferred from canonical p and binary checkpoint half-step velocity; not a separately stored force measurement.",
+      "historical_kinetic_energy_difference_hartree": 4.149671433661677e-11,
+      "input_chunk": "chunk-000046.npz",
+      "input_chunk_sha256": "1317ad705cdc0265b86362bf2e6de3d5262cdedf0c26e680f9438d3d96ee70d8",
+      "input_manifest_sha256": "cdf07967c7a7419d7ee331da71d7d8132c2abe7f1728f44a235d9159e5e60bbb",
+      "input_source_sha256": {
+        "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+        "benchmarks/water/native_reference.py": "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2",
+        "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+        "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+      },
+      "measured_round_trip": {
+        "advance_before_checkpoint_steps": 10,
+        "after_virtual_site_residual_nm": 0.0,
+        "all_half_step_velocities_exact": true,
+        "all_positions_including_virtual_sites_exact": true,
+        "before_virtual_site_residual_nm": 0.0,
+        "canonical_p_delta_minus_force_conversion_max_au": 3.684481136667171e-15,
+        "canonical_p_max_difference_au": 1.8118151212664912e-07,
+        "force_RMS_difference_kj_mol_nm": 0.0001483882432137987,
+        "force_max_difference_kj_mol_nm": 0.0017395214845237206,
+        "force_relative_RMS_difference": 2.058083533339046e-07,
+        "physical_q_exact": true
+      },
+      "positions_exact_from_historical_canonical_q": true,
+      "run": "classical-1101",
+      "seed": 1101,
+      "state_time_ps": 47.0
+    },
+    {
+      "continued_20_step_comparison": {
+        "interpretation": "CPU checkpoint continuation preserves the raw engine state; rebuilt force caches need not give bitwise identical later trajectories.",
+        "max_p_difference_au": 1.4309941807066906e-06,
+        "max_q_difference_bohr": 4.125726960069187e-08
+      },
+      "historical_canonical_p_RMS_difference_au": 2.0642528550877985e-08,
+      "historical_canonical_p_max_difference_au": 1.1778420633268283e-07,
+      "historical_force_difference_inferred_max_kj_mol_nm": 0.0011308447268447708,
+      "historical_force_note": "Pre-save force inferred from canonical p and binary checkpoint half-step velocity; not a separately stored force measurement.",
+      "historical_kinetic_energy_difference_hartree": -8.416355554992207e-11,
+      "input_chunk": "chunk-000046.npz",
+      "input_chunk_sha256": "8b839d8257a5883d82a30ea3d8940f72560717136879812cf418a52d25a5b606",
+      "input_manifest_sha256": "65fd89597579a268c9682a012605d031bff017eafebe1a6d45c45ead95f0a662",
+      "input_source_sha256": {
+        "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+        "benchmarks/water/native_reference.py": "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2",
+        "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+        "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+      },
+      "measured_round_trip": {
+        "advance_before_checkpoint_steps": 10,
+        "after_virtual_site_residual_nm": 0.0,
+        "all_half_step_velocities_exact": true,
+        "all_positions_including_virtual_sites_exact": true,
+        "before_virtual_site_residual_nm": 0.0,
+        "canonical_p_delta_minus_force_conversion_max_au": 3.684481136667171e-15,
+        "canonical_p_max_difference_au": 9.995004290885845e-08,
+        "force_RMS_difference_kj_mol_nm": 0.00017031378990608036,
+        "force_max_difference_kj_mol_nm": 0.00095961914075815,
+        "force_relative_RMS_difference": 2.2383558444390058e-07,
+        "physical_q_exact": true
+      },
+      "positions_exact_from_historical_canonical_q": true,
+      "run": "classical-1102",
+      "seed": 1102,
+      "state_time_ps": 47.0
+    }
+  ],
+  "schema": "pyrpmd.water-native-checkpoint-audit.v1",
+  "source_sha256": {
+    "benchmarks/water/checkpoint_validation.py": "1fe0d08d779671e27c4da0a7c2918e0d3397d3bbfe32d38587bba20a6bb04a06",
+    "benchmarks/water/native_reference.py": "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2"
+  },
+  "threads": 1
+}

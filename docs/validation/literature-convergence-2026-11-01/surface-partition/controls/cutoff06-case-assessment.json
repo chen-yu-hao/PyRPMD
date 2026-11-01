@@ -1,0 +1,110 @@
+{
+  "schema": "pyrpmd.h3.completed-control-case-assessment.v1",
+  "created_utc": "2026-11-01T17:18:55.430837+00:00",
+  "phase": "all registered equilibrium controls complete",
+  "case": {
+    "name": "p128-cutoff06",
+    "beads": 128,
+    "minimum": 0.6,
+    "seeds": [
+      820601,
+      820603,
+      820607,
+      820609
+    ],
+    "completed_seed_results": [
+      {
+        "seed": 820601,
+        "log_TS_quantum_classical_ratio": -2.1844120057333347,
+        "minimum_BAR_overlap": 0.8985420182618195,
+        "minimum_energy_ESS": 1053.3806536991092,
+        "half_log_difference": 0.02101404730019052,
+        "checkpoint_sha256": "cbc1592d74c38e2518087b8f9d74d96de53b4216a65f438004c13dad51a81610",
+        "report_sha256": "8189636590b4f09868e834cc9c238524c931573badab799a0dd6ba75f8a88b0e"
+      },
+      {
+        "seed": 820603,
+        "log_TS_quantum_classical_ratio": -2.185434972420886,
+        "minimum_BAR_overlap": 0.9024090232554641,
+        "minimum_energy_ESS": 1142.8987479732784,
+        "half_log_difference": -0.0032407330628747566,
+        "checkpoint_sha256": "8d7ccdbe6ca01247854cc333cf42027bbacdb90dbc0bf1fd977726e0aa519e1f",
+        "report_sha256": "b864285e920eea2da376774ed639af2a8791afb6f954688934549bcfb3d06727"
+      },
+      {
+        "seed": 820607,
+        "log_TS_quantum_classical_ratio": -2.1948855645950998,
+        "minimum_BAR_overlap": 0.9043018301061886,
+        "minimum_energy_ESS": 993.496365253601,
+        "half_log_difference": 0.04937706355637106,
+        "checkpoint_sha256": "e724c0eea7e6fc5c7e1af6dbbb8122d760c3f053a186db6b03464a7e4f5bd35b",
+        "report_sha256": "76424096a75cf672dc69bbcd7d922ee5fb323be60eb4ddb8ae940d181167862b"
+      },
+      {
+        "seed": 820609,
+        "log_TS_quantum_classical_ratio": -2.1787410118600334,
+        "minimum_BAR_overlap": 0.9047681505684432,
+        "minimum_energy_ESS": 1174.79002100264,
+        "half_log_difference": 0.011230011265105144,
+        "checkpoint_sha256": "a405067505dc4b7c94b26ea9dfaf231376ccab14859537f6dde9e9a9451df6a6",
+        "report_sha256": "9aa170ce75602c8f8900f0e40d4a3dab6e2b1348a5277358545dcb84e71525c8"
+      }
+    ],
+    "complete": true,
+    "independent_seed_statistics": {
+      "seed_count": 4,
+      "mean": -11.383276740336061,
+      "standard_error": 0.003346862495416007,
+      "CI95": [
+        -11.39392795051889,
+        -11.372625530153233
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        -11.381820357417059,
+        -11.38284332410461,
+        -11.392293916278824,
+        -11.376149363543757
+      ]
+    },
+    "relative_QTST_comparison": {
+      "mean_log_difference": -0.015083370577926303,
+      "standard_error": 0.006831937496314634,
+      "Welch_degrees_of_freedom": 9.83138963983997,
+      "CI95_log_difference": [
+        -0.03034133779069465,
+        0.0001745966348420478
+      ],
+      "relative_point_difference": -0.014970186325173529,
+      "CI95_relative_difference": [
+        -0.029885659658308358,
+        0.00017461187772160248
+      ],
+      "equivalence_log_margin": 0.04879016416943204,
+      "CI95_wholly_within_margin": true,
+      "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+    },
+    "paired_seed_half_log_difference": {
+      "seed_count": 4,
+      "mean": 0.01959509726469799,
+      "standard_error": 0.011107162651234903,
+      "CI95": [
+        -0.01575285147690972,
+        0.0549430460063057
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        0.02101404730019052,
+        -0.0032407330628747566,
+        0.04937706355637106,
+        0.011230011265105144
+      ]
+    },
+    "classical_and_exact_reactant_log_offset": -9.197408351683723,
+    "seed_sampling_flags_passed": true
+  },
+  "protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "primary_parent_files_modified": false,
+  "algorithm_or_counts_changed_after_observation": false,
+  "interpretation": "The .6-versus-.5-bohr individual equilibrium equivalence test passes. The aggregate protocol remains false because the earlier coarse-P64 equivalence interval crosses its margin. No recrossing-domain equivalence is inferred."
+}

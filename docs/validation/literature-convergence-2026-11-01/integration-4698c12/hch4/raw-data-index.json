@@ -1,0 +1,50 @@
+{
+  "schema": "pyrpmd.hch4.integration-raw-index.v1",
+  "publish_in_git": false,
+  "required_by_tests_or_replay": false,
+  "note": "Three-step generated checkpoint outputs; the workflow probe regenerates fresh states and files. Retain locally, exclude from Git by default.",
+  "path_base": "integration repository root",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P1-window-105-native/checkpoints/window_00105_replica_0000.npz",
+      "sha256": "feec2e0e58484c02435df787238933c026e0acd98dbf2d90cbb18615f317c135",
+      "bytes": 4370
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P1-window-105-python/checkpoints/window_00105_replica_0000.npz",
+      "sha256": "38575e590f33a14d3f2e00f2328005c45e0e23fa3e266c067f109c902c40c445",
+      "bytes": 4362
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P1-window-5-native/checkpoints/window_00005_replica_0000.npz",
+      "sha256": "fbe8af9db2c38d880168a1421c43da517705feb48daea1a5b56a06e98ad3f994",
+      "bytes": 4361
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P1-window-5-python/checkpoints/window_00005_replica_0000.npz",
+      "sha256": "5f5a1a483bb7852de94184599b059b6049419e3604d5247008b01657f58030f1",
+      "bytes": 4357
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P128-window-105-native/checkpoints/window_00105_replica_0000.npz",
+      "sha256": "600351d84dae54979ea0b17337e942bba6d3c6473fd371f327c508c735ecaeaf",
+      "bytes": 39572
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P128-window-105-python/checkpoints/window_00105_replica_0000.npz",
+      "sha256": "c7b226b77675005c6878c656fbc28a909bf57bc905a872fe4bb848fe8c6da40e",
+      "bytes": 39581
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P128-window-5-native/checkpoints/window_00005_replica_0000.npz",
+      "sha256": "7b694bbd74fe10ff11ba93f7ed6432d9ff674e4e938ccc6c9d2f1cd630f27a04",
+      "bytes": 39502
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P128-window-5-python/checkpoints/window_00005_replica_0000.npz",
+      "sha256": "f579d1b1a5fd1d538464885993c0f197731e11ac623f1cfd63564f3dcc68825e",
+      "bytes": 39506
+    }
+  ],
+  "total_bytes": 175611
+}

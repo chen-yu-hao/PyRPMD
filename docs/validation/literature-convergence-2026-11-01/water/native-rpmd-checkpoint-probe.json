@@ -1,0 +1,33 @@
+{
+  "note": "A successful Context checkpoint API call alone is insufficient: all ring copies must actually be restored. This probe has no thermostat and does not establish RNG restart.",
+  "results": [
+    {
+      "beads": 8,
+      "checkpoint_api_completed": true,
+      "checkpoint_bytes": 1813,
+      "long_copies": 1,
+      "max_p_restore_error_au": 1.756136011897329,
+      "max_q_restore_error_bohr": 0.04240520917292567,
+      "molecules": 8,
+      "platform": "Reference",
+      "restore_is_unchanged_advanced_q": true,
+      "thermostat": false
+    },
+    {
+      "beads": 8,
+      "checkpoint_api_completed": true,
+      "checkpoint_bytes": 1811,
+      "long_copies": 1,
+      "max_p_restore_error_au": 1.7561474972912627,
+      "max_q_restore_error_bohr": 0.04240514914824889,
+      "molecules": 8,
+      "platform": "CPU",
+      "restore_is_unchanged_advanced_q": true,
+      "thermostat": false
+    }
+  ],
+  "schema": "pyrpmd.native-rpmd-checkpoint-probe.v1",
+  "source_sha256": {
+    "benchmarks/water/native_optimizations.py": "59cc10baf566c79e3bb8769f9851d45b1b954e224fd5e3f9d103ca810c13e4df"
+  }
+}

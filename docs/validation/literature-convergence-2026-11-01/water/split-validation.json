@@ -1,0 +1,176 @@
+{
+  "beads": 32,
+  "contraction_errors": [
+    {
+      "centroid_nonbonded_force_relative_RMS_error": 0.007218927725212659,
+      "energy_difference_kcal_mol_water": -0.014724379223570934,
+      "force_max_error_hartree_bohr": 0.0088624301866079,
+      "long_range_copies": 1,
+      "nonbonded_force_relative_RMS_error": 0.09961885781137983,
+      "total_force_relative_RMS_error": 0.031743392357561295
+    },
+    {
+      "centroid_nonbonded_force_relative_RMS_error": 0.0030675409886413755,
+      "energy_difference_kcal_mol_water": -0.007400310610001941,
+      "force_max_error_hartree_bohr": 0.00513004451839353,
+      "long_range_copies": 3,
+      "nonbonded_force_relative_RMS_error": 0.0727506248414792,
+      "total_force_relative_RMS_error": 0.023181872181002
+    },
+    {
+      "centroid_nonbonded_force_relative_RMS_error": 0.0018383572266213654,
+      "energy_difference_kcal_mol_water": -0.004619775907792364,
+      "force_max_error_hartree_bohr": 0.004049639019569577,
+      "long_range_copies": 5,
+      "nonbonded_force_relative_RMS_error": 0.058831030692997305,
+      "total_force_relative_RMS_error": 0.018746415398814317
+    },
+    {
+      "centroid_nonbonded_force_relative_RMS_error": 0.0010112155623308787,
+      "energy_difference_kcal_mol_water": -0.0025168944091045996,
+      "force_max_error_hartree_bohr": 0.0033714926200068725,
+      "long_range_copies": 9,
+      "nonbonded_force_relative_RMS_error": 0.044882185572563696,
+      "total_force_relative_RMS_error": 0.014301637840421176
+    },
+    {
+      "centroid_nonbonded_force_relative_RMS_error": 0.00045473734337929037,
+      "energy_difference_kcal_mol_water": -0.0009637333505244182,
+      "force_max_error_hartree_bohr": 0.0020943219639677855,
+      "long_range_copies": 17,
+      "nonbonded_force_relative_RMS_error": 0.029629668942885413,
+      "total_force_relative_RMS_error": 0.00944144740606751
+    },
+    {
+      "centroid_nonbonded_force_relative_RMS_error": 5.025140854772538e-09,
+      "energy_difference_kcal_mol_water": 2.580279504722412e-15,
+      "force_max_error_hartree_bohr": 2.500940704530663e-09,
+      "long_range_copies": 32,
+      "nonbonded_force_relative_RMS_error": 2.7934516330630248e-08,
+      "total_force_relative_RMS_error": 8.901289692367908e-09
+    }
+  ],
+  "external_experimental_reference": true,
+  "full_electrostatic_split_comparison": {
+    "candidate": "5 A electrostatic direct / 9 A LJ / PME tolerance 1e-5; no bead contraction",
+    "energy_mean_difference_kcal_mol_water": 1.4473704964869424e-05,
+    "force_max_difference_hartree_bohr": 2.5369299443689375e-06,
+    "force_relative_RMS_difference": 1.1724015782302086e-05,
+    "reference": "audited original 9 A direct cutoff / PME tolerance 1e-5"
+  },
+  "integration_and_timing": [
+    {
+      "conditional_ps_per_wall_hour": 1.2529744378451682,
+      "duration_fs": 5,
+      "effective_CPU_equivalents": 0.4089379456076397,
+      "energy_scope": "the actually propagated contracted/uncontracted Hamiltonian divided by P",
+      "force_calls_in_timed_steps": 320,
+      "forward_backward_max_p_error_au": 1.2068213095517422e-10,
+      "forward_backward_max_q_error_bohr": 8.526512829121202e-14,
+      "inner_dt_fs": 0.1,
+      "long_range_copies": 32,
+      "max_abs_energy_change_kcal_mol_water": 0.0011592238535356415,
+      "outer_dt_fs": 0.5,
+      "outer_steps": 10,
+      "process_cpu_seconds": 5.874727208,
+      "process_cpu_seconds_per_outer_step": 0.5874727208,
+      "wall_seconds": 14.365815819001,
+      "wall_seconds_per_outer_step": 1.4365815819001
+    },
+    {
+      "conditional_ps_per_wall_hour": 0.6075893569977888,
+      "duration_fs": 5,
+      "effective_CPU_equivalents": 0.36445704398002704,
+      "energy_scope": "the actually propagated contracted/uncontracted Hamiltonian divided by P",
+      "force_calls_in_timed_steps": 640,
+      "forward_backward_max_p_error_au": 1.6862955476426578e-10,
+      "forward_backward_max_q_error_bohr": 1.1013412404281553e-13,
+      "inner_dt_fs": 0.05,
+      "long_range_copies": 32,
+      "max_abs_energy_change_kcal_mol_water": 0.0002450784962956077,
+      "outer_dt_fs": 0.25,
+      "outer_steps": 20,
+      "process_cpu_seconds": 10.797139081,
+      "process_cpu_seconds_per_outer_step": 0.53985695405,
+      "wall_seconds": 29.625272057004622,
+      "wall_seconds_per_outer_step": 1.481263602850231
+    },
+    {
+      "conditional_ps_per_wall_hour": 2.725626145750737,
+      "duration_fs": 10,
+      "effective_CPU_equivalents": 0.2802518391246953,
+      "energy_scope": "the actually propagated contracted/uncontracted Hamiltonian divided by P",
+      "force_calls_in_timed_steps": 660,
+      "forward_backward_max_p_error_au": 1.8425794223730918e-10,
+      "forward_backward_max_q_error_bohr": 1.5631940186722204e-13,
+      "inner_dt_fs": 0.1,
+      "long_range_copies": 1,
+      "max_abs_energy_change_kcal_mol_water": 0.0008187593163311325,
+      "outer_dt_fs": 0.5,
+      "outer_steps": 20,
+      "process_cpu_seconds": 3.7015590799999956,
+      "process_cpu_seconds_per_outer_step": 0.18507795399999977,
+      "wall_seconds": 13.207974269003898,
+      "wall_seconds_per_outer_step": 0.660398713450195
+    },
+    {
+      "conditional_ps_per_wall_hour": 2.9279911916068926,
+      "duration_fs": 10,
+      "effective_CPU_equivalents": 0.3658923314581197,
+      "energy_scope": "the actually propagated contracted/uncontracted Hamiltonian divided by P",
+      "force_calls_in_timed_steps": 740,
+      "forward_backward_max_p_error_au": 1.7679724351182813e-10,
+      "forward_backward_max_q_error_bohr": 1.5631940186722204e-13,
+      "inner_dt_fs": 0.1,
+      "long_range_copies": 5,
+      "max_abs_energy_change_kcal_mol_water": 0.0008509905759335972,
+      "outer_dt_fs": 0.5,
+      "outer_steps": 20,
+      "process_cpu_seconds": 4.498689740000003,
+      "process_cpu_seconds_per_outer_step": 0.22493448700000016,
+      "wall_seconds": 12.295118955000362,
+      "wall_seconds_per_outer_step": 0.6147559477500181
+    }
+  ],
+  "limitations": [
+    "One short-warmup P32 configuration is a numerical probe, not an equilibrium ensemble.",
+    "RPC is an approximate Hamiltonian; energy conservation alone does not validate its diffusion.",
+    "The experimental screened-Coulomb split is not claimed to reproduce the original paper's exact RPC implementation.",
+    "No GPU or additional cloud compute is used; wall times are affected by shared CPU scheduling."
+  ],
+  "literature_reproduced": false,
+  "molecules": 216,
+  "openmm": "8.6.1",
+  "physical_converged": false,
+  "platform": "CPU",
+  "schema": "pyrpmd.water-split-mts-audit.v1",
+  "snapshot_sha256": "1d6f42b27ff79c8f450e39cad41d35eea82e4e8d47c2d917ecaf6a4b83851dc1",
+  "source_sha256": {
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/split_reference.py": "b60a908b479421ba07e5da9ced92e8cc25374007eca19428bbaba1799cf6c94f",
+    "benchmarks/water/validate_split.py": "b3026ff4725ccf88ae358ca333e3b3bdb3f0979c60682bbbfc5106353987ef83",
+    "native/cayley.cpp": "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124",
+    "native/thermal.cpp": "a28d75d4a460bf70003ca8f8bee03c83679df57c21df7ac22b4a7dce7c897caf",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+  },
+  "split_model": {
+    "alpha_per_nm": 6.578686277490449,
+    "constraints": [],
+    "coulomb_coefficient_kJ_mol_nm_e2": 138.93545764438198,
+    "electrostatic_cutoff_angstrom": 5,
+    "ewald_tolerance": 1e-05,
+    "lj_backend": "nonbonded",
+    "lj_cutoff_angstrom": 9,
+    "move_intramolecular_smooth_exclusions": true,
+    "reference_mesh": [
+      82,
+      82,
+      82
+    ],
+    "switching": false,
+    "tail_correction": false
+  },
+  "threads": 1
+}

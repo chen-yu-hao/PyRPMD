@@ -1,0 +1,44 @@
+{
+  "checkpoint_revision_sha256": "3e05f3ecb1207673ea1cc3c375ac341fc47ac806a2ccbc0f8936ce1dacdbff16",
+  "child_wall_budget_seconds": 1800,
+  "config_sha256": {
+    "1101": "123f84b208215fbc6afc2f05b02f3d9ecd53a7ad2cc889ef13927113fca21d21",
+    "1102": "5e060bfbf3df471e99c2ca500521f2c23e308fa2c31f01977651dfb3970c7344",
+    "1103": "2fd50d0601b57b82837dfbc57199312f839dd7b0dfe0edd70fee3d64ac351c21",
+    "1104": "7ca1b00e7c6ff3515808beaf848f8f8ad3ff005ea9563b424d820a48e8a8246a",
+    "1105": "2282a9133e1575ec2a2989278a8cac0e50b490e7476b69480719d47b36438b2f",
+    "1106": "178aacaa81fa8887f623bee9084c3b43bd81b4f7ed7d0adb5a41899d467cc338",
+    "1107": "8e4148e80e4f3b976e21cf755c28d6c175b789f71994c112ffa90cd6e9a54653",
+    "1108": "6137814f75564a6687c87f36bb8b2e30b05495ee2d0b2e6a1404edc4b33ffe57"
+  },
+  "created_utc": "2026-11-01T16:05:46.515724+00:00",
+  "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+  "initial_checkpoint_sha256": "663023b530463f892bdb7792cd71395805679b75c8ae7da32f41d2748df4bead",
+  "max_concurrent_workers": 2,
+  "native_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "outer_wall_budget_seconds": 7200,
+  "protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "queues": {
+    "even": [
+      1102,
+      1104,
+      1106,
+      1108
+    ],
+    "odd": [
+      1101,
+      1103,
+      1105,
+      1107
+    ]
+  },
+  "scheduler_source_sha256": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+  "schema": "pyrpmd.water-native-queue-registration.v1",
+  "start_condition": "Only after current manual invocations exit; do not write concurrently to an existing chain.",
+  "stopping": "Fixed registered queues or wall budget; any child/checksum/source/prefix failure stops its queue, with no seed substitution or data selection."
+}

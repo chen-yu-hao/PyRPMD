@@ -1,0 +1,19 @@
+{
+  "created_utc": "2026-11-01T17:16:21.025512+00:00",
+  "frozen_original_files_modified": false,
+  "historical_gate_preserved": "The original test source and its historical64-test freeze receipt remain unchanged. This patch is for the isolated integration checkout.",
+  "original_test": "tests/test_water_native_schedule.py",
+  "original_test_sha256": "60c58ca08da35a4c20539d8f831a7c5d15ad15966ecd9b503222c323ea7f55c2",
+  "patch_file": "scheduler-tests-portability.patch",
+  "patch_sha256": "bbc63143c073b33d31701cad47d1fe4f5ca806a13b82d6adf15b6f8a3cea0494",
+  "production_protocol_or_configs_modified": false,
+  "production_scheduler_modified": false,
+  "pytest": {
+    "junit": "scheduler-tests-portability-pytest.xml",
+    "result": "3 passed",
+    "sha256": "25d9c86075fbc0bfa620dbe7a0f23f1bc6e22c5bc4facac676606c4597e6f6c5"
+  },
+  "replacement_test_sha256": "aa86db798b491d74b96601767d39d4511a8920c73aa16bd70d8c2ffdddfb021f",
+  "schema": "pyrpmd.water-scheduler-test-portability-fix.v1",
+  "scope": "Self-contained tmp_path source/config/protocol/checkpoint/hash registration fixture. Real registration, manifest and prefix validation remain active; child subprocesses remain mocked."
+}

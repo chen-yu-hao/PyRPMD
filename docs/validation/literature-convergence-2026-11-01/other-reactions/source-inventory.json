@@ -1,0 +1,248 @@
+{
+  "schema": "pyrpmd.other-reaction-source-audit.v1",
+  "date": "2026-11-01",
+  "scope": "Primary source inventory plus bounded H+CH4 electronic adapter checks. No new thermal reaction rates.",
+  "h_ch4": {
+    "status": "pinned_source_built_electronic_checks_passed_rate_not_run",
+    "source_manifest": "../../../../benchmarks/hch4/source.json",
+    "evidence": "hch4/verification.json",
+    "repository": "https://github.com/GreenGroup/RPMDrate",
+    "commit": "8c1828d2302aacf09a15faf5c7fc50a18d4c113e",
+    "model_doi": "10.1063/1.3132223",
+    "rate_paper_doi": "10.1016/j.cpc.2012.10.017",
+    "rate_paper_model_location": "Section4 / reference49",
+    "correction": {
+      "old_record": "docs/validation/literature-audit-2026-11-01/h3/other-reaction-references.md",
+      "superseded_claim": "The CPC modified/recalibrated Jordan-Gilbert model and later PES-2008 were asserted to be different surfaces.",
+      "new_evidence": "CPC Ref49 and official ch52008.f both identify Corchado/Bravo/Espinosa-Garcia JCP130184314(2009). Modified Jordan-Gilbert describes the CBE/PES-2008 functional form; the previous distinction is withdrawn.",
+      "historical_record_unchanged": true
+    },
+    "primary_sources": [
+      {
+        "url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+        "kind": "author-uploaded CPC manuscript",
+        "locator": "Section4 and Ref49"
+      },
+      {
+        "url": "https://www.researchgate.net/publication/24434786_The_hydrogen_abstraction_reaction_OP-3_CH4_A_new_analytical_potential_energy_surface_based_on_fit_to_ab_initio_calculations",
+        "kind": "author-uploaded primary potential paper",
+        "locator": "PDF title/DOI and TableIII PES column",
+        "warning": "Host landing-page title mislabels O(3P)+CH4; actual paper is H+CH4, DOI10.1063/1.3132223."
+      },
+      {
+        "url": "https://github.com/GreenGroup/RPMDrate/tree/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/examples/H%2BCH4",
+        "kind": "official authors' distribution",
+        "locator": "source, utility, f2py interface, Makefile, physical input"
+      }
+    ],
+    "limitations": [
+      "Only small electronic PES checks; no six-atom canonical ensemble, PMF, kappa or thermal rate.",
+      "Preserved energy-unit conversion differs from modern CODATA by +0.0840463%.",
+      "Preserved gradient/energy derivative scale mismatch is -2.0622296 ppm.",
+      "Source and binaries are kept outside Git and are not redistributed in this report."
+    ]
+  },
+  "f_h2": {
+    "status": "author_distribution_urls_located_not_downloaded_or_built",
+    "primary_pes_doi": "10.1063/1.471372",
+    "primary_source_page": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/",
+    "variants": [
+      {
+        "name": "SW1",
+        "spin_orbit": "not included according to author page",
+        "url": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/sw1.tar",
+        "sha256": null,
+        "archive_contents_inspected": false
+      },
+      {
+        "name": "HSW",
+        "spin_orbit": "included according to author page",
+        "url": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/hsw.tar",
+        "sha256": null,
+        "archive_contents_inspected": false
+      }
+    ],
+    "license_status": "No explicit archive license verified; no redistribution assertion.",
+    "build_interface_status": "Not inspected because archives were not downloaded.",
+    "reference": {
+      "original_doi": "10.1063/1.3127145",
+      "scientific_erratum_doi": "10.1063/1.3464477",
+      "separate_publisher_note_doi": "10.1063/1.3147536",
+      "author_index": "https://manolopoulos.chem.ox.ac.uk/publications.html",
+      "corrected_numerical_table_retrieved": false,
+      "alternative_primary_pdf": "https://www.tjhh.uk/pubs/hel15trpmd.pdf",
+      "alternative_scope": "2015 TRPMD comparison; only zero-friction curve has ordinary RPMD dynamics, and numeric extraction uncertainty still required."
+    },
+    "remaining_inputs": [
+      "Exact variant matched to chosen paper and its scientific erratum",
+      "Archive/source byte hashes and use terms",
+      "Energy/force interface and model oracles",
+      "Spin-orbit/electronic population convention",
+      "Corrected reference numbers with uncertainty",
+      "Independent converged thermal-rate campaign"
+    ]
+  },
+  "oh_h2": {
+    "status": "exact_NN1_and_YZCL2_assets_not_retrieved",
+    "nn1": {
+      "primary_doi": "10.1063/1.4801658",
+      "publisher_url": "https://doi.org/10.1063/1.4801658",
+      "author_publications_url": "https://sklmr.dicp.ac.cn/zhangdh/Publications.htm",
+      "weights_retrieved": false,
+      "evaluator_retrieved": false,
+      "license_verified": false
+    },
+    "yzcl2": {
+      "primary_reference": "Yang, Zhang, Collins and Lee, JCP115174(2001)",
+      "integration_documentation": "https://www.pci.uni-heidelberg.de/tc/usr/mctdh/doc.86/mctdh/ham_docu.html",
+      "documented_option": "-i yzcl; supplementary addsurf files copied/linked into source/surfaces",
+      "supplementary_endpoint": "https://mctdh.uni-hd.de/packages/",
+      "observed_fetch_result": "Timeout",
+      "linked_interface": "https://www.pci.uni-heidelberg.de/tc/usr/mctdh/source/opfuncs/funcsrf.F",
+      "interface_fetch_result": "404",
+      "source_retrieved": false,
+      "license_verified": false
+    },
+    "reference_conventions": {
+      "rate_papers": [
+        "10.1039/C7CP05266A",
+        "10.1039/C8CP06037A"
+      ],
+      "status": "Existing correction/electronic-factor and 1000K table discrepancy remain explicitly unresolved; no new numbers substituted."
+    },
+    "distribution_negative_check": {
+      "repository": "https://github.com/shuyinan/chempotpy",
+      "commit": "4716d22e87ae01770cad9ec995c4a02a8e479296",
+      "scope": "Only exact listed directories at this commit, not a claim that assets are absent everywhere.",
+      "OH3_files": [
+        {
+          "name": "OH3_LEPS_SE_1986.f",
+          "git_blob_sha1": "e2b610db8870712dc30eed9f4f07722c7641da0f"
+        },
+        {
+          "name": "OH3_PIP_FFW1_2019.f90",
+          "git_blob_sha1": "b44d19728ae05c14fd60d554a0110e3ef836e98f"
+        },
+        {
+          "name": "OH3_PIP_FFW1_2019_DPEM.f90",
+          "git_blob_sha1": "2174d673280f4ca7cde454b067f5e458fb3bdf0c"
+        },
+        {
+          "name": "OH3_PIP_FFW2_2022.f90",
+          "git_blob_sha1": "af286123ebd5615f513326d602e5223c6095e06f"
+        },
+        {
+          "name": "OH3_PIP_FFW2_2022_DPEM.f90",
+          "git_blob_sha1": "f58ca48c4ef9ec2753d0afbdd964d3fd561e3048"
+        },
+        {
+          "name": "__init__.py",
+          "git_blob_sha1": "3e77dc619a3a964895182c2deab3d34eb1b12a10"
+        }
+      ],
+      "FH2_files": [
+        {
+          "name": "FH2_GEN_5SECCOG1_1993.f",
+          "git_blob_sha1": "33d17abcd4f47910a474a661abd08f12a95c96cd"
+        },
+        {
+          "name": "FH2_GEN_5SECCOG2_1993.f",
+          "git_blob_sha1": "4b5f8c8bd723b5f45b7cf21e6a38af3690b8dca0"
+        },
+        {
+          "name": "FH2_GEN_5SECCOG3_1993.f",
+          "git_blob_sha1": "fe146810fad2fb2831b536c8bebae9c0a0cb96ab"
+        },
+        {
+          "name": "FH2_GEN_5SECG1_1993.f",
+          "git_blob_sha1": "a16bb4e56885bc16f3b8a0824416166c8fa39355"
+        },
+        {
+          "name": "FH2_GEN_5SECG2_1993.f",
+          "git_blob_sha1": "d4173ffb64ad948d5789b43801b62446c3741fdc"
+        },
+        {
+          "name": "FH2_GEN_5SECG3_1993.f",
+          "git_blob_sha1": "8ff8aa5bf0ba406b24b2762212297a9f45b710d5"
+        },
+        {
+          "name": "FH2_GEN_5SECS1_1993.f",
+          "git_blob_sha1": "108be7e99c752f3187b0549c5d566618463d2b0f"
+        },
+        {
+          "name": "FH2_GEN_5SECS2_1993.f",
+          "git_blob_sha1": "0f077019aac5657e47e1df65800b061d82d98921"
+        },
+        {
+          "name": "FH2_GEN_5SECS3_1993.f",
+          "git_blob_sha1": "59106c02e8b3edfde29e8faccb1d5df75485788e"
+        },
+        {
+          "name": "FH2_GEN_5SECW_1991.f",
+          "git_blob_sha1": "628d77347000715ce07092ea647458dbde42c3da"
+        },
+        {
+          "name": "FH2_GEN_5SEC_1991.f",
+          "git_blob_sha1": "f5b38611ed96092212660778a141994e8676fb7e"
+        },
+        {
+          "name": "FH2_GEN_6SEC_1993.f",
+          "git_blob_sha1": "7fa104fd1b12640f081a54e52237c783712bc124"
+        },
+        {
+          "name": "FH2_LEPS_M5SK_1966.f",
+          "git_blob_sha1": "efde95d71c59ecb0743bf7ea093f977f4003cb02"
+        },
+        {
+          "name": "FH2_LEPS_M5_1991.f",
+          "git_blob_sha1": "b476319570fddb4cd437c8baf6494e3775ca732d"
+        },
+        {
+          "name": "FH2_LEPS_NO1_1984.f",
+          "git_blob_sha1": "e8449034d32a1a953f7894203399879869a1820b"
+        },
+        {
+          "name": "FH2_LEPS_NO2_1984.f",
+          "git_blob_sha1": "c382012336a3fcd971ad549bdfa82b89b4957142"
+        },
+        {
+          "name": "FH2_LEPS_NO2a_1984.f",
+          "git_blob_sha1": "bc6bca9d8a9181c074e1e80f0b165a2c840e1bc7"
+        },
+        {
+          "name": "FH2_LEPS_NO3_1984.f",
+          "git_blob_sha1": "68782125897c064f94fca6bd8d0224e3d21b487f"
+        },
+        {
+          "name": "FH2_LEPS_NO4_1984.f",
+          "git_blob_sha1": "656d31665d06d19e7d6c804b9ca8051e3a88e9ef"
+        },
+        {
+          "name": "FH2_LEPS_NO5_1985.f",
+          "git_blob_sha1": "71d6ec0280a1d701c38944ebf8255d2738d123fe"
+        },
+        {
+          "name": "FH2_LEPS_NO5a_1985.f",
+          "git_blob_sha1": "f3d1006572b3fda8b3cb992d633590528536e3b9"
+        },
+        {
+          "name": "FH2_LEPS_NO5b_1985.f",
+          "git_blob_sha1": "faa0b6ab822a89c2629484df689b29d516a363c6"
+        },
+        {
+          "name": "FH2_LEPS_NO5z_1985.f",
+          "git_blob_sha1": "3c078ef613a510e8958ae4aa883adb11f917ca95"
+        },
+        {
+          "name": "FH2_LEPS_SK_1980.f",
+          "git_blob_sha1": "56dcd0e98cc3814d19c9c3fd26ab69ee3bc1718e"
+        },
+        {
+          "name": "__init__.py",
+          "git_blob_sha1": "e635b1e18d9784001490d4bfa80a44929741162c"
+        }
+      ],
+      "conclusion": "OH3 directory has SE and multistate FFW models, not NN1/YZCL2; FH2 directory does not list SW1/HSW."
+    }
+  }
+}

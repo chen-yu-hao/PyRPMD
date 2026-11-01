@@ -1,0 +1,127 @@
+{
+  "schema": "pyrpmd.hch4.workflow-smoke.v1",
+  "passed": true,
+  "scope": "Three steps only: standard rate preparation, umbrella task, native/Python execution and exact completed-checkpoint reload. No equilibrium, PMF or rate analysis.",
+  "rate_validated": false,
+  "records": [
+    {
+      "beads": 1,
+      "window": 5,
+      "center": [
+        0.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 0.0,
+      "momentum_error_au": 6.661338147750939e-16,
+      "energy_per_bead_error_hartree": 1.1102230246251565e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    },
+    {
+      "beads": 1,
+      "window": 105,
+      "center": [
+        1.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 0.0,
+      "momentum_error_au": 0.0,
+      "energy_per_bead_error_hartree": 2.220446049250313e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "window": 5,
+      "center": [
+        0.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 3.552713678800501e-15,
+      "momentum_error_au": 7.126743639673805e-12,
+      "energy_per_bead_error_hartree": 7.216449660063518e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "window": 105,
+      "center": [
+        1.0
+      ],
+      "steps": 3,
+      "samples": 3,
+      "native_propagation": {
+        "native_steps": 3,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      },
+      "python_propagation": {
+        "native_steps": 0,
+        "python_steps": 3,
+        "fallback_reasons": {}
+      },
+      "position_error_bohr": 0.0,
+      "momentum_error_au": 3.552713678800501e-15,
+      "energy_per_bead_error_hartree": 4.440892098500626e-16,
+      "completed_restart_arrays_and_file_exact": true,
+      "passed": true
+    }
+  ],
+  "CPU_seconds": 0.11980207100000007,
+  "source_files": {
+    "benchmarks/hch4/verify_workflow.py": "a3185fb13de5298ddceb06907f695eade66c235f7f6bfede76315959d9df8148",
+    "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+    "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+    "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587",
+    "src/pyrpmd/workflows/fes.py": "91c93d11d58097d3637613b495a00239bbb9563d153101b0c6c36910da2ea345",
+    "src/pyrpmd/workflows/sampling.py": "d2bd91a0a6efec967b3b54d1720a5cab0a03aecadaa8b77bfb9ffe6c8ead7e1b",
+    "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+  },
+  "files": {
+    "P1-preparation/preparation.json": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+    "P1-window-105-native/checkpoints/window_00105_replica_0000.npz": "d935adad31b3aab7979403b885291cbbbb4fc2cba2ade60348a07ecca052e4c1",
+    "P1-window-105-python/checkpoints/window_00105_replica_0000.npz": "ea4f83a30c4810a1717f6b8d33b19f70dabdc26ec274dc871b0fe02d9b866021",
+    "P1-window-5-native/checkpoints/window_00005_replica_0000.npz": "42bcb6ca2921ffad43d172a579c26c05227467ccd4f59afbb8984b0546c9d66f",
+    "P1-window-5-python/checkpoints/window_00005_replica_0000.npz": "a482af6af08acd5b6968a413c4a609c8f49a4d4ca3679f8baf7b732bb92b69ea",
+    "P128-preparation/preparation.json": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+    "P128-window-105-native/checkpoints/window_00105_replica_0000.npz": "5d958891fd8690e7f42516e27c23f303b2a2516ab2ae50fcf201cf8e1268ea97",
+    "P128-window-105-python/checkpoints/window_00105_replica_0000.npz": "6d6418a0c99d50e9ae4784032ceaba13ec1f55ad830e58bfbe9b7a71c13e57d3",
+    "P128-window-5-native/checkpoints/window_00005_replica_0000.npz": "d607d1b346b09fc14311009223c7b26224e51dff96d7e91d952908184387bcc2",
+    "P128-window-5-python/checkpoints/window_00005_replica_0000.npz": "c3c16171badbe2c26148f7b0a93a12bfa5d001613e6e8025df28af94918fa215"
+  }
+}

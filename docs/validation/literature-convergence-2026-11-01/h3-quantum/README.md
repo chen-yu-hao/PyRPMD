@@ -93,8 +93,15 @@ allowed extended bead paths can have a smaller centroid distance.
 
 The registered lower-cutoff checks are 0.4 and 0.6 bohr. Classical cutoff
 insensitivity does not automatically establish quantum cutoff insensitivity.
-Bead controls at P64 and P256, the physical-domain controls, and a fresh
-transmission coefficient remain separate requirements for a full rate claim.
+All sixteen independent equilibrium control chains have now completed.
+Relative to P128 / 0.5 bohr, the P256 QTST change is −0.563%, with a 95%
+interval [−2.802%, +1.728%]; the 0.4 and 0.6 bohr checks also individually
+pass the registered ±log(1.05) equivalence margin. P64 fails equivalence,
+so the original aggregate control gate remains false. Full values and
+matching finite-P/domain denominators are in the
+[control report](../surface-partition/controls/comparison.json).
+These equilibrium checks do not establish bead/domain convergence of the
+real-time transmission coefficient.
 
 ## Free-energy estimation and uncertainty
 
@@ -200,7 +207,10 @@ parent, and identical initial states at 0.1 and 0.05 fs. Both p and −p are
 propagated without a thermostat. The primary horizon is 200 fs; a failed
 plateau comparison triggers the all-child 400-fs continuation. A separate,
 predeclared extra momentum batch can improve precision without selecting
-geometries, seeds or favorable rate points.
+geometries, seeds or favorable rate points. Before either conditional
+extension, an immutable decision receipt must reference the complete
+eight-chain report and the exact registered gate that triggered it; a
+partial-cohort diagnostic cannot trigger a continuation.
 
 The source already includes fs(q), so child flux weights divide by fs.
 The full-rate analysis combines the partition and κ within each original
@@ -208,6 +218,17 @@ chain before constructing its Student-t interval. It retains their covariance
 and never treats individual children as independent parent ensembles.
 The [analysis specification](recrossing-analysis-prespecification.json)
 records its timing and the additional numerical-stability/component checks.
+
+The [independent method review](../review/pr68-software-review/quantum-method-review.json)
+confirms the antithetic flux normalization, physical mass/bead factors,
+paired comparisons and covariance calculation without inspecting a primary
+rate. The registered central rate is a geometric mean over chain estimates;
+finite-chain ratio and log-transformation bias are not separately corrected.
+The Student-t intervals are nominal, approximate sampling intervals, not
+sequentially adjusted guarantees after conditional extensions. Passing the
+separate point-accuracy and precision gates is not identical to demonstrating
+that the entire interval lies inside the paper's approximately 5% band; that
+stronger condition is retained as its own diagnostic.
 
 An excluded real-PES continuation check verifies bitwise-equal q, p,
 observations and clocks for continuous 400-fs propagation versus a 200-fs

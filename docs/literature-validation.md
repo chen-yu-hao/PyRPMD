@@ -10,14 +10,14 @@ sampling into validated rate constants.
 
 | Requested family | Available evidence and software | What prevents a reproduction claim |
 | --- | --- | --- |
-| H + CH₄ | Source-verified RPMDrate table entry and convention-aware comparator | Exact historical PES/license/build and converged trajectories |
+| H + CH₄ | Pinned RPMDrate PES-2008 source/build; 15.0143 kcal/mol barrier versus paper 15.01; force, native-map and actual umbrella/checkpoint checks | Converged thermal-rate sampling; the short P128 0.1 fs NVE probe fails its fixed energy gate |
 | OH + H₂ | Source-verified NN1/YZCL2 entries with corrected/uncorrected conventions separated | Matched surface and a full converged rate campaign |
 | F + H₂ | Original paper and erratum identified; missing numeric reference stays null | Extract corrected source data and match PES/electronic conventions |
-| H + H₂ | Pinned BKMP2 builder; independent complete classical rate agrees within paper precision; new finite-P normalization and quantum campaigns | Complete the registered quantum transmission and bead/domain controls; production umbrella precision remains a separate question |
-| D/Mu + H₂ | Published isotope studies identified; missing values stay null | Source-specific masses, tabulated targets and particularly demanding light-mass convergence |
+| H + H₂ | Pinned BKMP2 builder; independent complete classical rate agrees within paper precision; independent quantum QTST, P128→256 and domain checks | Complete the registered quantum transmission; coarse P64 fails equivalence and production umbrella precision remains a separate question |
+| D/Mu + H₂; D + HMu | Primary-source index distinguishes the H₂ isotope series from deep-tunnelling muonium exchange; unresolved table versions stay unpromoted | Exact source-specific masses, implementation bytes, supplementary protocols and light-mass convergence |
 | H on Ni | Real EAM/ASE integration pilot with H/D and bead cases | Existing EAM/slab pilot is not the exact model of the 2012 Ni(100) study |
 | H in Pd | Published bulk/nanocluster study identified | Match potential, loading, geometry and transport estimator; run the campaign |
-| q-TIP4P/F diffusion | Flexible force-field builder, PME provider, independent energy/force checks, small periodic pilot, source table targets | Equilibrated source-sized liquid, matching conventions, long independent production and convergence |
+| q-TIP4P/F diffusion | Flexible force field, full PME, independent force checks, eight-seed OpenMM reference campaign running, completed velocity-recording check and prepared P32 reference jobs | Complete reference equilibrium/production gates, then quantum production and long-time comparison with PyRPMD's own transport workflow |
 | q-TIP4P/F IR | Bead dipoles and replayable RPMD spectrum diagnostic | Original paper uses PA-CMD; source curves, long liquid records and method-aware comparison are still required |
 
 The machine-readable inventory and a local evidence-bundle auditor are in
@@ -94,7 +94,7 @@ transmission campaign retains eight independent parent chains and paired
 timesteps; its complete rate interval preserves correlation between each
 chain's partition and child estimates. Earlier failed estimates remain intact.
 Detailed protocols, tables and limitations are available in the
-[convergence record under review](https://github.com/chen-yu-hao/PyRPMD/blob/feat/ecosystem-trust-20261101/docs/validation/literature-convergence-2026-11-01/README.md).
+[convergence record under review](https://github.com/chen-yu-hao/PyRPMD/blob/feat/literature-convergence-20261101/docs/validation/literature-convergence-2026-11-01/README.md).
 
 ## Recommended campaign order
 
@@ -104,9 +104,10 @@ Detailed protocols, tables and limitations are available in the
 2. Establish water force-model agreement first, then source-sized liquid
    equilibrium and classical diffusion, then RPMD isotope diffusion. Treat IR
    as a separate method-aware study.
-3. Obtain the exact methane/OH/F surfaces and Ni/Pd material models before
-   allocating expensive sampling. Distinct surfaces should have distinct case
-   identities and comparisons.
+3. Resolve methane timestep and sampling-cost controls using the now-pinned
+   PES-2008, and obtain the matched OH/F surfaces and Ni/Pd material models
+   before allocating expensive production. Distinct surfaces should have
+   distinct case identities and comparisons.
 4. Have another researcher reproduce at least one complete record from the
    archived inputs and model bytes before describing the suite as validated.
 

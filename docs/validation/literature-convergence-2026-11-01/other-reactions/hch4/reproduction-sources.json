@@ -1,0 +1,81 @@
+{
+  "schema": "pyrpmd.hch4.reproduction-source-reading.v1",
+  "retrieved_date": "2026-11-01",
+  "purpose": "Reference extraction and exact-source conventions; no rate results generated",
+  "primary_paper": {
+    "doi": "10.1016/j.cpc.2012.10.017",
+    "authors": "Suleimanov, Allen and Green",
+    "journal": "Computer Physics Communications 184, 833-840 (2013)",
+    "author_manuscript_url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+    "verified_locations": [
+      "Table 1 H+CH4 column",
+      "Table 2 H+CH4 row and rate units",
+      "section 4 about-5% statistical accuracy",
+      "equations 4-17",
+      "reference 49 CBE/PES-2008",
+      "program summary historical run time"
+    ],
+    "host_date_note": "The landing-page upload date is not the publication year. The manuscript itself is dated October 9, 2012, and the journal publication is 2013.",
+    "values_recorded_in": "benchmarks/hch4/reproduction_protocol.json (repository-relative)"
+  },
+  "official_source": {
+    "repository": "GreenGroup/RPMDrate",
+    "commit": "8c1828d2302aacf09a15faf5c7fc50a18d4c113e",
+    "base_url": "https://github.com/GreenGroup/RPMDrate/blob/8c1828d2302aacf09a15faf5c7fc50a18d4c113e/",
+    "files": [
+      {
+        "path": "examples/H+CH4/input.py",
+        "git_blob_sha1": "be90de4c193868415cae121cc24da8ba36d9b0ae",
+        "read_for": "Atom order, reference geometry, fragments, bonds, equivalent channels, Rinf expression and nominal trajectory budgets"
+      },
+      {
+        "path": "rpmdrate/element.py",
+        "git_blob_sha1": "3cb9ed4f6150494b15f9ec910b50f677fd4aefe6",
+        "read_for": "H=1.00782503207 u and C=12 u"
+      },
+      {
+        "path": "rpmdrate/quantity.py",
+        "git_blob_sha1": "93a4afb682dfb9fc593d66b2102d445e7a040f6f",
+        "read_for": "angstrom=1e-10 m and bohr=5.2917721092e-11 m"
+      },
+      {
+        "path": "rpmdrate/constants.py",
+        "git_blob_sha1": "18e13328ec67dc893f8e99f448bf8c70de004e8f",
+        "read_for": "Na=6.02214179e23 and kB=1.3806504e-23 J/K"
+      },
+      {
+        "path": "rpmdrate/surface.py",
+        "git_blob_sha1": "047208e1730bebb84a899ce82c886ed1a73ac3de",
+        "read_for": "Mass conversion uses 9.1093826e-31 kg electron mass; equivalent-path definition"
+      },
+      {
+        "path": "rpmdrate/thermostat.py",
+        "git_blob_sha1": "dc2d16c55a5a05570a95a93dfb0947149541cee5",
+        "read_for": "Unspecified Andersen samplingTime becomes zero, selecting the native default"
+      },
+      {
+        "path": "rpmdrate/_main.f90",
+        "git_blob_sha1": "1bc2393871576e1c993f7a119722d14ab5dbdaa4",
+        "read_for": "Equilibrate/umbrella trajectory collision interval, per-bead umbrella addition and flux metric"
+      },
+      {
+        "path": "rpmdrate/main.py",
+        "git_blob_sha1": "621f0b7a3e4da69ac6b4c167726bbbaade10a2d3",
+        "read_for": "Beta conversion, 4*pi*Rinf^2 rate prefactor, antithetic child counting, console mol vs saved molecule/mol unit conversions"
+      }
+    ],
+    "content_handling": "Read using the GitHub connector at the pinned commit. No upstream source is reproduced in this metadata file. PES compile inputs remain external and byte-pinned by benchmarks/hch4/source.json."
+  },
+  "separate_F_plus_H2_status": {
+    "scientific_erratum_doi": "10.1063/1.3464477",
+    "publisher_note_doi_is_different": "10.1063/1.3147536",
+    "erratum_author_host": "https://www.researchgate.net/publication/45507097_Erratum_Bimolecular_reaction_rates_from_ring_polymer_molecular_dynamics_J_Chem_Phys_130_174713_2009",
+    "observed": "A renewed exact-DOI search finds the scientific erratum metadata but the author-host page reports no full text. No corrected numeric table was retrieved; do not infer values or silently substitute uncorrected ones.",
+    "official_PES_catalog": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/",
+    "model_names": {
+      "SW1": "without spin-orbit correction",
+      "HSW": "with spin-orbit correction"
+    },
+    "status": "Official variants identified, but no archive downloaded or model-to-erratum convention proved in this preparation step."
+  }
+}

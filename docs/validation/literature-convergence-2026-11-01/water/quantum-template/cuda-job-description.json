@@ -1,0 +1,45 @@
+{
+  "config": {
+    "cells_per_axis": 6,
+    "beads": 32,
+    "isotope": "H2O",
+    "temperature_K": 298.0,
+    "density_g_cm3": 0.997,
+    "dt_fs": 0.1,
+    "cutoff_angstrom": 9.0,
+    "ewald_tolerance": 1e-05,
+    "dispersion_correction": false,
+    "equilibration_steps": 1000000,
+    "segment_steps": 40000,
+    "segments": 100,
+    "record_stride": 50,
+    "equilibration_record_stride": 1000,
+    "checkpoint_steps": 10000,
+    "max_native_block_steps": 50,
+    "andersen_mean_interval_fs": 100.0,
+    "andersen_schedule": "geometric",
+    "seed": 2101,
+    "platform": "CUDA",
+    "threads": 1,
+    "platform_properties": {
+      "DeterministicForces": "true",
+      "DeviceIndex": "0",
+      "Precision": "double",
+      "UseCpuPme": "false"
+    },
+    "trajectory_precision": "float32",
+    "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz"
+  },
+  "source_sha256": {
+    "benchmarks/water/native_quantum.py": "6ffe98313abfc0b74e4e63531a41e5dcbb830766537b45b934b1c0d614950715",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/workflows/sampling.py": "d2bd91a0a6efec967b3b54d1720a5cab0a03aecadaa8b77bfb9ffe6c8ead7e1b"
+  },
+  "preparation_ps": 100.0,
+  "production_ps": 400.0,
+  "total_steps": 5000000,
+  "external_reference": true,
+  "GPU_tested": false
+}

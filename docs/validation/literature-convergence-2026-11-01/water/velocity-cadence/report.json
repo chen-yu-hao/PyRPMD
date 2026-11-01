@@ -1,0 +1,115 @@
+{
+  "additional_diffusion_replica": false,
+  "baseline_modified": false,
+  "cadences": [
+    {
+      "cadence_fs": 0.25,
+      "dense_origins_quadrature_difference_angstrom2_ps": 0.0,
+      "difference_from_dense_angstrom2_ps": 0.0,
+      "frames": 16001,
+      "integral_trace_over_3_angstrom2_ps": 0.20329863701446005,
+      "origins_at_maximum_lag": 8001
+    },
+    {
+      "cadence_fs": 0.5,
+      "dense_origins_quadrature_difference_angstrom2_ps": -2.5964816408041713e-10,
+      "difference_from_dense_angstrom2_ps": -3.630209681082519e-06,
+      "frames": 8001,
+      "integral_trace_over_3_angstrom2_ps": 0.20329500680477897,
+      "origins_at_maximum_lag": 4001
+    },
+    {
+      "cadence_fs": 1.0,
+      "dense_origins_quadrature_difference_angstrom2_ps": -1.2902806600934014e-09,
+      "difference_from_dense_angstrom2_ps": -1.0816488080295228e-05,
+      "frames": 4001,
+      "integral_trace_over_3_angstrom2_ps": 0.20328782052637975,
+      "origins_at_maximum_lag": 2001
+    },
+    {
+      "cadence_fs": 2.5,
+      "dense_origins_quadrature_difference_angstrom2_ps": -8.147364477517627e-09,
+      "difference_from_dense_angstrom2_ps": -3.1777979007663326e-05,
+      "frames": 1601,
+      "integral_trace_over_3_angstrom2_ps": 0.20326685903545239,
+      "origins_at_maximum_lag": 801
+    },
+    {
+      "cadence_fs": 5.0,
+      "dense_origins_quadrature_difference_angstrom2_ps": -2.593741954548534e-08,
+      "difference_from_dense_angstrom2_ps": -6.457089798547755e-05,
+      "frames": 801,
+      "integral_trace_over_3_angstrom2_ps": 0.20323406611647457,
+      "origins_at_maximum_lag": 401
+    }
+  ],
+  "comparison": "All cadences subsample the same dense trajectory; coarse records also reduce available time origins.",
+  "curves_sha256": "72f3a32d0db61be3dbb16633d716ee21be1145a6485b4dd7762ceefc94336df6",
+  "environment": {
+    "dependencies": {
+      "numpy": "2.5.4",
+      "openmm": "8.6.1",
+      "scipy": "1.18.1"
+    },
+    "machine": "x86_64",
+    "python": "3.12.14"
+  },
+  "frames": 16001,
+  "limitations": [
+    "One predetermined segment assesses recording numerics, not long-time transport convergence.",
+    "CPU checkpoint force-cache roundoff prevents a bitwise future-trajectory replay claim."
+  ],
+  "literature_reproduced": false,
+  "maximum_lag_ps": 2.0,
+  "molecules": 216,
+  "no_velocity_demeaning": true,
+  "numerical_margin_angstrom2_ps": 0.001,
+  "quadrature_diagnostic": "Dense-origin VACF sampled at each lag spacing isolates trapezoid quadrature from origin subsampling.",
+  "recording_cadence_pass": true,
+  "replay_manifest_sha256": "cdedb8b5a88dea67acf9afbc57ba7c69c67b9595c2eccf6d9fb30ad3431109c2",
+  "replay_process_cpu_seconds": 159.38760604200002,
+  "replay_restart_validations": [
+    {
+      "canonical_p_conversion_residual_max_au": 2.6078386058500967e-15,
+      "canonical_p_max_difference_au": 1.432129046463615e-07,
+      "contract_version": 2,
+      "force_RMS_relative_difference": 2.4807781274070817e-07,
+      "force_atol_kj_mol_nm": 0.005,
+      "force_max_difference_kj_mol_nm": 0.001374985351617397,
+      "force_rtol": 2e-06,
+      "legacy_force_inferred": false,
+      "physical_q_exact": true,
+      "raw_positions_and_half_step_velocities_exact": true
+    }
+  ],
+  "replay_wall_seconds": 324.6305706550047,
+  "schema": "pyrpmd.water-velocity-cadence-analysis.v1",
+  "selection": {
+    "baseline_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+    "baseline_manifest_snapshot_sha256": "9ea4bf5daefc6094672bf2c41d85a6f9777adee164c74956a2e47817f9416b6c",
+    "checkpoint": {
+      "file": "chunk-000099.npz",
+      "observations": 10,
+      "sha256": "0b9ed7afffa6286b5f89d2a994f0f8747ac09b622e44900ed576b63aafcbd071",
+      "step": 400000
+    },
+    "config_sha256": "123f84b208215fbc6afc2f05b02f3d9ecd53a7ad2cc889ef13927113fca21d21",
+    "model_artifacts": {
+      "integrator.xml": {
+        "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+      },
+      "model.xml": {
+        "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+      }
+    },
+    "protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+    "registration_sha256": "bec53a962d2642ca720b545f8f9398b13009a269ac24d8223e969a2822eb0326"
+  },
+  "source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/velocity_cadence.py": "bac1e70a6e16e9bfb3164379b800086d82abdb6a509d4a5e9fee7c6c1556888d",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  }
+}

@@ -1,0 +1,219 @@
+--- a/benchmarks/water/native_reference.py
++++ b/benchmarks/water/native_reference.py
+@@ -39,6 +39,8 @@
+ BOHR_NM = BOHR_ANGSTROM / 10
+ VELOCITY_NM_PS = BOHR_NM * 1000 * FS_TO_AU
+ HARTREE_KJ_MOL = 4.184 / KCAL_MOL_TO_AU
++LEGACY_CHECKPOINT_SOURCE_SHA256 = "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2"
++CHECKPOINT_CONTRACT_VERSION = 2
+ 
+ 
+ @dataclass(frozen=True)
+@@ -160,20 +162,84 @@
+     context.setVelocities(velocities.reshape(-1, 3))
+ 
+ 
+-def get_state(context, masses, *, energy=False):
++def get_state(context, masses, *, energy=False, raw=False):
+     from openmm import unit
+     state = context.getState(getPositions=True, getVelocities=True, getForces=True, getEnergy=energy)
+     n = len(masses) // 3
+-    q = np.asarray(state.getPositions(asNumpy=True) / unit.nanometer).reshape(n, 4, 3)[:, :3].reshape(-1, 3) / BOHR_NM
+-    velocity_nm_ps = np.asarray(state.getVelocities(asNumpy=True) / (unit.nanometer / unit.picosecond)).reshape(n, 4, 3)[:, :3].reshape(-1, 3)
+-    forces_nm = np.asarray(state.getForces(asNumpy=True) / (unit.kilojoule_per_mole / unit.nanometer)).reshape(n, 4, 3)[:, :3].reshape(-1, 3)
++    positions_nm = np.asarray(state.getPositions(asNumpy=True) / unit.nanometer)
++    half_step_velocities_nm_ps = np.asarray(state.getVelocities(asNumpy=True) / (unit.nanometer / unit.picosecond))
++    forces_kj_mol_nm = np.asarray(state.getForces(asNumpy=True) / (unit.kilojoule_per_mole / unit.nanometer))
++    q = positions_nm.reshape(n, 4, 3)[:, :3].reshape(-1, 3) / BOHR_NM
++    velocity_nm_ps = half_step_velocities_nm_ps.reshape(n, 4, 3)[:, :3].reshape(-1, 3)
++    forces_nm = forces_kj_mol_nm.reshape(n, 4, 3)[:, :3].reshape(-1, 3)
+     dt_ps = float(context.getIntegrator().getStepSize() / unit.picosecond)
+     v = (velocity_nm_ps + .5 * dt_ps * forces_nm / (masses / AMU_TO_AU)[:, None]) / VELOCITY_NM_PS
+     p = v * masses[:, None]
+     if not np.isfinite(q).all() or not np.isfinite(p).all():
+         raise FloatingPointError("nonfinite native OpenMM state")
+     potential = float(state.getPotentialEnergy() / unit.kilojoule_per_mole) / HARTREE_KJ_MOL if energy else None
+-    return q[None], p[None], potential
++    result = q[None], p[None], potential
++    if raw:
++        return (*result, {"engine_positions_nm": positions_nm,
++                          "engine_half_step_velocities_nm_ps": half_step_velocities_nm_ps,
++                          "engine_forces_kj_mol_nm": forces_kj_mol_nm})
++    return result
++
++
++def validate_checkpoint_state(context, masses, config, checkpoint, *, allow_legacy=False):
++    """Verify the binary engine state and bounded CPU force-cache roundoff.
++
++    CPU checkpoints preserve all positions and half-step velocities bitwise,
++    but rebuilding neighbor/PME force caches can change final force bits. The
++    canonical momentum difference must equal dt/2 times that measured force
++    difference, after unit conversion. No physical state is reset here.
++    """
++    q, p, _, actual = get_state(context, masses, raw=True)
++    if not np.array_equal(q, checkpoint["q"]):
++        raise ValueError("loaded native checkpoint physical position mismatch")
++    keys = tuple(actual)
++    redundant = all(name in checkpoint for name in keys)
++    if any(name in checkpoint for name in keys) and not redundant:
++        raise ValueError("incomplete native checkpoint raw-state contract")
++    physical = np.arange(len(actual["engine_positions_nm"])).reshape(-1, 4)[:, :3].ravel()
++    new_force = actual["engine_forces_kj_mol_nm"][physical]
++    if redundant:
++        for name in keys[:2]:
++            if not np.array_equal(actual[name], checkpoint[name]):
++                raise ValueError(f"loaded native checkpoint raw state mismatch: {name}")
++        old_force = np.asarray(checkpoint["engine_forces_kj_mol_nm"])[physical]
++    elif allow_legacy:
++        # Only the explicitly migrated, checksum-verified v1 checkpoint is
++        # eligible. Its force is inferred, not claimed to have been stored.
++        velocity = actual["engine_half_step_velocities_nm_ps"][physical]
++        old_force = ((checkpoint["p"][0] / masses[:, None] * VELOCITY_NM_PS - velocity)
++                     * (masses / AMU_TO_AU)[:, None] * 2 / (config.dt_fs / 1000))
++    else:
++        raise ValueError("legacy checkpoint requires explicit versioned contract migration")
++    if not np.isfinite(old_force).all() or not np.isfinite(new_force).all():
++        raise ValueError("nonfinite checkpoint force")
++    # Independent bounds, in kJ/mol/nm, keep an altered model from being
++    # accepted just because the velocity conversion remains algebraic.
++    # Measured liquid CPU round trips: max 0.00174; RMS relative 2.24e-7.
++    force_atol, force_rtol = (0.005, 2e-6) if config.platform == "CPU" else (1e-9, 1e-12)
++    delta_force = new_force - old_force
++    rms_relative = float(np.sqrt(np.mean(delta_force**2)) / max(1., np.sqrt(np.mean(old_force**2))))
++    if (not np.allclose(new_force, old_force, atol=force_atol, rtol=force_rtol)
++            or rms_relative > (1e-6 if config.platform == "CPU" else 1e-12)):
++        raise ValueError("checkpoint recomputed force exceeds declared roundoff bound")
++    predicted_delta_p = .5 * config.dt_fs / 1000 * AMU_TO_AU / VELOCITY_NM_PS * delta_force
++    residual = p[0] - checkpoint["p"][0] - predicted_delta_p
++    if not np.isfinite(residual).all() or np.max(abs(residual)) > 2e-13:
++        raise ValueError("checkpoint canonical momentum differs beyond force-cache conversion")
++    return {"contract_version": CHECKPOINT_CONTRACT_VERSION,
++            "legacy_force_inferred": not redundant,
++            "raw_positions_and_half_step_velocities_exact": redundant,
++            "physical_q_exact": True,
++            "force_max_difference_kj_mol_nm": float(np.max(abs(delta_force))),
++            "force_RMS_relative_difference": rms_relative,
++            "force_atol_kj_mol_nm": force_atol, "force_rtol": force_rtol,
++            "canonical_p_max_difference_au": float(np.max(abs(p-checkpoint["p"]))),
++            "canonical_p_conversion_residual_max_au": float(np.max(abs(residual)))}
+ 
+ 
+ def sample_momenta(rng, masses, temperature_K, *, remove_com):
+@@ -211,15 +277,18 @@
+     for entry in manifest["chunks"]:
+         if Path(entry["file"]).name != entry["file"] or sha256(output / entry["file"]) != entry["sha256"]:
+             raise ValueError(f"committed checkpoint checksum mismatch: {entry['file']}")
+-    for name in ("model.xml", "integrator.xml"):
+-        if sha256(output / name) != manifest["artifacts"][name]["sha256"]:
++    for name, artifact in manifest["artifacts"].items():
++        if Path(name).name != name or sha256(output / name) != artifact["sha256"]:
+             raise ValueError(f"serialized engine checksum mismatch: {name}")
+ 
+ 
+-def run(output, config, *, resume=False, wall_seconds=None, max_steps=None):
++def run(output, config, *, resume=False, wall_seconds=None, max_steps=None,
++        migrate_checkpoint_contract=False):
+     """Run a bounded invocation, restoring OpenMM and external RNG checkpoints."""
+     import openmm as mm
+     config.validate()
++    if migrate_checkpoint_contract and not resume:
++        raise ValueError("checkpoint contract migration requires --resume")
+     if wall_seconds is not None and (not math.isfinite(wall_seconds) or wall_seconds <= 0):
+         raise ValueError("wall_seconds must be positive")
+     if max_steps is not None and (isinstance(max_steps, bool) or not isinstance(max_steps, int) or max_steps < 1):
+@@ -231,10 +300,19 @@
+     initial_q, box = initial_grid(cells_per_axis=config.cells_per_axis, density_g_cm3=config.density_g_cm3,
+                                  seed=config.seed, hydrogen_mass_da=hydrogen)
+     initial_sha = sha256(config.initial_checkpoint) if config.initial_checkpoint else None
++    migrating = False
+     if resume:
+         manifest = json.loads((output / "manifest.json").read_text())
+-        if manifest["config"] != asdict(config) or manifest["source_sha256"] != identity:
++        old_identity = manifest["source_sha256"]
++        native_path = "benchmarks/water/native_reference.py"
++        allowed_legacy = dict(identity, **{native_path: LEGACY_CHECKPOINT_SOURCE_SHA256})
++        if (migrate_checkpoint_contract and old_identity == allowed_legacy
++                and manifest.get("checkpoint_contract_version", 1) == 1):
++            migrating = True
++        if manifest["config"] != asdict(config) or (old_identity != identity and not migrating):
+             raise ValueError("resume source/configuration identity mismatch")
++        if migrate_checkpoint_contract and not migrating:
++            raise ValueError("migration only accepts the specifically audited legacy source SHA")
+         if manifest["environment"] != environment or manifest["initial_checkpoint_sha256"] != initial_sha:
+             raise ValueError("resume environment/initial-checkpoint identity mismatch")
+         verify_manifest(output, manifest)
+@@ -253,6 +331,7 @@
+                     "complete": False, "physical_converged": False, "literature_reproduced": False,
+                     "elapsed_seconds": 0.0, "created_utc": datetime.now(timezone.utc).isoformat(),
+                     "trajectory_precision": config.trajectory_precision, "checkpoint_precision": "float64",
++                    "checkpoint_contract_version": CHECKPOINT_CONTRACT_VERSION,
+                     "independence_unit": "independently seeded equilibrated chain; NVE segments share a configuration chain"}
+         try:
+             manifest["git_revision"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+@@ -271,9 +350,29 @@
+                 step = int(checkpoint["state_step"])
+                 active_segment = int(checkpoint["active_segment"])
+                 rng.bit_generator.state = json.loads(str(checkpoint["rng_json"]))
+-                q, p, _ = get_state(context, masses)
+-                if not np.array_equal(q, checkpoint["q"]) or not np.array_equal(p, checkpoint["p"]):
+-                    raise ValueError("loaded native checkpoint physical state mismatch")
++                legacy_hashes = {item["historical_checkpoint_sha256"] for item in manifest.get("source_migrations", [])}
++                checked = validate_checkpoint_state(
++                    context, masses, config, checkpoint,
++                    allow_legacy=migrating or manifest["chunks"][-1]["sha256"] in legacy_hashes)
++                checked.update({"step": step, "chunk_sha256": manifest["chunks"][-1]["sha256"],
++                                "validated_utc": datetime.now(timezone.utc).isoformat()})
++                if migrating:
++                    backup = "manifest.before-checkpoint-contract-v2.json"
++                    if (output / backup).exists():
++                        raise ValueError("refusing to overwrite existing migration evidence")
++                    (output / backup).write_bytes((output / "manifest.json").read_bytes())
++                    migration = {"reason": "Raw engine state identity replaces invalid exact canonical-p requirement on CPU force-cache rebuild.",
++                                 "from_source_sha256": old_identity, "to_source_sha256": identity,
++                                 "historical_manifest_file": backup, "historical_manifest_sha256": sha256(output / backup),
++                                 "historical_checkpoint_sha256": manifest["chunks"][-1]["sha256"],
++                                 "at_committed_step": step, "state_validation": checked,
++                                 "propagator_model_protocol_unchanged": True}
++                    manifest.setdefault("source_migrations", []).append(migration)
++                    manifest["source_sha256"] = identity
++                    manifest["checkpoint_contract_version"] = CHECKPOINT_CONTRACT_VERSION
++                    manifest["artifacts"][backup] = {"sha256": sha256(output / backup)}
++                    atomic_json(output / "manifest.json", manifest)
++                manifest.setdefault("restart_validations", []).append(checked)
+         else:
+             if config.initial_checkpoint:
+                 with np.load(config.initial_checkpoint, allow_pickle=False) as checkpoint:
+@@ -313,12 +412,13 @@
+                 segment_step += advance
+                 if segment_step % stride == 0:
+                     observations.append(observe(context, masses, config, step, segment, segment_step))
+-            q, p, _ = get_state(context, masses)
++            q, p, _, raw_checkpoint = get_state(context, masses, raw=True)
+             arrays = {key: np.asarray([row[key] for row in observations]) for key in observations[0]} if observations else {}
+             filename = f"chunk-{len(manifest['chunks']):06d}.npz"
+             atomic_npz(output / filename, **arrays, q=q, p=p, state_step=step,
+                        state_time=step * config.dt_fs * FS_TO_AU, box_angstrom=box,
+                        active_segment=active_segment, rng_json=json.dumps(rng.bit_generator.state, sort_keys=True),
++                       **raw_checkpoint,
+                        openmm_checkpoint=np.frombuffer(context.createCheckpoint(), dtype=np.uint8))
+             if source_identity() != identity:
+                 raise RuntimeError("native-reference source changed during propagation; chunk not committed")
+@@ -348,6 +448,8 @@
+     parser.add_argument("--resume", action="store_true")
+     parser.add_argument("--wall-seconds", type=float)
+     parser.add_argument("--max-steps", type=int)
++    parser.add_argument("--migrate-checkpoint-contract", action="store_true",
++                        help="explicitly migrate only the audited original v1 source/checkpoint contract")
+     args = parser.parse_args()
+     if args.config:
+         config = Config(**json.loads(args.config.read_text()))
+@@ -355,7 +457,8 @@
+         config = Config(**json.loads((args.output / "manifest.json").read_text())["config"])
+     else:
+         config = Config()
+-    run(args.output, config, resume=args.resume, wall_seconds=args.wall_seconds, max_steps=args.max_steps)
++    run(args.output, config, resume=args.resume, wall_seconds=args.wall_seconds, max_steps=args.max_steps,
++        migrate_checkpoint_contract=args.migrate_checkpoint_contract)
+ 
+ 
+ if __name__ == "__main__":

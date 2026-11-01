@@ -1,0 +1,129 @@
+{
+  "passed": true,
+  "gates": {
+    "paper_barrier_coarse_identity": true,
+    "asymptotic_50_to_80_bohr": true,
+    "raw_gradient_with_declared_legacy_rounding": true,
+    "symmetries_and_momentum": true,
+    "batch_scalar_exact": true,
+    "second_instance_does_not_rescale": true,
+    "invalid_frame_does_not_poison_batch": true
+  },
+  "barrier": {
+    "doi": "10.1063/1.3132223",
+    "table": "III, PES column",
+    "reference_kcal_mol": 15.01,
+    "actual_kcal_mol": 15.014284308354895,
+    "difference_kcal_mol": 0.004284308354895572,
+    "tolerance_kcal_mol": 0.03,
+    "reactant_energy_hartree": -0.7098507305932952,
+    "saddle_energy_hartree": -0.6859239455343497,
+    "reactant_tail_50_to_80_bohr_energy_change": 0.0
+  },
+  "finite_difference": {
+    "predeclared_absolute_tolerance": 3e-08,
+    "predeclared_relative_tolerance": 5e-06,
+    "tests": [
+      {
+        "epsilon_bohr": 0.0001,
+        "maximum_absolute_error_hartree_per_bohr": 1.0352734504393002e-07,
+        "rms_error_hartree_per_bohr": 1.814521949332781e-08,
+        "observed_least_squares_gradient_scale": 0.9999979348769957,
+        "maximum_residual_after_known_upstream_scale": 2.340855908417039e-09,
+        "raw_gradient_gate": true
+      },
+      {
+        "epsilon_bohr": 3e-05,
+        "maximum_absolute_error_hartree_per_bohr": 1.0181926692054422e-07,
+        "rms_error_hartree_per_bohr": 1.810304506727535e-08,
+        "observed_least_squares_gradient_scale": 0.9999979375267126,
+        "maximum_residual_after_known_upstream_scale": 2.1145253950582976e-10,
+        "raw_gradient_gate": true
+      },
+      {
+        "epsilon_bohr": 1e-05,
+        "maximum_absolute_error_hartree_per_bohr": 1.0166938680528093e-07,
+        "rms_error_hartree_per_bohr": 1.8101362932118566e-08,
+        "observed_least_squares_gradient_scale": 0.9999979377010522,
+        "maximum_residual_after_known_upstream_scale": 3.381721638828772e-11,
+        "raw_gradient_gate": true
+      },
+      {
+        "epsilon_bohr": 3e-06,
+        "maximum_absolute_error_hartree_per_bohr": 1.0166568606417847e-07,
+        "rms_error_hartree_per_bohr": 1.8100999062537247e-08,
+        "observed_least_squares_gradient_scale": 0.999997937743876,
+        "maximum_residual_after_known_upstream_scale": 7.204474256755633e-11,
+        "raw_gradient_gate": true
+      }
+    ]
+  },
+  "units": {
+    "declared": "upstream bohr / Hartree / Hartree per bohr, without rescaling",
+    "coordinate_conversion_used_for_paper_angstrom_geometries": 0.5291772105439999,
+    "legacy_energy_conversion_100000_j_mol": 0.03812,
+    "modern_energy_conversion_100000_j_mol": 0.03808798847134393,
+    "legacy_energy_factor_relative_difference": 0.0008404625694569123,
+    "expected_gradient_energy_scale_ratio": 0.9999979377703975,
+    "policy": "No correction applied. Scale-residual values diagnose the source constants, not a replacement force."
+  }
+}
+
+
+  J. Espinosa-Garcia and J. C. Corchado                                      
+  Unpublished results, 1999.                                                 
+                                                                             
+                                                                             
+                                                                             
+
+
+   MAX. AND ACTUAL NO. OF EXCITED SURFACES:   0       0
+   MAX. AND ACTUAL ORDER OF DERIVATIVES:      1       1
+
+  The potential routine in POTLIB assumes a
+  default labeling of the atoms.  The user has
+  made the following selection of atomic labels:
+
+               DEFAULT                         USER-SELECTED
+
+  Atom  1 is       H                                   H 
+  Atom  2 is       C                                   C 
+  Atom  3 is       H                                   H 
+  Atom  4 is       H                                   H 
+  Atom  5 is       H                                   H 
+  Atom  6 is       H                                   H 
+
+
+  Atom  1  H  is a member of Reactant #1
+  Atom  2  C  is a member of Reactant #1
+  Atom  3  H  is a member of Reactant #1
+  Atom  4  H  is a member of Reactant #1
+  Atom  5  H  is a member of Reactant #1
+  Atom  6  H  is a member of Reactant #2
+
+  The Potential Energy is Zero for the following
+  geometric arrangement:  The reactants are at
+  their equilibrium geometries, widely separated.
+
+
+  Reactant #1
+  H C H H H 
+
+  Reactant #2
+  H 
+
+  The default units are:
+     BOHR FOR DISTANCE
+     HARTREE FOR ENERGY
+
+
+  The user has chosen units :
+     BOHR                 FOR DISTANCE
+     HARTREE              FOR ENERGY
+
+
+  To reset the zero-of-energy, assign a
+  non-zero value to the variable ANUZERO.
+  The value of ANUZERO will be SUBTRACTED from
+  the energy calculated by this routine.
+

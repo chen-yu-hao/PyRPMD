@@ -1,0 +1,1910 @@
+{
+  "all_1600_primary_parents_retained": true,
+  "archive": {
+    "bytes": 83259073,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+    "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+  },
+  "category_counts": {
+    "excluded_direct_importance_pilot": 2,
+    "excluded_efficiency_calibration": 2,
+    "excluded_initial_calibration": 2,
+    "finite_grid_short_distance_diagnostic": 1,
+    "primary_TS_equilibrium_and_parents": 8,
+    "primary_reactant_normalization_control": 4,
+    "registered_bead_or_domain_control": 16
+  },
+  "external_upload_performed": false,
+  "files": [
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/checkpoint.npz",
+      "array_count": 17,
+      "beads": 128,
+      "bytes": 1475525,
+      "category": "excluded_initial_calibration",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 6000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/reference-domain.json",
+        "sha256": "86c321a0b7834428f70951badd442a3d9ddd322585a72a33178da3f9bdb2a4ad"
+      },
+      "literature_reproduced_as_reported": false,
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "primary_inference_inclusion": false,
+      "production_samples_per_lambda": 5000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/report.json",
+        "sha256": "4fe009bce1dd089e7a20b46411426c828d8fcfb781cbf5e73ba5c9901e3f6aa8"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "311c052b2cd5412c8f6f96dc7f33047f2e579a19215ca8522686c191e944eb8b",
+        "shape": []
+      },
+      "seed": 319033,
+      "settings": {
+        "fingerprint": "ca31c361d71d4d3a8ac07cb7510f4be7cb8c5bca7683512c77756baf876693cc",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-reactant/settings.json",
+        "sha256": "b5c93e7d8d40c5ef1d4a4b57eadc3a859bb71120222575416dd13297a96b84db"
+      },
+      "sha256": "07cd62085ef138501f86934bb85183649be9aca861695cb38be07afc3d7952b0",
+      "surface": "reactant"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/checkpoint.npz",
+      "array_count": 17,
+      "beads": 128,
+      "bytes": 1750849,
+      "category": "excluded_initial_calibration",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 6000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/reference-domain.json",
+        "sha256": "c65df106b392d979bb5e6ec96659b291d79ddbc8b944b4e3067899524ff498dd"
+      },
+      "literature_reproduced_as_reported": false,
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "primary_inference_inclusion": false,
+      "production_samples_per_lambda": 5000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/report.json",
+        "sha256": "d0050b5827c012930b7f4e1af4fc470bf03e810dea52b2347804015f2718a2f8"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "70f4e85a946a30dc2cec948c8b6cc01d8972299db342caef547e971868f89a28",
+        "shape": []
+      },
+      "seed": 319031,
+      "settings": {
+        "fingerprint": "74c8d081d462871ab2995af9b6e630f02c692589f8cd38c76ddf87a36718745d",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/calibration-ts/settings.json",
+        "sha256": "8a7d482f3716f98699a885fb2bcaa8e4b996c544aa66138ec273c4d60c9a4a9f"
+      },
+      "sha256": "4a3a51ad88ba5952c77325553fa1fc54b2d6d4779e19d79f26b77f8826a8d23a",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2344315,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff04",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/reference-domain.json",
+        "sha256": "fa92132f2378d4f3072de22bf779a2b33b65973fc3d0e239cb97af6e04b23f45"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/report.json",
+        "sha256": "7f4a9f5fc0900d83d3971264b9148513710a19cefa0c207fc351e8839c7839cb"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "210087db18f7301c226f6652b64016aa065b0d65d579b8d704ebc77383e2327d",
+        "shape": []
+      },
+      "seed": 820401,
+      "settings": {
+        "fingerprint": "e5b0a21e23bfb9a6b226e8177371d4c95a77027eb56088318c8b57a0da6f801f",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820401/settings.json",
+        "sha256": "0da44629d07eb9689746f1c16c0d42f472a0d65658d83b4f66192b6cc8a274a1"
+      },
+      "sha256": "397f1868f0d3863d1ecf6fe47b536261fc9066a189cc2cf5cf7e6f02f9fe0735",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2343916,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff04",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/reference-domain.json",
+        "sha256": "cda52b2dc376d68f15b1d6f17859a02104f1bdd10c1bc884f79f6be9e4b2b9d5"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/report.json",
+        "sha256": "8ee52c74c318971639a49c8023fa005d61cecb254cb7b5b8db0469ff76350c93"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "09215b340201413f318793e6d6f09dcf3bd6cf93a72ef6341a13f42c0f28d48d",
+        "shape": []
+      },
+      "seed": 820403,
+      "settings": {
+        "fingerprint": "b2fdc503ce8559de034ea27bcb510d793c40c6954e5a0ea040d4db002e8e4956",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820403/settings.json",
+        "sha256": "e17805649e2e34b18f6fae0a8717dea8eece6b9ac706c5d31ff25868330159c7"
+      },
+      "sha256": "a9c77ec87d7b96a020a0dd6904bc2bd48d8b52e5e012a4a86c866ab8dfde9732",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2343897,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff04",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/reference-domain.json",
+        "sha256": "cdcb244253ed5be33c789f66b5e721a0ac8c81293638107b192514e60ad093df"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/report.json",
+        "sha256": "3c85d2c8c8e706c7a5c32cced6c243a72e8c371e5ec34c540c2d9b85e1a629b4"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "5920123d97da915f1f081f51b9e8115683ffd6788ec1d983d0233ae4f4c12adc",
+        "shape": []
+      },
+      "seed": 820407,
+      "settings": {
+        "fingerprint": "b82e22d55cd3fa1138911eecea41686e1aa8f4e94160271f16630880318cef09",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820407/settings.json",
+        "sha256": "19a51864b0431ec18a30bb287ec6dd28b69572979fe26ae8c1f64aa690933fb3"
+      },
+      "sha256": "6e660959d2009f6977821dbd44d1a4a2ab10cd23e4919afa683b8c3c925cd5db",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2344569,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff04",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/reference-domain.json",
+        "sha256": "8be9655a3916d4066a5cc23f85780a13302b5f2f7a5a8c6f8ee528aff227efc4"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/report.json",
+        "sha256": "468febe97db0eaf4ca6c6ea04872c41989b5799cf080e453677ce331219fbccb"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "ca9347f44c8029e85e65406c08b70b77e6a67d7941b1bce87d7e9331f19998dc",
+        "shape": []
+      },
+      "seed": 820409,
+      "settings": {
+        "fingerprint": "507aced8636acecbbf1036ecf7311bedc92971a8b8d66ef81c4aa711628c81b7",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff04/seed-820409/settings.json",
+        "sha256": "524d1381e6c91657c67e6dd9027c0702fe358a6ba3da5eb93c7fa22193682bfb"
+      },
+      "sha256": "920546d48719eeaf74d97619e9997d5d1b7c6118e93a1ee66c397c8b078d9098",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2343852,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff06",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/reference-domain.json",
+        "sha256": "561108bca2be50f546948bd32ef8b8e6d9a84f4c443258c672e5e988cbce0575"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/report.json",
+        "sha256": "8189636590b4f09868e834cc9c238524c931573badab799a0dd6ba75f8a88b0e"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "ab1c18fbd3eed5caf1324b7bf42de713987ef58a406c3588ea905eaff0ee592c",
+        "shape": []
+      },
+      "seed": 820601,
+      "settings": {
+        "fingerprint": "f80a740af48f84914068714d90bb18ace210f3ac34cc387919c349d3f36ef227",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820601/settings.json",
+        "sha256": "99cdd2ce200b795adec02603ec3b314d57e80b353ce8c3a88efce027a0f36d9a"
+      },
+      "sha256": "cbc1592d74c38e2518087b8f9d74d96de53b4216a65f438004c13dad51a81610",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2344701,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff06",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/reference-domain.json",
+        "sha256": "63124067bb62d70b180c3d2f3f06e560f24378a6f108bce5e25a120d4c27fa75"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/report.json",
+        "sha256": "b864285e920eea2da376774ed639af2a8791afb6f954688934549bcfb3d06727"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "86143b2d25fe88c5629e93c50ebbfb105bccca744d85a79e48d8645acd7a2b94",
+        "shape": []
+      },
+      "seed": 820603,
+      "settings": {
+        "fingerprint": "3435afc21615d6558cabeb81a96ef0e88e4814a739a653ff7fe1af94216ef97b",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820603/settings.json",
+        "sha256": "6e8d73dc1ce58fb21094093ed4bf93f37c7dd05cef8786e8111dcf2eff444302"
+      },
+      "sha256": "8d7ccdbe6ca01247854cc333cf42027bbacdb90dbc0bf1fd977726e0aa519e1f",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2344318,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff06",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/reference-domain.json",
+        "sha256": "5d50a6694d55f9e50741c64f7b0f33ae0981d2ef590fefba39681af5197ac6e1"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/report.json",
+        "sha256": "76424096a75cf672dc69bbcd7d922ee5fb323be60eb4ddb8ae940d181167862b"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "5ce88b01e1df04025a826aa4d0d2719aad5bb1b13298129a2f883fd9c2c17678",
+        "shape": []
+      },
+      "seed": 820607,
+      "settings": {
+        "fingerprint": "480fadfb0765f1c5a02905210acaec44b50be4863f0d77ab22a02e11bbc78fbf",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820607/settings.json",
+        "sha256": "9d8c85edbdef4e407e2dba7cf7529d10e77cee0beddd2c88a5ad61f98f71730f"
+      },
+      "sha256": "e724c0eea7e6fc5c7e1af6dbbb8122d760c3f053a186db6b03464a7e4f5bd35b",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 2344313,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p128-cutoff06",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/reference-domain.json",
+        "sha256": "3a9a395863a2c463a4f5768adacaa36d0458a4cedaf20e638c89ced66cac456e"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/report.json",
+        "sha256": "9aa170ce75602c8f8900f0e40d4a3dab6e2b1348a5277358545dcb84e71525c8"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "2f335bd25454cbfac7374dc92ac6630b7e44a6e22d0991b7ed419dcd1f4e30b4",
+        "shape": []
+      },
+      "seed": 820609,
+      "settings": {
+        "fingerprint": "700375d31e107eefd90588b03eeb2da4433f83c8a026e866ba320490f00fcf18",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p128-cutoff06/seed-820609/settings.json",
+        "sha256": "ad2705f388467d7c86354c3d172e74df863c7fe96f89f7b6a7c1ce0986667cad"
+      },
+      "sha256": "a405067505dc4b7c94b26ea9dfaf231376ccab14859537f6dde9e9a9451df6a6",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/checkpoint.npz",
+      "array_count": 19,
+      "beads": 256,
+      "bytes": 2397672,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p256-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference-domain.json",
+        "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            256,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/report.json",
+        "sha256": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "78a172f979c214cb82206582f88ae70373f1b318763ba1101a75391988c7f61d",
+        "shape": []
+      },
+      "seed": 825601,
+      "settings": {
+        "fingerprint": "34cd32b5143263544a59c28e6f3b843beee4a94f162d75e19e5ba27ae35d6c0d",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/settings.json",
+        "sha256": "8f244e633b79b7dd988a1bd209126a7b71dbdadfbe9926ac57e9bac7a513b21d"
+      },
+      "sha256": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/checkpoint.npz",
+      "array_count": 19,
+      "beads": 256,
+      "bytes": 2397890,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p256-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference-domain.json",
+        "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            256,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/report.json",
+        "sha256": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "2147aa3363f2d600f774285d634b7a1735317a5a404965fee896c75b95618c3a",
+        "shape": []
+      },
+      "seed": 825603,
+      "settings": {
+        "fingerprint": "f646683ce0c9b2322cc4bc5537cd4cf3220e134bdd3a5d925456b42dca14ce46",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/settings.json",
+        "sha256": "1c175cb52de13430ac05e9b1cdb2409f3a5b24f63f98c8af0805ab977aec9713"
+      },
+      "sha256": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/checkpoint.npz",
+      "array_count": 19,
+      "beads": 256,
+      "bytes": 2397287,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p256-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference-domain.json",
+        "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            256,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/report.json",
+        "sha256": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "f607dce1ec27e76591245081c2a66626f475681be0e88cf48b8cc24cf8d129d1",
+        "shape": []
+      },
+      "seed": 825607,
+      "settings": {
+        "fingerprint": "c63382b13b69959f4334c95e0a766705618f2f6df69596229af2c8f28f3a0bbc",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/settings.json",
+        "sha256": "59cb3d80a4dddd18caf26d856d09233eb2197f1492c76ef3ef6397c85c9517a5"
+      },
+      "sha256": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/checkpoint.npz",
+      "array_count": 19,
+      "beads": 256,
+      "bytes": 2397311,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p256-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference-domain.json",
+        "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            256,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": true,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/report.json",
+        "sha256": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "b27248d85159a7a0149a323c323c8ec80acd60ce9e3d1f2ac75f5bf9b964882c",
+        "shape": []
+      },
+      "seed": 825609,
+      "settings": {
+        "fingerprint": "0938c288f7da80cc95cda816f59343001b0f6051c008b0426e23eddefb541eb8",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/settings.json",
+        "sha256": "64050597dcbf5a313de032b0e5f91cc71b00b8fc0a0fba698424bb094cbf1a3f"
+      },
+      "sha256": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/checkpoint.npz",
+      "array_count": 19,
+      "beads": 64,
+      "bytes": 2317791,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p64-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/reference-domain.json",
+        "sha256": "858636cfb175c96a1a655b03718dec90319cb1bbbf84cc873c8fc46acca38ec5"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            64,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": false,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/report.json",
+        "sha256": "3daf6091caf7b49e5f1bc86b96a95d496271d1e56ad521e64dc9afb08d77f81e"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "c90bb9c38385049a89479c3937f208a933555eca431d2af4c6339f4d32ca484b",
+        "shape": []
+      },
+      "seed": 826401,
+      "settings": {
+        "fingerprint": "1bf993e6e2499e825e6b7354d1e0d9c949229f98def839ab4b97fe3fcd99e9a4",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826401/settings.json",
+        "sha256": "e87f129a228f3387a9c71faa7595b5f0ba6b3a109ebfff6b561a2c4d813dc9ec"
+      },
+      "sha256": "a1573fd366d8c9130d1fe3673c1a3d28c1ccbbe4347bf8ce4c145de951e89170",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/checkpoint.npz",
+      "array_count": 19,
+      "beads": 64,
+      "bytes": 2318189,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p64-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/reference-domain.json",
+        "sha256": "01f1b7beb559e9bd8e42c92d2d6fa86bb2654a5f820b67d4807f1f990c1c38d5"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            64,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": false,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/report.json",
+        "sha256": "f1882fefae0a61837c0b609616633f788f5a2feeacf81d9c8b557720ff180322"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "d9db9cac8dc84d912032bd09f0f85462d415b7a290d4342811cb11405e0c2d78",
+        "shape": []
+      },
+      "seed": 826403,
+      "settings": {
+        "fingerprint": "e22f3122364714fb402e6f23b81d8a69517c47e06785aad55f2f01de5cf2a8ad",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826403/settings.json",
+        "sha256": "9eae97477e08e688394ec650f6d974a9ff9ace2f45202dbd34a69fd62d536ae1"
+      },
+      "sha256": "48b71e05f5b088913efa77ea568fb525cf67340e80473eb8cadf0b44d2070f29",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/checkpoint.npz",
+      "array_count": 19,
+      "beads": 64,
+      "bytes": 2317998,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p64-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/reference-domain.json",
+        "sha256": "9cc634d50fdc5e0e8bd81025d2c2ae7293afa615bdcfb3893daaa591a9630e3b"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            64,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": false,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/report.json",
+        "sha256": "33e3d6c9e4fd94dc7cd223fda8f57c7b94647bd514551ff356421f9f20e9d7e1"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "d19f938221bf552e3181e7fc54172694f75568ec6da7aba032ab1e53e2a7060d",
+        "shape": []
+      },
+      "seed": 826407,
+      "settings": {
+        "fingerprint": "e58caed329b56f4928053e99b6706f083e8ba014710dceb99b47a7c4d9221776",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826407/settings.json",
+        "sha256": "dc7dfbd581b96e915ed59fcda34c7382eff3365324d987b326083373dfd82c60"
+      },
+      "sha256": "63c3be4afa48c0bf3aab3531268a53688febe8b9c21088c0c183f8e9e863dac4",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/checkpoint.npz",
+      "array_count": 19,
+      "beads": 64,
+      "bytes": 2318268,
+      "category": "registered_bead_or_domain_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "control_case": "p64-cutoff05",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/reference-domain.json",
+        "sha256": "554eec74517a526145e1d5e4865ae4073144612af648763c33e402a96425d261"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            64,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "registered_case_equivalence_passed": false,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/report.json",
+        "sha256": "f90083d41eb9d20ef1cf3cc518e19d41e3604f7ec1afbbca7ee74029c1837c8e"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "86c89b25305cf39752642ee29bb9489414c11355862a2c58b7753e363a1e3fcd",
+        "shape": []
+      },
+      "seed": 826409,
+      "settings": {
+        "fingerprint": "2874f3836d2e2564b118c25aca8ab50cc7d3c290fdc1446d7401470f6b963863",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p64-cutoff05/seed-826409/settings.json",
+        "sha256": "c10e87eaf8497d75cf0213d2d32242487e1b50538530a395d2b894300f2873d6"
+      },
+      "sha256": "c067e160530b9e199bb33af900e63c5948e8dda9aa4515bfc941ed6b91b6e7d0",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/short-distance-grid.npz",
+      "array_count": 2,
+      "arrays": {
+        "energy_hartree": {
+          "dtype": "<f8",
+          "sha256": "403fc06245934726cca8f32d20bbb8d517aac984e3cd68d534920388affc8831",
+          "shape": [
+            50238
+          ]
+        },
+        "pair_distances_bohr": {
+          "dtype": "<f8",
+          "sha256": "6e5c0f5676fd499a6d6b71ecfb508d0e6ee303719d9c12465db54edbbb75d4c9",
+          "shape": [
+            50238,
+            3
+          ]
+        }
+      },
+      "bytes": 763337,
+      "category": "finite_grid_short_distance_diagnostic",
+      "container_integrity": "no_original_envelope; ZIP CRC and whole-file SHA verified",
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/short-distance-grid.npz",
+      "primary_inference_inclusion": false,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/short-distance-domain-check.json",
+        "sha256": "0e3f36c22582d63820c2a5d8dd58470dbf64a3a21ec804ffa03987c91d3c0b13"
+      },
+      "sha256": "90c3e11fd3dbf053af7c439a77883fdefb44cce4c9428aa14f5564cc6a549f8a"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 80604,
+      "category": "excluded_efficiency_calibration",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 1000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/reference-domain.json",
+        "sha256": "2b31cc4565d76b4a063358b93f8472e970ad08523a7c647ebf9a23049f6e2147"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "primary_inference_inclusion": false,
+      "production_samples_per_lambda": 500,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/report.json",
+        "sha256": "791dd341c4ca7d7f2019ae8dab774642af3a1d74d8ea085db7a7b79794e354eb"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "5e296829c9e0b49b643455a4f5e5e5c7451ea1699ca35d09282ceef73845dcde",
+        "shape": []
+      },
+      "seed": 319053,
+      "settings": {
+        "fingerprint": "5b0c26d8fdc96645f0b98942bc34f797e8b3fd91624ec183f34594eecc066c87",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-reactant/settings.json",
+        "sha256": "2326c41601946dc0ddc2f9f13d0af396e688e0cadb923d790ff99f6874fb125d"
+      },
+      "sha256": "e8530b9b8b92e045f802514431a95275ae0ea32851e2628f92aff8cb9216ddee",
+      "surface": "reactant"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 160868,
+      "category": "excluded_efficiency_calibration",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 1000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/reference-domain.json",
+        "sha256": "faa7ab4ea0fc53a2596d80383dc467d5040e08107b8a3b7f82fd5ffe7f462ab3"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 5,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "d543a7d65e35a42426dc67e56387f83c1172b19d5a9535cf260cd072785a3306",
+          "shape": [
+            5
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "dc295e5a1e5e5f3038a1af9c62045ea5572c2c1df34de8515ca0040813f5844c",
+          "shape": [
+            5,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "primary_inference_inclusion": false,
+      "production_samples_per_lambda": 500,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/report.json",
+        "sha256": "4f434614ad63985bb883893e2f07e0292eec49b97352db6c441a335ff96f47f5"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "2acfc7843bbe2ce5daeda8f03ca6765499ab21322ec7df23e42d7bba7ad418f3",
+        "shape": []
+      },
+      "seed": 319051,
+      "settings": {
+        "fingerprint": "99753097ccac844014e09aea19f62d1c209ef6f694a17b3cb58a3c36edfce48c",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/efficiency-ts/settings.json",
+        "sha256": "924f4e316b179121250fad86c0897f6c29cd9aefd9a068db6316f298fa1c743f"
+      },
+      "sha256": "657413b8df4511c4b8aaf75a8d14f2d2c061338fc57b7cee144a2ed59c01d5b9",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 1939165,
+      "category": "primary_reactant_normalization_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/reference-domain.json",
+        "sha256": "51db0704d3d1d54fc9c65340d0ca2c09b6bd94d0cbb59713ae164e6f386b4972"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/report.json",
+        "sha256": "6f76526a64c81035195b494301f502350f570ccf4e7de4d5854e5fb0a221f475"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "83d550233566f28912ab62e2d4c2163a6957db9266268f759b2ce20bb769037a",
+        "shape": []
+      },
+      "seed": 721401,
+      "settings": {
+        "fingerprint": "f5e1e75736fbc5b9b13ce7f7721dcc1c02f363c888f1d2861f1ad4ee1f14c509",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/settings.json",
+        "sha256": "36f9dd4f0f7dd4b329f04119864399b9a5f7067845294e223f070fe0fa1a38b9"
+      },
+      "sha256": "b768d34eb29e9ffe2014c6e6c3dba3f67e86df1b1414a4c29d27c1c823bd5d49",
+      "surface": "reactant"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 1937656,
+      "category": "primary_reactant_normalization_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/reference-domain.json",
+        "sha256": "8ddc4ea1b62f6588d15dac29bbcda4485178a92e8c6532bc30749e3cee194a23"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/report.json",
+        "sha256": "2bbbbf327ae7db1d53874083bf4f99daed94f2f96393544c38e42b13a7376add"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "f87f63f2c4ce8950fdfffe27eb286c3c78317f8d72c67b831ca6777b108ddb7c",
+        "shape": []
+      },
+      "seed": 721403,
+      "settings": {
+        "fingerprint": "8de13bfb25216c9e40c1d6cc30a396bb28ecfbe572752bc10d12306af3e6e921",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/settings.json",
+        "sha256": "220aae2c586d6cbca49e11e3b7f992937df36c087129f8328f809d53bd0424c3"
+      },
+      "sha256": "d6fb33969c7d2baf8544d962aa3a92c9434b42042ac0d9ec60f0ba9fd452eabd",
+      "surface": "reactant"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 1939549,
+      "category": "primary_reactant_normalization_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/reference-domain.json",
+        "sha256": "0c48c792304ecbc0f0b8d6c70525312f671e02a89d7d2dfe09107a0ed66585a4"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/report.json",
+        "sha256": "666c659b21c73d135beceb39dea706be4c593f48fc370f39840717c1935eaaff"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "d974d34eeb7d39faaf164130f55f849ebc82af13d523d7eb2a5b519378385dc6",
+        "shape": []
+      },
+      "seed": 721407,
+      "settings": {
+        "fingerprint": "139f5fe13fb683d69c12d81de81c0c4b401e0d663b54c5ef0962986093eaa00e",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/settings.json",
+        "sha256": "3b7799bb55f1a8b5d851e9cca9f7c99f2076c7b417cf4b5892871f78a915c1e2"
+      },
+      "sha256": "7b566b9503e880dc9609eb1489601b56bace6783700aa2a1d14d371b6fca7bbe",
+      "surface": "reactant"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 1936566,
+      "category": "primary_reactant_normalization_control",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/reference-domain.json",
+        "sha256": "3b53472e0d43e743f61be24df17ceb45af83c481fc041cbf07b4427847de8c62"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 0,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/report.json",
+        "sha256": "6cb1a850250f6b7bc5a8b7edefc3e2125a279d4c667b4852eafbc72b017fd9ad"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "df25877220b4e0a93f22bbadf5716506012ed0af3afef4099feb35f5391f8862",
+        "shape": []
+      },
+      "seed": 721409,
+      "settings": {
+        "fingerprint": "ea469fc10fe60c7b70551525f0138c86340861ed7e20f55399f80f49535e761f",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/settings.json",
+        "sha256": "ff5c8aa62cf51bb089ee298b8e5dee49ff2f9327d35ba66c3f46344f3edb22cc"
+      },
+      "sha256": "8d2224fc1474ec951142961228ad0c8216c85762f5a42af5d2ca5ee61bd58cc6",
+      "surface": "reactant"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4113196,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/reference-domain.json",
+        "sha256": "2fce3b883b4ad0b509e1d044bff93cbe08065a93c4fbbe8e4bb2cfa42bb646e2"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "acddd8bbfd2a13b0d305a3f91cbf7888f259d04bceadcb2926a853693f00bba1",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/report.json",
+        "sha256": "d0849e64cbeb5f1ba3c654c9999c57095c7645c227ef415fed6b69fe5fde4bfa"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "3b7037102a58cbc15a3a7b927842f8f3e621fc520dceb859149eb9465fa6d96d",
+        "shape": []
+      },
+      "seed": 721301,
+      "settings": {
+        "fingerprint": "37ce9396c61007342b04421fdc0b5c5647448d15751084db759953eabcb04220",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/settings.json",
+        "sha256": "7ebb1dcefb2abdc3d91586fdd3a397573293bf425167f22ed2213e04b2e7798a"
+      },
+      "sha256": "eebd1809b4a0a5011ed6298ab44973cd89bb576f8d7091019f6bfb3555ca3dbf",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4113028,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/reference-domain.json",
+        "sha256": "04edc9c6b31084630b9595f44cbcc78070c5b167cec7c0999a1c0ddead443b71"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "d9c681d93189413de075e9689daf4aa8c6d2a0702df8f8c81575c70dccdf43e9",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/report.json",
+        "sha256": "e46d5420e9a5b1390fef7ad967aa87fe07976f40acf4d209f64b77edf20cff22"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "35f8cdbc9a1598dd4342ef28be214b2051e6d94816f1add67d6ede9b88de2a9d",
+        "shape": []
+      },
+      "seed": 721303,
+      "settings": {
+        "fingerprint": "3d493e8c61b03ae98ac5d63fa48ba85136f593b2a6871fc1f785f1e15f59be1d",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/settings.json",
+        "sha256": "acb58ecb3dfba08f2188c958e88d259b6ff355bbf65e9b732aef9e544d0d5d3d"
+      },
+      "sha256": "aaf11b6ea143c7166456d46d2f4b767481eb0319d7e46816783ad57baacc0c14",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4112604,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/reference-domain.json",
+        "sha256": "bfa317465c2b3e877fb98d9478ac57a55325fcf2c3e09a4aa000cb969233f45a"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "40b6e7c43d880c7c120b1e8f929230fcf645c6e1bbd55b35b3f4eff581d64ac8",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/report.json",
+        "sha256": "c2cebae072d51a03f0ce47b590775d8b3292373cfdac0de26142d16281c9a9e1"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "38389412e189130cf0469ae4dc74bbe3f69f23503a2d16b52d28398428ecfdb9",
+        "shape": []
+      },
+      "seed": 721307,
+      "settings": {
+        "fingerprint": "0240f7f70ae55d4aa66ed6242109caacd5446d6a75d3408d17c1bed3d54495a6",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/settings.json",
+        "sha256": "88c37c59cad156f1a395418ead315de50f25f4d32833ab83ccfa976529a24b71"
+      },
+      "sha256": "d1cf4de76ade549ab74391e12eb4b42e3e06be44dab3cbd3037f470a044b8519",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4113120,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/reference-domain.json",
+        "sha256": "afb5896ae911f831aa8b79f5eaf306b2e5793ada370f3a901d978b79ec7afb26"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "911653cb03c4e8228b1bf0b4716ecdd0f9318e74546369c8dc8b372f11feb771",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/report.json",
+        "sha256": "2a0e3c71cd6aca33cf33106695cac81cd44b316ce7fb9d3fcaca5c277892a07a"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "2f07a01085c8a79aafadd86ca05260cc4dffbd71b27245d1eea024f0dc7fa45d",
+        "shape": []
+      },
+      "seed": 721309,
+      "settings": {
+        "fingerprint": "66ee1b585c5cdf10d6cced9b318e0dd3d6393818e6aac46fb1b695429a301a4e",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/settings.json",
+        "sha256": "82dc90c8a3e1fbe716144718b8ce9e00e60118b3963056b1f10a1eb3064f4d76"
+      },
+      "sha256": "d7c9c82121fed1fa75adef7b2c49cb97d0d5d410f6eee485ae4e2ca46d31b469",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4113109,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/reference-domain.json",
+        "sha256": "73e25a0a5a4e9705efd12a6200ff4cd31bac4932a0cc5a5b7ffbf2fda1c2ac3f"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "2d47dd79678f44893773e8ae7c029c122b3e2412838edbddf3c2046e2f363b56",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/report.json",
+        "sha256": "af0569bf5e2ef86436c5d922aa9a44b6e22a5f38363841d7468e027c16ef619b"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "4b26cfe9e6c14f56c74a696a36938a76d99e376d569593aae12bf8f2787b40bc",
+        "shape": []
+      },
+      "seed": 721313,
+      "settings": {
+        "fingerprint": "3f9a00129fce2b523709b19d7cdc8337dd783b0af2d8cd963c2d66456ae467c7",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/settings.json",
+        "sha256": "4ccb943c13734aebbcc48427b7a0d69747141850e3723eeffb7028a4ac998af7"
+      },
+      "sha256": "a91a6dba5428a1b9b1e2f08a19f6a6388965b0d5039a45d07e55a00cbad0c86f",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4112792,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/reference-domain.json",
+        "sha256": "e7aaf0a8375fcff00d0c1a8b95d818e02075920c0c4f8037dbbe6ac4400026ed"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "6fbdc96b5eaa3cd5c5b49f181ac621cd83e0f3711a96b16e0326d9c31e8ba327",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/report.json",
+        "sha256": "b99e2996efdb6550d64a863cb1540f043819f41415ed2bc36662439a659bc45a"
+      },
+      "rng_array": {
+        "dtype": "<U175",
+        "sha256": "4f42f42ab6070a109bf27e79e002be8616929db84891111c70fb0aa41f5cdcd1",
+        "shape": []
+      },
+      "seed": 721317,
+      "settings": {
+        "fingerprint": "96c1c1689e5e525293fa2abed379f1b999fc212ef19e4ff7146eeeca0ed29aa3",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/settings.json",
+        "sha256": "12f6497afe191cf971488cca9ba3eedf9e56f0ecde6e10461ca052e27c732d89"
+      },
+      "sha256": "d6d0d0c2b063523ad549e00ddda311b1f5dd60040f6317842c7da1851421bea9",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4113780,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/reference-domain.json",
+        "sha256": "cbdaeaa9ff70a1124e00fa1011e906b22945a5655ef0d31a6d0661526bc58429"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "42e66e352bf782bcdaf6d3acd08ebff51ad0240079b499167240bc9224a98411",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/report.json",
+        "sha256": "8ca26884df01d061a56ab379dca4af20c2702bd7eea856d73aac96638a4ecb78"
+      },
+      "rng_array": {
+        "dtype": "<U176",
+        "sha256": "71065b016b75ed47f03998f354af268267616dbb6f32597187ef38b02b697a43",
+        "shape": []
+      },
+      "seed": 721321,
+      "settings": {
+        "fingerprint": "ee56612d3f357c02412ea0292b0bd6d26317a1e94169aadce4b1cb1eaf19cad8",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/settings.json",
+        "sha256": "c2a92347474317ea0bc91ca38928caa2d1bba88299fc665742001f5ac5744dc4"
+      },
+      "sha256": "fe74abf796ebb757c887f30afdb864d388cd1ce8e3b520445dc9653d96dfea64",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/checkpoint.npz",
+      "array_count": 19,
+      "beads": 128,
+      "bytes": 4113187,
+      "category": "primary_TS_equilibrium_and_parents",
+      "checkpoint_kind": "h3.surface-partition",
+      "completed_sweeps": 22000,
+      "container_integrity": "verified_v2_envelope",
+      "domain": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/reference-domain.json",
+        "sha256": "f31e1ae01491e99c512760efb610a79b4481bd679ba8a4bb84aaa4bbe48e9478"
+      },
+      "literature_reproduced_as_reported": false,
+      "parents": {
+        "coordinate_units": "bohr",
+        "count": 200,
+        "endpoint_completed_sweeps": {
+          "dtype": "<i8",
+          "sha256": "f08dca2292ffa7c3979a462b2d98779d2838d37dd62593089f7862c50d81f893",
+          "shape": [
+            200
+          ]
+        },
+        "endpoint_q": {
+          "dtype": "<f8",
+          "sha256": "a743ffb6cf593f50e14ffeaa7f40476c4a1aef9ad811b977906409c514848b5f",
+          "shape": [
+            200,
+            128,
+            3,
+            3
+          ]
+        }
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/checkpoint.npz",
+      "physical_converged_as_reported": false,
+      "production_samples_per_lambda": 20000,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/report.json",
+        "sha256": "ccd31b2149bbefe42d71495fd55933a190db43b4d4a6f75d5b7aef2ce43bda6f"
+      },
+      "rng_array": {
+        "dtype": "<U174",
+        "sha256": "06c6165e1d5717dced54f4426a2d6ea3e21886b2b166bb4ff51aa041fbb53c52",
+        "shape": []
+      },
+      "seed": 721323,
+      "settings": {
+        "fingerprint": "02d6fe840771b4f2c69b8529ef2a7699ba56d0833a3583ebf9fcfe8557317a32",
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/settings.json",
+        "sha256": "22b3bf6a4a82116009351050e55266587b7b65ee4cb82d94851667d649055982"
+      },
+      "sha256": "207d8801820a18b928fc84d54227798a01a5c7f53e84c93943edde524469adfa",
+      "surface": "ts"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-importance.npz",
+      "array_count": 2,
+      "arrays": {
+        "log_weights": {
+          "dtype": "<f8",
+          "sha256": "82262e03c7be2ab35a4b839c9540044a10292917e98099daf3ad45b5921583dd",
+          "shape": [
+            8192
+          ]
+        },
+        "observations": {
+          "dtype": "<f8",
+          "sha256": "04ef1f34f491ceb1d5db6018a1db0813666abef3e8a436d2886cf547b1c99417",
+          "shape": [
+            8192,
+            4
+          ]
+        }
+      },
+      "beads": 128,
+      "bytes": 193908,
+      "category": "excluded_direct_importance_pilot",
+      "container_integrity": "no_original_envelope; ZIP CRC and whole-file SHA verified",
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-importance.npz",
+      "primary_inference_inclusion": false,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/reactant-importance.json",
+        "sha256": "f7e5a11afc412195db7e2e10d2c29b589899aede526c7579cb9eec56cbabf6e7"
+      },
+      "seed": 319039,
+      "sha256": "9bd6ba5d386c588d7c74175d69193c5e0e7ed6a379702505269032c5a0f6e252",
+      "surface": "reactant"
+    },
+    {
+      "archive_member": "docs/validation/literature-convergence-2026-11-01/surface-partition/ts-importance.npz",
+      "array_count": 2,
+      "arrays": {
+        "log_weights": {
+          "dtype": "<f8",
+          "sha256": "6d964d45a3e89fbdd96a9425d6b6c9a00e73e7010d19907176c644a771ba68f1",
+          "shape": [
+            8192
+          ]
+        },
+        "observations": {
+          "dtype": "<f8",
+          "sha256": "f94ff44a89199611967a0907587adcc070a719617b803c63627965f5ca116032",
+          "shape": [
+            8192,
+            4
+          ]
+        }
+      },
+      "beads": 128,
+      "bytes": 203312,
+      "category": "excluded_direct_importance_pilot",
+      "container_integrity": "no_original_envelope; ZIP CRC and whole-file SHA verified",
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/ts-importance.npz",
+      "primary_inference_inclusion": false,
+      "report": {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/ts-importance.json",
+        "sha256": "21e233c71b34ce08ed5f2bab569d03d19ca3763a38db3c47173fb5fd2c7f11a0"
+      },
+      "seed": 319037,
+      "sha256": "b5a74b4acdd40dbb5e2c111730098a38f0d9220e5fae30dc7d3f41c495b77e25",
+      "surface": "ts"
+    }
+  ],
+  "member_inventory_sha256": "3d0ed87a1197b2b14cc769a572a2e486a5f939d041532e8280e1d6d14eae6b7b",
+  "raw_NPZ_Git_publication_requested": false,
+  "raw_bytes": 82902442,
+  "raw_count": 35,
+  "schema": "pyrpmd.h3.quantum-equilibrium-raw-index.v1"
+}

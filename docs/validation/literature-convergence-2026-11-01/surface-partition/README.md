@@ -282,6 +282,59 @@ normalization, Welch uncertainty, full-interval equivalence rule and matching
 finite-P/domain oracle selection. These are equilibrium controls only:
 they do not establish bead convergence of the real-time recrossing factor.
 
+### Fine-bead refinement and the full control-set decision
+
+All four control groups have completed their four registered independent
+chains each. Their individual comparisons with the frozen P=128,
+0.5-bohr baseline are:
+
+| Control | QTST change | Independent-seed 95% interval | Registered individual equivalence test |
+| --- | ---: | ---: | --- |
+| P=64, minimum 0.5 bohr | −3.76% | [−6.33%, −1.12%] | Does not pass |
+| P=256, minimum 0.5 bohr | −0.56% | [−2.80%, +1.73%] | Passes |
+| P=128, minimum 0.4 bohr | −0.75% | [−4.45%, +3.09%] | Passes |
+| P=128, minimum 0.6 bohr | −1.50% | [−2.99%, +0.02%] | Passes |
+
+The **P=128 to P=256 equilibrium refinement passes** its predeclared
+criterion: the entire fine-bead interval is inside ±log(1.05) on the log-ratio
+scale. The coarser P=64 experiment resolves a downward shift but its interval
+extends beyond that margin. Its TS log correction changes by −0.00103,
+whereas the independently calculated H2 reactant log correction changes by
++0.03730; the latter dominates the coarse-bead QTST shift.
+
+Both distance-cutoff groups also pass their individual equilibrium
+equivalence tests. The **aggregate control-set gate remains false**. The
+original protocol requires every one of the four control groups to pass,
+and the failed P=64 equivalence result is retained.
+Passing the individual fine-bead check is therefore a narrower conclusion
+than passing the entire control set. Neither conclusion establishes bead
+convergence of the separate dynamical recrossing coefficient. Exact values,
+sampling flags and source/checkpoint hashes are preserved in
+`controls/comparison.json` and the four `*-case-assessment.json` files.
+
+All 16 chains pass the separately registered sampling flags. Across them,
+the minimum adjacent BAR overlap is 0.89535, the minimum per-lambda energy
+ESS is 728.6, and the largest absolute first/second-half log difference is
+0.05102. The maximum change in the independently refined classical-domain
+normalization is 7.62 × 10⁻¹¹ in log units. No seed, count, cutoff, estimator
+or acceptance margin changed after observing these results.
+
+![Registered equilibrium QTST control intervals](controls/comparison.png)
+
+The shaded interval is exactly the registered log-symmetric margin:
+−4.7619% to +5.0000% on this ordinary percentage scale. The SVG, exact plotted
+CSV values and input/output checksums are retained beside the PNG.
+
+`controls/short-distance-domain-check.json` records a separate deterministic
+PES diagnostic motivated by the known short-distance extrapolation problem.
+It reproduces −7.17166 hartree at distances (0.3, 0.3, 0.45) bohr. In the
+specified finite grid, the lowest energies in the 0.4–0.425, 0.5–0.525 and
+0.6–0.625-bohr shortest-distance bands are respectively +0.76145, +0.40982
+and +0.19424 hartree, relative to three separated atoms. This grid does not
+prove a global energy bound or measure an omitted domain's equilibrium
+probability. Its source and raw energies are retained separately, and it
+does not change the registered statistical control gates.
+
 ## Reproduce in a separate directory
 
 Build the documented BKMP2 library first, as described in
@@ -319,3 +372,17 @@ experiment's original reference and parent files when doing that rebuild.
 `primary-manifest.json` binds all completed primary sources, text evidence
 and raw checkpoint files. The checkpoint hashes support integrity checks;
 they are not a claim of cross-platform bitwise-identical stochastic results.
+
+After the full control campaign completes, `controls/verify_controls.py`
+checks the registered settings, every checkpoint's internal integrity and
+observation count, source hashes, and every file in the immutable primary
+manifest. It writes `controls/manifest.json`. Its integrity result is separate
+from the scientific equivalence result, so the retained P=64 failure cannot
+become a pass through successful file verification.
+`controls/plot_controls.py` accepts only the complete comparison and writes
+PNG/SVG figures, the exact plotted data as CSV, and input/output checksums.
+
+The recorded final verification passed for all **16 control checkpoints**
+and reverified all **72 immutable primary cohort files**, including the
+original **1600 TS parents**. Every registered sampling-source hash still
+matches. The manifest retains the aggregate scientific gate as `false`.

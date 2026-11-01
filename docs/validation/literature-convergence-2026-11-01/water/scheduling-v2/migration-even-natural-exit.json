@@ -1,0 +1,51 @@
+{
+  "queue": "even",
+  "dispatcher_pid": 201552,
+  "dispatcher_start_ticks": "5001193",
+  "dispatcher_argv": [
+    ".venv/bin/python",
+    "benchmarks/water/native_campaign_schedule.py",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+    "--protocol",
+    "docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+    "--queue",
+    "even",
+    "--wall-seconds",
+    "7200",
+    "--invocation-seconds",
+    "1800"
+  ],
+  "native_child_pid": 240341,
+  "native_child_start_ticks": "5184542",
+  "native_child_argv": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102",
+    "--wall-seconds",
+    "1800.0",
+    "--resume"
+  ],
+  "seed": 1102,
+  "native_exit_code": 0,
+  "native_raw_wait_status": 0,
+  "native_normal_exit_verified_utc": "2026-11-01T17:31:02.896095+00:00",
+  "committed": {
+    "manifest_sha256": "4dda575c8a201dc235232bfad729fcd1071946209cff0595b496207d16d8b37b",
+    "committed_steps": 592000,
+    "chunk_count": 148,
+    "completed_NVE_segments": 12,
+    "chunk_prefix_sha256": "01963e3ff42c5f2689c81814333ed461db828eaeb18de8ac74a5a3aca90b6f38",
+    "last_chunk": {
+      "file": "chunk-000147.npz",
+      "observations": 200,
+      "sha256": "529974ef58bfad3ae3d1157599e3d5c5c3c16bbbc72dbd4636873b0a4005be0d",
+      "step": 592000
+    },
+    "complete": false
+  },
+  "old_invocation_prefix_sha256": "c3f376448c3df3afc6f3312f8414251e046390f0a107f3ea56070428ffc7f554",
+  "prefix_preserved": true,
+  "integration_child_signalled": false
+}

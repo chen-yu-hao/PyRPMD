@@ -1,0 +1,59 @@
+{
+  "schema": "pyrpmd.water.integrated-main-check.v1",
+  "main_commit": "4698c1202d0726bce7d63742e7cd31a6f137a847",
+  "initial_summary": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "2",
+    "skipped": "0",
+    "tests": "64",
+    "time": "51.369",
+    "timestamp": "2026-11-01T12:12:33.700628-05:00",
+    "hostname": "13d968332fed"
+  },
+  "initial_failure_cause": "Two scheduler tests depended on historical local protocol/checkpoint inputs rather than a self-contained temporary fixture.",
+  "followup_summary": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "3",
+    "time": "0.520",
+    "timestamp": "2026-11-01T12:16:47.351839-05:00",
+    "hostname": "13d968332fed"
+  },
+  "unique_tests_passed": 64,
+  "all_initial_failures_covered": [
+    "tests.test_water_native_schedule::test_native_child_failure_stops_queue_without_replacing_seed",
+    "tests.test_water_native_schedule::test_scheduler_rejects_self_consistent_replacement_of_old_chunk"
+  ],
+  "final_source_and_test_sha256": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/checkpoint_validation.py": "1fe0d08d779671e27c4da0a7c2918e0d3397d3bbfe32d38587bba20a6bb04a06",
+    "benchmarks/water/compact_split.py": "7fbb62470381ea35706d41e077f22fef9751ae7db81092fb6a38e2099bc7abb4",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_optimizations.py": "59cc10baf566c79e3bb8769f9851d45b1b954e224fd5e3f9d103ca810c13e4df",
+    "benchmarks/water/native_quantum.py": "6ffe98313abfc0b74e4e63531a41e5dcbb830766537b45b934b1c0d614950715",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/native_validation.py": "3a85a0c5ed5cfbac76225db15c1a74436e30552c8acc10e144e04a9e65e6e759",
+    "benchmarks/water/plot_native_progress.py": "8cc0148b1d3dbc1c0f0546ed810be37675a249c62f038c4669aabda5c2024981",
+    "benchmarks/water/split_reference.py": "b60a908b479421ba07e5da9ced92e8cc25374007eca19428bbaba1799cf6c94f",
+    "benchmarks/water/validate_native_optimizations.py": "7532a0bf2449c9a861fc9817f75d8f21c766795eb36eb23163453c284512bdcb",
+    "benchmarks/water/validate_split.py": "b3026ff4725ccf88ae358ca333e3b3bdb3f0979c60682bbbfc5106353987ef83",
+    "benchmarks/water/velocity_cadence.py": "bac1e70a6e16e9bfb3164379b800086d82abdb6a509d4a5e9fee7c6c1556888d",
+    "tests/test_water_chain_statistics.py": "98fb3037d417e359ef13fb737b0c3ac5993a635ec42b81f92d9d7bec6ecfd0f9",
+    "tests/test_water_compact_split.py": "da981484ca1da34a89d154cb7483c033c2cd5d02dda350cf0d4b2e4f96004658",
+    "tests/test_water_native_optimizations.py": "ad72e3b91552df66dcda45b073217461a2767f3158a4996641bcc59417472390",
+    "tests/test_water_native_quantum.py": "3d7e7fe171c0cb2d3910d49e92ef95953da59fe9d744ca96b49284b07323ddb7",
+    "tests/test_water_native_reference.py": "6ed99f89b56953f02c02948091a971e9df52e907b27b8fbb053450e92ed7cd3b",
+    "tests/test_water_native_schedule.py": "aa86db798b491d74b96601767d39d4511a8920c73aa16bd70d8c2ffdddfb021f",
+    "tests/test_water_split_reference.py": "9df1e11aa408fc295f128501977431367ec8adde35354329d769f01f88caeacb",
+    "tests/test_water_velocity_cadence.py": "b99704290e44142bd7a07e8f54e8a7f09dc0a4cab2fb5ed9fc86dca1feac5fed"
+  },
+  "physics_or_production_code_changes": false,
+  "scope": "Source-matched small-system OpenMM Reference/CPU numerical and restart tests, estimators, guards and scheduler-failure tests; no full water transport or GPU claim.",
+  "test_fix": "../water/scheduler-tests-portability.patch",
+  "frozen_original_test": "../water/executed-source/test_water_native_schedule_original.py.txt",
+  "initial_junit_sha256": "2e6612a5d0a1a74d389c69ec49535b98a6ab2c602b71a1d36a9ea9f105f18e37",
+  "followup_junit_sha256": "f0bfdf4f3ef034352071162eccbd7f59e6ac87164285dcc205a0ace8bbd8128b"
+}

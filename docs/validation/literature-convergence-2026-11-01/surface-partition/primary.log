@@ -1,0 +1,13 @@
+{"completed_surface": "ts", "seed": 721301, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/checkpoint.npz"}
+{"completed_surface": "ts", "seed": 721303, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/checkpoint.npz"}
+{"completed_surface": "reactant", "seed": 721401, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401/checkpoint.npz"}
+{"completed_surface": "reactant", "seed": 721403, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403/checkpoint.npz"}
+{"completed_surface": "ts", "seed": 721307, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/checkpoint.npz"}
+{"completed_surface": "ts", "seed": 721309, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/checkpoint.npz"}
+{"completed_surface": "reactant", "seed": 721407, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407/checkpoint.npz"}
+{"completed_surface": "reactant", "seed": 721409, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409/checkpoint.npz"}
+{"completed_surface": "ts", "seed": 721317, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/checkpoint.npz"}
+{"completed_surface": "ts", "seed": 721313, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/checkpoint.npz"}
+{"completed_surface": "ts", "seed": 721323, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/checkpoint.npz"}
+{"completed_surface": "ts", "seed": 721321, "checkpoint": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/checkpoint.npz"}
+{"complete": true, "summary": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary-summary.json"}

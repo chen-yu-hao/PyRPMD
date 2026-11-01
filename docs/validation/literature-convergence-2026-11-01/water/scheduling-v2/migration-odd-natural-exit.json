@@ -1,0 +1,60 @@
+{
+  "queue": "odd",
+  "dispatcher_pid": 202795,
+  "dispatcher_start_ticks": "5007437",
+  "dispatcher_argv": [
+    ".venv/bin/python",
+    "benchmarks/water/native_campaign_schedule.py",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+    "--protocol",
+    "docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+    "--queue",
+    "odd",
+    "--wall-seconds",
+    "7200",
+    "--invocation-seconds",
+    "1800"
+  ],
+  "native_child_pid": 242960,
+  "native_child_start_ticks": "5273126",
+  "native_child_argv": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+    "--wall-seconds",
+    "1800.0",
+    "--resume"
+  ],
+  "seed": 1101,
+  "native_exit_code": 0,
+  "native_raw_wait_status": 0,
+  "native_normal_exit_verified_utc": "2026-11-01T17:42:42.720705+00:00",
+  "committed": {
+    "manifest_sha256": "978471e3e9974bc379e4521cfe91feef82e5aaf4aec583a95089cb6675892155",
+    "committed_steps": 740000,
+    "chunk_count": 185,
+    "completed_NVE_segments": 21,
+    "chunk_prefix_sha256": "459e7c84ac6e532f21aa9590233b3ab94982fb2962c6c3c1a132c72814cbab72",
+    "last_chunk": {
+      "file": "chunk-000184.npz",
+      "observations": 201,
+      "sha256": "e11e650c757fb5ea6d4669a648dd1be257171e0be0153fd1c56022cb4379f2c4",
+      "step": 740000
+    },
+    "complete": false
+  },
+  "old_invocation_prefix_sha256": "2190f294360ac2dae6b4af2e11a2f085418a102db70a4d98f2a158baf9f48741",
+  "prefix_preserved": true,
+  "integration_child_signalled": false,
+  "timing": {
+    "native_process_cpu_seconds": 1367.64,
+    "committed_added_steps": 268000,
+    "committed_added_ps": 67.0,
+    "native_logged_elapsed_seconds_delta": 1808.6944483510379,
+    "cpu_seconds_per_committed_step": 0.005103134328358209,
+    "logged_wall_seconds_per_committed_step": 0.006748859881906858,
+    "qualification": "CPU includes startup/restart validation; logged elapsed delta measures committed propagation intervals. Fixed original run, no extra timing trajectory."
+  }
+}

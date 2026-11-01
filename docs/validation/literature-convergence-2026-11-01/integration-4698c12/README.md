@@ -64,3 +64,66 @@ The first local build invocation lacked `setuptools`. Build-only
 dependencies were subsequently installed into a separate directory
 (`setuptools 84.2.1`, `wheel 0.48.0`, `packaging 26.3`), without changing the
 running experiment environment. The new extension then built successfully.
+
+## Water compatibility and portable scheduler tests
+
+All **64 distinct water method tests** have also passed on the integrated
+main runtime. The first invocation passed 62 and failed two scheduler tests
+because they depended on historical local protocol/checkpoint files. That
+dependency would also prevent those tests from running in a clean checkout.
+
+A [test-only patch](../water/scheduler-tests-portability.patch) now provides
+temporary source, configuration, protocol and initial-state fixtures with
+their complete checksums. The real scheduler registration, manifest and
+committed-prefix checks still execute; controlled subprocess failures and
+history replacements remain the tested behaviors. All three scheduler
+tests pass after the patch. The original test file and original failed
+output remain available. No production scheduler, physical model, RNG,
+sampling protocol or trajectory was changed.
+
+See the [combined coverage receipt](water-complete-check.json),
+[original report](water-method-tests.xml),
+[original log](water-method-tests.log),
+[successful scheduler report](water-scheduler-portable-tests.xml), and
+[successful scheduler log](water-scheduler-portable-tests.log).
+
+The other passing checks include small-system OpenMM Reference/CPU
+force-map, all-copy quantum checkpoint, geometric-clock and momentum
+conventions, VACF recording, estimators and corruption guards. They do not
+establish long liquid equilibration, diffusion convergence or GPU validity.
+
+The later four-worker orchestration adds **19 distinct self-contained
+tests**, which also pass in the integrated checkout (0.70 seconds). Its
+[JUnit report](water-scheduling-v2-tests.xml),
+[log](water-scheduling-v2-tests.log), and
+[source/runtime receipt](water-scheduling-v2-check.json) are separate from
+the original 64 tests. The scientific water protocol and native trajectory
+sources are unchanged. See the [handoff evidence](../water/scheduling-v2/README.md)
+for the observed normal old-child exits, preserved prefixes and new leases.
+
+## H + CH₄ compatibility
+
+The [separate methane compatibility record](hch4/README.md) verifies the
+actual integrated imports and native binary at execution HEAD `3ff0b67`.
+All 11 standard tests, twelve native/Python comparisons, and four actual
+three-step umbrella/checkpoint probes pass. The observed maximum position,
+momentum and per-bead energy differences are respectively 4.09×10⁻¹⁴ bohr,
+5.01×10⁻¹¹ atomic units and 7.44×10⁻¹⁵ hartree. All 202 guarded source/native
+files are unchanged over the check.
+
+The independent P128, 0.1 fs short-NVE energy gate still fails, with exactly
+the same 1.8773813694×10⁻⁴ hartree-per-bead span as the original runtime.
+The failed command return code and `passed=false` report are retained. The
+other three original NVE spans are also exactly reproduced. Compatibility
+therefore preserves the known failure instead of converting it to a pass.
+These checks consume 6.66 CPU seconds and do not run a thermal-rate campaign.
+
+## Documentation
+
+The changed English manual passes the strict Sphinx HTML build with
+`-W --keep-going`. The [log](documentation-build.log) and
+[scope/source receipt](documentation-check.json) retain the command and its
+limits. Historical validation records are intentionally outside Sphinx's
+include patterns; local links in the changed aggregate evidence pages are
+checked separately. No untranslated-manual rebuild or full-suite rerun is
+implied by this documentation check.

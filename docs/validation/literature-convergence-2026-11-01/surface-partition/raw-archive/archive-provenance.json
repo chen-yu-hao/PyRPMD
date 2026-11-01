@@ -1,0 +1,92 @@
+{
+  "archive": {
+    "bytes": 83259073,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+    "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+  },
+  "archive_format": "sorted PAX tar, regular 0444 members, uid/gid=0, mtime=0; gzip level 6 and mtime=0",
+  "availability": "local workspace only; no upload attempted or external persistence asserted",
+  "builder": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/package_archive.py",
+    "sha256": "e15ac94d2a02c41b7cd40d3c403846eca70ec9a92f0189351c729ac998b3d817"
+  },
+  "created_utc": "2026-11-01T17:46:22.759399+00:00",
+  "excluded": [
+    "external BKMP2 Fortran source",
+    "PES libraries and compiled native binaries",
+    "live recrossing data",
+    "umbrella campaigns",
+    "unlisted repository files"
+  ],
+  "file_identity_authority": "per-file immutable SHA256, not an assertion that all working-tree evidence was committed at HEAD",
+  "frozen_inventory_sha256": "f68456bddc3e340911ae91590507a2769ae0a17d67eba983325870b15ba87b68",
+  "git_HEAD_at_end": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "git_HEAD_at_packaging": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "immutability": "exclusive creation; postwrite full-member verification; archive and adjacent member inventory chmod 0444; no overwrite/resume",
+  "member_inventory": {
+    "bytes": 93147,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.members.json",
+    "sha256": "3d0ed87a1197b2b14cc769a572a2e486a5f939d041532e8280e1d6d14eae6b7b"
+  },
+  "runtime": {
+    "numpy": "2.5.4",
+    "python": "3.12.14"
+  },
+  "schema": "pyrpmd.h3.quantum-equilibrium-archive-provenance.v1",
+  "scope_counts": {
+    "frozen_inventory": 1,
+    "frozen_publishable": 243,
+    "raw_NPZ": 35
+  },
+  "source_dependencies": [
+    {
+      "bytes": 40251,
+      "included_in_archive": true,
+      "path": "benchmarks/h3/surface_partition.py",
+      "sha256": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+    },
+    {
+      "bytes": 17299,
+      "included_in_archive": false,
+      "path": "benchmarks/h3/mixing_sampling.py",
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "bytes": 9908,
+      "included_in_archive": false,
+      "path": "benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    {
+      "bytes": 7765,
+      "included_in_archive": false,
+      "path": "benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    {
+      "bytes": 940,
+      "included_in_archive": false,
+      "path": "src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 62426,
+      "included_in_archive": false,
+      "path": "src/pyrpmd/analysis/fes.py",
+      "sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+    },
+    {
+      "bytes": 9555,
+      "included_in_archive": false,
+      "path": "src/pyrpmd/checkpoint.py",
+      "sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+    },
+    {
+      "bytes": 5865,
+      "included_in_archive": false,
+      "path": "src/pyrpmd/io.py",
+      "sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    }
+  ],
+  "source_repository": "/workspace/scratch/a5e4820daedd/PyRPMD"
+}

@@ -55,12 +55,33 @@ cm³ molecule⁻¹ s⁻¹.
   [analysis specification](h3-quantum/recrossing-analysis-prespecification.json).
   These bind all parents, both timesteps, observation windows, precision-only
   continuation and the joint partition/transmission uncertainty.
+- [Completed independent bead/domain controls](surface-partition/controls/comparison.json).
+  Every registered control is retained, including the coarse-P64 failure.
+- [Quantum equilibrium archive and exact-parent reconstruction](surface-partition/raw-archive/README.md).
+  The completed local archive contains every equilibrium/control raw file;
+  all 1,600 primary parent geometries were extracted and verified exactly.
+- [Water reference-engine, recording and checkpoint evidence](water/README.md).
+  The fixed classical transport stage is still running; the complete quantum
+  job specification is prepared but has not been launched.
+- [H + CH₄ model and native workflow](other-reactions/hch4/README.md).
+  The paper's PES-2008 is now pinned, built and checked. Its published barrier
+  and native/Python force workflow are reproduced; the thermal rate is unrun.
+- [Isotope source review](review/isotopologues-source-index/README.md).
+  Mu + H₂ and D + HMu are different reactions. Unresolved source versions,
+  masses and supplementary protocols remain explicit.
+- [Compatibility with integrated main](integration-4698c12/README.md).
+  The running experiments retain their frozen runtime; the new main-branch
+  native engine is checked in an isolated checkout.
 
-Raw checkpoint arrays stay in separately checksummed data archives. The
-repository keeps the executed benchmark sources, protocols, report tables,
-test receipts, figures and raw-data indexes. External BKMP2 source and compiled
-libraries are fetched/built under their recorded provenance and are not
-redistributed as PyRPMD code.
+Raw checkpoint arrays are retained in the experiment workspace. Completed
+datasets are packaged as separately checksummed local archives; the new
+archives have not been uploaded to persistent storage because that delivery
+was blocked by automatic approval. Repository indexes are not a claim that
+those raw archives are publicly hosted. The repository keeps the executed
+benchmark sources, protocols, report tables, test receipts, figures and
+raw-data indexes. External PES sources and compiled libraries are fetched
+and built under their recorded provenance and are not redistributed as
+PyRPMD code.
 
 ## Why the previous rate checks failed
 
@@ -97,8 +118,27 @@ All eight fixed-budget surface-partition chains are complete. Their
 is 1.69% above the paper. The paper QTST point lies slightly below our new
 95% interval, while the difference remains within the paper's approximately
 5% reported precision. A quantum transition-state factor is not a complete
-RPMD rate: it still needs its own transmission coefficient and independent
-bead/domain refinement checks.
+RPMD rate: it still needs its own transmission coefficient. The registered
+independent equilibrium bead/domain controls have now completed, with four
+new independent seeds for each variant:
+
+| Variant relative to P=128 / minimum pair 0.5 bohr | QTST change | 95% interval | Registered equivalence |
+| --- | ---: | ---: | --- |
+| P=64 | −3.760% | [−6.331%, −1.118%] | Fail |
+| P=256 | −0.563% | [−2.802%, +1.728%] | Pass |
+| Minimum pair 0.4 bohr, P=128 | −0.751% | [−4.446%, +3.087%] | Pass |
+| Minimum pair 0.6 bohr, P=128 | −1.497% | [−2.989%, +0.017%] | Pass |
+
+The comparison uses complete independent-chain Welch intervals in log rate
+and the preregistered margin ±log(1.05), equivalent to relative bounds
+−4.762% and +5.000%. The **aggregate over all four controls remains false**
+because P64 fails; the P128-to-P256 refinement and both domain checks pass
+individually. Matching finite-P/domain reactant denominators are used in
+every comparison. These are equilibrium QTST checks, not full-rate
+bead-convergence tests. All 1,600 primary parent geometries and their
+original reports remain unchanged.
+
+![Independent equilibrium controls](surface-partition/controls/comparison.png)
 
 The registered finite-P surface sampler supplies eight independent chains
 with 200 equilibrium parent geometries each. All 1,600 parents are retained.
@@ -132,13 +172,35 @@ component errors cannot produce an unqualified pass.
 
 ## Water and other requested systems
 
-The water campaign retains 216 flexible q-TIP4P/F molecules, 298 K, the
-declared density and full PME. Eight fixed independent seeds are scheduled
+The independently integrated OpenMM water reference retains 216 flexible
+q-TIP4P/F molecules, 298 K, the declared density and full PME. Eight fixed
+independent seeds are scheduled
 for 100 ps preparation plus 25 × 4 ps NVE segments each. No converged new
 diffusion coefficient is claimed in this snapshot. CPU checkpoint restoration
 and momentum conventions are audited separately from physical equilibration.
 Short native MTS/RPC checks establish mathematical map/force agreement only;
 they do not establish equivalent long-time diffusion.
+
+The [four-worker handoff](water/scheduling-v2/README.md) retains the original
+random streams, configurations, physical integrator and complete committed
+prefixes. The initial preparation audit of seed 1102 fails its predefined
+potential-energy stationarity threshold; this failure remains part of the
+fixed cohort. Completing the OpenMM reference would still require a separate
+long-time comparison of PyRPMD's own production transport workflow.
+
+The predetermined 4 ps velocity-recording control has completed. At 5 fs
+recording, its 2 ps VACF integral differs from the dense 0.25 fs record by
+−6.45709 × 10⁻⁵ Å²/ps, within the registered 0.001 Å²/ps numerical margin.
+It is a numerical recording check on one predetermined segment, not a new
+independent diffusion sample. All tested recording intervals are reported
+in the [cadence evidence](water/velocity-cadence/report.json).
+
+A [full-PME OpenMM quantum-water reference specification](water/quantum-template/README.md)
+now defines twenty fixed P32 chains, 100 ps preparation per chain and 8 ns
+total NVE production, with an explicitly checkpointed geometric Andersen
+clock during preparation. Small Reference/CPU map and restart tests pass.
+The long quantum experiment and the explicit CUDA example have not been
+run; no GPU performance or quantum diffusion agreement is claimed.
 
 The water reference is S. Habershon, T. E. Markland and D. E. Manolopoulos,
 J. Chem. Phys. 131, 024501 (2009),
@@ -147,10 +209,30 @@ J. Chem. Phys. 131, 024501 (2009),
 uses RPMD; its infrared comparison uses PA-CMD. Rigid constraints or a
 different spectroscopy method would define a different calculation.
 
-The methane, OH, F, isotope, Pd and Ni targets remain separately identified
-in the [benchmark inventory](../../../benchmarks/literature/README.md).
-The completed H₃ reference and provider force checks do not validate those
-unrun reaction or materials campaigns.
+For H + CH₄, the exact RPMDrate-distributed PES-2008 source is now pinned and
+built. Its computed barrier is 15.0142843 kcal/mol versus the PES paper's
+rounded 15.01 kcal/mol. Rigid transformations, equivalent-H permutations,
+batch/scalar evaluation and finite-difference gradients have independent
+checks. The original low-precision conversion coefficients are retained,
+including their measured 2.062 ppm gradient/energy inconsistency.
+
+The H + CH₄ native/Python trajectory comparison and actual three-step
+umbrella/checkpoint probes also pass. A separate 20 fs, nonequilibrium P128
+NVE probe **fails** its predeclared energy-span gate at 0.1 fs; 0.05 fs passes
+that absolute gate and the observed 0.1/0.05/0.025 fs errors scale approximately
+quadratically. This short diagnostic does not establish rate convergence or
+justify silently changing the paper's 0.1 fs production timestep. All
+outcomes, upstream unit conventions and the 111-versus-110 window discrepancy
+are retained in the [methane record](other-reactions/hch4/README.md). The
+300 K thermal rate has not been run.
+
+The OH, F, isotope, Pd and Ni targets remain separately identified in the
+[benchmark inventory](../../../benchmarks/literature/README.md). The isotope
+review distinguishes Mu + H₂ → MuH + H from the deep-tunnelling muonium
+exchange D + HMu → DMu + H; it does not promote proof/OCR values with unresolved
+source discrepancies into accepted targets. The completed H₃ reference and
+provider force checks do not validate these unrun reaction or materials
+campaigns.
 
 ## Reproducibility and interpretation
 
@@ -162,5 +244,7 @@ an exact historical source replay.
 
 Software-test passes demonstrate the tested numerical contracts. They do
 not replace physical convergence, and previous full-suite results are not
-silently reassigned to newer source revisions. All changes remain reviewable
-in the draft [PR #62](https://github.com/chen-yu-hao/PyRPMD/pull/62).
+silently reassigned to newer source revisions. PR #62 was merged externally
+while these experiments were running. Follow-up changes are reviewable in
+draft [PR #68](https://github.com/chen-yu-hao/PyRPMD/pull/68), based on the
+integrated main branch; the old experimental source identities are retained.

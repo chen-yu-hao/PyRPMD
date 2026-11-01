@@ -1,0 +1,150 @@
+{
+  "cpu_threads": {
+    "cases": [
+      {
+        "dt_fs": 0.25,
+        "potential_per_water_kcal_mol": -10.288900204912803,
+        "seconds": 4.419132276998425,
+        "seconds_per_step": 0.00883826455399685,
+        "steps": 500,
+        "threads": 1
+      },
+      {
+        "dt_fs": 0.25,
+        "potential_per_water_kcal_mol": -10.288898431542206,
+        "seconds": 3.48115232699638,
+        "seconds_per_step": 0.00696230465399276,
+        "steps": 500,
+        "threads": 2
+      }
+    ],
+    "maximum_thread_count_momentum_difference_au": 1.4408709654745167e-05,
+    "maximum_thread_count_position_difference_bohr": 2.2381612474475787e-06,
+    "note": "Parallel force summation is not bitwise invariant; no long-trajectory identity is assumed."
+  },
+  "custom_virtual_site_probe": {
+    "canonical_momentum_map_error_au": 5.18121914889905e-05,
+    "dt_fs": 0.1,
+    "initial_force_max_error_hartree_bohr": 6.678685382510707e-16,
+    "interpretation": "On this runtime the CustomIntegrator last kick uses intermediate stale M-site positions. Force captured inside the integrator differs from a fresh independent endpoint evaluation. This path is not used for production.",
+    "last_kick_force_max_error_hartree_bohr": 2.506554248355797e-05,
+    "platform": "Reference",
+    "steps": 1,
+    "virtual_site_update_source": "https://github.com/openmm/openmm/blob/8.6.0/platforms/reference/src/SimTKReference/ReferenceCustomDynamics.cpp"
+  },
+  "external_reference": true,
+  "float32_storage": {
+    "absolute_D_MSD_difference_angstrom2_ps": 8.875003509878354e-11,
+    "absolute_D_VACF_difference_angstrom2_ps": 8.591571898364236e-12,
+    "cases": [
+      {
+        "D_MSD_angstrom2_ps": 0.11718093154247304,
+        "D_VACF_angstrom2_ps": 0.1538523875996426,
+        "dtype": "float64"
+      },
+      {
+        "D_MSD_angstrom2_ps": 0.11718093163122308,
+        "D_VACF_angstrom2_ps": 0.15385238760823416,
+        "dtype": "float32"
+      }
+    ],
+    "source_chunks": [
+      {
+        "file": "chunk-000080.npz",
+        "sha256": "ef0c83a8433036b84a0ce6d2a23fe8977bbee8923ebc5600be129d89c8861eb8"
+      },
+      {
+        "file": "chunk-000081.npz",
+        "sha256": "ea8c7e080ef9e16abd72e7647f5e761e9b0eb9848fa6e994e272874f7e020601"
+      },
+      {
+        "file": "chunk-000082.npz",
+        "sha256": "6caa1c05cf8fa8ced190c618c139e2c26502c19128f21bd16ba46fd894407749"
+      },
+      {
+        "file": "chunk-000083.npz",
+        "sha256": "9b270c67bc002e6446257fbc9e0f645e3c1cf901372ea848cd177361e06e09dc"
+      },
+      {
+        "file": "chunk-000084.npz",
+        "sha256": "ee39a6b135850643756efb9d8938df25394f60c90a1d009bf16d2273bfea7fae"
+      },
+      {
+        "file": "chunk-000085.npz",
+        "sha256": "d13e1b2057dccaaaafc3e2c8447a57a23109f7a4324d1095d74f4ee1c7cfdc9c"
+      },
+      {
+        "file": "chunk-000086.npz",
+        "sha256": "e7cee88c43152cf57fdbef49df8ab5076ab3ebc4db31c5a394236e4984e7d8b1"
+      },
+      {
+        "file": "chunk-000087.npz",
+        "sha256": "93d32fff0f219d87396639efac3dca3ae6ba81c8661be23c1db0bf4c9b145e65"
+      },
+      {
+        "file": "chunk-000088.npz",
+        "sha256": "efbbdc0bfe5c27d55b1db682926b6bde8ca81bb5c45e8c8e32a239b8004e4b13"
+      },
+      {
+        "file": "chunk-000089.npz",
+        "sha256": "798051f35d96418fb379bd1688c887d2bbf20779f2e62750e0112cd2efeb25f3"
+      },
+      {
+        "file": "chunk-000090.npz",
+        "sha256": "f0de24b18fad8d6771002df8659db3db71da97830372d1498cf9707a25379d44"
+      },
+      {
+        "file": "chunk-000091.npz",
+        "sha256": "0cd7793f9a7fbc3019c1adaacca7a305308a5fee268ca22776d299f27e600722"
+      },
+      {
+        "file": "chunk-000092.npz",
+        "sha256": "9ad7ea733e1eef7bf1be030c7be6617e4b81cfd4b824b594d0b331331a7b7ca7"
+      },
+      {
+        "file": "chunk-000093.npz",
+        "sha256": "a7cb3f6f7ad4c7696d9fcc850efca72b4e1cc3df63646a18dc0703c86c554f91"
+      },
+      {
+        "file": "chunk-000094.npz",
+        "sha256": "5b716ab4e8f614f1567f8a0db9af0102d2d240f17f474185cef7bf78243583eb"
+      },
+      {
+        "file": "chunk-000095.npz",
+        "sha256": "503efdb213312acbe00916946b9e607debbde3fb533ed378b00dee1def320d18"
+      }
+    ]
+  },
+  "native_rpmd_maps": [
+    {
+      "beads": 1,
+      "comparison": "native OpenMM RPMDIntegrator vs PyRPMD normal-mode-bab at identical physical q,p",
+      "contraction": null,
+      "dt_fs": 0.1,
+      "maximum_momentum_difference_au": 2.5768809308601703e-09,
+      "maximum_position_difference_bohr": 4.127009844978602e-11,
+      "platform": "Reference",
+      "steps": 20,
+      "thermostat": false
+    },
+    {
+      "beads": 8,
+      "comparison": "native OpenMM RPMDIntegrator vs PyRPMD normal-mode-bab at identical physical q,p",
+      "contraction": null,
+      "dt_fs": 0.1,
+      "maximum_momentum_difference_au": 5.9869539814627615e-06,
+      "maximum_position_difference_bohr": 3.0010948837144724e-08,
+      "platform": "Reference",
+      "steps": 20,
+      "thermostat": false
+    }
+  ],
+  "openmm": "8.6.1",
+  "schema": "pyrpmd.water-native-validation.v1",
+  "source_sha256": {
+    "benchmarks/water/native_reference.py": "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2",
+    "benchmarks/water/native_validation.py": "19a7452746b1ec0ab44284b9d5783d416d2f5a6db6addb62a4b3be27c15524d7",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+  }
+}

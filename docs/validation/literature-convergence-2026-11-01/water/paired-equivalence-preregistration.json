@@ -1,0 +1,25 @@
+{
+  "confidence_level": 0.95,
+  "created_utc": "2026-11-01T15:19:20.761587+00:00",
+  "decision": "Require the full paired-chain 95% confidence interval to be contained within [-0.01,+0.01] A^2/ps. Apply to every originally prespecified estimator/cutoff/window comparison. This is stricter than a failure-to-detect-difference compatibility screen.",
+  "does_not_change_sampling_duration_seeds_or_target": true,
+  "equivalence_margin_angstrom2_ps": 0.01,
+  "existing_run_progress_at_registration": [
+    {
+      "committed_steps": 96000,
+      "equilibration_steps": 400000,
+      "manifest_sha256": "c93fd7ed3d6159107af952f41c7f2ff4978f87dd894d11bcb848c08f8ba2f384",
+      "seed": 1102
+    },
+    {
+      "committed_steps": 116000,
+      "equilibration_steps": 400000,
+      "manifest_sha256": "464b1f7b581bb53273b7bfa8be31948a3af63cdbe7cb3e161a286961501cee09",
+      "seed": 1101
+    }
+  ],
+  "positive_convergence_claim_requires_equivalence": true,
+  "protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "registered_before_any_NVE_production": true,
+  "schema": "pyrpmd.water-paired-equivalence-preregistration.v1"
+}

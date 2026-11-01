@@ -1,0 +1,40 @@
+{
+  "baseline_modified": false,
+  "comparison": "Each subsampled VACF integral minus the dense0.25fs integral; no new diffusion estimate or literature test from this single replay.",
+  "created_utc": "2026-11-01T16:25:01.430138+00:00",
+  "dense_dt_fs": 0.25,
+  "memory_rule": "Accumulate summed velocity FFT power in small component blocks; avoid a full time\u00d7molecule complex FFT workspace.",
+  "numerical_acceptance_absolute_difference_angstrom2_ps": 0.001,
+  "observable": "Molecular COM velocity, float64; VACF trace integral divided by3 to2ps using all available origins. All cadence estimates are subsamples of the same dense trajectory.",
+  "protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "record_cadences_fs": [
+    0.25,
+    0.5,
+    1,
+    2.5,
+    5
+  ],
+  "registration_precedes_any_NVE_for_selected_chain": true,
+  "registration_state": {
+    "committed_steps": 376000,
+    "last_chunk_sha256": "c756c52ce78178e09ad89c2f17acdc508cca7e641f2e81bde1dcfcabca828a0e",
+    "manifest_sha256": "9c37089c3ba485162d86fafc3074fc09546b7c29c0cd346b870eca882d463874"
+  },
+  "replay": "Restore the native binary checkpoint and external NumPy RNG; verify raw engine/canonical state; draw the one registered COM-projected Maxwell momentum; propagate the same native Verlet map for4ps.",
+  "schema": "pyrpmd.water-velocity-cadence-preregistration.v1",
+  "selected_seed": 1101,
+  "selected_segment": 0,
+  "selected_start_checkpoint": {
+    "phase": "end of preparation, before NVE segment-0 Maxwell refresh",
+    "physical_time_ps": 100,
+    "selection": "Require exactly one committed checkpoint with state_step400000; verify its chunk, model, source and environment identities. Its checksum will be retained when it exists.",
+    "state_step": 400000
+  },
+  "selection_rule": "First registered NVE segment of the first registered chain, selected before any of its NVE data exists; no target-value selection.",
+  "source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  }
+}

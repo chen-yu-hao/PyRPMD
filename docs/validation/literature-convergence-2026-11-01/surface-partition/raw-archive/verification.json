@@ -1,0 +1,41 @@
+{
+  "TS_chains": 8,
+  "aggregate_control_equivalence_passed": false,
+  "all_checkpoint_array_envelopes_verified": true,
+  "all_checkpoint_report_SHA_links_verified": true,
+  "archive_member_bytes_verified": true,
+  "archive_member_count": 279,
+  "control_chains": 16,
+  "control_decisions_retained": {
+    "p128-cutoff04": true,
+    "p128-cutoff06": true,
+    "p256-cutoff05": true,
+    "p64-cutoff05": false
+  },
+  "control_manifest_file_identities": 96,
+  "created_utc": "2026-11-01T17:46:22.759399+00:00",
+  "external_upload_performed": false,
+  "frozen_243_file_manifest_unmodified": true,
+  "integrity_success_is_not_scientific_convergence": true,
+  "new_sampling_or_PES_evaluation": false,
+  "original_inputs_rehashed_after_archive": 279,
+  "parent_extraction_roundtrip": {
+    "parent_arrays_extracted_and_reloaded": 16,
+    "parents": 1600
+  },
+  "primary_checkpoints": 12,
+  "primary_manifest_file_identities": 72,
+  "raw_NPZ_bytes": 82902442,
+  "raw_NPZ_count": 35,
+  "raw_category_counts": {
+    "excluded_direct_importance_pilot": 2,
+    "excluded_efficiency_calibration": 2,
+    "excluded_initial_calibration": 2,
+    "finite_grid_short_distance_diagnostic": 1,
+    "primary_TS_equilibrium_and_parents": 8,
+    "primary_reactant_normalization_control": 4,
+    "registered_bead_or_domain_control": 16
+  },
+  "registered_TS_parents": 1600,
+  "schema": "pyrpmd.h3.quantum-equilibrium-archive-verification.v1"
+}

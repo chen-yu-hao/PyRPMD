@@ -1,0 +1,22 @@
+{
+  "runtime_openmm": "8.6.1",
+  "official_source_tag": "8.6.1",
+  "files": [
+    {
+      "url": "https://raw.githubusercontent.com/openmm/openmm/8.6.1/platforms/reference/src/SimTKReference/ReferenceCustomDynamics.cpp",
+      "sha256": "1493c0703a019b2c94bb3dbd8321c0b97c6481f1fab066aad8fa7648f1f643c0",
+      "same_bytes_as_examined_8_6_0_source": true
+    },
+    {
+      "url": "https://raw.githubusercontent.com/openmm/openmm/8.6.1/plugins/rpmd/platforms/reference/src/ReferenceRpmdKernels.cpp",
+      "sha256": "74eeeefb7f5583fc2bde79052173139b2fd4d10c21c2a727e4cad606c9861113",
+      "same_bytes_as_examined_8_6_0_source": true
+    }
+  ],
+  "observations": [
+    "ReferenceCustomDynamics computes virtual-site positions only at the end of its complete custom step.",
+    "Reference RPMD computeForces refreshes virtual sites for every full and contracted copy.",
+    "Reference RPMD kernel uses hbar=1.054571628e-34 SI; deterministic frequency-convention control matches the measured short-map residual."
+  ],
+  "third_party_source_in_data_archive": false
+}

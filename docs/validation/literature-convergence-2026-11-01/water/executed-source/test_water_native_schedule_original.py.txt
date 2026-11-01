@@ -1,0 +1,62 @@
+"""Fixed seed queue fails closed on child errors or changed committed history."""
+
+import json
+from pathlib import Path
+import sys
+from types import SimpleNamespace
+
+import pytest
+
+pytest.importorskip("fcntl",reason="the recorded cloud campaign uses POSIX advisory locks")
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+
+from benchmarks.water import native_campaign_schedule as schedule
+from benchmarks.water.campaign import sha256
+from benchmarks.water.native_reference import source_identity
+
+ROOT=Path(__file__).resolve().parents[1]
+PROTOCOL=ROOT/"docs/validation/literature-convergence-2026-11-01/water/protocol.json"
+
+
+def test_native_child_failure_stops_queue_without_replacing_seed(tmp_path,monkeypatch):
+    calls=[]
+    def fail(command,**kwargs):
+        calls.append(command)
+        return SimpleNamespace(returncode=17)
+    monkeypatch.setattr(schedule.subprocess,"run",fail)
+    with pytest.raises(RuntimeError,match="failed; queue stopped without replacement"):
+        schedule.schedule(tmp_path,PROTOCOL,"odd",wall_seconds=120)
+    assert len(calls)==1
+    assert Path(calls[0][calls[0].index("--config")+1]).name=="classical-seed-1101.json"
+    rows=[json.loads(line) for line in (tmp_path/"scheduler-odd.jsonl").read_text().splitlines()]
+    assert rows[-1]["event"]=="queue_stopped_on_error"
+    assert rows[-2]["exit_code"]==17
+
+
+def test_scheduler_rejects_self_consistent_replacement_of_old_chunk(tmp_path,monkeypatch):
+    directory=tmp_path/"runs"/"classical-1102";directory.mkdir(parents=True)
+    config=json.loads((PROTOCOL.parent/"configs"/"classical-seed-1102.json").read_text())
+    artifacts={}
+    for name in ("model.xml","integrator.xml"):
+        (directory/name).write_text("Mock engine artifact; no molecular dynamics executed in this test.")
+        artifacts[name]={"sha256":sha256(directory/name)}
+    filename="chunk-000000.npz"
+    (directory/filename).write_bytes(b"immutable committed history")
+    manifest={"config":config,"source_sha256":source_identity(),"artifacts":artifacts,
+        "chunks":[{"file":filename,"sha256":sha256(directory/filename),"step":4000,"observations":10}],
+        "committed_steps":4000,"complete":False}
+    path=directory/"manifest.json";path.write_text(json.dumps(manifest))
+    def replace_history(command,**kwargs):
+        (directory/filename).write_bytes(b"different history with a recomputed checksum")
+        manifest["chunks"][0]["sha256"]=sha256(directory/filename)
+        path.write_text(json.dumps(manifest))
+        return SimpleNamespace(returncode=0)
+    monkeypatch.setattr(schedule.subprocess,"run",replace_history)
+    with pytest.raises(RuntimeError,match="committed trajectory prefix was changed"):
+        schedule.schedule(tmp_path,PROTOCOL,"even",wall_seconds=120)
+
+
+def test_queue_requires_serialized_engine_identity_records(tmp_path):
+    (tmp_path/"manifest.json").write_text(json.dumps({"artifacts":{}}))
+    with pytest.raises(ValueError,match="identity records"):
+        schedule.committed_prefix(tmp_path)

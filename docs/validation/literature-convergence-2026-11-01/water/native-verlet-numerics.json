@@ -1,0 +1,35 @@
+{
+  "external_reference": true,
+  "source_sha256": {
+    "benchmarks/water/native_reference.py": "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "cases": [
+    {
+      "dt_fs": 0.5,
+      "duration_ps": 1.0,
+      "seconds": 9.790286437004397,
+      "seconds_per_step": 0.004895143218502198,
+      "max_abs_delta_energy_kcal_mol_per_water": 0.0025650286726966996,
+      "linear_energy_drift_kcal_mol_per_water_ps": -0.0007670828752965451
+    },
+    {
+      "dt_fs": 0.25,
+      "duration_ps": 1.0,
+      "seconds": 17.121883090003394,
+      "seconds_per_step": 0.004280470772500849,
+      "max_abs_delta_energy_kcal_mol_per_water": 0.0005523041086700998,
+      "linear_energy_drift_kcal_mol_per_water_ps": 2.345740357074274e-05
+    },
+    {
+      "dt_fs": 0.125,
+      "duration_ps": 1.0,
+      "seconds": 35.51547247999406,
+      "seconds_per_step": 0.004439434059999257,
+      "max_abs_delta_energy_kcal_mol_per_water": 0.000300661046739956,
+      "linear_energy_drift_kcal_mol_per_water_ps": 0.0001378600936973091
+    }
+  ]
+}
