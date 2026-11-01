@@ -7,10 +7,14 @@ the same geometry during one integration/observation transaction.
 """
 
 from contextlib import contextmanager
+from contextvars import ContextVar
 
 import numpy as np
 
 from .base import PESResult, coordinates, validate_result
+
+
+_ATTRIBUTE_LOOKUPS = ContextVar("pyrpmd_cache_attribute_lookups", default=frozenset())
 
 
 class StepEvaluationCache:
@@ -29,7 +33,17 @@ class StepEvaluationCache:
         self._result = None
 
     def __getattr__(self, name):
-        return getattr(self._provider, name)
+        lookup = (id(self), name)
+        active = _ATTRIBUTE_LOOKUPS.get()
+        if lookup in active:
+            # Optional capability probes must terminate even on a malformed
+            # wrapper graph. Static-workflow preflight reports the cycle.
+            raise AttributeError(name)
+        token = _ATTRIBUTE_LOOKUPS.set(active | {lookup})
+        try:
+            return getattr(object.__getattribute__(self, "_provider"), name)
+        finally:
+            _ATTRIBUTE_LOOKUPS.reset(token)
 
     def set_cell(self, cell):
         """Invalidate geometry-only reuse before a variable-cell PES update.

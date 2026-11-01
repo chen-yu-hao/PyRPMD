@@ -91,6 +91,16 @@ def test_cache_cycles_fail_before_forwarded_metadata_recurses(indirect):
         ReplicaExchange(dynamics, states)
 
 
+def test_mutual_cache_cycle_reaches_static_exchange_preflight():
+    first = StepEvaluationCache(FreePotential())
+    second = StepEvaluationCache(first)
+    first._provider = second
+    dynamics = [Dynamics(first, [1.0], beta, 1, 0.01, native=False) for beta in (1.0, 2.0)]
+    states = [State(np.zeros((1, 1, 3)), np.zeros((1, 1, 3))) for _ in dynamics]
+    with pytest.raises(ValueError, match="acyclic"):
+        ReplicaExchange(dynamics, states)
+
+
 @pytest.mark.parametrize("changed", ["potential", "bias"])
 def test_advance_preflights_all_slots_before_any_provider_side_effect(changed):
     from pyrpmd.bias import CompositeBias
