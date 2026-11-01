@@ -33,6 +33,7 @@ go straight to your task:
 | Smooth nonlinear centroid escape coordinate | `site_rate` | [General-coordinate rates](general-coordinate-rates.md) |
 | Temperature, isotope and numerical convergence scans | `pyrpmd study` | [Rate studies](rate-studies.md) |
 | Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
+| Multidimensional instanton rates, splittings and TST/Wigner/Eckart | Python API / cached-Hessian CLI | [Low-temperature cross-checks](low-temperature.md) |
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
 
 The examples use analytic model potentials so they run in seconds. Before a production study,
@@ -102,6 +103,7 @@ Examples <manual/examples>
 General-coordinate rates <general-coordinate-rates>
 Rate studies <rate-studies>
 Instantons <instanton>
+Low-temperature cross-checks <low-temperature>
 Quantum statistics <quantum-statistics>
 ```
 
