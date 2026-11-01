@@ -2,7 +2,7 @@
 """Independently reproduce Liu et al. (JCP 161, 024102, 2024) DAC SOFT data.
 
 Atomic units; Tully II Eq. (69-71), mass=2000, x0=-9, initial diabatic 0,
-Gaussian sigma_x=sigma_p=1/sqrt(2), momentum p0=5 or 15.
+Gaussian sigma_x=sigma_p=1/sqrt(2), momentum p0=5, 15 or 30.
 No PyRPMD propagator or potential is imported in this reference program.
 """
 from __future__ import annotations
@@ -16,7 +16,8 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 DATA = {5: ("dac_p5_liu2024_reference.csv", 6000),
-        15: ("dac_p15_liu2024_reference.csv", 2800)}
+        15: ("dac_p15_liu2024_reference.csv", 2800),
+        30: ("dac_p30_liu2024_reference.csv", 1200)}
 MASS = 2000.0
 
 
@@ -95,17 +96,17 @@ def calculate(momentum):
             "max_abs_grid_and_timestep_difference": float(max(abs(difference))),
             "max_abs_grid_only_difference": float(max(abs(grid_difference)))},
         "pass_original_published_propagator_reproduction":
-            diagnostics["grid1024_dt2"]["max_abs_vs_published"] < 3e-8,
+            diagnostics["grid1024_dt1" if momentum == 30 else "grid1024_dt2"]["max_abs_vs_published"] < 3e-8,
         "pass_all_norms": all(v["max_norm_error"] < 1e-9
                               for v in diagnostics.values())}
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--case", choices=("p5", "p15", "both"), default="both")
+    parser.add_argument("--case", choices=("p5", "p15", "p30", "both", "all"), default="both")
     parser.add_argument("--output", type=Path, default=HERE / "results" / "dac_quantum.json")
     args = parser.parse_args()
-    momenta = (5, 15) if args.case == "both" else (int(args.case[1:]),)
+    momenta = (5, 15, 30) if args.case == "all" else (5, 15) if args.case == "both" else (int(args.case[1:]),)
     payload = {
         "format": "PyRPMD.paper.Tully.DAC.quantum.v1",
         "publication": "Liu et al., J. Chem. Phys. 161, 024102 (2024), DOI:10.1063/5.0208708",
