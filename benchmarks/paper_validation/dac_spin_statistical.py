@@ -23,15 +23,15 @@ MASS = 2000.
 
 
 def reference(momentum):
-    if momentum not in (5, 15):
-        raise ValueError("only pinned DAC p0=5 and p0=15 reference curves are accepted")
+    if momentum not in (5, 15, 30):
+        raise ValueError("only pinned DAC p0=5, p0=15 and p0=30 reference curves are accepted")
     path = ROOT / f"dac_p{momentum}_liu2024_reference.csv"
     with path.open(encoding="utf-8") as stream:
         lines = [line for line in stream if line.strip() and not line.startswith("#")]
     if lines[0].strip() != "time,sigma_0_0_real,sigma_1_1_real":
         raise ValueError("unexpected published CSV schema")
     data = np.loadtxt(lines[1:], delimiter=",", ndmin=2)
-    end = 6000 if momentum == 5 else 2800
+    end = {5: 6000, 15: 2800, 30: 1200}[momentum]
     expected_times = np.arange(0, end+1, 40., dtype=float)
     if (data.shape != (len(expected_times), 3) or
             not np.array_equal(data[:, 0], expected_times) or
@@ -208,7 +208,7 @@ def simulate(momentum, n, dt, seed, replica, methods, *, retain=False):
 
 def main():
     parser=argparse.ArgumentParser()
-    parser.add_argument("--momentum",type=int,choices=(5,15),required=True)
+    parser.add_argument("--momentum",type=int,choices=(5,15,30),required=True)
     parser.add_argument("--n",type=int,default=2048)
     parser.add_argument("--dt",type=float,default=4.)
     parser.add_argument("--seed",type=int,default=731)
