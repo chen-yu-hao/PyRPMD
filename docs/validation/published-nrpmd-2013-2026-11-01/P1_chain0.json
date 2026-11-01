@@ -1,0 +1,75 @@
+{
+  "config": {
+    "beads": [
+      1,
+      4,
+      8
+    ],
+    "chains": 4,
+    "samples": 512,
+    "burn_in": 1024,
+    "stride": 4,
+    "dt": 0.02,
+    "duration": 5.0,
+    "output_interval": 0.1,
+    "bootstrap_replicates": 256,
+    "block_multiplier": 2.0,
+    "min_average_sign": 0.05,
+    "refinement_parents": 8,
+    "seed": 20261102,
+    "potential_split": "lowest_adiabatic"
+  },
+  "source_sha256": {
+    "examples/nonadiabatic/published_nrpmd_benchmark.py": "ed6fc6c30c0d6e276dbaae7e3f28f139807d859442b6f212da9ec34053803323",
+    "src/pyrpmd/thermal_nrpmd.py": "2643b6cb7fedf48f038fff44d7f62bbda2f8ee82594a8025d2bbfe74ea6ad9ac",
+    "src/pyrpmd/nonadiabatic.py": "68bc1c565ee795a640bcada4f21baff4083472594ad4b8eb620f62d85e9a94a6",
+    "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+  },
+  "beads": 1,
+  "chain": 0,
+  "fingerprint": "42158c3f02a949ed496fbee6c7421e5f728f0fe6ed56662e06b28eb597b3756c",
+  "arrays": "P1_chain0.npz",
+  "array_sha256": "5c1ea78013b42a7dded4618eb43874f702c7a7a4db546f30780d0791446f9d13",
+  "sampling": {
+    "sweeps": 3072,
+    "burn_in_requested": 1024,
+    "sample_stride": 4,
+    "attempted": {
+      "nuclear": 3072,
+      "centroid": 3072,
+      "mapping": 3072
+    },
+    "accepted": {
+      "nuclear": 2124,
+      "centroid": 1914,
+      "mapping": 641
+    },
+    "distribution": "absolute_SEO_projected_trace",
+    "static_bias": false,
+    "static_bias_identity": null,
+    "potential_split": "trace",
+    "independent_chains": 1,
+    "physical_converged": false
+  },
+  "average_sign": 1.0,
+  "timestep_refinement": {
+    "parents": 8,
+    "same_complete_initial_states": true,
+    "coarse_dt": 0.02,
+    "reference_dt": 0.01,
+    "same_physical_duration": 5.0,
+    "maximum_absolute_per_parent_correlation_difference": [
+      0.0005623915130446022,
+      0.00037052974528228866
+    ],
+    "maximum_absolute_energy_drift_coarse": 0.0005033874179591891,
+    "maximum_absolute_energy_drift_fine": 0.0001258338433700601,
+    "uncertainty_scope": "paired_numerical_difference_not_sampling_uncertainty"
+  },
+  "maximum_absolute_energy_drift": 0.0029612583227720535,
+  "timing_seconds": {
+    "sampling": 1.768312910000077,
+    "total": 45.908743460000096
+  }
+}

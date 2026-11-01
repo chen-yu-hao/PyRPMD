@@ -73,4 +73,4 @@ Faradaic reservoir exchange or shared-N grand-canonical sampling.
 The path is a finite-restraint string in selected scaled CVs. The initial signed
 SEO measure is retained through positive-weight MBAR and unbiased real-time
 NRPMD. All reports retain `physical_converged=false`. Details and references
-are in the [implementation guide](../../adaptive-nrpmd.md).
+are in the [implementation guide](../../manual/adaptive-nrpmd.md).

@@ -9,7 +9,7 @@
 4. 对绝对 SEO 权重做 MBAR，再携带原始符号计算物理平均。
 5. 按正 MBAR 权重抽取完整初态，沿同一个恒电势矩阵无偏推进核与电子。
 
-完整参数、公式和参考文献见 [英文技术说明](../../adaptive-nrpmd.md)。
+完整参数、公式和参考文献见 [英文技术说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/manual/adaptive-nrpmd.md)。
 
 ## 直接运行
 
@@ -25,6 +25,74 @@ python examples/electrochemistry/adaptive_constant_potential.py \
 MBAR 重叠、电子化学势残差，以及允许发射时的无偏短轨迹和 Hamiltonian 漂移。
 该解析两态弯曲势谷使用模型原子单位，没有标定真实电极。
 `physical_converged` 始终为 `false`；它不输出已收敛的化学速率。
+
+## 多条独立链的完整计算
+
+较完整的计算覆盖三个电势、三个珠子数，并与独立的有限珠子数网格参考比较：
+
+```bash
+python examples/electrochemistry/adaptive_nrpmd_study.py --preset full --plan
+python examples/electrochemistry/adaptive_nrpmd_study.py \
+  --preset full --workers 3 --output runs/adaptive-study
+python examples/electrochemistry/adaptive_nrpmd_reference.py \
+  --convergence --output runs/adaptive-study/reference.json
+python examples/electrochemistry/analyze_adaptive_nrpmd_study.py \
+  runs/adaptive-study --reference runs/adaptive-study/reference.json --plot
+```
+
+绘图需要安装 `analysis` 扩展依赖。完整预设为 `U=-0.6,0,+0.6 V`、
+`P=1,2,4`，每点有五个窗口、每窗口三条独立生产链、每链 512 个保存样本，
+九个参数点共 **69,120 个生产构型**。路径最多学习三轮，pilot 数据不进入
+生产估计。电势仍使用显式模型参考，没有真实 SHE/RHE 标定。
+
+64 次 bootstrap 在原始链／窗口内抽取时间块，并在每次重复中重新拟合 MBAR。
+置信区间要求每条源序列至少有八个完整时间块，而且所有重复都通过重加权与
+符号归一化检查。区间以冻结路径和选定时间块为条件，不证明热化充分或尾部
+完全覆盖。平均符号、正测度有效样本数与有符号有效样本诊断分别保存；
+不通过门槛的生产结果不会输出一个貌似可靠的数值。
+
+独立参考解析积分 mapping 变量，保留不对易电子 Boltzmann 矩阵的有序乘积，
+在坐标网格上计算同一有限珠子数的平衡量。珠子二阶矩与质心二阶矩使用不同
+估计式，后者保留虚时交叉相关。网格加密、两次计算域扩大以及 `P=8,16`
+的额外参考分别记录，从而区分采样误差、有限域误差与珠子离散误差。
+
+实时传播使用同样的 16 个完整父状态，以 `dt=0.02,0.01,0.005` 推进至
+相同的 `t=2` 原子时间，比较完整核／mapping 相空间、带符号观测量与能量漂移。
+这是给定父状态下的积分误差检查，不是化学速率的统计收敛证明。
+
+每点保存 `report.json`、完整源样本 `source.npz` 及可用时的 `dynamics.npz`。
+`--resume` 检查配置、相关源码和数据哈希后复用完整完成的参数点；尚不支持
+从一个中断参数点的自适应迭代内部续跑。`--config` 接受 JSON 字段覆盖，
+可以显式增大预算而不修改驱动源码。
+
+## 与已发表论文的对比
+
+独立基准使用 Richardson 与 Thoss（2013），
+[JCP 139, 031102，DOI:10.1063/1.4816124](https://doi.org/10.1063/1.4816124)
+的式 (15) 与图 1(c)：`m=hbar=omega=kappa=Delta=beta=1`、`alpha=0`。
+
+```bash
+python examples/nonadiabatic/published_nrpmd_benchmark.py \
+  --workers 3 --output runs/published-nrpmd \
+  --published-data examples/nonadiabatic/data/richardson_thoss_2013_fig1c.csv
+```
+
+默认运行 `P=1,4,8`，每个珠子数四条独立链、每链 512 个父状态，比较论文的
+核质心位置 Kubo 自关联和电子布居 Kubo 自关联。电子初始端使用 SEO 投影
+估计器，传播端使用 MMST 布居，沿轨迹保留初始符号。误差分析同时重采样
+分子、分母，保留原始链的时间相关。
+
+对比文件明确区分论文图中的数值、独立重算的 sinc-DVR 参考，以及本次 NRPMD
+采样结果。论文数据附来源、坐标标定和读图误差。DVR 自身也进行网格／域检查，
+不会将独立重算值冒充论文原始数据。
+
+论文采用最低绝热能面的哈密顿量分拆，因此示例中的 `Paper2013Dynamics`
+在复用已有 MInt 和自由环传播器时明确实现该分拆，并包含对应的
+`-Tr(V_mapping)/2` 能量项。库默认的迹／无迹分拆仍保留，可通过
+`--potential-split trace` 比较，并明确标记为不同近似。
+
+这项论文对比检验已有非绝热核量子动力学部分。论文没有使用新增的公共充电
+电极模型或自适应路径算法，因此不能据此宣称组合方法已通过真实电化学验证。
 
 ## 恒电势的具体含义
 

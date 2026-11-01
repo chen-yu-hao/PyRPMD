@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-01 04:36:18 UTC",
+  "scope": "Final targeted regression report and bilingual Sphinx documentation verification for adaptive constant-potential thermal NRPMD and its published-paper benchmark",
+  "working_directory": "/workspace/scratch/77e630723d2d/PyRPMD",
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "packages": {
+      "Sphinx": "8.2.3",
+      "myst-parser": "4.0.1",
+      "pydata-sphinx-theme": "0.16.1",
+      "numpy": "2.5.4",
+      "scipy": "1.17.0",
+      "h5py": "3.16.0",
+      "threadpoolctl": "3.6.0",
+      "pytest": "9.2.0",
+      "matplotlib": "3.10.8"
+    }
+  },
+  "targeted_regression": {
+    "command": "PYTHONPATH=/workspace/scratch/77e630723d2d/python-deps:src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q tests/test_nonadiabatic*.py tests/test_nrpmd*.py tests/test_complex_nonadiabatic.py tests/test_thermal_nrpmd*.py tests/test_electrochemistry*.py tests/test_constant_potential_nonadiabatic.py tests/test_adaptive_nrpmd.py tests/test_adaptive_constant_potential_example.py tests/test_adaptive_nrpmd_reference.py tests/test_adaptive_nrpmd_study.py tests/test_published_nrpmd_benchmark.py",
+    "execution_session_id": 57326,
+    "exit_code": 0,
+    "passed": 502,
+    "skipped": 3,
+    "elapsed_seconds": 55.21,
+    "observed_result": "502 passed, 3 skipped in 55.21s",
+    "observation": "Directly observed by the parent task (/root) and reported to this documentation verifier; this verifier did not rerun the tests.",
+    "skip_details": {
+      "source": "tests/test_nonadiabatic_method_invariants.py",
+      "line": 78,
+      "reason": "optional compiled nuclear kernel unavailable",
+      "optional": true
+    },
+    "scope": "Targeted nonadiabatic, thermal NRPMD, electrochemistry, adaptive sampling, study/reference, and published-benchmark tests; not the entire repository test suite"
+  },
+  "documentation": {
+    "builds": [
+      {
+        "language": "en",
+        "builder": "html",
+        "source_directory": "docs",
+        "output_directory": "/workspace/scratch/77e630723d2d/pyrpmd-docs-verification/en-html",
+        "command": "PYTHONPATH=/workspace/scratch/77e630723d2d/docs-deps:/workspace/scratch/77e630723d2d/python-deps:src python -m sphinx -W --keep-going -b html docs /workspace/scratch/77e630723d2d/pyrpmd-docs-verification/en-html",
+        "execution_session_id": 49949,
+        "exit_code": 0,
+        "warnings_as_errors": true,
+        "keep_going": true,
+        "sphinx_warnings": 0,
+        "sphinx_errors": 0,
+        "completion_message": "build succeeded.",
+        "observation": "directly observed by documentation verifier"
+      },
+      {
+        "language": "zh_CN",
+        "builder": "html",
+        "source_directory": "docs/zh",
+        "output_directory": "/workspace/scratch/77e630723d2d/pyrpmd-docs-verification/zh-html",
+        "command": "PYTHONPATH=/workspace/scratch/77e630723d2d/docs-deps:/workspace/scratch/77e630723d2d/python-deps:src python -m sphinx -W --keep-going -b html docs/zh /workspace/scratch/77e630723d2d/pyrpmd-docs-verification/zh-html",
+        "execution_session_id": 38774,
+        "exit_code": 0,
+        "warnings_as_errors": true,
+        "keep_going": true,
+        "sphinx_warnings": 0,
+        "sphinx_errors": 0,
+        "completion_message": "build succeeded.",
+        "observation": "directly observed by documentation verifier"
+      },
+      {
+        "language": "en",
+        "builder": "singlehtml",
+        "source_directory": "docs",
+        "output_directory": "/workspace/scratch/77e630723d2d/pyrpmd-docs-verification/en-singlehtml",
+        "command": "PYTHONPATH=/workspace/scratch/77e630723d2d/docs-deps:/workspace/scratch/77e630723d2d/python-deps:src python -m sphinx -W --keep-going -b singlehtml docs /workspace/scratch/77e630723d2d/pyrpmd-docs-verification/en-singlehtml",
+        "execution_session_id": 94613,
+        "exit_code": 0,
+        "warnings_as_errors": true,
+        "keep_going": true,
+        "sphinx_warnings": 0,
+        "sphinx_errors": 0,
+        "completion_message": "build succeeded.",
+        "observation": "directly observed by documentation verifier"
+      },
+      {
+        "language": "zh_CN",
+        "builder": "singlehtml",
+        "source_directory": "docs/zh",
+        "output_directory": "/workspace/scratch/77e630723d2d/pyrpmd-docs-verification/zh-singlehtml",
+        "command": "PYTHONPATH=/workspace/scratch/77e630723d2d/docs-deps:/workspace/scratch/77e630723d2d/python-deps:src python -m sphinx -W --keep-going -b singlehtml docs/zh /workspace/scratch/77e630723d2d/pyrpmd-docs-verification/zh-singlehtml",
+        "execution_session_id": 70181,
+        "exit_code": 0,
+        "warnings_as_errors": true,
+        "keep_going": true,
+        "sphinx_warnings": 0,
+        "sphinx_errors": 0,
+        "completion_message": "build succeeded.",
+        "observation": "directly observed by documentation verifier"
+      }
+    ],
+    "matching_manual_filenames": {
+      "english_manual_files": [
+        "adaptive-nrpmd.md",
+        "analysis-reports.md",
+        "api.md",
+        "development.md",
+        "electrochemistry.md",
+        "examples.md",
+        "execution.md",
+        "input.md",
+        "installation.md",
+        "jaxpip-generation.md",
+        "nonadiabatic.md",
+        "pcet.md",
+        "periodic.md",
+        "pes-generation.md",
+        "potentials.md",
+        "quickstart.md",
+        "results.md",
+        "science.md",
+        "troubleshooting.md",
+        "workflows.md"
+      ],
+      "chinese_manual_files": [
+        "adaptive-nrpmd.md",
+        "analysis-reports.md",
+        "api.md",
+        "development.md",
+        "electrochemistry.md",
+        "examples.md",
+        "execution.md",
+        "input.md",
+        "installation.md",
+        "jaxpip-generation.md",
+        "nonadiabatic.md",
+        "pcet.md",
+        "periodic.md",
+        "pes-generation.md",
+        "potentials.md",
+        "quickstart.md",
+        "results.md",
+        "science.md",
+        "troubleshooting.md",
+        "workflows.md"
+      ],
+      "english_only": [],
+      "chinese_only": [],
+      "adaptive_nrpmd_both_present": true,
+      "english_count": 20,
+      "chinese_count": 20,
+      "all_filenames_match": true
+    },
+    "adaptive_chapter_generated_checks": {
+      "english_html": "/workspace/scratch/77e630723d2d/pyrpmd-docs-verification/en-html/manual/adaptive-nrpmd.html",
+      "chinese_html": "/workspace/scratch/77e630723d2d/pyrpmd-docs-verification/zh-html/manual/adaptive-nrpmd.html",
+      "both_html_files_exist": true,
+      "english_language_switch_href": "../zh/manual/adaptive-nrpmd.html",
+      "chinese_language_switch_href": "../../manual/adaptive-nrpmd.html",
+      "language_switch_deployment_layout": "English at <site>/; Chinese at <site>/zh/",
+      "english_singlehtml_chapter_id": "document-manual/adaptive-nrpmd",
+      "chinese_singlehtml_chapter_id": "document-manual/adaptive-nrpmd",
+      "both_singlehtml_chapter_ids_present": true,
+      "singlehtml_language_switch_hrefs": {
+        "english": "zh/index.html",
+        "chinese": "../index.html"
+      }
+    },
+    "documentation_fixes_required": false
+  },
+  "git_diff_check": {
+    "command": "git diff --check",
+    "exit_code": 0,
+    "output": ""
+  },
+  "computation_sources_changed_by_documentation_verifier": false,
+  "scientific_scope": {
+    "physical_converged": false,
+    "rate_constant": null,
+    "note": "Passing tests and documentation builds does not establish sampling or physical convergence; the calculation reports preserve sign, effective-sample, and uncertainty limitations."
+  },
+  "initial_remote_ci": {
+    "commit_sha": "b00c542c1b41305714b0731c4b79e02d287b5060",
+    "workflow_name": "PyRPMD tests",
+    "workflow_run_id": 41269597867,
+    "workflow_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41269597867",
+    "job_name": "cpu (3.11)",
+    "job_id": 124739450717,
+    "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41269597867/job/124739450717",
+    "observation": "Directly retrieved GitHub Actions job status and decoded job log using the connected GitHub reader.",
+    "runner": {
+      "image": "ubuntu-26.04",
+      "image_version": "20261025.179.1",
+      "python": "3.11.17",
+      "openmpi_package": "5.0.10-1",
+      "prrte_package": "3.0.13-2",
+      "mpi4py": "4.1.2"
+    },
+    "full_pytest": {
+      "command": "python -m pytest -q",
+      "step_conclusion": "success",
+      "passed": 4420,
+      "skipped": 117,
+      "warnings": 14,
+      "subtests_passed": 357,
+      "elapsed_seconds": 312.66,
+      "exact_result": "4420 passed, 117 skipped, 14 warnings, 357 subtests passed in 312.66s (0:05:12)",
+      "scope": "Initial remote commit only; this is not a full-suite run of the later expanded study/documentation commit."
+    },
+    "workflow_conclusion": "failure",
+    "mpi_launcher_failure": {
+      "command": "mpiexec -n 4 python tests/mpi_integration.py",
+      "exit_code": 1,
+      "message_key": "prte-rmaps-base:alloc-error",
+      "secondary_diagnostic": "PRRTE/PMIx distribution help files not found",
+      "stage": "MPI process allocation before the integration application starts",
+      "legacy_environment_option": "OMPI_MCA_rmaps_base_oversubscribe=1",
+      "runner_cpu_slot_count": null,
+      "diagnosis": "Open MPI 5 moved the mapping parameter to PRRTE. The allocation failure and legacy environment option support an oversubscription/launcher diagnosis; the exact CPU-slot count was not printed in the failed log."
+    },
+    "other_jobs": {
+      "cpu (3.12)": "cancelled after matrix fail-fast; no claim of a complete test result",
+      "torch-cpu": "success",
+      "electronic-structure": "success"
+    },
+    "launcher_fix": {
+      "file": ".github/workflows/tests.yml",
+      "change": "Remove reliance on the legacy OMPI_MCA environment variable and pass --oversubscribe explicitly to all eight existing MPI commands.",
+      "mpi_rank_counts": [
+        4,
+        5,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4
+      ],
+      "rank_counts_changed": false,
+      "application_assertions_changed": false,
+      "production_sources_changed": false,
+      "verification": {
+        "yaml_parse": "passed",
+        "bash_syntax": "passed",
+        "eight_original_commands_preserved_except_oversubscribe": true,
+        "local_mpi_execution": "not run: mpiexec is unavailable in this local environment",
+        "corrected_remote_run": "pending"
+      },
+      "scope": "Launcher allocation compatibility for the existing MPI integration/smoke gates; this does not weaken the scientific tests."
+    },
+    "official_documentation": [
+      "https://docs.open-mpi.org/en/v5.0.10/mca.html",
+      "https://docs.open-mpi.org/en/v5.0.10/man-openmpi/man1/mpirun.1.html"
+    ]
+  },
+  "completed_computation_integrity": {
+    "adaptive_case_reports": 11,
+    "published_benchmark_chain_reports": 12,
+    "all_frozen_source_sha256_match_current_checkout": true,
+    "all_raw_artifact_sha256_match_reported_values": true,
+    "verification": "independent parent-agent SHA256 scan after all computations completed",
+    "original_production_configurations": 69120,
+    "supplemental_production_configurations": 61440,
+    "published_benchmark_parent_trajectories": 6144,
+    "published_benchmark_production_steps": 1536000
+  },
+  "final_generated_evidence_check": {
+    "csv_line_endings": "LF",
+    "csv_and_svg_trailing_whitespace": false,
+    "paper_chain_resume": "all_12_reused; no_simulation_rerun",
+    "figure_png_bytes_unchanged": true,
+    "postprocessing_regression_command": "python -m pytest -q tests/test_published_nrpmd_benchmark.py",
+    "postprocessing_regression_result": {
+      "passed": 21,
+      "seconds": 0.88
+    },
+    "all_report_provenance_hashes_refreshed": true
+  }
+}

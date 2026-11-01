@@ -1,0 +1,29 @@
+{
+  "config": {
+    "beads": [
+      1,
+      4,
+      8
+    ],
+    "chains": 4,
+    "samples": 512,
+    "burn_in": 1024,
+    "stride": 4,
+    "dt": 0.02,
+    "duration": 5.0,
+    "output_interval": 0.1,
+    "bootstrap_replicates": 256,
+    "block_multiplier": 2.0,
+    "min_average_sign": 0.05,
+    "refinement_parents": 8,
+    "seed": 20261102,
+    "potential_split": "lowest_adiabatic"
+  },
+  "source_sha256": {
+    "examples/nonadiabatic/published_nrpmd_benchmark.py": "ed6fc6c30c0d6e276dbaae7e3f28f139807d859442b6f212da9ec34053803323",
+    "src/pyrpmd/thermal_nrpmd.py": "2643b6cb7fedf48f038fff44d7f62bbda2f8ee82594a8025d2bbfe74ea6ad9ac",
+    "src/pyrpmd/nonadiabatic.py": "68bc1c565ee795a640bcada4f21baff4083472594ad4b8eb620f62d85e9a94a6",
+    "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+  }
+}
