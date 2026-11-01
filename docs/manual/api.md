@@ -383,7 +383,7 @@ DBOC and complex SOC conventions.
 ```
 
 ```{autoclass} pyrpmd.potentials.multistate_external.ChemPotPyDPEM
-:members: evaluate, to_dict
+:members: evaluate
 ```
 
 ## Versioning
