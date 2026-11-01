@@ -21,7 +21,6 @@ jobs:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
       MKL_NUM_THREADS: '1'
-      OMPI_MCA_rmaps_base_oversubscribe: '1'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,8 +51,8 @@ jobs:
           python -m pytest -q --junitxml=runs/fused-tests.xml | tee runs/fused-tests.txt
       - name: Actual 4-rank MPI regression
         run: |
-          mpiexec -n 4 python tests/mpi_integration.py | tee runs/fused-mpi.txt
-          mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-fused-mpi" | tee runs/fused-mpi-workflows.txt
+          mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_integration.py | tee runs/fused-mpi.txt
+          mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-fused-mpi" | tee runs/fused-mpi-workflows.txt
       - name: Fused real-system observations, restart and timing
         run: python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
       - name: Segmented API, constrained parents and compatibility workflows
