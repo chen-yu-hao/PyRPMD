@@ -42,7 +42,7 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e '.[test]'
       - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py
+      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py tests/test_torch_backend.py
   electronic-structure:
     runs-on: ubuntu-latest
     timeout-minutes: 15
