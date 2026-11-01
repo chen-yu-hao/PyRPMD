@@ -1,0 +1,51 @@
+{
+  "archive": "pyrpmd-water-216-audit-2026-11-01.tar.gz",
+  "archive_root": "pyrpmd-water-216-audit-2026-11-01",
+  "bytes": 104940983,
+  "checksum_file_in_archive": "SHA256SUMS",
+  "code_files_included": false,
+  "compressed_archive_integrity_passed": true,
+  "compressed_archive_members_verified": 192,
+  "data_only_archive": true,
+  "no_third_party_code_or_binaries_included": true,
+  "raw_coordinate_classical_replay_passed": true,
+  "raw_coordinate_replay_comparison": [
+    "segments",
+    "fit_window_comparison"
+  ],
+  "raw_file_manifest": "raw-file-manifest.json",
+  "raw_file_manifest_sha256": "6cbc078cc1768c672c0500947d9dc97b3c5637d8904d195bbedf651335877baa",
+  "raw_manifest_integrity_passed": true,
+  "runs": {
+    "classical-pilot": {
+      "chunks": 112,
+      "committed_steps": 112000,
+      "complete": true,
+      "manifest_sha256": "51f53d59092badb810a082909832ba47d667aa38bb91182f45d408adeab73ab3",
+      "relative_path": "runs/classical-216"
+    },
+    "p16-warmup": {
+      "chunks": 6,
+      "committed_steps": 960,
+      "complete": true,
+      "manifest_sha256": "c73f7adfa5ceeaa6c578c7e1ef64a24588d7a612dd2bb7f9a44970cdb75b0c46",
+      "relative_path": "runs/p16"
+    },
+    "p32-warmup": {
+      "chunks": 6,
+      "committed_steps": 960,
+      "complete": true,
+      "manifest_sha256": "107f8b9ae3abe3ad8e3e1d1b6062ed57582ec5c1bf7c03c95fe1f9503f054845",
+      "relative_path": "runs/p32"
+    },
+    "p8-warmup": {
+      "chunks": 6,
+      "committed_steps": 960,
+      "complete": true,
+      "manifest_sha256": "f220d722e0653fd7702df04c8fddb3980608075e10c5607a599751de12fe0429",
+      "relative_path": "runs/p8"
+    }
+  },
+  "sha256": "7c241adda7d9ae52764bd4b237382400781a5ccedc84294dfb3183abb0547fe3",
+  "source_reference_in_archive": "source-reference.json"
+}

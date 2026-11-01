@@ -1,0 +1,156 @@
+{
+  "scope": "public constrained-water kinematic workflow, restart and three standard exports; zero physical PES, not a liquid validation",
+  "commands": [
+    "pyrpmd run examples/materials/rigid_water.inp --output RUN",
+    "pyrpmd resume RUN",
+    "pyrpmd export RUN RUN/centroids.extxyz",
+    "pyrpmd export RUN RUN/centroids.h5md",
+    "pyrpmd export RUN RUN/centroids.traj"
+  ],
+  "checkpoint": {
+    "step": 160,
+    "time_au": 330.7309866813615,
+    "beads": 8
+  },
+  "maximum_relative_bead_bond_error": 8.717471189356729e-13,
+  "maximum_fractional_bond_extension_rate_au": 9.55432549965267e-13,
+  "exported_frames": 17,
+  "last_production_time_ps": 0.006400000000000001,
+  "ase_extxyz_traj_h5md_coordinates_agree": true,
+  "mdanalysis_h5md_positions_agree": true,
+  "dependencies": {
+    "numpy": "2.5.4",
+    "h5py": "3.16.0",
+    "ase": "3.29.0",
+    "MDAnalysis": "2.11.0",
+    "openmm": "8.6.1",
+    "lammps": "2025.7.22.4.0",
+    "mpi4py": "4.1.2",
+    "mpich": "5.0.2"
+  },
+  "artifact_sha256": {
+    "materials_0000.npz": "5cafe156ae3606e7dcee0eb744ecef3a17f99fd4e1004e701f1c5c302585bb2f",
+    "centroids.extxyz": "c98e9c31baf7b54266cca4cf3c610313af8cfa07804b1b428803c2f85e612ee8",
+    "centroids.h5md": "77e2155f18f85a65bdfd8ce15da7da66bce478c71ba8cffca3dd199fbd4592c5",
+    "centroids.traj": "c584ae10cb884534e4478bdd23953d97c945bbc266e31d3c8d78c570f8f782c0"
+  },
+  "run_summary": {
+    "task": "pimd",
+    "status": "complete",
+    "physical_converged": false,
+    "converged": false,
+    "replicas": 1,
+    "samples_per_replica": [
+      17
+    ],
+    "phase": "equilibrium_sampling",
+    "sampling_thermostat": "andersen",
+    "integrator": "velocity-verlet",
+    "coordinate_convention": "continuous_unwrapped_ring_polymer_centroids",
+    "cell": null,
+    "pbc": [
+      false,
+      false,
+      false
+    ],
+    "ensemble": "fixed_cell",
+    "fixed_atoms": [],
+    "mobile_atoms": 3,
+    "trajectory_storage": [
+      "stream"
+    ],
+    "propagation": [
+      {
+        "sampling": {
+          "native_steps": 0,
+          "python_steps": 160,
+          "fallback_reasons": {
+            "bond constraints require the Python RATTLE propagation loop": 160
+          }
+        },
+        "production": null
+      }
+    ],
+    "warnings": [
+      "Bead count, timestep, equilibration, system size and statistical convergence have not been certified.",
+      "Bond constraints define a constrained Cartesian ring Hamiltonian; unconstrained quantum kinetic/internal-energy estimators are omitted. This does not implement a rigid-rotor path integral or a Fixman correction. Centroid bond lengths need not equal bead bond lengths.",
+      "PIMD sampling times are not physical dynamical times; H_P is reported only as an integration diagnostic."
+    ],
+    "files": {
+      "checkpoints": [
+        "checkpoints/materials_0000.npz"
+      ],
+      "trajectories": [
+        "samples/materials_0000/manifest.json"
+      ]
+    },
+    "bond_constraints": [
+      {
+        "atoms": [
+          0,
+          1
+        ],
+        "length": 1.8088458477189298
+      },
+      {
+        "atoms": [
+          0,
+          2
+        ],
+        "length": 1.8088458477189298
+      },
+      {
+        "atoms": [
+          1,
+          2
+        ],
+        "length": 2.860856382011792
+      }
+    ],
+    "constraint_method": "per_bead_shake_rattle",
+    "quantum_kinetic_estimators_available": false,
+    "energy_unit": "hartree",
+    "estimators": {
+      "potential_energy": {
+        "mean": 0.0,
+        "standard_error_between_replicas": null
+      },
+      "ring_polymer_hamiltonian": {
+        "mean": 0.262600046981034,
+        "standard_error_between_replicas": null
+      }
+    },
+    "radius_of_gyration_squared_bohr2": [
+      0.0035373656622979797,
+      0.016088554370735867,
+      0.013698296406917982
+    ],
+    "sampling_diagnostics": [
+      {
+        "replica": 0,
+        "observables": {
+          "potential_energy": {
+            "samples": 17,
+            "statistical_inefficiency": 17.0,
+            "effective_samples": 1.0,
+            "block_length_frames": 17,
+            "complete_blocks": 1,
+            "conditional_standard_error": null,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": "fewer_than_four_complete_blocks"
+          },
+          "ring_polymer_hamiltonian": {
+            "samples": 17,
+            "statistical_inefficiency": 3.16875711908524,
+            "effective_samples": 5.364879465709122,
+            "block_length_frames": 4,
+            "complete_blocks": 4,
+            "conditional_standard_error": 0.010386358390261533,
+            "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+            "reason": null
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "utc_epoch": 1793542563.424763,
+  "phase": "after all recovered workflows and exact full-CV replays",
+  "memory.current": "2964664320",
+  "memory.max": "8589934592",
+  "memory.peak": "8590946304",
+  "memory.events": "low 0\nhigh 0\nmax 58107\noom 7\noom_kill 3\noom_group_kill 0"
+}

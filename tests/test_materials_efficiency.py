@@ -26,6 +26,28 @@ class CountingHarmonic(HarmonicPotential):
         return super().evaluate(q)
 
 
+def test_nested_cache_forwards_required_constraints_and_recovers_after_cycle_probe():
+    raw = CountingHarmonic()
+    raw.required_bond_constraints = ((0, 1, 1.0),)
+    inner = StepEvaluationCache(raw)
+    cached = StepEvaluationCache(inner)
+    assert cached.metadata is raw.metadata
+    assert cached.required_bond_constraints is raw.required_bond_constraints
+    kwargs = dict(masses=[1.0, 1.0], beta=1.0, nbeads=1, dt=0.01,
+                  native=False, integrator="velocity-verlet")
+    with pytest.raises(ValueError, match="potential-required bond constraints"):
+        Dynamics(cached, **kwargs)
+    dynamics = Dynamics(cached, **kwargs, bond_constraints=raw.required_bond_constraints)
+    assert dynamics.bond_constraints == raw.required_bond_constraints
+    assert raw.calls == 0
+
+    inner._provider = cached
+    assert getattr(cached, "required_bond_constraints", None) is None
+    inner._provider = raw
+    assert cached.required_bond_constraints is raw.required_bond_constraints
+    assert cached.metadata is raw.metadata
+
+
 @pytest.mark.parametrize("scheme", ["cayley-bcb", "normal-mode-bab", "velocity-verlet"])
 def test_step_and_quantum_observation_share_endpoint_without_changing_trajectory(scheme):
     raw = CountingHarmonic()

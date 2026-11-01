@@ -1,0 +1,51 @@
+{
+  "comparison_types": [
+    "published-model independent monochromatic quantum reference",
+    "paper-inspired Gaussian-width reference, explicitly separate",
+    "finite-trajectory binomial confidence intervals",
+    "numerical timestep, gauge and representation validation"
+  ],
+  "sources": [
+    {
+      "author": "John C. Tully",
+      "doi": "10.1063/1.459170",
+      "key": "tully_1990",
+      "locations": [
+        "Section IV: mass=2000 a.u.; 2000 trajectories per paper point",
+        "Eq. (20): Gaussian wavepacket; width typically 20/k",
+        "Eq. (21), Section IV A: model I Hamiltonian and parameters",
+        "Fig. 4: transmission/reflection on the adiabatic states"
+      ],
+      "title": "Molecular dynamics with electronic transitions",
+      "url": "https://xuv.scs.illinois.edu/chem540/GroupProjects/Benke_Hammer_SourcePaper1.pdf",
+      "use": "Published Hamiltonian, asymptotic lower-state incidence and channel definitions. No paper points digitized."
+    },
+    {
+      "authors": [
+        "Jonathan R. Mannouch",
+        "Jeremy O. Richardson"
+      ],
+      "doi": "10.1063/5.0139734",
+      "key": "mash_2023",
+      "title": "A mapping approach to surface hopping",
+      "url": "https://www.research-collection.ethz.ch/items/9e9f269e-f36c-4b37-80fe-0ad299fa2c65",
+      "use": "MASH theoretical method; this study does not reproduce a named numerical figure from this paper."
+    },
+    {
+      "authors": [
+        "J. Amira Geuther",
+        "Kasra Asnaashari",
+        "Jeremy O. Richardson"
+      ],
+      "doi": "10.1021/acs.jctc.4c01684",
+      "key": "mash_integrators_2025",
+      "locations": [
+        "Sections 2.1 and 2.3: impulse/reflection and phase-aligned overlap propagation",
+        "Section 3: distinction between endpoint and reversible/event-resolved algorithms"
+      ],
+      "title": "Time-Reversible Implementation of MASH for Efficient Nonadiabatic Molecular Dynamics",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11912208/",
+      "use": "Algorithm scope and limitations. The implementation tested here is fixed-step endpoint MASH."
+    }
+  ]
+}

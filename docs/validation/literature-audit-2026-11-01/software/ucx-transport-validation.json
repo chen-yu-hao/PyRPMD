@@ -1,0 +1,48 @@
+{
+  "recorded_utc": "2026-11-01T13:59:18.599069+00:00",
+  "source_reference": "4ba870dd7121a31e0e0987a90b194fec3f788ffd",
+  "scope": "Validate explicit CPU-only UCX transports with real LAMMPS forces and two MPI ranks; Azure MANA hardware failure is evidenced by the separate CI log",
+  "packages": {
+    "PyRPMD": "0.2.0",
+    "mpich": "5.0.2",
+    "mpi4py": "4.1.2",
+    "lammps": "2025.7.22.4.0",
+    "openmm": "8.6.1"
+  },
+  "runtime_environment": {
+    "UCX_TLS": "tcp,sm,self",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "tests": [
+    {
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_lammps_provider.py::test_actual_lammps_lj_units_batch_virial_and_reuse"
+      ],
+      "returncode": 0,
+      "log": "ucx-lammps-forces.log",
+      "log_sha256": "0cfa6b98e7905fe06d924615a1af81e47c1aaa3d41ac210f96af02d886036c9b"
+    },
+    {
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/mpiexec",
+        "-n",
+        "2",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "tests/mpi_engine_smoke.py"
+      ],
+      "returncode": 0,
+      "log": "ucx-lammps-mpi.log",
+      "log_sha256": "db30964d77099fce63d764ade9c56b81c7325b63ee12921eee2f4295c124c3e1"
+    }
+  ],
+  "actionlint": {
+    "version": "1.7.12",
+    "exit_code": 0
+  },
+  "primary_reference": "https://openucx.readthedocs.io/en/master/faq.html#which-transports-does-ucx-use"
+}

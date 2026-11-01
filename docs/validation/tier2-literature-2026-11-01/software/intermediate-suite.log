@@ -1,0 +1,227 @@
+........................................................................ [  1%]
+........................................................................ [  3%]
+........................................................................ [  4%]
+.................................................................sssssss [  6%]
+................................ssssssssssssssss.ss....................s [  7%]
+sssssssssssssssssssssssssss............................................. [  9%]
+......................................................... [ 10%]
+........................................................................ [ 11%]
+...................................................................................................................................... [ 14%]
+........................................................................ [ 16%]
+.................................... [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+................................................................... [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 27%]
+................................................................s....... [ 28%]
+........................................................................ [ 30%]
+..................ssss. [ 30%]
+...........ssssssss................... [ 31%]
+........................................................................ [ 33%]
+........................................................................ [ 34%]
+..........................s............................................. [ 36%]
+...................................................... [ 37%]
+.................................................................ssssss. [ 38%]
+........................................................................ [ 40%]
+.................................................................sssssss [ 41%]
+s.......................................s............................... [ 43%]
+........................................................................ [ 44%]
+................................................................... [ 46%]
+........................................................................ [ 47%]
+........................................................................ [ 49%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 53%]
+........................................................................ [ 55%]
+........................................................................ [ 56%]
+........................................................................ [ 58%]
+........................................................................ [ 59%]
+........................................................................ [ 61%]
+........................................................................ [ 62%]
+.................................................................F...... [ 64%]
+...................................................... [ 65%]
+.............................................. [ 66%]
+...............................ssssssss............................. [ 67%]
+........................................................................ [ 69%]
+................................s....................................... [ 70%]
+........................................................................ [ 72%]
+..................................................................... [ 73%]
+........................................................ [ 74%]
+........................................................................ [ 76%]
+............................................................. [ 77%]
+........................................................................ [ 79%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 83%]
+............................................................................................................. [ 86%]
+........................................................................ [ 87%]
+.................................. [ 88%]
+...................................................... [ 89%]
+........................................................................ [ 90%]
+........................................................................ [ 92%]
+..................................................................... [ 93%]
+........................................................... [ 95%]
+........................................................................ [ 96%]
+........................................................................ [ 98%]
+........................................................................ [ 99%]
+..............sssss                                                      [100%]
+=================================== FAILURES ===================================
+_______ test_two_process_scheduler_matches_serial_independent_histories ________
+
+tmp_path = PosixPath('/tmp/pytest-of-root/pytest-10/test_two_process_scheduler_mat0')
+
+        assert resolve_opes(cfg, system())[2]["sigma"] == pytest.approx(options["sigma"])
+    
+    
+    def test_actual_cartesian_cv_object_can_be_resolved_and_resumed_after_copy(tmp_path):
+        cfg = config()
+>       cfg["cvs"] = [Cartesian(0, "x")]
+                   ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_opes.py:334: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/pyrpmd/workflows/opes.py:408: in run_opes
+    validate_opes(config, system)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+function = <function _analyze at 0x7f059a65eca0>
+args = ([{'replica': 0, 'state': State(q=array([[[ 0.17887777, -0.00411765, -0.13702681]],
+
+       [[ 0.36277434, -0.09718885...(False, False, False), fixed_atoms=()), '/tmp/pytest-of-root/pytest-10/test_two_process_scheduler_mat0/parallel', True)
+kwargs = {}
+
+    def root_call(function, *args, **kwargs):
+        """Run analysis/I/O on root and broadcast its value or its exception."""
+        payload = None
+        if is_root():
+            try:
+                payload = (function(*args, **kwargs), None)
+            except Exception as exc:
+                payload = (None, _result_error(exc))
+        value, error = broadcast(payload)
+        if error is not None:
+>           raise RuntimeError("Root stage failed: " + error)
+E           RuntimeError: Root stage failed: ValueError: invalid OPES state fields
+
+src/pyrpmd/parallel/execution.py:165: RuntimeError
+=============================== warnings summary ===============================
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_trace.py:1006: FutureWarning: `torch.jit.trace` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_trace.py:1145: FutureWarning: `torch.jit.trace_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+    warnings.warn(
+
+tests/test_ase_force_consistency.py: 170 warnings
+tests/test_barostat.py: 2 warnings
+tests/test_parallel.py: 5 warnings
+tests/test_periodic_materials.py: 19 warnings
+tests/test_potential_adapters.py: 24 warnings
+tests/test_potential_energy_identity.py: 186 warnings
+tests/test_potentials.py: 45 warnings
+tests/test_surface_examples.py: 33 warnings
+tests/test_surface_geometry.py: 1 warning
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/geometry/geometry.py:403: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D.shape = (-1, len(p2), 3)
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/geometry/geometry.py:404: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D_len.shape = (-1, len(p2))
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/atoms.py:1548: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D.shape = (-1, 3)
+
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_onnx_native.py:20: optional native ONNX plugin not configured
+SKIPPED [1] tests/test_brhcl_pes.py:45: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:57: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:71: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:91: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:102: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:126: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:147: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_reference.py:246: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [11] tests/test_brhcl_reference.py:260: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [4] tests/test_brhcl_reference.py:290: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:331: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:349: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_scan.py:50: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:83: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:100: build optional pinned BrHCl PES first
+SKIPPED [15] tests/test_brhcl_scan.py:139: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:166: build optional pinned BrHCl PES first
+SKIPPED [8] tests/test_brhcl_scan.py:186: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:209: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_diatomic_action.py:210: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:237: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:248: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:222: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:279: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:306: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:286: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:299: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:312: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_preparation_study.py:307: Build verified BKMP2 for the full-PES near-threshold launch check
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [4] tests/test_jaxpip_pesgen.py:138: optional real JaxPIP environment
+SKIPPED [2] tests/test_jaxpip_pesgen.py:167: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:189: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:196: optional real JaxPIP environment
+SKIPPED [1] tests/test_materials_eam.py:85: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [1] tests/test_pesgen_native.py:48: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:65: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:95: explicit pinned native Caracal build/source required
+SKIPPED [2] tests/test_pesgen_native.py:110: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:149: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pesgen_native.py:158: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:174: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [1] tests/test_worker_thread_limits.py:88: This BLAS runtime cannot provide four threads
+SKIPPED [1] tests/test_worker_thread_limits.py:99: This BLAS runtime cannot provide four threads
+SKIPPED [2] tests/test_worker_thread_limits.py:119: This BLAS runtime cannot provide four threads
+SKIPPED [1] tests/test_worker_thread_limits.py:147: This BLAS runtime cannot provide four threads
+FAILED tests/test_opes.py::test_two_process_scheduler_matches_serial_independent_histories
+1 failed, 4677 passed, 97 skipped, 928 warnings, 357 subtests passed in 807.94s (0:13:27)

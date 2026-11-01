@@ -1,0 +1,4438 @@
+{
+  "schema": "pyrpmd.endpoint-rate-literature-comparison.v1",
+  "created_utc": "2026-11-01T14:10:58.009632+00:00",
+  "physical_validation": false,
+  "paper_source": {
+    "authors": "Y. V. Suleimanov, J. W. Allen, W. H. Green",
+    "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+    "journal": "Computer Physics Communications 184 (2013), 833-840",
+    "doi": "10.1016/j.cpc.2012.10.017",
+    "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+    "author_manuscript": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+    "locations": "Table 1 H+H2 column; Table 2 H+H2 classical and RPMD columns; Figure 1 equivalent channels",
+    "source_verified": true,
+    "uncertainty_note": "Paper describes approximately 5% statistical convergence; this is not a published standard error or confidence interval."
+  },
+  "published_references": {
+    "classical": {
+      "beads": 1,
+      "qtst_cm3_molecule_s": 1.56e-18,
+      "kappa": 0.994,
+      "rate_cm3_molecule_s": 1.55e-18
+    },
+    "rpmd": {
+      "beads": 128,
+      "qtst_cm3_molecule_s": 2.51e-16,
+      "kappa": 0.776,
+      "rate_cm3_molecule_s": 1.95e-16
+    }
+  },
+  "independent_classical_seed_statistics": {
+    "independent_seeds": [
+      914301,
+      914302,
+      914303
+    ],
+    "mean_rate_cm3_molecule_s": 2.338824097872653e-18,
+    "between_seed_standard_error_cm3_molecule_s": 1.0655262031431582e-18,
+    "mean_to_published_ratio": 1.5089187728210665,
+    "scope": "Between-seed dispersion only; does not include finite-bead, integration, coordinate or shared systematic bias."
+  },
+  "prior_incomplete_attempt": {
+    "case": "classical-a-dense-output-aborted",
+    "status": "process_terminated_before_analysis_completed",
+    "exit_code": 137,
+    "provenance": "fresh endpoint-to-rate trajectories before recording-interval adjustment",
+    "reason": "MBAR raw reduced-potential matrix alone is approximately 222 streams x 2.22e6 observations x 8 bytes = 3.94 GB, plus solver work arrays. Memory exhaustion is the likely cause; no rate estimate exists.",
+    "completed_window_checkpoints": 222,
+    "action": "Retain raw checkpoints and restart same physical trajectory protocol with recording interval10fs (previously0.5fs) and12bootstrapdraws(previously40).",
+    "physical_validation": false,
+    "completed_trajectory_ui_diagnostics": {
+      "full": {
+        "barrier_hartree": 0.02206698524136961,
+        "qtst": 1.9901633149876246e-18,
+        "qtst_to_paper": 1.2757457147356568,
+        "maxxi": 0.9996000000000002,
+        "quarter_interval_barrier_increments_kbt": [
+          0.1945269661008814,
+          0.9408932470919452,
+          0.9307050735372557,
+          21.161217419745604
+        ],
+        "scalar_cv_effective_samples_quantiles": [
+          148.6329033782996,
+          299.58959069412515,
+          340.4459959491463,
+          382.0355178982262,
+          751.0785557137704
+        ],
+        "effective_samples_note": "Scalar CV autocorrelation only; production FES uses maximum linear/amplitude-CV correlation and may report fewer effective samples."
+      },
+      "replica0": {
+        "barrier_hartree": 0.022689027110422165,
+        "qtst": 1.0340320252183572e-18,
+        "qtst_to_paper": 0.6628410418066393,
+        "maxxi": 0.9996000000000002,
+        "quarter_interval_barrier_increments_kbt": [
+          0.1673902329396318,
+          1.0679285417056503,
+          1.1932708996333576,
+          21.453503987627677
+        ]
+      },
+      "replica1": {
+        "barrier_hartree": 0.021439178851012698,
+        "qtst": 3.853706059564191e-18,
+        "qtst_to_paper": 2.4703243971565327,
+        "maxxi": 0.9996000000000002,
+        "quarter_interval_barrier_increments_kbt": [
+          0.2138671554513435,
+          0.8123925335524474,
+          0.674236313775515,
+          20.866028108739528
+        ]
+      },
+      "firsthalf": {
+        "barrier_hartree": 0.021511425744991656,
+        "qtst": 3.5715133577394014e-18,
+        "qtst_to_paper": 2.2894316395765393,
+        "maxxi": 0.9996000000000002,
+        "quarter_interval_barrier_increments_kbt": [
+          -0.3952401065838118,
+          0.811174552936325,
+          1.1875819998903088,
+          21.039053547736735
+        ]
+      },
+      "secondhalf": {
+        "barrier_hartree": 0.022624379951922957,
+        "qtst": 1.1068435044805313e-18,
+        "qtst_to_paper": 0.7095150669746996,
+        "maxxi": 0.9996000000000002,
+        "quarter_interval_barrier_increments_kbt": [
+          0.7931477745889606,
+          1.0594851654606763,
+          0.6768016425281205,
+          21.284612552399913
+        ]
+      },
+      "thin20": {
+        "barrier_hartree": 0.02239777647044569,
+        "qtst": 1.4049916241570178e-18,
+        "qtst_to_paper": 0.9006356565109089,
+        "maxxi": 0.9996000000000002,
+        "quarter_interval_barrier_increments_kbt": [
+          0.29119524375080263,
+          0.968022835827541,
+          1.1920980415930087,
+          21.12421194719247
+        ],
+        "scalar_cv_effective_samples_quantiles": [
+          80.99500737090207,
+          283.21015412112126,
+          327.91598265700094,
+          358.93913315533104,
+          463.45801632613086
+        ],
+        "effective_samples_note": "Scalar CV autocorrelation only; production FES uses maximum linear/amplitude-CV correlation and may report fewer effective samples."
+      }
+    },
+    "diagnostic_scope": "QTST only from the completed fresh dense trajectory checkpoints; no recrossing or total rate was computed for this aborted analysis."
+  },
+  "cases": [
+    {
+      "case": "classical-a",
+      "new_dynamics": true,
+      "physical_validation": false,
+      "started_utc": "2026-11-01T13:51:23.175304+00:00",
+      "settings": {
+        "beads": 1,
+        "seed": 914301,
+        "dt_fs": 0.1,
+        "equil_fs": 1000.0,
+        "production_fs": 5000.0,
+        "temperature_K": 300.0,
+        "rinf_bohr": 30.0,
+        "windows": 111,
+        "umbrella_coefficient_hartree": 30.0,
+        "umbrella_replicas": 2,
+        "parent_chains": 4,
+        "recording_interval_fs": 10.0,
+        "pmf_bootstrap_draws": 12,
+        "parent_samples_per_chain": 32,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 100.0,
+        "timestep_fs": 0.10000000000000002,
+        "trajectory_workers": 4,
+        "threads_per_worker": 1,
+        "isotope_masses_au": [
+          1837.1526474396187,
+          1837.1526474396187,
+          1837.1526474396187
+        ]
+      },
+      "conventions": {
+        "reaction": "H + H2 -> H2 + H",
+        "pes": "BKMP2",
+        "nuclear_spin": "distinguishable nuclei",
+        "electronic": "single adiabatic surface, electronic_weight=1",
+        "channels": "two equivalent product arrangements in coordinate; no extra factor of two",
+        "symmetry_factor": 1.0
+      },
+      "protocol_differences_from_paper": [
+        "Andersen thermostat instead of Table 1 GLE; this study uses Cayley, and an identical propagator is not claimed",
+        "Independent endpoint search supplies the TS; paper supplied a saddle geometry",
+        "Far shorter equilibration and sampling; paper uses 200 trajectories per window, 20 ps equilibration and 100 ps production each",
+        "Four independent constrained-parent chains and 512 children of 100 fs; paper reports 100000 children of 50 fs",
+        "Numerical PMF quadrature uses 1001 grid points instead of the Table 1 5000",
+        "Twelve PMF bootstrap draws give only rough within-run uncertainty; independent-seed and replica/time-half variation are also reported"
+      ],
+      "uncertainty_interpretation": {
+        "pmf_bootstrap_draws": 12,
+        "interval_scope": "Percentile intervals involving the PMF use only 12 bootstrap draws and are low-draw diagnostics, not established coverage guarantees.",
+        "recording_scope": "Changing the recording interval keeps the integrated trajectories and physical thermostat schedule unchanged but changes the finite-sample estimator; dense-versus-thinned diagnostics are retained separately when available.",
+        "primary_checks": "independent-seed dispersion, separate umbrella replicas, temporal halves and timestep sensitivity"
+      },
+      "pes_provenance": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "trajectory_batch_safe": true,
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+      },
+      "source_sha256": {
+        "src/pyrpmd/workflows/prepare.py": "106511ca46f797f813298d3e65e6285be580d0af0510abc3809af21b515b7095",
+        "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+        "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+        "src/pyrpmd/workflows/rate.py": "cf72093145d810fdad4a1c2bac5f67135939e269e4e69deaa7c00df8a825f8a9",
+        "src/pyrpmd/workflows/fes.py": "5b261552140e02ee3001f7bb22f278b1e68416a37c06cd71de1a91ca90074aa6",
+        "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+        "benchmarks/transition_state_search/rates.py": "4f44353e905bd052b20594d7752a357db510123e4df77320fe2eb1c7d148437b"
+      },
+      "raw_output": "/workspace/scratch/620dee2c1ca3/endpoint-rate-classical-rest/classical-a",
+      "results": {
+        "status": "plateau_estimate",
+        "rate_estimate_cm3_s": 1.3945590293675328e-18,
+        "rate_standard_error_cm3_s": 9.27705594790319e-19,
+        "rate_percentile_95_ci_cm3_s": [
+          4.879187912546544e-19,
+          3.5493973610173504e-18
+        ],
+        "conditional_rate_standard_error_cm3_s": 5.531416484654376e-21,
+        "kappa": 0.9925746213642063,
+        "kappa_standard_error": 0.003936974704723366,
+        "plateau_detected": true,
+        "plateau_diagnostics": {
+          "passed": true,
+          "reasons": [],
+          "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+          "scope": "selected_finite_time_tail",
+          "tail_samples": 500,
+          "relative_tolerance": 0.05,
+          "absolute_tolerance": 0.049628731068210315,
+          "maximum_tail_deviation": 1.1102230246251565e-16,
+          "bootstrap_95_envelope_radius": 4.440892098500626e-16,
+          "maximum_tail_deviation_bound": 5.551115123125783e-16,
+          "absolute_drift_plus_two_standard_errors": 0.0,
+          "uncertainty_available": true
+        },
+        "child_trajectories": 512,
+        "maximum_endpoint_energy_error_kbt": 0.014201640004587462,
+        "rate_uncertainty": {
+          "available": true,
+          "pmf_block_status": "limited_blocks",
+          "reasons": [
+            "pmf_bootstrap_limited_blocks"
+          ],
+          "pmf_bootstrap_valid": 12,
+          "recrossing_bootstrap_valid": 200,
+          "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
+          "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+          "recrossing_scope": "independent_parent_chains",
+          "recrossing_support": {
+            "available": true,
+            "reasons": [],
+            "scope": "independent_parent_chains",
+            "condition": null,
+            "independent_parent_chains": 4,
+            "nonzero_flux_parent_configurations": 128,
+            "effective_parent_blocks": {
+              "0": 32.0,
+              "1": 32.0,
+              "2": 32.0,
+              "3": 32.0
+            },
+            "bootstrap_requested": 200,
+            "bootstrap_valid": 200,
+            "bootstrap_rejected": 0
+          },
+          "parent_block_lengths": {
+            "0": 1,
+            "1": 1,
+            "2": 1,
+            "3": 1
+          },
+          "pmf_bootstrap_requested": 12,
+          "pmf_bootstrap_attempted": 12,
+          "pmf_bootstrap_rejected": 0,
+          "independence_assumption": "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+        },
+        "warnings": [
+          "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval.",
+          "Unsampled/insufficient-count bins are masked; no extrapolation is reported.",
+          "Some supported bins lack complete bootstrap support; their main standard errors are unavailable. supported_draw_standard_error describes surviving draws only and is a conditional diagnostic.",
+          "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR.",
+          "Complete rate uncertainty has limited support: pmf_bootstrap_limited_blocks. Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
+        ],
+        "pmf": {
+          "ready": true,
+          "status": "ready",
+          "xi_star": 1.0,
+          "free_energy_barrier_hartree": 0.02239777647044569,
+          "barrier_standard_error_hartree": 0.000631184681758477,
+          "k_qtst_cm3_s": 1.4049916241570175e-18,
+          "reactant_prefactor_au": 3.9738107997425676,
+          "overlap_connected": true,
+          "support": {
+            "model": "Gaussian-window integration within the umbrella-center range",
+            "reference": {
+              "coordinate": 0.0,
+              "model_supported": true
+            },
+            "dividing_surface": {
+              "coordinate": 1.0,
+              "model_supported": true
+            },
+            "observed_histogram": {
+              "reference": {
+                "coordinate": 0.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  -0.0018952208896102982,
+                  0.0003955751200277191
+                ],
+                "raw_count": [
+                  248.0,
+                  253.0
+                ]
+              },
+              "dividing_surface": {
+                "coordinate": 1.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  0.9991826353222049,
+                  1.001473431331843
+                ],
+                "raw_count": [
+                  139.0,
+                  151.0
+                ]
+              }
+            },
+            "search_range": [
+              0.0,
+              1.05
+            ],
+            "selection": "fixed",
+            "failure_reason": null
+          },
+          "uncertainty": {
+            "available": true,
+            "block_status": "limited_blocks",
+            "reasons": [
+              "pmf_bootstrap_limited_blocks"
+            ],
+            "bootstrap_requested": 12,
+            "bootstrap_attempted": 12,
+            "bootstrap_valid": 12,
+            "bootstrap_rejected": 0,
+            "surface_held_fixed": true,
+            "selection_uncertainty_included": false,
+            "reason": null
+          }
+        },
+        "rate_cm3_s": 1.3945590293675328e-18,
+        "converged": false,
+        "convergence_note": "A detected time plateau is not bead, timestep, Rinf or statistical convergence.",
+        "child_time_fs": 100.00000000000001,
+        "parent_configurations": 128,
+        "energy_diagnostic_child_pairs": 256
+      },
+      "reference": {
+        "beads": 1,
+        "qtst_cm3_molecule_s": 1.56e-18,
+        "kappa": 0.994,
+        "rate_cm3_molecule_s": 1.55e-18,
+        "source": {
+          "authors": "Y. V. Suleimanov, J. W. Allen, W. H. Green",
+          "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+          "journal": "Computer Physics Communications 184 (2013), 833-840",
+          "doi": "10.1016/j.cpc.2012.10.017",
+          "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+          "author_manuscript": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+          "locations": "Table 1 H+H2 column; Table 2 H+H2 classical and RPMD columns; Figure 1 equivalent channels",
+          "source_verified": true,
+          "uncertainty_note": "Paper describes approximately 5% statistical convergence; this is not a published standard error or confidence interval."
+        }
+      },
+      "comparison": {
+        "status": "pilot_comparison",
+        "rate_ratio": 0.899715502817763,
+        "qtst_ratio": 0.9006356565109086,
+        "kappa_ratio": 0.9985660174690204,
+        "reference_qtst_implied_barrier_hartree": 0.022298350165266028,
+        "physical_validation_passed": null,
+        "reason": "Numerical sensitivity and sampling diagnostics do not establish all convergence criteria."
+      },
+      "preparation": {
+        "ready": true,
+        "reaction": {
+          "rinf": 30.0,
+          "electronic_weight": 1.0,
+          "symmetry_factor": 1.0,
+          "equivalent_paths": [
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "preparation": {
+            "gradient_tolerance": 1e-07,
+            "neb": {
+              "images": 7,
+              "gradient_tolerance": 1e-05
+            }
+          },
+          "rinf_au": 30.0,
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "forming_bonds": [
+            [
+              0,
+              1
+            ]
+          ],
+          "breaking_bonds": [
+            [
+              1,
+              2
+            ]
+          ],
+          "entry_side": 0
+        },
+        "diagnostics": [
+          "CI-NEB converged with a stationary climbing image.",
+          "max NEB force = 9.02805e-06 hartree/bohr",
+          "P-RFO converged to a first-order saddle",
+          "P-RFO max force = 6.97448e-12 hartree/bohr",
+          "P-RFO negative mass-weighted Hessian eigenvalues = 1",
+          "max TS force = 6.97448e-12 hartree/bohr",
+          "negative mass-weighted Hessian eigenvalues = 1",
+          "Entrance direction checked against labeled reactant/product endpoint connectivity."
+        ],
+        "candidates": [
+          {
+            "fragments": [
+              [
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "forming_bonds": [
+              [
+                0,
+                1
+              ]
+            ],
+            "breaking_bonds": [
+              [
+                1,
+                2
+              ]
+            ],
+            "entry_side": 0,
+            "rinf": 30.0
+          }
+        ],
+        "transition_state": [
+          [
+            -1.7570014695873986,
+            2.230533650402687e-12,
+            4.047639123015114e-12
+          ],
+          [
+            -1.4701185403448259e-06,
+            2.230470806834448e-12,
+            4.047608826054499e-12
+          ],
+          [
+            1.7569985293059402,
+            2.230416588098092e-12,
+            4.047582610668732e-12
+          ]
+        ],
+        "neb": {
+          "geometry": [
+            [
+              -1.7570051621846448,
+              0.0,
+              0.0
+            ],
+            [
+              1.5606201627322583e-15,
+              0.0,
+              0.0
+            ],
+            [
+              1.757005162184644,
+              0.0,
+              0.0
+            ]
+          ],
+          "energy": -0.15917600011677163,
+          "converged": true,
+          "iterations": 127,
+          "images": [
+            [
+              [
+                -4.467157326666666,
+                0.0,
+                0.0
+              ],
+              [
+                1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                2.9343146533333333,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.556263342890286,
+                0.0,
+                0.0
+              ],
+              [
+                1.0770807103740108,
+                0.0,
+                0.0
+              ],
+              [
+                2.479182632516275,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.645470580019648,
+                0.0,
+                0.0
+              ],
+              [
+                0.6177630568343961,
+                0.0,
+                0.0
+              ],
+              [
+                2.0277075231852533,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -1.7570051621846448,
+                0.0,
+                0.0
+              ],
+              [
+                1.5606201627322583e-15,
+                0.0,
+                0.0
+              ],
+              [
+                1.757005162184644,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.0277075231852493,
+                0.0,
+                0.0
+              ],
+              [
+                -0.6177630568343979,
+                0.0,
+                0.0
+              ],
+              [
+                2.645470580019647,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.479182632516271,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0770807103740134,
+                0.0,
+                0.0
+              ],
+              [
+                3.556263342890285,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.9343146533333333,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                4.467157326666666,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "energies": [
+            -0.17459382642944093,
+            -0.17436227663867251,
+            -0.17136706959679698,
+            -0.15917600011677163,
+            -0.17136706959679732,
+            -0.17436227663866885,
+            -0.17459382642944093
+          ],
+          "climbing_image": 3,
+          "max_force": 9.028054394344013e-06,
+          "max_climbing_force": 8.311226148971507e-07,
+          "tangent": [
+            [
+              0.4082482904638747,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8164965809277265,
+              0.0,
+              0.0
+            ],
+            [
+              0.4082482904638506,
+              0.0,
+              0.0
+            ]
+          ],
+          "directional_curvature": -0.08671184030475432,
+          "diagnostics": [
+            "CI-NEB converged with a stationary climbing image.",
+            "max NEB force = 9.02805e-06 hartree/bohr"
+          ]
+        },
+        "refinement": {
+          "geometry": [
+            [
+              -1.7570014695873986,
+              2.230533650402687e-12,
+              4.047639123015114e-12
+            ],
+            [
+              -1.4701185403448259e-06,
+              2.230470806834448e-12,
+              4.047608826054499e-12
+            ],
+            [
+              1.7569985293059402,
+              2.230416588098092e-12,
+              4.047582610668732e-12
+            ]
+          ],
+          "converged": true,
+          "iterations": 1,
+          "energy": -0.15917600012106253,
+          "max_force": 6.974480021293417e-12,
+          "hessian_eigenvalues": [
+            -4.7194899393958204e-05,
+            -4.186686261397022e-21,
+            -1.2437320708903509e-21,
+            2.3947914830160094e-15,
+            4.195878311252033e-14,
+            4.195878696096024e-14,
+            1.7091763372645454e-05,
+            1.7091763372645464e-05,
+            8.762870662118705e-05
+          ],
+          "mode": [
+            [
+              0.4082441780136725,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8165006933508355,
+              -5.3025642254224745e-18,
+              1.7934522826950447e-18
+            ],
+            [
+              0.40824417800569546,
+              4.893369734963825e-19,
+              -8.966625909410956e-19
+            ]
+          ],
+          "history": [
+            {
+              "iteration": 0,
+              "energy": -0.15917600011677163,
+              "max_force": 8.311226148971507e-07,
+              "negative_modes": 1
+            },
+            {
+              "iteration": 1,
+              "energy": -0.15917600012106253,
+              "max_force": 6.974480021293417e-12,
+              "negative_modes": 1
+            }
+          ],
+          "diagnostics": [
+            "P-RFO converged to a first-order saddle",
+            "P-RFO max force = 6.97448e-12 hartree/bohr",
+            "P-RFO negative mass-weighted Hessian eigenvalues = 1"
+          ]
+        },
+        "hessian_eigenvalues": [
+          -4.719489939395821e-05,
+          -2.011770406088025e-21,
+          1.2477785036717787e-21,
+          2.394801186541084e-15,
+          4.195878542721823e-14,
+          4.1958788790978854e-14,
+          1.709176337264545e-05,
+          1.7091763372645457e-05,
+          8.762870662118704e-05
+        ],
+        "trace_endpoints": [
+          [
+            [
+              -3.7159674765288933,
+              2.230596991525445e-12,
+              4.0476690233911726e-12
+            ],
+            [
+              1.1605097235852573,
+              2.23043519130824e-12,
+              4.047591294302519e-12
+            ],
+            [
+              2.5554548536339183,
+              2.2303889001737216e-12,
+              4.0475695079731786e-12
+            ]
+          ],
+          [
+            [
+              -2.5554577939002,
+              2.230559530457035e-12,
+              4.047652332367667e-12
+            ],
+            [
+              -1.1605126638515795,
+              2.230507977634676e-12,
+              4.0476275003631666e-12
+            ],
+            [
+              3.7159645362615,
+              2.23035349957133e-12,
+              4.0475514610789874e-12
+            ]
+          ]
+        ]
+      },
+      "pmf_diagnostics": {
+        "scope": "same-sample replica/temporal diagnostics; no independent extra dynamics",
+        "xi_star": 1.0,
+        "ui": {
+          "pooled": {
+            "barrier_at_fixed_xi_hartree": 0.02239777647044569,
+            "maximum_barrier_hartree": 0.02240155925091065,
+            "maximum_xi": 0.9996000000000002
+          },
+          "first_half": {
+            "barrier_at_fixed_xi_hartree": 0.022235199563557063,
+            "maximum_barrier_hartree": 0.022239346268413486,
+            "maximum_xi": 0.9996000000000002
+          },
+          "second_half": {
+            "barrier_at_fixed_xi_hartree": 0.02255111413298031,
+            "maximum_barrier_hartree": 0.022554597481876076,
+            "maximum_xi": 0.9996000000000002
+          },
+          "replica_0": {
+            "barrier_at_fixed_xi_hartree": 0.02321649059857517,
+            "maximum_barrier_hartree": 0.023224743208745575,
+            "maximum_xi": 0.9985500000000002
+          },
+          "replica_1": {
+            "barrier_at_fixed_xi_hartree": 0.021572457129605694,
+            "maximum_barrier_hartree": 0.021574557807462588,
+            "maximum_xi": 0.9996000000000002
+          }
+        },
+        "mbar": {
+          "ready": true,
+          "status": "ready",
+          "barrier_hartree": 0.02249115824475979,
+          "minus_ui_barrier_kbt": 0.09829210700091644,
+          "support": {
+            "reference": {
+              "bracket": [
+                29,
+                30,
+                0.8273197969773719
+              ],
+              "bins": [
+                {
+                  "bin": 29,
+                  "center": -0.0018952208896102982,
+                  "raw_count": 248,
+                  "density": 2.1510617171718356,
+                  "weighted_effective_samples_without_time_correction": 247.99883309488072,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 30,
+                  "center": 0.0003955751200277191,
+                  "raw_count": 253,
+                  "density": 2.2108908732563406,
+                  "weighted_effective_samples_without_time_correction": 252.99859354353703,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "dividing_surface": {
+              "bracket": [
+                466,
+                467,
+                0.3568037810246863
+              ],
+              "bins": [
+                {
+                  "bin": 466,
+                  "center": 0.9991826353222049,
+                  "raw_count": 139,
+                  "density": 1.1102796371969225e-10,
+                  "weighted_effective_samples_without_time_correction": 138.98815088405388,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 467,
+                  "center": 1.001473431331843,
+                  "raw_count": 151,
+                  "density": 1.2284137861410697e-10,
+                  "weighted_effective_samples_without_time_correction": 150.94562816457605,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "search_range": null,
+            "continuous_interval": true,
+            "selection": "fixed",
+            "smoothing": "none",
+            "failure_reason": null
+          },
+          "overlap_connected": true
+        },
+        "effective_samples_quantiles_0_25_50_75_100": [
+          80.99500737090207,
+          279.35331710164803,
+          322.38927192114323,
+          358.2635678046421,
+          463.45801632613086
+        ],
+        "streams_below_20_effective_samples": 0,
+        "stream_count": 222,
+        "samples_per_stream": [
+          500
+        ],
+        "replica_barrier_difference_kbt": 1.7304823648080725,
+        "time_half_barrier_difference_kbt": 0.3325264366518908
+      },
+      "artifact_sha256": {
+        "run/preparation.json": "0559d94fe7c9dce6fe0152304fd90bc7533e58268b89920ee5fc23a444056bd2",
+        "run/summary.json": "774ebdf4e1f22ad34fefd77a9a4ef20bf5b750299ec98764188896e32320d130",
+        "run/rate_pmf.json": "b498531dfbf4fc8390b0ee18d7af16a02ec1674e633432c592d7b2055196df82",
+        "run/umbrella/fes.h5": "785438fdfb906e98f458ff418b0d0b7de47195e80c42af65dd6bf8aa706ecb1a",
+        "run/input/resolved.json": "773e258eae8e53bfe8b45c69faa965e5ef353a5e0632561effe7da9df4620708",
+        "run/input/system.json": "fe8adb7eb6480f3bcc41ebe10c12108fb2f3d05eff3de28ffcf2d5b1c8060ca1"
+      },
+      "elapsed_total_seconds": 333.8393722760011,
+      "elapsed_workflow_seconds": 308.46777836699766,
+      "runtime_manifest": {
+        "schema": "pyrpmd.run",
+        "schema_version": 2,
+        "checkpoint_schema_version": 2,
+        "input_schema_version": 1,
+        "physics_identity": "execution-independent-v2",
+        "software": "PyRPMD",
+        "version": "0.2.0",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "dependencies": {
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "h5py": "3.16.0",
+          "mpi4py": "4.1.2",
+          "ase": "3.29.0"
+        },
+        "files": {
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/build/libbkmp2.so": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+        },
+        "physics_fingerprint": "e542f3f8d3d2b691ab5dfd7ce3946596fb0686d9044b9d4f72b9805572b6a6a6",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "parallel": {
+          "backend": "process",
+          "trajectory_workers": 4,
+          "threads_per_rank": 1,
+          "bead_workers": 1,
+          "mode": "serial",
+          "pes_ranks": 1,
+          "scheduling": "static",
+          "coordinator_ranks": 0
+        },
+        "preset": "pilot",
+        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "units": {
+          "length": "bohr",
+          "momentum": "atomic",
+          "energy": "hartree",
+          "time": "atomic"
+        }
+      }
+    },
+    {
+      "case": "classical-b",
+      "new_dynamics": true,
+      "physical_validation": false,
+      "started_utc": "2026-11-01T13:43:31.854909+00:00",
+      "settings": {
+        "beads": 1,
+        "seed": 914302,
+        "dt_fs": 0.1,
+        "equil_fs": 1000.0,
+        "production_fs": 5000.0,
+        "temperature_K": 300.0,
+        "rinf_bohr": 30.0,
+        "windows": 111,
+        "umbrella_coefficient_hartree": 30.0,
+        "umbrella_replicas": 2,
+        "parent_chains": 4,
+        "recording_interval_fs": 10.0,
+        "pmf_bootstrap_draws": 12,
+        "parent_samples_per_chain": 32,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 100.0,
+        "timestep_fs": 0.10000000000000002,
+        "isotope_masses_au": [
+          1837.1526474396187,
+          1837.1526474396187,
+          1837.1526474396187
+        ],
+        "trajectory_workers": 2,
+        "threads_per_worker": 1
+      },
+      "conventions": {
+        "reaction": "H + H2 -> H2 + H",
+        "pes": "BKMP2",
+        "nuclear_spin": "distinguishable nuclei",
+        "electronic": "single adiabatic surface, electronic_weight=1",
+        "channels": "two equivalent product arrangements in coordinate; no extra factor of two",
+        "symmetry_factor": 1.0
+      },
+      "protocol_differences_from_paper": [
+        "Andersen thermostat instead of Table 1 GLE; this study uses Cayley, and an identical propagator is not claimed",
+        "Independent endpoint search supplies the TS; paper supplied a saddle geometry",
+        "Far shorter equilibration and sampling; paper uses 200 trajectories per window, 20 ps equilibration and 100 ps production each",
+        "Four independent constrained-parent chains and 512 children of 100 fs; paper reports 100000 children of 50 fs",
+        "Numerical PMF quadrature uses 1001 grid points instead of the Table 1 5000",
+        "Twelve PMF bootstrap draws give only rough within-run uncertainty; independent-seed and replica/time-half variation are also reported"
+      ],
+      "pes_provenance": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "trajectory_batch_safe": true,
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+      },
+      "source_sha256": {
+        "src/pyrpmd/workflows/prepare.py": "106511ca46f797f813298d3e65e6285be580d0af0510abc3809af21b515b7095",
+        "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+        "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+        "src/pyrpmd/workflows/rate.py": "cf72093145d810fdad4a1c2bac5f67135939e269e4e69deaa7c00df8a825f8a9",
+        "src/pyrpmd/workflows/fes.py": "5b261552140e02ee3001f7bb22f278b1e68416a37c06cd71de1a91ca90074aa6",
+        "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+        "benchmarks/transition_state_search/rates.py": "1e2c053e0bbd2b01c74337f29ccfefd64404970d47cc4050a365f34830b68617"
+      },
+      "raw_output": "/workspace/scratch/620dee2c1ca3/endpoint-rate-study/classical-b",
+      "results": {
+        "status": "plateau_estimate",
+        "rate_estimate_cm3_s": 1.1564745744845776e-18,
+        "rate_standard_error_cm3_s": 4.825736002768775e-19,
+        "rate_percentile_95_ci_cm3_s": [
+          2.8546588421737037e-19,
+          1.942063876985553e-18
+        ],
+        "conditional_rate_standard_error_cm3_s": 1.7798860596088327e-21,
+        "kappa": 0.9959726655297627,
+        "kappa_standard_error": 0.0015328636722670254,
+        "plateau_detected": true,
+        "plateau_diagnostics": {
+          "passed": true,
+          "reasons": [],
+          "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+          "scope": "selected_finite_time_tail",
+          "tail_samples": 500,
+          "relative_tolerance": 0.05,
+          "absolute_tolerance": 0.04979863327648814,
+          "maximum_tail_deviation": 1.1102230246251565e-16,
+          "bootstrap_95_envelope_radius": 4.440892098500626e-16,
+          "maximum_tail_deviation_bound": 5.551115123125783e-16,
+          "absolute_drift_plus_two_standard_errors": 0.0,
+          "uncertainty_available": true
+        },
+        "child_trajectories": 512,
+        "maximum_endpoint_energy_error_kbt": 0.009584654386394085,
+        "rate_uncertainty": {
+          "available": true,
+          "pmf_block_status": "limited_blocks",
+          "reasons": [
+            "pmf_bootstrap_limited_blocks"
+          ],
+          "pmf_bootstrap_valid": 12,
+          "recrossing_bootstrap_valid": 200,
+          "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
+          "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+          "recrossing_scope": "independent_parent_chains",
+          "recrossing_support": {
+            "available": true,
+            "reasons": [],
+            "scope": "independent_parent_chains",
+            "condition": null,
+            "independent_parent_chains": 4,
+            "nonzero_flux_parent_configurations": 128,
+            "effective_parent_blocks": {
+              "0": 16.0,
+              "1": 32.0,
+              "2": 32.0,
+              "3": 32.0
+            },
+            "bootstrap_requested": 200,
+            "bootstrap_valid": 200,
+            "bootstrap_rejected": 0
+          },
+          "parent_block_lengths": {
+            "0": 2,
+            "1": 1,
+            "2": 1,
+            "3": 1
+          },
+          "pmf_bootstrap_requested": 12,
+          "pmf_bootstrap_attempted": 12,
+          "pmf_bootstrap_rejected": 0,
+          "independence_assumption": "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+        },
+        "warnings": [
+          "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval.",
+          "Unsampled/insufficient-count bins are masked; no extrapolation is reported.",
+          "Some supported bins lack complete bootstrap support; their main standard errors are unavailable. supported_draw_standard_error describes surviving draws only and is a conditional diagnostic.",
+          "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR.",
+          "Complete rate uncertainty has limited support: pmf_bootstrap_limited_blocks. Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
+        ],
+        "pmf": {
+          "ready": true,
+          "status": "ready",
+          "xi_star": 1.0,
+          "free_energy_barrier_hartree": 0.022578873431338596,
+          "barrier_standard_error_hartree": 0.0005630549910098173,
+          "k_qtst_cm3_s": 1.1611509176001765e-18,
+          "reactant_prefactor_au": 3.9738107997425676,
+          "overlap_connected": true,
+          "support": {
+            "model": "Gaussian-window integration within the umbrella-center range",
+            "reference": {
+              "coordinate": 0.0,
+              "model_supported": true
+            },
+            "dividing_surface": {
+              "coordinate": 1.0,
+              "model_supported": true
+            },
+            "observed_histogram": {
+              "reference": {
+                "coordinate": 0.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  -0.0004715827281676563,
+                  0.0018126572522900314
+                ],
+                "raw_count": [
+                  228.0,
+                  234.0
+                ]
+              },
+              "dividing_surface": {
+                "coordinate": 1.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  0.9977412887318403,
+                  1.0000255287122979
+                ],
+                "raw_count": [
+                  133.0,
+                  131.0
+                ]
+              }
+            },
+            "search_range": [
+              0.0,
+              1.05
+            ],
+            "selection": "fixed",
+            "failure_reason": null
+          },
+          "uncertainty": {
+            "available": true,
+            "block_status": "limited_blocks",
+            "reasons": [
+              "pmf_bootstrap_limited_blocks"
+            ],
+            "bootstrap_requested": 12,
+            "bootstrap_attempted": 12,
+            "bootstrap_valid": 12,
+            "bootstrap_rejected": 0,
+            "surface_held_fixed": true,
+            "selection_uncertainty_included": false,
+            "reason": null
+          }
+        },
+        "rate_cm3_s": 1.1564745744845776e-18,
+        "converged": false,
+        "convergence_note": "A detected time plateau is not bead, timestep, Rinf or statistical convergence.",
+        "child_time_fs": 100.00000000000001,
+        "parent_configurations": 128,
+        "energy_diagnostic_child_pairs": 256
+      },
+      "reference": {
+        "beads": 1,
+        "qtst_cm3_molecule_s": 1.56e-18,
+        "kappa": 0.994,
+        "rate_cm3_molecule_s": 1.55e-18,
+        "source": {
+          "authors": "Y. V. Suleimanov, J. W. Allen, W. H. Green",
+          "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+          "journal": "Computer Physics Communications 184 (2013), 833-840",
+          "doi": "10.1016/j.cpc.2012.10.017",
+          "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+          "author_manuscript": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+          "locations": "Table 1 H+H2 column; Table 2 H+H2 classical and RPMD columns; Figure 1 equivalent channels",
+          "source_verified": true,
+          "uncertainty_note": "Paper describes approximately 5% statistical convergence; this is not a published standard error or confidence interval."
+        }
+      },
+      "comparison": {
+        "status": "pilot_comparison",
+        "rate_ratio": 0.7461126286997275,
+        "qtst_ratio": 0.7443275112821645,
+        "kappa_ratio": 1.001984572967568,
+        "reference_qtst_implied_barrier_hartree": 0.022298350165266028,
+        "physical_validation_passed": null,
+        "reason": "Numerical sensitivity and sampling diagnostics do not establish all convergence criteria."
+      },
+      "preparation": {
+        "ready": true,
+        "reaction": {
+          "rinf": 30.0,
+          "electronic_weight": 1.0,
+          "symmetry_factor": 1.0,
+          "equivalent_paths": [
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "preparation": {
+            "gradient_tolerance": 1e-07,
+            "neb": {
+              "images": 7,
+              "gradient_tolerance": 1e-05
+            }
+          },
+          "rinf_au": 30.0,
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "forming_bonds": [
+            [
+              0,
+              1
+            ]
+          ],
+          "breaking_bonds": [
+            [
+              1,
+              2
+            ]
+          ],
+          "entry_side": 0
+        },
+        "diagnostics": [
+          "CI-NEB converged with a stationary climbing image.",
+          "max NEB force = 9.02805e-06 hartree/bohr",
+          "P-RFO converged to a first-order saddle",
+          "P-RFO max force = 6.97448e-12 hartree/bohr",
+          "P-RFO negative mass-weighted Hessian eigenvalues = 1",
+          "max TS force = 6.97448e-12 hartree/bohr",
+          "negative mass-weighted Hessian eigenvalues = 1",
+          "Entrance direction checked against labeled reactant/product endpoint connectivity."
+        ],
+        "candidates": [
+          {
+            "fragments": [
+              [
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "forming_bonds": [
+              [
+                0,
+                1
+              ]
+            ],
+            "breaking_bonds": [
+              [
+                1,
+                2
+              ]
+            ],
+            "entry_side": 0,
+            "rinf": 30.0
+          }
+        ],
+        "transition_state": [
+          [
+            -1.7570014695873986,
+            2.230533650402687e-12,
+            4.047639123015114e-12
+          ],
+          [
+            -1.4701185403448259e-06,
+            2.230470806834448e-12,
+            4.047608826054499e-12
+          ],
+          [
+            1.7569985293059402,
+            2.230416588098092e-12,
+            4.047582610668732e-12
+          ]
+        ],
+        "neb": {
+          "geometry": [
+            [
+              -1.7570051621846448,
+              0.0,
+              0.0
+            ],
+            [
+              1.5606201627322583e-15,
+              0.0,
+              0.0
+            ],
+            [
+              1.757005162184644,
+              0.0,
+              0.0
+            ]
+          ],
+          "energy": -0.15917600011677163,
+          "converged": true,
+          "iterations": 127,
+          "images": [
+            [
+              [
+                -4.467157326666666,
+                0.0,
+                0.0
+              ],
+              [
+                1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                2.9343146533333333,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.556263342890286,
+                0.0,
+                0.0
+              ],
+              [
+                1.0770807103740108,
+                0.0,
+                0.0
+              ],
+              [
+                2.479182632516275,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.645470580019648,
+                0.0,
+                0.0
+              ],
+              [
+                0.6177630568343961,
+                0.0,
+                0.0
+              ],
+              [
+                2.0277075231852533,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -1.7570051621846448,
+                0.0,
+                0.0
+              ],
+              [
+                1.5606201627322583e-15,
+                0.0,
+                0.0
+              ],
+              [
+                1.757005162184644,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.0277075231852493,
+                0.0,
+                0.0
+              ],
+              [
+                -0.6177630568343979,
+                0.0,
+                0.0
+              ],
+              [
+                2.645470580019647,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.479182632516271,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0770807103740134,
+                0.0,
+                0.0
+              ],
+              [
+                3.556263342890285,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.9343146533333333,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                4.467157326666666,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "energies": [
+            -0.17459382642944093,
+            -0.17436227663867251,
+            -0.17136706959679698,
+            -0.15917600011677163,
+            -0.17136706959679732,
+            -0.17436227663866885,
+            -0.17459382642944093
+          ],
+          "climbing_image": 3,
+          "max_force": 9.028054394344013e-06,
+          "max_climbing_force": 8.311226148971507e-07,
+          "tangent": [
+            [
+              0.4082482904638747,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8164965809277265,
+              0.0,
+              0.0
+            ],
+            [
+              0.4082482904638506,
+              0.0,
+              0.0
+            ]
+          ],
+          "directional_curvature": -0.08671184030475432,
+          "diagnostics": [
+            "CI-NEB converged with a stationary climbing image.",
+            "max NEB force = 9.02805e-06 hartree/bohr"
+          ]
+        },
+        "refinement": {
+          "geometry": [
+            [
+              -1.7570014695873986,
+              2.230533650402687e-12,
+              4.047639123015114e-12
+            ],
+            [
+              -1.4701185403448259e-06,
+              2.230470806834448e-12,
+              4.047608826054499e-12
+            ],
+            [
+              1.7569985293059402,
+              2.230416588098092e-12,
+              4.047582610668732e-12
+            ]
+          ],
+          "converged": true,
+          "iterations": 1,
+          "energy": -0.15917600012106253,
+          "max_force": 6.974480021293417e-12,
+          "hessian_eigenvalues": [
+            -4.7194899393958204e-05,
+            -4.186686261397022e-21,
+            -1.2437320708903509e-21,
+            2.3947914830160094e-15,
+            4.195878311252033e-14,
+            4.195878696096024e-14,
+            1.7091763372645454e-05,
+            1.7091763372645464e-05,
+            8.762870662118705e-05
+          ],
+          "mode": [
+            [
+              0.4082441780136725,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8165006933508355,
+              -5.3025642254224745e-18,
+              1.7934522826950447e-18
+            ],
+            [
+              0.40824417800569546,
+              4.893369734963825e-19,
+              -8.966625909410956e-19
+            ]
+          ],
+          "history": [
+            {
+              "iteration": 0,
+              "energy": -0.15917600011677163,
+              "max_force": 8.311226148971507e-07,
+              "negative_modes": 1
+            },
+            {
+              "iteration": 1,
+              "energy": -0.15917600012106253,
+              "max_force": 6.974480021293417e-12,
+              "negative_modes": 1
+            }
+          ],
+          "diagnostics": [
+            "P-RFO converged to a first-order saddle",
+            "P-RFO max force = 6.97448e-12 hartree/bohr",
+            "P-RFO negative mass-weighted Hessian eigenvalues = 1"
+          ]
+        },
+        "hessian_eigenvalues": [
+          -4.719489939395821e-05,
+          -2.011770406088025e-21,
+          1.2477785036717787e-21,
+          2.394801186541084e-15,
+          4.195878542721823e-14,
+          4.1958788790978854e-14,
+          1.709176337264545e-05,
+          1.7091763372645457e-05,
+          8.762870662118704e-05
+        ],
+        "trace_endpoints": [
+          [
+            [
+              -3.7159674765288933,
+              2.230596991525445e-12,
+              4.0476690233911726e-12
+            ],
+            [
+              1.1605097235852573,
+              2.23043519130824e-12,
+              4.047591294302519e-12
+            ],
+            [
+              2.5554548536339183,
+              2.2303889001737216e-12,
+              4.0475695079731786e-12
+            ]
+          ],
+          [
+            [
+              -2.5554577939002,
+              2.230559530457035e-12,
+              4.047652332367667e-12
+            ],
+            [
+              -1.1605126638515795,
+              2.230507977634676e-12,
+              4.0476275003631666e-12
+            ],
+            [
+              3.7159645362615,
+              2.23035349957133e-12,
+              4.0475514610789874e-12
+            ]
+          ]
+        ]
+      },
+      "pmf_diagnostics": {
+        "scope": "same-sample replica/temporal diagnostics; no independent extra dynamics",
+        "xi_star": 1.0,
+        "ui": {
+          "pooled": {
+            "barrier_at_fixed_xi_hartree": 0.022578873431338596,
+            "maximum_barrier_hartree": 0.02257905904202011,
+            "maximum_xi": 0.9996000000000002
+          },
+          "first_half": {
+            "barrier_at_fixed_xi_hartree": 0.022471260985879333,
+            "maximum_barrier_hartree": 0.022473911007233897,
+            "maximum_xi": 1.00065
+          },
+          "second_half": {
+            "barrier_at_fixed_xi_hartree": 0.022678352186673134,
+            "maximum_barrier_hartree": 0.02267992022107113,
+            "maximum_xi": 0.9996000000000002
+          },
+          "replica_0": {
+            "barrier_at_fixed_xi_hartree": 0.021832541464833776,
+            "maximum_barrier_hartree": 0.021836641123716447,
+            "maximum_xi": 0.9996000000000002
+          },
+          "replica_1": {
+            "barrier_at_fixed_xi_hartree": 0.023324791023438807,
+            "maximum_barrier_hartree": 0.02333108732796146,
+            "maximum_xi": 1.00065
+          }
+        },
+        "mbar": {
+          "ready": true,
+          "status": "ready",
+          "barrier_hartree": 0.022659364240351688,
+          "minus_ui_barrier_kbt": 0.08472329070867336,
+          "support": {
+            "reference": {
+              "bracket": [
+                29,
+                30,
+                0.20645060597930975
+              ],
+              "bins": [
+                {
+                  "bin": 29,
+                  "center": -0.0004715827281676563,
+                  "raw_count": 228,
+                  "density": 2.078442445647002,
+                  "weighted_effective_samples_without_time_correction": 227.99411344109703,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 30,
+                  "center": 0.0018126572522900314,
+                  "raw_count": 234,
+                  "density": 2.100372213163695,
+                  "weighted_effective_samples_without_time_correction": 233.99708828898392,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "dividing_surface": {
+              "bracket": [
+                466,
+                467,
+                0.9888239797410557
+              ],
+              "bins": [
+                {
+                  "bin": 466,
+                  "center": 0.9977412887318403,
+                  "raw_count": 133,
+                  "density": 9.778423448608973e-11,
+                  "weighted_effective_samples_without_time_correction": 132.88694984250827,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 467,
+                  "center": 1.0000255287122979,
+                  "raw_count": 131,
+                  "density": 9.120938854955837e-11,
+                  "weighted_effective_samples_without_time_correction": 130.9978710234128,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "search_range": null,
+            "continuous_interval": true,
+            "selection": "fixed",
+            "smoothing": "none",
+            "failure_reason": null
+          },
+          "overlap_connected": true
+        },
+        "effective_samples_quantiles_0_25_50_75_100": [
+          50.15930356960475,
+          301.0341099692507,
+          339.246178631278,
+          364.3675322446674,
+          494.2746751350907
+        ],
+        "streams_below_20_effective_samples": 0,
+        "stream_count": 222,
+        "samples_per_stream": [
+          500
+        ],
+        "replica_barrier_difference_kbt": 1.5707171379408087,
+        "time_half_barrier_difference_kbt": 0.21798076355783355
+      },
+      "artifact_sha256": {
+        "run/preparation.json": "0559d94fe7c9dce6fe0152304fd90bc7533e58268b89920ee5fc23a444056bd2",
+        "run/summary.json": "d244d8fa52b4fddcbe93c80039f42110880c060cc125ec3cd6bfd2f3f28f5247",
+        "run/rate_pmf.json": "0155f21af128227d51b5018129eceb03ccb54d9051c0ae88064e54b73afda1d9",
+        "run/umbrella/fes.h5": "b577145f566e3025aa14e0917230639517cf24f3bd500a510dd8ba40ee8a2b20",
+        "run/input/resolved.json": "4fd3412c8687f9e39a4fd5c9c3a613d3c9ba3363c07dccc8b30a84153f03b5fc",
+        "run/input/system.json": "fe8adb7eb6480f3bcc41ebe10c12108fb2f3d05eff3de28ffcf2d5b1c8060ca1"
+      },
+      "elapsed_total_seconds": 573.9012800659984,
+      "elapsed_workflow_seconds": 542.8741271800027,
+      "runtime_manifest": {
+        "schema": "pyrpmd.run",
+        "schema_version": 2,
+        "checkpoint_schema_version": 2,
+        "input_schema_version": 1,
+        "physics_identity": "execution-independent-v2",
+        "software": "PyRPMD",
+        "version": "0.2.0",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "dependencies": {
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "h5py": "3.16.0",
+          "mpi4py": "4.1.2",
+          "ase": "3.29.0"
+        },
+        "files": {
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/build/libbkmp2.so": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+        },
+        "physics_fingerprint": "5c02d606967b9a000342325b80a965f72dccc0c99deb2be0df794cd2c41dca67",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "parallel": {
+          "backend": "process",
+          "trajectory_workers": 2,
+          "threads_per_rank": 1,
+          "bead_workers": 1,
+          "mode": "serial",
+          "pes_ranks": 1,
+          "scheduling": "static",
+          "coordinator_ranks": 0
+        },
+        "preset": "pilot",
+        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "units": {
+          "length": "bohr",
+          "momentum": "atomic",
+          "energy": "hartree",
+          "time": "atomic"
+        }
+      }
+    },
+    {
+      "case": "classical-c",
+      "new_dynamics": true,
+      "physical_validation": false,
+      "started_utc": "2026-11-01T13:56:57.053723+00:00",
+      "settings": {
+        "beads": 1,
+        "seed": 914303,
+        "dt_fs": 0.1,
+        "equil_fs": 1000.0,
+        "production_fs": 5000.0,
+        "temperature_K": 300.0,
+        "rinf_bohr": 30.0,
+        "windows": 111,
+        "umbrella_coefficient_hartree": 30.0,
+        "umbrella_replicas": 2,
+        "parent_chains": 4,
+        "recording_interval_fs": 10.0,
+        "pmf_bootstrap_draws": 12,
+        "parent_samples_per_chain": 32,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 100.0,
+        "timestep_fs": 0.10000000000000002,
+        "trajectory_workers": 4,
+        "threads_per_worker": 1,
+        "isotope_masses_au": [
+          1837.1526474396187,
+          1837.1526474396187,
+          1837.1526474396187
+        ]
+      },
+      "conventions": {
+        "reaction": "H + H2 -> H2 + H",
+        "pes": "BKMP2",
+        "nuclear_spin": "distinguishable nuclei",
+        "electronic": "single adiabatic surface, electronic_weight=1",
+        "channels": "two equivalent product arrangements in coordinate; no extra factor of two",
+        "symmetry_factor": 1.0
+      },
+      "protocol_differences_from_paper": [
+        "Andersen thermostat instead of Table 1 GLE; this study uses Cayley, and an identical propagator is not claimed",
+        "Independent endpoint search supplies the TS; paper supplied a saddle geometry",
+        "Far shorter equilibration and sampling; paper uses 200 trajectories per window, 20 ps equilibration and 100 ps production each",
+        "Four independent constrained-parent chains and 512 children of 100 fs; paper reports 100000 children of 50 fs",
+        "Numerical PMF quadrature uses 1001 grid points instead of the Table 1 5000",
+        "Twelve PMF bootstrap draws give only rough within-run uncertainty; independent-seed and replica/time-half variation are also reported"
+      ],
+      "uncertainty_interpretation": {
+        "pmf_bootstrap_draws": 12,
+        "interval_scope": "Percentile intervals involving the PMF use only 12 bootstrap draws and are low-draw diagnostics, not established coverage guarantees.",
+        "recording_scope": "Changing the recording interval keeps the integrated trajectories and physical thermostat schedule unchanged but changes the finite-sample estimator; dense-versus-thinned diagnostics are retained separately when available.",
+        "primary_checks": "independent-seed dispersion, separate umbrella replicas, temporal halves and timestep sensitivity"
+      },
+      "pes_provenance": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "trajectory_batch_safe": true,
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+      },
+      "source_sha256": {
+        "src/pyrpmd/workflows/prepare.py": "106511ca46f797f813298d3e65e6285be580d0af0510abc3809af21b515b7095",
+        "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+        "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+        "src/pyrpmd/workflows/rate.py": "cf72093145d810fdad4a1c2bac5f67135939e269e4e69deaa7c00df8a825f8a9",
+        "src/pyrpmd/workflows/fes.py": "5b261552140e02ee3001f7bb22f278b1e68416a37c06cd71de1a91ca90074aa6",
+        "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+        "benchmarks/transition_state_search/rates.py": "4f44353e905bd052b20594d7752a357db510123e4df77320fe2eb1c7d148437b"
+      },
+      "raw_output": "/workspace/scratch/620dee2c1ca3/endpoint-rate-classical-rest/classical-c",
+      "results": {
+        "status": "plateau_estimate",
+        "rate_estimate_cm3_s": 4.465438689765848e-18,
+        "rate_standard_error_cm3_s": 3.647012495187072e-18,
+        "rate_percentile_95_ci_cm3_s": [
+          1.1428403246275593e-18,
+          1.520475073320765e-17
+        ],
+        "conditional_rate_standard_error_cm3_s": 7.973724806908645e-21,
+        "kappa": 0.9956906690221977,
+        "kappa_standard_error": 0.0017779582117621855,
+        "plateau_detected": true,
+        "plateau_diagnostics": {
+          "passed": true,
+          "reasons": [],
+          "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+          "scope": "selected_finite_time_tail",
+          "tail_samples": 500,
+          "relative_tolerance": 0.05,
+          "absolute_tolerance": 0.04978453345110989,
+          "maximum_tail_deviation": 2.220446049250313e-16,
+          "bootstrap_95_envelope_radius": 5.551115123125783e-16,
+          "maximum_tail_deviation_bound": 7.771561172376096e-16,
+          "absolute_drift_plus_two_standard_errors": 0.0,
+          "uncertainty_available": true
+        },
+        "child_trajectories": 512,
+        "maximum_endpoint_energy_error_kbt": 0.010740445417427717,
+        "rate_uncertainty": {
+          "available": true,
+          "pmf_block_status": "limited_blocks",
+          "reasons": [
+            "pmf_bootstrap_limited_blocks"
+          ],
+          "pmf_bootstrap_valid": 12,
+          "recrossing_bootstrap_valid": 200,
+          "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
+          "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+          "recrossing_scope": "independent_parent_chains",
+          "recrossing_support": {
+            "available": true,
+            "reasons": [],
+            "scope": "independent_parent_chains",
+            "condition": null,
+            "independent_parent_chains": 4,
+            "nonzero_flux_parent_configurations": 128,
+            "effective_parent_blocks": {
+              "0": 32.0,
+              "1": 32.0,
+              "2": 32.0,
+              "3": 32.0
+            },
+            "bootstrap_requested": 200,
+            "bootstrap_valid": 200,
+            "bootstrap_rejected": 0
+          },
+          "parent_block_lengths": {
+            "0": 1,
+            "1": 1,
+            "2": 1,
+            "3": 1
+          },
+          "pmf_bootstrap_requested": 12,
+          "pmf_bootstrap_attempted": 12,
+          "pmf_bootstrap_rejected": 0,
+          "independence_assumption": "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+        },
+        "warnings": [
+          "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval.",
+          "Unsampled/insufficient-count bins are masked; no extrapolation is reported.",
+          "Some bootstrap draws failed; inspect bootstrap_diagnostics and per-bin valid counts.",
+          "Some supported bins lack complete bootstrap support; their main standard errors are unavailable. supported_draw_standard_error describes surviving draws only and is a conditional diagnostic.",
+          "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR.",
+          "Complete rate uncertainty has limited support: pmf_bootstrap_limited_blocks. Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
+        ],
+        "pmf": {
+          "ready": true,
+          "status": "ready",
+          "xi_star": 1.0,
+          "free_energy_barrier_hartree": 0.02129510399411307,
+          "barrier_standard_error_hartree": 0.0006971395695260156,
+          "k_qtst_cm3_s": 4.484765026623239e-18,
+          "reactant_prefactor_au": 3.9738107997425676,
+          "overlap_connected": true,
+          "support": {
+            "model": "Gaussian-window integration within the umbrella-center range",
+            "reference": {
+              "coordinate": 0.0,
+              "model_supported": true
+            },
+            "dividing_surface": {
+              "coordinate": 1.0,
+              "model_supported": true
+            },
+            "observed_histogram": {
+              "reference": {
+                "coordinate": 0.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  -0.0004746511813124299,
+                  0.0018049162893744239
+                ],
+                "raw_count": [
+                  231.0,
+                  224.0
+                ]
+              },
+              "dividing_surface": {
+                "coordinate": 1.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  0.9979759009795303,
+                  1.000255468450217
+                ],
+                "raw_count": [
+                  149.0,
+                  141.0
+                ]
+              }
+            },
+            "search_range": [
+              0.0,
+              1.05
+            ],
+            "selection": "fixed",
+            "failure_reason": null
+          },
+          "uncertainty": {
+            "available": true,
+            "block_status": "limited_blocks",
+            "reasons": [
+              "pmf_bootstrap_limited_blocks"
+            ],
+            "bootstrap_requested": 12,
+            "bootstrap_attempted": 12,
+            "bootstrap_valid": 12,
+            "bootstrap_rejected": 0,
+            "surface_held_fixed": true,
+            "selection_uncertainty_included": false,
+            "reason": null
+          }
+        },
+        "rate_cm3_s": 4.465438689765848e-18,
+        "converged": false,
+        "convergence_note": "A detected time plateau is not bead, timestep, Rinf or statistical convergence.",
+        "child_time_fs": 100.00000000000001,
+        "parent_configurations": 128,
+        "energy_diagnostic_child_pairs": 256
+      },
+      "reference": {
+        "beads": 1,
+        "qtst_cm3_molecule_s": 1.56e-18,
+        "kappa": 0.994,
+        "rate_cm3_molecule_s": 1.55e-18,
+        "source": {
+          "authors": "Y. V. Suleimanov, J. W. Allen, W. H. Green",
+          "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+          "journal": "Computer Physics Communications 184 (2013), 833-840",
+          "doi": "10.1016/j.cpc.2012.10.017",
+          "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+          "author_manuscript": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+          "locations": "Table 1 H+H2 column; Table 2 H+H2 classical and RPMD columns; Figure 1 equivalent channels",
+          "source_verified": true,
+          "uncertainty_note": "Paper describes approximately 5% statistical convergence; this is not a published standard error or confidence interval."
+        }
+      },
+      "comparison": {
+        "status": "pilot_comparison",
+        "rate_ratio": 2.880928186945708,
+        "qtst_ratio": 2.874849376040538,
+        "kappa_ratio": 1.0017008742678046,
+        "reference_qtst_implied_barrier_hartree": 0.022298350165266028,
+        "physical_validation_passed": null,
+        "reason": "Numerical sensitivity and sampling diagnostics do not establish all convergence criteria."
+      },
+      "preparation": {
+        "ready": true,
+        "reaction": {
+          "rinf": 30.0,
+          "electronic_weight": 1.0,
+          "symmetry_factor": 1.0,
+          "equivalent_paths": [
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "preparation": {
+            "gradient_tolerance": 1e-07,
+            "neb": {
+              "images": 7,
+              "gradient_tolerance": 1e-05
+            }
+          },
+          "rinf_au": 30.0,
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "forming_bonds": [
+            [
+              0,
+              1
+            ]
+          ],
+          "breaking_bonds": [
+            [
+              1,
+              2
+            ]
+          ],
+          "entry_side": 0
+        },
+        "diagnostics": [
+          "CI-NEB converged with a stationary climbing image.",
+          "max NEB force = 9.02805e-06 hartree/bohr",
+          "P-RFO converged to a first-order saddle",
+          "P-RFO max force = 6.97448e-12 hartree/bohr",
+          "P-RFO negative mass-weighted Hessian eigenvalues = 1",
+          "max TS force = 6.97448e-12 hartree/bohr",
+          "negative mass-weighted Hessian eigenvalues = 1",
+          "Entrance direction checked against labeled reactant/product endpoint connectivity."
+        ],
+        "candidates": [
+          {
+            "fragments": [
+              [
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "forming_bonds": [
+              [
+                0,
+                1
+              ]
+            ],
+            "breaking_bonds": [
+              [
+                1,
+                2
+              ]
+            ],
+            "entry_side": 0,
+            "rinf": 30.0
+          }
+        ],
+        "transition_state": [
+          [
+            -1.7570014695873986,
+            2.230533650402687e-12,
+            4.047639123015114e-12
+          ],
+          [
+            -1.4701185403448259e-06,
+            2.230470806834448e-12,
+            4.047608826054499e-12
+          ],
+          [
+            1.7569985293059402,
+            2.230416588098092e-12,
+            4.047582610668732e-12
+          ]
+        ],
+        "neb": {
+          "geometry": [
+            [
+              -1.7570051621846448,
+              0.0,
+              0.0
+            ],
+            [
+              1.5606201627322583e-15,
+              0.0,
+              0.0
+            ],
+            [
+              1.757005162184644,
+              0.0,
+              0.0
+            ]
+          ],
+          "energy": -0.15917600011677163,
+          "converged": true,
+          "iterations": 127,
+          "images": [
+            [
+              [
+                -4.467157326666666,
+                0.0,
+                0.0
+              ],
+              [
+                1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                2.9343146533333333,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.556263342890286,
+                0.0,
+                0.0
+              ],
+              [
+                1.0770807103740108,
+                0.0,
+                0.0
+              ],
+              [
+                2.479182632516275,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.645470580019648,
+                0.0,
+                0.0
+              ],
+              [
+                0.6177630568343961,
+                0.0,
+                0.0
+              ],
+              [
+                2.0277075231852533,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -1.7570051621846448,
+                0.0,
+                0.0
+              ],
+              [
+                1.5606201627322583e-15,
+                0.0,
+                0.0
+              ],
+              [
+                1.757005162184644,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.0277075231852493,
+                0.0,
+                0.0
+              ],
+              [
+                -0.6177630568343979,
+                0.0,
+                0.0
+              ],
+              [
+                2.645470580019647,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.479182632516271,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0770807103740134,
+                0.0,
+                0.0
+              ],
+              [
+                3.556263342890285,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.9343146533333333,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                4.467157326666666,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "energies": [
+            -0.17459382642944093,
+            -0.17436227663867251,
+            -0.17136706959679698,
+            -0.15917600011677163,
+            -0.17136706959679732,
+            -0.17436227663866885,
+            -0.17459382642944093
+          ],
+          "climbing_image": 3,
+          "max_force": 9.028054394344013e-06,
+          "max_climbing_force": 8.311226148971507e-07,
+          "tangent": [
+            [
+              0.4082482904638747,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8164965809277265,
+              0.0,
+              0.0
+            ],
+            [
+              0.4082482904638506,
+              0.0,
+              0.0
+            ]
+          ],
+          "directional_curvature": -0.08671184030475432,
+          "diagnostics": [
+            "CI-NEB converged with a stationary climbing image.",
+            "max NEB force = 9.02805e-06 hartree/bohr"
+          ]
+        },
+        "refinement": {
+          "geometry": [
+            [
+              -1.7570014695873986,
+              2.230533650402687e-12,
+              4.047639123015114e-12
+            ],
+            [
+              -1.4701185403448259e-06,
+              2.230470806834448e-12,
+              4.047608826054499e-12
+            ],
+            [
+              1.7569985293059402,
+              2.230416588098092e-12,
+              4.047582610668732e-12
+            ]
+          ],
+          "converged": true,
+          "iterations": 1,
+          "energy": -0.15917600012106253,
+          "max_force": 6.974480021293417e-12,
+          "hessian_eigenvalues": [
+            -4.7194899393958204e-05,
+            -4.186686261397022e-21,
+            -1.2437320708903509e-21,
+            2.3947914830160094e-15,
+            4.195878311252033e-14,
+            4.195878696096024e-14,
+            1.7091763372645454e-05,
+            1.7091763372645464e-05,
+            8.762870662118705e-05
+          ],
+          "mode": [
+            [
+              0.4082441780136725,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8165006933508355,
+              -5.3025642254224745e-18,
+              1.7934522826950447e-18
+            ],
+            [
+              0.40824417800569546,
+              4.893369734963825e-19,
+              -8.966625909410956e-19
+            ]
+          ],
+          "history": [
+            {
+              "iteration": 0,
+              "energy": -0.15917600011677163,
+              "max_force": 8.311226148971507e-07,
+              "negative_modes": 1
+            },
+            {
+              "iteration": 1,
+              "energy": -0.15917600012106253,
+              "max_force": 6.974480021293417e-12,
+              "negative_modes": 1
+            }
+          ],
+          "diagnostics": [
+            "P-RFO converged to a first-order saddle",
+            "P-RFO max force = 6.97448e-12 hartree/bohr",
+            "P-RFO negative mass-weighted Hessian eigenvalues = 1"
+          ]
+        },
+        "hessian_eigenvalues": [
+          -4.719489939395821e-05,
+          -2.011770406088025e-21,
+          1.2477785036717787e-21,
+          2.394801186541084e-15,
+          4.195878542721823e-14,
+          4.1958788790978854e-14,
+          1.709176337264545e-05,
+          1.7091763372645457e-05,
+          8.762870662118704e-05
+        ],
+        "trace_endpoints": [
+          [
+            [
+              -3.7159674765288933,
+              2.230596991525445e-12,
+              4.0476690233911726e-12
+            ],
+            [
+              1.1605097235852573,
+              2.23043519130824e-12,
+              4.047591294302519e-12
+            ],
+            [
+              2.5554548536339183,
+              2.2303889001737216e-12,
+              4.0475695079731786e-12
+            ]
+          ],
+          [
+            [
+              -2.5554577939002,
+              2.230559530457035e-12,
+              4.047652332367667e-12
+            ],
+            [
+              -1.1605126638515795,
+              2.230507977634676e-12,
+              4.0476275003631666e-12
+            ],
+            [
+              3.7159645362615,
+              2.23035349957133e-12,
+              4.0475514610789874e-12
+            ]
+          ]
+        ]
+      },
+      "pmf_diagnostics": {
+        "scope": "same-sample replica/temporal diagnostics; no independent extra dynamics",
+        "xi_star": 1.0,
+        "ui": {
+          "pooled": {
+            "barrier_at_fixed_xi_hartree": 0.02129510399411307,
+            "maximum_barrier_hartree": 0.021298735501931496,
+            "maximum_xi": 0.9996000000000002
+          },
+          "first_half": {
+            "barrier_at_fixed_xi_hartree": 0.020965429132934008,
+            "maximum_barrier_hartree": 0.020968924490254896,
+            "maximum_xi": 0.9996000000000002
+          },
+          "second_half": {
+            "barrier_at_fixed_xi_hartree": 0.02161771320776701,
+            "maximum_barrier_hartree": 0.021621310929865575,
+            "maximum_xi": 0.9996000000000002
+          },
+          "replica_0": {
+            "barrier_at_fixed_xi_hartree": 0.02039918665406058,
+            "maximum_barrier_hartree": 0.020403767437250447,
+            "maximum_xi": 0.9996000000000002
+          },
+          "replica_1": {
+            "barrier_at_fixed_xi_hartree": 0.022194994155701652,
+            "maximum_barrier_hartree": 0.022197745829985988,
+            "maximum_xi": 0.9996000000000002
+          }
+        },
+        "mbar": {
+          "ready": true,
+          "status": "ready",
+          "barrier_hartree": 0.021359754724423703,
+          "minus_ui_barrier_kbt": 0.06805028655812144,
+          "support": {
+            "reference": {
+              "bracket": [
+                29,
+                30,
+                0.20821984320096185
+              ],
+              "bins": [
+                {
+                  "bin": 29,
+                  "center": -0.0004746511813124299,
+                  "raw_count": 231,
+                  "density": 1.4316288716815022,
+                  "weighted_effective_samples_without_time_correction": 230.9996975553746,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 30,
+                  "center": 0.0018049162893744239,
+                  "raw_count": 224,
+                  "density": 1.3956179934681283,
+                  "weighted_effective_samples_without_time_correction": 223.9991415690028,
+                  "contributing_streams": 7
+                }
+              ]
+            },
+            "dividing_surface": {
+              "bracket": [
+                467,
+                468,
+                0.8879311740046901
+              ],
+              "bins": [
+                {
+                  "bin": 467,
+                  "center": 0.9979759009795303,
+                  "raw_count": 149,
+                  "density": 2.629679703238849e-10,
+                  "weighted_effective_samples_without_time_correction": 148.94478254919753,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 468,
+                  "center": 1.000255468450217,
+                  "raw_count": 141,
+                  "density": 2.4291634492664663e-10,
+                  "weighted_effective_samples_without_time_correction": 140.9934767260681,
+                  "contributing_streams": 5
+                }
+              ]
+            },
+            "search_range": null,
+            "continuous_interval": true,
+            "selection": "fixed",
+            "smoothing": "none",
+            "failure_reason": null
+          },
+          "overlap_connected": true
+        },
+        "effective_samples_quantiles_0_25_50_75_100": [
+          90.07906466043167,
+          285.21064960338896,
+          333.3396727216103,
+          366.1757491068235,
+          476.48007358242023
+        ],
+        "streams_below_20_effective_samples": 0,
+        "stream_count": 222,
+        "samples_per_stream": [
+          500
+        ],
+        "replica_barrier_difference_kbt": 1.8902371945796526,
+        "time_half_barrier_difference_kbt": 0.6865833996987883
+      },
+      "artifact_sha256": {
+        "run/preparation.json": "0559d94fe7c9dce6fe0152304fd90bc7533e58268b89920ee5fc23a444056bd2",
+        "run/summary.json": "92bd61f9150c113f386ed5ea5fa370d4689480498c82f6cfb27782937bbb2343",
+        "run/rate_pmf.json": "898155246933d117ef5ec999aeca23236695c110945fdb1eeee9a9f220fbe988",
+        "run/umbrella/fes.h5": "9f0c12f41caa80f032d2448e86a420b5abcde8d55e3b4fe153869e47904330ca",
+        "run/input/resolved.json": "79facb84ad21630168d24d0b8eefbafb472d4ca98ade64a642db2d35a1414eee",
+        "run/input/system.json": "fe8adb7eb6480f3bcc41ebe10c12108fb2f3d05eff3de28ffcf2d5b1c8060ca1"
+      },
+      "elapsed_total_seconds": 348.4100947860061,
+      "elapsed_workflow_seconds": 332.1562918010022,
+      "runtime_manifest": {
+        "schema": "pyrpmd.run",
+        "schema_version": 2,
+        "checkpoint_schema_version": 2,
+        "input_schema_version": 1,
+        "physics_identity": "execution-independent-v2",
+        "software": "PyRPMD",
+        "version": "0.2.0",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "dependencies": {
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "h5py": "3.16.0",
+          "mpi4py": "4.1.2",
+          "ase": "3.29.0"
+        },
+        "files": {
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/build/libbkmp2.so": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+        },
+        "physics_fingerprint": "da8dc7807fec571a255336c8d140396604beb760df2c26d563b1093e6b375168",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "parallel": {
+          "backend": "process",
+          "trajectory_workers": 4,
+          "threads_per_rank": 1,
+          "bead_workers": 1,
+          "mode": "serial",
+          "pes_ranks": 1,
+          "scheduling": "static",
+          "coordinator_ranks": 0
+        },
+        "preset": "pilot",
+        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "units": {
+          "length": "bohr",
+          "momentum": "atomic",
+          "energy": "hartree",
+          "time": "atomic"
+        }
+      }
+    },
+    {
+      "case": "classical-halfdt",
+      "new_dynamics": true,
+      "physical_validation": false,
+      "started_utc": "2026-11-01T14:02:45.475940+00:00",
+      "settings": {
+        "beads": 1,
+        "seed": 914301,
+        "dt_fs": 0.05,
+        "equil_fs": 1000.0,
+        "production_fs": 5000.0,
+        "temperature_K": 300.0,
+        "rinf_bohr": 30.0,
+        "windows": 111,
+        "umbrella_coefficient_hartree": 30.0,
+        "umbrella_replicas": 2,
+        "parent_chains": 4,
+        "recording_interval_fs": 10.0,
+        "pmf_bootstrap_draws": 12,
+        "parent_samples_per_chain": 32,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 100.0,
+        "timestep_fs": 0.05000000000000001,
+        "trajectory_workers": 4,
+        "threads_per_worker": 1,
+        "isotope_masses_au": [
+          1837.1526474396187,
+          1837.1526474396187,
+          1837.1526474396187
+        ]
+      },
+      "conventions": {
+        "reaction": "H + H2 -> H2 + H",
+        "pes": "BKMP2",
+        "nuclear_spin": "distinguishable nuclei",
+        "electronic": "single adiabatic surface, electronic_weight=1",
+        "channels": "two equivalent product arrangements in coordinate; no extra factor of two",
+        "symmetry_factor": 1.0
+      },
+      "protocol_differences_from_paper": [
+        "Andersen thermostat instead of Table 1 GLE; this study uses Cayley, and an identical propagator is not claimed",
+        "Independent endpoint search supplies the TS; paper supplied a saddle geometry",
+        "Far shorter equilibration and sampling; paper uses 200 trajectories per window, 20 ps equilibration and 100 ps production each",
+        "Four independent constrained-parent chains and 512 children of 100 fs; paper reports 100000 children of 50 fs",
+        "Numerical PMF quadrature uses 1001 grid points instead of the Table 1 5000",
+        "Twelve PMF bootstrap draws give only rough within-run uncertainty; independent-seed and replica/time-half variation are also reported"
+      ],
+      "uncertainty_interpretation": {
+        "pmf_bootstrap_draws": 12,
+        "interval_scope": "Percentile intervals involving the PMF use only 12 bootstrap draws and are low-draw diagnostics, not established coverage guarantees.",
+        "recording_scope": "Changing the recording interval keeps the integrated trajectories and physical thermostat schedule unchanged but changes the finite-sample estimator; dense-versus-thinned diagnostics are retained separately when available.",
+        "primary_checks": "independent-seed dispersion, separate umbrella replicas, temporal halves and timestep sensitivity"
+      },
+      "pes_provenance": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "trajectory_batch_safe": true,
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+      },
+      "source_sha256": {
+        "src/pyrpmd/workflows/prepare.py": "106511ca46f797f813298d3e65e6285be580d0af0510abc3809af21b515b7095",
+        "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+        "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+        "src/pyrpmd/workflows/rate.py": "cf72093145d810fdad4a1c2bac5f67135939e269e4e69deaa7c00df8a825f8a9",
+        "src/pyrpmd/workflows/fes.py": "5b261552140e02ee3001f7bb22f278b1e68416a37c06cd71de1a91ca90074aa6",
+        "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+        "benchmarks/transition_state_search/rates.py": "4f44353e905bd052b20594d7752a357db510123e4df77320fe2eb1c7d148437b"
+      },
+      "raw_output": "/workspace/scratch/620dee2c1ca3/endpoint-rate-classical-rest/classical-halfdt",
+      "results": {
+        "status": "plateau_estimate",
+        "rate_estimate_cm3_s": 1.3929094622776962e-18,
+        "rate_standard_error_cm3_s": 7.614040779516287e-19,
+        "rate_percentile_95_ci_cm3_s": [
+          4.212049700012658e-19,
+          3.1205002480691165e-18
+        ],
+        "conditional_rate_standard_error_cm3_s": 5.524700428758713e-21,
+        "kappa": 0.9925756257117828,
+        "kappa_standard_error": 0.003936855289918394,
+        "plateau_detected": true,
+        "plateau_diagnostics": {
+          "passed": true,
+          "reasons": [],
+          "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+          "scope": "selected_finite_time_tail",
+          "tail_samples": 1000,
+          "relative_tolerance": 0.05,
+          "absolute_tolerance": 0.049628781285589146,
+          "maximum_tail_deviation": 2.220446049250313e-16,
+          "bootstrap_95_envelope_radius": 5.551115123125783e-16,
+          "maximum_tail_deviation_bound": 7.771561172376096e-16,
+          "absolute_drift_plus_two_standard_errors": 0.0,
+          "uncertainty_available": true
+        },
+        "child_trajectories": 512,
+        "maximum_endpoint_energy_error_kbt": 0.003564367186470556,
+        "rate_uncertainty": {
+          "available": true,
+          "pmf_block_status": "limited_blocks",
+          "reasons": [
+            "pmf_bootstrap_limited_blocks"
+          ],
+          "pmf_bootstrap_valid": 12,
+          "recrossing_bootstrap_valid": 200,
+          "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
+          "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+          "recrossing_scope": "independent_parent_chains",
+          "recrossing_support": {
+            "available": true,
+            "reasons": [],
+            "scope": "independent_parent_chains",
+            "condition": null,
+            "independent_parent_chains": 4,
+            "nonzero_flux_parent_configurations": 128,
+            "effective_parent_blocks": {
+              "0": 32.0,
+              "1": 32.0,
+              "2": 32.0,
+              "3": 32.0
+            },
+            "bootstrap_requested": 200,
+            "bootstrap_valid": 200,
+            "bootstrap_rejected": 0
+          },
+          "parent_block_lengths": {
+            "0": 1,
+            "1": 1,
+            "2": 1,
+            "3": 1
+          },
+          "pmf_bootstrap_requested": 12,
+          "pmf_bootstrap_attempted": 12,
+          "pmf_bootstrap_rejected": 0,
+          "independence_assumption": "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+        },
+        "warnings": [
+          "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval.",
+          "Unsampled/insufficient-count bins are masked; no extrapolation is reported.",
+          "Some supported bins have fewer than two valid bootstrap draws; their errors are unavailable.",
+          "Some supported bins lack complete bootstrap support; their main standard errors are unavailable. supported_draw_standard_error describes surviving draws only and is a conditional diagnostic.",
+          "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR.",
+          "Complete rate uncertainty has limited support: pmf_bootstrap_limited_blocks. Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
+        ],
+        "pmf": {
+          "ready": true,
+          "status": "ready",
+          "xi_star": 1.0,
+          "free_energy_barrier_hartree": 0.02239890186464534,
+          "barrier_standard_error_hartree": 0.0005697846809149448,
+          "k_qtst_cm3_s": 1.4033282968024035e-18,
+          "reactant_prefactor_au": 3.9738107997425676,
+          "overlap_connected": true,
+          "support": {
+            "model": "Gaussian-window integration within the umbrella-center range",
+            "reference": {
+              "coordinate": 0.0,
+              "model_supported": true
+            },
+            "dividing_surface": {
+              "coordinate": 1.0,
+              "model_supported": true
+            },
+            "observed_histogram": {
+              "reference": {
+                "coordinate": 0.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  -0.0018950874373033916,
+                  0.00039569104795696836
+                ],
+                "raw_count": [
+                  248.0,
+                  253.0
+                ]
+              },
+              "dividing_surface": {
+                "coordinate": 1.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  0.999175110621473,
+                  1.0014658891067334
+                ],
+                "raw_count": [
+                  139.0,
+                  150.0
+                ]
+              }
+            },
+            "search_range": [
+              0.0,
+              1.05
+            ],
+            "selection": "fixed",
+            "failure_reason": null
+          },
+          "uncertainty": {
+            "available": true,
+            "block_status": "limited_blocks",
+            "reasons": [
+              "pmf_bootstrap_limited_blocks"
+            ],
+            "bootstrap_requested": 12,
+            "bootstrap_attempted": 12,
+            "bootstrap_valid": 12,
+            "bootstrap_rejected": 0,
+            "surface_held_fixed": true,
+            "selection_uncertainty_included": false,
+            "reason": null
+          }
+        },
+        "rate_cm3_s": 1.3929094622776962e-18,
+        "converged": false,
+        "convergence_note": "A detected time plateau is not bead, timestep, Rinf or statistical convergence.",
+        "child_time_fs": 100.00000000000001,
+        "parent_configurations": 128,
+        "energy_diagnostic_child_pairs": 256
+      },
+      "reference": {
+        "beads": 1,
+        "qtst_cm3_molecule_s": 1.56e-18,
+        "kappa": 0.994,
+        "rate_cm3_molecule_s": 1.55e-18,
+        "source": {
+          "authors": "Y. V. Suleimanov, J. W. Allen, W. H. Green",
+          "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+          "journal": "Computer Physics Communications 184 (2013), 833-840",
+          "doi": "10.1016/j.cpc.2012.10.017",
+          "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+          "author_manuscript": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+          "locations": "Table 1 H+H2 column; Table 2 H+H2 classical and RPMD columns; Figure 1 equivalent channels",
+          "source_verified": true,
+          "uncertainty_note": "Paper describes approximately 5% statistical convergence; this is not a published standard error or confidence interval."
+        }
+      },
+      "comparison": {
+        "status": "pilot_comparison",
+        "rate_ratio": 0.8986512659856104,
+        "qtst_ratio": 0.8995694210271817,
+        "kappa_ratio": 0.9985670278790572,
+        "reference_qtst_implied_barrier_hartree": 0.022298350165266028,
+        "physical_validation_passed": null,
+        "reason": "Numerical sensitivity and sampling diagnostics do not establish all convergence criteria."
+      },
+      "preparation": {
+        "ready": true,
+        "reaction": {
+          "rinf": 30.0,
+          "electronic_weight": 1.0,
+          "symmetry_factor": 1.0,
+          "equivalent_paths": [
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "preparation": {
+            "gradient_tolerance": 1e-07,
+            "neb": {
+              "images": 7,
+              "gradient_tolerance": 1e-05
+            }
+          },
+          "rinf_au": 30.0,
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "forming_bonds": [
+            [
+              0,
+              1
+            ]
+          ],
+          "breaking_bonds": [
+            [
+              1,
+              2
+            ]
+          ],
+          "entry_side": 0
+        },
+        "diagnostics": [
+          "CI-NEB converged with a stationary climbing image.",
+          "max NEB force = 9.02805e-06 hartree/bohr",
+          "P-RFO converged to a first-order saddle",
+          "P-RFO max force = 6.97448e-12 hartree/bohr",
+          "P-RFO negative mass-weighted Hessian eigenvalues = 1",
+          "max TS force = 6.97448e-12 hartree/bohr",
+          "negative mass-weighted Hessian eigenvalues = 1",
+          "Entrance direction checked against labeled reactant/product endpoint connectivity."
+        ],
+        "candidates": [
+          {
+            "fragments": [
+              [
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "forming_bonds": [
+              [
+                0,
+                1
+              ]
+            ],
+            "breaking_bonds": [
+              [
+                1,
+                2
+              ]
+            ],
+            "entry_side": 0,
+            "rinf": 30.0
+          }
+        ],
+        "transition_state": [
+          [
+            -1.7570014695873986,
+            2.230533650402687e-12,
+            4.047639123015114e-12
+          ],
+          [
+            -1.4701185403448259e-06,
+            2.230470806834448e-12,
+            4.047608826054499e-12
+          ],
+          [
+            1.7569985293059402,
+            2.230416588098092e-12,
+            4.047582610668732e-12
+          ]
+        ],
+        "neb": {
+          "geometry": [
+            [
+              -1.7570051621846448,
+              0.0,
+              0.0
+            ],
+            [
+              1.5606201627322583e-15,
+              0.0,
+              0.0
+            ],
+            [
+              1.757005162184644,
+              0.0,
+              0.0
+            ]
+          ],
+          "energy": -0.15917600011677163,
+          "converged": true,
+          "iterations": 127,
+          "images": [
+            [
+              [
+                -4.467157326666666,
+                0.0,
+                0.0
+              ],
+              [
+                1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                2.9343146533333333,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.556263342890286,
+                0.0,
+                0.0
+              ],
+              [
+                1.0770807103740108,
+                0.0,
+                0.0
+              ],
+              [
+                2.479182632516275,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.645470580019648,
+                0.0,
+                0.0
+              ],
+              [
+                0.6177630568343961,
+                0.0,
+                0.0
+              ],
+              [
+                2.0277075231852533,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -1.7570051621846448,
+                0.0,
+                0.0
+              ],
+              [
+                1.5606201627322583e-15,
+                0.0,
+                0.0
+              ],
+              [
+                1.757005162184644,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.0277075231852493,
+                0.0,
+                0.0
+              ],
+              [
+                -0.6177630568343979,
+                0.0,
+                0.0
+              ],
+              [
+                2.645470580019647,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.479182632516271,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0770807103740134,
+                0.0,
+                0.0
+              ],
+              [
+                3.556263342890285,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.9343146533333333,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                4.467157326666666,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "energies": [
+            -0.17459382642944093,
+            -0.17436227663867251,
+            -0.17136706959679698,
+            -0.15917600011677163,
+            -0.17136706959679732,
+            -0.17436227663866885,
+            -0.17459382642944093
+          ],
+          "climbing_image": 3,
+          "max_force": 9.028054394344013e-06,
+          "max_climbing_force": 8.311226148971507e-07,
+          "tangent": [
+            [
+              0.4082482904638747,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8164965809277265,
+              0.0,
+              0.0
+            ],
+            [
+              0.4082482904638506,
+              0.0,
+              0.0
+            ]
+          ],
+          "directional_curvature": -0.08671184030475432,
+          "diagnostics": [
+            "CI-NEB converged with a stationary climbing image.",
+            "max NEB force = 9.02805e-06 hartree/bohr"
+          ]
+        },
+        "refinement": {
+          "geometry": [
+            [
+              -1.7570014695873986,
+              2.230533650402687e-12,
+              4.047639123015114e-12
+            ],
+            [
+              -1.4701185403448259e-06,
+              2.230470806834448e-12,
+              4.047608826054499e-12
+            ],
+            [
+              1.7569985293059402,
+              2.230416588098092e-12,
+              4.047582610668732e-12
+            ]
+          ],
+          "converged": true,
+          "iterations": 1,
+          "energy": -0.15917600012106253,
+          "max_force": 6.974480021293417e-12,
+          "hessian_eigenvalues": [
+            -4.7194899393958204e-05,
+            -4.186686261397022e-21,
+            -1.2437320708903509e-21,
+            2.3947914830160094e-15,
+            4.195878311252033e-14,
+            4.195878696096024e-14,
+            1.7091763372645454e-05,
+            1.7091763372645464e-05,
+            8.762870662118705e-05
+          ],
+          "mode": [
+            [
+              0.4082441780136725,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8165006933508355,
+              -5.3025642254224745e-18,
+              1.7934522826950447e-18
+            ],
+            [
+              0.40824417800569546,
+              4.893369734963825e-19,
+              -8.966625909410956e-19
+            ]
+          ],
+          "history": [
+            {
+              "iteration": 0,
+              "energy": -0.15917600011677163,
+              "max_force": 8.311226148971507e-07,
+              "negative_modes": 1
+            },
+            {
+              "iteration": 1,
+              "energy": -0.15917600012106253,
+              "max_force": 6.974480021293417e-12,
+              "negative_modes": 1
+            }
+          ],
+          "diagnostics": [
+            "P-RFO converged to a first-order saddle",
+            "P-RFO max force = 6.97448e-12 hartree/bohr",
+            "P-RFO negative mass-weighted Hessian eigenvalues = 1"
+          ]
+        },
+        "hessian_eigenvalues": [
+          -4.719489939395821e-05,
+          -2.011770406088025e-21,
+          1.2477785036717787e-21,
+          2.394801186541084e-15,
+          4.195878542721823e-14,
+          4.1958788790978854e-14,
+          1.709176337264545e-05,
+          1.7091763372645457e-05,
+          8.762870662118704e-05
+        ],
+        "trace_endpoints": [
+          [
+            [
+              -3.7159674765288933,
+              2.230596991525445e-12,
+              4.0476690233911726e-12
+            ],
+            [
+              1.1605097235852573,
+              2.23043519130824e-12,
+              4.047591294302519e-12
+            ],
+            [
+              2.5554548536339183,
+              2.2303889001737216e-12,
+              4.0475695079731786e-12
+            ]
+          ],
+          [
+            [
+              -2.5554577939002,
+              2.230559530457035e-12,
+              4.047652332367667e-12
+            ],
+            [
+              -1.1605126638515795,
+              2.230507977634676e-12,
+              4.0476275003631666e-12
+            ],
+            [
+              3.7159645362615,
+              2.23035349957133e-12,
+              4.0475514610789874e-12
+            ]
+          ]
+        ]
+      },
+      "pmf_diagnostics": {
+        "scope": "same-sample replica/temporal diagnostics; no independent extra dynamics",
+        "xi_star": 1.0,
+        "ui": {
+          "pooled": {
+            "barrier_at_fixed_xi_hartree": 0.02239890186464534,
+            "maximum_barrier_hartree": 0.022402684348255868,
+            "maximum_xi": 0.9996000000000002
+          },
+          "first_half": {
+            "barrier_at_fixed_xi_hartree": 0.022235538316715087,
+            "maximum_barrier_hartree": 0.022239684294469528,
+            "maximum_xi": 0.9996000000000002
+          },
+          "second_half": {
+            "barrier_at_fixed_xi_hartree": 0.022552986879965316,
+            "maximum_barrier_hartree": 0.02255647048522385,
+            "maximum_xi": 0.9996000000000002
+          },
+          "replica_0": {
+            "barrier_at_fixed_xi_hartree": 0.023216859002215883,
+            "maximum_barrier_hartree": 0.02322511068124478,
+            "maximum_xi": 0.9985500000000002
+          },
+          "replica_1": {
+            "barrier_at_fixed_xi_hartree": 0.021574295068392986,
+            "maximum_barrier_hartree": 0.02157639554806057,
+            "maximum_xi": 0.9996000000000002
+          }
+        },
+        "mbar": {
+          "ready": true,
+          "status": "ready",
+          "barrier_hartree": 0.022494268024827364,
+          "minus_ui_barrier_kbt": 0.10038083865646483,
+          "support": {
+            "reference": {
+              "bracket": [
+                29,
+                30,
+                0.8272678696334116
+              ],
+              "bins": [
+                {
+                  "bin": 29,
+                  "center": -0.0018950874373033916,
+                  "raw_count": 248,
+                  "density": 2.1514798475834613,
+                  "weighted_effective_samples_without_time_correction": 247.99883334459565,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 30,
+                  "center": 0.00039569104795696836,
+                  "raw_count": 253,
+                  "density": 2.211319432511607,
+                  "weighted_effective_samples_without_time_correction": 252.99859371011522,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "dividing_surface": {
+              "bracket": [
+                466,
+                467,
+                0.3600912894173712
+              ],
+              "bins": [
+                {
+                  "bin": 466,
+                  "center": 0.999175110621473,
+                  "raw_count": 139,
+                  "density": 1.1092585322022034e-10,
+                  "weighted_effective_samples_without_time_correction": 138.9881580983533,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 467,
+                  "center": 1.0014658891067334,
+                  "raw_count": 150,
+                  "density": 1.2188162120790086e-10,
+                  "weighted_effective_samples_without_time_correction": 149.9473677120737,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "search_range": null,
+            "continuous_interval": true,
+            "selection": "fixed",
+            "smoothing": "none",
+            "failure_reason": null
+          },
+          "overlap_connected": true
+        },
+        "effective_samples_quantiles_0_25_50_75_100": [
+          81.05469566799968,
+          279.34573585730334,
+          322.35580635760004,
+          358.2254186256445,
+          463.30663857243735
+        ],
+        "streams_below_20_effective_samples": 0,
+        "stream_count": 222,
+        "samples_per_stream": [
+          500
+        ],
+        "replica_barrier_difference_kbt": 1.7289355564835334,
+        "time_half_barrier_difference_kbt": 0.33414109311443724
+      },
+      "artifact_sha256": {
+        "run/preparation.json": "0559d94fe7c9dce6fe0152304fd90bc7533e58268b89920ee5fc23a444056bd2",
+        "run/summary.json": "1d10a4f1c5a3c9f264d290be7ada7ba83f8fb1b5111ff3f24eb4bd374c7ab736",
+        "run/rate_pmf.json": "d90828fbe803559a829f70e4888f895efc4af7d7e79f9564c6ad26c08da9c804",
+        "run/umbrella/fes.h5": "fe24feaf069dceffd566c61251d244dca179e0dcdab0c4659f00ae01a9a568d1",
+        "run/input/resolved.json": "61778d503601b496b51a436ee1b62149139a61d2f2014c1030264ceeceb8ff30",
+        "run/input/system.json": "fe8adb7eb6480f3bcc41ebe10c12108fb2f3d05eff3de28ffcf2d5b1c8060ca1"
+      },
+      "elapsed_total_seconds": 285.33709483299754,
+      "elapsed_workflow_seconds": 274.74135583099996,
+      "runtime_manifest": {
+        "schema": "pyrpmd.run",
+        "schema_version": 2,
+        "checkpoint_schema_version": 2,
+        "input_schema_version": 1,
+        "physics_identity": "execution-independent-v2",
+        "software": "PyRPMD",
+        "version": "0.2.0",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "dependencies": {
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "h5py": "3.16.0",
+          "mpi4py": "4.1.2",
+          "ase": "3.29.0"
+        },
+        "files": {
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/build/libbkmp2.so": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+        },
+        "physics_fingerprint": "346828552497d13100c6cdb45582bc8352f62bf9e17987de8d59f4535972bf34",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "parallel": {
+          "backend": "process",
+          "trajectory_workers": 4,
+          "threads_per_rank": 1,
+          "bead_workers": 1,
+          "mode": "serial",
+          "pes_ranks": 1,
+          "scheduling": "static",
+          "coordinator_ranks": 0
+        },
+        "preset": "pilot",
+        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "units": {
+          "length": "bohr",
+          "momentum": "atomic",
+          "energy": "hartree",
+          "time": "atomic"
+        }
+      }
+    },
+    {
+      "case": "quantum-128",
+      "new_dynamics": true,
+      "physical_validation": false,
+      "started_utc": "2026-11-01T13:51:21.678646+00:00",
+      "settings": {
+        "beads": 128,
+        "seed": 914401,
+        "dt_fs": 0.1,
+        "equil_fs": 100.0,
+        "production_fs": 300.0,
+        "temperature_K": 300.0,
+        "rinf_bohr": 30.0,
+        "windows": 111,
+        "umbrella_coefficient_hartree": 30.0,
+        "umbrella_replicas": 2,
+        "parent_chains": 4,
+        "recording_interval_fs": 0.5,
+        "pmf_bootstrap_draws": 12,
+        "parent_samples_per_chain": 32,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 100.0,
+        "timestep_fs": 0.10000000000000002,
+        "trajectory_workers": 4,
+        "threads_per_worker": 1,
+        "isotope_masses_au": [
+          1837.1526474396187,
+          1837.1526474396187,
+          1837.1526474396187
+        ]
+      },
+      "conventions": {
+        "reaction": "H + H2 -> H2 + H",
+        "pes": "BKMP2",
+        "nuclear_spin": "distinguishable nuclei",
+        "electronic": "single adiabatic surface, electronic_weight=1",
+        "channels": "two equivalent product arrangements in coordinate; no extra factor of two",
+        "symmetry_factor": 1.0
+      },
+      "protocol_differences_from_paper": [
+        "Andersen thermostat instead of Table 1 GLE; this study uses Cayley, and an identical propagator is not claimed",
+        "Independent endpoint search supplies the TS; paper supplied a saddle geometry",
+        "Far shorter equilibration and sampling; paper uses 200 trajectories per window, 20 ps equilibration and 100 ps production each",
+        "Four independent constrained-parent chains and 512 children of 100 fs; paper reports 100000 children of 50 fs",
+        "Numerical PMF quadrature uses 1001 grid points instead of the Table 1 5000",
+        "Twelve PMF bootstrap draws give only rough within-run uncertainty; independent-seed and replica/time-half variation are also reported"
+      ],
+      "uncertainty_interpretation": {
+        "pmf_bootstrap_draws": 12,
+        "interval_scope": "Percentile intervals involving the PMF use only 12 bootstrap draws and are low-draw diagnostics, not established coverage guarantees.",
+        "recording_scope": "Changing the recording interval keeps the integrated trajectories and physical thermostat schedule unchanged but changes the finite-sample estimator; dense-versus-thinned diagnostics are retained separately when available.",
+        "primary_checks": "independent-seed dispersion, separate umbrella replicas, temporal halves and timestep sensitivity"
+      },
+      "pes_provenance": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "trajectory_batch_safe": true,
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+      },
+      "source_sha256": {
+        "src/pyrpmd/workflows/prepare.py": "106511ca46f797f813298d3e65e6285be580d0af0510abc3809af21b515b7095",
+        "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+        "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+        "src/pyrpmd/workflows/rate.py": "cf72093145d810fdad4a1c2bac5f67135939e269e4e69deaa7c00df8a825f8a9",
+        "src/pyrpmd/workflows/fes.py": "5b261552140e02ee3001f7bb22f278b1e68416a37c06cd71de1a91ca90074aa6",
+        "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+        "benchmarks/transition_state_search/rates.py": "4f44353e905bd052b20594d7752a357db510123e4df77320fe2eb1c7d148437b"
+      },
+      "raw_output": "/workspace/scratch/620dee2c1ca3/endpoint-rate-quantum/quantum-128",
+      "results": {
+        "status": "pilot_requires_convergence",
+        "rate_estimate_cm3_s": 6.137527185229685e-15,
+        "rate_standard_error_cm3_s": 7.951536428758136e-14,
+        "rate_percentile_95_ci_cm3_s": [
+          4.0773231608906365e-16,
+          3.078142954505684e-13
+        ],
+        "conditional_rate_standard_error_cm3_s": 2.7425331289343054e-16,
+        "kappa": 0.7350844288458576,
+        "kappa_standard_error": 0.03284699746055906,
+        "plateau_detected": true,
+        "plateau_diagnostics": {
+          "passed": true,
+          "reasons": [],
+          "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+          "scope": "selected_finite_time_tail",
+          "tail_samples": 500,
+          "relative_tolerance": 0.05,
+          "absolute_tolerance": 0.03675422144229288,
+          "maximum_tail_deviation": 1.1102230246251565e-16,
+          "bootstrap_95_envelope_radius": 3.3306690738754696e-16,
+          "maximum_tail_deviation_bound": 4.440892098500626e-16,
+          "absolute_drift_plus_two_standard_errors": 0.0,
+          "uncertainty_available": true
+        },
+        "child_trajectories": 512,
+        "maximum_endpoint_energy_error_kbt": 0.13522193514065842,
+        "rate_uncertainty": {
+          "available": true,
+          "pmf_block_status": "limited_blocks",
+          "reasons": [
+            "pmf_bootstrap_limited_blocks"
+          ],
+          "pmf_bootstrap_valid": 12,
+          "recrossing_bootstrap_valid": 200,
+          "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
+          "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+          "recrossing_scope": "independent_parent_chains",
+          "recrossing_support": {
+            "available": true,
+            "reasons": [],
+            "scope": "independent_parent_chains",
+            "condition": null,
+            "independent_parent_chains": 4,
+            "nonzero_flux_parent_configurations": 128,
+            "effective_parent_blocks": {
+              "0": 32.0,
+              "1": 32.0,
+              "2": 16.0,
+              "3": 32.0
+            },
+            "bootstrap_requested": 200,
+            "bootstrap_valid": 200,
+            "bootstrap_rejected": 0
+          },
+          "parent_block_lengths": {
+            "0": 1,
+            "1": 1,
+            "2": 2,
+            "3": 1
+          },
+          "pmf_bootstrap_requested": 12,
+          "pmf_bootstrap_attempted": 12,
+          "pmf_bootstrap_rejected": 0,
+          "independence_assumption": "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+        },
+        "warnings": [
+          "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval.",
+          "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+          "Some supported bins lack complete bootstrap support; their main standard errors are unavailable. supported_draw_standard_error describes surviving draws only and is a conditional diagnostic.",
+          "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR.",
+          "Complete rate uncertainty has limited support: pmf_bootstrap_limited_blocks. Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support.",
+          "Child endpoint energy error exceeds 0.1 kBT per bead; reduce timestep before publishing a rate estimate."
+        ],
+        "pmf": {
+          "ready": true,
+          "status": "ready",
+          "xi_star": 1.0,
+          "free_energy_barrier_hartree": 0.014141978739709895,
+          "barrier_standard_error_hartree": 0.0018580968598223677,
+          "k_qtst_cm3_s": 8.349418031975052e-15,
+          "reactant_prefactor_au": 3.9738107997425676,
+          "overlap_connected": true,
+          "support": {
+            "model": "Gaussian-window integration within the umbrella-center range",
+            "reference": {
+              "coordinate": 0.0,
+              "model_supported": true
+            },
+            "dividing_surface": {
+              "coordinate": 1.0,
+              "model_supported": true
+            },
+            "observed_histogram": {
+              "reference": {
+                "coordinate": 0.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  -0.002261825527495341,
+                  8.87715414539525e-06
+                ],
+                "raw_count": [
+                  257.0,
+                  236.0
+                ]
+              },
+              "dividing_surface": {
+                "coordinate": 1.0,
+                "supported": true,
+                "reason": null,
+                "bracket_centers": [
+                  0.9991180570760715,
+                  1.0013887597577122
+                ],
+                "raw_count": [
+                  199.0,
+                  196.0
+                ]
+              }
+            },
+            "search_range": [
+              0.0,
+              1.05
+            ],
+            "selection": "fixed",
+            "failure_reason": null
+          },
+          "uncertainty": {
+            "available": true,
+            "block_status": "limited_blocks",
+            "reasons": [
+              "pmf_bootstrap_limited_blocks"
+            ],
+            "bootstrap_requested": 12,
+            "bootstrap_attempted": 12,
+            "bootstrap_valid": 12,
+            "bootstrap_rejected": 0,
+            "surface_held_fixed": true,
+            "selection_uncertainty_included": false,
+            "reason": null
+          }
+        },
+        "rate_cm3_s": null,
+        "converged": false,
+        "convergence_note": "A detected time plateau is not bead, timestep, Rinf or statistical convergence.",
+        "child_time_fs": 100.00000000000001,
+        "parent_configurations": 128,
+        "energy_diagnostic_child_pairs": 256
+      },
+      "reference": {
+        "beads": 128,
+        "qtst_cm3_molecule_s": 2.51e-16,
+        "kappa": 0.776,
+        "rate_cm3_molecule_s": 1.95e-16,
+        "source": {
+          "authors": "Y. V. Suleimanov, J. W. Allen, W. H. Green",
+          "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+          "journal": "Computer Physics Communications 184 (2013), 833-840",
+          "doi": "10.1016/j.cpc.2012.10.017",
+          "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+          "author_manuscript": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+          "locations": "Table 1 H+H2 column; Table 2 H+H2 classical and RPMD columns; Figure 1 equivalent channels",
+          "source_verified": true,
+          "uncertainty_note": "Paper describes approximately 5% statistical convergence; this is not a published standard error or confidence interval."
+        }
+      },
+      "comparison": {
+        "status": "pilot_comparison",
+        "rate_ratio": 31.474498385793257,
+        "qtst_ratio": 33.26461367320738,
+        "kappa_ratio": 0.947273748512703,
+        "reference_qtst_implied_barrier_hartree": 0.017471400547235772,
+        "physical_validation_passed": null,
+        "reason": "Numerical sensitivity and sampling diagnostics do not establish all convergence criteria."
+      },
+      "preparation": {
+        "ready": true,
+        "reaction": {
+          "rinf": 30.0,
+          "electronic_weight": 1.0,
+          "symmetry_factor": 1.0,
+          "equivalent_paths": [
+            [
+              0,
+              2,
+              1
+            ]
+          ],
+          "preparation": {
+            "gradient_tolerance": 1e-07,
+            "neb": {
+              "images": 7,
+              "gradient_tolerance": 1e-05
+            }
+          },
+          "rinf_au": 30.0,
+          "fragments": [
+            [
+              0
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "forming_bonds": [
+            [
+              0,
+              1
+            ]
+          ],
+          "breaking_bonds": [
+            [
+              1,
+              2
+            ]
+          ],
+          "entry_side": 0
+        },
+        "diagnostics": [
+          "CI-NEB converged with a stationary climbing image.",
+          "max NEB force = 9.02805e-06 hartree/bohr",
+          "P-RFO converged to a first-order saddle",
+          "P-RFO max force = 6.97448e-12 hartree/bohr",
+          "P-RFO negative mass-weighted Hessian eigenvalues = 1",
+          "max TS force = 6.97448e-12 hartree/bohr",
+          "negative mass-weighted Hessian eigenvalues = 1",
+          "Entrance direction checked against labeled reactant/product endpoint connectivity."
+        ],
+        "candidates": [
+          {
+            "fragments": [
+              [
+                0
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "forming_bonds": [
+              [
+                0,
+                1
+              ]
+            ],
+            "breaking_bonds": [
+              [
+                1,
+                2
+              ]
+            ],
+            "entry_side": 0,
+            "rinf": 30.0
+          }
+        ],
+        "transition_state": [
+          [
+            -1.7570014695873986,
+            2.230533650402687e-12,
+            4.047639123015114e-12
+          ],
+          [
+            -1.4701185403448259e-06,
+            2.230470806834448e-12,
+            4.047608826054499e-12
+          ],
+          [
+            1.7569985293059402,
+            2.230416588098092e-12,
+            4.047582610668732e-12
+          ]
+        ],
+        "neb": {
+          "geometry": [
+            [
+              -1.7570051621846448,
+              0.0,
+              0.0
+            ],
+            [
+              1.5606201627322583e-15,
+              0.0,
+              0.0
+            ],
+            [
+              1.757005162184644,
+              0.0,
+              0.0
+            ]
+          ],
+          "energy": -0.15917600011677163,
+          "converged": true,
+          "iterations": 127,
+          "images": [
+            [
+              [
+                -4.467157326666666,
+                0.0,
+                0.0
+              ],
+              [
+                1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                2.9343146533333333,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -3.556263342890286,
+                0.0,
+                0.0
+              ],
+              [
+                1.0770807103740108,
+                0.0,
+                0.0
+              ],
+              [
+                2.479182632516275,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.645470580019648,
+                0.0,
+                0.0
+              ],
+              [
+                0.6177630568343961,
+                0.0,
+                0.0
+              ],
+              [
+                2.0277075231852533,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -1.7570051621846448,
+                0.0,
+                0.0
+              ],
+              [
+                1.5606201627322583e-15,
+                0.0,
+                0.0
+              ],
+              [
+                1.757005162184644,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.0277075231852493,
+                0.0,
+                0.0
+              ],
+              [
+                -0.6177630568343979,
+                0.0,
+                0.0
+              ],
+              [
+                2.645470580019647,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.479182632516271,
+                0.0,
+                0.0
+              ],
+              [
+                -1.0770807103740134,
+                0.0,
+                0.0
+              ],
+              [
+                3.556263342890285,
+                0.0,
+                0.0
+              ]
+            ],
+            [
+              [
+                -2.9343146533333333,
+                0.0,
+                0.0
+              ],
+              [
+                -1.5328426733333333,
+                0.0,
+                0.0
+              ],
+              [
+                4.467157326666666,
+                0.0,
+                0.0
+              ]
+            ]
+          ],
+          "energies": [
+            -0.17459382642944093,
+            -0.17436227663867251,
+            -0.17136706959679698,
+            -0.15917600011677163,
+            -0.17136706959679732,
+            -0.17436227663866885,
+            -0.17459382642944093
+          ],
+          "climbing_image": 3,
+          "max_force": 9.028054394344013e-06,
+          "max_climbing_force": 8.311226148971507e-07,
+          "tangent": [
+            [
+              0.4082482904638747,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8164965809277265,
+              0.0,
+              0.0
+            ],
+            [
+              0.4082482904638506,
+              0.0,
+              0.0
+            ]
+          ],
+          "directional_curvature": -0.08671184030475432,
+          "diagnostics": [
+            "CI-NEB converged with a stationary climbing image.",
+            "max NEB force = 9.02805e-06 hartree/bohr"
+          ]
+        },
+        "refinement": {
+          "geometry": [
+            [
+              -1.7570014695873986,
+              2.230533650402687e-12,
+              4.047639123015114e-12
+            ],
+            [
+              -1.4701185403448259e-06,
+              2.230470806834448e-12,
+              4.047608826054499e-12
+            ],
+            [
+              1.7569985293059402,
+              2.230416588098092e-12,
+              4.047582610668732e-12
+            ]
+          ],
+          "converged": true,
+          "iterations": 1,
+          "energy": -0.15917600012106253,
+          "max_force": 6.974480021293417e-12,
+          "hessian_eigenvalues": [
+            -4.7194899393958204e-05,
+            -4.186686261397022e-21,
+            -1.2437320708903509e-21,
+            2.3947914830160094e-15,
+            4.195878311252033e-14,
+            4.195878696096024e-14,
+            1.7091763372645454e-05,
+            1.7091763372645464e-05,
+            8.762870662118705e-05
+          ],
+          "mode": [
+            [
+              0.4082441780136725,
+              0.0,
+              0.0
+            ],
+            [
+              -0.8165006933508355,
+              -5.3025642254224745e-18,
+              1.7934522826950447e-18
+            ],
+            [
+              0.40824417800569546,
+              4.893369734963825e-19,
+              -8.966625909410956e-19
+            ]
+          ],
+          "history": [
+            {
+              "iteration": 0,
+              "energy": -0.15917600011677163,
+              "max_force": 8.311226148971507e-07,
+              "negative_modes": 1
+            },
+            {
+              "iteration": 1,
+              "energy": -0.15917600012106253,
+              "max_force": 6.974480021293417e-12,
+              "negative_modes": 1
+            }
+          ],
+          "diagnostics": [
+            "P-RFO converged to a first-order saddle",
+            "P-RFO max force = 6.97448e-12 hartree/bohr",
+            "P-RFO negative mass-weighted Hessian eigenvalues = 1"
+          ]
+        },
+        "hessian_eigenvalues": [
+          -4.719489939395821e-05,
+          -2.011770406088025e-21,
+          1.2477785036717787e-21,
+          2.394801186541084e-15,
+          4.195878542721823e-14,
+          4.1958788790978854e-14,
+          1.709176337264545e-05,
+          1.7091763372645457e-05,
+          8.762870662118704e-05
+        ],
+        "trace_endpoints": [
+          [
+            [
+              -3.7159674765288933,
+              2.230596991525445e-12,
+              4.0476690233911726e-12
+            ],
+            [
+              1.1605097235852573,
+              2.23043519130824e-12,
+              4.047591294302519e-12
+            ],
+            [
+              2.5554548536339183,
+              2.2303889001737216e-12,
+              4.0475695079731786e-12
+            ]
+          ],
+          [
+            [
+              -2.5554577939002,
+              2.230559530457035e-12,
+              4.047652332367667e-12
+            ],
+            [
+              -1.1605126638515795,
+              2.230507977634676e-12,
+              4.0476275003631666e-12
+            ],
+            [
+              3.7159645362615,
+              2.23035349957133e-12,
+              4.0475514610789874e-12
+            ]
+          ]
+        ]
+      },
+      "pmf_diagnostics": {
+        "scope": "same-sample replica/temporal diagnostics; no independent extra dynamics",
+        "xi_star": 1.0,
+        "ui": {
+          "pooled": {
+            "barrier_at_fixed_xi_hartree": 0.014141978739709895,
+            "maximum_barrier_hartree": 0.01415350885281806,
+            "maximum_xi": 1.0017
+          },
+          "first_half": {
+            "barrier_at_fixed_xi_hartree": 0.017814734009966693,
+            "maximum_barrier_hartree": 0.017822948371114283,
+            "maximum_xi": 1.0017
+          },
+          "second_half": {
+            "barrier_at_fixed_xi_hartree": 0.01036650718555261,
+            "maximum_barrier_hartree": 0.01038928789392775,
+            "maximum_xi": 1.0027500000000003
+          },
+          "replica_0": {
+            "barrier_at_fixed_xi_hartree": 0.012810166273880699,
+            "maximum_barrier_hartree": 0.01282871384589372,
+            "maximum_xi": 1.0017
+          },
+          "replica_1": {
+            "barrier_at_fixed_xi_hartree": 0.015367334381833724,
+            "maximum_barrier_hartree": 0.015372373508014167,
+            "maximum_xi": 1.0017
+          }
+        },
+        "mbar": {
+          "ready": true,
+          "status": "ready",
+          "barrier_hartree": 0.014234031065309122,
+          "minus_ui_barrier_kbt": 0.09689275133120186,
+          "support": {
+            "reference": {
+              "bracket": [
+                27,
+                28,
+                0.9960905695769113
+              ],
+              "bins": [
+                {
+                  "bin": 27,
+                  "center": -0.002261825527495341,
+                  "raw_count": 257,
+                  "density": 0.7043710218765876,
+                  "weighted_effective_samples_without_time_correction": 256.92820326134677,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 28,
+                  "center": 8.87715414539525e-06,
+                  "raw_count": 236,
+                  "density": 0.6177205453157167,
+                  "weighted_effective_samples_without_time_correction": 235.9791506267911,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "dividing_surface": {
+              "bracket": [
+                468,
+                469,
+                0.3884008818324212
+              ],
+              "bins": [
+                {
+                  "bin": 468,
+                  "center": 0.9991180570760715,
+                  "raw_count": 199,
+                  "density": 1.9436502912943236e-07,
+                  "weighted_effective_samples_without_time_correction": 198.97820842224343,
+                  "contributing_streams": 6
+                },
+                {
+                  "bin": 469,
+                  "center": 1.0013887597577122,
+                  "raw_count": 196,
+                  "density": 1.8933537668261208e-07,
+                  "weighted_effective_samples_without_time_correction": 195.9967341221088,
+                  "contributing_streams": 6
+                }
+              ]
+            },
+            "search_range": null,
+            "continuous_interval": true,
+            "selection": "fixed",
+            "smoothing": "none",
+            "failure_reason": null
+          },
+          "overlap_connected": true
+        },
+        "effective_samples_quantiles_0_25_50_75_100": [
+          6.584707213475073,
+          19.729511040338945,
+          25.451158518022027,
+          30.027978487649392,
+          71.99688660362926
+        ],
+        "streams_below_20_effective_samples": 59,
+        "stream_count": 222,
+        "samples_per_stream": [
+          600
+        ],
+        "replica_barrier_difference_kbt": 2.6916327423894377,
+        "time_half_barrier_difference_kbt": 7.839880034083597
+      },
+      "artifact_sha256": {
+        "run/preparation.json": "0559d94fe7c9dce6fe0152304fd90bc7533e58268b89920ee5fc23a444056bd2",
+        "run/summary.json": "24a1592ee49cbaa325575dd450ef0feb14801ceba68121effa1e8217b79f728a",
+        "run/rate_pmf.json": "aff05c7aa01b491759c18f8b1622314078a264d890b812a441c9b61b576994be",
+        "run/umbrella/fes.h5": "ecf5d54ff51b06280e126fb0a388ab351f1f271e3e92d1492865f802d94a1139",
+        "run/input/resolved.json": "6e41baf1f05c0f29e611d4d004f8237d95fcfad8bb8776698d0ad3a092cd67de",
+        "run/input/system.json": "fe8adb7eb6480f3bcc41ebe10c12108fb2f3d05eff3de28ffcf2d5b1c8060ca1"
+      },
+      "elapsed_total_seconds": 621.992089364001,
+      "elapsed_workflow_seconds": 603.3499990459968,
+      "runtime_manifest": {
+        "schema": "pyrpmd.run",
+        "schema_version": 2,
+        "checkpoint_schema_version": 2,
+        "input_schema_version": 1,
+        "physics_identity": "execution-independent-v2",
+        "software": "PyRPMD",
+        "version": "0.2.0",
+        "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "dependencies": {
+          "numpy": "2.3.5",
+          "scipy": "1.17.0",
+          "h5py": "3.16.0",
+          "mpi4py": "4.1.2",
+          "ase": "3.29.0"
+        },
+        "files": {
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+          "/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/h3/build/libbkmp2.so": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70"
+        },
+        "physics_fingerprint": "df653e098f51796df538881e6b92643d94381cc37cd1c5936eb70277bcba70f1",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "parallel": {
+          "backend": "process",
+          "trajectory_workers": 4,
+          "threads_per_rank": 1,
+          "bead_workers": 1,
+          "mode": "serial",
+          "pes_ranks": 1,
+          "scheduling": "static",
+          "coordinator_ranks": 0
+        },
+        "preset": "pilot",
+        "hamiltonian_convention": "sum_beads_beta_over_P",
+        "units": {
+          "length": "bohr",
+          "momentum": "atomic",
+          "energy": "hartree",
+          "time": "atomic"
+        }
+      }
+    }
+  ],
+  "interpretation": [
+    "These are fresh endpoint-to-rate runs. Historical archived pilots, if discussed elsewhere, are separate evidence.",
+    "Ratios compare identical temperature, PES and channel conventions. P=1 compares only to the classical row; P=128 compares only to the RPMD row.",
+    "A plateau or a favorable rate ratio alone is not a convergence result.",
+    "The target-implied barrier is derived with the calculated reactant prefactor, not a separately tabulated paper value."
+  ],
+  "study_progress": {
+    "planned_cases": [
+      "classical-a",
+      "classical-b",
+      "classical-c",
+      "classical-halfdt",
+      "quantum-128"
+    ],
+    "completed_case_records": [
+      "classical-a",
+      "classical-b",
+      "classical-c",
+      "classical-halfdt",
+      "quantum-128"
+    ],
+    "remaining": [],
+    "operational_errors": []
+  },
+  "scheduling": {
+    "classical_b_workers": 2,
+    "remaining_workers": 4,
+    "threads_per_worker": 1,
+    "concurrency": "Quantum and remaining classical studies ran in separate output trees and separate evidence reports, then these completed case records were combined.",
+    "boundary_stop": "After classical-B completed, the original two-worker invocation stopped at the existing-output guard before classical-C. No classical-C trajectory from that invocation is included."
+  },
+  "source_provenance_note": "Production preparation, rate and analysis code stayed fixed during these calculations. The benchmark harness received metadata/aggregation-only edits while the earlier two-worker invocation was running; the four-worker invocations used frozen scientific code and settings. The final CLI error-exit/duplicate-case guards are reporting safeguards and do not change the numerical protocol. Per-case settings, runtime manifests, source hashes and artifact hashes are retained. The dense initial attempt used a different recording interval and bootstrap count, as explicitly recorded, and is not pooled as an independent seed.",
+  "bibliographic_corrections": [
+    "An early harness note described the paper propagator as Verlet without a verified primary-source statement. This unsupported claim was removed; the verified Table 1 thermostat is GLE, and this study uses Andersen/Cayley."
+  ],
+  "uncertainty_interpretation": {
+    "within_run": "PMF uncertainty uses only 12 bootstrap draws and limited correlation blocks; rate percentile intervals are low-draw diagnostics, not demonstrated confidence coverage.",
+    "between_seed": "The independent-seed standard error uses distinct full classical runs only; the same-seed half-timestep case and dense reanalysis are excluded.",
+    "physical_scope": "Neither classical sampling convergence nor quantum bead/time-step/sampling convergence is established. All physical-validation flags remain false or null."
+  },
+  "classical_timestep_sensitivity": {
+    "scope": "Full endpoint-to-rate reruns with the same root seed, physical equilibration/production lengths and thermostat collision interval; not an additional independent seed.",
+    "baseline_dt_fs": 0.1,
+    "halved_dt_fs": 0.05,
+    "candidate_rate_ratio_halfdt_to_baseline": 0.9988171407196834,
+    "absolute_candidate_rate_change_percent": 0.11828592803165838,
+    "qtst_ratio_halfdt_to_baseline": 0.9988161300565674,
+    "kappa_difference": 1.004347576549769e-06,
+    "maximum_endpoint_energy_error_kbt_baseline": 0.014201640004587462,
+    "maximum_endpoint_energy_error_kbt_halfdt": 0.003564367186470556,
+    "interpretation": "The timestep change is small for this case; independent-seed and umbrella-replica sampling variation is much larger. This does not establish all numerical or physical convergence criteria."
+  },
+  "source_audit": {
+    "production_hashes_identical_across_completed_cases": true,
+    "production_paths_compared": [
+      "src/pyrpmd/analysis/fes.py",
+      "src/pyrpmd/workflows/fes.py",
+      "src/pyrpmd/workflows/neb.py",
+      "src/pyrpmd/workflows/prepare.py",
+      "src/pyrpmd/workflows/rate.py",
+      "src/pyrpmd/workflows/saddle.py"
+    ],
+    "executed_harness_snapshot_sha256": "4f44353e905bd052b20594d7752a357db510123e4df77320fe2eb1c7d148437b",
+    "final_reporting_driver_sha256": "e729c58b980a67217fc82b3b835d036a1093bf7a41a19d28cfd9f5aa4bfd653e",
+    "harness_difference_scope": "Primary-rate/status metadata, runtime labeling, verified propagator wording and CLI duplicate/error safeguards only; the scientific protocol is unchanged."
+  },
+  "completed_work_totals": {
+    "scope": "Accepted five-case studies only; aborted/rejected attempts and controlled quantum child replay are separate.",
+    "umbrella_streams": 1110,
+    "recrossing_children": 2560,
+    "umbrella_production_ps": 4506.6,
+    "umbrella_equilibration_ps": 910.2
+  },
+  "prior_operational_failures": [
+    {
+      "case": "classical-a",
+      "started_utc": "2026-11-01T13:43:23.751521+00:00",
+      "settings": {
+        "beads": 1,
+        "seed": 914301,
+        "dt_fs": 0.1,
+        "equil_fs": 1000.0,
+        "production_fs": 5000.0,
+        "temperature_K": 300.0,
+        "rinf_bohr": 30.0,
+        "windows": 111,
+        "umbrella_coefficient_hartree": 30.0,
+        "umbrella_replicas": 2,
+        "parent_chains": 4,
+        "recording_interval_fs": 10.0,
+        "pmf_bootstrap_draws": 12,
+        "parent_samples_per_chain": 32,
+        "child_pairs_per_parent": 2,
+        "child_time_fs": 100.0,
+        "timestep_fs": 0.10000000000000002,
+        "isotope_masses_au": [
+          1837.1526474396187,
+          1837.1526474396187,
+          1837.1526474396187
+        ]
+      },
+      "error": {
+        "type": "ValueError",
+        "message": "checkpoint physics differs: /workspace/scratch/620dee2c1ca3/endpoint-rate-study/classical-a/run/umbrella/checkpoints/window_00004_replica_0000.npz; choose a fresh output directory",
+        "traceback": "concurrent.futures.process._RemoteTraceback: \n\"\"\"\nTraceback (most recent call last):\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/process.py\", line 264, in _process_worker\n    r = call_item.fn(*call_item.args, **call_item.kwargs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/process.py\", line 213, in _process_chunk\n    return [fn(*args) for args in chunk]\n            ^^^^^^^^^\n  File \"/workspace/scratch/620dee2c1ca3/PyRPMD/src/pyrpmd/parallel/execution.py\", line 597, in _execute_batch\n    return [(index, function(task)) for index, task in indexed_tasks]\n                    ^^^^^^^^^^^^^^\n  File \"/workspace/scratch/620dee2c1ca3/PyRPMD/src/pyrpmd/workflows/fes.py\", line 537, in _sample_window\n    raise ValueError(\nValueError: checkpoint physics differs: /workspace/scratch/620dee2c1ca3/endpoint-rate-study/classical-a/run/umbrella/checkpoints/window_00004_replica_0000.npz; choose a fresh output directory\n\"\"\"\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/workspace/scratch/620dee2c1ca3/PyRPMD/benchmarks/transition_state_search/rates.py\", line 234, in run_case\n    summary = run_resolved(config, system)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/620dee2c1ca3/PyRPMD/src/pyrpmd/runner.py\", line 182, in run_resolved\n    result = run_rate(config, system, Path(target))\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/620dee2c1ca3/PyRPMD/src/pyrpmd/workflows/rate.py\", line 1324, in run_rate\n    sampled = run_fes(\n              ^^^^^^^^\n  File \"/workspace/scratch/620dee2c1ca3/PyRPMD/src/pyrpmd/workflows/fes.py\", line 909, in run_fes\n    else run_tasks(_sample_window, tasks, config.get(\"parallel\", {}))\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/620dee2c1ca3/PyRPMD/src/pyrpmd/parallel/execution.py\", line 776, in run_tasks\n    item for sub in pool.map(_execute_batch, payloads) for item in sub\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/process.py\", line 636, in _chain_from_iterable_of_lists\n    for element in iterable:\n                   ^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py\", line 619, in result_iterator\n    yield _result_or_cancel(fs.pop())\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py\", line 317, in _result_or_cancel\n    return fut.result(timeout)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py\", line 456, in result\n    return self.__get_result()\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/concurrent/futures/_base.py\", line 401, in __get_result\n    raise self._exception\nValueError: checkpoint physics differs: /workspace/scratch/620dee2c1ca3/endpoint-rate-study/classical-a/run/umbrella/checkpoints/window_00004_replica_0000.npz; choose a fresh output directory\n"
+      },
+      "elapsed_total_seconds": 8.095761238997511,
+      "raw_output": "/workspace/scratch/620dee2c1ca3/endpoint-rate-study/classical-a",
+      "source_sha256": {
+        "src/pyrpmd/workflows/prepare.py": "106511ca46f797f813298d3e65e6285be580d0af0510abc3809af21b515b7095",
+        "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+        "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+        "src/pyrpmd/workflows/rate.py": "cf72093145d810fdad4a1c2bac5f67135939e269e4e69deaa7c00df8a825f8a9",
+        "src/pyrpmd/workflows/fes.py": "5b261552140e02ee3001f7bb22f278b1e68416a37c06cd71de1a91ca90074aa6",
+        "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+        "benchmarks/transition_state_search/rates.py": "1e2c053e0bbd2b01c74337f29ccfefd64404970d47cc4050a365f34830b68617"
+      }
+    }
+  ],
+  "dense_vs_thin_trajectory_check": {
+    "streams_compared": 222,
+    "dense_interval_fs": 0.5,
+    "thin_interval_fs": 10.0,
+    "max_final_position_difference_bohr": 0.0,
+    "max_final_momentum_difference_au": 0.0,
+    "max_recorded_coordinate_difference_dense_every_twentieth_vs_thin": 0.0,
+    "interpretation": "For this fixed-seed case, recorded observations at common times and final phase-space states match exactly; finite-sample PMF estimates still differ because the retained observations differ."
+  },
+  "quantum_regional_time_half_diagnostic": {
+    "full": {
+      "barrier_hartree": 0.014141978739709895,
+      "qtst_cm3_molecule_s": 8.349418031975055e-15,
+      "quarter_increments_kbt": [
+        -0.9029611883393857,
+        0.8264899045359415,
+        0.14664126924189472,
+        14.815442305592718
+      ]
+    },
+    "replica0": {
+      "barrier_hartree": 0.012810166273880699,
+      "qtst_cm3_molecule_s": 3.3921042835965813e-14,
+      "quarter_increments_kbt": [
+        -3.705883100240906,
+        2.084429235938059,
+        0.4064594040758318,
+        14.698763036486604
+      ]
+    },
+    "replica1": {
+      "barrier_hartree": 0.015367334381833724,
+      "qtst_cm3_molecule_s": 2.2988357797098318e-15,
+      "quarter_increments_kbt": [
+        1.8776939052854833,
+        -0.40250067496023245,
+        -0.24035044900179292,
+        14.940558537325568
+      ]
+    },
+    "firsthalf": {
+      "barrier_hartree": 0.017814734009966693,
+      "qtst_cm3_molecule_s": 1.7487402019790754e-16,
+      "quarter_increments_kbt": [
+        -0.4927478125952461,
+        1.9430205966680465,
+        0.5197583783210036,
+        16.78146241718508
+      ]
+    },
+    "secondhalf": {
+      "barrier_hartree": 0.01036650718555261,
+      "qtst_cm3_molecule_s": 4.441625438545681e-13,
+      "quarter_increments_kbt": [
+        -1.4119520315191525,
+        -0.21000777319134456,
+        -0.26775248988749656,
+        12.80132584009328
+      ]
+    },
+    "effective_samples_quantiles": [
+      6.584707213475073,
+      19.729511040338945,
+      25.451158518022027,
+      30.027978487649392,
+      71.99688660362926
+    ]
+  }
+}

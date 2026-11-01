@@ -1,0 +1,89 @@
+name: H3 calibrated entrance-flux normalization audit
+
+on:
+  push:
+    branches: ['feat/h3-bond-qtst-recrossing-20261031']
+    paths:
+      - 'src/pyrpmd/analysis/entrance.py'
+      - 'src/pyrpmd/analysis/__init__.py'
+      - 'tests/test_entrance_flux.py'
+      - 'benchmarks/h3/entrance_normalization.py'
+      - '.github/workflows/h3-entrance-normalization.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  entrance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PyRPMD
+        run: python -m pip install -e '.[test]'
+      - name: Verify analytic entrance normalization and fail-closed contracts
+        run: python -m pytest -q tests/test_entrance_flux.py tests/test_bond_flux_metric.py tests/test_bond_rate_physics.py
+      - name: Download real 307200-sample H3 bond FES artifact
+        run: |
+          mkdir -p validation/entrance/source
+          gh run download 41192380353 --repo chen-yu-hao/PyRPMD --name h3-r01-r12-expanded-16bead -D validation/entrance/source
+      - name: Audit actual far-entrance support without inventing normalization
+        run: |
+          python - <<'PY'
+          import io,json
+          from pathlib import Path
+          import numpy as np
+          from pyrpmd.analysis import free_h3_entrance_flux
+          root=Path("validation/entrance")
+          source=root/"source/validation/h3-bond-extended/run"
+          summary=json.loads((source/"summary.json").read_text())
+          paths=list((source/"checkpoints").glob("window_*.npz"))
+          assert len(paths)==128,len(paths)
+          radii=[]
+          for p in paths:
+              with np.load(p,allow_pickle=False) as d:
+                  q=d["q"].mean(axis=0)
+              radii.append(float(np.linalg.norm(q[0]-(q[1]+q[2])/2)))
+          assert summary["samples"]==307200,summary["samples"]
+          m=[1837.1526474396187]*3
+          ref=free_h3_entrance_flux(10,210.51668320265807,m)
+          assert abs(ref["reference_rate_au"]-0.9873012308830208)<1e-12
+          shell=sum(abs(r-10)<=.2 for r in radii)
+          # No independent joint per-configuration MBAR weights exist in
+          # this archive. Endpoint checkpoints are not equilibrium samples.
+          report=dict(schema="pyrpmd.entrance_archive_audit.v1",
+                      temperature_K=1500,beads=16,
+                      samples=summary["samples"],
+                      checkpoint_count=len(paths),
+                      checkpoint_R_min_bohr=min(radii),
+                      checkpoint_R_max_bohr=max(radii),
+                      entrance_shell_R_bohr=10.,
+                      entrance_shell_half_width_bohr=.2,
+                      entrance_checkpoint_count=shell,
+                      analytic_reference=ref,
+                      missing_joint_entrance_bridge=True,
+                      normalized_2D_rate_cm3_s=None,
+                      reason="Finite r01/r12 PMF lacks same-ensemble entrance-to-target MBAR weight bridge",
+                      converged=False)
+          (root/"actual-entrance-audit.json").write_text(json.dumps(report,indent=2)+"\n")
+          print(json.dumps(report,indent=2))
+          assert shell==0
+          PY
+      - name: Preserve evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: h3-entrance-normalization-audit
+          path: validation/entrance/actual-entrance-audit.json
+          retention-days: 30
+          if-no-files-found: warn

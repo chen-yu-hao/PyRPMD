@@ -19,8 +19,9 @@ supply zero-point and excited-state energies exactly once.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
+from functools import partial
 
 import numpy as np
 from scipy.integrate import quad_vec
@@ -28,7 +29,7 @@ from scipy.linalg import eigh_tridiagonal
 from scipy.special import expit, logsumexp
 
 from .constants import AMU_TO_AU, ATOMIC_TIME_S, KB_AU
-
+from .validation import finite_real
 
 # Match the isotope mass convention used by System (neutral atomic masses).
 ISOTOPE_MASSES_AU = {
@@ -38,20 +39,7 @@ ISOTOPE_MASSES_AU = {
 }
 
 
-def _real(value, name, *, positive=False, nonnegative=False):
-    if isinstance(value, (bool, np.bool_)) or not np.isscalar(value) or np.iscomplexobj(value):
-        raise ValueError(f"{name} must be a finite real number")
-    try:
-        value = float(value)
-    except (TypeError, ValueError) as error:
-        raise ValueError(f"{name} must be a finite real number") from error
-    if not math.isfinite(value):
-        raise ValueError(f"{name} must be finite")
-    if positive and value <= 0:
-        raise ValueError(f"{name} must be positive")
-    if nonnegative and value < 0:
-        raise ValueError(f"{name} must be nonnegative")
-    return value
+_real = partial(finite_real, coerce=True, shape='scalar')
 
 
 def _array(value, name):

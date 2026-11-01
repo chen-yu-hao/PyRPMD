@@ -1,0 +1,41 @@
+........................................................................ [ 15%]
+........................................................................ [ 30%]
+........................................................................ [ 46%]
+........................................................................ [ 61%]
+..................................................................s..... [ 77%]
+.................................................................... [ 92%]
+.....................................                                    [100%]
+=============================== warnings summary ===============================
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_trace.py:1006: FutureWarning: `torch.jit.trace` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_trace.py:1145: FutureWarning: `torch.jit.trace_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+    warnings.warn(
+
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_plumed.py:379: optional PLUMED Python wrapper unavailable
+464 passed, 1 skipped, 17 warnings, 4 subtests passed in 12.71s

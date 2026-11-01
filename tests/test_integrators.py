@@ -287,12 +287,23 @@ def test_baoab_p1_matches_independent_scalar_langevin_step():
 
 
 def test_sampling_selection_is_explicit_and_strict_native_never_falls_back():
+    from pyrpmd.propagation import NativeUnavailableError
+
     dynamics = Dynamics(FreePotential(), [1.0], 2.0, 2, 0.01)
     with pytest.raises(ValueError, match="selected integrator"):
         dynamics.sample_step(initial(2), method="baoab")
     dynamics.loop_backend = "native"
-    with pytest.raises(RuntimeError, match="Python/NumPy"):
-        dynamics.sample_step(initial(2))
+    state = initial(2)
+    previous = state.copy()
+    rng = dynamics.rng.bit_generator.state
+    # A Python PES without an exported native binding still cannot satisfy a
+    # forced native loop. The shared scheduler reports this capability limit.
+    with pytest.raises(NativeUnavailableError, match="requires Python force/operator scheduling"):
+        dynamics.sample_step(state)
+    np.testing.assert_array_equal(state.q, previous.q)
+    np.testing.assert_array_equal(state.p, previous.p)
+    assert (state.step, state.time) == (previous.step, previous.time)
+    assert dynamics.rng.bit_generator.state == rng
     verlet = Dynamics(FreePotential(), [1.0], 2.0, 2, 0.01, integrator="velocity-verlet")
     with pytest.raises(ValueError, match="Andersen"):
         verlet.sample_step(initial(2))

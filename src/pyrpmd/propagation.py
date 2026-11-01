@@ -6,11 +6,13 @@ as its parent: overridden Python mathematics must remain in the Python path.
 """
 from __future__ import annotations
 
+import copy
 from contextlib import contextmanager
 from dataclasses import dataclass
-import copy
-import numbers
+
 import numpy as np
+
+from .validation import checked_integer as _integer
 
 
 class NativeUnavailableError(RuntimeError):
@@ -64,13 +66,26 @@ def _atomic_binding(binding):
 def _check_dynamics_methods(dynamics):
     from .dynamics import (Dynamics, CayleyIntegrator, _BLOCK_DYNAMICS_METHODS,
                            _BLOCK_INTEGRATOR_METHODS)
-    if getattr(dynamics, "fixed_atoms", ()):
-        raise NativeUnavailableError("fixed atoms require the Python propagation loop")
+    if getattr(dynamics, "bond_constraints", ()):
+        raise NativeUnavailableError("bond constraints require the Python RATTLE propagation loop")
+    if getattr(dynamics, "plan", None) is not None and dynamics.plan.active:
+        raise NativeUnavailableError("configured operators require the composed propagation executor")
     if type(dynamics) is not Dynamics or not _original_methods(dynamics, _BLOCK_DYNAMICS_METHODS):
         raise NativeUnavailableError("custom Dynamics methods require the Python path")
     integrator = dynamics.integrator
     if type(integrator) is not CayleyIntegrator or not _original_methods(integrator, _BLOCK_INTEGRATOR_METHODS):
         raise NativeUnavailableError("custom integrator methods require the Python path")
+    if (getattr(dynamics, "fixed_atoms", ()) and integrator._native is not None
+            and getattr(integrator._native, "FIXED_ATOMS_API", 0) < 1):
+        raise NativeUnavailableError("installed native extension lacks fixed-atom projection; rebuild it")
+
+
+def fixed_descriptor(dynamics):
+    """One constraint descriptor for both native block transaction policies."""
+    if not dynamics.fixed_atoms:
+        return {}
+    return {"fixed_atoms": list(dynamics.fixed_atoms),
+            "fixed_positions": dynamics.fixed_positions.reshape(-1).tolist()}
 
 
 @dataclass
@@ -123,7 +138,14 @@ def _check_bias_methods(bias):
 
 
 def cv_descriptor(cv, n):
-    from .cv import Distance, BondDifference, Cartesian, COMDistance, RPMDrateCoordinate, RateSurface
+    from .cv import (
+        BondDifference,
+        Cartesian,
+        COMDistance,
+        Distance,
+        RateSurface,
+        RPMDrateCoordinate,
+    )
     if getattr(cv, "estimator", None) != "centroid":
         raise NativeUnavailableError("native CV path requires centroid estimator")
     if any(p is not None for p in cv.periods):
@@ -171,7 +193,7 @@ def _cvs(cv, n):
 
 
 def _biases(bias, n, masses):
-    from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
+    from .bias import CompositeBias, FluxMetricBias, UmbrellaBias
     if bias is None:
         return []
     _check_bias_methods(bias)
@@ -190,12 +212,6 @@ def _biases(bias, n, masses):
     raise NativeUnavailableError(f"{type(bias).__name__} requires Python bias evaluation")
 
 
-def _integer(value, name, minimum=1):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral) or value < minimum:
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
-
-
 def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interval=1,
               record_centroids=True, backend=None, fragment_data=()):
     """Advance a transactional block with the explicitly selected ring map.
@@ -206,13 +222,17 @@ def propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interva
     """
     kwargs = dict(bias=bias, observe=observe, sample_interval=sample_interval,
                   record_centroids=record_centroids, backend=backend, fragment_data=fragment_data)
-    if not getattr(dynamics, "_stochastic_propagation", False):
+    composed = getattr(dynamics, "plan", None) is not None and dynamics.plan.active
+    if not composed and not getattr(dynamics, "_stochastic_propagation", False):
         return _propagate(dynamics, state, steps, **kwargs)
+    operators = dynamics.operator_state_dict() if composed else None
     rng_state = copy.deepcopy(dynamics.rng.bit_generator.state)
     stats = copy.deepcopy(dynamics.propagation_stats)
     try:
         return _propagate(dynamics, state, steps, **kwargs)
     except BaseException:
+        if operators is not None:
+            dynamics.load_operator_state_dict(operators)
         dynamics.rng.bit_generator.state = rng_state
         dynamics.propagation_stats = stats
         raise
@@ -228,6 +248,10 @@ def _propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interv
     dynamics._check_parameters()
     dynamics.integrator._check(state.q, state.p)
     dynamics._check_fixed(state.q, state.p)
+    if getattr(dynamics, "plan", None) is not None and dynamics.plan.active:
+        return _propagate_composed(dynamics, state, steps, bias=bias, observe=observe,
+                                   sample_interval=stride, record_centroids=record_centroids,
+                                   backend=backend, fragment_data=fragment_data)
     offsets = np.arange(stride, steps + 1, stride, dtype=np.int64)
     if not len(offsets) or offsets[-1] != steps:
         offsets = np.append(offsets, steps)
@@ -252,6 +276,7 @@ def _propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interv
                     "fragments": [{"atoms": ix.tolist(), "reference": ref.tolist()}
                                   for ix, _m, _total, ref in fragment_data],
                     "time": float(state.time)}
+            spec.update(fixed_descriptor(dynamics))
         except NativeUnavailableError as exc:
             if backend == "native":
                 raise
@@ -304,6 +329,117 @@ def _propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interv
                              float(minimum), float(maximum), used, reason)
 
 
+_COMPOSED_NATIVE_BUFFER_BYTES = 256 * 1024**2
+
+
+def _propagate_composed(dynamics, state, steps, *, bias, observe,
+                        sample_interval, record_centroids, backend, fragment_data):
+    """Lower a common operator plan to a block or to per-step callbacks.
+
+    The enclosing propagate() owns whole-block bath/RNG rollback. Nuclear
+    state is committed here only after every requested observation succeeds.
+    """
+    from .dynamics import _state_clock
+    start_step, clock = _state_clock(state.step, state.time)
+    component = dynamics._composition
+    offsets = np.arange(sample_interval, steps + 1, sample_interval, dtype=np.int64)
+    if not len(offsets) or offsets[-1] != steps:
+        offsets = np.append(offsets, steps)
+    rows, natoms = len(offsets), len(dynamics.masses)
+    dimension = 0 if observe is None else _integer(observe.dimension, "CV dimension")
+    if rows * (1 + 3 * natoms * bool(record_centroids) + dimension) * 8 > 256 * 1024**2:
+        raise ValueError("block observation buffers exceed 256 MiB; shorten the block")
+    energies = np.empty(rows)
+    centroids = np.empty((rows, natoms, 3)) if record_centroids else None
+    values = np.empty((rows, dimension)) if observe is not None else None
+    if backend == "native" and observe is not None:
+        raise NativeUnavailableError("composed native blocks require Python scheduling for CV observations")
+    trial = state.copy()
+    engine = component._prepare_native(trial, bias, fragment_data, backend)
+    minimum, maximum = np.inf, -np.inf
+    if engine is not None and observe is None:
+        # Energy extrema inspect every endpoint. The native common observer
+        # also emits dense centroid/momentum buffers, even if the public result
+        # samples sparsely. Bound those temporary records independently of the
+        # requested result size and the caller's block_steps setting.
+        from .native_ensemble import _COLUMNS
+        native_row_bytes = (len(_COLUMNS) + 7 * natoms) * 8
+        native_chunk_limit = _COMPOSED_NATIVE_BUFFER_BYTES // native_row_bytes
+        if not native_chunk_limit:
+            raise ValueError("one native observation exceeds the block buffer budget")
+        initial_state = engine.state()
+        q, p = initial_state["q"], initial_state["p"]
+        dq = q - np.roll(q, -1, axis=0)
+        initial = float(np.sum(initial_state["energy"]) + np.sum(p*p / (2*dynamics.masses[None, :, None]))
+                        + 0.5 * (dynamics.nbeads/dynamics.beta)**2 * np.sum(dynamics.masses[None, :, None]*dq*dq))
+        if not np.isfinite(initial):
+            raise FloatingPointError("nonfinite ring-polymer energy")
+        completed, row = 0, 0
+        used = "native"
+        while completed < steps:
+            count = min(steps - completed, dynamics.block_steps, native_chunk_limit)
+            # Request the common nuclear observations, not NativeEnsemble's
+            # thermal estimators. Its per-step transaction is enclosed by this
+            # API's whole-block operator/state rollback.
+            result = engine.run_prefix(count, record_energy=True, check_energy=True)
+            if result["error"] is not None:
+                raise RuntimeError(result["error"])
+            column = result["columns"].index("ring_polymer_hamiltonian")
+            samples = result["samples"][:, column]
+            minimum, maximum = min(minimum, float(samples.min())), max(maximum, float(samples.max()))
+            last = np.searchsorted(offsets, completed + count, side="right")
+            selected = offsets[row:last] - completed - 1
+            energies[row:last] = samples[selected]
+            if centroids is not None:
+                centroids[row:last] = result["centroids"][selected]
+            # Match repeated accepted-step clock addition, including a caller's
+            # nonzero time origin, without a Python propagation loop.
+            clock = float(np.add.accumulate(np.r_[clock, np.full(count, dynamics.dt)])[-1])
+            if not np.isfinite(clock):
+                raise FloatingPointError("nonfinite integration clock")
+            row, completed = last, completed + count
+            if result.get("python_step_callbacks", 0):
+                used = "python"
+        final = engine.state()
+        component._native_state = final
+        trial.q[:], trial.p[:] = final["q"], final["p"]
+        trial.step, trial.time = start_step + steps, clock
+        if dynamics._initial_cell is not None:
+            dynamics.cell = final["cell"].copy()
+    else:
+        initial = dynamics.energy(trial, bias)
+        if not np.isfinite(initial):
+            raise FloatingPointError("nonfinite ring-polymer energy")
+        cache, row = {}, 0
+        for i in range(1, steps + 1):
+            component.step(trial, bias, fragment_data, cache=cache, backend=backend)
+            energy = dynamics.energy(trial, bias)
+            if not np.isfinite(energy):
+                raise FloatingPointError("nonfinite ring-polymer energy")
+            minimum, maximum = min(minimum, energy), max(maximum, energy)
+            if i == offsets[row]:
+                energies[row] = energy
+                if centroids is not None:
+                    centroids[row] = trial.q.mean(axis=0)
+                if values is not None:
+                    value = np.asarray(observe.value(trial.q), dtype=float)
+                    if value.shape != (dimension,) or not np.isfinite(value).all():
+                        raise ValueError("CV returned invalid observation")
+                    values[row] = value
+                row += 1
+        used = "python"
+    state.q[:], state.p[:] = trial.q, trial.p
+    state.step, state.time = trial.step, trial.time
+    dynamics.last_step_backend = used
+    dynamics.propagation_stats[used + "_steps"] += steps
+    reason = None if used == "native" else "composed Python force/operator scheduling"
+    if reason:
+        reasons = dynamics.propagation_stats["fallback_reasons"]
+        reasons[reason] = reasons.get(reason, 0) + steps
+    return PropagationResult(start_step + offsets, energies, centroids, values,
+                             float(initial), float(minimum), float(maximum), used, reason)
+
+
 def loop_options(config):
     """Integrator and execution choices; only block/backend are hash-exempt."""
     from .dynamics import normalize_integrator
@@ -317,6 +453,13 @@ def native_supported(dynamics, *, bias=None, observe=None):
     if dynamics.loop_backend == "python":
         return False
     try:
+        if getattr(dynamics, "plan", None) is not None and dynamics.plan.active:
+            component = dynamics._composition
+            component.validate_binding()
+            if (observe is not None or not dynamics.native
+                    or not component._can_native(bias, ()) or not component._has_native_binding()):
+                raise NativeUnavailableError("requested operators/observations require Python scheduling")
+            return True
         _check_dynamics_methods(dynamics)
         if dynamics.integrator._native is None or not hasattr(dynamics.integrator._native, "run_block"):
             raise NativeUnavailableError(dynamics.integrator.native_fallback_reason or "fused extension unavailable or native=False")
@@ -342,12 +485,15 @@ def scientific_config(config):
     if "dynamics" in result:
         result["dynamics"].pop("loop_backend", None)
         result["dynamics"].pop("block_steps", None)
+        result["dynamics"].pop("electronic_backend", None)
+        result["dynamics"].pop("electronic_device", None)
         if not result["dynamics"]:
             result.pop("dynamics")
     # These controls change resource ownership / launch grouping only, never
     # momenta, force definitions, estimator weights or the sampling measure.
     if "parallel" in result:
         result["parallel"].pop("reuse_potentials", None)
+        result["parallel"].pop("trajectory_batch_size", None)
         if not result["parallel"]:
             result.pop("parallel")
     for parent in (result, result.get("rate", {})):
@@ -364,3 +510,4 @@ def scientific_config(config):
 
 # The valid-prefix API is additive; propagate() retains whole-block rollback.
 from .block_propagation import BlockResult, PropagationError, propagate_block
+

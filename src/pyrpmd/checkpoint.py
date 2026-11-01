@@ -77,6 +77,25 @@ def atomic_savez(path, *, kind="arrays", **arrays):
             os.unlink(temporary)
 
 
+def save_metadata_npz(path, metadata, **arrays):
+    """Store legacy workflow metadata using the common atomic NPZ container.
+
+    The metadata's payload format is also its envelope kind. The fallback is
+    retained for dRPMD archives written before an explicit format was supplied.
+    """
+    from .io import jsonable
+
+    atomic_savez(
+        path,
+        kind=metadata.get("format", "drpmd-arrays"),
+        metadata=np.asarray(json.dumps(
+            jsonable(metadata, dataclasses="asdict", callables=False, to_dict="ignore"),
+            allow_nan=False,
+        )),
+        **arrays,
+    )
+
+
 def _payload_format(archive, names, *, legacy=False):
     """Read an optional payload schema independently of its NPZ container.
 

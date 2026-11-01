@@ -1,0 +1,164 @@
+[
+  {
+    "95CI_halfwidth": 0.1028327427063653,
+    "mean": 0.9792030785285369,
+    "observable": "centroid_variance",
+    "reference": 1.0,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 0
+  },
+  {
+    "95CI_halfwidth": 0.10210033277758679,
+    "mean": 1.0562430978627688,
+    "observable": "bead_variance",
+    "reference": 1.0759906759906759,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 0
+  },
+  {
+    "95CI_halfwidth": 0.033153918264539915,
+    "mean": 4.009120818679902,
+    "observable": "momentum_variance",
+    "reference": 4.0,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 0
+  },
+  {
+    "95CI_halfwidth": 0.02451112166611188,
+    "mean": 0.4974849214876665,
+    "observable": "centroid_variance",
+    "reference": 0.5,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 1
+  },
+  {
+    "95CI_halfwidth": 0.021247783779926713,
+    "mean": 0.6370413666366881,
+    "observable": "bead_variance",
+    "reference": 0.6405228758169935,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 1
+  },
+  {
+    "95CI_halfwidth": 0.049033180000902975,
+    "mean": 2.0012673185834204,
+    "observable": "momentum_variance",
+    "reference": 2.0,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 1
+  },
+  {
+    "95CI_halfwidth": 0.0098689538154906,
+    "mean": 0.25235925104183,
+    "observable": "centroid_variance",
+    "reference": 0.25,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 2
+  },
+  {
+    "95CI_halfwidth": 0.0016787184879463912,
+    "mean": 0.4703861350056686,
+    "observable": "bead_variance",
+    "reference": 0.4666666666666667,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 2
+  },
+  {
+    "95CI_halfwidth": 0.0075559287746705915,
+    "mean": 0.9964126871820558,
+    "observable": "momentum_variance",
+    "reference": 1.0,
+    "samples": 4,
+    "scheme": "temperature",
+    "slot": 2
+  },
+  {
+    "95CI_halfwidth": 0.1054665689311922,
+    "mean": 1.0269664726830192,
+    "observable": "centroid_variance",
+    "reference": 1.0,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 0
+  },
+  {
+    "95CI_halfwidth": 0.10366566128898662,
+    "mean": 1.1768830425355428,
+    "observable": "bead_variance",
+    "reference": 1.1479500891265597,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 0
+  },
+  {
+    "95CI_halfwidth": 0.027472647537723178,
+    "mean": 2.004128799545359,
+    "observable": "momentum_variance",
+    "reference": 2.0,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 0
+  },
+  {
+    "95CI_halfwidth": 0.04554494871417002,
+    "mean": 0.5039581808929865,
+    "observable": "centroid_variance",
+    "reference": 0.5,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 1
+  },
+  {
+    "95CI_halfwidth": 0.04453441240884486,
+    "mean": 0.6442844417859765,
+    "observable": "bead_variance",
+    "reference": 0.6405228758169935,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 1
+  },
+  {
+    "95CI_halfwidth": 0.02126379464384219,
+    "mean": 1.992164066650878,
+    "observable": "momentum_variance",
+    "reference": 2.0,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 1
+  },
+  {
+    "95CI_halfwidth": 0.018281532609174454,
+    "mean": 0.24660053124170636,
+    "observable": "centroid_variance",
+    "reference": 0.25,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 2
+  },
+  {
+    "95CI_halfwidth": 0.018401686838585694,
+    "mean": 0.37447695310392154,
+    "observable": "bead_variance",
+    "reference": 0.37777777777777777,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 2
+  },
+  {
+    "95CI_halfwidth": 0.013535635511383728,
+    "mean": 1.996476184317875,
+    "observable": "momentum_variance",
+    "reference": 2.0,
+    "samples": 4,
+    "scheme": "hamiltonian",
+    "slot": 2
+  }
+]

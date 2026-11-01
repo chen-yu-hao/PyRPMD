@@ -1,0 +1,75 @@
+{
+  "nrpmd": [
+    {
+      "action": "analyze",
+      "returncode": 0,
+      "completed": true,
+      "valid": null,
+      "final_populations": [
+        0.05136090336856288,
+        0.9486390966314422
+      ],
+      "physics_fingerprint": "411fed1ce9a6fd10ea2548a3f0042a4449fd4a9ce9b715d6e620da3f8d59e116",
+      "checkpoints_unchanged": true
+    },
+    {
+      "action": "resume",
+      "returncode": 0,
+      "completed": true,
+      "valid": null,
+      "final_populations": [
+        0.05136090336856288,
+        0.9486390966314422
+      ],
+      "physics_fingerprint": "411fed1ce9a6fd10ea2548a3f0042a4449fd4a9ce9b715d6e620da3f8d59e116",
+      "checkpoints_unchanged": true
+    }
+  ],
+  "rpsh": [
+    {
+      "action": "validate",
+      "returncode": 0,
+      "completed": null,
+      "valid": true,
+      "final_populations": null,
+      "physics_fingerprint": null,
+      "checkpoints_unchanged": null
+    },
+    {
+      "action": "run",
+      "returncode": 0,
+      "completed": true,
+      "valid": null,
+      "final_populations": [
+        0.3299077357379571,
+        0.6700922642620655
+      ],
+      "physics_fingerprint": "7996e5d29aa5a48f5b39ce72d8f27925268dba390f54edbdef2161f1e44283fd",
+      "checkpoints_unchanged": null
+    },
+    {
+      "action": "analyze",
+      "returncode": 0,
+      "completed": true,
+      "valid": null,
+      "final_populations": [
+        0.3299077357379571,
+        0.6700922642620655
+      ],
+      "physics_fingerprint": "7996e5d29aa5a48f5b39ce72d8f27925268dba390f54edbdef2161f1e44283fd",
+      "checkpoints_unchanged": true
+    },
+    {
+      "action": "resume",
+      "returncode": 0,
+      "completed": true,
+      "valid": null,
+      "final_populations": [
+        0.3299077357379571,
+        0.6700922642620655
+      ],
+      "physics_fingerprint": "7996e5d29aa5a48f5b39ce72d8f27925268dba390f54edbdef2161f1e44283fd",
+      "checkpoints_unchanged": true
+    }
+  ]
+}

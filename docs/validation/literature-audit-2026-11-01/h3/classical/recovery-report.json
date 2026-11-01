@@ -1,0 +1,1269 @@
+{
+  "schema": "pyrpmd.h3.checkpoint-recovery.v1",
+  "elapsed_seconds": 47.51363936800044,
+  "new_umbrella_steps": 0,
+  "all_original_cv_samples_used": true,
+  "source_at_start": {
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/sampling_control.py": "33f026beb253018e3b130ceff0bf6e438abf031f462ac80dfb08e738cdc22bcc",
+    "benchmarks/published_rates/h3.py": "51d432df7f1ef19c99d0d0faa33ea02a3423d6bed7d8fe7db392889b3e1c9a7c",
+    "native/ABI.md": "409dd617c009333467f0265736d038e14e763582e98383645cb72d439da304d0",
+    "native/CMakeLists.txt": "8ecfeaa85042bdccf602b3df68291ec398de7bcf7d03c6114845a9372c507d09",
+    "native/README.md": "33143daffdbac00e16ba16769ac79eb068ed986f1c3ec9ee8c40b4bacac00efc",
+    "native/cayley.cpp": "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124",
+    "native/examples/harmonic_pes.c": "811eea56274b3d3013a3bca49a9f2f0b389708c202e83a7f73efcbd5884e0aeb",
+    "native/examples/periodic_cosine_pes.c": "bf5e4025550f81724746e46fea5855ba6dd7054940d662e708ddbf36781b53dc",
+    "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "native/include/pyrpmd/thermal_pes.h": "40d1cbeec480eaf828499db46c20db4644c7d72c1e17d3132f13f5dea012a961",
+    "native/onnx/CMakeLists.txt": "0473fa7d35b5f7ba04a6dce49d1773feb89144125638a2bb5c78751723959433",
+    "native/onnx/README.md": "7e3726d46932221c3fc42dad34a13aff5228b752c8e1c4d56df510564660ca3a",
+    "native/onnx/context_test.cpp": "ff69cbea4ec453441a543dd09adba1a62c9a42ccb87a30274fffc0a92a17e1fe",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "native/propagation.h": "ba2ac0eb4789e9cffb947c50789807f7aba27ae8ad91a51785cbface2f2e68bd",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/thermal-NOTICE.md": "758b6cde37b061eab530baa5f7fb9fd4c0057fbc2fc47f6d9f1f798ac59967b1",
+    "native/thermal.cpp": "a28d75d4a460bf70003ca8f8bee03c83679df57c21df7ac22b4a7dce7c897caf",
+    "native/thermal.hpp": "54c704af9f277680c34c42cf4f1da24aaeebe0e5ed055a52b31bd8fbc4ac3702",
+    "src/pyrpmd/__init__.py": "dcefe7933bccb19db5c6684f0c27428d42b9d7767722f3f0ec7d90abec965bc8",
+    "src/pyrpmd/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/pyrpmd/_matrix_path.py": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777",
+    "src/pyrpmd/analysis/__init__.py": "f2a84808471d40e6146cea7ce4882a8531b946cecb507d820302d465966624a8",
+    "src/pyrpmd/analysis/diagnostics.py": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "src/pyrpmd/analysis/metadynamics.py": "bde084ed41a2022a0e69f3086fdfbb324fa577add73fdc2db5f0ac1ffa08ef00",
+    "src/pyrpmd/analysis/projection.py": "3be5f9e0b069fa48dc470220d40a7cad302afb94ab5b8707d38e4ed6f03178bc",
+    "src/pyrpmd/analysis/rate_io.py": "bdfc82bc3615ed4be998a04c1834b69067df02992790ab6575ac317b4f7cf771",
+    "src/pyrpmd/analysis/rate_postprocess.py": "bbf77026592d1d512c6f91818726b86ced71f8d0af42f99534a4f2370e92e5a3",
+    "src/pyrpmd/analysis/recrossing.py": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45",
+    "src/pyrpmd/analysis/report_compare.py": "731516c31b8a9c22cbd883712618df47a363bd76c9032a09d2d0b2df53cb74e7",
+    "src/pyrpmd/analysis/report_observables.py": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b",
+    "src/pyrpmd/analysis/report_render.py": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656",
+    "src/pyrpmd/analysis/report_sampling.py": "996cfaeea7105514ea29acbb2e92b1843621a8143e9dbbce8ee2d553e28082b9",
+    "src/pyrpmd/analysis/reporting.py": "7e5b87026e76f04cca05a81df191dbb94bd3ed0a50431e32a776b01aa18388b8",
+    "src/pyrpmd/analysis/scattering.py": "32f3caa24e2007a8b908417c612b1fa37ae6c898374e0f3e5c50c94e20a68776",
+    "src/pyrpmd/analysis/spectroscopy.py": "7ddcc583588d08e588c938cddcc6d4d8e32067d0ef47e9163d526ff2f34d734f",
+    "src/pyrpmd/analysis/surface.py": "001f0c5f33bcd59893bc32ab3fd574332a9c505f7684cb4d46422ac7500aeb9e",
+    "src/pyrpmd/barostat.py": "1f0588a61ccab074cb1667b2dde93d0441c3565bfb1472320a2cf2522f342692",
+    "src/pyrpmd/batched.py": "0f2366bacb745c32f7d5623eb2bc456a678f88a995488854828082e453e98790",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/block_propagation.py": "be33731535b3d75d0adf7603b36bb62d789e7b06bd669f9d0803394cef5cd6fa",
+    "src/pyrpmd/bond_constraints.py": "3a09282f3e6b90f10664a1bb69aad1d2c504d7753f4d880775c39193215445cc",
+    "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "src/pyrpmd/cli.py": "459be07d62d499649988a10324eba1c614de30398983142922767251fba088a9",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/cv_periodic.py": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2",
+    "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+    "src/pyrpmd/electrochemistry/__init__.py": "8793377b911aa8da402211f04e986d56c77fc00a0bb8b8bd4a1d7389cab3460c",
+    "src/pyrpmd/electrochemistry/kinetics.py": "cd2502a570790e4a57e3e97675be20ece276e2728efd031e7962571254c82095",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/reservoir.py": "c2092e405d6d880e21afa512597c37858daeed067f351ac134ddb5c5b5379be3",
+    "src/pyrpmd/electrochemistry/sampling.py": "873d1ed5f4e9e4c4a2a1c10ea35578e084bbe5dc4fa875bbfe8eb7b479b085aa",
+    "src/pyrpmd/electronic_friction.py": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005",
+    "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+    "src/pyrpmd/initial_states.py": "19af0668ddb0259cf4d4afa2b2f99d71341cc60f8df73e9ac9bdd39f2b803742",
+    "src/pyrpmd/input.py": "f0c6fd29005244e28de13a3dcc8ac184fde14b893911e74b4966c220f3999b41",
+    "src/pyrpmd/instanton.py": "504bbf5d46ebc05dbb875ef01de47a3df9dc2271ee30b2dbdeee5c4897b3e005",
+    "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+    "src/pyrpmd/isomorphic.py": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5",
+    "src/pyrpmd/kc_rpmd.py": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2",
+    "src/pyrpmd/multitime.py": "b6e89becaf5fd6edbc13a0a3af6e64a173ed95499e1c68842a231a8a9051d9db",
+    "src/pyrpmd/mv_rpmd.py": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f",
+    "src/pyrpmd/native_ensemble.py": "e4ff5aaae29cb78be2acf70709e0ef6962023c29a0775df4b226817e4f167e56",
+    "src/pyrpmd/nonadiabatic.py": "68bc1c565ee795a640bcada4f21baff4083472594ad4b8eb620f62d85e9a94a6",
+    "src/pyrpmd/opes.py": "e976e83492000c75221915531b7449fb031f9966eee21c70f6d1af7f9fee0bed",
+    "src/pyrpmd/parallel/__init__.py": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5",
+    "src/pyrpmd/parallel/execution.py": "6464e5facc5dd1ff230952356b8acb7b6f50a03c4f303c5b2150f6576c844a46",
+    "src/pyrpmd/path_integral.py": "72d85927c1f2230d24938eb1ae0e210f61e7bd6654d484e46f6f5a726506fd5c",
+    "src/pyrpmd/pcet.py": "0e7901c8ef104b37c9e08fbd09ce0c96097ecf72b846b60177986b0a1bdc074c",
+    "src/pyrpmd/pcet_input.py": "697a786e16e6904f5e82535a76077ccdaa20b92f63caf381e428381d768f490b",
+    "src/pyrpmd/pesgen/__init__.py": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907",
+    "src/pyrpmd/pesgen/__main__.py": "68215945ac4766cdb44195a9cbe5a96ae750e67be9d4ca71913d9e3e78843bb7",
+    "src/pyrpmd/pesgen/_native/bridge.cpp": "74338290dff58c0def2fa84ed57a90942e9d8f54f784f596b49c8b7d2b8b5b6c",
+    "src/pyrpmd/pesgen/_native/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "src/pyrpmd/pesgen/_native/worker.f90": "44c71a89637c6d583b773245ffd663f599d29235bfef31500fd7aaab91b7668c",
+    "src/pyrpmd/pesgen/build.py": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06",
+    "src/pyrpmd/pesgen/formats.py": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7",
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "f6435ce61ddb52a654f9c7a93e75674bf1c4a943fdac20ad51c05171f05c1c75",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "a2e791e566381239435181dfd61a6b2b5b7aec91fd9d198dc21ca05667ed1654",
+    "src/pyrpmd/pesgen/reference.py": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b",
+    "src/pyrpmd/pesgen/workflow.py": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a",
+    "src/pyrpmd/plumed.py": "4999b605608d750e95b1e1f7ffd8b3216ac2db5b557fb9c29c51066a6dbf2570",
+    "src/pyrpmd/potentials/__init__.py": "805e37bfd615317dc5fbf41cc90693ecd5b2b7ef85f636c92fba47178358fbf0",
+    "src/pyrpmd/potentials/adapters.py": "bc6662a4a3e936b894457446ec6a080d66c0c51c24deae89cd82973f6b7d03bd",
+    "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+    "src/pyrpmd/potentials/builtin.py": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/cache.py": "f2e6aa04854499a12d255371e626d689a907ca89bdb242426c89fa8cd7ffc7d6",
+    "src/pyrpmd/potentials/contraction.py": "4ac12b5251361344ebea1eb5407f2951b4a06b3bcdc015b90fe8c267bf6a49db",
+    "src/pyrpmd/potentials/diabatic.py": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec",
+    "src/pyrpmd/potentials/lammps.py": "c7bd00faf6a2d5eaad31be0b4fb0b85ef99ed3f8dd2e29ceb29e98bf86c45fba",
+    "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+    "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+    "src/pyrpmd/potentials/optional.py": "e83a0544d32dd9d58ebecedff9fd1bc0d6ccd624ab9797e97e3e71e702107fd4",
+    "src/pyrpmd/potentials/python.py": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9",
+    "src/pyrpmd/potentials/socket.py": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08",
+    "src/pyrpmd/propagation.py": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/reactions.py": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1",
+    "src/pyrpmd/runner.py": "8f3f6af7768c005fc6c3ffb33e068bf4653190b89f312435e5e2e7ec7d165136",
+    "src/pyrpmd/scaffold.py": "60c937e0b1aa0e54b78fb4ef0a4ef5e481e410a08eece5908e9d15ee49dc9c27",
+    "src/pyrpmd/studies.py": "b04a7ae4c9d6030ac6a0491898a455d7a6ed93ad6ccb609d2ca33f3e7f04906d",
+    "src/pyrpmd/surface_hopping.py": "e28617a2ff7cfd75fbc25895f59d7a1d5a4372e0824b18609de2de3db6f1447b",
+    "src/pyrpmd/system.py": "f49e55b344e1fcb6c9ec7d35410ad47ace06ef738a0deb45b7a69fd3f4824e78",
+    "src/pyrpmd/templates/quickstart.inp": "9fbea50ed5925f075325ef8e7a674fa8761ae3c79e032aecf3bdd4a7c79f56c0",
+    "src/pyrpmd/thermal_nrpmd.py": "4056f73013326c671b991b8dc5f3ca2e0844dd2cce5c102707099bb0ea345c8b",
+    "src/pyrpmd/thermostats.py": "0dd1e5d20c6fae996039d5d7c2b9ab91bbe18ce3ac475f3dcd2c6eb4511a845f",
+    "src/pyrpmd/trajectory.py": "2fb27eae9f4b7449a53d12c885f1a0f205ea0bb144f6311678638e48cfccb104",
+    "src/pyrpmd/trajectory_export.py": "aa9a2b58fdbe95bc7c3c8e2d4b05388685d537c478b520fadcaeae94ce9ffc3d",
+    "src/pyrpmd/transition_interface.py": "7949ceddcc4aeb1dd70c03354bdff305ed3492cbd221d4024ef7902556833183",
+    "src/pyrpmd/units.py": "cd4f490c2f17388e012fe769b6de1ca3e0ad737e5f8bd4b69b189d25036b9e20",
+    "src/pyrpmd/workflows/__init__.py": "0dfda51b1d63474796b42bd9be6bf4464ec77964d419840642bff86e5c7cdd49",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "19fe81b581b3659ba5b74993d6e29f8dc54be8cf30c0f25be4fd5e780a46fca9",
+    "src/pyrpmd/workflows/batched_recrossing.py": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa",
+    "src/pyrpmd/workflows/drpmd.py": "50c0062a8b8edd08e236ed6000858aabae2152253fd6d3e8dc3a02e0cd2ddf1e",
+    "src/pyrpmd/workflows/extend.py": "7d3e564e819cf135ac755170c6f5fcc32bc47add1b38f9dd16f3a26190655cd1",
+    "src/pyrpmd/workflows/fes.py": "979f6d63ad9bb370089ef7f0d98898a9197dbf1282611f54477064ee90168077",
+    "src/pyrpmd/workflows/materials.py": "de5afe12ad0399c42bdfc3be090857a63d8029d53ab6c3bb855803664d5952ed",
+    "src/pyrpmd/workflows/metadynamics.py": "bb76c12773bbb3c0c90afaa1110d9f016bc4602db5f7a4d1d0cb5685cdbf7fa4",
+    "src/pyrpmd/workflows/native_pimd.py": "a7c1739f05a226b96faf9d284b08905e2f7843f5933f0d736f81dd9dd2fec553",
+    "src/pyrpmd/workflows/network.py": "6b6090d761c83b2f4dec76fccf0ec6c76e1f13ab86b0fa0ff19493a19b53fa31",
+    "src/pyrpmd/workflows/opes.py": "961cc29ec56b2c04b6f32938d9920fcf1b22d5593c5328063f57408e74b632e3",
+    "src/pyrpmd/workflows/pcet.py": "bffc084cee091c8f04577daa88469cd9c4fffdff6e7f57241f873747a0dc41de",
+    "src/pyrpmd/workflows/prepare.py": "2c20324decbecbc0f414701b257857c276f577792ea6d09134ff8ae3790d31b0",
+    "src/pyrpmd/workflows/rate.py": "69e30ef296676057b4e9efb1c172062353487d8e58ebf28a02a3f9f4526811df",
+    "src/pyrpmd/workflows/replica_exchange.py": "a33843d0fccef42412d842a12a92c63287258e076837f40e7123ecb193e661c4",
+    "src/pyrpmd/workflows/sampling.py": "1abf7efbf558e0b76c2dc16ed3ad49d6826eac94e1b1b88c4d4c20b76a8e14af",
+    "src/pyrpmd/workflows/site_rate.py": "e099372cafa58ae76605f11d7ac4760c324057e82a4d41db799c18631d640f53",
+    "src/pyrpmd/workflows/state_selected.py": "c885c1d46c6c16f342ff3e56d52a60fedee63e8b3a5690b5880a1f1bf58de478",
+    "src/pyrpmd/workflows/surface.py": "441d870c6b25615a9122949884dfc0367bbcd7499868f9aac8252988a03898ec",
+    "src/pyrpmd/workflows/surface_source.py": "ac8d6d8791dbe9e344475ff1b0691d622b68b1ab4eed89c14b540372dfbb3eaf",
+    "loaded_native_extension:_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+  },
+  "source_at_end": {
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/sampling_control.py": "33f026beb253018e3b130ceff0bf6e438abf031f462ac80dfb08e738cdc22bcc",
+    "benchmarks/published_rates/h3.py": "51d432df7f1ef19c99d0d0faa33ea02a3423d6bed7d8fe7db392889b3e1c9a7c",
+    "native/ABI.md": "409dd617c009333467f0265736d038e14e763582e98383645cb72d439da304d0",
+    "native/CMakeLists.txt": "8ecfeaa85042bdccf602b3df68291ec398de7bcf7d03c6114845a9372c507d09",
+    "native/README.md": "33143daffdbac00e16ba16769ac79eb068ed986f1c3ec9ee8c40b4bacac00efc",
+    "native/cayley.cpp": "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124",
+    "native/examples/harmonic_pes.c": "811eea56274b3d3013a3bca49a9f2f0b389708c202e83a7f73efcbd5884e0aeb",
+    "native/examples/periodic_cosine_pes.c": "bf5e4025550f81724746e46fea5855ba6dd7054940d662e708ddbf36781b53dc",
+    "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "native/include/pyrpmd/thermal_pes.h": "40d1cbeec480eaf828499db46c20db4644c7d72c1e17d3132f13f5dea012a961",
+    "native/onnx/CMakeLists.txt": "0473fa7d35b5f7ba04a6dce49d1773feb89144125638a2bb5c78751723959433",
+    "native/onnx/README.md": "7e3726d46932221c3fc42dad34a13aff5228b752c8e1c4d56df510564660ca3a",
+    "native/onnx/context_test.cpp": "ff69cbea4ec453441a543dd09adba1a62c9a42ccb87a30274fffc0a92a17e1fe",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "native/propagation.h": "ba2ac0eb4789e9cffb947c50789807f7aba27ae8ad91a51785cbface2f2e68bd",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/thermal-NOTICE.md": "758b6cde37b061eab530baa5f7fb9fd4c0057fbc2fc47f6d9f1f798ac59967b1",
+    "native/thermal.cpp": "a28d75d4a460bf70003ca8f8bee03c83679df57c21df7ac22b4a7dce7c897caf",
+    "native/thermal.hpp": "54c704af9f277680c34c42cf4f1da24aaeebe0e5ed055a52b31bd8fbc4ac3702",
+    "src/pyrpmd/__init__.py": "dcefe7933bccb19db5c6684f0c27428d42b9d7767722f3f0ec7d90abec965bc8",
+    "src/pyrpmd/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/pyrpmd/_matrix_path.py": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777",
+    "src/pyrpmd/analysis/__init__.py": "f2a84808471d40e6146cea7ce4882a8531b946cecb507d820302d465966624a8",
+    "src/pyrpmd/analysis/diagnostics.py": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "src/pyrpmd/analysis/metadynamics.py": "bde084ed41a2022a0e69f3086fdfbb324fa577add73fdc2db5f0ac1ffa08ef00",
+    "src/pyrpmd/analysis/projection.py": "3be5f9e0b069fa48dc470220d40a7cad302afb94ab5b8707d38e4ed6f03178bc",
+    "src/pyrpmd/analysis/rate_io.py": "bdfc82bc3615ed4be998a04c1834b69067df02992790ab6575ac317b4f7cf771",
+    "src/pyrpmd/analysis/rate_postprocess.py": "bbf77026592d1d512c6f91818726b86ced71f8d0af42f99534a4f2370e92e5a3",
+    "src/pyrpmd/analysis/recrossing.py": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45",
+    "src/pyrpmd/analysis/report_compare.py": "731516c31b8a9c22cbd883712618df47a363bd76c9032a09d2d0b2df53cb74e7",
+    "src/pyrpmd/analysis/report_observables.py": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b",
+    "src/pyrpmd/analysis/report_render.py": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656",
+    "src/pyrpmd/analysis/report_sampling.py": "996cfaeea7105514ea29acbb2e92b1843621a8143e9dbbce8ee2d553e28082b9",
+    "src/pyrpmd/analysis/reporting.py": "7e5b87026e76f04cca05a81df191dbb94bd3ed0a50431e32a776b01aa18388b8",
+    "src/pyrpmd/analysis/scattering.py": "32f3caa24e2007a8b908417c612b1fa37ae6c898374e0f3e5c50c94e20a68776",
+    "src/pyrpmd/analysis/spectroscopy.py": "7ddcc583588d08e588c938cddcc6d4d8e32067d0ef47e9163d526ff2f34d734f",
+    "src/pyrpmd/analysis/surface.py": "001f0c5f33bcd59893bc32ab3fd574332a9c505f7684cb4d46422ac7500aeb9e",
+    "src/pyrpmd/barostat.py": "1f0588a61ccab074cb1667b2dde93d0441c3565bfb1472320a2cf2522f342692",
+    "src/pyrpmd/batched.py": "0f2366bacb745c32f7d5623eb2bc456a678f88a995488854828082e453e98790",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/block_propagation.py": "be33731535b3d75d0adf7603b36bb62d789e7b06bd669f9d0803394cef5cd6fa",
+    "src/pyrpmd/bond_constraints.py": "3a09282f3e6b90f10664a1bb69aad1d2c504d7753f4d880775c39193215445cc",
+    "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "src/pyrpmd/cli.py": "459be07d62d499649988a10324eba1c614de30398983142922767251fba088a9",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/cv_periodic.py": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2",
+    "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+    "src/pyrpmd/electrochemistry/__init__.py": "8793377b911aa8da402211f04e986d56c77fc00a0bb8b8bd4a1d7389cab3460c",
+    "src/pyrpmd/electrochemistry/kinetics.py": "cd2502a570790e4a57e3e97675be20ece276e2728efd031e7962571254c82095",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/reservoir.py": "c2092e405d6d880e21afa512597c37858daeed067f351ac134ddb5c5b5379be3",
+    "src/pyrpmd/electrochemistry/sampling.py": "873d1ed5f4e9e4c4a2a1c10ea35578e084bbe5dc4fa875bbfe8eb7b479b085aa",
+    "src/pyrpmd/electronic_friction.py": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005",
+    "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+    "src/pyrpmd/initial_states.py": "19af0668ddb0259cf4d4afa2b2f99d71341cc60f8df73e9ac9bdd39f2b803742",
+    "src/pyrpmd/input.py": "f0c6fd29005244e28de13a3dcc8ac184fde14b893911e74b4966c220f3999b41",
+    "src/pyrpmd/instanton.py": "504bbf5d46ebc05dbb875ef01de47a3df9dc2271ee30b2dbdeee5c4897b3e005",
+    "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+    "src/pyrpmd/isomorphic.py": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5",
+    "src/pyrpmd/kc_rpmd.py": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2",
+    "src/pyrpmd/multitime.py": "b6e89becaf5fd6edbc13a0a3af6e64a173ed95499e1c68842a231a8a9051d9db",
+    "src/pyrpmd/mv_rpmd.py": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f",
+    "src/pyrpmd/native_ensemble.py": "e4ff5aaae29cb78be2acf70709e0ef6962023c29a0775df4b226817e4f167e56",
+    "src/pyrpmd/nonadiabatic.py": "68bc1c565ee795a640bcada4f21baff4083472594ad4b8eb620f62d85e9a94a6",
+    "src/pyrpmd/opes.py": "e976e83492000c75221915531b7449fb031f9966eee21c70f6d1af7f9fee0bed",
+    "src/pyrpmd/parallel/__init__.py": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5",
+    "src/pyrpmd/parallel/execution.py": "6464e5facc5dd1ff230952356b8acb7b6f50a03c4f303c5b2150f6576c844a46",
+    "src/pyrpmd/path_integral.py": "72d85927c1f2230d24938eb1ae0e210f61e7bd6654d484e46f6f5a726506fd5c",
+    "src/pyrpmd/pcet.py": "0e7901c8ef104b37c9e08fbd09ce0c96097ecf72b846b60177986b0a1bdc074c",
+    "src/pyrpmd/pcet_input.py": "697a786e16e6904f5e82535a76077ccdaa20b92f63caf381e428381d768f490b",
+    "src/pyrpmd/pesgen/__init__.py": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907",
+    "src/pyrpmd/pesgen/__main__.py": "68215945ac4766cdb44195a9cbe5a96ae750e67be9d4ca71913d9e3e78843bb7",
+    "src/pyrpmd/pesgen/_native/bridge.cpp": "74338290dff58c0def2fa84ed57a90942e9d8f54f784f596b49c8b7d2b8b5b6c",
+    "src/pyrpmd/pesgen/_native/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "src/pyrpmd/pesgen/_native/worker.f90": "44c71a89637c6d583b773245ffd663f599d29235bfef31500fd7aaab91b7668c",
+    "src/pyrpmd/pesgen/build.py": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06",
+    "src/pyrpmd/pesgen/formats.py": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7",
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "f6435ce61ddb52a654f9c7a93e75674bf1c4a943fdac20ad51c05171f05c1c75",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "a2e791e566381239435181dfd61a6b2b5b7aec91fd9d198dc21ca05667ed1654",
+    "src/pyrpmd/pesgen/reference.py": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b",
+    "src/pyrpmd/pesgen/workflow.py": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a",
+    "src/pyrpmd/plumed.py": "4999b605608d750e95b1e1f7ffd8b3216ac2db5b557fb9c29c51066a6dbf2570",
+    "src/pyrpmd/potentials/__init__.py": "805e37bfd615317dc5fbf41cc90693ecd5b2b7ef85f636c92fba47178358fbf0",
+    "src/pyrpmd/potentials/adapters.py": "bc6662a4a3e936b894457446ec6a080d66c0c51c24deae89cd82973f6b7d03bd",
+    "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+    "src/pyrpmd/potentials/builtin.py": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/cache.py": "f2e6aa04854499a12d255371e626d689a907ca89bdb242426c89fa8cd7ffc7d6",
+    "src/pyrpmd/potentials/contraction.py": "4ac12b5251361344ebea1eb5407f2951b4a06b3bcdc015b90fe8c267bf6a49db",
+    "src/pyrpmd/potentials/diabatic.py": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec",
+    "src/pyrpmd/potentials/lammps.py": "c7bd00faf6a2d5eaad31be0b4fb0b85ef99ed3f8dd2e29ceb29e98bf86c45fba",
+    "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+    "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+    "src/pyrpmd/potentials/optional.py": "e83a0544d32dd9d58ebecedff9fd1bc0d6ccd624ab9797e97e3e71e702107fd4",
+    "src/pyrpmd/potentials/python.py": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9",
+    "src/pyrpmd/potentials/socket.py": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08",
+    "src/pyrpmd/propagation.py": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/reactions.py": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1",
+    "src/pyrpmd/runner.py": "8f3f6af7768c005fc6c3ffb33e068bf4653190b89f312435e5e2e7ec7d165136",
+    "src/pyrpmd/scaffold.py": "60c937e0b1aa0e54b78fb4ef0a4ef5e481e410a08eece5908e9d15ee49dc9c27",
+    "src/pyrpmd/studies.py": "b04a7ae4c9d6030ac6a0491898a455d7a6ed93ad6ccb609d2ca33f3e7f04906d",
+    "src/pyrpmd/surface_hopping.py": "e28617a2ff7cfd75fbc25895f59d7a1d5a4372e0824b18609de2de3db6f1447b",
+    "src/pyrpmd/system.py": "f49e55b344e1fcb6c9ec7d35410ad47ace06ef738a0deb45b7a69fd3f4824e78",
+    "src/pyrpmd/templates/quickstart.inp": "9fbea50ed5925f075325ef8e7a674fa8761ae3c79e032aecf3bdd4a7c79f56c0",
+    "src/pyrpmd/thermal_nrpmd.py": "4056f73013326c671b991b8dc5f3ca2e0844dd2cce5c102707099bb0ea345c8b",
+    "src/pyrpmd/thermostats.py": "0dd1e5d20c6fae996039d5d7c2b9ab91bbe18ce3ac475f3dcd2c6eb4511a845f",
+    "src/pyrpmd/trajectory.py": "2fb27eae9f4b7449a53d12c885f1a0f205ea0bb144f6311678638e48cfccb104",
+    "src/pyrpmd/trajectory_export.py": "aa9a2b58fdbe95bc7c3c8e2d4b05388685d537c478b520fadcaeae94ce9ffc3d",
+    "src/pyrpmd/transition_interface.py": "7949ceddcc4aeb1dd70c03354bdff305ed3492cbd221d4024ef7902556833183",
+    "src/pyrpmd/units.py": "cd4f490c2f17388e012fe769b6de1ca3e0ad737e5f8bd4b69b189d25036b9e20",
+    "src/pyrpmd/workflows/__init__.py": "0dfda51b1d63474796b42bd9be6bf4464ec77964d419840642bff86e5c7cdd49",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "19fe81b581b3659ba5b74993d6e29f8dc54be8cf30c0f25be4fd5e780a46fca9",
+    "src/pyrpmd/workflows/batched_recrossing.py": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa",
+    "src/pyrpmd/workflows/drpmd.py": "50c0062a8b8edd08e236ed6000858aabae2152253fd6d3e8dc3a02e0cd2ddf1e",
+    "src/pyrpmd/workflows/extend.py": "7d3e564e819cf135ac755170c6f5fcc32bc47add1b38f9dd16f3a26190655cd1",
+    "src/pyrpmd/workflows/fes.py": "979f6d63ad9bb370089ef7f0d98898a9197dbf1282611f54477064ee90168077",
+    "src/pyrpmd/workflows/materials.py": "de5afe12ad0399c42bdfc3be090857a63d8029d53ab6c3bb855803664d5952ed",
+    "src/pyrpmd/workflows/metadynamics.py": "bb76c12773bbb3c0c90afaa1110d9f016bc4602db5f7a4d1d0cb5685cdbf7fa4",
+    "src/pyrpmd/workflows/native_pimd.py": "a7c1739f05a226b96faf9d284b08905e2f7843f5933f0d736f81dd9dd2fec553",
+    "src/pyrpmd/workflows/network.py": "6b6090d761c83b2f4dec76fccf0ec6c76e1f13ab86b0fa0ff19493a19b53fa31",
+    "src/pyrpmd/workflows/opes.py": "961cc29ec56b2c04b6f32938d9920fcf1b22d5593c5328063f57408e74b632e3",
+    "src/pyrpmd/workflows/pcet.py": "bffc084cee091c8f04577daa88469cd9c4fffdff6e7f57241f873747a0dc41de",
+    "src/pyrpmd/workflows/prepare.py": "2c20324decbecbc0f414701b257857c276f577792ea6d09134ff8ae3790d31b0",
+    "src/pyrpmd/workflows/rate.py": "69e30ef296676057b4e9efb1c172062353487d8e58ebf28a02a3f9f4526811df",
+    "src/pyrpmd/workflows/replica_exchange.py": "a33843d0fccef42412d842a12a92c63287258e076837f40e7123ecb193e661c4",
+    "src/pyrpmd/workflows/sampling.py": "1abf7efbf558e0b76c2dc16ed3ad49d6826eac94e1b1b88c4d4c20b76a8e14af",
+    "src/pyrpmd/workflows/site_rate.py": "e099372cafa58ae76605f11d7ac4760c324057e82a4d41db799c18631d640f53",
+    "src/pyrpmd/workflows/state_selected.py": "c885c1d46c6c16f342ff3e56d52a60fedee63e8b3a5690b5880a1f1bf58de478",
+    "src/pyrpmd/workflows/surface.py": "441d870c6b25615a9122949884dfc0367bbcd7499868f9aac8252988a03898ec",
+    "src/pyrpmd/workflows/surface_source.py": "ac8d6d8791dbe9e344475ff1b0691d622b68b1ab4eed89c14b540372dfbb3eaf",
+    "loaded_native_extension:_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+  },
+  "sources_unchanged": true,
+  "script_sha256": "31ad53d459b283a1d30db440b4a397cf09765a075846718c161cfc3fa5825a37",
+  "input_checkpoints": [
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00000_replica_0000.npz",
+      "sha256": "f864f22cc7c10c1ab771ec11203a3eda7654f1122fa7d5111b65d817ab3d3b71"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00000_replica_0001.npz",
+      "sha256": "d09e1fc11d2d524bf1438a038834dee7caf714f1d04f961eb78293f84637bfd3"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00001_replica_0000.npz",
+      "sha256": "b3077e0a228d6f13d174265dc5b52337b4a5a09abec12e089bdafc50d2f6978f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00001_replica_0001.npz",
+      "sha256": "98df86d628bb12366d29018aa3e8339d40681fb135308c661661ccfa560d00be"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00002_replica_0000.npz",
+      "sha256": "3b656979ff9ceef36fabfb87ca2b888a14f2dea67643a22f1fcdf364cc8edc53"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00002_replica_0001.npz",
+      "sha256": "816fa3787d4e9b145086b586df769fde3db217a6dca2d31b067744144364ba25"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00003_replica_0000.npz",
+      "sha256": "581f398263d64a13a87fea1beebb5beccd052867219f3903e079c657443720a5"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00003_replica_0001.npz",
+      "sha256": "0e705547edea32a155d2404b7a3cd03d3ae9ccc789d9e5eed269820de4455fa2"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00004_replica_0000.npz",
+      "sha256": "ae91d9383b6943e168d7f354fe7706261a5b7c293e14cad8e2083bebc1572634"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00004_replica_0001.npz",
+      "sha256": "c60d9d771ad35fb8d70be110a196b6d8e909d1af314221a815f58bcec74679ef"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00005_replica_0000.npz",
+      "sha256": "cb802dca346fc81915dc3073b18c411e1b453916938638bc49d3b17491e21596"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00005_replica_0001.npz",
+      "sha256": "54cdb37188c929f311bb8a1060b41265462e8f0ac39d306338a4bbcaaac619a3"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00006_replica_0000.npz",
+      "sha256": "6faea34829782e6c26a17bb8a6aac443e917d6d11346fd248d5dca3ca5933061"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00006_replica_0001.npz",
+      "sha256": "53f062537018718aa5bdec10c3812396e3a51a534c70aa2243545d9125a3f5f6"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00007_replica_0000.npz",
+      "sha256": "276d3b0e4fbfa37e7ea145df67bed1f8283babd9d2b839e6df69b903994b333b"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00007_replica_0001.npz",
+      "sha256": "54590073753841d2b9fa9b926dae0f381231c3b45d2a3d480b5887a1ef8d1408"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00008_replica_0000.npz",
+      "sha256": "918cf4c6110ccacc59e07e3eea31b29af917de67d696f20d0e66ee1efcf6143e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00008_replica_0001.npz",
+      "sha256": "12d0ece3aa2e1100272d322636d6159d34fb77cbfd20f9e9bd2ff707544166c0"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00009_replica_0000.npz",
+      "sha256": "98fe3dbeebb1f7ac7a867ddd3163b9bc841459cea0892624b20650761cc8f56f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00009_replica_0001.npz",
+      "sha256": "ecbab6dffcfeef94c2a404c6423c9c5ffad287ec709c50f4ac42158486b04d07"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00010_replica_0000.npz",
+      "sha256": "100ee86d9c47346df8bb63727d5bfcf7e1cee858dfebfeff6ea6db3e832b9eb9"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00010_replica_0001.npz",
+      "sha256": "47815375fefe4baf581bc964dc0bee65c82a451158b5adb4484c8f417871aca0"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00011_replica_0000.npz",
+      "sha256": "3dc7f6655ccd10a30c71947889dac5b5bb345b3da7be1d984f1cd140703b30e5"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00011_replica_0001.npz",
+      "sha256": "68d0433b6fd6422568ba935f4a450daadb469b00baff87089bbf0e3c328e4f7f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00012_replica_0000.npz",
+      "sha256": "0a0746c9c655594b4daf905fae6de8c0398e6d2bcc390183cb3009fda0210b67"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00012_replica_0001.npz",
+      "sha256": "7c507cba015d93d2a797234f64fdcfcaf6bf09d586c07a063316c9fa1966653f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00013_replica_0000.npz",
+      "sha256": "94df33110f7d74dfa0a9455d937bbfe3f745f88e13eb21ee9ee853bb204268c5"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00013_replica_0001.npz",
+      "sha256": "55d1d2ef288b4372fde5c6c0e40655322efba8ac166c1f715bf4ecc56801cd18"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00014_replica_0000.npz",
+      "sha256": "6ae0c7377f44d8f443c4422c372dc294b122db6f91ab281852cae139d825bc09"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00014_replica_0001.npz",
+      "sha256": "099af55cf97b9d6f69e4d3cadd8568b4a186487a3b131cc2f040633330e0d9ef"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00015_replica_0000.npz",
+      "sha256": "38531ba590c3fae0a7c7442c411696da62931d53b1a253b772c09a9886574181"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00015_replica_0001.npz",
+      "sha256": "100ddd1ad0e44ffe0c718a9fbe92256ffcfe435c59c86e5ee434c36ae5cd4268"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00016_replica_0000.npz",
+      "sha256": "19d6638dcb7570c3a3f0daee0e466d82102f98180c5fe641465ba41e61fee9d7"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00016_replica_0001.npz",
+      "sha256": "f900516d9006c93ff5e5d309c2be754b7f47c6bbd66b282ee5e77ba507b8fae0"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00017_replica_0000.npz",
+      "sha256": "93a36fc807591f75994c9b71b2ee0ea42acf9d9616b171bcfdcb341ef819e309"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00017_replica_0001.npz",
+      "sha256": "09822755f9d980fd45edd5e743aa7a83827927ebedd14f20e9b64179d672e9f7"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00018_replica_0000.npz",
+      "sha256": "fff1b184c919130e5534d665920dd5ef70f4fe6c1d5d05ffe1852885cb5f9c22"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00018_replica_0001.npz",
+      "sha256": "eaafc50fa0521999867724738c7f9fc30c1332404f4526c14d8e60b92c61a053"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00019_replica_0000.npz",
+      "sha256": "7a4ba0fc873e09b38c30b7d8fa2a4608cea6c174dd1d47a04fde62c5b0003491"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00019_replica_0001.npz",
+      "sha256": "82ba94c25634a5009e5b9174eade9d45f7e267f4a14685ac6b62d024d97494d4"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00020_replica_0000.npz",
+      "sha256": "1fff924f41673a87eb7451416016c3aa35b4c9c8780d5124e375b4fbae72729a"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00020_replica_0001.npz",
+      "sha256": "040f7bc3711c9c2c95849884541d3fde3b2a0c8d8f6c702528e711d31141b8f4"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00021_replica_0000.npz",
+      "sha256": "bd19eb0dc9f65bd4bf168dba94661b4239fd9934db6dee29edaf190610ac8560"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00021_replica_0001.npz",
+      "sha256": "ec88dcdaaa6f50c488e8ef51ba4306f14d0a24ec1203bda820cf3337a51d8062"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00022_replica_0000.npz",
+      "sha256": "92d89860dd08c0eb8c0650b84f24baf72482adefa36dd41971db5b1eba04ebf7"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00022_replica_0001.npz",
+      "sha256": "0f2da274f8df415e422f4a6e17b4493b131ce12eb565301ebcb73ff669dc9dd0"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00023_replica_0000.npz",
+      "sha256": "2b098335ab152ce2a2a9a74352d3f10ce151b5c860dbfea75f816c4158a0d63b"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00023_replica_0001.npz",
+      "sha256": "5c2dd5788046b0a28efdcf7d94fd41f21cd00682273a12619d535ee147ccd795"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00024_replica_0000.npz",
+      "sha256": "213bcbcfb485229264fb34f5b221aee77da44ac852d62a6bd8e4b6c83665e1a2"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00024_replica_0001.npz",
+      "sha256": "991518aedfa7e749664deee6e81aed1e0f066f82ca7b795f9f05fe02be2d36ab"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00025_replica_0000.npz",
+      "sha256": "a6537ab2f933a99e5c24a9017874849b97630a88d2c4116b6ddaa818c7a0d510"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00025_replica_0001.npz",
+      "sha256": "e555c583f434aca2504b532265015565c09167332194aaf6534ff0cd163c01a1"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00026_replica_0000.npz",
+      "sha256": "0986783547088f00b69b33ad6a98b3e6d7db50d3cd0272e07a45f65f6d52a840"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00026_replica_0001.npz",
+      "sha256": "d79f0909a4c51a385c7ee58231a14b727990de5f960def51e92d55eb7c666963"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00027_replica_0000.npz",
+      "sha256": "a3215e19f3aede0959d050350504de667921154f8ffa5f1ebe76b71f6dcae428"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00027_replica_0001.npz",
+      "sha256": "d40e8ccc65b2a38a5c19b1c19529503b06a3758d313c9482e9cad365c0e990f2"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00028_replica_0000.npz",
+      "sha256": "8d591d59fc2d13ed02eea314b6b3fa9dbf40774f9b2a1fd1b7a0034372776f33"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00028_replica_0001.npz",
+      "sha256": "e8864de7801d8cd0262f0e4d34f6b7d3961db6fbba1ead3970ba82dac0fc0e77"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00029_replica_0000.npz",
+      "sha256": "9f0177ee46943d7c38da0bb781fe0a10716d72a077edf67b1b8b6b356771fd80"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00029_replica_0001.npz",
+      "sha256": "9280245f794bbde5de37aafffcaf7d49f372f5e013fd04c508d16befecbd3908"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00030_replica_0000.npz",
+      "sha256": "8df0c50f76cc1ef20a30dec4d5fce6f5d812335f778142953d45be09170b317e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00030_replica_0001.npz",
+      "sha256": "0039f72288c2dc3fae7172c9e57855c230f64ce929b4fd49bc82401ee95d96ab"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00031_replica_0000.npz",
+      "sha256": "474c9cc26ccbbfb25a038f938070200313b257bb3bb379e4dd4bc3b1d4f2639e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00031_replica_0001.npz",
+      "sha256": "cc49c576d5218a14d97c57d2d71b353167db3ad7b498ef22e3b94f4b441fd6b4"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00032_replica_0000.npz",
+      "sha256": "ebc2ee5e4ab72678aec61c4834ed2c930ecdd5e66a648f1101371760c28e76bc"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00032_replica_0001.npz",
+      "sha256": "cebc764a716384ac22acde743513c73dd8bab274e94c1b64c448ee4a82d0df5a"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00033_replica_0000.npz",
+      "sha256": "971f2f886273469b00e7c5a25ac3223412b6ed94ad903c85b412f6203b15332c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00033_replica_0001.npz",
+      "sha256": "2d06d8aa452ffba6e811e8dd9577e74c39eca81a6539a0b3e55206d9819aeafc"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00034_replica_0000.npz",
+      "sha256": "f2bbdf8fba92fd7f4db1286dfa2688e70e6d96ddac4da2d1f9d762a025b52ab3"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00034_replica_0001.npz",
+      "sha256": "6f61ca0a1e0f50d19b5e19e330ec5ce667d27db0b7ccd2c621f17984612985af"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00035_replica_0000.npz",
+      "sha256": "7a5a6af18791c4596a48f0d5e708eab5811ed4e96e651d2597f695700b0316a8"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00035_replica_0001.npz",
+      "sha256": "663ae9dbf62d816f414e1d44b426cf2d22ad4ea99fac97f6977e70017887f0a3"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00036_replica_0000.npz",
+      "sha256": "3d56fd16cd315bb83f7011e6f8454a2b64b0051d23a21417934cbc2211a9bb37"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00036_replica_0001.npz",
+      "sha256": "7c5a8e99854c177ad58a8880f07dd4dd78dd628ac3985e425b3f3281b28f1872"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00037_replica_0000.npz",
+      "sha256": "c071b129e5261f36bb093bb6300765efa97a7454222c5f450a78829fb7cab192"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00037_replica_0001.npz",
+      "sha256": "3752d7da73661a6e94a51cbd996a8ee79a7c85b513cc6a4c21d9545cfa044506"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00038_replica_0000.npz",
+      "sha256": "11090b83fda99cb5b3217adc0e9e40344fccd8217c164ceddcd894d968f9b968"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00038_replica_0001.npz",
+      "sha256": "cda2f1f983aeea16c86b7467efbf2ca919cbe57111d6fa73ef18dfe65c3f7c42"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00039_replica_0000.npz",
+      "sha256": "42cdf95664f09f7cd24fe9b58177cac589957251699a949b17290f2e10937c16"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00039_replica_0001.npz",
+      "sha256": "da2adbec12beaf6645265542ae0c34d6b581d60888dcf1bbc89ac3a3844f04ce"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00040_replica_0000.npz",
+      "sha256": "2ddd94716cc3579936ecd9dc5ad465c82f9a4765d49f8f6f5966e493b157db34"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00040_replica_0001.npz",
+      "sha256": "d6f108b69dc9d51e2ce0fe68318963b4c6bb9a47f7c952c63cff21b5381ee536"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00041_replica_0000.npz",
+      "sha256": "33f908518508704bca06ca8016bffffee1d98fc6f01446daa1d9dc244ba6331d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00041_replica_0001.npz",
+      "sha256": "e17b62d4679c20fd7d11eb1586f35d83d4682f79d9db5dbdefa54a519a6aa40f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00042_replica_0000.npz",
+      "sha256": "96286bfbdd348c4632ef5b42d1f85200e59a1d1c879e9ee854807b444e093666"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00042_replica_0001.npz",
+      "sha256": "ca63bdea468ad2a9ebffd029e122d99818d7de9976227aeb95513c2343f0a457"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00043_replica_0000.npz",
+      "sha256": "5c0ed36c3b3c51fe05ad0f36ae633bed3cd67d21b93caa7e440b8caff672b1a6"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00043_replica_0001.npz",
+      "sha256": "9d8ddab88e6cd11dd3c6dfd44f79d47afe894099905b063c1aa320628ba5a307"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00044_replica_0000.npz",
+      "sha256": "e30806444755ac3987058a37931c8472793bec42aa6c1d4f26c3452391b987ee"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00044_replica_0001.npz",
+      "sha256": "142e381999ebfac8d6cd470430166456da7527d21db9a003405a4a04f7492ebe"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00045_replica_0000.npz",
+      "sha256": "8d476db9c2a12350c3ac5cfd693567e53d74322d942dde48b81497cfad679f1f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00045_replica_0001.npz",
+      "sha256": "8e1e0f186742a4c81656e694f4e27dfd3dce15c99541fed1c55feffff72c7c8c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00046_replica_0000.npz",
+      "sha256": "c7528249cbde8b20e46c7f22c8882d231d2c40d3374934b64961da517dc8123d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00046_replica_0001.npz",
+      "sha256": "5acc8ec243809066f2199df0ca9abc3a71e49bfc5e5db700e90933d0239eb3d8"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00047_replica_0000.npz",
+      "sha256": "97f4bb5d0bf6f87aab460eae3f191365d5198d594a25ce537c8515dbde5744c0"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00047_replica_0001.npz",
+      "sha256": "295af344602b83a9bf93097f6cfc0f93b16f944e279f50db2d405b2448fc270e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00048_replica_0000.npz",
+      "sha256": "14eb7d2e478ce8c65aa4786db713e7b6a07b60c83337d2346ae43d208698ace3"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00048_replica_0001.npz",
+      "sha256": "90af5b1f588f26c98a0d44b1f58e5301a8f6a18ee2d75b88632f2461ac99d744"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00049_replica_0000.npz",
+      "sha256": "3a7845e662250d04b2166876994c05ef55ca7f5323a3614acf5ebc1351a6989c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00049_replica_0001.npz",
+      "sha256": "1366ed8e03dc200c02d0f9e84439983a07c6346a28ff863b5fede8a9db858185"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00050_replica_0000.npz",
+      "sha256": "cf16d028b181d3732169e72f3c7bc59e84f9e789bc75564275e21e5f4befab4b"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00050_replica_0001.npz",
+      "sha256": "8fc1c9b3ea2eaa17f593c558e6b7b4ce66f505343942af3ffa51ca726f29fb60"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00051_replica_0000.npz",
+      "sha256": "5d02fd995043ae25377f019c3f4a3dd8c009a8135c2742043e693b8829cf731e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00051_replica_0001.npz",
+      "sha256": "61c05206383eb9783ff79d7e0c8afcec81e31a9db9abbcc0d07699e5e4c6ce7e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00052_replica_0000.npz",
+      "sha256": "efcfe8e591783d0b3f4ef87592d7a3c62a3a00bb1f13e6cdc34432e8afef786e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00052_replica_0001.npz",
+      "sha256": "e8aa0d5ceeac74fe1e719a1bee68caad15d438c074719c51bd5744245d228405"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00053_replica_0000.npz",
+      "sha256": "6e479876c4845645a2cde74fc2948f626502d2721fbc14b0667a993dc4804997"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00053_replica_0001.npz",
+      "sha256": "31f79122c856fd673065536866ae5ea3192f7528daf6c2c3b4fbcc4947f409cf"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00054_replica_0000.npz",
+      "sha256": "5fae8cef51a33040cb7b8e7ad426e95cc8dd9424dd0532575be6c13256a9e7ad"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00054_replica_0001.npz",
+      "sha256": "bc97bb3e098106538243245cc82056ba502a5e2b1ee402e3deaf94b99d65d7f3"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00055_replica_0000.npz",
+      "sha256": "8ddac3172557fe822c5ed9e02490eb5f5b91bb3c1e8666a96dbff74e8b0c60c9"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00055_replica_0001.npz",
+      "sha256": "9577d12771b208565189861c5469055f8c77377f082b23c8393b337db52bd04e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00056_replica_0000.npz",
+      "sha256": "2644f55eb084da6b35b9c086bc3d11db23cb48ed72e22d8d455b16f8ccfdc8e4"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00056_replica_0001.npz",
+      "sha256": "427eb04174e239658f38a17ea88d8af385a2904cc4dfe31e006817a25431eab8"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00057_replica_0000.npz",
+      "sha256": "fc708aa441fc901f808f1aa4cbc82740c5ccd334ed6cce08cc71c894f95ec841"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00057_replica_0001.npz",
+      "sha256": "bed7e6b8194921c96f11c67633e8383da19188e4b953d27fe92c55c823c46a98"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00058_replica_0000.npz",
+      "sha256": "acf493f5aaae0c39e7341e2e03ac308e4717bf0d159f49778412ccf38a9f5b4e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00058_replica_0001.npz",
+      "sha256": "7ea09a3bee05c8152f985a24077ff73a1cee4e9ed6513676d4d6e1e98d11cd22"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00059_replica_0000.npz",
+      "sha256": "b9337c8fba4d0817620d7756f91c2438b8733ff614419da7dac9f206a00f6625"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00059_replica_0001.npz",
+      "sha256": "d4c7165ee8b6f86371a1fad6cbbab64b9c5a7904f34bd09ca441e5f17b91a517"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00060_replica_0000.npz",
+      "sha256": "1f27a14b2c5a2d230cdbd7cc32786521b582f8e5df355772bfd047dea3725e90"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00060_replica_0001.npz",
+      "sha256": "6ab54218fc1dd8cf445d29a788c35ae0da7d6546c50e0c88eec57c530659ad9c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00061_replica_0000.npz",
+      "sha256": "1ecbaf63358567715d8436a9cedd55c50b6007d81a11e4a6a49c05d7e5dfa06d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00061_replica_0001.npz",
+      "sha256": "8f5650044ec63d3d3cc9dc3b7b04127d509506913e0617693b47b5907128020d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00062_replica_0000.npz",
+      "sha256": "8784f320afa46dae8cbe1849f06d57d836869ef04a2300cfe0b3270ea95c8bb1"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00062_replica_0001.npz",
+      "sha256": "4545052f550a9e035b0f490dedbaec104538a13c8668e32c1740886aac01dbfc"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00063_replica_0000.npz",
+      "sha256": "1c4ff62960af9858d0aa37373dcceaba9a0828ef1081c464f100ec18c6c86462"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00063_replica_0001.npz",
+      "sha256": "d6dff0cecd192372190f51f7127cd88b53de881a4239eab8a8ed20b13465da1f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00064_replica_0000.npz",
+      "sha256": "f6669265cfe2ea0c722e15c900476aa29c709b8c4c6c3a4f14b62d455d8594cd"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00064_replica_0001.npz",
+      "sha256": "336db51957021b46f221d8e149dffd21ca12462b00d85969e8a4c0afca74591d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00065_replica_0000.npz",
+      "sha256": "4fe0a4620fe4f677486b493160fda37d64ff992e0fd1cd4be7f0bac2a447a9cd"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00065_replica_0001.npz",
+      "sha256": "448bb5117146400331d2bbef6435c350895654b48feb20e13eb49b3387aacb8c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00066_replica_0000.npz",
+      "sha256": "0445bd884cd8b470a7fb12c1f5bb1c8d9b9489bc23003a78ab3f0acf1016580c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00066_replica_0001.npz",
+      "sha256": "61777179c89f56e73982813a1d0ae73d7f00456aee69da22dcb31043b250ae05"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00067_replica_0000.npz",
+      "sha256": "641a253a5046ab61ec395f9ee7224de379fac9533c4e569832f0df3df7155fe2"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00067_replica_0001.npz",
+      "sha256": "7d0459bd12027c621df9d92204461699c9b950f7130e27320fcee251bbfeeec6"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00068_replica_0000.npz",
+      "sha256": "ba9bb5d7732a4097b4e812c9c1171a144ee4719a9b2404a19006d7951ae14a75"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00068_replica_0001.npz",
+      "sha256": "2edd163089eb62f9dd0b9090cd5bcfa3852de539c8900bcd410d9f1a09a256da"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00069_replica_0000.npz",
+      "sha256": "ff009be0f895355c09dd5666fd36df43c8e68af3fc3e812b6665f83c73edfd3e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00069_replica_0001.npz",
+      "sha256": "88bbc48b8bc196b7fd91fa5427a12cc92a23185f577e78296d9d71f60225185e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00070_replica_0000.npz",
+      "sha256": "c90dc3601d81f1aab3523e5d79d481bb445e5121ebecab8f2348ba354ee42786"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00070_replica_0001.npz",
+      "sha256": "db7b7de7e981bfc36175bb32ca4c46276a417448a135c9765cfd4ac8503ca6a7"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00071_replica_0000.npz",
+      "sha256": "45cb5a028fd3a579f77635a131856b42cbb0fb1802662aa1e9ea0b584544d46f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00071_replica_0001.npz",
+      "sha256": "ad9ff4eba70fb75fe499ac79f91dd2053933a1226c6a64bf2a3f11ac21656ecf"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00072_replica_0000.npz",
+      "sha256": "b4ead2370bb1a353e763a4d8419607ec6996946ae7a1a02733231ae43cb4e4c5"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00072_replica_0001.npz",
+      "sha256": "1b3eebe97b687841be8e1e6810c123965120df993e86a6928aa04e50e8f363c8"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00073_replica_0000.npz",
+      "sha256": "6b2f92d140dd44fecd5e6b01d691b4c431fd2151b107bc2ec50c1b6e3c3a4659"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00073_replica_0001.npz",
+      "sha256": "ef8c77d11f9870d05147b4e7431f8aa0c6d2de506d852ca48f4dc99dcb7ad99c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00074_replica_0000.npz",
+      "sha256": "c927bb7f8f211633916c0562fb24e3a83a3ea64fa505541e3d7ded764dd5611e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00074_replica_0001.npz",
+      "sha256": "ce35b3f8264eab4cbafb9c5a7f2a9aa27370d50d45bc76c7fdb1ea82a764e474"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00075_replica_0000.npz",
+      "sha256": "456f50cef20c1d2b0a958e469bbbe99c71f5a843c2ed278d04d883eb827dd4f4"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00075_replica_0001.npz",
+      "sha256": "f6237fd351c66c979be302bd6ffa1a3cb359fd2b8ffb401070c72a0abad805a5"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00076_replica_0000.npz",
+      "sha256": "ff8601cb90d27d47a8bc00525ca08a9af10f88d2ab99b63a01c4615ce1cd7a5e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00076_replica_0001.npz",
+      "sha256": "6ac427919902d47e95332024572fc6ddb7338ebff4dcfd3e33fb0a910b7d2c39"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00077_replica_0000.npz",
+      "sha256": "da2c884a5078b17d08548929add3e62ceccbb2171dc1b529c9ac96a0853f189c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00077_replica_0001.npz",
+      "sha256": "048510a97991f31cd5a45effb86038b3933e8ff389cc7a46c00431dc9047e883"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00078_replica_0000.npz",
+      "sha256": "43942cc03aa0b07031796a70e1311b3ada596148ae1be5b324d41662f7589025"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00078_replica_0001.npz",
+      "sha256": "e607281e615148de055abd58d13d03bbd443099a3a8cc13a625c4722fbec85de"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00079_replica_0000.npz",
+      "sha256": "8841f54d554eb1a450d40e5f9a4a63fe3590fe9b9cf6b4e7d3b6cc11000599db"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00079_replica_0001.npz",
+      "sha256": "fba103a4916e60d042294e18c6fedfd67a5bc3bb31e777640c3fa57dec29501f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00080_replica_0000.npz",
+      "sha256": "4e5eb010944eef03c01a1d7c80e80fd85af0dca2c58ef18df9afb6735dd61e75"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00080_replica_0001.npz",
+      "sha256": "b3890609b4d235031206a4f8d499b337bb70fd2486fb1ff3e587235104c0966d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00081_replica_0000.npz",
+      "sha256": "29228a68fd6c7629d65b4b5f618cdf68a485d61b06affb4b838c58e99e212f43"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00081_replica_0001.npz",
+      "sha256": "a29f4d8cd2fcd1a16ea81954be716deb82d7b41bc93ad30fd7dedd4bb4affc8b"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00082_replica_0000.npz",
+      "sha256": "7ee4c531c4e95f9011541cf50cdd52e2e9751c0022fb55395d6ff2ebc416c80a"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00082_replica_0001.npz",
+      "sha256": "fa484e84ae2105acc566e8d2184f83376a03bdd79de00ebbf669600bc6687ac8"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00083_replica_0000.npz",
+      "sha256": "00e3097ae08fad9b9e3efd55a4e3c4c9ef68888f5a40ba9e3f526b27ec0b19e5"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00083_replica_0001.npz",
+      "sha256": "445bfc29efbe1fb0a6fe8f328787ca2b35848973fab2857a4fa690d883a55041"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00084_replica_0000.npz",
+      "sha256": "3f993d21d61091583757bd8309087538846cf96ed97d6a1fd80bd38e210a3c74"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00084_replica_0001.npz",
+      "sha256": "6683be070e487c032b17d2a264df1f9a4a74914370c23d525bdc50b8544c6123"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00085_replica_0000.npz",
+      "sha256": "7108257bf42394fa7a5e2880fb31be006677e5e2b870224f2b6071bd1b28698d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00085_replica_0001.npz",
+      "sha256": "c6ed72075f256256c80b957ecbd292a7afa1805159acf5ceec44bad183330be1"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00086_replica_0000.npz",
+      "sha256": "ff7c7124bd17916b97a3409698d5ae820054aef65f40cad46455b0340a946944"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00086_replica_0001.npz",
+      "sha256": "fa2c2861ca44706283ed7872eff20c114259d50ac2380ebc33ef094c0d8be810"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00087_replica_0000.npz",
+      "sha256": "2be70d7599ebe04629bf5549a45386fea901a309dd4bdbbdd16f0e3d28e64f56"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00087_replica_0001.npz",
+      "sha256": "6607fe96e1459c43fc77bd36c0985188c56ca98112b869dc74efda044bf96164"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00088_replica_0000.npz",
+      "sha256": "be6ac4334760fbe061f8ab94add1bc2f047fe998b93394f10598e7831c6ef88d"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00088_replica_0001.npz",
+      "sha256": "9e2d7accdfbda5371e0a0437d1aaa8a28ca8a2713aef5106fcdadbe6966aa7b0"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00089_replica_0000.npz",
+      "sha256": "5b3fc01399ca2b173d6bddc62980a492b0b8d1d73e8b81be3cda1bcc7927133e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00089_replica_0001.npz",
+      "sha256": "086cccbc0ac5663d6865710fe75ebf05f7a89d59f83f832871ed4e7b7e6326c1"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00090_replica_0000.npz",
+      "sha256": "2c5170d33606c306398df60f3d6023cb7141735f15255d8cabb1e04a801d6784"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00090_replica_0001.npz",
+      "sha256": "7404fb722ef4aa670287556837ad26d86586a2c9bdfe675bbf77f5177b947f25"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00091_replica_0000.npz",
+      "sha256": "53e471ca28120a8d7987c917b2217c857fdf3e39771265db69bc3ff942f9be35"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00091_replica_0001.npz",
+      "sha256": "acdb12ffcc5d3531ca2e8cea514ac192eae06fbb37222df5ba5421207e7ce32c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00092_replica_0000.npz",
+      "sha256": "efd9dcace0956264fa0942affef132297ec668a29695cd81646ee960f1232867"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00092_replica_0001.npz",
+      "sha256": "fc128ad5a800e434c24b5a830bb9e4f2d99a61cd9150c84acfa74be08efc9300"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00093_replica_0000.npz",
+      "sha256": "d1dd9c8d78760d7dd5ee665301e0fefddaed1a84bfc354f6f667f5a9655b4b81"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00093_replica_0001.npz",
+      "sha256": "514ba3026ba301e1251b8d262e8060b87053060ff5a5b29d29eb6c96a878107a"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00094_replica_0000.npz",
+      "sha256": "9c8a3e64f549bd26d20ae13b53771e1e7ed3f5bfa6bec668c9106d5b0925dc1c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00094_replica_0001.npz",
+      "sha256": "e881f906fbdf27294f8ff1b4a855b7bdb695a5bd5524a6198b202697b89aca2f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00095_replica_0000.npz",
+      "sha256": "86c9516142ad778abefd39d6a41eb64b485b84c0db4ce592152bd5e340e4eff2"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00095_replica_0001.npz",
+      "sha256": "3366c329ef45e6c920a079e34e73902209be53badab87a7ff26b3dcba57efb41"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00096_replica_0000.npz",
+      "sha256": "871a6b6d0ecf5d1ca98596a1c8a3ff27157c141eb3d3ab37756748b77be35f73"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00096_replica_0001.npz",
+      "sha256": "489151d3a54b461e5db25052ecebd35c999408005c26bd49afc7a437a2c79491"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00097_replica_0000.npz",
+      "sha256": "b37f3c65dea07650d7aca17ca8abde6df9a1fa31e00114735d2f88c49a41e24e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00097_replica_0001.npz",
+      "sha256": "88afccd2ac2c79c87bc7690768df89e750f000d7c45857389a3c3f6548da39a3"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00098_replica_0000.npz",
+      "sha256": "14c15cd8bec131713c236ea08b8d22ed51dbcda9eb5c2b3a77781d4478d43cd7"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00098_replica_0001.npz",
+      "sha256": "d20e8876c6355266f941a0f73414fcaf766547589d5cfc71a85f45a5053048bc"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00099_replica_0000.npz",
+      "sha256": "f4a1224bad24479c18e27690730743b5b95be64f8b6ec14c18e09e09a8698af2"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00099_replica_0001.npz",
+      "sha256": "5206b303ede8f1176740c0957e8a18e6d85d7326d22ecb0ffa64e03831cf7ba6"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00100_replica_0000.npz",
+      "sha256": "7d489d5c8601fb294273cbf4c8b96a1f0e6c77d336093567cfde3e25acf46f99"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00100_replica_0001.npz",
+      "sha256": "0de2a402dbe2581f94f4e1873c1238ee2007964775211933e3daaaeef1a1d1ad"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00101_replica_0000.npz",
+      "sha256": "b34cc820405d7585b900aab69739aae5100f9faf7a857784d89faf666d803539"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00101_replica_0001.npz",
+      "sha256": "89320bc5c7277557afcf2c323ae72466b3b9690e67e96e00250f610e20070c7c"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00102_replica_0000.npz",
+      "sha256": "00658d6ab04839cb57de8fbeb62eebab6178dfa9cc10ee18d4ce0219bb3aa4ff"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00102_replica_0001.npz",
+      "sha256": "ccf2a9259b0e1afc410c691ad633a318483dbcd8c00301e43daefe6d2cd13574"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00103_replica_0000.npz",
+      "sha256": "9c3ecacbffeb1499a7e3642730728bd1a4fab548814bce6f29a9351fb883c0d0"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00103_replica_0001.npz",
+      "sha256": "07b16dfbc2d96635a60cdc1329f63495c2c5b17be56d54162c1e3c7e26284d7f"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00104_replica_0000.npz",
+      "sha256": "3f2e2690e1a16b3fe877cf4a90152e148ddbd27fe30ee3f83b609e82858375df"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00104_replica_0001.npz",
+      "sha256": "46461b12c2f9bdad055030bfa8bd1dc63c2024526b78928f91b26a86a374b39b"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00105_replica_0000.npz",
+      "sha256": "ffcfe23513d8d83501c2235448585f306f0decafdd163cd9d15c8ccd16620825"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00105_replica_0001.npz",
+      "sha256": "a047dc34ce8fb3ddcbb45360ffebc4aab60ba7bf79880dbbd143fec92f7bac74"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00106_replica_0000.npz",
+      "sha256": "8146a4cccc5351fa8fec11e726de82943c52f8b3918358d331a0bc80c1c77251"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00106_replica_0001.npz",
+      "sha256": "131417330ba11c61bb361b465a6012da32c358506fde7741e1502df79331d623"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00107_replica_0000.npz",
+      "sha256": "182c7e80569aae2f742ae0767a3d59d3589fc7fffb92565b42d6f61e6a2f7016"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00107_replica_0001.npz",
+      "sha256": "12566097c567480623997b74772b4017aad573492bcb236336eca0bfbcd08626"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00108_replica_0000.npz",
+      "sha256": "06506c209ff173d1dfd2dd181c768de5748e786d38e9bff59ce9d472552c2ca4"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00108_replica_0001.npz",
+      "sha256": "8b5e69b0f0f016d0fda5e60a7410d258ee5bbad74d1497b87bdcde60d3fda5e4"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00109_replica_0000.npz",
+      "sha256": "f41ae187aee48f3560b645fae702867cbc33ca9a4f35f377ad61966c3d63aa3e"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00109_replica_0001.npz",
+      "sha256": "5e0b2395f60dc28d1c0902183b3310823b91b21eb1dc691637ce2652e20c2054"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00110_replica_0000.npz",
+      "sha256": "f8048318e419bcb08e26f1edc7f006e6414a1703377c0f822f65f76a2b340f27"
+    },
+    {
+      "file": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/umbrella/checkpoints/window_00110_replica_0001.npz",
+      "sha256": "7b880a03123fbf37c6282a43dd2bfc1663d78dd50f823948c608a4a916849743"
+    }
+  ],
+  "intermediate_mbar_bootstrap": 0,
+  "final_ui_bootstrap": 100,
+  "physical_converged": false,
+  "summary": {
+    "task": "rate",
+    "status": "plateau_estimate",
+    "rate_cm3_s": 5.859957932594734e-19,
+    "rate_estimate_cm3_s": 5.859957932594734e-19,
+    "rate_standard_error_cm3_s": 1.3979432516733417e-18,
+    "rate_percentile_95_ci_cm3_s": [
+      4.195956755620963e-20,
+      5.4574958714952466e-18
+    ],
+    "conditional_rate_standard_error_cm3_s": 5.920988174597832e-22,
+    "rate_uncertainty": {
+      "available": true,
+      "pmf_block_status": "limited_blocks",
+      "reasons": [
+        "pmf_bootstrap_limited_blocks"
+      ],
+      "pmf_bootstrap_valid": 100,
+      "recrossing_bootstrap_valid": 40,
+      "conditional_quantity": "recrossing uncertainty with the QTST factor held fixed",
+      "combination": "independent draws from the PMF and constrained-parent block bootstrap distributions, with the selected dividing surface fixed",
+      "recrossing_scope": "independent_parent_chains",
+      "recrossing_support": {
+        "available": true,
+        "reasons": [],
+        "scope": "independent_parent_chains",
+        "condition": null,
+        "independent_parent_chains": 2,
+        "nonzero_flux_parent_configurations": 64,
+        "effective_parent_blocks": {
+          "0": 32.0,
+          "1": 32.0
+        },
+        "bootstrap_requested": 40,
+        "bootstrap_valid": 40,
+        "bootstrap_rejected": 0
+      },
+      "parent_block_lengths": {
+        "0": 1,
+        "1": 1
+      },
+      "pmf_bootstrap_requested": 100,
+      "pmf_bootstrap_attempted": 100,
+      "pmf_bootstrap_rejected": 0,
+      "independence_assumption": "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+    },
+    "kappa": 0.9974698763548513,
+    "kappa_standard_error": 0.0010078583174742198,
+    "plateau_detected": true,
+    "plateau_diagnostics": {
+      "passed": true,
+      "reasons": [],
+      "method": "half_tail_drift_and_simultaneous_centered_bootstrap_envelope",
+      "scope": "selected_finite_time_tail",
+      "tail_samples": 250,
+      "relative_tolerance": 0.1,
+      "absolute_tolerance": 0.09974698763548513,
+      "maximum_tail_deviation": 0.0,
+      "bootstrap_95_envelope_radius": 2.220446049250313e-16,
+      "maximum_tail_deviation_bound": 2.220446049250313e-16,
+      "absolute_drift_plus_two_standard_errors": 0.0,
+      "uncertainty_available": true
+    },
+    "plateau_start_au": 3104.737137471279,
+    "plateau_drift": 0.0,
+    "plateau_drift_standard_error": 0.0,
+    "child_time_fs": 100.00000000000001,
+    "parent_configurations": 64,
+    "child_pairs": 256,
+    "child_trajectories": 512,
+    "maximum_scaled_energy_drift": 5.2618262845238674e-05,
+    "maximum_endpoint_energy_error_hartree_per_bead": 8.048908744173744e-06,
+    "maximum_endpoint_energy_error_kbt": 0.008472147861121642,
+    "energy_diagnostic_child_pairs": 256,
+    "warnings": [
+      "Gaussian UI models each biased window by its mean and variance; inspect non-Gaussian window distributions or compare with MBAR.",
+      "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval.",
+      "Complete rate uncertainty has limited support: pmf_bootstrap_limited_blocks. Recrossing-only conditional uncertainty holds QTST fixed; supported-draw uncertainty is conditional on complete PMF support."
+    ],
+    "converged": false,
+    "convergence_note": "A detected time plateau is not bead, timestep, Rinf or statistical convergence.",
+    "files": {
+      "pmf": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/rate_pmf.csv",
+      "recrossing": "/workspace/scratch/a5e4820daedd/literature-audit-h3-classical/run/recrossing.csv"
+    }
+  }
+}

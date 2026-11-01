@@ -1,0 +1,331 @@
+running bdist_wheel
+running build
+running build_py
+copying src/pyrpmd/adiabatic.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/opes.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/workflows/opes.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+running egg_info
+writing src/PyRPMD.egg-info/PKG-INFO
+writing dependency_links to src/PyRPMD.egg-info/dependency_links.txt
+writing entry points to src/PyRPMD.egg-info/entry_points.txt
+writing requirements to src/PyRPMD.egg-info/requires.txt
+writing top-level names to src/PyRPMD.egg-info/top_level.txt
+reading manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'docs/validation/tier1-2026-10-31/*.npz'
+no previously-included directories found matching 'docs/_build'
+no previously-included directories found matching 'benchmarks/brhcl/build'
+warning: no files found matching '*.md' under directory 'benchmarks/tier2_literature'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+warning: no previously-included files matching '*.o' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'THIRD_PARTY_NOTICES.md'
+adding license file 'native/thermal-NOTICE.md'
+writing manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+running build_ext
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/block_propagation.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pimd_methods.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pcet.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/native_ensemble.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/path_integral.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/system.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/propagation.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/spectroscopy_input.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/nonadiabatic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/dynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/kc_rpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/studies.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/multitime.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/cli.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/shared_metadynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/replica_exchange.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/instanton.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/reservoir.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/potentials.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/kinetics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/sampling.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/units.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/barostat.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/initial_states.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/isomorphic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/thermostats.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/trajectory.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/reactions.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pcet_input.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/templates
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/templates/quickstart.inp -> build/bdist.linux-x86_64/wheel/./pyrpmd/templates
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/surface_hopping.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/adiabatic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/rate.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/adaptive_umbrella.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/pcet.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/spectroscopy.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/path_integral.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/native_pimd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/prepare.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/network.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/site_rate.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/shared_metadynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/replica_exchange.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/fes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/state_selected.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/surface_source.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/surface.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/opes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/extend.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/batched_recrossing.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/nonadiabatic_rate.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/plumed.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/materials.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/drpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/metadynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/sampling.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electronic_friction.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/__main__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/parallel
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/parallel/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/parallel
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/parallel/execution.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/parallel
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/cmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/cv_periodic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/_matrix_path.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/bias.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/mash.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/checkpoint.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/biased_kinetics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/opes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/scaffold.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/properties.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/geometry.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/advanced_cv.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/input.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/plumed.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/transition_interface.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/batched.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/constants.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/base.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/contraction.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/native.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/cabi.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/cache.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/socket.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/lifecycle.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/adapters.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/optional.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/diabatic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/python.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/builtin.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/thermal_nrpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/jaxpip_data.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/jaxpip_fit.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/__main__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/jaxpip_export.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+creating build/bdist.linux-x86_64/wheel/pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native/bridge.cpp -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native/worker.f90 -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native/pes_api_v1.h -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/reference.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/build.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/formats.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/workflow.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/runner.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/spectroscopy.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_observables.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/recrossing.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/scattering.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/fes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/diagnostics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_compare.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/rate_postprocess.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_sampling.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/diffusion.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/projection.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/surface.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_render.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/reporting.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/metadynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/rate_io.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/mv_rpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/io.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/cv.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/retis.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/quantum_statistics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+running install_data
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+copying native/include/pyrpmd/pes_api_v1.h -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+copying native/include/pyrpmd/pes_api_v2.h -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+copying native/include/pyrpmd/thermal_pes.h -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/share/pyrpmd/examples
+copying native/examples/harmonic_pes.c -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/share/pyrpmd/examples
+copying native/examples/periodic_cosine_pes.c -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/share/pyrpmd/examples
+running install_egg_info
+Copying src/PyRPMD.egg-info to build/bdist.linux-x86_64/wheel/./PyRPMD-0.2.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.dist-info/WHEEL
+creating '/workspace/scratch/82b1e823c721/tier2-literature-package/.tmp-wus3jfi4/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'pyrpmd/__init__.py'
+adding 'pyrpmd/__main__.py'
+adding 'pyrpmd/_matrix_path.py'
+adding 'pyrpmd/_native.cpython-312-x86_64-linux-gnu.so'
+adding 'pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so'
+adding 'pyrpmd/adiabatic.py'
+adding 'pyrpmd/advanced_cv.py'
+adding 'pyrpmd/barostat.py'
+adding 'pyrpmd/batched.py'
+adding 'pyrpmd/bias.py'
+adding 'pyrpmd/biased_kinetics.py'
+adding 'pyrpmd/block_propagation.py'
+adding 'pyrpmd/checkpoint.py'
+adding 'pyrpmd/cli.py'
+adding 'pyrpmd/cmd.py'
+adding 'pyrpmd/constants.py'
+adding 'pyrpmd/cv.py'
+adding 'pyrpmd/cv_periodic.py'
+adding 'pyrpmd/dynamics.py'
+adding 'pyrpmd/electronic_friction.py'
+adding 'pyrpmd/geometry.py'
+adding 'pyrpmd/initial_states.py'
+adding 'pyrpmd/input.py'
+adding 'pyrpmd/instanton.py'
+adding 'pyrpmd/io.py'
+adding 'pyrpmd/isomorphic.py'
+adding 'pyrpmd/kc_rpmd.py'
+adding 'pyrpmd/mash.py'
+adding 'pyrpmd/multitime.py'
+adding 'pyrpmd/mv_rpmd.py'
+adding 'pyrpmd/native_ensemble.py'
+adding 'pyrpmd/nonadiabatic.py'
+adding 'pyrpmd/opes.py'
+adding 'pyrpmd/path_integral.py'
+adding 'pyrpmd/pcet.py'
+adding 'pyrpmd/pcet_input.py'
+adding 'pyrpmd/pimd_methods.py'
+adding 'pyrpmd/plumed.py'
+adding 'pyrpmd/propagation.py'
+adding 'pyrpmd/properties.py'
+adding 'pyrpmd/quantum_statistics.py'
+adding 'pyrpmd/reactions.py'
+adding 'pyrpmd/replica_exchange.py'
+adding 'pyrpmd/retis.py'
+adding 'pyrpmd/runner.py'
+adding 'pyrpmd/scaffold.py'
+adding 'pyrpmd/shared_metadynamics.py'
+adding 'pyrpmd/spectroscopy_input.py'
+adding 'pyrpmd/studies.py'
+adding 'pyrpmd/surface_hopping.py'
+adding 'pyrpmd/system.py'
+adding 'pyrpmd/thermal_nrpmd.py'
+adding 'pyrpmd/thermostats.py'
+adding 'pyrpmd/trajectory.py'
+adding 'pyrpmd/transition_interface.py'
+adding 'pyrpmd/units.py'
+adding 'pyrpmd/analysis/__init__.py'
+adding 'pyrpmd/analysis/diagnostics.py'
+adding 'pyrpmd/analysis/diffusion.py'
+adding 'pyrpmd/analysis/fes.py'
+adding 'pyrpmd/analysis/metadynamics.py'
+adding 'pyrpmd/analysis/projection.py'
+adding 'pyrpmd/analysis/rate_io.py'
+adding 'pyrpmd/analysis/rate_postprocess.py'
+adding 'pyrpmd/analysis/recrossing.py'
+adding 'pyrpmd/analysis/report_compare.py'
+adding 'pyrpmd/analysis/report_observables.py'
+adding 'pyrpmd/analysis/report_render.py'
+adding 'pyrpmd/analysis/report_sampling.py'
+adding 'pyrpmd/analysis/reporting.py'
+adding 'pyrpmd/analysis/scattering.py'
+adding 'pyrpmd/analysis/spectroscopy.py'
+adding 'pyrpmd/analysis/surface.py'
+adding 'pyrpmd/electrochemistry/__init__.py'
+adding 'pyrpmd/electrochemistry/kinetics.py'
+adding 'pyrpmd/electrochemistry/potentials.py'
+adding 'pyrpmd/electrochemistry/reservoir.py'
+adding 'pyrpmd/electrochemistry/sampling.py'
+adding 'pyrpmd/parallel/__init__.py'
+adding 'pyrpmd/parallel/execution.py'
+adding 'pyrpmd/pesgen/__init__.py'
+adding 'pyrpmd/pesgen/__main__.py'
+adding 'pyrpmd/pesgen/build.py'
+adding 'pyrpmd/pesgen/formats.py'
+adding 'pyrpmd/pesgen/jaxpip_data.py'
+adding 'pyrpmd/pesgen/jaxpip_export.py'
+adding 'pyrpmd/pesgen/jaxpip_fit.py'
+adding 'pyrpmd/pesgen/reference.py'
+adding 'pyrpmd/pesgen/workflow.py'
+adding 'pyrpmd/pesgen/_native/bridge.cpp'
+adding 'pyrpmd/pesgen/_native/pes_api_v1.h'
+adding 'pyrpmd/pesgen/_native/worker.f90'
+adding 'pyrpmd/potentials/__init__.py'
+adding 'pyrpmd/potentials/adapters.py'
+adding 'pyrpmd/potentials/base.py'
+adding 'pyrpmd/potentials/builtin.py'
+adding 'pyrpmd/potentials/cabi.py'
+adding 'pyrpmd/potentials/cache.py'
+adding 'pyrpmd/potentials/contraction.py'
+adding 'pyrpmd/potentials/diabatic.py'
+adding 'pyrpmd/potentials/lifecycle.py'
+adding 'pyrpmd/potentials/native.py'
+adding 'pyrpmd/potentials/optional.py'
+adding 'pyrpmd/potentials/python.py'
+adding 'pyrpmd/potentials/socket.py'
+adding 'pyrpmd/templates/quickstart.inp'
+adding 'pyrpmd/workflows/__init__.py'
+adding 'pyrpmd/workflows/adaptive_umbrella.py'
+adding 'pyrpmd/workflows/batched_recrossing.py'
+adding 'pyrpmd/workflows/drpmd.py'
+adding 'pyrpmd/workflows/extend.py'
+adding 'pyrpmd/workflows/fes.py'
+adding 'pyrpmd/workflows/materials.py'
+adding 'pyrpmd/workflows/metadynamics.py'
+adding 'pyrpmd/workflows/native_pimd.py'
+adding 'pyrpmd/workflows/network.py'
+adding 'pyrpmd/workflows/nonadiabatic_rate.py'
+adding 'pyrpmd/workflows/opes.py'
+adding 'pyrpmd/workflows/path_integral.py'
+adding 'pyrpmd/workflows/pcet.py'
+adding 'pyrpmd/workflows/plumed.py'
+adding 'pyrpmd/workflows/prepare.py'
+adding 'pyrpmd/workflows/rate.py'
+adding 'pyrpmd/workflows/replica_exchange.py'
+adding 'pyrpmd/workflows/sampling.py'
+adding 'pyrpmd/workflows/shared_metadynamics.py'
+adding 'pyrpmd/workflows/site_rate.py'
+adding 'pyrpmd/workflows/spectroscopy.py'
+adding 'pyrpmd/workflows/state_selected.py'
+adding 'pyrpmd/workflows/surface.py'
+adding 'pyrpmd/workflows/surface_source.py'
+adding 'pyrpmd-0.2.0.data/data/include/pyrpmd/pes_api_v1.h'
+adding 'pyrpmd-0.2.0.data/data/include/pyrpmd/pes_api_v2.h'
+adding 'pyrpmd-0.2.0.data/data/include/pyrpmd/thermal_pes.h'
+adding 'pyrpmd-0.2.0.data/data/share/pyrpmd/examples/harmonic_pes.c'
+adding 'pyrpmd-0.2.0.data/data/share/pyrpmd/examples/periodic_cosine_pes.c'
+adding 'pyrpmd-0.2.0.dist-info/licenses/LICENSE'
+adding 'pyrpmd-0.2.0.dist-info/licenses/THIRD_PARTY_NOTICES.md'
+adding 'pyrpmd-0.2.0.dist-info/licenses/native/thermal-NOTICE.md'
+adding 'pyrpmd-0.2.0.dist-info/METADATA'
+adding 'pyrpmd-0.2.0.dist-info/WHEEL'
+adding 'pyrpmd-0.2.0.dist-info/entry_points.txt'
+adding 'pyrpmd-0.2.0.dist-info/top_level.txt'
+adding 'pyrpmd-0.2.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl

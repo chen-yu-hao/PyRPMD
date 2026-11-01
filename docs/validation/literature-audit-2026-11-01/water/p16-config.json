@@ -1,0 +1,21 @@
+{
+  "beads": 16,
+  "cells_per_axis": 6,
+  "centroid_friction_time_fs": 100.0,
+  "checkpoint_steps": 160,
+  "cutoff_angstrom": 9.0,
+  "density_g_cm3": 0.997,
+  "dispersion_correction": false,
+  "dt_fs": 0.125,
+  "equilibration_steps": 800,
+  "ewald_tolerance": 1e-05,
+  "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/initial-classical-5ps.npz",
+  "isotope": "H2O",
+  "platform": "CPU",
+  "record_stride": 8,
+  "seed": 541,
+  "segment_steps": 160,
+  "segments": 1,
+  "temperature_K": 298.0,
+  "threads": 1
+}

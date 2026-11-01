@@ -1,0 +1,21 @@
+{
+  "scope": "small-memory numerical equivalence proof of recovery on copied completed smoke data; final UI bootstrap changes10to100",
+  "old_run": "/workspace/scratch/a5e4820daedd/literature-audit-h3-smoke",
+  "recovered_copy": "/workspace/scratch/a5e4820daedd/literature-audit-h3-recovery-smoke-proof",
+  "matching_quantities": {
+    "rate_estimate_cm3_s": {
+      "original": 6.252545723203395e-52,
+      "recovered": 6.252545723203395e-52,
+      "absolute_difference": 0.0
+    },
+    "kappa": {
+      "original": 0.9728674485010342,
+      "recovered": 0.9728674485010342,
+      "absolute_difference": 0.0
+    }
+  },
+  "qtst_absolute_difference": 0.0,
+  "all_222_umbrella_checkpoints_byte_identical": true,
+  "recovery_script_sha256": "f207f20fe8b8cb58c97a34fbe6aa4a1111b35cea7c99bf95519983c2e6d9586c",
+  "new_umbrella_steps": 0
+}

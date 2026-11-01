@@ -13,10 +13,14 @@ frequency and wavenumber conversions do not silently rescale that density.
 
 from __future__ import annotations
 
+from functools import partial
+
 import numpy as np
 from scipy.constants import c
 
 from ..constants import ATOMIC_TIME_S
+from ..validation import checked_integer as _integer
+from ..validation import finite_positive
 
 
 def _real_array(value, name):
@@ -29,18 +33,12 @@ def _real_array(value, name):
     return result
 
 
-def _integer(value, name, minimum):
-    if (isinstance(value, (bool, np.bool_))
-            or not isinstance(value, (int, np.integer)) or value < minimum):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
-
-
-def _positive(value, name):
-    if (isinstance(value, (bool, np.bool_)) or not np.isscalar(value)
-            or not np.isreal(value) or not np.isfinite(value) or value <= 0):
-        raise ValueError(f"{name} must be a finite positive real number")
-    return float(value)
+_positive = partial(
+    finite_positive,
+    coerce=False,
+    shape="scalar",
+    message="{name} must be a finite positive real number",
+)
 
 
 def _series(value, name):
@@ -309,3 +307,195 @@ def relative_ir_spectrum(
     result["beta_au"] = inverse_temperature
     result["estimator"] = "beta*omega^2 times RPMD/TRPMD Kubo dipole spectrum"
     return result
+
+
+def bead_averaged_polarizabilities(polarizabilities):
+    """Average a real symmetric total polarizability surface over beads.
+
+    Input: [time,P,3,3] or [replica,time,P,3,3], in atomic polarizability
+    units. Lab-frame axes, including the normal to an interface, are preserved.
+    """
+    alpha = _real_array(polarizabilities, "polarizabilities")
+    if alpha.ndim not in (4, 5) or alpha.shape[-2:] != (3, 3) or min(alpha.shape) < 1:
+        raise ValueError("polarizabilities need [time,P,3,3] or [replica,time,P,3,3]")
+    if not np.allclose(alpha, alpha.swapaxes(-1, -2), rtol=1e-8, atol=1e-10):
+        raise ValueError("nonresonant polarizability tensors must be symmetric")
+    return alpha.mean(axis=-3)
+
+
+def relative_raman_spectrum(
+    polarizabilities, sample_interval, *, beta=None,
+    laser_wavenumber_cm1=None, normalize=True, **options,
+):
+    """Isotropic/anisotropic nonresonant Raman spectra from a Kubo estimator.
+
+    Let a=Tr(alpha)/3 and b=sqrt(3/2)*(alpha-a*I). The scalar a spectrum and
+    the Frobenius b spectrum give the rotational invariants I_iso and I_aniso.
+    VV=45*I_iso+4*I_aniso and VH=3*I_aniso; the unpolarized sum is 45*I_iso
+    +7*I_aniso. Tensor components are correlated and never counted as replicas.
+
+    With ``beta=None``, outputs are reduced Kubo band shapes. Supplying beta
+    converts the Kubo approximation to the positive-frequency Stokes spectrum
+    via beta*omega/(1-exp(-beta*omega)); this is a detailed-balance conversion,
+    not another correction to a quantum Kubo correlation. An optional positive
+    laser wavenumber also supplies (omega_laser-omega)**4 and removes bins at or
+    above the laser frequency. Electromagnetic, volume and instrument factors
+    are absent, so these remain relative intensities.
+
+    Peak normalization uses one common unpolarized peak. Replica error bars
+    condition on that scale, as in ``relative_ir_spectrum``.
+    """
+    if not isinstance(normalize, (bool, np.bool_)):
+        raise ValueError("normalize must be boolean")
+    alpha = bead_averaged_polarizabilities(polarizabilities)
+    if alpha.ndim == 3:
+        alpha = alpha[None, ...]
+    isotropic = np.trace(alpha, axis1=-2, axis2=-1) / 3
+    anisotropic = np.sqrt(1.5) * (alpha - isotropic[..., None, None] * np.eye(3))
+    iso = power_spectrum(isotropic[..., None], sample_interval, **options)
+    aniso = power_spectrum(anisotropic.reshape(*alpha.shape[:2], 9), sample_interval, **options)
+    omega = iso["angular_frequency_au"]
+    factor = np.ones_like(omega)
+    if beta is not None:
+        inverse_temperature = _positive(beta, "beta")
+        with np.errstate(over="ignore", invalid="ignore"):
+            x = inverse_temperature * omega
+        if not np.isfinite(x).all():
+            raise ValueError("Raman detailed-balance factor overflows")
+        positive = x > 0
+        factor[positive] = x[positive] / -np.expm1(-x[positive])
+    if laser_wavenumber_cm1 is not None:
+        if beta is None:
+            raise ValueError("a laser-frequency Stokes spectrum requires beta")
+        laser = _positive(laser_wavenumber_cm1, "laser_wavenumber_cm1")
+        laser_omega = laser * c * 100 * ATOMIC_TIME_S * 2 * np.pi
+        factor *= np.maximum(laser_omega - omega, 0.0) ** 4
+    per_iso = iso["per_replica"] * factor
+    per_aniso = aniso["per_replica"] * factor
+    per_vv = 45 * per_iso + 4 * per_aniso
+    per_vh = 3 * per_aniso
+    per_total = per_vv + per_vh
+    if not np.isfinite(per_total).all():
+        raise ValueError("Raman intensity overflows; check property units and frequency range")
+    raw = per_total.mean(axis=0)
+    scale = float(raw.max()) if normalize else 1.0
+    if scale == 0:
+        scale = 1.0
+    vv, vh = per_vv.mean(axis=0), per_vh.mean(axis=0)
+    ratio = np.full_like(vv, np.nan)
+    np.divide(vh, vv, out=ratio, where=vv > 0)
+    result = {k: v for k, v in iso.items() if k not in ("power", "per_replica", "standard_error")}
+    result.update({
+        "relative_raman": raw / scale,
+        "unnormalized_relative_raman": raw,
+        "per_replica": per_total / scale,
+        "standard_error": None if len(per_total) < 2 else _replica_error(per_total) / scale,
+        "isotropic": per_iso.mean(axis=0) / scale,
+        "anisotropic": per_aniso.mean(axis=0) / scale,
+        "vv": vv / scale, "vh": vh / scale,
+        "depolarization_ratio": ratio,
+        "peak_normalized": bool(normalize), "normalization_scale": scale,
+        "absolute_intensity": False, "beta_au": beta,
+        "laser_wavenumber_cm1": laser_wavenumber_cm1,
+        "estimator": "rotationally averaged Kubo polarizability spectrum",
+        "representation": "reduced_kubo" if beta is None else "stokes",
+        "invariant_convention": "a=Tr(alpha)/3; gamma^2=(3/2)Tr[(alpha-a*I)^2]",
+    })
+    return result
+
+
+def _polarization_component(component):
+    if isinstance(component, str):
+        if len(component) != 3 or any(letter not in "xyz" for letter in component):
+            raise ValueError("component must contain three axes, for example xxz")
+        return tuple("xyz".index(letter) for letter in component)
+    raw = np.asarray(component)
+    if raw.shape != (3,) or raw.dtype.kind not in "iu" or np.any((raw < 0) | (raw > 2)):
+        raise ValueError("component must be xxz-style text or three axis indices")
+    return tuple(int(i) for i in raw)
+
+
+def relative_sfg_spectrum(
+    dipoles, polarizabilities, sample_interval, *, beta, component="xxz",
+    max_lag=None, demean=True, window="cosine", nfft=None, normalize=False,
+):
+    """Causal complex nonresonant SFG response with its signed imaginary part.
+
+    For component ijk, C(t)=<delta mu_k(0) delta alpha_ij(t)> and
+    R(t)=-beta*dC/dt. We integrate R(t)*exp(+i*omega*t) on t>=0 with the
+    trapezoidal rule. Thus reversing the dipole/interface orientation reverses
+    chi, including Im(chi), while |chi|**2 is unchanged. Squaring an ordinary
+    dipole-polarizability cross-periodogram would lose this causal phase and is
+    deliberately not used.
+
+    Inputs have the same bead-property shapes as the IR/Raman routines. The
+    lab axes and chosen interface must be supplied by the caller. This gives
+    a Kubo/classical approximate resonant response; Fresnel factors, area or
+    volume normalization, incident beams and nonresonant electronic background
+    are not included. The default cosine lag taper equals 1 at t=0 and 0 at
+    max_lag. A symmetric Hann time-series window is inappropriate here.
+
+    Derivatives use finite differences of the available-origin correlation;
+    convergence with sampling cadence, record length and max_lag is required.
+    """
+    dt = _positive(sample_interval, "sample_interval")
+    inverse_temperature = _positive(beta, "beta")
+    if not isinstance(normalize, (bool, np.bool_)):
+        raise ValueError("normalize must be boolean")
+    mu = bead_averaged_dipoles(dipoles)
+    alpha = bead_averaged_polarizabilities(polarizabilities)
+    if mu.shape[:-1] != alpha.shape[:-2]:
+        raise ValueError("dipoles and polarizabilities must have equal replica/time axes")
+    if mu.ndim == 2:
+        mu, alpha = mu[None, ...], alpha[None, ...]
+    i, j, k = _polarization_component(component)
+    corr = time_correlation(mu[..., k, None], dt, other=alpha[..., i, j, None],
+                            max_lag=max_lag, demean=demean)
+    count = len(corr["lag_time_au"])
+    if count < 3:
+        raise ValueError("SFG needs at least three lag samples (max_lag >= 2)")
+    if window == "cosine":
+        taper = 0.5 * (1 + np.cos(np.pi * np.arange(count) / (count - 1)))
+    elif window in ("boxcar", None):
+        taper = np.ones(count)
+    else:
+        raise ValueError("SFG lag window must be cosine, boxcar or None")
+    size = (1 << (2 * count - 2).bit_length()
+            if nfft is None else _integer(nfft, "nfft", count))
+    response = -inverse_temperature * np.gradient(corr["per_replica"], dt, axis=1, edge_order=2)
+    weighted = response * taper
+    # Finite interval trapezoidal weights; zeros beyond max_lag do not add data.
+    weighted[:, [0, -1]] *= 0.5
+    susceptibility = dt * np.fft.rfft(weighted, n=size, axis=1).conj()
+    if not np.isfinite(susceptibility).all():
+        raise ValueError("SFG response overflows; check property units and beta")
+    frequency = np.fft.rfftfreq(size, d=dt)
+    frequency_hz = frequency / ATOMIC_TIME_S
+    if not np.isfinite(frequency_hz).all():
+        raise ValueError("SFG frequency range overflows; check sample_interval")
+    mean = susceptibility.mean(axis=0)
+    scale = float(np.abs(mean).max()) if normalize else 1.0
+    if scale == 0:
+        scale = 1.0
+    susceptibility /= scale
+    mean /= scale
+    # Coherent response is averaged before squaring. Replica |chi|^2 average
+    # would spuriously keep inversion-paired contributions that must cancel.
+    return {
+        "frequency_au": frequency, "angular_frequency_au": 2 * np.pi * frequency,
+        "frequency_hz": frequency_hz, "wavenumber_cm1": frequency_hz / (c * 100),
+        "susceptibility": mean, "real": mean.real, "imaginary": mean.imag,
+        "relative_sfg_intensity": np.abs(mean) ** 2,
+        "per_replica_susceptibility": susceptibility,
+        "real_standard_error": _replica_error(susceptibility.real),
+        "imaginary_standard_error": _replica_error(susceptibility.imag),
+        "lag_time_au": corr["lag_time_au"], "correlation": corr["correlation"],
+        "response": response.mean(axis=0), "sample_interval_au": dt,
+        "component": "".join("xyz"[axis] for axis in (i, j, k)),
+        "beta_au": inverse_temperature, "replicas": len(mu),
+        "peak_normalized": bool(normalize), "normalization_scale": scale,
+        "window": "boxcar" if window is None else window,
+        "absolute_intensity": False,
+        "estimator": "causal -beta*d/dt Kubo dipole-polarizability cross correlation",
+        "fourier_convention": "integral_0^tmax R(t)*exp(+i*omega*t) dt",
+    }

@@ -75,15 +75,19 @@ class RPSHDynamics:
     same vector parallel to the centroid derivative coupling, leaving internal
     momenta unchanged. Frustrated hops either keep or reverse that component.
 
-    The propagation is an experimental real-symmetric, nonperiodic Python API;
-    it adds no decoherence or detailed-balance correction and does not prepare a
-    thermal electronic ensemble. Nuclear and electronic timesteps require
+    The propagation is an experimental real-symmetric, nonperiodic Python API.
+    Optional ``decoherence='edc'`` applies the Granucci--Persico energy-based
+    correction after propagation and hopping, using centroid energy gaps and
+    centroid kinetic energy. The default ``'none'`` retains coherent amplitudes.
+    This does not add a detailed-balance correction or prepare a thermal
+    electronic ensemble. Nuclear and electronic timesteps require
     convergence. The outgoing fewest-switches probabilities are never silently
     renormalized when their sum exceeds one: such a step fails transactionally.
     """
     def __init__(self, potential, masses, beta, nbeads, dt, nstates, *, seed=0,
                  native=True, threads=1, integrator="cayley-bcb", electronic_substeps=8,
-                 rescaling="centroid", frustrated_hops="keep", gap_tolerance=1e-10):
+                 rescaling="centroid", frustrated_hops="keep", gap_tolerance=1e-10,
+                 decoherence="none", decoherence_constant=0.1):
         self.potential = potential
         self.nstates = _positive_integer(nstates, "nstates")
         self.integrator = CayleyIntegrator(masses, beta, nbeads, dt, threads=threads,
@@ -102,15 +106,29 @@ class RPSHDynamics:
         if isinstance(gap_tolerance, (bool, np.bool_)) or not np.isfinite(gap_tolerance) or gap_tolerance <= 0:
             raise ValueError("gap_tolerance must be positive and finite")
         self.gap_tolerance = float(gap_tolerance)
+        if not isinstance(decoherence, str) or decoherence not in ("none", "edc"):
+            raise ValueError("decoherence must be none or edc")
+        self.decoherence = decoherence
+        self.decoherence_constant = None
+        if decoherence == "edc":
+            constant = np.asarray(decoherence_constant)
+            if (constant.ndim != 0 or constant.dtype.kind not in "fiu"
+                    or not np.isfinite(constant) or constant <= 0):
+                raise ValueError("decoherence_constant must be positive and finite in hartree")
+            self.decoherence_constant = float(constant)
+            if not np.isfinite(self.decoherence_constant) or self.decoherence_constant <= 0.:
+                raise ValueError("decoherence_constant must be representable as a positive finite float")
         self.rng = seed if isinstance(seed, np.random.Generator) else np.random.default_rng(seed)
         self.last_hop = None
         self.last_probabilities = tuple(0. for _ in range(self.nstates))
         self._parameters = (self.dt, self.beta, self.nbeads, self.nstates, self.integrator_name,
-                            self.electronic_substeps, self.rescaling, self.frustrated_hops, self.gap_tolerance)
+                            self.electronic_substeps, self.rescaling, self.frustrated_hops, self.gap_tolerance,
+                            self.decoherence, self.decoherence_constant)
 
     def _check_parameters(self):
         current = (self.dt, self.beta, self.nbeads, self.nstates, self.integrator_name,
-                   self.electronic_substeps, self.rescaling, self.frustrated_hops, self.gap_tolerance)
+                   self.electronic_substeps, self.rescaling, self.frustrated_hops, self.gap_tolerance,
+                   self.decoherence, self.decoherence_constant)
         if (current != self._parameters or self.dt != self.integrator.dt or self.beta != self.integrator.beta
                 or self.nbeads != self.integrator.nbeads or self.integrator_name != self.integrator.scheme):
             raise ValueError("RPSHDynamics parameters are immutable")
@@ -259,6 +277,51 @@ class RPSHDynamics:
         self.last_hop = result
         return result
 
+    def _apply_decoherence(self, state):
+        """Apply centroid EDC to the trial amplitudes after the hop decision.
+
+        Granucci and Persico, J. Chem. Phys. 126, 134114 (2007), Eq. (17),
+        damps amplitudes (not populations) on inactive surfaces. Applying that
+        prescription to centroid gaps and kinetic energy is an explicit RPSH-CA
+        choice. A stationary centroid gives infinite decoherence times and no
+        damping, even when the internal ring modes carry kinetic energy.
+        """
+        if self.decoherence == "none":
+            return
+        pc = state.p.mean(axis=0)
+        kinetic = float(np.sum(pc**2/(2*self.masses[:, None])))
+        if not np.isfinite(kinetic):
+            raise ValueError("centroid kinetic energy must be finite for EDC")
+        if kinetic == 0.:
+            return
+        energies, vectors, _ = self._adiabatic(state.q.mean(axis=0, keepdims=True))
+        c = vectors[0].T@state.coefficients
+        active = state.active_surface
+        inactive = np.arange(self.nstates) != active
+        # This form of 1/tau remains finite as kinetic energy tends to zero.
+        # Avoid an overflowing sum kinetic + C for large finite input values.
+        with np.errstate(over="ignore"):
+            factor = 1./(1.+self.decoherence_constant/kinetic)
+        if factor == 0.:
+            return
+        with np.errstate(over="ignore"):
+            damping = np.exp(-self.dt*(np.abs(energies[0]-energies[0, active])*factor))
+        damped = c.copy()
+        damped[inactive] *= damping[inactive]
+        if np.array_equal(damped, c):
+            return
+        active_magnitude = abs(c[active])
+        if active_magnitude == 0.:
+            raise ValueError("EDC cannot restore a zero active-state amplitude without a phase")
+        inactive_population = float(np.vdot(damped[inactive], damped[inactive]).real)
+        active_population = 1.-inactive_population
+        if active_population < -1e-10:
+            raise ValueError("invalid electronic norm in EDC")
+        # Using the phase avoids overflowing a complex division when an
+        # otherwise valid active amplitude is subnormal after a hop.
+        damped[active] = np.exp(1j*np.angle(c[active]))*np.sqrt(max(active_population, 0.))
+        state.coefficients[:] = vectors[0]@damped
+
     def step(self, state):
         self._check(state)
         trial = state.copy()
@@ -276,6 +339,7 @@ class RPSHDynamics:
                 target = int(np.searchsorted(np.cumsum(probabilities), self.rng.random(), side="right"))
                 if target < self.nstates:
                     hop = self._hop(trial, target, energies)
+            self._apply_decoherence(trial)
             trial.step = int(trial.step) + 1
             trial.time += self.dt
             self._check(trial)

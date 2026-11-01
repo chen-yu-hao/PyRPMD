@@ -1,0 +1,46 @@
+{
+  "status": "passed",
+  "build_backend": "setuptools.build_meta",
+  "build_frontend_note": "build is not installed; used the pyproject PEP 517 backend directly without isolation",
+  "commands": [
+    "PYTHONPATH=/workspace/scratch/82b1e823c721/test-deps:src python - [setuptools.build_meta.build_sdist(output), build_wheel(output); cwd=PyRPMD]",
+    "PYTHONPATH=/workspace/scratch/82b1e823c721/test-deps python - [setuptools.build_meta.build_wheel(output); cwd=extracted-sdist]",
+    "PYTHONPATH=/workspace/scratch/82b1e823c721/test-deps python -m pip install --no-index --no-deps --no-compile --target /workspace/scratch/82b1e823c721/packaging-validation/isolated-install /workspace/scratch/82b1e823c721/packaging-validation/sdist-built-wheel/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+    "PYTHONPATH=/workspace/scratch/82b1e823c721/packaging-validation/isolated-install:/workspace/scratch/82b1e823c721/test-deps python /workspace/scratch/82b1e823c721/packaging-validation/smoke_wheel.py"
+  ],
+  "runtime_modules_in_wheel": 125,
+  "new_scientific_files_in_sdist": 50,
+  "public_tier2_exports_checked": 47,
+  "native_from_sdist": {
+    "available": true,
+    "openmp": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "outside_checkout_smoke_passed": true,
+  "optional_torch_plumed_remain_lazy": true,
+  "console_entrypoint_and_module_cli_info": "passed",
+  "packaged_spectroscopy_numerical_preflight": "passed",
+  "packaging_changes_needed": false,
+  "published": false,
+  "artifacts": [
+    {
+      "path": "/workspace/scratch/82b1e823c721/packaging-validation/dist/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+      "bytes": 1964181,
+      "sha256": "34ad75b6b9527dde00eb4e8dffbe2453cec5cfd92b847ae927aca5a0ab133248"
+    },
+    {
+      "path": "/workspace/scratch/82b1e823c721/packaging-validation/dist/pyrpmd-0.2.0.tar.gz",
+      "bytes": 8366027,
+      "sha256": "76ed7f6a6dd27517877a3f97acb8a4189cc2eb2652e996904efdad3911346b0a"
+    },
+    {
+      "path": "/workspace/scratch/82b1e823c721/packaging-validation/sdist-built-wheel/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+      "bytes": 1964225,
+      "sha256": "642f5eef7a8208a23d576a835e0de5469109a1e99b001125fe50c1da060f8014"
+    }
+  ]
+}

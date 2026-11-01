@@ -1,0 +1,113 @@
+{
+  "schema": "pyrpmd.andersen-review-manifest.v1",
+  "created_utc": "2026-11-01T15:27:38.329629+00:00",
+  "base_commit": "274f8289fcc2392278ba9ed894bdae88a92f8b01",
+  "owned_source_files": {
+    "benchmarks/h3/review_free_modes.py": "708617fb3d18151386d447d5d7deb59b72994d4afac5fb06509ac7d8cffd0b71",
+    "benchmarks/h3/review_saved_modes.py": "cec05d1f33edabf5b61692b2e54e9508799106b6f4e3cc23a1b506e0a093d6b7",
+    "docs/andersen-sampling.md": "a98daca53103dbcfc7d83cdf65578f6d8a7ba008f28b202501f4688122921d40",
+    "docs/conf.py": "d202dc1f7b6b9de16edfdeb60a65758c0386c42e5a958af9bf4372a2bd1036a6",
+    "docs/index.md": "a612cf690db5b6e3e524b9a11c25465feb8e6036a5e4e6f7d15a98936f6be604",
+    "docs/input.md": "07f9ce5762c29f92b864a6b9d60d527ffee180b92f7ec5ece2903bbeb96c4c2e",
+    "src/pyrpmd/input.py": "6b8b620ac8d7acf2c5b7958e49482cd89c9cf8de40294e4d31e8852e10938fd1",
+    "src/pyrpmd/runner.py": "f7d98864ad20404cc20c1c2118a20551b25f3d13685d920880469008c4c5c116",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "2d3d4365926fcd7bd87fe797498aa7ff4768d183ffc5eea020356875e4c0de7a",
+    "src/pyrpmd/workflows/drpmd.py": "75f402f072b67593c11526a02f3d22433e223452c3195edf4eb22a10b70fab33",
+    "src/pyrpmd/workflows/fes.py": "91c93d11d58097d3637613b495a00239bbb9563d153101b0c6c36910da2ea345",
+    "src/pyrpmd/workflows/materials.py": "d9ca4b9f26fd231144a4161500a5ffa7786b67b99bb5c9b5d2b04079177b59c9",
+    "src/pyrpmd/workflows/metadynamics.py": "4c76752815a87a7c33de433d16830304b10ffe425db46a59bd916407175b79c7",
+    "src/pyrpmd/workflows/native_pimd.py": "41f81758526a14daa7693ae42c384ba7b5ba6dec503a2c7e4417475a2656e7ff",
+    "src/pyrpmd/workflows/network.py": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7",
+    "src/pyrpmd/workflows/opes.py": "2043c2113e8f38c22f79c84429e048deaeade95e21a8c68567b8ed0dacf64f62",
+    "src/pyrpmd/workflows/pcet.py": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587",
+    "src/pyrpmd/workflows/replica_exchange.py": "93e6f3b761c26fbf0c0a2da8dceaaeeaed88e74a57fe2a54df9319b3698e2f99",
+    "src/pyrpmd/workflows/sampling.py": "d2bd91a0a6efec967b3b54d1720a5cab0a03aecadaa8b77bfb9ffe6c8ead7e1b",
+    "src/pyrpmd/workflows/site_rate.py": "2aafd5f341d3c9dc87b672e67f16734de8002b9828b7f0a54d8303820541a7cd",
+    "src/pyrpmd/workflows/surface.py": "c63e01b7a07fe8f73258938d557ae1042325cfaa2e29755f2db3028c93b49e1b",
+    "tests/data/andersen_legacy_parent.json": "5a29cb4c1e746e7744221f5f713de62c591a77886344e8eac02d908caf0fc5d7",
+    "tests/data/andersen_legacy_window.json": "2bcb9bebc47f5f043e98c011a99cab996dcb04879449bf41804d876eae90ba03",
+    "tests/test_andersen_schedule.py": "dfca8714aeaf891136113f1d923de17baeeb3570fc02903095ec25b84c8b7cec"
+  },
+  "protected_source_unchanged_from_head": {
+    "src/pyrpmd/cv.py": true,
+    "src/pyrpmd/bias.py": true,
+    "src/pyrpmd/constants.py": true,
+    "src/pyrpmd/analysis/fes.py": true,
+    "benchmarks/h3/classical_tst.py": true
+  },
+  "final_gate_source_hashes_still_match": true,
+  "evidence_files": {
+    "README.md": {
+      "sha256": "260e37fa8fa726fa6a6f060baec8df4cfc88c9b798ab8b16e7535c353d5a5fd5",
+      "bytes": 8739,
+      "raw_binary": false
+    },
+    "andersen-docs.json": {
+      "sha256": "097a381d0d858ca49fbb14df4385a5c377b20152b374165cf528b4ad4e63e06c",
+      "bytes": 858,
+      "raw_binary": false
+    },
+    "andersen-docs.log": {
+      "sha256": "7faf70d503b005a98fb9e007ac5b349edc317e1769a0abfc7d65d746a5ed23e1",
+      "bytes": 6900,
+      "raw_binary": false
+    },
+    "andersen-gate.json": {
+      "sha256": "4895ce684c1bb572580fb2d6e09208d9fed91708429f44ad049ab88996761c88",
+      "bytes": 8422,
+      "raw_binary": false
+    },
+    "andersen-gate.log": {
+      "sha256": "bd0b073491814dc2269e0aeaea5933b2e1c81c7c75046001871727ecb026bc5a",
+      "bytes": 438,
+      "raw_binary": false
+    },
+    "andersen-gate.xml": {
+      "sha256": "2391a5d467976e38b16e85347bb55ceecc7d4896bc66c65b3a0854d654278f8a",
+      "bytes": 62964,
+      "raw_binary": false
+    },
+    "andersen-tests.log": {
+      "sha256": "583c7ee7ba15d0aab42959462c6037439ed5dc2bc36c1d6d17660bc5ae45c6ad",
+      "bytes": 100,
+      "raw_binary": false
+    },
+    "andersen-tests.xml": {
+      "sha256": "b1c760cba9528ddf6582ec14b73905d37f91082cf74bd46b33a2476f586b8140",
+      "bytes": 11300,
+      "raw_binary": false
+    },
+    "free-mode-observations.npz": {
+      "sha256": "ae8039169480aa8372538179bf02f71d40a3efd7fe590cdcbf8cd9dedb1fd4d7",
+      "bytes": 6455009,
+      "raw_binary": true
+    },
+    "free-mode-review.json": {
+      "sha256": "6e6afa19fab43aefc430ad26414b461716281a5759b48bc35e8d7863d7907c9d",
+      "bytes": 52785,
+      "raw_binary": false
+    },
+    "free-mode-run.log": {
+      "sha256": "3ddfa1f3bfca3e96f0bbb4d4777c19bcb7de1f081a0323df50e819d4a55a0b1f",
+      "bytes": 892,
+      "raw_binary": false
+    },
+    "saved-h3-modes.json": {
+      "sha256": "ba6070d8e3b34e7c687ec1e9f7afe327493a4de759ed9cceb347decb1db62c02",
+      "bytes": 50254,
+      "raw_binary": false
+    },
+    "workflow-fixed-checkpoint.npz": {
+      "sha256": "95c50e05d924a8479979da36f389078e75c28e94f20e660c692f138831d93d35",
+      "bytes": 192890,
+      "raw_binary": true
+    },
+    "workflow-geometric-checkpoint.npz": {
+      "sha256": "71f2a1e5333e51159dbd116c8fd5723e031d8258afd6ca8d008062e41ed9e7fd",
+      "bytes": 193865,
+      "raw_binary": true
+    }
+  },
+  "scope": "Geometric Andersen production correction and independent free-mode/archived-H3 review. Other agents own the quantum/classical/water campaigns."
+}

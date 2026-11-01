@@ -8,10 +8,10 @@ PyRPMD 支持周期体系、带冻结层的 slab，以及恒压 PIMD。本章介
 
 | 任务 | 用途 | 周期晶胞 | `fixed_atoms` | 主要结果 |
 | --- | --- | --- | --- | --- |
-| `pimd` | 平衡量子统计，可选 BZP 恒压 | 支持 | 固定晶胞时支持 | 能量估计量、回转半径 |
+| `pimd` | 平衡量子统计，可选恒压（Python BZP，或原生 BZP/MTTK/RGB/SCR） | 支持 | 固定晶胞时支持 | 能量估计量、回转半径 |
 | `diffusion` | 连续质心轨迹与输运 | 支持 | 支持 | MSD、VACF、D 与诊断 |
 | `site_rate` | 全原子可动材料中的有向出口 | 支持 | 不支持 | 沿单一受支持的光滑标量质心 CV 的盆地速率 |
-| `fes` | 一维/二维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
+| `fes`，method 为 `umbrella` | 一至三维几何自由能 | 支持 | 支持 | 位置密度 FES、重叠、mask |
 | `surface_rate` | 表面上的有向出口，可含固定层 | 支持，也可为有限团簇 | 支持 | 以可动原子质量度量计算的一阶速率 |
 
 `pimd`、`diffusion`、`fes`、`metadynamics` 和 `surface_rate` 支持固定原子；固定原子在所有珠子上保持
@@ -166,6 +166,49 @@ time_constant = "1000 fs"
 [原生系综](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md#barostats)。
 
 RPMD 扩散生产段仍固定晶胞；默认使用无恒温器传播，可显式选择物理电子摩擦浴。
+
+### 原生 PIMD 引擎
+
+`sampling.engine="native"` 让同一个 `pimd` 任务在 C++ 轨迹驱动中运行：每次调用把一个副本推进到下一个检查点，
+恒温器噪声、观测量和流式写出都在 C++ 中完成。旧输入保持缺省的 `engine="legacy"` 及其检查点；选择原生引擎即为新的运行身份。
+
+```bash
+pyrpmd validate examples/ensembles/pimd_native.inp --check-pes
+pyrpmd run examples/ensembles/pimd_native.inp --output runs/pimd-native
+pyrpmd resume runs/pimd-native
+pyrpmd run examples/ensembles/pimd_native_npt.inp --output runs/pimd-native-npt
+```
+
+```toml
+[dynamics]
+integrator = "cayley-bcb"
+loop_backend = "native"
+timestep = "0.1 fs"
+
+[sampling]
+engine = "native"
+thermostat = "pile-g"
+thermostat_params = {tau = "100 fs"}
+
+[barostat]            # 可选：恒压
+mode = "bzp"          # 或 "mttk"、"rgb"、"scr"
+pressure = "100 bar"
+tau = "100 fs"
+gamma = "0.01 fs^-1"
+```
+
+| 项目 | 原生引擎 |
+| --- | --- |
+| 恒温器 | `andersen`、`langevin`、`pile-l`、`pile-g`、`svr`、`gle`、`nm-gle`、`nm-gle-g`、`piglet`（仅 NVT，需提供标定矩阵）、`ffl`；`thermostat_params` 接受 `gamma`、`tau`、`pile_scale`、`interval`、`gle` |
+| 恒压器 | `mode="bzp"`、`"mttk"`、`"rgb"`（需 `stress` 与 `reference_cell`）、`"scr"`（单珠子）；要求三维 PBC 且全部原子可动 |
+| 势能 | 内置 `free`、标量谐振和 `periodic_cosine`；非周期 NVT 中的分子 C ABI/Fortran；编译周期求值函数用 `provider="native_periodic"` |
+| 并行 | 独立副本可用 serial/process/MPI；每条轨迹 `mode="serial"`、一个珠子 worker |
+| 输出 | `samples/native_pimd_NNNN/journal.json` 与带校验值的事务目录；续跑时校验哈希与采样时钟 |
+
+两种引擎的恒压字段不同（`method`/`time_constant`/`friction` 对 `mode`/`tau`/`gamma`），不能混用。固定原子只在原生 NVT 中可用。
+原生记录中的 `H_P` 是粒子环 Hamiltonian，不是 NPT 守恒量。独立命令 `pyrpmd-native INPUT --output DIR` 用自己的 TOML 格式运行同一驱动
+（`examples/ensembles/native_nvt.toml`、`native_npt.toml`）；`--resume CHECKPOINT` 时输入时长为*追加*时长。详见
+[原生 PIMD 工作流](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)与[原生系综](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md)（英文）。
 
 ## 扩散：从连续轨迹得到 MSD 与 D
 

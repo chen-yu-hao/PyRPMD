@@ -1,0 +1,35 @@
+{
+  "driver_unchanged_since_first_extended_sampling": true,
+  "driver_sha256": "51d432df7f1ef19c99d0d0faa33ea02a3423d6bed7d8fe7db392889b3e1c9a7c",
+  "recovered_runs": {
+    "long-a": {
+      "sources_unchanged_during_recovery": true,
+      "new_umbrella_steps": 0,
+      "all_original_cv_samples_used": true,
+      "elapsed_seconds": 82.82718092800496,
+      "execution_script_sha256": "f207f20fe8b8cb58c97a34fbe6aa4a1111b35cea7c99bf95519983c2e6d9586c",
+      "current_source_hashes_match": true,
+      "loaded_native_binary_matches": true
+    },
+    "long-b": {
+      "sources_unchanged_during_recovery": true,
+      "new_umbrella_steps": 0,
+      "all_original_cv_samples_used": true,
+      "elapsed_seconds": 88.55304611899919,
+      "execution_script_sha256": "31ad53d459b283a1d30db440b4a397cf09765a075846718c161cfc3fa5825a37",
+      "current_source_hashes_match": true,
+      "loaded_native_binary_matches": true
+    },
+    "classical": {
+      "sources_unchanged_during_recovery": true,
+      "new_umbrella_steps": 0,
+      "all_original_cv_samples_used": true,
+      "elapsed_seconds": 47.51363936800044,
+      "execution_script_sha256": "31ad53d459b283a1d30db440b4a397cf09765a075846718c161cfc3fa5825a37",
+      "current_source_hashes_match": true,
+      "loaded_native_binary_matches": true
+    }
+  },
+  "source_files_in_recovery_snapshot": 139,
+  "loaded_native_binary_sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+}

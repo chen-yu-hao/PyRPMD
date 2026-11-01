@@ -15,6 +15,7 @@ from unittest.mock import patch
 
 import numpy as np
 
+from pyrpmd.checkpoint import load_checkpoint
 from pyrpmd.constants import KB_AU
 from pyrpmd.dynamics import Dynamics
 from pyrpmd.input import JobSpec
@@ -78,6 +79,21 @@ def serial_reference(directory):
                    env=env, check=True, timeout=120)
 
 
+def portable_fes_metadata(value, directory):
+    """Normalize output locations while preserving every physical field."""
+    metadata = json.loads(str(value))
+
+    def relative_files(value):
+        if isinstance(value, dict):
+            return {key: relative_files(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [relative_files(item) for item in value]
+        return str(Path(value).relative_to(directory))
+
+    metadata["files"] = relative_files(metadata["files"])
+    return metadata
+
+
 def compare(root):
     left, right = root / "serial", root / "mpi"
     arrays = files = 0
@@ -85,10 +101,19 @@ def compare(root):
         paths = sorted(left.glob(pattern))
         assert paths and len(paths) == len(list(right.glob(pattern)))
         for path in paths:
-            with np.load(path, allow_pickle=False) as a, np.load(right / path.relative_to(left), allow_pickle=False) as b:
+            # Each envelope must authenticate its own payload. Output-root
+            # provenance also changes the payload hash, so compare envelope
+            # schema fields and all physical content after verification.
+            with load_checkpoint(path, require_integrity=True) as a, \
+                 load_checkpoint(right / path.relative_to(left), require_integrity=True) as b:
                 assert set(a.files) == set(b.files)
+                for key in ("schema", "schema_version", "kind", "writer_version"):
+                    assert a.envelope[key] == b.envelope[key]
                 for key in a.files:
-                    np.testing.assert_array_equal(a[key], b[key], err_msg=f"{path.name}:{key}")
+                    if key == "fes_metadata":
+                        assert portable_fes_metadata(a[key], left) == portable_fes_metadata(b[key], right)
+                    else:
+                        np.testing.assert_array_equal(a[key], b[key], err_msg=f"{path.name}:{key}")
                     arrays += 1
             files += 1
     assert (left / "fes.csv").read_bytes() == (right / "fes.csv").read_bytes()

@@ -7,6 +7,62 @@ physical potential call per step. The public state shape is `[K,P,N,3]` for
 atom masses, preserving `P`-bead springs within every trajectory. The selected
 Cayley, exact normal-mode, or velocity-Verlet map is unchanged.
 
+## Batch existing workflow tasks
+
+Independent umbrella windows, dRPMD collisions and `site_rate` tasks can share
+PES calls without replacing their sampling or trajectory algorithms:
+
+```toml
+[parallel]
+trajectory_batch_size = 8
+bead_workers = 1
+
+[dynamics]
+loop_backend = "auto"
+```
+
+`trajectory_batch_size` is a maximum number of independent workflow tasks in
+one group, from 1 to 256. The upper bound limits the number of simultaneous
+cooperative worker threads. The default, 1, retains the scalar task schedule. Each task keeps its
+own state, clock, random generator, thermostat state, observations and
+checkpoint files. When the live tasks request forces, their independent
+configuration arrays are concatenated into one PES call and its results are
+returned to the originating tasks. A task that finishes, stops or fails leaves
+the group; completed checkpoints do not have to make a dummy force request.
+
+For dRPMD, parent sampling first writes the existing launch checkpoints and
+then collision tasks enter the batch groups. This two-phase schedule is
+automatic when batching is requested; no separate launch-file option is
+needed. `site_rate` groups both parent and child tasks. Independent umbrella
+batching currently applies to fixed windows; adaptive window scheduling and
+replica-exchange ladders reject this execution option explicitly.
+
+This execution layer also batches the PES calls of thermostatted sampling. It
+does not couple thermostats between windows, synchronize independent collision
+clocks, or turn the individual trajectories into a larger ring. Group size and
+task completion order do not change the task-specific RNG streams. Floating
+point differences are still possible for providers whose arithmetic changes
+with batch size.
+
+The force provider must explicitly support independent, history-independent
+frames as described below. All tasks in a group use the same potential and
+system identity. Mutable-cell/NPT tasks, unknown ring-coupled potentials,
+stateful providers and bead-process parallelism are rejected. Exact built-in
+`SplitPotential` and `DifferencePotential` wrappers have a separate route:
+contraction/lifting stay local to each ring, and only requests to their
+independent physical component providers are batched. The scheduler runs in
+Python, so `loop_backend="native"` cannot be combined with task batching;
+compiled ring substeps remain available through `native=true` or
+`native="required"`.
+
+Task batching and `recrossing.child_batch_pairs` describe different groups:
+the former groups existing workflow tasks, while the latter vectorizes the
+opposite-momentum children within gas-phase/surface recrossing. Choose the
+setting for the workflow being run; neither changes the number of requested
+trajectories or their statistical weights. For `site_rate`,
+`recrossing.child_batch_pairs` is an additional child-group size control; the
+larger of it and `parallel.trajectory_batch_size` determines the child group.
+
 ## Recrossing input
 
 Gas-phase `rate` and conditional `surface_rate` child propagation can opt in:
@@ -54,8 +110,9 @@ adapters preserve declarations; the Torch adapter now preserves explicit model
 or delegate declarations. Merely accepting a batched tensor or declaring
 `native_batch=true` is insufficient. An explicitly stateful, ring-coupled,
 `batch_independent=false`, or `trajectory_batch_safe=false` provider is rejected.
-Ring-polymer contraction wrappers need a separate per-ring contraction path
-and cannot flatten multiple rings through this API. Process/MPI bead proxies
+Ring-polymer contraction wrappers use the separate per-ring path in the
+composed API below; flattening complete rings through a coupled evaluator is
+never allowed. Process/MPI bead proxies
 without an independent-frame declaration are also rejected.
 
 ## Python API and stop masks
@@ -78,6 +135,10 @@ result = engine.propagate_block(
 )
 ```
 
+Composed array batches with more than 256 active lanes are evaluated in bounded
+groups; original lane indices and RNG identities are preserved. The vectorized
+NVE path does not create one worker thread per lane and has no such lane limit.
+
 `state.step[K]` and `state.time[K]` advance independently. A stopping step is
 always recorded, even between sampling points. Stopped/inactive trajectories
 are omitted from subsequent PES calls. The stop callback receives a scalar
@@ -98,18 +159,53 @@ default raises `BatchedPropagationError`, whose `result` carries completion
 details, after committing healthy trajectories in that iteration. With
 `raise_on_error=False`, remaining healthy trajectories continue.
 
-This core can propagate preinitialized collision ensembles. A collision stop
+This low-level core can propagate preinitialized collision ensembles. A collision stop
 callback can close over one classifier/persistence state per trajectory; it
 must not use a shared persistence counter across trajectories. The existing
-`drpmd` runner's checkpoint/thermalization/task scheduling has not been replaced
-by a batched runner.
+`drpmd` runner uses task batching above to retain its existing classifier,
+thermalization and checkpoint behavior.
 
 Static umbrella forces may be supplied as `bias=[window_bias_0, ...]`, one per
 trajectory. Fixed atoms use the existing reference-position and zero-momentum
-convention. This API is NVE propagation: a full canonical umbrella sampler
-still needs its established thermostat, per-window RNG streams and statistical
-bookkeeping. It does not batch adaptive umbrella scheduling or metadynamics
-depositions. Time-dependent/depositing bias objects are rejected.
+convention. The default low-level API is NVE propagation. A full canonical
+umbrella sampler needs its thermostat, per-window RNG streams and statistical
+bookkeeping; the workflow task scheduler supplies batching around that
+established sampler. `BatchedDynamics` itself does not schedule adaptive
+umbrellas or metadynamics depositions; time-dependent or depositing bias
+objects are rejected.
+
+## Compose batched thermostats and force splitting
+
+`BatchedDynamics` also accepts the common `thermostat` and `force_splitting`
+operators:
+
+```python
+from pyrpmd.engine import ForceSplitting
+
+engine = BatchedDynamics(
+    split_potential, masses, beta, P, dt,
+    integrator="normal-mode-bab",
+    force_splitting=ForceSplitting(inner_steps=4),
+    thermostat={"mode": "nhc", "tau": 800.0},
+    seed=1729,
+)
+result = engine.propagate_block(state, 100, active=active_mask)
+operators = engine.operator_state_dict()
+```
+
+The composed path delegates each lane to the common scalar plan and combines
+its physical PES requests. Each original trajectory index has its own random
+stream and bath variables; temporarily inactive or completed lanes do not
+consume noise. NHC is therefore one chain per independent trajectory, not
+one chain across all concatenated atoms. Use `load_operator_state_dict()` with
+the saved `BatchedState` to resume these auxiliary states.
+
+Exact built-in split/difference wrappers keep each RPC projection and force
+lift within the corresponding ring. Fast, slow and correction-provider calls
+are grouped by their physical component, even when tasks are at different
+force-splitting stages. Arbitrary ring-coupled providers still need an explicit
+adapter. An observer failure restores that lane's physical and operator state
+together; healthy lanes retain their accepted steps.
 
 ## Cost and validation
 

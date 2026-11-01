@@ -1,0 +1,186 @@
+{
+  "recorded_utc": "2026-11-01T14:21:51.245104+00:00",
+  "source_versions": {
+    "original": "45763a7ab84100b376e2e5e5df06a8013a82659b",
+    "windows_export_fix": "b3e229309e6db4dba08f58a75e387b7b5628f169",
+    "mpi_launcher_fix": "4ba870dd7121a31e0e0987a90b194fec3f788ffd"
+  },
+  "local_python_regressions": [
+    {
+      "tag": "python313",
+      "python": "3.13.18 | packaged by conda-forge | (main, Oct 26 2026, 11:38:18) [GCC 15.3.0]",
+      "source_reference": "b3e229309e6db4dba08f58a75e387b7b5628f169",
+      "selected_test_modules": 28,
+      "initial_passed": 978,
+      "initial_failed_due_to_sandbox_socket_permissions": 2,
+      "subtests_passed": 64,
+      "skipped_optional": 10,
+      "socket_rerun_passed": 2,
+      "resolved_unique_test_cases_passed": 980,
+      "full_repository_suite": false,
+      "source_unchanged_during_test": true,
+      "manifest": "python313-regression.json"
+    },
+    {
+      "tag": "python314",
+      "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]",
+      "source_reference": "b3e229309e6db4dba08f58a75e387b7b5628f169",
+      "selected_test_modules": 28,
+      "initial_passed": 978,
+      "initial_failed_due_to_sandbox_socket_permissions": 2,
+      "subtests_passed": 64,
+      "skipped_optional": 10,
+      "socket_rerun_passed": 2,
+      "resolved_unique_test_cases_passed": 980,
+      "full_repository_suite": false,
+      "source_unchanged_during_test": true,
+      "manifest": "python314-regression.json"
+    }
+  ],
+  "remote_original_python312": {
+    "passed": 4452,
+    "skipped": 140,
+    "subtests_passed": 357,
+    "pytest_success": true,
+    "job_success": false,
+    "subsequent_failure": "Open MPI 5 allocation before starting Python"
+  },
+  "workflow_validation": {
+    "actionlint": "1.7.12",
+    "actionlint_exit_code": 0,
+    "git_diff_check_exit_code": 0,
+    "files": [
+      ".github/workflows/tests.yml",
+      ".github/workflows/fused-native.yml"
+    ]
+  },
+  "remote_corrected_status": {
+    "observed_utc": "2026-11-01 14:12:32 UTC",
+    "cpu_run": 41312690874,
+    "cpu_status": "queued",
+    "portable_wheels_run": 41312691014,
+    "portable_wheels_status": "pending",
+    "snapshot": "github-4ba870d.json",
+    "fixed_windows_runtime_pass_observed": false,
+    "conda": "success",
+    "installed_source_platform_wheel": "success",
+    "fused_native": {
+      "run": 41312690979,
+      "job": 124866208162,
+      "conclusion": "success",
+      "pytest": {
+        "passed": 4475,
+        "skipped": 120,
+        "subtests_passed": 365
+      },
+      "actual_four_rank_mpi": "success",
+      "sdist_rebuild_tests_passed": 36,
+      "runner": "ubuntu-24.04",
+      "log_excerpt": "github-fused-mpi-pass.log",
+      "tested_merge_commit": "1cd400a90054e87b86e2d6dc172b8f5782aeb1eb"
+    }
+  },
+  "files_sha256": {
+    "README.md": "03260e5afeb175ae30c9bdc8a37c6312091d4780627d1dd98b4841f9cb7b95a7",
+    "github-45763a7.json": "20ac8d900c4e0e9f85077b223c7c1c7ab2670af08f5825ced37a90e378594a44",
+    "github-conda-matrix.log": "6cc86b8fa31031c82823e97beafe606c69dee140964b21f214eb5cbf04b4348d",
+    "github-cpu312-pytest-mpi.log": "59cd1274df6a540b1a58b44ccf94aef968033a997f3d7144b73a4b4cf65a8b2a",
+    "github-macos-wheel-matrix.log": "d3cac2847c22dcdac7e78acc48d18e73cca50605867353f3171a9cfe9f9e9f5c",
+    "github-ucx-runtime-failure.log": "f7483b2287dd53a0323b61144e5135275123dc646a00dcba3ddddce944867788",
+    "github-windows-export-failure.log": "6735c1d370b6a0cbd91df3124ece124eece69fbd0b773b9a0a82a3f65e1264b1",
+    "mpi-dynamic-oversubscribe-pass.log": "c1a0c9197f46b68f102fd6fe94a5ff09b89d1ab54ebecafeb5d5e0ab9c3a874a",
+    "mpi-explicit-oversubscribe-pass.log": "89a04acbf222fafa9555956480a3436569524e7dbd1a3eb224d73d4db7939e57",
+    "mpi-launcher-regression.json": "a5bfa447a3d2a328f26aa3f8c8d9a4bd9000d5ce4b34ee5753465f216856e9b3",
+    "mpi-legacy-oversubscribe-failure.log": "c933fd07ced9752bc7250537a6bc007904d2c4697e0d057e7e5b58510fb602c6",
+    "python313-regression.json": "e6ee3201b375b04f408cf68411cd90981ebd63b4fe35178e8d6fe49d34a1848d",
+    "python313-regression.log": "8bff0634b59a871b3f2492cfb8eaaa43ed1813486c3f7044e394cde8d6254356",
+    "python313-regression.xml": "78f7f516b190406b6e69b4a1dbd3e94b20d1a68c5fa00a3e11c9c013825cb62b",
+    "python313-sockets.log": "fec3c14fd4b14ce6322837033e533d3fb48c079716af71d54d570041aaed2a2a",
+    "python313-sockets.xml": "0dcfcc2308edebf75d945927e2c4fd3ef63df7776be3d3afaa1a570653ab158a",
+    "python314-regression.json": "483ac0c1a6061475812986028c505690840c157651c90179dff2adfac7f44a30",
+    "python314-regression.log": "6782dfe7e3f135320281450fa65aa4d44d3001e3994a79d70623322742c5ce2d",
+    "python314-regression.xml": "28f41f9294689623de2f7b743389f166b5bb28b213fc4860d9502d02f5c128b3",
+    "python314-sockets.log": "e0f99c009e3f0cb266186091c50ea73692ee91d8e6be128e02c71a43032856ce",
+    "python314-sockets.xml": "d211a144c8c81bb64914fdbf531f384011f11285668b18e37430ba6bc298fa23",
+    "resources.json": "aa26493840a883412a07b7249fff81b12d6bc28ad0faefe887969e845d11ed80",
+    "ucx-lammps-forces.log": "0cfa6b98e7905fe06d924615a1af81e47c1aaa3d41ac210f96af02d886036c9b",
+    "ucx-lammps-mpi.log": "db30964d77099fce63d764ade9c56b81c7325b63ee12921eee2f4295c124c3e1",
+    "ucx-transport-validation.json": "44cff671a297bf4db1c67042d580ad0cd5eaee34f3617c687efda6bc8389e344",
+    "github-4ba870d.json": "24304707cb6cebfbe99d66238744d2b39e7aa1ea0671fd3514da814cd75e84f7",
+    "github-fused-mpi-pass.log": "3c3c34ec707dd314d951bd63f6b27a462c9b069e91e140a047796417cd00c92f",
+    "github-ucx-push-runtime-failure.log": "36fef1c693380dffe89c76f0c805e03cc9c5600a2282f835945cd611a346a05e"
+  },
+  "ucx_transport_correction": {
+    "failing_head": "4ba870dd7121a31e0e0987a90b194fec3f788ffd",
+    "run": 41312690867,
+    "job": 124866205959,
+    "failure_stage": "Runtime preflight: LAMMPS MPI_Init_thread before science tests",
+    "classification": "Runner-dependent Azure MANA RDMA/UCX initialization failure",
+    "workflow_environment": {
+      "UCX_TLS": "tcp,sm,self"
+    },
+    "local_validation": "ucx-transport-validation.json",
+    "remote_fix_validated": false,
+    "additional_failure": {
+      "event": "push",
+      "run": 41312685089,
+      "job": 124866188164,
+      "head": "4ba870dd7121a31e0e0987a90b194fec3f788ffd",
+      "observed_utc": "2026-11-01 14:16:07 UTC",
+      "failure_stage": "Require working runtimes before tests",
+      "classification": "Same MANA UD QP / UCX MPI_Init_thread initialization failure",
+      "log_excerpt": "github-ucx-push-runtime-failure.log"
+    }
+  },
+  "local_final_python312": {
+    "manifest": "full-suite.json",
+    "base_commit": "4ba870dd7121a31e0e0987a90b194fec3f788ffd",
+    "working_tree_dirty": true,
+    "python": "3.12.14",
+    "recorded_source_files": 450,
+    "sources_unchanged_during_run": true,
+    "result": {
+      "passed": 4527,
+      "skipped": 97,
+      "subtests_passed": 365,
+      "warnings": 932,
+      "failed": 0,
+      "errors": 0,
+      "elapsed_seconds": 739.88,
+      "exit_code": 0
+    },
+    "scope": "Full suite of the exact source snapshot recorded in the manifest; later edits require separate focused checks."
+  },
+  "final_integrity_check": {
+    "observed_utc": "2026-11-01T14:21:51.245104+00:00",
+    "json_files_parsed": 10,
+    "recorded_evidence_hashes_verified": 28,
+    "python_snapshots": {
+      "python313": {
+        "installed_python_modules_match_current_source": 112,
+        "selected_test_files_match_current_source": 28,
+        "native_binary_hashes_match": 2,
+        "initial_junit_failures": 2,
+        "initial_failure_class": "Sandbox PermissionError creating sockets",
+        "focused_socket_rerun_passes": 2
+      },
+      "python314": {
+        "installed_python_modules_match_current_source": 112,
+        "selected_test_files_match_current_source": 28,
+        "native_binary_hashes_match": 2,
+        "initial_junit_failures": 2,
+        "initial_failure_class": "Sandbox PermissionError creating sockets",
+        "focused_socket_rerun_passes": 2
+      }
+    },
+    "mpi_log_hashes_verified": 3,
+    "ucx_log_hashes_verified": 2,
+    "root_full_suite_outputs_verified": true,
+    "scratch_harnesses_syntax_checked": [
+      "version_regressions.py",
+      "mpi_launcher_regression.py",
+      "ucx_transport_validation.py"
+    ],
+    "new_test_execution": false
+  }
+}

@@ -1,0 +1,550 @@
+[
+  {
+    "recipe": {
+      "schema_version": 1,
+      "context": {
+        "version": "0.2.0"
+      },
+      "package": {
+        "name": "pyrpmd",
+        "version": "0.2.0"
+      },
+      "source": [
+        {
+          "path": "../.."
+        }
+      ],
+      "build": {
+        "number": 0,
+        "string": "py311hcd2a3cd_0",
+        "script": [
+          "python -m pip install . -vv --no-deps --no-build-isolation",
+          "python -c \"from importlib.metadata import version; assert version('PyRPMD') == '${{ version }}'\""
+        ]
+      },
+      "requirements": {
+        "build": [
+          "gxx_linux-64",
+          "sysroot_linux-64 2.28.*"
+        ],
+        "host": [
+          "python",
+          "pip",
+          "setuptools >=77",
+          "wheel",
+          "libgomp"
+        ],
+        "run": [
+          "python",
+          "numpy >=1.26",
+          "scipy >=1.11",
+          "h5py >=3.10",
+          "threadpoolctl >=3.1",
+          "libgomp"
+        ]
+      },
+      "tests": [
+        {
+          "python": {
+            "imports": [
+              "pyrpmd",
+              "pyrpmd._native",
+              "pyrpmd._thermal"
+            ]
+          }
+        },
+        {
+          "script": "python tests/wheel_smoke.py",
+          "files": {
+            "source": [
+              "tests/wheel_smoke.py"
+            ]
+          }
+        }
+      ],
+      "about": {
+        "homepage": "https://github.com/chen-yu-hao/PyRPMD",
+        "repository": "https://github.com/chen-yu-hao/PyRPMD",
+        "documentation": "https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md",
+        "license": "MIT",
+        "license_file": [
+          "LICENSE",
+          "THIRD_PARTY_NOTICES.md",
+          "native/thermal-NOTICE.md"
+        ],
+        "summary": "Ring-polymer dynamics, reaction networks and adaptive free-energy sampling"
+      }
+    },
+    "build_configuration": {
+      "target_platform": "linux-64",
+      "host_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "build_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "variant": {
+        "c_stdlib": "sysroot",
+        "c_stdlib_version": "2.28",
+        "python": "3.11",
+        "target_platform": "linux-64"
+      },
+      "hash": {
+        "hash": "cd2a3cd",
+        "prefix": "py311"
+      },
+      "directories": {
+        "host_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hcd2a3cd_1793538110/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho",
+        "build_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hcd2a3cd_1793538110/build_env",
+        "work_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hcd2a3cd_1793538110/work",
+        "build_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hcd2a3cd_1793538110"
+      },
+      "channels": [
+        "https://conda.anaconda.org/conda-forge"
+      ],
+      "channel_priority": "strict",
+      "solve_strategy": "highest",
+      "timestamp": "2026-11-01T13:01:50.189611056Z",
+      "subpackages": {
+        "pyrpmd": {
+          "name": "pyrpmd",
+          "version": "0.2.0",
+          "build_string": "py311hcd2a3cd_0"
+        }
+      },
+      "packaging_settings": {
+        "archive_type": "conda",
+        "compression_level": 15
+      }
+    },
+    "finalized_dependencies": null,
+    "finalized_sources": null,
+    "system_tools": {
+      "rattler-build": "0.80.0"
+    },
+    "extra_meta": {}
+  },
+  {
+    "recipe": {
+      "schema_version": 1,
+      "context": {
+        "version": "0.2.0"
+      },
+      "package": {
+        "name": "pyrpmd",
+        "version": "0.2.0"
+      },
+      "source": [
+        {
+          "path": "../.."
+        }
+      ],
+      "build": {
+        "number": 0,
+        "string": "py312h2e77849_0",
+        "script": [
+          "python -m pip install . -vv --no-deps --no-build-isolation",
+          "python -c \"from importlib.metadata import version; assert version('PyRPMD') == '${{ version }}'\""
+        ]
+      },
+      "requirements": {
+        "build": [
+          "gxx_linux-64",
+          "sysroot_linux-64 2.28.*"
+        ],
+        "host": [
+          "python",
+          "pip",
+          "setuptools >=77",
+          "wheel",
+          "libgomp"
+        ],
+        "run": [
+          "python",
+          "numpy >=1.26",
+          "scipy >=1.11",
+          "h5py >=3.10",
+          "threadpoolctl >=3.1",
+          "libgomp"
+        ]
+      },
+      "tests": [
+        {
+          "python": {
+            "imports": [
+              "pyrpmd",
+              "pyrpmd._native",
+              "pyrpmd._thermal"
+            ]
+          }
+        },
+        {
+          "script": "python tests/wheel_smoke.py",
+          "files": {
+            "source": [
+              "tests/wheel_smoke.py"
+            ]
+          }
+        }
+      ],
+      "about": {
+        "homepage": "https://github.com/chen-yu-hao/PyRPMD",
+        "repository": "https://github.com/chen-yu-hao/PyRPMD",
+        "documentation": "https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md",
+        "license": "MIT",
+        "license_file": [
+          "LICENSE",
+          "THIRD_PARTY_NOTICES.md",
+          "native/thermal-NOTICE.md"
+        ],
+        "summary": "Ring-polymer dynamics, reaction networks and adaptive free-energy sampling"
+      }
+    },
+    "build_configuration": {
+      "target_platform": "linux-64",
+      "host_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "build_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "variant": {
+        "c_stdlib": "sysroot",
+        "c_stdlib_version": "2.28",
+        "python": "3.12",
+        "target_platform": "linux-64"
+      },
+      "hash": {
+        "hash": "2e77849",
+        "prefix": "py312"
+      },
+      "directories": {
+        "host_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h2e77849_1793538110/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho",
+        "build_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h2e77849_1793538110/build_env",
+        "work_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h2e77849_1793538110/work",
+        "build_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h2e77849_1793538110"
+      },
+      "channels": [
+        "https://conda.anaconda.org/conda-forge"
+      ],
+      "channel_priority": "strict",
+      "solve_strategy": "highest",
+      "timestamp": "2026-11-01T13:01:50.189611056Z",
+      "subpackages": {
+        "pyrpmd": {
+          "name": "pyrpmd",
+          "version": "0.2.0",
+          "build_string": "py312h2e77849_0"
+        }
+      },
+      "packaging_settings": {
+        "archive_type": "conda",
+        "compression_level": 15
+      }
+    },
+    "finalized_dependencies": null,
+    "finalized_sources": null,
+    "system_tools": {
+      "rattler-build": "0.80.0"
+    },
+    "extra_meta": {}
+  },
+  {
+    "recipe": {
+      "schema_version": 1,
+      "context": {
+        "version": "0.2.0"
+      },
+      "package": {
+        "name": "pyrpmd",
+        "version": "0.2.0"
+      },
+      "source": [
+        {
+          "path": "../.."
+        }
+      ],
+      "build": {
+        "number": 0,
+        "string": "py313h60db7c6_0",
+        "script": [
+          "python -m pip install . -vv --no-deps --no-build-isolation",
+          "python -c \"from importlib.metadata import version; assert version('PyRPMD') == '${{ version }}'\""
+        ]
+      },
+      "requirements": {
+        "build": [
+          "gxx_linux-64",
+          "sysroot_linux-64 2.28.*"
+        ],
+        "host": [
+          "python",
+          "pip",
+          "setuptools >=77",
+          "wheel",
+          "libgomp"
+        ],
+        "run": [
+          "python",
+          "numpy >=1.26",
+          "scipy >=1.11",
+          "h5py >=3.10",
+          "threadpoolctl >=3.1",
+          "libgomp"
+        ]
+      },
+      "tests": [
+        {
+          "python": {
+            "imports": [
+              "pyrpmd",
+              "pyrpmd._native",
+              "pyrpmd._thermal"
+            ]
+          }
+        },
+        {
+          "script": "python tests/wheel_smoke.py",
+          "files": {
+            "source": [
+              "tests/wheel_smoke.py"
+            ]
+          }
+        }
+      ],
+      "about": {
+        "homepage": "https://github.com/chen-yu-hao/PyRPMD",
+        "repository": "https://github.com/chen-yu-hao/PyRPMD",
+        "documentation": "https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md",
+        "license": "MIT",
+        "license_file": [
+          "LICENSE",
+          "THIRD_PARTY_NOTICES.md",
+          "native/thermal-NOTICE.md"
+        ],
+        "summary": "Ring-polymer dynamics, reaction networks and adaptive free-energy sampling"
+      }
+    },
+    "build_configuration": {
+      "target_platform": "linux-64",
+      "host_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "build_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "variant": {
+        "c_stdlib": "sysroot",
+        "c_stdlib_version": "2.28",
+        "python": "3.13",
+        "target_platform": "linux-64"
+      },
+      "hash": {
+        "hash": "60db7c6",
+        "prefix": "py313"
+      },
+      "directories": {
+        "host_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h60db7c6_1793538110/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho",
+        "build_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h60db7c6_1793538110/build_env",
+        "work_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h60db7c6_1793538110/work",
+        "build_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_h60db7c6_1793538110"
+      },
+      "channels": [
+        "https://conda.anaconda.org/conda-forge"
+      ],
+      "channel_priority": "strict",
+      "solve_strategy": "highest",
+      "timestamp": "2026-11-01T13:01:50.189611056Z",
+      "subpackages": {
+        "pyrpmd": {
+          "name": "pyrpmd",
+          "version": "0.2.0",
+          "build_string": "py313h60db7c6_0"
+        }
+      },
+      "packaging_settings": {
+        "archive_type": "conda",
+        "compression_level": 15
+      }
+    },
+    "finalized_dependencies": null,
+    "finalized_sources": null,
+    "system_tools": {
+      "rattler-build": "0.80.0"
+    },
+    "extra_meta": {}
+  },
+  {
+    "recipe": {
+      "schema_version": 1,
+      "context": {
+        "version": "0.2.0"
+      },
+      "package": {
+        "name": "pyrpmd",
+        "version": "0.2.0"
+      },
+      "source": [
+        {
+          "path": "../.."
+        }
+      ],
+      "build": {
+        "number": 0,
+        "string": "py314hb8d3e0d_0",
+        "script": [
+          "python -m pip install . -vv --no-deps --no-build-isolation",
+          "python -c \"from importlib.metadata import version; assert version('PyRPMD') == '${{ version }}'\""
+        ]
+      },
+      "requirements": {
+        "build": [
+          "gxx_linux-64",
+          "sysroot_linux-64 2.28.*"
+        ],
+        "host": [
+          "python",
+          "pip",
+          "setuptools >=77",
+          "wheel",
+          "libgomp"
+        ],
+        "run": [
+          "python",
+          "numpy >=1.26",
+          "scipy >=1.11",
+          "h5py >=3.10",
+          "threadpoolctl >=3.1",
+          "libgomp"
+        ]
+      },
+      "tests": [
+        {
+          "python": {
+            "imports": [
+              "pyrpmd",
+              "pyrpmd._native",
+              "pyrpmd._thermal"
+            ]
+          }
+        },
+        {
+          "script": "python tests/wheel_smoke.py",
+          "files": {
+            "source": [
+              "tests/wheel_smoke.py"
+            ]
+          }
+        }
+      ],
+      "about": {
+        "homepage": "https://github.com/chen-yu-hao/PyRPMD",
+        "repository": "https://github.com/chen-yu-hao/PyRPMD",
+        "documentation": "https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md",
+        "license": "MIT",
+        "license_file": [
+          "LICENSE",
+          "THIRD_PARTY_NOTICES.md",
+          "native/thermal-NOTICE.md"
+        ],
+        "summary": "Ring-polymer dynamics, reaction networks and adaptive free-energy sampling"
+      }
+    },
+    "build_configuration": {
+      "target_platform": "linux-64",
+      "host_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "build_platform": {
+        "platform": "linux-64",
+        "virtual_packages": [
+          "__unix=0=0",
+          "__linux=6.18.57=0",
+          "__glibc=2.39=0",
+          "__archspec=1=x86_64"
+        ]
+      },
+      "variant": {
+        "c_stdlib": "sysroot",
+        "c_stdlib_version": "2.28",
+        "python": "3.14",
+        "target_platform": "linux-64"
+      },
+      "hash": {
+        "hash": "b8d3e0d",
+        "prefix": "py314"
+      },
+      "directories": {
+        "host_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hb8d3e0d_1793538110/host_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placeho",
+        "build_prefix": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hb8d3e0d_1793538110/build_env",
+        "work_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hb8d3e0d_1793538110/work",
+        "build_dir": "/workspace/scratch/a5e4820daedd/distribution-check/conda-output/bld/rattler-build_pyrpmd_hb8d3e0d_1793538110"
+      },
+      "channels": [
+        "https://conda.anaconda.org/conda-forge"
+      ],
+      "channel_priority": "strict",
+      "solve_strategy": "highest",
+      "timestamp": "2026-11-01T13:01:50.189611056Z",
+      "subpackages": {
+        "pyrpmd": {
+          "name": "pyrpmd",
+          "version": "0.2.0",
+          "build_string": "py314hb8d3e0d_0"
+        }
+      },
+      "packaging_settings": {
+        "archive_type": "conda",
+        "compression_level": 15
+      }
+    },
+    "finalized_dependencies": null,
+    "finalized_sources": null,
+    "system_tools": {
+      "rattler-build": "0.80.0"
+    },
+    "extra_meta": {}
+  }
+]

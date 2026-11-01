@@ -16,7 +16,8 @@ import numpy as np
 from ..cv import Cartesian, CollectiveVariable, SurfaceHeight, SurfaceLateral, Distance, PeriodicDistance
 from ..parallel import root_call, run_tasks
 from ..units import parse_quantity
-from .fes import resolve_umbrellas, run_fes, write_json, _atomic_npz, jsonable
+from .fes import resolve_umbrellas, run_fes
+from .common import write_json, _atomic_npz, jsonable
 
 
 class _AffineSurface(CollectiveVariable):
@@ -275,6 +276,10 @@ def _pmf_and_parents(sampled, config, system, output, options):
 
 def run_surface_rate(config, system, output, executor=None):
     """Umbrella density -> basin QTST -> constrained parents -> paired flux."""
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "surface_rate")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "surface_rate")
     from .rate import _recrossing_options, _parent_task, _child_tasks, _aggregate, _dispatch_children
 
     config = copy.deepcopy(config)

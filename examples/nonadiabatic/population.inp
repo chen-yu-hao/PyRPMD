@@ -1,0 +1,36 @@
+# Small workflow demonstration, not a converged physical prediction.
+# All numeric model parameters, masses, beta and coordinates use atomic units.
+task = "nonadiabatic"
+method = "nrpmd"
+beta = 4.0
+beads = 4
+seed = 20261101
+
+[model]
+name = "spin_boson"
+
+[model.params]
+frequencies = [0.5]
+couplings = [0.08]
+masses = [1.0]
+bias = 0.1
+tunnelling = 0.15
+
+[initial]
+kind = "harmonic_ring"
+frequencies = [0.5]
+centers = [0.0]
+initial_state = 0
+
+[ensemble]
+trajectories = 16
+steps = 100
+sample_stride = 5
+
+[dynamics]
+dt = "0.02 autime"
+integrator = "cayley-bcb"
+block_steps = 32
+
+[output]
+directory = "runs/population"

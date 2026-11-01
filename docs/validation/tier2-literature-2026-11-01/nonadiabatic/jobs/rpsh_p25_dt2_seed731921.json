@@ -1,0 +1,3599 @@
+{
+  "complete": true,
+  "identity": {
+    "boundary": 8.0,
+    "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+    "count": 128,
+    "dt": 2.0,
+    "electronic_substeps": 4,
+    "method": "rpsh",
+    "momentum": 25.0,
+    "seed": 731921
+  },
+  "trajectories": [
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.5098157768466134e-06,
+      "final_p": 23.345452411217742,
+      "final_x": 8.00802906692018,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.683148060178553e-06,
+      "max_norm_error": 5.773159728050814e-15,
+      "seconds": 0.886111241998151,
+      "seed_entropy": [
+        731921,
+        25000,
+        0
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 0
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 4.768966798962548e-07,
+      "final_p": 25.000035970009915,
+      "final_x": 8.007664537426843,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.5499896667270363e-06,
+      "max_norm_error": 1.2212453270876722e-14,
+      "seconds": 0.6599427529945388,
+      "seed_entropy": [
+        731921,
+        25000,
+        1
+      ],
+      "steps": 646,
+      "time_au": 1292.0,
+      "trajectory": 1
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.8481366239939234,
+      "seed_entropy": [
+        731921,
+        25000,
+        2
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 2
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7891540099954,
+      "seed_entropy": [
+        731921,
+        25000,
+        3
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 3
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.6795843938720587e-06,
+      "final_p": 23.345466940049498,
+      "final_x": 8.012112431334089,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.852978237599668e-06,
+      "max_norm_error": 1.532107773982716e-14,
+      "seconds": 0.7305805299984058,
+      "seed_entropy": [
+        731921,
+        25000,
+        4
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 4
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.888001077421375e-07,
+      "final_p": 23.345253592561328,
+      "final_x": 8.00187238865376,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.7360074504590983e-06,
+      "max_norm_error": 8.43769498715119e-15,
+      "seconds": 0.6689421359988046,
+      "seed_entropy": [
+        731921,
+        25000,
+        5
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 5
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6269597759965109,
+      "seed_entropy": [
+        731921,
+        25000,
+        6
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 6
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.7412775638335773e-07,
+      "final_p": 23.345260842141386,
+      "final_x": 8.018112198960193,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7075003680001828,
+      "seed_entropy": [
+        731921,
+        25000,
+        7
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 7
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 5.852157685393156e-07,
+      "final_p": 23.345287546786558,
+      "final_x": 8.003700055774148,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3181904198744654e-06,
+      "max_norm_error": 1.4432899320127035e-14,
+      "seconds": 0.8089183689953643,
+      "seed_entropy": [
+        731921,
+        25000,
+        8
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 8
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -2.798724478836334e-07,
+      "final_p": 23.345213445932682,
+      "final_x": 8.000594292178308,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 6.8833827526759706e-15,
+      "seconds": 0.9107141439963016,
+      "seed_entropy": [
+        731921,
+        25000,
+        9
+      ],
+      "steps": 662,
+      "time_au": 1324.0,
+      "trajectory": 9
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 1.1719670371945767e-06,
+      "final_p": 25.000091634345633,
+      "final_x": 8.02475485032944,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 7.438494264988549e-15,
+      "seconds": 0.9002856530059944,
+      "seed_entropy": [
+        731921,
+        25000,
+        10
+      ],
+      "steps": 645,
+      "time_au": 1290.0,
+      "trajectory": 10
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.587491931997647,
+      "seed_entropy": [
+        731921,
+        25000,
+        11
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 11
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6404860010006814,
+      "seed_entropy": [
+        731921,
+        25000,
+        12
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 12
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.6795843938720587e-06,
+      "final_p": 23.345466940049498,
+      "final_x": 8.012112431334089,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.852978237599668e-06,
+      "max_norm_error": 1.532107773982716e-14,
+      "seconds": 0.7015979569987394,
+      "seed_entropy": [
+        731921,
+        25000,
+        13
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 13
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.1765238459314773e-06,
+      "final_p": 23.34542383993194,
+      "final_x": 8.012924794816234,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.3499489339162682e-06,
+      "max_norm_error": 1.1324274851176597e-14,
+      "seconds": 0.6610838799970224,
+      "seed_entropy": [
+        731921,
+        25000,
+        14
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 14
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.227294045282658e-06,
+      "final_p": 23.34551386512532,
+      "final_x": 8.0113096570113,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.4006537525388403e-06,
+      "max_norm_error": 1.3322676295501878e-14,
+      "seconds": 0.6531440449980437,
+      "seed_entropy": [
+        731921,
+        25000,
+        15
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 15
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.3360757820122267e-07,
+      "final_p": 23.34520881795327,
+      "final_x": 8.007096281505456,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.1966824620966996e-06,
+      "max_norm_error": 9.992007221626409e-15,
+      "seconds": 0.6355170009992435,
+      "seed_entropy": [
+        731921,
+        25000,
+        16
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 16
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.8338716729995213,
+      "seed_entropy": [
+        731921,
+        25000,
+        17
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 17
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": -1.1952553349847683e-07,
+      "final_p": 24.999988287986735,
+      "final_x": 8.016821326322756,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.43769498715119e-15,
+      "seconds": 0.8965620320013841,
+      "seed_entropy": [
+        731921,
+        25000,
+        18
+      ],
+      "steps": 644,
+      "time_au": 1288.0,
+      "trajectory": 18
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": -3.8027487908598445e-08,
+      "final_p": 24.99999476047276,
+      "final_x": 8.003203178176275,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.0745777563335732e-06,
+      "max_norm_error": 1.1102230246251565e-14,
+      "seconds": 0.9525517310030409,
+      "seed_entropy": [
+        731921,
+        25000,
+        19
+      ],
+      "steps": 646,
+      "time_au": 1292.0,
+      "trajectory": 19
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.9301619899997604,
+      "seed_entropy": [
+        731921,
+        25000,
+        20
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 20
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": -1.0024712537859415e-07,
+      "final_p": 24.999989824938982,
+      "final_x": 8.015276390372536,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.1711380634170663e-06,
+      "max_norm_error": 6.8833827526759706e-15,
+      "seconds": 0.7656527549988823,
+      "seed_entropy": [
+        731921,
+        25000,
+        21
+      ],
+      "steps": 647,
+      "time_au": 1294.0,
+      "trajectory": 21
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.227294045282658e-06,
+      "final_p": 23.34551386512532,
+      "final_x": 8.0113096570113,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.4006537525388403e-06,
+      "max_norm_error": 1.3322676295501878e-14,
+      "seconds": 0.7154975049998029,
+      "seed_entropy": [
+        731921,
+        25000,
+        22
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 22
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 6.585511648782294e-07,
+      "final_p": 25.000050479796386,
+      "final_x": 8.001238487089669,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.6209256159527285e-14,
+      "seconds": 0.7570910750000621,
+      "seed_entropy": [
+        731921,
+        25000,
+        23
+      ],
+      "steps": 643,
+      "time_au": 1286.0,
+      "trajectory": 23
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -2.0075759749049737e-07,
+      "final_p": 23.34522014025632,
+      "final_x": 8.02307923012951,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.148489697900713e-06,
+      "max_norm_error": 5.551115123125783e-15,
+      "seconds": 0.9487168210034724,
+      "seed_entropy": [
+        731921,
+        25000,
+        24
+      ],
+      "steps": 665,
+      "time_au": 1330.0,
+      "trajectory": 24
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.1612600744892454e-07,
+      "final_p": 23.3452473026485,
+      "final_x": 8.019038104513502,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 0.8075210690003587,
+      "seed_entropy": [
+        731921,
+        25000,
+        25
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 25
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.6795843938720587e-06,
+      "final_p": 23.345466940049498,
+      "final_x": 8.012112431334089,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.852978237599668e-06,
+      "max_norm_error": 1.532107773982716e-14,
+      "seconds": 0.7748606729946914,
+      "seed_entropy": [
+        731921,
+        25000,
+        26
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 26
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.1838279636577909e-06,
+      "final_p": 23.345338823430733,
+      "final_x": 8.005468292642732,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3572568427488996e-06,
+      "max_norm_error": 1.687538997430238e-14,
+      "seconds": 0.6712128020008095,
+      "seed_entropy": [
+        731921,
+        25000,
+        27
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 27
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 7.075893658226029e-07,
+      "final_p": 23.3452979835974,
+      "final_x": 8.016315119277193,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7086565909994533,
+      "seed_entropy": [
+        731921,
+        25000,
+        28
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 28
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7335901280021062,
+      "seed_entropy": [
+        731921,
+        25000,
+        29
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 29
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.8258342479966814,
+      "seed_entropy": [
+        731921,
+        25000,
+        30
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 30
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.4946501358803488e-07,
+      "final_p": 23.345224558180348,
+      "final_x": 8.016626416914981,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.0475032472544452e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 1.1930609510018257,
+      "seed_entropy": [
+        731921,
+        25000,
+        31
+      ],
+      "steps": 665,
+      "time_au": 1330.0,
+      "trajectory": 31
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.8261892070004251,
+      "seed_entropy": [
+        731921,
+        25000,
+        32
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 32
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -2.607655986974766e-07,
+      "final_p": 23.345215013004232,
+      "final_x": 8.019341549306844,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.1992890605060378e-06,
+      "max_norm_error": 8.215650382226158e-15,
+      "seconds": 0.8292384110027342,
+      "seed_entropy": [
+        731921,
+        25000,
+        33
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 33
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6390112039953237,
+      "seed_entropy": [
+        731921,
+        25000,
+        34
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 34
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.4364581594226173e-07,
+      "final_p": 23.34520794061671,
+      "final_x": 8.011751719563106,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.1519947220882685e-06,
+      "max_norm_error": 9.103828801926284e-15,
+      "seconds": 0.9037658640008885,
+      "seed_entropy": [
+        731921,
+        25000,
+        35
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 35
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.8055548852444776e-06,
+      "final_p": 23.34556340738924,
+      "final_x": 8.010513067029951,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.978877472360365e-06,
+      "max_norm_error": 6.106226635438361e-15,
+      "seconds": 1.1131548490011482,
+      "seed_entropy": [
+        731921,
+        25000,
+        36
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 36
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 1.5234450010029832,
+      "seed_entropy": [
+        731921,
+        25000,
+        37
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 37
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 7.671157671307327e-07,
+      "final_p": 25.000059211010342,
+      "final_x": 8.014438319768363,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3181904198744654e-06,
+      "max_norm_error": 9.103828801926284e-15,
+      "seconds": 1.3544969240028877,
+      "seed_entropy": [
+        731921,
+        25000,
+        38
+      ],
+      "steps": 645,
+      "time_au": 1290.0,
+      "trajectory": 38
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.332212098692498e-06,
+      "final_p": 23.3453515015629,
+      "final_x": 8.014588436485262,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 0.9566532930039102,
+      "seed_entropy": [
+        731921,
+        25000,
+        39
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 39
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.1612600744892454e-07,
+      "final_p": 23.3452473026485,
+      "final_x": 8.019038104513502,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 0.6711240940057905,
+      "seed_entropy": [
+        731921,
+        25000,
+        40
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 40
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 7.075893658226029e-07,
+      "final_p": 23.3452979835974,
+      "final_x": 8.016315119277193,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.5829035700007807,
+      "seed_entropy": [
+        731921,
+        25000,
+        41
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 41
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.835161755059378e-07,
+      "final_p": 23.34522162155192,
+      "final_x": 8.021925412691997,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.43769498715119e-15,
+      "seconds": 0.7163964790015598,
+      "seed_entropy": [
+        731921,
+        25000,
+        42
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 42
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.5098157768466134e-06,
+      "final_p": 23.345452411217742,
+      "final_x": 8.00802906692018,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.683148060178553e-06,
+      "max_norm_error": 5.773159728050814e-15,
+      "seconds": 0.8084846130004735,
+      "seed_entropy": [
+        731921,
+        25000,
+        43
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 43
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 5.852157685393156e-07,
+      "final_p": 23.345287546786558,
+      "final_x": 8.003700055774148,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3181904198744654e-06,
+      "max_norm_error": 1.4432899320127035e-14,
+      "seconds": 0.7005432900041342,
+      "seed_entropy": [
+        731921,
+        25000,
+        44
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 44
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.839826210576657e-06,
+      "final_p": 25.000225019419585,
+      "final_x": 8.012274827676029,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.852978237599668e-06,
+      "max_norm_error": 1.2878587085651816e-14,
+      "seconds": 0.7982226780004567,
+      "seed_entropy": [
+        731921,
+        25000,
+        45
+      ],
+      "steps": 645,
+      "time_au": 1290.0,
+      "trajectory": 45
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 8.963896124813964e-07,
+      "final_p": 25.00006951339843,
+      "final_x": 8.003104694566474,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 9.325873406851315e-15,
+      "seconds": 1.0002355509932386,
+      "seed_entropy": [
+        731921,
+        25000,
+        46
+      ],
+      "steps": 643,
+      "time_au": 1286.0,
+      "trajectory": 46
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.5098157768466134e-06,
+      "final_p": 23.345452411217742,
+      "final_x": 8.00802906692018,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.683148060178553e-06,
+      "max_norm_error": 5.773159728050814e-15,
+      "seconds": 0.8510878710003453,
+      "seed_entropy": [
+        731921,
+        25000,
+        47
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 47
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.6379144137121955e-06,
+      "final_p": 23.34554904877016,
+      "final_x": 8.009696367328633,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.8111957170738897e-06,
+      "max_norm_error": 1.3766765505351941e-14,
+      "seconds": 0.8008209620020352,
+      "seed_entropy": [
+        731921,
+        25000,
+        48
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 48
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -9.697207759007398e-09,
+      "final_p": 23.34523651983942,
+      "final_x": 8.019982358288187,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.9354580049985088,
+      "seed_entropy": [
+        731921,
+        25000,
+        49
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 49
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.444372922434269e-07,
+      "final_p": 23.345207877061018,
+      "final_x": 8.010608213699516,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.166211430898457e-06,
+      "max_norm_error": 5.551115123125783e-15,
+      "seconds": 1.003126745003101,
+      "seed_entropy": [
+        731921,
+        25000,
+        50
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 50
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.1612600744892454e-07,
+      "final_p": 23.3452473026485,
+      "final_x": 8.019038104513502,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 1.0348910390021047,
+      "seed_entropy": [
+        731921,
+        25000,
+        51
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 51
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7044500019983388,
+      "seed_entropy": [
+        731921,
+        25000,
+        52
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 52
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.625508107994392,
+      "seed_entropy": [
+        731921,
+        25000,
+        53
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 53
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.5991798710019793,
+      "seed_entropy": [
+        731921,
+        25000,
+        54
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 54
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.6795843938720587e-06,
+      "final_p": 23.345466940049498,
+      "final_x": 8.012112431334089,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.852978237599668e-06,
+      "max_norm_error": 1.532107773982716e-14,
+      "seconds": 0.8563440970028751,
+      "seed_entropy": [
+        731921,
+        25000,
+        55
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 55
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 4.694903356639024e-07,
+      "final_p": 23.34527758228271,
+      "final_x": 8.017204606914897,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.0436096431476471e-14,
+      "seconds": 0.9020274110007449,
+      "seed_entropy": [
+        731921,
+        25000,
+        56
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 56
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.888001077421375e-07,
+      "final_p": 23.345253592561328,
+      "final_x": 8.00187238865376,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.7360074504590983e-06,
+      "max_norm_error": 8.43769498715119e-15,
+      "seconds": 0.8006411909955204,
+      "seed_entropy": [
+        731921,
+        25000,
+        57
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 57
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 8.570943843821954e-07,
+      "final_p": 23.34531083537336,
+      "final_x": 8.004591172925382,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.0359081536182035e-06,
+      "max_norm_error": 2.042810365310288e-14,
+      "seconds": 0.8020805000051041,
+      "seed_entropy": [
+        731921,
+        25000,
+        58
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 58
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -2.8638984408968504e-07,
+      "final_p": 23.345212821567763,
+      "final_x": 8.018304058393921,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.212108869442675e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 0.8839970870030811,
+      "seed_entropy": [
+        731921,
+        25000,
+        59
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 59
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 5.852157685393156e-07,
+      "final_p": 23.345287546786558,
+      "final_x": 8.003700055774148,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3181904198744654e-06,
+      "max_norm_error": 1.4432899320127035e-14,
+      "seconds": 0.5673429249945912,
+      "seed_entropy": [
+        731921,
+        25000,
+        60
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 60
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7497261349999462,
+      "seed_entropy": [
+        731921,
+        25000,
+        61
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 61
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 1.380937002999417,
+      "seed_entropy": [
+        731921,
+        25000,
+        62
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 62
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.0112645265080165e-06,
+      "final_p": 23.345409703551155,
+      "final_x": 8.007185596064016,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.18463128126567e-06,
+      "max_norm_error": 1.4876988529977098e-14,
+      "seconds": 0.945258161998936,
+      "seed_entropy": [
+        731921,
+        25000,
+        63
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 63
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.192120444639457e-07,
+      "final_p": 23.345210017483282,
+      "final_x": 8.016181019429393,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.2088400638275996e-06,
+      "max_norm_error": 1.9095836023552692e-14,
+      "seconds": 0.7470580209992477,
+      "seed_entropy": [
+        731921,
+        25000,
+        64
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 64
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 5.852157685393156e-07,
+      "final_p": 23.345287546786558,
+      "final_x": 8.003700055774148,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3181904198744654e-06,
+      "max_norm_error": 1.4432899320127035e-14,
+      "seconds": 0.6564504479974858,
+      "seed_entropy": [
+        731921,
+        25000,
+        65
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 65
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.0706334636088073e-07,
+      "final_p": 23.345211112568528,
+      "final_x": 8.001627139189669,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.4654943925052066e-14,
+      "seconds": 0.7173296760010999,
+      "seed_entropy": [
+        731921,
+        25000,
+        66
+      ],
+      "steps": 662,
+      "time_au": 1324.0,
+      "trajectory": 66
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.332212098692498e-06,
+      "final_p": 23.3453515015629,
+      "final_x": 8.014588436485262,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 0.7319867119949777,
+      "seed_entropy": [
+        731921,
+        25000,
+        67
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 67
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.056451169158869e-06,
+      "final_p": 23.345499238188427,
+      "final_x": 8.008865157020546,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.2297467451314343e-06,
+      "max_norm_error": 8.659739592076221e-15,
+      "seconds": 0.7266026650031563,
+      "seed_entropy": [
+        731921,
+        25000,
+        68
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 68
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6777969369941275,
+      "seed_entropy": [
+        731921,
+        25000,
+        69
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 69
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.8284179699985543,
+      "seed_entropy": [
+        731921,
+        25000,
+        70
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 70
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.7035963595368742e-07,
+      "final_p": 23.345222777933447,
+      "final_x": 8.01397027048004,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.012628760705848e-06,
+      "max_norm_error": 1.2434497875801753e-14,
+      "seconds": 1.5123829950025538,
+      "seed_entropy": [
+        731921,
+        25000,
+        71
+      ],
+      "steps": 665,
+      "time_au": 1330.0,
+      "trajectory": 71
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 1.2893624589996762,
+      "seed_entropy": [
+        731921,
+        25000,
+        72
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 72
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 5.48533814481722e-08,
+      "final_p": 23.345242120813435,
+      "final_x": 8.000934692639396,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.8809609532988159e-06,
+      "max_norm_error": 1.5765166949677223e-14,
+      "seconds": 1.3735320159976254,
+      "seed_entropy": [
+        731921,
+        25000,
+        73
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 73
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.7263254299404451e-06,
+      "final_p": 23.34538526839445,
+      "final_x": 8.013749442162503,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 7.771561172376096e-15,
+      "seconds": 0.6713126779941376,
+      "seed_entropy": [
+        731921,
+        25000,
+        74
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 74
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.791788884998823,
+      "seed_entropy": [
+        731921,
+        25000,
+        75
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 75
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.8477007609981229,
+      "seed_entropy": [
+        731921,
+        25000,
+        76
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 76
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7433749990013894,
+      "seed_entropy": [
+        731921,
+        25000,
+        77
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 77
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.215577472013507e-07,
+      "final_p": 23.345226928000567,
+      "final_x": 8.022354905335709,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.0727947903920185e-06,
+      "max_norm_error": 1.4654943925052066e-14,
+      "seconds": 0.8992371809945325,
+      "seed_entropy": [
+        731921,
+        25000,
+        78
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 78
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.5683321683002127e-06,
+      "final_p": 23.345371760722102,
+      "final_x": 8.006332605277505,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.7417311453382656e-06,
+      "max_norm_error": 9.325873406851315e-15,
+      "seconds": 1.2039084330026526,
+      "seed_entropy": [
+        731921,
+        25000,
+        79
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 79
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 1.6971251249997295,
+      "seed_entropy": [
+        731921,
+        25000,
+        80
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 80
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 1.2640524409944192,
+      "seed_entropy": [
+        731921,
+        25000,
+        81
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 81
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 3.246221099595381e-06,
+      "final_p": 25.000257540124252,
+      "final_x": 8.015001469829574,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.246221099595381e-06,
+      "max_norm_error": 8.104628079763643e-15,
+      "seconds": 0.8446177679943503,
+      "seed_entropy": [
+        731921,
+        25000,
+        82
+      ],
+      "steps": 644,
+      "time_au": 1288.0,
+      "trajectory": 82
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6042252749975887,
+      "seed_entropy": [
+        731921,
+        25000,
+        83
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 83
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6806998449974344,
+      "seed_entropy": [
+        731921,
+        25000,
+        84
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 84
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6792930950032314,
+      "seed_entropy": [
+        731921,
+        25000,
+        85
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 85
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6244629899956635,
+      "seed_entropy": [
+        731921,
+        25000,
+        86
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 86
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7456973820007988,
+      "seed_entropy": [
+        731921,
+        25000,
+        87
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 87
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -9.697207759007398e-09,
+      "final_p": 23.34523651983942,
+      "final_x": 8.019982358288187,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.9368482959980611,
+      "seed_entropy": [
+        731921,
+        25000,
+        88
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 88
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.332212098692498e-06,
+      "final_p": 23.3453515015629,
+      "final_x": 8.014588436485262,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 1.6515495169951464,
+      "seed_entropy": [
+        731921,
+        25000,
+        89
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 89
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 1.4197583999994094,
+      "seed_entropy": [
+        731921,
+        25000,
+        90
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 90
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.7263254299404451e-06,
+      "final_p": 23.34538526839445,
+      "final_x": 8.013749442162503,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 7.771561172376096e-15,
+      "seconds": 1.340273136003816,
+      "seed_entropy": [
+        731921,
+        25000,
+        91
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 91
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.056451169158869e-06,
+      "final_p": 23.345499238188427,
+      "final_x": 8.008865157020546,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.2297467451314343e-06,
+      "max_norm_error": 8.659739592076221e-15,
+      "seconds": 0.7996386739978334,
+      "seed_entropy": [
+        731921,
+        25000,
+        92
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 92
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": -1.404243974156838e-07,
+      "final_p": 24.99998655917888,
+      "final_x": 8.000496078971556,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.196555207556461e-06,
+      "max_norm_error": 5.773159728050814e-15,
+      "seconds": 0.6350275420045364,
+      "seed_entropy": [
+        731921,
+        25000,
+        93
+      ],
+      "steps": 644,
+      "time_au": 1288.0,
+      "trajectory": 93
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.227294045282658e-06,
+      "final_p": 23.34551386512532,
+      "final_x": 8.0113096570113,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.4006537525388403e-06,
+      "max_norm_error": 1.3322676295501878e-14,
+      "seconds": 0.7062083900018479,
+      "seed_entropy": [
+        731921,
+        25000,
+        94
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 94
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.7035963595368742e-07,
+      "final_p": 23.345222777933447,
+      "final_x": 8.01397027048004,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.012628760705848e-06,
+      "max_norm_error": 1.2434497875801753e-14,
+      "seconds": 0.9672771819969057,
+      "seed_entropy": [
+        731921,
+        25000,
+        95
+      ],
+      "steps": 665,
+      "time_au": 1330.0,
+      "trajectory": 95
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.056451169158869e-06,
+      "final_p": 23.345499238188427,
+      "final_x": 8.008865157020546,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.2297467451314343e-06,
+      "max_norm_error": 8.659739592076221e-15,
+      "seconds": 0.7583200929948362,
+      "seed_entropy": [
+        731921,
+        25000,
+        96
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 96
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.640162574147787e-07,
+      "final_p": 23.34526859994034,
+      "final_x": 8.00279402064621,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.5499896667270363e-06,
+      "max_norm_error": 1.2212453270876722e-14,
+      "seconds": 0.8249260500015225,
+      "seed_entropy": [
+        731921,
+        25000,
+        97
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 97
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.4096192108590273e-07,
+      "final_p": 23.345208166357345,
+      "final_x": 8.012881097549469,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.158122548889807e-06,
+      "max_norm_error": 7.105427357601002e-15,
+      "seconds": 0.8857865120007773,
+      "seed_entropy": [
+        731921,
+        25000,
+        98
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 98
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6291905850011972,
+      "seed_entropy": [
+        731921,
+        25000,
+        99
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 99
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.888001077421375e-07,
+      "final_p": 23.345253592561328,
+      "final_x": 8.00187238865376,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.7360074504590983e-06,
+      "max_norm_error": 8.43769498715119e-15,
+      "seconds": 0.7774698109933524,
+      "seed_entropy": [
+        731921,
+        25000,
+        100
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 100
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.9651650300002075,
+      "seed_entropy": [
+        731921,
+        25000,
+        101
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 101
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.9154025989992078,
+      "seed_entropy": [
+        731921,
+        25000,
+        102
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 102
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.215577472013507e-07,
+      "final_p": 23.345226928000567,
+      "final_x": 8.022354905335709,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.0727947903920185e-06,
+      "max_norm_error": 1.4654943925052066e-14,
+      "seconds": 0.7992195939950761,
+      "seed_entropy": [
+        731921,
+        25000,
+        103
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 103
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 1.046008323540848e-06,
+      "final_p": 25.000081528559647,
+      "final_x": 8.01623860822438,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.046008323540848e-06,
+      "max_norm_error": 1.3766765505351941e-14,
+      "seconds": 0.6816367900028126,
+      "seed_entropy": [
+        731921,
+        25000,
+        104
+      ],
+      "steps": 644,
+      "time_au": 1288.0,
+      "trajectory": 104
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6807762949974858,
+      "seed_entropy": [
+        731921,
+        25000,
+        105
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 105
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.0813802997500233e-07,
+      "final_p": 23.345228082830317,
+      "final_x": 8.020944861148756,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.3988810110276972e-14,
+      "seconds": 0.827787754999008,
+      "seed_entropy": [
+        731921,
+        25000,
+        106
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 106
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -2.920269553952082e-07,
+      "final_p": 23.3452123938048,
+      "final_x": 8.00346892152354,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.1978436434699766e-06,
+      "max_norm_error": 5.773159728050814e-15,
+      "seconds": 0.7747214580012951,
+      "seed_entropy": [
+        731921,
+        25000,
+        107
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 107
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -1.0813802997500233e-07,
+      "final_p": 23.345228082830317,
+      "final_x": 8.020944861148756,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.3988810110276972e-14,
+      "seconds": 0.7895656820037402,
+      "seed_entropy": [
+        731921,
+        25000,
+        108
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 108
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 8.570943843821954e-07,
+      "final_p": 23.34531083537336,
+      "final_x": 8.004591172925382,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.0359081536182035e-06,
+      "max_norm_error": 2.042810365310288e-14,
+      "seconds": 0.7743360710010165,
+      "seed_entropy": [
+        731921,
+        25000,
+        109
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 109
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.6795843938720587e-06,
+      "final_p": 23.345466940049498,
+      "final_x": 8.012112431334089,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.852978237599668e-06,
+      "max_norm_error": 1.532107773982716e-14,
+      "seconds": 0.8181118170032278,
+      "seed_entropy": [
+        731921,
+        25000,
+        110
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 110
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -2.396503371859815e-07,
+      "final_p": 23.345216808857266,
+      "final_x": 8.022923737392764,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.687538997430238e-14,
+      "seconds": 0.707359986998199,
+      "seed_entropy": [
+        731921,
+        25000,
+        111
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 111
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.470789984831967e-07,
+      "final_p": 25.00001761561045,
+      "final_x": 8.016607585844042,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.8809609532988159e-06,
+      "max_norm_error": 6.661338147750939e-15,
+      "seconds": 0.7691113859982579,
+      "seed_entropy": [
+        731921,
+        25000,
+        112
+      ],
+      "steps": 644,
+      "time_au": 1288.0,
+      "trajectory": 112
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 4.694903356639024e-07,
+      "final_p": 23.34527758228271,
+      "final_x": 8.017204606914897,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.0436096431476471e-14,
+      "seconds": 0.7311318210049649,
+      "seed_entropy": [
+        731921,
+        25000,
+        113
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 113
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -2.732832708463029e-07,
+      "final_p": 23.34521396909229,
+      "final_x": 8.011625503381872,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 7.993605777301127e-15,
+      "seconds": 0.7157434869950521,
+      "seed_entropy": [
+        731921,
+        25000,
+        114
+      ],
+      "steps": 662,
+      "time_au": 1324.0,
+      "trajectory": 114
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 2.6795843938720587e-06,
+      "final_p": 23.345466940049498,
+      "final_x": 8.012112431334089,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.852978237599668e-06,
+      "max_norm_error": 1.532107773982716e-14,
+      "seconds": 0.6781064839960891,
+      "seed_entropy": [
+        731921,
+        25000,
+        115
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 115
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.7692250359978061,
+      "seed_entropy": [
+        731921,
+        25000,
+        116
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 116
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.1838279636577909e-06,
+      "final_p": 23.345338823430733,
+      "final_x": 8.005468292642732,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3572568427488996e-06,
+      "max_norm_error": 1.687538997430238e-14,
+      "seconds": 0.8767194969987031,
+      "seed_entropy": [
+        731921,
+        25000,
+        117
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 117
+    },
+    {
+      "accepted_hops": 0,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.7645329220282733e-08,
+      "final_p": 25.00000007360815,
+      "final_x": 8.020304804577128,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.9314495139988139,
+      "seed_entropy": [
+        731921,
+        25000,
+        118
+      ],
+      "steps": 642,
+      "time_au": 1284.0,
+      "trajectory": 118
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 5.852157685393156e-07,
+      "final_p": 23.345287546786558,
+      "final_x": 8.003700055774148,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.3181904198744654e-06,
+      "max_norm_error": 1.4432899320127035e-14,
+      "seconds": 0.674584476997552,
+      "seed_entropy": [
+        731921,
+        25000,
+        119
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 119
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.224152125835822e-07,
+      "final_p": 23.345209777045643,
+      "final_x": 8.007033536627308,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 5.995204332975845e-15,
+      "seconds": 0.6613273629991454,
+      "seed_entropy": [
+        731921,
+        25000,
+        120
+      ],
+      "steps": 662,
+      "time_au": 1324.0,
+      "trajectory": 120
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.3626993187207965e-07,
+      "final_p": 23.345208564193914,
+      "final_x": 8.01399600376137,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.1792332562942107e-06,
+      "max_norm_error": 5.329070518200751e-15,
+      "seconds": 0.7543761319975602,
+      "seed_entropy": [
+        731921,
+        25000,
+        121
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 121
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.053422933385619e-07,
+      "final_p": 23.34521120177404,
+      "final_x": 8.017250448777839,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 2.2146073144213574e-06,
+      "max_norm_error": 9.103828801926284e-15,
+      "seconds": 0.825329076993512,
+      "seed_entropy": [
+        731921,
+        25000,
+        122
+      ],
+      "steps": 664,
+      "time_au": 1328.0,
+      "trajectory": 122
+    },
+    {
+      "accepted_hops": 2,
+      "active_surface": 0,
+      "channel": "transmitted_lower",
+      "final_energy_error": 2.470789984831967e-07,
+      "final_p": 25.00001761561045,
+      "final_x": 8.016607585844042,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.8809609532988159e-06,
+      "max_norm_error": 6.661338147750939e-15,
+      "seconds": 0.756521540999529,
+      "seed_entropy": [
+        731921,
+        25000,
+        123
+      ],
+      "steps": 644,
+      "time_au": 1288.0,
+      "trajectory": 123
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.1612600744892454e-07,
+      "final_p": 23.3452473026485,
+      "final_x": 8.019038104513502,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 0.7721174180041999,
+      "seed_entropy": [
+        731921,
+        25000,
+        124
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 124
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 3.056451169158869e-06,
+      "final_p": 23.345499238188427,
+      "final_x": 8.008865157020546,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 3.2297467451314343e-06,
+      "max_norm_error": 8.659739592076221e-15,
+      "seconds": 1.3264067630007048,
+      "seed_entropy": [
+        731921,
+        25000,
+        125
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 125
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": -3.2984115724832286e-07,
+      "final_p": 23.345209145025443,
+      "final_x": 8.005921319502756,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 1.4210854715202004e-14,
+      "seconds": 1.6513771669997368,
+      "seed_entropy": [
+        731921,
+        25000,
+        126
+      ],
+      "steps": 662,
+      "time_au": 1324.0,
+      "trajectory": 126
+    },
+    {
+      "accepted_hops": 1,
+      "active_surface": 1,
+      "channel": "transmitted_upper",
+      "final_energy_error": 1.1612600744892454e-07,
+      "final_p": 23.3452473026485,
+      "final_x": 8.019038104513502,
+      "frustrated_hops": 0,
+      "initial_coefficients_imag": [
+        0.0,
+        0.0
+      ],
+      "initial_coefficients_real": [
+        1.0,
+        0.0
+      ],
+      "max_energy_error": 1.981186967314752e-06,
+      "max_norm_error": 8.881784197001252e-15,
+      "seconds": 1.183438693995413,
+      "seed_entropy": [
+        731921,
+        25000,
+        127
+      ],
+      "steps": 663,
+      "time_au": 1326.0,
+      "trajectory": 127
+    }
+  ]
+}

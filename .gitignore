@@ -11,6 +11,8 @@ runs/
 .venv/
 *.h5
 *.npz
+!docs/validation/ecosystem-2026-11-01/water-pilot/trajectory.npz
+!docs/validation/ecosystem-2026-11-01/water-pilot/spectrum-diagnostic.npz
 *.mod
 /validation/
 

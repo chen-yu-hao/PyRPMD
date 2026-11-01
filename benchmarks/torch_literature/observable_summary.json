@@ -1,0 +1,309 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-01",
+  "parent_commit": "dae39b12c8b7e3d181661f2c1bff111d856f22ab",
+  "production_backend_git_blob": "973cc9a8005b85506033c009ba456862fa8a0e47",
+  "environment": {
+    "python": "3.13.5",
+    "numpy": "2.3.5",
+    "torch": "2.10.0+cpu",
+    "device": "cpu",
+    "threads": 1,
+    "harness_sha256": "47052865e5f48aedb08e9984b8e5fd1c9876d50db274c193aefdd5d57e181d1c",
+    "backend_sha256": "c1bbeaf840f48d476ab41a335fd7bfdf7de89b4b21d580e7de69d3fcc7ed5946"
+  },
+  "scope": "Independent analytic and numerical observable validation; not CUDA, trained chemistry, liquid water, rate, or digitized figure replication.",
+  "tests": {
+    "new_cases": 85,
+    "focused": {
+      "passed": 302,
+      "skipped": 4,
+      "subtests_passed": 3
+    },
+    "full": {
+      "passed": 4639,
+      "failed": 1,
+      "skipped": 141,
+      "subtests_passed": 357,
+      "failure": "test_render_never_initializes_a_requested_gui_backend: isolated no-PyRPMD subprocess already selects Agg and imports pyplot despite MPLBACKEND=TkAgg"
+    },
+    "rebuilt_sdist": {
+      "passed": 285,
+      "skipped": 3
+    },
+    "parent_ci": {
+      "commit": "dae39b12c8b7e3d181661f2c1bff111d856f22ab",
+      "workflow_run": 41310983169,
+      "torch_passed": 217,
+      "torch_skipped": 4,
+      "all_11_workflows": "success",
+      "mpi": "all eight commands pass on both Python 3.11 and 3.12"
+    }
+  },
+  "quantum_reference": {
+    "points": 4096,
+    "extent": 8.0,
+    "levels": 80,
+    "q2": 0.6967255140925812,
+    "potential": 0.2908276835001269,
+    "kinetic": 0.5816579529690706,
+    "total_energy": 0.8724856364691975,
+    "ground_energy": 0.42080440671808816,
+    "highest_level_weight": 2.2141936171403623e-129
+  },
+  "finite_P_reference": [
+    {
+      "beads": 1,
+      "beta": 1.0,
+      "points": 512,
+      "extent": 6.0,
+      "retained_eigenvalues": 19,
+      "q2": 0.6759782400672808,
+      "potential": 0.24999999999999134,
+      "kinetic_virial": 0.5000000000000744,
+      "kinetic_primitive": 0.49999999999997957
+    },
+    {
+      "beads": 8,
+      "beta": 1.0,
+      "points": 512,
+      "extent": 6.0,
+      "retained_eigenvalues": 73,
+      "q2": 0.6964786506216631,
+      "potential": 0.2896880103982864,
+      "kinetic_virial": 0.5793760207965726,
+      "kinetic_primitive": 0.5793760207966017
+    },
+    {
+      "beads": 16,
+      "beta": 1.0,
+      "points": 512,
+      "extent": 6.0,
+      "retained_eigenvalues": 117,
+      "q2": 0.6966650534558295,
+      "potential": 0.29053890878898575,
+      "kinetic_virial": 0.5810778175779653,
+      "kinetic_primitive": 0.5810778175780058
+    },
+    {
+      "beads": 54,
+      "beta": 1.0,
+      "points": 512,
+      "extent": 6.0,
+      "retained_eigenvalues": 226,
+      "q2": 0.6967203925510944,
+      "potential": 0.2908025427237435,
+      "kinetic_virial": 0.5816050854474832,
+      "kinetic_primitive": 0.5816050854480679
+    }
+  ],
+  "correlation": {
+    "seed": 20261101,
+    "trajectories": 2048,
+    "beads": 54,
+    "beta": 1.0,
+    "mass": 1.0,
+    "potential": "x**4/4",
+    "thermostat": null,
+    "interval": 0.1,
+    "C0": 0.599023006261178,
+    "reference": "paired normal-mode BAB dt=0.0025; not exact quantum dynamics or digitized paper data",
+    "rows": [
+      {
+        "scheme": "normal-mode-bab",
+        "dt": 0.0025,
+        "max_mean_difference_over_C0": 0.0,
+        "simultaneous_95_upper_absolute_difference_over_C0": 0.0,
+        "max_relative_energy_drift_at_observations": 6.786031720329433e-06
+      },
+      {
+        "scheme": "normal-mode-bab",
+        "dt": 0.005,
+        "max_mean_difference_over_C0": 1.0411207813559485e-05,
+        "simultaneous_95_upper_absolute_difference_over_C0": 1.3478801762477522e-05,
+        "max_relative_energy_drift_at_observations": 2.7361109990131638e-05
+      },
+      {
+        "scheme": "normal-mode-bab",
+        "dt": 0.01,
+        "max_mean_difference_over_C0": 5.210620365164319e-05,
+        "simultaneous_95_upper_absolute_difference_over_C0": 6.744834963420396e-05,
+        "max_relative_energy_drift_at_observations": 0.00011320028981698371
+      },
+      {
+        "scheme": "cayley-bcb",
+        "dt": 0.01,
+        "max_mean_difference_over_C0": 0.00018664199358166652,
+        "simultaneous_95_upper_absolute_difference_over_C0": 0.0007729407368904519,
+        "max_relative_energy_drift_at_observations": 0.00013138233498710683
+      },
+      {
+        "scheme": "cayley-bcb",
+        "dt": 0.05,
+        "max_mean_difference_over_C0": 0.0014604068286971994,
+        "simultaneous_95_upper_absolute_difference_over_C0": 0.0025532402362524595,
+        "max_relative_energy_drift_at_observations": 0.003266673113273111
+      },
+      {
+        "scheme": "cayley-bcb",
+        "dt": 0.1,
+        "max_mean_difference_over_C0": 0.005621562853371878,
+        "simultaneous_95_upper_absolute_difference_over_C0": 0.008030497477137612,
+        "max_relative_energy_drift_at_observations": 0.021519551778962143
+      }
+    ]
+  },
+  "dimension": {
+    "beta": 8.0,
+    "dt": 0.5,
+    "trajectories": 1024,
+    "scheme": "OBCBO",
+    "potential": "x**2/2",
+    "cold_start": true,
+    "rows": [
+      {
+        "beads": 8,
+        "seed": 5008,
+        "steps": 1600,
+        "exact_KE": 0.2238095238095238,
+        "stationary_KE": 0.2053968253968254,
+        "finite_time_KE": 0.20539682539682547,
+        "sampled_KE": {
+          "mean": 0.20127367530752155,
+          "se": 0.005138674165704603,
+          "ci": [
+            0.1911901288881065,
+            0.2113572217269366
+          ],
+          "n": 1024
+        }
+      },
+      {
+        "beads": 32,
+        "seed": 5032,
+        "steps": 1600,
+        "exact_KE": 0.24823944258872288,
+        "stationary_KE": 0.1314554054279713,
+        "finite_time_KE": 0.13145540542797107,
+        "sampled_KE": {
+          "mean": 0.11212272364956,
+          "se": 0.01505736062217137,
+          "ci": [
+            0.08257588143083008,
+            0.1416695658682899
+          ],
+          "n": 1024
+        }
+      },
+      {
+        "beads": 128,
+        "seed": 5128,
+        "steps": 1600,
+        "exact_KE": 0.2500459432410338,
+        "stationary_KE": -0.2666176605428987,
+        "finite_time_KE": -0.2666176605428987,
+        "sampled_KE": {
+          "mean": -0.24090282410286717,
+          "se": 0.031835984992057816,
+          "ci": [
+            -0.3033741196400885,
+            -0.17843152856564587
+          ],
+          "n": 1024
+        }
+      },
+      {
+        "beads": 256,
+        "seed": 5256,
+        "steps": 1600,
+        "exact_KE": 0.25013730976387194,
+        "stationary_KE": -0.7998535362518666,
+        "finite_time_KE": -0.7998535361220185,
+        "sampled_KE": {
+          "mean": -0.7524160674138386,
+          "se": 0.04722695938508274,
+          "ci": [
+            -0.8450888506748521,
+            -0.6597432841528251
+          ],
+          "n": 1024
+        }
+      }
+    ]
+  },
+  "sampling": {
+    "beads": 16,
+    "beta": 1.0,
+    "trajectories": 256,
+    "equil_time": 20.0,
+    "production_time": 100.0,
+    "observation_interval": 0.2,
+    "uncertainty": "standard error across independent trajectory means, not across correlated time samples",
+    "reference_KE": 0.5810778175780058,
+    "rows": [
+      {
+        "scheme": "normal-mode-bab",
+        "dt": 0.02,
+        "seed": 717,
+        "primitive_KE": {
+          "mean": 0.579548442258546,
+          "se": 0.008600881458127747,
+          "ci": [
+            0.5626106354930291,
+            0.5964862490240628
+          ],
+          "n": 256
+        },
+        "z_vs_finite_P": -0.1778161141861341
+      },
+      {
+        "scheme": "normal-mode-bab",
+        "dt": 0.1,
+        "seed": 717,
+        "primitive_KE": {
+          "mean": 1.6043467437906336,
+          "se": 0.025824540591229576,
+          "ci": [
+            1.553490203042808,
+            1.6552032845384592
+          ],
+          "n": 256
+        },
+        "z_vs_finite_P": 39.62389660322345
+      },
+      {
+        "scheme": "cayley-bcb",
+        "dt": 0.02,
+        "seed": 717,
+        "primitive_KE": {
+          "mean": 0.5802981659412585,
+          "se": 0.00862736525900134,
+          "ci": [
+            0.5633082043467516,
+            0.5972881275357654
+          ],
+          "n": 256
+        },
+        "z_vs_finite_P": -0.09036961034353638
+      },
+      {
+        "scheme": "cayley-bcb",
+        "dt": 0.1,
+        "seed": 717,
+        "primitive_KE": {
+          "mean": 0.5561798659920072,
+          "se": 0.00867662923061954,
+          "ci": [
+            0.5390928883374797,
+            0.5732668436465347
+          ],
+          "n": 256
+        },
+        "z_vs_finite_P": -2.869541952782142
+      }
+    ]
+  },
+  "uncertainty": "Student-t pointwise 95% intervals over independent trajectory summaries; correlation uses approximate Bonferroni simultaneous bounds across 505 method-time differences. Not exact finite-sample distribution-free guarantees.",
+  "complete_local_result_sha256": "3656521261b14d6434eed23daf43617d61ba4ff8a37e9b3dae071c6eb027bac4",
+  "regenerate": "PYTHONPATH=src python benchmarks/torch_observable_validation.py --section all --output results.json"
+}

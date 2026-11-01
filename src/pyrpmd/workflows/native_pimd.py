@@ -10,25 +10,42 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-from pathlib import Path
 import shutil
 import tempfile
+from pathlib import Path
 
 import numpy as np
 
 from ..io import file_sha256, jsonable, referenced_files, write_json
-from ..native_ensemble import NativeEnsemble, NativePeriodicPES, ensemble_from_config, _COLUMNS, _THERMOSTATS
+from ..native_ensemble import (
+    _COLUMNS,
+    _THERMOSTATS,
+    NativeEnsemble,
+    NativePeriodicPES,
+    ensemble_from_config,
+)
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
-from .fes import _fingerprint, checked_integer
+from .common import _fingerprint, checked_integer
 
 _SCHEMA = "pyrpmd.native-pimd-journal.v1"
 _NAMES = ("potential_energy", "kinetic_primitive", "kinetic_centroid_virial",
           "internal_energy_centroid_virial", "ring_polymer_hamiltonian")
 
 
+def sampling_splitting(integrator, thermostat, barostat="none"):
+    """Name the full map reported by the shared native executor."""
+    if barostat != "none":
+        return "obabo"
+    if thermostat == "nhc":
+        return "obcbo" if integrator == "cayley-bcb" else "obabo"
+    return "bcocb" if integrator == "cayley-bcb" else "baoab"
+
+
 def resolve_native_pimd(config, system):
     """Preflight the opt-in route; the native constructor checks all matrices."""
+    if system.bond_constraints:
+        raise ValueError("native PIMD does not implement bond constraints; use legacy velocity-verlet")
     if config.get("task") != "pimd":
         raise ValueError("sampling.engine='native' currently requires task='pimd'")
     s = config.get("sampling", {})
@@ -40,7 +57,8 @@ def resolve_native_pimd(config, system):
     mode = s.get("thermostat", "pile-l")
     if mode not in _THERMOSTATS or mode in ("none", "trpmd"):
         raise ValueError("equilibrium native PIMD requires a sampling thermostat, not none/TRPMD")
-    expected = "bcocb" if loop["integrator"] == "cayley-bcb" else "baoab"
+    expected = (sampling_splitting(loop["integrator"], mode, config.get("barostat", {}).get("mode", "none"))
+                if mode == "nhc" else "bcocb" if loop["integrator"] == "cayley-bcb" else "baoab")
     if s.get("integrator", expected) != expected:
         raise ValueError(f"native PIMD sampling.integrator must be {expected}")
     if any(config.get(key) for key in ("umbrella", "metadynamics", "reaction", "electronic_friction")):
@@ -89,7 +107,11 @@ def resolve_native_pimd(config, system):
 
 
 def _native_potential(provider):
-    from ..potentials.builtin import FreePotential, HarmonicPotential, PeriodicCosinePotential
+    from ..potentials.builtin import (
+        FreePotential,
+        HarmonicPotential,
+        PeriodicCosinePotential,
+    )
     if type(provider) is FreePotential:
         return {"kind": "free"}
     if type(provider) is HarmonicPotential:
@@ -267,6 +289,8 @@ def _summary(streams, config, system, output, return_data=False):
     summary = {"task": "pimd", "status": "complete", "physical_converged": False, "converged": False,
         "phase": "equilibrium_sampling", "backend": "native-cxx17", "python_step_callbacks": 0,
         "sampling_thermostat": config["sampling"].get("thermostat", "pile-l"), "barostat": bmode,
+        "sampling_splitting": sampling_splitting(loop_options(config)["integrator"],
+            config["sampling"].get("thermostat", "pile-l"), bmode).upper(),
         "integrator": loop_options(config)["integrator"], "replicas": len(streams),
         "samples_per_replica": [s["frames"] for s in streams], "energy_unit": "hartree",
         "estimators": {name: {"mean": float(means[:, i].mean()), "standard_error_between_replicas":
@@ -291,6 +315,8 @@ def _summary(streams, config, system, output, return_data=False):
 
 
 def run_native_pimd(config, system, output, executor=None, return_data=False):
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "native_pimd")
     options = resolve_native_pimd(config, system)
     tasks = [dict(config=copy.deepcopy(config), system=system, output=str(output), replica=r) for r in range(options["replicas"])]
     streams = executor.map(_sample, tasks) if executor is not None else run_tasks(_sample, tasks, config.get("parallel", {}))

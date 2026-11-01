@@ -3,9 +3,9 @@
 The Cartesian path solver is a stationary-action calculation, not molecular
 dynamics.  Its folded half-ring representation fixes imaginary-time phase; the
 full-ring Hessian is retained for mode diagnostics.  Quantitative rates in this
-module are restricted to one active Cartesian degree of freedom, with an
-explicit reactant partition function.  Multidimensional action optimization
-does not by itself supply the transverse fluctuation/rotation prefactor.
+module retain the original one-dimensional cross-check. Multidimensional
+Gaussian rates and cached-Hessian TST/Wigner/Eckart estimates are available
+in pyrpmd.low_temperature; open-path splittings are in pyrpmd.tunnelling.
 
 References: Richardson & Althorpe, JCP 131, 214106 (2009),
 doi:10.1063/1.3267318; Richardson, JCP 144, 114106 (2016),
@@ -15,27 +15,27 @@ and kelvin; hbar=1 in atomic units.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
+from functools import partial
 
 import numpy as np
 from scipy.optimize import root
 
 from .constants import ATOMIC_TIME_S, BOHR_M, KB_AU
 from .potentials.base import coordinates, validate_result
+from .validation import finite_positive
 
 
 class InstantonError(RuntimeError):
     """The requested stationary orbit or its rate prefactor is not valid."""
 
 
-def _positive(value, name):
-    if isinstance(value, (bool, np.bool_)) or np.ndim(value) != 0:
-        raise ValueError(f"{name} must be a positive finite scalar")
-    value = float(value)
-    if not np.isfinite(value) or value <= 0:
-        raise ValueError(f"{name} must be a positive finite scalar")
-    return value
+_positive = partial(
+    finite_positive,
+    shape="zero_dim",
+    message="{name} must be a positive finite scalar",
+)
 
 
 def _mask_and_masses(shape, masses, active_mask):
@@ -203,10 +203,11 @@ class InstantonResult:
     converged: bool
     function_evaluations: int
     message: str
+    action_hessian: np.ndarray | None = None
 
     def to_dict(self, *, include_path=True):
         output = {key: value for key, value in vars(self).items()
-                  if key not in ("path_bohr", "hessian_eigenvalues")}
+                  if key not in ("path_bohr", "hessian_eigenvalues", "action_hessian")}
         output.update(nbeads=len(self.path_bohr),
                       hessian_eigenvalues=self.hessian_eigenvalues.tolist(),
                       scope="stationary_action_path_not_a_multidimensional_rate",
@@ -221,7 +222,8 @@ def optimize_instanton(potential, masses, temperature_kelvin, initial_path, *,
                       active_mask=None, transition_state=None,
                       energy_reference_hartree=0.0, hessian_step_bohr=1e-4,
                       gradient_tolerance=1e-8, max_iterations=200,
-                      minimum_spread_bohr=1e-5, raise_on_failure=True):
+                      minimum_spread_bohr=1e-5, raise_on_failure=True,
+                      retain_hessian=False):
     """Find a folded periodic stationary orbit from a noncollapsed path seed.
 
     ``initial_path[P,N,3]`` must obey link reflection q[j]=q[P-1-j],
@@ -237,7 +239,12 @@ def optimize_instanton(potential, masses, temperature_kelvin, initial_path, *,
     bead study and independent PES validation remain necessary.  The default
     raises on failure.  ``raise_on_failure=False`` returns diagnostics only.
     ``max_iterations`` bounds the solver's residual-evaluation budget.
+    ``retain_hessian=True`` retains the final unweighted Cartesian action
+    Hessian for pyrpmd.low_temperature.instanton_rate, avoiding another set
+    of PES finite differences. The cache is excluded from JSON diagnostics.
     """
+    if not isinstance(retain_hessian, (bool, np.bool_)):
+        raise ValueError("retain_hessian must be boolean")
     action = RingPolymerAction(potential, masses, temperature_kelvin,
                               active_mask=active_mask,
                               energy_reference_hartree=energy_reference_hartree,
@@ -328,6 +335,7 @@ def optimize_instanton(potential, masses, temperature_kelvin, initial_path, *,
         evaluation["potential_action_hbar"], gradient_max, spread, negative,
         near_zero, phase_residual, eigenvalues, converged, int(solution.nfev),
         "; ".join(reasons) if reasons else "stationary noncollapsed first-order orbit",
+        h.copy() if retain_hessian else None,
     )
     if not converged and raise_on_failure:
         raise InstantonError(result.message)

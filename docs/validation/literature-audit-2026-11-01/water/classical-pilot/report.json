@@ -1,0 +1,330 @@
+{
+  "analysis_source_sha256": {
+    "benchmarks/water/analyze_campaign.py": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "artifacts": {
+    "curves.npz": {
+      "bytes": 28069,
+      "sha256": "8096a45533cd0bb24f9160bc4fea2531df76a9be3c452769a6f49cf1e8aec467"
+    },
+    "endpoint.npz": {
+      "bytes": 31220,
+      "sha256": "663023b530463f892bdb7792cd71395805679b75c8ae7da32f41d2748df4bead"
+    },
+    "model.xml": {
+      "bytes": 196297,
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    "observables.npz": {
+      "bytes": 252375,
+      "sha256": "1f03817056ce71a5716bf05d9f57e2c551db83c52d56a53272a766bf6b2da53a"
+    },
+    "raw-manifest.json": {
+      "bytes": 30432,
+      "sha256": "51f53d59092badb810a082909832ba47d667aa38bb91182f45d408adeab73ab3"
+    }
+  },
+  "box_angstrom": 18.642822871774577,
+  "committed_steps": 112000,
+  "complete": true,
+  "conditions": {
+    "beads": 1,
+    "cells_per_axis": 6,
+    "centroid_friction_time_fs": 100.0,
+    "checkpoint_steps": 1000,
+    "cutoff_angstrom": 9.0,
+    "density_g_cm3": 0.997,
+    "dispersion_correction": false,
+    "dt_fs": 0.25,
+    "equilibration_steps": 80000,
+    "ewald_tolerance": 1e-05,
+    "initial_checkpoint": null,
+    "isotope": "H2O",
+    "platform": "CPU",
+    "record_stride": 20,
+    "seed": 541,
+    "segment_steps": 16000,
+    "segments": 2,
+    "temperature_K": 298.0,
+    "threads": 2
+  },
+  "elapsed_seconds": 1639.6443445639816,
+  "eligibility": {
+    "published_NVE_segments": 2000,
+    "published_equilibration_ps": 100,
+    "published_independent_batches": 20,
+    "published_segment_ps": 4,
+    "source_MTS_inter_fs": 0.5,
+    "source_MTS_intra_fs": 0.1,
+    "source_dynamics": "RPMD P32 (classical comparison P1)",
+    "source_electrostatic_contraction_angstrom": 5,
+    "this_MTS": null,
+    "this_contraction": null,
+    "this_dynamics": "classical MD",
+    "this_equilibration_ps": 20.0,
+    "this_independent_batches": 0
+  },
+  "equilibration": {
+    "first_window": {
+      "hamiltonian_per_bead_hartree": {
+        "frames": 1000,
+        "maximum": 0.6782452592543425,
+        "mean": -2.454210530895178,
+        "minimum": -2.7419795704021457,
+        "standard_deviation": 0.41005921353685953
+      },
+      "hydrogen_radius_gyration_angstrom": {
+        "frames": 1000,
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "mean_HOH_degrees": {
+        "frames": 1000,
+        "maximum": 107.00682987290578,
+        "mean": 104.73498872438792,
+        "minimum": 103.69928883970991,
+        "standard_deviation": 0.34101010305736296
+      },
+      "mean_OH_angstrom": {
+        "frames": 1000,
+        "maximum": 0.9661739297849329,
+        "mean": 0.9625450375789366,
+        "minimum": 0.9476104630255685,
+        "standard_deviation": 0.001954537458862071
+      },
+      "potential_per_molecule_hartree": {
+        "frames": 1000,
+        "maximum": -0.0016955949692729821,
+        "mean": -0.01576162340587973,
+        "minimum": -0.016617797642545392,
+        "standard_deviation": 0.001319940919766156
+      },
+      "temperature_centroid_K": {
+        "frames": 1000,
+        "maximum": 673.3459797122819,
+        "mean": 308.7253554238768,
+        "minimum": 271.0394895257875,
+        "standard_deviation": 43.998135213811054
+      },
+      "temperature_momenta_K": {
+        "frames": 1000,
+        "maximum": 673.3459797122819,
+        "mean": 308.7253554238768,
+        "minimum": 271.0394895257875,
+        "standard_deviation": 43.998135213811054
+      }
+    },
+    "last_window": {
+      "hamiltonian_per_bead_hartree": {
+        "frames": 1000,
+        "maximum": -2.532183662365075,
+        "mean": -2.651438289636095,
+        "minimum": -2.762903873048675,
+        "standard_deviation": 0.04712821473699667
+      },
+      "hydrogen_radius_gyration_angstrom": {
+        "frames": 1000,
+        "maximum": 0.0,
+        "mean": 0.0,
+        "minimum": 0.0,
+        "standard_deviation": 0.0
+      },
+      "mean_HOH_degrees": {
+        "frames": 1000,
+        "maximum": 105.7700035917727,
+        "mean": 104.79977970942828,
+        "minimum": 103.80943919460633,
+        "standard_deviation": 0.32396377577316515
+      },
+      "mean_OH_angstrom": {
+        "frames": 1000,
+        "maximum": 0.9676887070887022,
+        "mean": 0.9637278819824622,
+        "minimum": 0.9598184214298243,
+        "standard_deviation": 0.0012862342729602911
+      },
+      "potential_per_molecule_hartree": {
+        "frames": 1000,
+        "maximum": -0.016048671950232435,
+        "mean": -0.01651309324056919,
+        "minimum": -0.016957371059635334,
+        "standard_deviation": 0.00016894387675793276
+      },
+      "temperature_centroid_K": {
+        "frames": 1000,
+        "maximum": 328.2204780215158,
+        "mean": 297.3840048274477,
+        "minimum": 272.2612433748286,
+        "standard_deviation": 9.710631323280952
+      },
+      "temperature_momenta_K": {
+        "frames": 1000,
+        "maximum": 328.2204780215158,
+        "mean": 297.3840048274477,
+        "minimum": 272.2612433748286,
+        "standard_deviation": 9.710631323280952
+      }
+    }
+  },
+  "equilibration_window_duration_ps": 5.0,
+  "fit_window_comparison": [
+    {
+      "conditional_segment_SEM_angstrom2_ps": 0.026975648059097967,
+      "mean_raw_D_angstrom2_ps": 0.35849462194739645,
+      "segment_standard_deviation_angstrom2_ps": 0.038149327338979806,
+      "segments": [
+        {
+          "log_msd_slope": 0.9661641640989199,
+          "raw_D_angstrom2_ps": 0.3315189738882985,
+          "segment": 0,
+          "status": "diffusive_regime_candidate"
+        },
+        {
+          "log_msd_slope": 0.9958696540473154,
+          "raw_D_angstrom2_ps": 0.3854702700064944,
+          "segment": 1,
+          "status": "diffusive_regime_candidate"
+        }
+      ],
+      "uncertainty_warning": "Adjacent segments are correlated; this conditional spread is not a validated standard error.",
+      "window_ps": [
+        0.1,
+        0.5
+      ]
+    },
+    {
+      "conditional_segment_SEM_angstrom2_ps": 0.01644705087829404,
+      "mean_raw_D_angstrom2_ps": 0.15298778973832974,
+      "segment_standard_deviation_angstrom2_ps": 0.023259642413123754,
+      "segments": [
+        {
+          "log_msd_slope": 0.5038445843137772,
+          "raw_D_angstrom2_ps": 0.1365407388600357,
+          "segment": 0,
+          "status": "non_diffusive_window"
+        },
+        {
+          "log_msd_slope": 0.5368611614859886,
+          "raw_D_angstrom2_ps": 0.16943484061662378,
+          "segment": 1,
+          "status": "non_diffusive_window"
+        }
+      ],
+      "uncertainty_warning": "Adjacent segments are correlated; this conditional spread is not a validated standard error.",
+      "window_ps": [
+        0.5,
+        1
+      ]
+    },
+    {
+      "conditional_segment_SEM_angstrom2_ps": 0.03805143415781528,
+      "mean_raw_D_angstrom2_ps": 0.1552323657002883,
+      "segment_standard_deviation_angstrom2_ps": 0.05381285425372922,
+      "segments": [
+        {
+          "log_msd_slope": 0.5943906740437949,
+          "raw_D_angstrom2_ps": 0.11718093154247304,
+          "segment": 0,
+          "status": "non_diffusive_window"
+        },
+        {
+          "log_msd_slope": 0.7742159190305217,
+          "raw_D_angstrom2_ps": 0.1932837998581036,
+          "segment": 1,
+          "status": "diffusive_regime_candidate"
+        }
+      ],
+      "uncertainty_warning": "Adjacent segments are correlated; this conditional spread is not a validated standard error.",
+      "window_ps": [
+        1,
+        2
+      ]
+    }
+  ],
+  "limitations": [
+    "The equilibration segment begins on a random oriented cubic grid; thermal stationarity does not establish structural equilibration.",
+    "Production segments share successive configurations. Fresh Maxwell momenta do not prove independence of slow liquid structure.",
+    "Overlapping time origins and different molecules are not independent uncertainty units.",
+    "No accepted diffusion value, uncertainty, infinite-size extrapolation, or literature reproduction is inferred.",
+    "The printed Table I parameters, specified isotope masses, and full per-bead PME are explicit; numerical identity to the original source is not claimed.",
+    "No PA-CMD infrared spectrum is computed. Ordinary RPMD spectra have a different dynamics method."
+  ],
+  "literature_reproduced": false,
+  "literature_target": {
+    "agreement_test": null,
+    "comparison_eligible": false,
+    "diffusion_angstrom2_ps": 0.199,
+    "source": "https://arxiv.org/pdf/1011.1047",
+    "standard_error_angstrom2_ps": 0.002,
+    "table": "IV",
+    "unavailable_reason": null
+  },
+  "molecules": 216,
+  "oxygen_rdf": {
+    "bin_width_angstrom": 0.025,
+    "coordinate": "oxygen centroid; equals physical coordinate only for P=1",
+    "early_interval_ps": [
+      0,
+      1.0
+    ],
+    "frame_spacing_ps": 0.1,
+    "late_interval_ps": [
+      15.0,
+      20.0
+    ],
+    "late_peak_height": 3.447469626782885,
+    "late_peak_position_angstrom": 2.7625,
+    "literature_curve_digitized": false,
+    "normalization": "unordered N(N-1)/2 pairs / cubic volume; ideal finite sample g=1"
+  },
+  "physical_converged": false,
+  "schema": "pyrpmd.water-campaign-analysis.v1",
+  "segments": [
+    {
+      "duration_ps": 4.0,
+      "energy_linear_drift_per_water_kcal_mol_ps": 2.7868515743878236e-05,
+      "frames": 801,
+      "half_window_relative_difference": 0.015523669284217464,
+      "independent_replica": false,
+      "log_msd_slope": 0.5943906740437949,
+      "max_energy_change_per_water_kcal_mol": 0.0010902623597874549,
+      "raw_D_MSD_angstrom2_ps": 0.11718093154247304,
+      "raw_D_VACF_at_maxlag_angstrom2_ps": 0.1538523875996426,
+      "segment": 0,
+      "status": "non_diffusive_window",
+      "temperature_centroid_K": {
+        "frames": 801,
+        "maximum": 321.44468009943944,
+        "mean": 292.8911804532502,
+        "minimum": 270.70693494862394,
+        "standard_deviation": 7.8135319087153645
+      }
+    },
+    {
+      "duration_ps": 4.0,
+      "energy_linear_drift_per_water_kcal_mol_ps": 5.357911163512974e-05,
+      "frames": 801,
+      "half_window_relative_difference": 0.16186734989624657,
+      "independent_replica": false,
+      "log_msd_slope": 0.7742159190305217,
+      "max_energy_change_per_water_kcal_mol": 0.001258085318011449,
+      "raw_D_MSD_angstrom2_ps": 0.1932837998581036,
+      "raw_D_VACF_at_maxlag_angstrom2_ps": 0.18471034917434334,
+      "segment": 1,
+      "status": "diffusive_regime_candidate",
+      "temperature_centroid_K": {
+        "frames": 801,
+        "maximum": 320.4444654414981,
+        "mean": 296.3522031670295,
+        "minimum": 274.39743733440645,
+        "standard_deviation": 7.945694294623486
+      }
+    }
+  ],
+  "validated_diffusion_angstrom2_ps": null,
+  "validated_standard_error_angstrom2_ps": null
+}

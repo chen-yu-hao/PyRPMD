@@ -27,11 +27,18 @@ extensions = [
 source_suffix = {".md": "markdown"}
 root_doc = "index"
 include_patterns = [
-    "index.md", "manual/*.md", "replica-exchange.md", "opes.md",
-    "plumed.md", "transition-interface-sampling.md", "rate-postprocessing.md",
-    "general-coordinate-rates.md", "rate-studies.md", "instanton.md",
+    "index.md", "manual/*.md", "enhanced-sampling.md", "replica-exchange.md", "opes.md",
+    "plumed.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
+    "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
-    "rpc-mts.md", "trpmd-spectroscopy.md",
+    "rpc-mts.md", "trpmd-spectroscopy.md", "propagation-stack.md",
+    "nonadiabatic-workflow.md", "nonadiabatic-models.md",
+    "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
+    "nonadiabatic-spin-methods.md", "nonadiabatic-hopping-extensions.md",
+    "molecular-nonadiabatic.md", "nonadiabatic-performance.md",
+    "tier2-*.md",
+    "andersen-sampling.md", "trajectory-export.md", "bond-constraints.md", "distribution.md",
+    "literature-validation.md", "publication-readiness.md",
     "validation/tier1-2026-10-31/README.md",
     "validation/tier1-2026-10-31/pmf-replay.md",
 ]
@@ -63,7 +70,7 @@ html_context = {
     "doc_path": "docs",
     # English-only extension guides return to the Chinese contents rather than
     # claiming a translation at a nonexistent same-name page.
-    "bilingual_pages": ["index", "genindex", "search", "replica-exchange"] + [
+    "bilingual_pages": ["index", "genindex", "search", "enhanced-sampling", "replica-exchange"] + [
         "manual/" + path.stem
         for path in sorted((ROOT / "docs" / "manual").glob("*.md"))
         if (ROOT / "docs" / "zh" / "manual" / path.name).is_file()

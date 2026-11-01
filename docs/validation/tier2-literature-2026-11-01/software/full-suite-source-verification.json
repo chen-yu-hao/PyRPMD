@@ -1,0 +1,53 @@
+{
+  "frozen_file_count": 353,
+  "production_and_test_file_count": 345,
+  "production_and_test_sources_unchanged": true,
+  "numerical_drivers_unchanged": true,
+  "entire_launch_snapshot_unchanged": false,
+  "changed_files": {
+    "benchmarks/tier2_literature/plot_sampling.py": {
+      "at_launch_sha256": "e899a258724d5c934510fe4fc094d5fa4f1cc0b79447d542c58350b596905520",
+      "current_sha256": "b864641b02bfab2441948bc3a451ae9252d80e5cb74a6990679964fb90066c4b"
+    }
+  },
+  "plotting_note": "Only the saved-data plotting helper changed, to render shared MetaD and kinetics figures. No source/test imports it and no propagation or numerical driver changed. New saved-data report helpers were added after launch.",
+  "pytest": {
+    "passed": 4712,
+    "skipped": 97,
+    "warnings": 928,
+    "subtests_passed": 357,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 302.23,
+    "exit_code": 0
+  },
+  "junit_suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "97",
+      "tests": "5166",
+      "time": "302.157",
+      "timestamp": "2026-11-01T09:08:36.575887-05:00",
+      "hostname": "13d968332fed"
+    }
+  ],
+  "skip_reasons": {
+    "collection skipped": 1,
+    "optional pinned BrHCl_LEPS1 has not been built": 7,
+    "build optional pinned BrHCl PES for actual-source cache checks": 18,
+    "build optional pinned BrHCl PES first": 28,
+    "optional real BKMP2 not built": 1,
+    "Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks": 4,
+    "Build verified BKMP2 for the real-PES switch checks": 5,
+    "optional real BKMP2 PES has not been built": 9,
+    "Build verified BKMP2 for the full-PES near-threshold launch check": 1,
+    "optional real JaxPIP environment": 8,
+    "Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check": 1,
+    "explicit pinned native Caracal build/source required": 6,
+    "full MPI installation for original optimizer": 2,
+    "independent optional reference solver": 1,
+    "This BLAS runtime cannot provide four threads": 5
+  }
+}

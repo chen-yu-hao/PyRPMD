@@ -1,0 +1,99 @@
+{
+  "scope": "Primary-source model reference, direct implementation comparison, and separately labeled engineering experiments",
+  "sources": [
+    {
+      "authors": "Michele Invernizzi and Michele Parrinello",
+      "comparison": "Our independently integrated model reference reproduces the printed basin free energies. Short local trajectories test the same model with different bandwidth rules and a much smaller budget; they are not a full reproduction of the paper's convergence curves.",
+      "doi": "10.1021/acs.jctc.2c00152",
+      "id": "opes-explore-2022",
+      "locations": [
+        "Main Eqs. 3, 5, 7, 8",
+        "Supporting Information S1 and S3, printed pages 16-17"
+      ],
+      "published_values": {
+        "delta_F_oblique_printed": "5.690(5)",
+        "delta_F_x_printed": "5.712(6)",
+        "interpretation": "Preserve printed notation; do not infer a statistical confidence interval from its parentheses.",
+        "units": "kBT"
+      },
+      "title": "Exploration vs Convergence Speed in Adaptive-Bias Enhanced Sampling",
+      "url": "https://arxiv.org/pdf/2201.09950",
+      "version": "arXiv:2201.09950v3, 22 April 2022"
+    },
+    {
+      "archive": "https://www.plumed-nest.org/eggs/22/003/",
+      "commit": "47b5d4c92f87920dd7750900c751a1e37011ed6a",
+      "differences": [
+        "Authors use 200000000 MD steps per run",
+        "Authors use PLUMED adaptive widths and compression",
+        "Local runs use fixed literal sigma=0.1 or the explicitly documented deposition-Welford rule",
+        "Local runs freeze the bias for independent equilibrium reweighting",
+        "An independent harmonic z coordinate embeds the exact 2D problem in the public Cartesian API",
+        "Paper Figure4 averages25 independent runs; local primary groups use4 selected documented input seeds, not the full25-run ensemble."
+      ],
+      "files": {
+        "explore/plumed.dat": "519f243b9e027347d59d3e6f6f03f053c1ace42c",
+        "inputs/input_md.0.dat": "7c5686fe90fe4633840621bd8d5c4986b737a6f3",
+        "inputs/input_md.1.dat": "304060e336a44d3d30dfa8cc7ceaa0434ecd9af1",
+        "inputs/input_md.2.dat": "e331973a142b1942f6f4654598796f052c275292",
+        "inputs/input_md.3.dat": "98fd66255b313d42b4a636383ce473e937d260b4",
+        "metad/plumed.dat": "36f24189ee03c7b56d347bba7e65b75be596c327",
+        "opes/plumed.dat": "0bdae6221a05907e5ee495d7b8de3de431112db1"
+      },
+      "id": "author-inputs",
+      "parameters_used": [
+        "Potential coefficients and 0.15 scaling",
+        "X walls at -1.3 and 1.0, KAPPA=1000",
+        "kBT=1",
+        "mass=1",
+        "friction=10",
+        "timestep=0.005",
+        "PACE=500",
+        "BARRIER=20",
+        "four documented seeds and initial positions"
+      ],
+      "url": "https://github.com/invemichele/OPES-explore/tree/47b5d4c92f87920dd7750900c751a1e37011ed6a/mueller"
+    },
+    {
+      "comparison": "Weighted density and bias equations; no separate reproduction of its molecular examples.",
+      "doi": "10.1021/acs.jpclett.0c00497",
+      "id": "opes-2020",
+      "title": "Rethinking Metadynamics: From Bias Potentials to Probability Distributions",
+      "url": "https://arxiv.org/abs/1909.07250"
+    },
+    {
+      "commit": "52da2bb76d37dbad0d19f59c6fe0b2ab939e3ded",
+      "comparison": "Live runtime, same prescribed deposition centers, FIXED_SIGMA, COMPRESSION_THRESHOLD=0, KERNEL_CUTOFF=12; direct energies and Cartesian forces. This isolates fixed uncompressed equations and initialization, not trajectory parity or adaptive-width equivalence.",
+      "id": "plumed-2.9.4",
+      "url": "https://github.com/plumed/plumed2/blob/52da2bb76d37dbad0d19f59c6fe0b2ab939e3ded/src/opes/OPESmetad.cpp"
+    },
+    {
+      "comparison": "Theory for the harmonic engineering test's ideal well-tempered marginal; no reproduced published numerical value.",
+      "doi": "10.1103/PhysRevLett.100.020603",
+      "id": "well-tempered-2008",
+      "title": "Well-Tempered Metadynamics: A Smoothly Converging and Tunable Free-Energy Method",
+      "url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.100.020603"
+    },
+    {
+      "comparison": "Shared bias history principle; local synchronous deposition and harmonic frozen-bias tests are engineering checks.",
+      "doi": "10.1021/jp054359r",
+      "id": "multiple-walkers-2006",
+      "title": "Efficient Reconstruction of Complex Free Energy Landscapes by Multiple Walkers Metadynamics",
+      "url": "https://pubs.acs.org/doi/10.1021/jp054359r"
+    },
+    {
+      "comparison": "Replica-exchange equilibrium principle; measured finite-P harmonic ensembles use an independently derived exact Gaussian reference, not a published protein result.",
+      "doi": "10.1016/S0009-2614(99)01123-9",
+      "id": "replica-exchange-1999",
+      "title": "Replica-exchange molecular dynamics method for protein folding",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0009261499011239"
+    },
+    {
+      "comparison": "Theory for transition-region-free bias acceleration. Local overdamped first-passage statistics validate the clock/rate analysis on a computed model; this is not an implementation benchmark of native infrequent MetaD or OPES-flooding deposition.",
+      "doi": "10.1103/PhysRevLett.78.3908",
+      "id": "hyperdynamics-1997",
+      "title": "Hyperdynamics: Accelerated Molecular Dynamics of Infrequent Events",
+      "url": "https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.78.3908"
+    }
+  ]
+}

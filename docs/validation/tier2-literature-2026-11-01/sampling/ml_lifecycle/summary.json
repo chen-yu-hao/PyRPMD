@@ -1,0 +1,51 @@
+{
+  "benchmark_scope": "supervised TorchScript engineering test, not molecular-paper reproduction",
+  "coefficients": [
+    [
+      0.0900723966748121,
+      -0.026940283138287675,
+      0.01716408364666558
+    ],
+    [
+      0.08980944375590383,
+      -0.025844585144765016,
+      0.016049134859507947
+    ],
+    [
+      0.08992575476966684,
+      -0.026227878194384154,
+      0.01638204123419715
+    ],
+    [
+      0.08989952016633898,
+      -0.025789158163711447,
+      0.015509183296131273
+    ]
+  ],
+  "contracted_force_chain_rule_max_error": 1.077108402469662e-10,
+  "contraction_total_energy_change": -0.21266170784864868,
+  "disagreement_is_calibrated_error_bound": false,
+  "extrapolation": {
+    "acquired_fraction": 1.0,
+    "energy_RMSE": 0.18398124105226132,
+    "error_disagreement_Pearson": 0.9953473732784587,
+    "force_RMSE": 0.40595233633593886,
+    "mean_force_disagreement": 0.04964270371113882
+  },
+  "force_acquisition_threshold": 0.00041036286040404716,
+  "full_delta_vs_full_model_force_max_error": 1.1102230246251565e-16,
+  "inspection_records": 80,
+  "interpolation": {
+    "acquired_fraction": 0.05,
+    "energy_RMSE": 2.2732646314389166e-05,
+    "error_disagreement_Pearson": 0.7854704421152828,
+    "force_RMSE": 0.00014896572059713018,
+    "mean_force_disagreement": 0.00015024162988389313
+  },
+  "monitored_trajectory_max_difference": 0.0,
+  "reference_labels_available": false,
+  "selected_bead_geometries": 32,
+  "torch_version": "2.15.0+cpu",
+  "training_energy_noise_sigma": 0.0002,
+  "training_samples": 512
+}

@@ -1,0 +1,370 @@
+{
+  "schema": "pyrpmd.covalent_radii.validation.v1",
+  "generated_utc": "2026-11-01T13:48:50.310617+00:00",
+  "source": {
+    "paper": "Cordero et al., Covalent radii revisited, Dalton Trans. (2008), 2832-2838, Table 2",
+    "doi": "10.1039/B801115J",
+    "url": "https://doi.org/10.1039/B801115J",
+    "ase_version": "3.29.0",
+    "ase_source_path": "/workspace/scratch/620dee2c1ca3/validation-venv/lib/python3.12/site-packages/ase/data/__init__.py",
+    "ase_source_sha256": "4bb3b1a8d330c3fcdf2d0321a4d8cc3eae55d1f860034261565661d0203c07e0",
+    "scope": "Full software-table cross-check against ASE's Cordero dataset; no independent experimental fit or digitization of the paper",
+    "conventions": "PyRPMD documents C(sp3) and Mn/Fe/Co low-spin choices; all match ASE numerically",
+    "missing_value_note": "ASE's entries after Cm are placeholders, excluded from the 96-value comparison; PyRPMD requires explicit values"
+  },
+  "code_sha256": {
+    "benchmarks/transition_state_search/covalent_radii.py": "1861952038d1b1153ccfe9640871d40616c1a092ae96b14598fc46d4ebd0a380",
+    "src/pyrpmd/covalent.py": "6c344bed774688b863bb77d46458b615704321dfdaed8eaf67b99acfcef391fe"
+  },
+  "table_comparison": {
+    "count": 96,
+    "symbols": [
+      "H",
+      "He",
+      "Li",
+      "Be",
+      "B",
+      "C",
+      "N",
+      "O",
+      "F",
+      "Ne",
+      "Na",
+      "Mg",
+      "Al",
+      "Si",
+      "P",
+      "S",
+      "Cl",
+      "Ar",
+      "K",
+      "Ca",
+      "Sc",
+      "Ti",
+      "V",
+      "Cr",
+      "Mn",
+      "Fe",
+      "Co",
+      "Ni",
+      "Cu",
+      "Zn",
+      "Ga",
+      "Ge",
+      "As",
+      "Se",
+      "Br",
+      "Kr",
+      "Rb",
+      "Sr",
+      "Y",
+      "Zr",
+      "Nb",
+      "Mo",
+      "Tc",
+      "Ru",
+      "Rh",
+      "Pd",
+      "Ag",
+      "Cd",
+      "In",
+      "Sn",
+      "Sb",
+      "Te",
+      "I",
+      "Xe",
+      "Cs",
+      "Ba",
+      "La",
+      "Ce",
+      "Pr",
+      "Nd",
+      "Pm",
+      "Sm",
+      "Eu",
+      "Gd",
+      "Tb",
+      "Dy",
+      "Ho",
+      "Er",
+      "Tm",
+      "Yb",
+      "Lu",
+      "Hf",
+      "Ta",
+      "W",
+      "Re",
+      "Os",
+      "Ir",
+      "Pt",
+      "Au",
+      "Hg",
+      "Tl",
+      "Pb",
+      "Bi",
+      "Po",
+      "At",
+      "Rn",
+      "Fr",
+      "Ra",
+      "Ac",
+      "Th",
+      "Pa",
+      "U",
+      "Np",
+      "Pu",
+      "Am",
+      "Cm"
+    ],
+    "matched": 96,
+    "differences": [],
+    "max_absolute_difference_angstrom": 0.0
+  },
+  "isotope_cases": [
+    {
+      "symbols": [
+        "H",
+        "D",
+        "T"
+      ],
+      "overrides": null,
+      "actual_angstrom": [
+        0.31,
+        0.31,
+        0.31
+      ],
+      "expected_angstrom": [
+        0.31,
+        0.31,
+        0.31
+      ],
+      "passed": true
+    },
+    {
+      "symbols": [
+        "H",
+        "D",
+        "T"
+      ],
+      "overrides": {
+        "H": 0.4
+      },
+      "actual_angstrom": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "expected_angstrom": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "passed": true
+    },
+    {
+      "symbols": [
+        "H",
+        "D",
+        "T"
+      ],
+      "overrides": {
+        "H": 0.4,
+        "D": 0.35
+      },
+      "actual_angstrom": [
+        0.4,
+        0.35,
+        0.4
+      ],
+      "expected_angstrom": [
+        0.4,
+        0.35,
+        0.4
+      ],
+      "passed": true
+    },
+    {
+      "symbols": [
+        "H",
+        "D",
+        "T"
+      ],
+      "overrides": {
+        "H": 0.4,
+        "T": 0.35
+      },
+      "actual_angstrom": [
+        0.4,
+        0.4,
+        0.35
+      ],
+      "expected_angstrom": [
+        0.4,
+        0.4,
+        0.35
+      ],
+      "passed": true
+    }
+  ],
+  "heavy_element_cases": [
+    {
+      "symbol": "Bk",
+      "without_override_error": "automatic connectivity has no radii for ['Bk']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Cf",
+      "without_override_error": "automatic connectivity has no radii for ['Cf']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Es",
+      "without_override_error": "automatic connectivity has no radii for ['Es']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Fm",
+      "without_override_error": "automatic connectivity has no radii for ['Fm']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Md",
+      "without_override_error": "automatic connectivity has no radii for ['Md']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "No",
+      "without_override_error": "automatic connectivity has no radii for ['No']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Lr",
+      "without_override_error": "automatic connectivity has no radii for ['Lr']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Rf",
+      "without_override_error": "automatic connectivity has no radii for ['Rf']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Db",
+      "without_override_error": "automatic connectivity has no radii for ['Db']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Sg",
+      "without_override_error": "automatic connectivity has no radii for ['Sg']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Bh",
+      "without_override_error": "automatic connectivity has no radii for ['Bh']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Hs",
+      "without_override_error": "automatic connectivity has no radii for ['Hs']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Mt",
+      "without_override_error": "automatic connectivity has no radii for ['Mt']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Ds",
+      "without_override_error": "automatic connectivity has no radii for ['Ds']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Rg",
+      "without_override_error": "automatic connectivity has no radii for ['Rg']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Cn",
+      "without_override_error": "automatic connectivity has no radii for ['Cn']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Nh",
+      "without_override_error": "automatic connectivity has no radii for ['Nh']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Fl",
+      "without_override_error": "automatic connectivity has no radii for ['Fl']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Mc",
+      "without_override_error": "automatic connectivity has no radii for ['Mc']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Lv",
+      "without_override_error": "automatic connectivity has no radii for ['Lv']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Ts",
+      "without_override_error": "automatic connectivity has no radii for ['Ts']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    },
+    {
+      "symbol": "Og",
+      "without_override_error": "automatic connectivity has no radii for ['Og']; supply reaction.preparation.covalent_radii overrides (numbers in angstrom or explicit length units), or supply reaction explicitly",
+      "with_explicit_1_7_angstrom_override": 1.7,
+      "passed": true
+    }
+  ],
+  "unknown_symbol_cases": [
+    {
+      "symbol": "X",
+      "error": "unknown element symbols for covalent radii: ['X']",
+      "passed": true
+    },
+    {
+      "symbol": "Ff",
+      "error": "unknown element symbols for covalent radii: ['Ff']",
+      "passed": true
+    },
+    {
+      "symbol": "Unobtainium",
+      "error": "unknown element symbols for covalent radii: ['Unobtainium']",
+      "passed": true
+    }
+  ],
+  "Og_2_bohr_override_angstrom": 1.0583544210879998,
+  "checks": {
+    "exactly_H_through_Cm": true,
+    "all_96_match_ase_exactly": true,
+    "all_isotope_alias_and_override_cases": true,
+    "all_22_heavy_elements_require_and_accept_explicit_overrides": true,
+    "unknown_symbols_stay_rejected_even_with_overrides": true,
+    "explicit_bohr_override_converted_to_angstrom": true
+  },
+  "core_checks_passed": true
+}

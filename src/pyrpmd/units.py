@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 import numbers
 import re
+from .validation import finite_real
 from .constants import (
     ANGSTROM_TO_AU,
     FS_TO_AU,
@@ -150,14 +151,10 @@ def parse_quantity(value, dimension=None) -> float:
 def time_steps(value, dt, *, allow_zero=False) -> int:
     """Resolve a duration against a positive, finite atomic-unit time step."""
     t = parse_quantity(value, "time")
-    if isinstance(dt, bool) or not isinstance(dt, numbers.Real):
-        raise ValueError("Time step must be a positive finite real number")
-    try:
-        dt = float(dt)
-    except OverflowError as error:
-        raise ValueError("Time step must be a positive finite real number") from error
-    if not math.isfinite(dt) or dt <= 0:
-        raise ValueError("Time step must be a positive finite real number")
+    dt = finite_real(
+        dt, "Time step", positive=True,
+        message="Time step must be a positive finite real number",
+    )
     if t < 0:
         raise ValueError("Negative duration")
     ratio = t / dt

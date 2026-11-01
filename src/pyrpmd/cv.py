@@ -786,6 +786,31 @@ def make_cv(spec, system):
     periodic = bool(np.any(getattr(system, "pbc", False)))
     if periodic and kind in ("com_distance", "rpmdrate", "rpmdrate_xi"):
         raise ValueError("Periodic COM/reaction CV needs an explicit molecular image convention; use a periodic distance or continuous projection")
+    if kind in ("dihedral", "periodic_dihedral", "coordination", "periodic_coordination", "rmsd", "path", "torchscript"):
+        from .advanced_cv import CoordinationNumber, Dihedral, PathCV, RMSD, TorchScriptCV
+
+        geometry = {}
+        if kind.startswith("periodic_"):
+            if not periodic:
+                raise ValueError(f"{kind} requires periodic System boundaries")
+            geometry = {"cell": system.cell, "pbc": system.pbc}
+        if kind.endswith("dihedral"):
+            return Dihedral(spec["atoms"], **geometry, **kwargs)
+        if kind.endswith("coordination"):
+            return CoordinationNumber(spec["group_a"], spec.get("group_b"),
+                                      r0=parse_quantity(spec["r0"], "length"),
+                                      exponent=spec.get("exponent", 6), **geometry, **kwargs)
+        if kind in ("rmsd", "path"):
+            options = {"atoms": spec.get("atoms"), "weights": spec.get("weights"),
+                       "align": spec.get("align", "optimal"), **kwargs}
+            if kind == "rmsd":
+                return RMSD(spec["reference"], **options)
+            return PathCV(spec["references"], path_lambda=spec["path_lambda"],
+                          scale=parse_quantity(spec.get("scale", 1.0), "length"),
+                          component=spec.get("component", "both"), **options)
+        return TorchScriptCV(spec["model"], dimension=spec.get("dimension", 1),
+                             units=spec.get("units"), periods=spec.get("periods"),
+                             device=spec.get("device", "cpu"), **kwargs)
     if kind in ("periodic_angle", "periodic_bond_difference", "periodic_difference"):
         if not periodic:
             raise ValueError(f"{kind} requires periodic System boundaries")

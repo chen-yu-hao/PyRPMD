@@ -1,0 +1,22 @@
+{
+  "JS_reweighted_to_unbiased": {
+    "95CI_halfwidth": 0.00047758268539368673,
+    "mean": 0.001031608014189275,
+    "samples": 4
+  },
+  "JS_sample_to_WT": {
+    "95CI_halfwidth": 0.003675505157458779,
+    "mean": 0.0483351593027193,
+    "samples": 4
+  },
+  "JS_sample_to_exact_frozen": {
+    "95CI_halfwidth": 0.0006299600502631266,
+    "mean": 0.0016584638783744537,
+    "samples": 4
+  },
+  "reweighted_variance": {
+    "95CI_halfwidth": 0.04709373203717821,
+    "mean": 1.021031256565648,
+    "samples": 4
+  }
+}

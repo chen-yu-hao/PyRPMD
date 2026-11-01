@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "source": {
+    "doi": "10.1063/1.3167790",
+    "url": "https://arxiv.org/pdf/1011.1047",
+    "locator": "Tables III and IV; Sections III.B-D",
+    "parameter_locator": "Table I; Eqs. (1)-(4)"
+  },
+  "cases": [
+    {
+      "id": "qtip4pf_h2o_216_298k",
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "model": "q-TIP4P/F",
+      "method": "RPMD",
+      "isotope": "H2O",
+      "temperature_K": 298.0,
+      "density_g_cm3": 0.997,
+      "molecules": 216,
+      "nbeads": 32,
+      "short_range_cutoff_angstrom": 9.0,
+      "diffusion_angstrom2_ps": 0.221,
+      "standard_error_angstrom2_ps": 0.001,
+      "estimator": "one-third integral of molecular translational velocity autocorrelation",
+      "finite_size": "finite 216-molecule cubic periodic box; not infinite-size extrapolation",
+      "source_table": "III",
+      "reproduced_by_pyrpmd": false
+    },
+    {
+      "id": "qtip4pf_d2o_216_298k",
+      "status": "verified_table",
+      "comparison_role": "implementation_reference",
+      "model": "q-TIP4P/F",
+      "method": "RPMD",
+      "isotope": "D2O",
+      "temperature_K": 298.0,
+      "density_g_cm3": 1.107,
+      "molecules": 216,
+      "nbeads": 32,
+      "short_range_cutoff_angstrom": 9.0,
+      "diffusion_angstrom2_ps": 0.172,
+      "standard_error_angstrom2_ps": 0.001,
+      "estimator": "one-third integral of molecular translational velocity autocorrelation",
+      "finite_size": "finite 216-molecule cubic periodic box; not infinite-size extrapolation",
+      "source_table": "III",
+      "reproduced_by_pyrpmd": false
+    },
+    {
+      "id": "qtip4pf_h2o_classical_216_298k",
+      "status": "verified_table",
+      "comparison_role": "classical_limit_reference",
+      "model": "q-TIP4P/F",
+      "method": "classical MD",
+      "isotope": "H2O",
+      "temperature_K": 298.0,
+      "density_g_cm3": 0.997,
+      "molecules": 216,
+      "nbeads": 1,
+      "diffusion_angstrom2_ps": 0.199,
+      "standard_error_angstrom2_ps": 0.002,
+      "source_table": "IV",
+      "reproduced_by_pyrpmd": false
+    }
+  ],
+  "ir_reference": {
+    "method": "PA-CMD",
+    "locator": "Section III.C and Figure 5",
+    "numeric_curve": null,
+    "status": "not_digitized",
+    "note": "RPMD/TRPMD predictions are cross-method comparisons; no implementation pass/fail against PA-CMD."
+  }
+}

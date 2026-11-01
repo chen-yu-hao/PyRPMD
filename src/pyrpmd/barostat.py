@@ -13,21 +13,15 @@ from __future__ import annotations
 import copy
 import math
 from collections.abc import Mapping
+from functools import partial
 
 import numpy as np
 
 from .geometry import validate_cell_pbc
 from .potentials.base import PotentialError, validate_result
+from .validation import finite_real
 
-
-def _real(value, name, *, positive=False, nonnegative=False):
-    if (isinstance(value, (bool, np.bool_))
-            or not isinstance(value, (int, float, np.number))
-            or np.iscomplexobj(value) or not np.isfinite(value)
-            or (positive and value <= 0) or (nonnegative and value < 0)):
-        raise ValueError(f"{name} must be a finite real" +
-                         (" > 0" if positive else " >= 0" if nonnegative else ""))
-    return float(value)
+_real = partial(finite_real, message='{name} must be a finite real{bound}')
 
 
 def validate_bzp_snapshot(snapshot, reference_cell):
@@ -84,6 +78,8 @@ class BZPBarostat:
         self.friction_au = _real(1.0 / self.tau_au if friction_au is None else friction_au,
                                  "friction_au", nonnegative=True)
         get = system.get if isinstance(system, Mapping) else lambda k, d=None: getattr(system, k, d)
+        if get("bond_constraints", ()):
+            raise ValueError("BZP does not implement bond-constraint virials; use a fixed cell")
         self._cell, pbc = validate_cell_pbc(get("cell"), get("pbc"))
         if self._cell is None or not pbc.all():
             raise ValueError("BZP requires a fully periodic 3D cell")

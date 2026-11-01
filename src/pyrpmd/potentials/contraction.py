@@ -10,17 +10,13 @@ from __future__ import annotations
 
 import numpy as np
 
-from .base import Potential, PESResult, coordinates, validate_result
+from ..validation import positive_integer as _positive_integer
+from .base import PESResult, Potential, coordinates, validate_result
 
 
-def _positive_integer(value, name):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
-        raise ValueError(f"{name} must be a positive integer")
-    return int(value)
-
-
-def _component(provider, name):
-    if not callable(getattr(provider, "evaluate", None)):
+def _component(provider, name, *, _allow_callable=False):
+    if not (callable(getattr(provider, "evaluate", None))
+            or _allow_callable and callable(provider)):
         raise TypeError(f"{name} must implement evaluate(positions)")
     metadata = getattr(provider, "metadata", {}) or {}
     if not isinstance(metadata, dict):
@@ -31,7 +27,13 @@ def _component(provider, name):
     if (metadata.get("batch_independent") is False
             or metadata.get("ring_polymer_coupled") or metadata.get("coupled_frames")):
         raise ValueError(f"{name} must evaluate independent physical configurations")
-    if metadata.get("stateful") or capabilities.get("stateful"):
+    # Composite providers publish their own metadata and may cache results at
+    # an unchanged geometry.  Reject every supported history/time marker at
+    # the leaf boundary, before wrapping can hide it from callers such as
+    # replica exchange.  Attributes and metadata describe the same contract.
+    dynamic_markers = ("history_dependent", "time_dependent", "stateful")
+    if any(getattr(provider, key, False) or metadata.get(key, False)
+           or capabilities.get(key, False) for key in dynamic_markers):
         raise ValueError(f"{name} must be a deterministic position-only potential")
     from .builtin import HarmonicPotential
     if type(provider) is HarmonicPotential and (
@@ -41,9 +43,8 @@ def _component(provider, name):
     from .python import PythonPotential
     if type(provider) is PythonPotential:
         # Unit/sign conversion does not remove a coupling or frame-dependent
-        # parameter in the wrapped physical provider.
-        if callable(getattr(provider.obj, "evaluate", None)):
-            _component(provider.obj, name)
+        # parameter in the wrapped physical provider, including plain callbacks.
+        _component(provider.obj, name, _allow_callable=True)
     return provider
 
 

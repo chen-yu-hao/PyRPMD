@@ -6,12 +6,14 @@ PES failures NEVER trigger a retry via another backend. Each completed step,
 including its requested observations, is transactional.
 """
 from dataclasses import dataclass
+import copy
 import numbers
 import numpy as np
 
 from . import cv as cv_module
 from .bias import UmbrellaBias, FluxMetricBias, CompositeBias
 from .potentials.native import descriptor_binding
+from .validation import checked_integer
 
 
 class NotNative(ValueError):
@@ -129,7 +131,7 @@ def bias_descriptors(bias, dynamics):
 
 
 def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, record_energy, clock):
-    from .propagation import _check_dynamics_methods
+    from .propagation import _check_dynamics_methods, fixed_descriptor
     _check_dynamics_methods(dynamics)
     if not dynamics.native or not hasattr(dynamics.integrator._native, "advance"):
         raise NotNative(dynamics.integrator.native_fallback_reason or "compiled fused kernel is not available")
@@ -141,6 +143,8 @@ def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, recor
     if binding.natoms != len(dynamics.masses):
         raise ValueError("invalid native binding or atom count")
     native_constraint = None if constraint is None else cv_descriptor(constraint, len(dynamics.masses))
+    if constraint is not None and dynamics.fixed_atoms:
+        raise NotNative("fixed-atom RATTLE uses the Python constraint operator")
     if constraint is not None and (getattr(constraint, "estimator", None) != "centroid" or bias is not None or fragment_data):
         raise NotNative("combined constraints/biases require the Python path")
     fragments = []
@@ -149,7 +153,8 @@ def _native_plan(dynamics, bias, cv, constraint, fragment_data, tolerance, recor
         fragments.append({"weights": weights.tolist(), "reference": reference.tolist()})
     return binding, {"beta": dynamics.beta, "time": clock, "cvs": cv_descriptors(cv, len(dynamics.masses)),
                      "biases": bias_descriptors(bias, dynamics), "constraint": native_constraint,
-                     "constraint_tolerance": tolerance, "fragments": fragments, "record_energy": record_energy}
+                     "constraint_tolerance": tolerance, "fragments": fragments, "record_energy": record_energy,
+                     **fixed_descriptor(dynamics)}
 
 
 def native_outcome_supported(dynamics):
@@ -182,11 +187,11 @@ def _outcome_options(outcome, state, steps):
         raise ValueError("outcome channel_labels must be unique nonempty strings")
 
     def integer(name, default, minimum):
-        value = outcome.get(name, default)
-        if (isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Integral)
-                or not minimum <= value <= np.iinfo(np.int64).max):
-            raise ValueError(f"outcome {name} must be an integer >= {minimum}")
-        return int(value)
+        return checked_integer(
+            outcome.get(name, default), f"outcome {name}", minimum,
+            np.iinfo(np.int64).max,
+            message="{name} must be an integer >= {minimum}",
+        )
 
     start = integer("start_step", state.step, 0)
     if start > np.iinfo(np.int64).max - steps:
@@ -331,6 +336,70 @@ def state_diagnostics(dynamics, state, diagnostics, *, energy_per_bead=None):
     return result
 
 
+def _composed_native_prefix(dynamics, state, steps, mask, record_energy,
+                            check_energy, diagnostics, backend, raise_on_error):
+    """Use the persistent native operator executor with per-step transactions."""
+    component = dynamics._composition
+    operators = dynamics.operator_state_dict()
+    initial_step, initial_time = state.step, state.time
+    try:
+        engine = component._prepare_native(state, backend=backend)
+        if engine is None:
+            return None
+        with np.errstate(over="ignore", invalid="ignore"):
+            clocks = np.add.accumulate(np.r_[float(initial_time), np.full(steps, dynamics.dt)])[1:]
+        invalid = np.flatnonzero(~np.isfinite(clocks))
+        allowed = int(invalid[0]) if len(invalid) else steps
+        native = engine.run_prefix(
+            allowed, observe=mask[:allowed], record_energy=record_energy,
+            check_energy=check_energy,
+            energy_parts=bool(diagnostics.get("energy_parts")),
+            ring_radii=bool(diagnostics.get("ring_radii")))
+        completed = native["completed"]
+        error = native["error"]
+        if completed == allowed and allowed < steps and error is None:
+            error = "FloatingPointError: nonfinite integration clock"
+        accepted = engine.state()
+        component._native_state = accepted
+        columns, samples = native["columns"], native["samples"]
+        selected = mask[:completed].astype(bool)
+        energies = samples[:, columns.index("ring_polymer_hamiltonian")]
+        centroid_q = native["centroids"]
+        centroid_p = native["centroid_momenta"]
+        arrays = {}
+        if diagnostics.get("energy_parts"):
+            arrays["energy_parts"] = native["energy_parts"]
+        if diagnostics.get("ring_radii"):
+            arrays["ring_radii"] = np.sqrt(native["radii_gyration_squared"])
+        used = "native" if native.get("python_step_callbacks", 0) == 0 else "python"
+        reason = None if used == "native" else "native operators with Python PES callbacks"
+        result = BlockResult(steps, completed, used, reason,
+                             initial_step + 1 + np.flatnonzero(selected), clocks[:completed][selected],
+                             energies if record_energy else np.full(int(selected.sum()), np.nan),
+                             centroid_q, centroid_p,
+                             np.empty((int(selected.sum()), 0)), None, None, error,
+                             diagnostics=arrays or None)
+    except BaseException:
+        dynamics.load_operator_state_dict(operators)
+        raise
+    if completed:
+        state.q[:], state.p[:] = accepted["q"], accepted["p"]
+        state.step, state.time = initial_step + completed, float(clocks[completed-1])
+        if dynamics._initial_cell is not None:
+            dynamics.cell = accepted["cell"].copy()
+    elif error:
+        # An unsuccessful first step cannot select/seed a new bath.
+        dynamics.load_operator_state_dict(operators)
+    dynamics.last_step_backend = used
+    dynamics.propagation_stats[used + "_steps"] += completed
+    if reason:
+        reasons = dynamics.propagation_stats["fallback_reasons"]
+        reasons[reason] = reasons.get(reason, 0) + completed
+    if error and raise_on_error:
+        raise PropagationError(result)
+    return result
+
+
 def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=None,
                     constraint_tolerance=1e-10, fragment_data=(), observe=None,
                     record_energy=True, record_states=False, backend=None, raise_on_error=True,
@@ -341,8 +410,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     ``observe`` is a length-steps boolean mask (default: all steps). A failure
     leaves q/p/clock at the last successfully completed step. Its requested
     observations are part of the same step transaction.
-    ``PropagationError.result`` retains the valid prefix. No force cache survives
-    a block, so changing bias, constraints, q/p or PES between blocks is safe.
+    ``PropagationError.result`` retains the valid prefix. Legacy and Python
+    force caches are block-local. A composed native executor refreshes forces
+    after q/p edits and requires its bound provider to remain immutable.
     ``outcome`` opts into a supported native classifier and its persistence
     state machine; it can stop successfully before the requested block ends.
     A comparison within floating-point roundoff of a classification boundary
@@ -369,10 +439,14 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     not molecular normal-mode populations. Native observations use existing
     endpoint PES data, with no Python callback or extra unprojected PES call.
     Blocks must end at thermostat/Python-classifier/checkpoint boundaries.
-    Sampling RNG remains in Python at those boundaries.
+    Legacy sampling RNG remains in Python at those boundaries; configured
+    native baths carry their own checkpointed stream inside the executor.
     """
     if getattr(dynamics, "_stochastic_propagation", False):
         raise ValueError("stochastic dynamics require step() or transactional propagate(), not propagate_block()")
+    composed = getattr(dynamics, "plan", None) is not None and dynamics.plan.active
+    if composed and constraint is not None:
+        raise ValueError("configured baths/force splitting with RATTLE require a projected constraint operator")
     if isinstance(steps, (bool, np.bool_)) or not isinstance(steps, (int, np.integer)) or not 0 <= steps <= 4096:
         raise ValueError("steps must be an integer in [0, 4096]")
     steps = int(steps)
@@ -420,7 +494,7 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     }
     start_step, start_time = state.step, state.time
     binding = options = None;reason = None
-    if backend != "python":
+    if backend != "python" and not composed:
         from .propagation import NativeUnavailableError
         try:
             binding, options = _native_plan(dynamics, bias, cv, constraint, fragment_data,
@@ -445,6 +519,14 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
     completed = written = 0;error = None
     metadata = {}
     previous_time = None
+    if (composed and steps and bias is None and cv is None and constraint is None
+            and not fragment_data and not record_states and not record_previous and outcome is None):
+        result = _composed_native_prefix(dynamics, state, steps, mask, record_energy,
+                                         check_energy, diagnostic_spec, backend, raise_on_error)
+        if result is not None:
+            return result
+    if composed and steps and backend == "native":
+        raise RuntimeError("native composed prefix does not support these observation/constraint callbacks; use auto/python")
     if steps and selected == "native":
         # The lease pins the owner and prevents concurrent context destruction.
         # The integrator lock protects all use of this Cayley context.
@@ -462,14 +544,19 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
         state.step += completed;state.time = clock;error = message or None
         previous_time = metadata.get("previous_time")
     elif steps:
+        cache = {}
         for i in range(steps):
             previous = state.copy()
+            operators = dynamics.operator_state_dict() if composed else None
+            previous_stats = copy.deepcopy(dynamics.propagation_stats) if composed else None
             try:
                 if check_energy and i == 0:
                     initial_energy = dynamics.energy(state, bias)
                     if not np.isfinite(initial_energy):
                         raise FloatingPointError("nonfinite total ring energy")
-                if constraint is not None:
+                if composed:
+                    dynamics._composition.step(state, bias, fragment_data, cache=cache, backend=backend)
+                elif constraint is not None:
                     from .workflows.rate import constrained_step
                     constrained_step(dynamics, state, constraint, constraint_tolerance)
                 elif fragment_data:
@@ -504,6 +591,9 @@ def propagate_block(dynamics, state, steps, *, bias=None, cv=None, constraint=No
                     if snapshots is not None:
                         snapshots[written, 0] = state.q;snapshots[written, 1] = state.p
             except Exception as exc:
+                if operators is not None:
+                    dynamics.load_operator_state_dict(operators)
+                    dynamics.propagation_stats = previous_stats
                 state.q[:] = previous.q;state.p[:] = previous.p
                 state.step, state.time = previous.step, previous.time
                 error = f"{type(exc).__name__}: {exc}"

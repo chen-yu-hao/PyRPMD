@@ -1,0 +1,34 @@
+{
+  "wheel": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+  "sdist": "pyrpmd-0.2.0.tar.gz",
+  "wheel_runtime_python_modules": 125,
+  "new_scientific_files_in_sdist": 50,
+  "new_docs": [
+    "docs/tier2-methods.md",
+    "docs/tier2-ml-lifecycle.md",
+    "docs/tier2-nonadiabatic.md",
+    "docs/tier2-path-integral.md",
+    "docs/tier2-sampling.md",
+    "docs/tier2-spectroscopy.md"
+  ],
+  "new_examples": [
+    "examples/ml_lifecycle/committee.inp",
+    "examples/ml_lifecycle/delta_rpc.inp",
+    "examples/ml_lifecycle/delta_rpc_mts.py",
+    "examples/nonadiabatic/adiabatic_on_the_fly.py",
+    "examples/nonadiabatic/thermal_rate.inp",
+    "examples/nonadiabatic/thermal_rate_model.py",
+    "examples/opes/adaptive_explore.inp",
+    "examples/path_integral/bosonic.inp",
+    "examples/path_integral/pigs.inp",
+    "examples/path_integral/suzuki_chin.inp",
+    "examples/spectroscopy/README.md",
+    "examples/spectroscopy/harmonic_properties.py",
+    "examples/spectroscopy/pacmd.inp"
+  ],
+  "missing_runtime": [],
+  "missing_sdist": [],
+  "native_extensions_in_wheel": true,
+  "generated_cache_or_object_files": false,
+  "distribution_convention": "Wheel has runtime modules/native libraries; source archive additionally contains docs, examples and tests."
+}

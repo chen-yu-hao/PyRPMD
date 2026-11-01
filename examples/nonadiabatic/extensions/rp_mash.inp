@@ -1,0 +1,42 @@
+# CA-RP-MASH: initial upper-adiabatic hemisphere with |Sz| importance sampling.
+# Output populations are active centroid-adiabatic populations; no density array.
+task = "nonadiabatic"
+method = "rp-mash"
+beta = 4.0
+beads = 4
+seed = 20261102
+
+[model]
+name = "spin_boson"
+
+[model.params]
+frequencies = [0.5]
+couplings = [0.08]
+masses = [1.0]
+bias = 0.1
+tunnelling = 0.15
+
+[initial]
+kind = "harmonic_ring"
+frequencies = [0.5]
+centers = [0.0]
+active_surface = 1
+
+[ensemble]
+trajectories = 4
+steps = 12
+sample_stride = 4
+
+[dynamics]
+dt = "0.02 autime"
+integrator = "adaptive-dop853"
+native = false
+rtol = 1e-9
+atol = 1e-11
+max_step = "0.005 autime"
+max_events = 64
+gap_tolerance = "1e-10 hartree"
+block_steps = 5
+
+[output]
+directory = "runs/rp-mash"

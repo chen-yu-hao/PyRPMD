@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-01",
+  "base_commit": "2f907ba96d22cb134198715e398b1d9f8d83d929",
+  "scope": "Local distribution validation during development; artifacts are snapshots of the evolving worktree, not a release or a final combined-tree certification.",
+  "sdist_and_native_cp312_wheel": {
+    "build_passed": true,
+    "twine_strict_passed": true,
+    "isolated_installed_smoke_passed": true
+  },
+  "conda": {
+    "rattler_build_version": "0.80.0",
+    "native_installed_tests": [
+      {
+        "version": "0.2.0",
+        "python": "3.12.16 (main, Oct 26 2026, 11:37:43) [GCC 15.3.0]",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "installed": "$SRC_DIR_run_env/lib/python3.12/site-packages/pyrpmd/__init__.py"
+      },
+      {
+        "version": "0.2.0",
+        "python": "3.13.18 | packaged by conda-forge | (main, Oct 26 2026, 11:38:18) [GCC 15.3.0]",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "installed": "$PREFIX/lib/python3.13/site-packages/pyrpmd/__init__.py"
+      },
+      {
+        "version": "0.2.0",
+        "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]",
+        "native": {
+          "available": true,
+          "openmp": true,
+          "integrators": [
+            "cayley-bcb",
+            "normal-mode-bab",
+            "velocity-verlet"
+          ]
+        },
+        "installed": "$SRC_DIR_run_env/lib/python3.14/site-packages/pyrpmd/__init__.py"
+      }
+    ],
+    "python_variants_rendered": [
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ],
+    "tested_python_minors": [
+      "3.12",
+      "3.13",
+      "3.14"
+    ],
+    "libgomp_explicit_runtime_dependency": true,
+    "overlinking_warnings_final": false,
+    "metadata_version_assertion_standalone_passed": true
+  },
+  "portable_wheels": {
+    "cibuildwheel_version": "3.4.0",
+    "selected_count": 12,
+    "python": [
+      "3.11",
+      "3.12",
+      "3.13",
+      "3.14"
+    ],
+    "platforms": [
+      "manylinux_x86_64",
+      "macosx_arm64",
+      "win_amd64"
+    ],
+    "full_cibuildwheel_matrix_executed_locally": false
+  },
+  "workflow_validation": {
+    "all_yaml_parsed": true,
+    "actionlint_version": "1.7.12",
+    "actionlint_passed": true,
+    "scope": [
+      "wheels.yml",
+      "conda.yml",
+      "tests.yml",
+      "packages.yml",
+      "ecosystem.yml"
+    ],
+    "shellcheck_and_pyflakes": false
+  },
+  "publication": {
+    "pypi": false,
+    "testpypi": false,
+    "conda_forge_submission": false
+  },
+  "artifacts_sha256": {
+    "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl": "121f87b27b92a889166282145b3db0ede4db5b2f37ee504717b84fde2d44b8c0",
+    "pyrpmd-0.2.0.tar.gz": "e8ce618983b28d56d6b7f2503413fe6473231994b721aabd136939a25b423ccb",
+    "pyrpmd-0.2.0-py314hb8d3e0d_0.conda": "ef645d0501e4c91dd68e368574f22d6e1a06efa9916f398c7304ad09cf7caf2f",
+    "pyrpmd-0.2.0-py313h60db7c6_0.conda": "7fd93db928e582c905f044fd6deb96bf60e9b42c0f9daa16831f49840b283526",
+    "pyrpmd-0.2.0-py312h2e77849_0.conda": "94ecd996c487938bc0f44e8acc25aae5476ff7396e49df19fac159d880d4083a"
+  },
+  "source_of_truth": "Raw conda test logs and isolated wheel smoke log; final integrated package checks are recorded separately by the parent validation record.",
+  "docs": {
+    "strict_html_en": true,
+    "strict_html_zh": true,
+    "strict_singlehtml_en": true,
+    "strict_singlehtml_zh": true,
+    "translated_references": [
+      "docs/input.md",
+      "docs/parallel.md",
+      "docs/periodic-materials-audit.md"
+    ],
+    "originals_preserved_under": "docs/zh",
+    "code_block_parity": true,
+    "local_relative_links_resolve": true
+  },
+  "final_distribution_source_sha256": {
+    "pyproject.toml": "86eb53f365054b1e4a80e1e940fdf07abc2b3392d355d4fa6ff17e8e2e953dbf",
+    "setup.py": "a87f0fe228bd1baf493aa32bcf55b6fb3dc909b083f6a877a18f2cb4c646287c",
+    "MANIFEST.in": "a4caf8bbced620cd9b8e630710858175c62b28786db19577f97a5cb3739df5a0",
+    ".github/workflows/wheels.yml": "f4c58b5315c62d9d7369482275980796a0842a495e4b3ccea8c6edcfbcdb7179",
+    ".github/workflows/conda.yml": "e1f444c3b1c74c4e6c97ab8b703bc0de3b1ed49091744bd50dc938416c334b89",
+    ".github/workflows/tests.yml": "8f6f3eed697104f71b06b72523bf7dfeefd433a1d169673417f56d6d5ac71671",
+    ".github/workflows/packages.yml": "dfcb6e761f36f4c8d445944c0be570b8108b467b0afef6fa15487d42f2ca5f8b",
+    "packaging/conda/recipe.yaml": "44b3894caaa8554e0519a10e6b167b6e22650143c299eb9e9be4a885936d4cdd",
+    "packaging/conda/variants.yaml": "f871e3613b601942bdbace2d0d91e0935270d96162efa34b9d7402ec22c48283",
+    "packaging/conda/prepare_release.py": "602ce134fdc4cbbdc70f5acf676f9e8fac8cd954cac3bfd817780f70c5f1ca99",
+    "tests/wheel_smoke.py": "3cf36c1ee7c144317c4242b86356ff8095eaecdfc1f52dc429bd8946fa913675",
+    "docs/input.md": "fc827809977ccbc4c385ab7b52fe76475bfd0668a067196ab149298b010bc287",
+    "docs/parallel.md": "18056bba90055793ccf72b6420f93f2927d53697c40f7720b717567eed030b2d",
+    "docs/periodic-materials-audit.md": "c7f14bbe09d4bc8fa0041d49a1aeb39a470626f476ed35f4cd404f2b60cd860e",
+    "docs/distribution.md": "6704bc2c1f7ddbf54eecacc610a23ddd0919f09587a40b3ac32bf0ccae94bce2"
+  },
+  "snapshot_note": "Conda builds used the recipe before the subsequent metadata-version assertion was added to build.script. That assertion has been rendered/parsed; raw logs retain the exact executed commands. Local package snapshots preceded final joint development completion.",
+  "final_combined_source_gate": {
+    "record": "final-package-verification.json",
+    "source_digest_sha256": "4398e6e4652a8393cf1fa59a65dfcd06b7840798b6aa3bc66df06d3faff1bee2",
+    "source_files": 142,
+    "wheel_python_modules_verified": 112,
+    "passed": true
+  }
+}

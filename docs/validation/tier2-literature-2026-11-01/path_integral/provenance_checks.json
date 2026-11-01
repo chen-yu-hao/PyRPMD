@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "recorded_utc": "2026-11-01T14:05:26.176527+00:00",
+  "original_driver_sha256": "5c07eb4d26a9ddd9a3161bde9610da454e210705801852ddf03ff08a54d347e2",
+  "hardened_driver_sha256": "c80cbb90f93f96d79a7178e3fac09d762bcae8254a5396e84f2a6b6467e09fdd",
+  "completed_original_job_count": 24,
+  "test_cases": [
+    "completed cache source drift",
+    "completed cache case drift",
+    "manifest source drift before deterministic output",
+    "partial checkpoint source drift",
+    "partial checkpoint case drift",
+    "unidentified legacy checkpoint"
+  ],
+  "test_result": "6 parametrized preventive provenance tests passed within the 77-test focused run",
+  "original_directory_cli_rejection": {
+    "returncode": 1,
+    "manifest_bytes_unchanged": true,
+    "message": "Sampling manifest source provenance differs or is missing; preserve the old evidence and use a fresh output directory"
+  },
+  "fresh_output_smoke": {
+    "steps_per_seed": 200,
+    "case_limit": 1,
+    "workers": 1,
+    "completed_seeds": 3,
+    "used_for_scientific_conclusions": false,
+    "checkpoint_metadata_present": true,
+    "note": "A second identical invocation reuses the completed records; tiny trajectories test cache plumbing only."
+  },
+  "numerical_equations_changed": false
+}

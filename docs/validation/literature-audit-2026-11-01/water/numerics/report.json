@@ -1,0 +1,316 @@
+{
+  "analysis_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/numerics.py": "132d3cfae297582dbba88eacb228c5150bd443a3031f66fa3c2c5613830512b7",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61"
+  },
+  "author_fortran": {
+    "intramolecular_source_parameters": {
+      "energy_difference_hartree": 2.2551405187698492e-17,
+      "energy_difference_kcal_mol_per_water": 1.4151220408711977e-14,
+      "force_max_error_hartree_per_bohr": 2.7972416050126014e-16,
+      "force_relative_rms_error": 7.634348055457633e-15,
+      "force_rms_error_hartree_per_bohr": 1.5949769857187148e-16
+    },
+    "limitations": [
+      "Unmodified source uses an explicit low-precision erfc approximation and finite direct Ewald sums.",
+      "Printed Table I and source atomic-unit parameters are not numerically identical.",
+      "No bitwise or high-precision identity is expected; source virial was not used."
+    ],
+    "printed_table_vs_unmodified_source": {
+      "energy_difference_hartree": 0.0008697539958868461,
+      "energy_difference_kcal_mol_per_water": 0.002526754039458603,
+      "force_max_error_hartree_per_bohr": 5.10511779994241e-05,
+      "force_relative_rms_error": 0.0016221428676003677,
+      "force_rms_error_hartree_per_bohr": 2.4324373147361015e-05
+    },
+    "source": {
+      "attribution": "Source header credits S. Habershon, D. Manolopoulos, T. Markland; dated 23 June 2014",
+      "sha256": "911047fc1133662723e5d07342214af82e2b60f49de17ef2d0f4074519ec5297",
+      "url": "https://raw.githubusercontent.com/i-pi/i-pi/93162d280d15fd954da6dc3580a5ed3503e207ac/drivers/f90/pes/qtip4pf.f90"
+    },
+    "source_parameters_vs_unmodified_source": {
+      "energy_difference_hartree": 0.0002500734139858629,
+      "energy_difference_kcal_mol_per_water": 0.0007264973911452874,
+      "force_max_error_hartree_per_bohr": 4.301332308659714e-06,
+      "force_relative_rms_error": 7.495082465156073e-05,
+      "force_rms_error_hartree_per_bohr": 1.123903364457622e-06
+    }
+  },
+  "box_angstrom": 18.642822871774577,
+  "cell_update": {
+    "energy_difference_hartree": 1.5351748761105455e-08,
+    "energy_difference_kcal_mol_per_water": 4.4598924958458434e-08,
+    "force_max_error_hartree_per_bohr": 1.5593091019783234e-08,
+    "force_relative_rms_error": 1.9189839502570525e-07,
+    "force_rms_error_hartree_per_bohr": 2.9907033627331235e-09
+  },
+  "cluster_oracle": {
+    "energy_tolerance_hartree": 2e-10,
+    "force_tolerance_hartree_per_bohr": 2e-09,
+    "max_energy_error_hartree": 2.3498642268138248e-12,
+    "max_force_error_hartree_per_bohr": 7.413132607769768e-11,
+    "oracle": "independent NumPy Eqs. (1)-(4); finite-difference all 18 coordinates",
+    "passed": true
+  },
+  "dispersion_tail": {
+    "energy_difference_hartree": -0.02433505853151674,
+    "energy_difference_kcal_mol_per_water": -0.07069666565000877,
+    "force_max_error_hartree_per_bohr": 0.0,
+    "force_relative_rms_error": 0.0,
+    "force_rms_error_hartree_per_bohr": 0.0
+  },
+  "electrostatics": [
+    {
+      "energy_difference_hartree": 1.154506142597711e-05,
+      "energy_difference_kcal_mol_per_water": 3.35399788122164e-05,
+      "evaluation_seconds": 0.03618985100183636,
+      "force_max_error_hartree_per_bohr": 1.1859264296820021e-05,
+      "force_relative_rms_error": 0.0001653918227603161,
+      "force_rms_error_hartree_per_bohr": 2.480570279662087e-06,
+      "method": "PME",
+      "platform": "CPU",
+      "tolerance": 0.0001
+    },
+    {
+      "energy_difference_hartree": 1.2823746900370026e-05,
+      "energy_difference_kcal_mol_per_water": 3.725473459706901e-05,
+      "evaluation_seconds": 0.08533131799777038,
+      "force_max_error_hartree_per_bohr": 1.1932041930565879e-05,
+      "force_relative_rms_error": 0.00016538301318240708,
+      "force_rms_error_hartree_per_bohr": 2.4804381523490626e-06,
+      "method": "PME",
+      "platform": "Reference",
+      "tolerance": 0.0001
+    },
+    {
+      "energy_difference_hartree": 2.5675731984975414e-07,
+      "energy_difference_kcal_mol_per_water": 7.45915049725548e-07,
+      "evaluation_seconds": 0.012785625003743917,
+      "force_max_error_hartree_per_bohr": 1.273252856641427e-06,
+      "force_relative_rms_error": 1.7776875501362468e-05,
+      "force_rms_error_hartree_per_bohr": 2.666201284802173e-07,
+      "method": "PME",
+      "platform": "CPU",
+      "tolerance": 1e-05
+    },
+    {
+      "energy_difference_hartree": 1.2654403751533039e-06,
+      "energy_difference_kcal_mol_per_water": 3.67627696421484e-06,
+      "evaluation_seconds": 0.0884441890011658,
+      "force_max_error_hartree_per_bohr": 1.2754214187490898e-06,
+      "force_relative_rms_error": 1.7748017727887805e-05,
+      "force_rms_error_hartree_per_bohr": 2.661873154546168e-07,
+      "method": "PME",
+      "platform": "Reference",
+      "tolerance": 1e-05
+    },
+    {
+      "energy_difference_hartree": -1.9039543941445913e-07,
+      "energy_difference_kcal_mol_per_water": -5.531247317173218e-07,
+      "evaluation_seconds": 0.021163719000469428,
+      "force_max_error_hartree_per_bohr": 1.947180756365686e-07,
+      "force_relative_rms_error": 2.3829410324344096e-06,
+      "force_rms_error_hartree_per_bohr": 3.573969138613531e-08,
+      "method": "PME",
+      "platform": "CPU",
+      "tolerance": 1e-06
+    },
+    {
+      "energy_difference_hartree": 1.4044592111517318e-07,
+      "energy_difference_kcal_mol_per_water": 4.0801456524658103e-07,
+      "evaluation_seconds": 0.10776278800040018,
+      "force_max_error_hartree_per_bohr": 1.3509882762149927e-07,
+      "force_relative_rms_error": 1.8683535000783555e-06,
+      "force_rms_error_hartree_per_bohr": 2.802183376933567e-08,
+      "method": "PME",
+      "platform": "Reference",
+      "tolerance": 1e-06
+    },
+    {
+      "energy_difference_hartree": -2.0098672988133615e-06,
+      "energy_difference_kcal_mol_per_water": -5.838938757474948e-06,
+      "evaluation_seconds": 0.07238342799973907,
+      "force_max_error_hartree_per_bohr": 1.6936235961161365e-07,
+      "force_relative_rms_error": 1.581955769837526e-06,
+      "force_rms_error_hartree_per_bohr": 2.3726399533583715e-08,
+      "method": "PME",
+      "platform": "CPU",
+      "tolerance": 1e-07
+    },
+    {
+      "energy_difference_hartree": 1.1822497203439752e-08,
+      "energy_difference_kcal_mol_per_water": 3.4345967602965533e-08,
+      "evaluation_seconds": 0.6073814580013277,
+      "force_max_error_hartree_per_bohr": 1.3581252317207415e-08,
+      "force_relative_rms_error": 1.9345032570329454e-07,
+      "force_rms_error_hartree_per_bohr": 2.9013957311901753e-09,
+      "method": "PME",
+      "platform": "Reference",
+      "tolerance": 1e-07
+    }
+  ],
+  "literature_reproduced": false,
+  "molecules": 216,
+  "openmm_version": "8.6.1",
+  "parameter_comparison": {
+    "D_r_kcal_mol": {
+      "author_source_atomic_units_converted": 116.08925270163603,
+      "relative_difference": -6.437232870839876e-06,
+      "table_I": 116.09
+    },
+    "alpha_r_per_angstrom": {
+      "author_source_atomic_units_converted": 2.286568612348417,
+      "relative_difference": -0.00018862599544517975,
+      "table_I": 2.287
+    },
+    "epsilon_kcal_mol": {
+      "author_source_atomic_units_converted": 0.185207538741242,
+      "relative_difference": 4.070594623102503e-05,
+      "table_I": 0.1852
+    },
+    "gamma": {
+      "author_source_atomic_units_converted": 0.73612,
+      "relative_difference": 0.0,
+      "table_I": 0.73612
+    },
+    "k_theta_kcal_mol_rad2": {
+      "author_source_atomic_units_converted": 87.85132636880564,
+      "relative_difference": 1.5098108203184245e-05,
+      "table_I": 87.85
+    },
+    "q_M_e": {
+      "author_source_atomic_units_converted": 1.1128,
+      "relative_difference": 0.0,
+      "table_I": 1.1128
+    },
+    "r_eq_angstrom": {
+      "author_source_atomic_units_converted": 0.9419354347683199,
+      "relative_difference": 3.762052056471871e-05,
+      "table_I": 0.9419
+    },
+    "sigma_angstrom": {
+      "author_source_atomic_units_converted": 3.1589021912539854,
+      "relative_difference": 6.936762750872169e-07,
+      "table_I": 3.1589
+    },
+    "theta_eq_degrees": {
+      "author_source_atomic_units_converted": 107.4,
+      "relative_difference": 0.0,
+      "table_I": 107.4
+    }
+  },
+  "physical_converged": false,
+  "platform_comparison": [
+    {
+      "energy_difference_hartree": -1.2786854743929155e-06,
+      "energy_difference_kcal_mol_per_water": -3.7147557848526154e-06,
+      "force_max_error_hartree_per_bohr": 6.879880685341927e-07,
+      "force_relative_rms_error": 9.072244535615034e-06,
+      "force_rms_error_hartree_per_bohr": 1.3606612968922154e-07,
+      "tolerance": 0.0001
+    },
+    {
+      "energy_difference_hartree": -1.0086830553035497e-06,
+      "energy_difference_kcal_mol_per_water": -2.9303619144892916e-06,
+      "force_max_error_hartree_per_bohr": 1.720086686210487e-07,
+      "force_relative_rms_error": 1.904411932532134e-06,
+      "force_rms_error_hartree_per_bohr": 2.8562625814029637e-08,
+      "tolerance": 1e-05
+    },
+    {
+      "energy_difference_hartree": -3.308413605296323e-07,
+      "energy_difference_kcal_mol_per_water": -9.611392969639028e-07,
+      "force_max_error_hartree_per_bohr": 1.6208721804192782e-07,
+      "force_relative_rms_error": 1.5280711027659565e-06,
+      "force_rms_error_hartree_per_bohr": 2.2918228019081247e-08,
+      "tolerance": 1e-06
+    },
+    {
+      "energy_difference_hartree": -2.021689796016801e-06,
+      "energy_difference_kcal_mol_per_water": -5.873284725077914e-06,
+      "force_max_error_hartree_per_bohr": 1.6635049739484537e-07,
+      "force_relative_rms_error": 1.576661413856599e-06,
+      "force_rms_error_hartree_per_bohr": 2.364699386287347e-08,
+      "tolerance": 1e-07
+    }
+  ],
+  "platforms": [
+    "Reference",
+    "CPU"
+  ],
+  "reference": {
+    "elapsed_evaluation_seconds": 0.14701504399999976,
+    "energy_hartree": -3.5615742792258605,
+    "method": "direct Ewald",
+    "platform": "Reference",
+    "tolerance": 1e-09
+  },
+  "schema": "pyrpmd.water-numerics.v1",
+  "scope": "One source-size configuration and short real-mass trajectories; not ensemble/bead/cell-size convergence.",
+  "snapshot_sha256": "34c426633127592cdb029907af5b9683191b95090f5122bcc259cc2d9ce43b48",
+  "timestep": [
+    {
+      "beads": 1,
+      "dt_fs": 0.5,
+      "duration_fs": 20,
+      "finite": true,
+      "force_evaluation_seconds_per_step": 0.02267690707503789,
+      "max_energy_change_per_water_kcal_mol": 0.0019453275494193977,
+      "reversibility_momentum_relative_norm": 8.883500550988761e-15,
+      "reversibility_position_max_bohr": 1.0658141036401503e-14,
+      "rms_energy_change_per_water_kcal_mol": 0.0009993638995743977
+    },
+    {
+      "beads": 1,
+      "dt_fs": 0.25,
+      "duration_fs": 20,
+      "finite": true,
+      "force_evaluation_seconds_per_step": 0.020782004524971854,
+      "max_energy_change_per_water_kcal_mol": 0.0004164379292503094,
+      "reversibility_momentum_relative_norm": 1.0338248458937808e-14,
+      "reversibility_position_max_bohr": 1.4210854715202004e-14,
+      "rms_energy_change_per_water_kcal_mol": 0.0001693725946994248
+    },
+    {
+      "beads": 1,
+      "dt_fs": 0.125,
+      "duration_fs": 20,
+      "finite": true,
+      "force_evaluation_seconds_per_step": 0.02007535924999502,
+      "max_energy_change_per_water_kcal_mol": 0.00015814637784961183,
+      "reversibility_momentum_relative_norm": 9.424167002923298e-15,
+      "reversibility_position_max_bohr": 1.4210854715202004e-14,
+      "rms_energy_change_per_water_kcal_mol": 7.885406727148744e-05
+    },
+    {
+      "beads": 32,
+      "dt_fs": 0.25,
+      "duration_fs": 2,
+      "finite": true,
+      "force_evaluation_seconds_per_step": 0.6242564933745598,
+      "max_energy_change_per_water_kcal_mol": 0.15865204881621836,
+      "reversibility_momentum_relative_norm": 1.6789163185049578e-13,
+      "reversibility_position_max_bohr": 3.552713678800501e-14,
+      "rms_energy_change_per_water_kcal_mol": 0.10727436732470542
+    },
+    {
+      "beads": 32,
+      "dt_fs": 0.125,
+      "duration_fs": 2,
+      "finite": true,
+      "force_evaluation_seconds_per_step": 0.3925235035626429,
+      "max_energy_change_per_water_kcal_mol": 0.038928540120320876,
+      "reversibility_momentum_relative_norm": 1.7293301138698368e-13,
+      "reversibility_position_max_bohr": 4.973799150320701e-14,
+      "rms_energy_change_per_water_kcal_mol": 0.026580317144051315
+    }
+  ],
+  "whole_molecule_image": {
+    "energy_difference_hartree": 0.0,
+    "energy_difference_kcal_mol_per_water": 0.0,
+    "force_max_error_hartree_per_bohr": 3.774758283725532e-15,
+    "force_relative_rms_error": 9.141509325000492e-15,
+    "force_rms_error_hartree_per_bohr": 1.3710565874172383e-16
+  }
+}

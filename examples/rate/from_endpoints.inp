@@ -1,0 +1,67 @@
+# Reactant/product geometries -> CI-NEB -> P-RFO -> RPMD rate preparation.
+# This analytic teaching PES does not predict the physical H + H2 rate.
+task = "rate"
+preset = "pilot"
+temperature = "1000 K"
+beads = 4
+seed = 612
+
+[system]
+reactant = "reactant.xyz"
+product = "product.xyz"
+
+[potential]
+provider = "python"
+factory = "toy_exchange.py:build"
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+equilibration = "5 fs"
+production = "20 fs"
+interval = "0.2 fs"
+andersen_interval = 20
+replicas = 1
+
+[reaction]
+rinf = "5 angstrom"
+
+[reaction.preparation]
+refine = true
+gradient_tolerance = 1e-5
+max_steps = 100
+max_step = 0.2  # bohr
+hessian_step = 1e-4  # bohr
+
+[reaction.preparation.neb]
+images = 7  # Includes both fixed endpoints.
+spring_constant = 0.1  # hartree/bohr^2
+max_steps = 1000
+gradient_tolerance = 1e-4  # hartree/bohr
+max_step = 0.1  # bohr
+climb_after = 20
+
+[umbrella]
+start = 0.0
+stop = 1.05
+count = 22
+kappa = "0.16 hartree"
+
+[analysis]
+bins = 50
+bootstrap = 10
+
+[recrossing]
+dividing_surface = 1.0
+parent_replicas = 2
+parent_samples = 4
+equilibration = "5 fs"
+parent_interval = "1 fs"
+child_pairs = 2
+child_time = "10 fs"
+bootstrap = 30
+
+[output]
+directory = "runs/from_endpoints"
+checkpoint_interval = "5 fs"

@@ -1,0 +1,122 @@
+{
+  "format": "PyRPMD.NaH2.molecular_smoke.v1",
+  "completed": true,
+  "physical_converged": false,
+  "method": "nrpmd",
+  "model": {
+    "schema": "pyrpmd.molecular_potential",
+    "version": 1,
+    "model": "nah2_leps_5g_1992",
+    "parameters": {
+      "symbols": [
+        "Na",
+        "H",
+        "H"
+      ]
+    },
+    "source": {
+      "repository": "https://github.com/shuyinan/chempotpy",
+      "commit": "4716d22e87ae01770cad9ec995c4a02a8e479296",
+      "path": "chempotpy/NaH2/NaH2_LEPS_5G_1992_DPEM.f",
+      "sha256": "b98e2cb6a7355d868346b2a901441998705f9dead1dd233146285fd618d08f61",
+      "license": "Apache-2.0",
+      "native_units": "hartree,bohr",
+      "translation": "numpy_forward_derivative_v1"
+    }
+  },
+  "symbols": [
+    "Na",
+    "H",
+    "H"
+  ],
+  "masses_amu": [
+    22.98976928,
+    1.00782503223,
+    1.00782503223
+  ],
+  "masses_electron": [
+    41907.7857228091,
+    1837.1526474396187,
+    1837.1526474396187
+  ],
+  "positions_bohr": [
+    [
+      3.2,
+      0.8,
+      0.0
+    ],
+    [
+      -0.85,
+      0.0,
+      0.0
+    ],
+    [
+      0.85,
+      0.0,
+      0.0
+    ]
+  ],
+  "momenta_atomic": [
+    [
+      -7.974223120067328,
+      -1.993555780016832,
+      -0.0
+    ],
+    [
+      3.987111560033664,
+      0.996777890008416,
+      0.0
+    ],
+    [
+      3.987111560033664,
+      0.996777890008416,
+      0.0
+    ]
+  ],
+  "beta_hartree_inverse": 1000.0,
+  "dt_atomic": 0.2,
+  "beads": 4,
+  "trajectories": 8,
+  "steps": 100,
+  "seed": 20261101,
+  "duration_fs": 0.48377686531728,
+  "initialization": {
+    "nuclear": "specified collapsed-ring phase point, not a thermal ensemble",
+    "electronic": "fixed diabatic state 1"
+  },
+  "initial_matrix_hartree": [
+    [
+      0.1439696390997602,
+      0.011797794951281576
+    ],
+    [
+      0.011797794951281576,
+      0.15270732309254176
+    ]
+  ],
+  "initial_adiabatic_energies_hartree": [
+    0.13575775193994097,
+    0.160919210252361
+  ],
+  "matrix_gradient_check": {
+    "max_absolute_gradient_error": 4.9228399134904066e-11,
+    "rms_gradient_error": 1.4554857174664628e-11,
+    "gradient_unit": "hartree/bohr",
+    "finite_difference_step_bohr": 1e-05
+  },
+  "final_diabatic_population_mean": [
+    -0.015911895950010503,
+    1.0159118959500097
+  ],
+  "final_diabatic_population_sem": [
+    0.036793530670196035,
+    0.03679353067019639
+  ],
+  "max_abs_sum_bead_energy_drift_hartree": 5.8826599591554896e-08,
+  "max_abs_electronic_norm_drift": 5.1958437552457326e-14,
+  "software": {
+    "pyrpmd": "0.2.0",
+    "numpy": "2.3.5",
+    "python": "3.12.14"
+  }
+}

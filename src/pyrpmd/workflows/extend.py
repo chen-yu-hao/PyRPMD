@@ -56,7 +56,7 @@ def _lock(directory):
             fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     except OSError as exc:
         stream.close()
-        raise InputError("Another unresolved-trajectory extension is active for this run") from exc
+        raise InputError("Another budget extension is active for this run") from exc
     _LOCKS[str(path)] = stream
 
 

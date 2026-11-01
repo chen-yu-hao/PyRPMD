@@ -1,0 +1,19 @@
+{
+  "schema": "pyrpmd.entrance.audit.v1",
+  "source_run": 41192380353,
+  "source_artifact": "h3-r01-r12-expanded-16bead",
+  "temperature_K": 1500,
+  "beads": 16,
+  "R_inf_bohr": 10,
+  "reference_shell_half_width_bohr": 0.2,
+  "checkpoint_count": 128,
+  "checkpoint_R_min_bohr": 0.5673964653280594,
+  "checkpoint_R_max_bohr": 7.734269665500342,
+  "reference_checkpoint_count": 0,
+  "joint_unbiased_canonical_bridge_weights_available": false,
+  "analytic_reference_flux_au": 0.9873012308830207,
+  "analytic_reference_flux_cm3_s": 6.048364782420899e-9,
+  "normalized_bond_2D_QTST_cm3_s": null,
+  "converged": false,
+  "notes": "Checkpoints are final snapshot positions, not canonical flux samples; no existing connected joint MBAR reference/target weight bridge. Analytic free entrance prefactor is not itself a reactive rate."
+}

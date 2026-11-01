@@ -1,0 +1,33 @@
+{
+  "model": {
+    "title": "A new perspective on quantum time correlation functions",
+    "authors": ["Jianshu Cao", "Gregory A. Voth"],
+    "doi": "10.1063/1.465512",
+    "primary_full_text_url": "https://web.mit.edu/jianshucaogroup/pdfdir/JCP99-10070-1993.pdf",
+    "journal_page": 10072,
+    "pdf_page_one_based": 3,
+    "equation": 18,
+    "equation_visually_checked": true,
+    "potential": "q^2/2 + g*q^4/24",
+    "g": 2.4,
+    "mass": 1.0,
+    "hbar": 1.0,
+    "beta": 5.0,
+    "paper_exact_basis_size": 100,
+    "paper_reported_ground_energy_increase_percent_rounded": 12.0
+  },
+  "comparison_classification": {
+    "primary_parameter_reproduction": true,
+    "reported_numerical_value_checked": "ground-state energy increase, rounded to 12 percent",
+    "figure_digitization": false,
+    "reference": "independently calculated exact Kubo correlation and transition spectrum",
+    "paper_figure_1_observable": "real quantum position correlation",
+    "benchmark_observable": "Kubo-transformed linear-position correlation and relative IR",
+    "water_or_liquid_hydrogen_benchmark": false
+  },
+  "method_sources": [
+    {"doi": "10.1063/1.2186636", "primary_abstract_url": "https://pubmed.ncbi.nlm.nih.gov/16674214/", "original_full_text_accessible": false},
+    {"doi": "10.1063/1.1836731", "primary_abstract_url": "https://pubmed.ncbi.nlm.nih.gov/15740308/", "original_full_text_accessible": false},
+    {"doi": "10.3389/fmolb.2022.851311", "primary_full_text_url": "https://www.frontiersin.org/journals/molecular-biosciences/articles/10.3389/fmolb.2022.851311/full", "original_full_text_accessible": true, "numerical_water_results_reproduced": false}
+  ]
+}

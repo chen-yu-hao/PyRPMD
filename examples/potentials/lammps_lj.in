@@ -1,0 +1,11 @@
+# Two-particle Lennard-Jones teaching model; no integration or constraint fix.
+units metal
+atom_style atomic
+boundary p p p
+region box block 0 20 0 20 0 20
+create_box 1 box
+create_atoms 1 single 8 10 10
+create_atoms 1 single 11.8 10 10
+mass 1 39.9623831237
+pair_style lj/cut 8
+pair_coeff 1 1 0.0103 3.4

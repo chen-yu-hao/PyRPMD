@@ -1,0 +1,33 @@
+# Smoke example only: all numerical quantities here use atomic units.
+# This small sample does not establish a kinetic plateau or a physical rate.
+task = "nonadiabatic_rate"
+masses = [1.0]
+q = [[0.0, 0.0, 0.0]]
+beta = 2.0
+beads = 2
+nstates = 2
+seed = 31
+
+[potential]
+provider = "diabatic_python"
+factory = "thermal_rate_model.py:build"
+
+[sampling]
+samples = 24
+burn_in = 20
+stride = 2
+nuclear_step = 0.2
+centroid_step = 0.2
+
+[dynamics]
+dt = 0.02
+steps = 20
+stride = 2
+native = false
+integrator = "normal-mode-bab"
+
+[rate]
+reactant_state = 0
+product_state = 1
+block_size = 3
+min_average_sign = 0.05

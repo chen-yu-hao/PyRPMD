@@ -1,19 +1,18 @@
 """Explicit potential references for a one-electron reservoir (atomic units)."""
 
 from dataclasses import dataclass
-import numbers
+from functools import partial
+
 import numpy as np
 
 from ..constants import EV_TO_AU
+from ..validation import finite_real
 
-
-def _finite_real(value, name, *, positive=False):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, numbers.Real):
-        raise ValueError(f"{name} must be a finite real number")
-    value = float(value)
-    if not np.isfinite(value) or (positive and value <= 0):
-        raise ValueError(f"{name} must be finite" + (" and positive" if positive else ""))
-    return value
+_finite_real = partial(
+    finite_real,
+    finite_message="{name} must be finite{and_sign}",
+    bounds_message="{name} must be finite{and_sign}",
+)
 
 
 def _electron_bounds(value):
