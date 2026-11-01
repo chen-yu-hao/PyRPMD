@@ -1,0 +1,476 @@
+{
+  "analysis_source_sha256": "071fb45ebf2c9a793524fc98f8cf5e13a68fed34b005f7276750d8df3081ca94",
+  "jobs": [
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 8.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p8.8_dt8_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p8.8_dt4_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p8.8_dt4_seed182331.json",
+      "seed": 182331
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p8.8_dt4_seed904577.json",
+      "seed": 904577
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p8.8_dt4_seed411953.json",
+      "seed": 411953
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 2.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p8.8_dt2_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 8.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p15_dt8_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p15_dt4_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p15_dt4_seed182331.json",
+      "seed": 182331
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p15_dt4_seed904577.json",
+      "seed": 904577
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p15_dt4_seed411953.json",
+      "seed": 411953
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 2.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p15_dt2_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 8.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p25_dt8_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p25_dt4_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p25_dt4_seed182331.json",
+      "seed": 182331
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p25_dt4_seed904577.json",
+      "seed": 904577
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p25_dt4_seed411953.json",
+      "seed": 411953
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 2.0,
+      "electronic_substeps": 4,
+      "method": "rpsh",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/rpsh_p25_dt2_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 8.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p8.8_dt8_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p8.8_dt4_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p8.8_dt4_seed182331.json",
+      "seed": 182331
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p8.8_dt4_seed904577.json",
+      "seed": 904577
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p8.8_dt4_seed411953.json",
+      "seed": 411953
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 2.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 8.8,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p8.8_dt2_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 8.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p15_dt8_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p15_dt4_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p15_dt4_seed182331.json",
+      "seed": 182331
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p15_dt4_seed904577.json",
+      "seed": 904577
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p15_dt4_seed411953.json",
+      "seed": 411953
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 2.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 15.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p15_dt2_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 8.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p25_dt8_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p25_dt4_seed731921.json",
+      "seed": 731921
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p25_dt4_seed182331.json",
+      "seed": 182331
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p25_dt4_seed904577.json",
+      "seed": 904577
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 4.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p25_dt4_seed411953.json",
+      "seed": 411953
+    },
+    {
+      "boundary": 8.0,
+      "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+      "count": 128,
+      "dt": 2.0,
+      "electronic_substeps": 4,
+      "method": "mash",
+      "momentum": 25.0,
+      "path": "/workspace/scratch/82b1e823c721/PyRPMD/docs/validation/tier2-literature-2026-11-01/nonadiabatic/jobs/mash_p25_dt2_seed731921.json",
+      "seed": 731921
+    }
+  ],
+  "literature_sources": [
+    {
+      "author": "John C. Tully",
+      "doi": "10.1063/1.459170",
+      "key": "tully_1990",
+      "locations": [
+        "Section IV: mass=2000 a.u.; 2000 trajectories per paper point",
+        "Eq. (20): Gaussian wavepacket; width typically 20/k",
+        "Eq. (21), Section IV A: model I Hamiltonian and parameters",
+        "Fig. 4: transmission/reflection on the adiabatic states"
+      ],
+      "title": "Molecular dynamics with electronic transitions",
+      "url": "https://xuv.scs.illinois.edu/chem540/GroupProjects/Benke_Hammer_SourcePaper1.pdf",
+      "use": "Published Hamiltonian, asymptotic lower-state incidence and channel definitions. No paper points digitized."
+    },
+    {
+      "authors": [
+        "Jonathan R. Mannouch",
+        "Jeremy O. Richardson"
+      ],
+      "doi": "10.1063/5.0139734",
+      "key": "mash_2023",
+      "title": "A mapping approach to surface hopping",
+      "url": "https://www.research-collection.ethz.ch/items/9e9f269e-f36c-4b37-80fe-0ad299fa2c65",
+      "use": "MASH theoretical method; this study does not reproduce a named numerical figure from this paper."
+    },
+    {
+      "authors": [
+        "J. Amira Geuther",
+        "Kasra Asnaashari",
+        "Jeremy O. Richardson"
+      ],
+      "doi": "10.1021/acs.jctc.4c01684",
+      "key": "mash_integrators_2025",
+      "locations": [
+        "Sections 2.1 and 2.3: impulse/reflection and phase-aligned overlap propagation",
+        "Section 3: distinction between endpoint and reversible/event-resolved algorithms"
+      ],
+      "title": "Time-Reversible Implementation of MASH for Efficient Nonadiabatic Molecular Dynamics",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11912208/",
+      "use": "Algorithm scope and limitations. The implementation tested here is fixed-step endpoint MASH."
+    }
+  ],
+  "mass": 2000.0,
+  "model": "Tully 1990 Eq.21 (model I)",
+  "native": {
+    "available": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ],
+    "openmp": true
+  },
+  "numpy": "2.5.4",
+  "parameters": {
+    "A": 0.01,
+    "B": 1.6,
+    "C": 0.005,
+    "D": 1.0
+  },
+  "primary_paper_figure": "Tully 1990 Fig.4; same model/channel definitions, not digitized values",
+  "python": "3.12.14",
+  "sampling": "four independent seed blocks at dt4; first block paired across dt8/4/2",
+  "scipy": "1.17.0",
+  "sources": {
+    "benchmarks/tier2_literature/nonadiabatic.py": "1fec40a3f99c766bba39fee75b0da4b302cfa9177b6341f2d62e6a72d5f194f5",
+    "src/pyrpmd/adiabatic.py": "c0e8df840173416c3af3b71de100e718903df5905a27d45190850b02f09379d2",
+    "src/pyrpmd/mash.py": "40092556c6cbfe4c6929a780ddd601302b93fc112c43766bff3b922142bcd1d1"
+  },
+  "thread_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "workers": 4
+}

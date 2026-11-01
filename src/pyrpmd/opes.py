@@ -36,6 +36,12 @@ class OPESBias:
     lower bound is ``-barrier``. The bias contribution to H_P is P*V and
     the KDE weight is exp(beta*V), without an extra bead factor.
 
+    With no kernels, the density is zero and V=prefactor*log(epsilon)
+    is ``-barrier``. This constant determines the first METAD kernel's
+    weight and therefore cannot be discarded during initialization.
+    Schema-1 checkpoints retain their historical zero initial bias when
+    resumed; new runs and schema-2 checkpoints use the equation above.
+
     The method retains every kernel: evaluating a point and adding a kernel
     cost O(n), and memory costs O(n). ``Z`` is the arithmetic mean of the
     normalized KDE at its kernel centers, evaluated incrementally exactly
@@ -100,7 +106,19 @@ class OPESBias:
         self._m2 = np.zeros(cv.dimension)
         self._last_unwrapped = np.zeros(cv.dimension)
         self.log_z = 0.0
+        self._state_schema = 2
+        self._initial_bias = -self.barrier
         if state is not None:
+            if (not isinstance(state, Mapping)
+                    or isinstance(state.get("schema_version"), (bool, np.bool_))
+                    or not isinstance(state.get("schema_version"), (int, np.integer))
+                    or state["schema_version"] not in (1, 2)):
+                raise ValueError("invalid OPES state schema_version")
+            if state["schema_version"] == 1:
+                # A legacy restart must continue the trajectory represented
+                # by its saved weights, including an empty pre-update state.
+                self._state_schema = 1
+                self._initial_bias = 0.0
             self._load_state(state)
 
     def __len__(self):
@@ -244,7 +262,7 @@ class OPESBias:
     def physical_energy_gradient(self, values):
         values = self._values(values)
         if not len(self):
-            return np.zeros(values.shape[:-1]), np.zeros_like(values)
+            return np.full(values.shape[:-1], self._initial_bias), np.zeros_like(values)
         log_probability, score = self._probability(values, gradient=True)
         ratio = log_probability - self.log_z
         log_argument = np.logaddexp(ratio, self.log_epsilon)
@@ -258,7 +276,7 @@ class OPESBias:
     def physical_energy(self, values):
         values = self._values(values)
         if not len(self):
-            return np.zeros(values.shape[:-1])
+            return np.full(values.shape[:-1], self._initial_bias)
         ratio = self.log_probability(values) - self.log_z
         return self.prefactor * np.logaddexp(ratio, self.log_epsilon)
 
@@ -315,12 +333,14 @@ class OPESBias:
 
     def state_dict(self):
         """Detached, JSON-compatible restart state, including exact accumulators."""
-        state = {"schema_version": 1, "method": self.method, "sigma": self.sigma.tolist(),
+        state = {"schema_version": self._state_schema, "method": self.method, "sigma": self.sigma.tolist(),
                 "beta": self.beta, "barrier": self.barrier, "bias_factor": self.bias_factor,
                 "periods": list(self.periods), "centers": self._centers.tolist(),
                 "log_weights": self._log_weights.tolist(), "steps": self._steps.tolist(),
                 "times": self._times.tolist(), "log_center_sums": self._log_center_sums.tolist(),
                 "log_z": self.log_z}
+        if self._state_schema == 2:
+            state["initial_bias"] = self._initial_bias
         if self.mode != "metad" or self.adaptive_sigma:
             state.update(mode=self.mode, adaptive_sigma=self.adaptive_sigma)
         if self.adaptive_sigma:
@@ -334,6 +354,8 @@ class OPESBias:
             raise ValueError("invalid OPES state fields")
         current = self.state_dict()
         identity = ["schema_version", "method", "sigma", "beta", "barrier", "bias_factor", "periods"]
+        if self._state_schema == 2:
+            identity += ["initial_bias"]
         if self.mode != "metad" or self.adaptive_sigma:
             identity += ["mode", "adaptive_sigma"]
         if self.adaptive_sigma:
@@ -362,6 +384,12 @@ class OPESBias:
         sigmas = None
         if self.mode == "explore" and np.any(log_weights != 0):
             raise ValueError("OPES explore requires unweighted kernels")
+        if (n and self.mode == "metad" and self._state_schema == 2
+                and log_weights[0] != self.beta * self._initial_bias):
+            # The normalized KDE is invariant to a common weight offset,
+            # so its caches alone cannot detect a legacy first weight being
+            # relabeled as the new initialization convention.
+            raise ValueError("OPES first kernel weight disagrees with initial_bias")
         if self.adaptive_sigma:
             sigmas = np.asarray(state["kernel_sigmas"], float).reshape(-1, self.cv.dimension)
             if sigmas.shape != centers.shape or not np.isfinite(sigmas).all() or np.any(sigmas < self.sigma_min):
@@ -404,8 +432,10 @@ class OPESBias:
 class OPESExploreBias(OPESBias):
     """OPES-explore with literal kernel widths in the declared CV units.
 
-    Unlike PLUMED's SIGMA input convention, sigma is not divided by sqrt(gamma).
-    The kernel width used is exactly the supplied width (before adaptation).
+    The kernel width is exactly the supplied width before adaptation. PLUMED
+    OPES_METAD_EXPLORE instead multiplies its input SIGMA by sqrt(gamma);
+    equivalent fixed physical widths therefore require SIGMA/sqrt(gamma)
+    as the PLUMED input.
     """
 
     def __init__(self, cv, sigma, beta, **kwargs):

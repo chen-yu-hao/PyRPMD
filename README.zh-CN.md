@@ -35,6 +35,10 @@ metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核�
 直接绝热电子结构接口、双态 MASH、热 NRPMD 速率命令，以及委员会不确定度、候选数据收集和 Δ-learning/RPC。
 文档明确区分输入工作流与 Python API；完整 QCMD/h-CMD、RETIS minus ensemble 和经过真实体系验证的量化软件桥接仍未实现。
 
+[Tier 2 文献对照与详尽测试](docs/validation/tier2-literature-2026-11-01/README.md)提供论文模型的独立量子/统计参考、
+多种子实际轨迹、珠子数与时间步收敛、统计区间，以及真实 PLUMED、TorchScript、量化软件和 MPI 测试记录。
+跨程序逐点对照发现并修复了 OPES 首核权重的初始化问题；报告保留未收敛结果，明确区分模型校验与完整论文复现。
+
 
 ## 安装
 

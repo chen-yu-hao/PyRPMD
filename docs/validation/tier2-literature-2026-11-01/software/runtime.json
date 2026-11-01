@@ -1,0 +1,44 @@
+{
+  "base_pr_head": "4da679023408bccfcd3173bfc81f961c48d1d0ff",
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "logical_cpus": 9,
+  "versions": {
+    "numpy": "2.5.4",
+    "scipy": "1.17.0",
+    "h5py": "3.16.0",
+    "pytest": "9.2.0",
+    "threadpoolctl": "3.7.0",
+    "torch": "2.15.0+cpu",
+    "plumed": "2.9.4",
+    "pyscf": "2.14.0",
+    "tblite": "0.8.0",
+    "ase": "3.29.0",
+    "matplotlib": "3.10.8",
+    "mpi4py": "4.1.2"
+  },
+  "native_capabilities": {
+    "available": true,
+    "openmp": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "plumed_source_commit": "52da2bb76d37dbad0d19f59c6fe0b2ab939e3ded",
+  "plumed_modules": [
+    "setup",
+    "colvar",
+    "reference",
+    "bias",
+    "generic",
+    "xdrfile",
+    "opes"
+  ],
+  "omp_threads": 1,
+  "openblas_threads": 1,
+  "plumed_wrapper_compiler": "gcc (runtime Python default clang was unavailable)",
+  "compiler": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+  "open_mpi": "4.1.6"
+}

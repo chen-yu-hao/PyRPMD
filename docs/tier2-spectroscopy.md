@@ -129,6 +129,13 @@ still require timestep and adiabatic-separation studies, appropriate initial
 equilibration, and statistical convergence. Cartesian CMD can retain the
 low-temperature curvature problem.
 
+The [literature validation report](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/tier2-literature-2026-11-01/spectroscopy/README.md)
+adds actual PA-CMD trajectories for Cao and Voth's published quartic model,
+an independently calculated exact Kubo reference, finite-bead and harmonic
+covariance checks, timestep/adiabatic-separation studies, and independent-seed
+uncertainty. It retains the observed correlation residual and the quadratic
+force-matching limitations; it does not claim molecular-spectrum convergence.
+
 ## Common dipole and polarizability interface
 
 `pyrpmd.properties.PropertyModel` accepts real coordinates `[batch,atom,3]` in

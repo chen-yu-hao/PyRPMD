@@ -18,6 +18,35 @@ from .potentials.python import unit_factors
 from .surface_hopping import HopResult, _surface
 
 
+def _aligned_overlap_log(overlap):
+    """Principal log after diagonal-phase alignment, with exact SU(2) algebra.
+
+    A unitary two-state overlap with positive diagonal entries has determinant
+    one. Its logarithm is angle/sin(angle) times its anti-Hermitian part.
+    This avoids a general Schur decomposition at every two-state step; larger
+    electronic spaces retain the general matrix logarithm.
+    """
+    if overlap.shape != (2, 2):
+        return logm(overlap)
+    antihermitian = .5*(overlap-overlap.conj().T)
+    sine = float(np.sqrt(max(0., -.5*np.trace(antihermitian@antihermitian).real)))
+    cosine = float(.5*np.trace(overlap).real)
+    factor = np.arctan2(sine, cosine)/sine if sine > 0 else 1.
+    return factor*antihermitian
+
+
+def _hermitian_propagator(hamiltonian, duration):
+    """Compute exp(-i duration H); the two-state branch is algebraically exact."""
+    if hamiltonian.shape != (2, 2):
+        return expm(-1j*duration*hamiltonian)
+    mean = float(.5*np.trace(hamiltonian).real)
+    centered = hamiltonian-mean*np.eye(2)
+    radius = float(np.hypot(centered[0, 0].real, abs(centered[0, 1])))
+    angle = duration*radius
+    return np.exp(-1j*duration*mean)*(np.cos(angle)*np.eye(2)
+                                    -1j*duration*np.sinc(angle/np.pi)*centered)
+
+
 @dataclass(frozen=True)
 class AdiabaticResult:
     """E[B,S], +grad E[B,S,N,3], d_ij=<i|grad j>[B,S,S,N,3].
@@ -404,7 +433,7 @@ class AdiabaticRPSHDynamics:
             raise PotentialError("electronic states rotate too far in one step; reduce timestep")
         phase = diagonal.conj()/abs(diagonal)
         aligned = overlap*phase[None, :]
-        connection = logm(aligned)/self.dt
+        connection = _aligned_overlap_log(aligned)/self.dt
         if np.max(np.abs(connection+connection.conj().T)) > 1e-8:
             raise PotentialError("overlap logarithm is not anti-Hermitian")
         connection = .5*(connection-connection.conj().T)
@@ -419,7 +448,7 @@ class AdiabaticRPSHDynamics:
             t = (k+.5)/self.electronic_substeps
             energies = (1-t)*old.result.energies[0]+t*new.result.energies[0]
             hamiltonian = np.diag(energies)-1j*connection
-            half = expm(-.5j*h*hamiltonian)
+            half = _hermitian_propagator(hamiltonian, .5*h)
             midpoint = half@z
             transfer += 2*h*np.real(midpoint[active].conj()*midpoint*connection[active])
             z = half@midpoint

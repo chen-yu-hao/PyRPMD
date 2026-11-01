@@ -93,6 +93,14 @@ truncation can change the dynamics.
 
 ## What validation establishes
 
+The [extended literature validation report](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/tier2-literature-2026-11-01/README.md)
+adds independent quantum and statistical references for published models,
+actual seeded trajectories, numerical convergence, uncertainty, and real
+optional runtimes. It records the OPES initialization defect exposed by direct
+PLUMED comparison and its versioned-checkpoint correction. It also preserves
+short-run uncertainty and model discrepancies instead of treating a successful
+software test as physical convergence.
+
 The tests include independent nonlinear force differences, Gaussian action
 integrals and convergence orders, explicit small-system bosonic recurrences,
 harmonic spectra, phase/gauge changes, exact adiabatic/diabatic integrator

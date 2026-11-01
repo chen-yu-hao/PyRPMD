@@ -15,6 +15,27 @@ from pyrpmd.nonadiabatic import DiabaticResult, NRPMDDynamics, NRPMDState
 from pyrpmd.potentials.base import PotentialError
 
 
+def test_two_state_electronic_algebra_matches_general_scipy_matrix_functions():
+    from scipy.linalg import expm, logm
+    from pyrpmd.adiabatic import _aligned_overlap_log, _hermitian_propagator
+
+    rng = np.random.default_rng(67312)
+    for angle in [0., 1e-14, .01, .7, 1.5]:
+        for _ in range(5):
+            phase = np.exp(1j*rng.uniform(-np.pi, np.pi))
+            overlap = np.array([[np.cos(angle), -np.sin(angle)*phase],
+                                [np.sin(angle)*phase.conjugate(), np.cos(angle)]])
+            np.testing.assert_allclose(_aligned_overlap_log(overlap), logm(overlap), atol=2e-15, rtol=2e-14)
+            h = rng.normal(size=(2, 2))+1j*rng.normal(size=(2, 2))
+            h = h+h.conj().T
+            duration = 10**rng.uniform(-5, 1)
+            np.testing.assert_allclose(_hermitian_propagator(h, duration), expm(-1j*duration*h),
+                                       atol=2e-14, rtol=2e-14)
+    for energy in [0., .5]:
+        h = energy*np.eye(2)
+        np.testing.assert_allclose(_hermitian_propagator(h, 3.), expm(-3j*h), atol=1e-15)
+
+
 class DiabaticModel:
     def evaluate(self, q):
         scalar = .04*np.sum(q*q, axis=(1, 2))

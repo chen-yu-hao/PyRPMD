@@ -1,0 +1,650 @@
+[
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.9296875,
+      0.953125,
+      0.921875,
+      0.875
+    ],
+    "channel": "transmitted_lower",
+    "counts": [
+      119,
+      122,
+      118,
+      112
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 8.8,
+    "pearson_pvalue": 0.13310456372976168,
+    "pearson_statistic": 5.594324478276629,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "transmitted_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 8.8,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.0703125,
+      0.046875,
+      0.078125,
+      0.125
+    ],
+    "channel": "reflected_lower",
+    "counts": [
+      9,
+      6,
+      10,
+      16
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 8.8,
+    "pearson_pvalue": 0.13310456372976168,
+    "pearson_statistic": 5.594324478276629,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 8.8,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.65625,
+      0.640625,
+      0.6015625,
+      0.6640625
+    ],
+    "channel": "transmitted_lower",
+    "counts": [
+      84,
+      82,
+      77,
+      85
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 15.0,
+    "pearson_pvalue": 0.7316275246964088,
+    "pearson_statistic": 1.2895015906680807,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.34375,
+      0.359375,
+      0.3984375,
+      0.3359375
+    ],
+    "channel": "transmitted_upper",
+    "counts": [
+      44,
+      46,
+      51,
+      43
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 15.0,
+    "pearson_pvalue": 0.7316275246964088,
+    "pearson_statistic": 1.2895015906680807,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_lower",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 15.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 15.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.3125,
+      0.40625,
+      0.375,
+      0.3359375
+    ],
+    "channel": "transmitted_lower",
+    "counts": [
+      40,
+      52,
+      48,
+      43
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 25.0,
+    "pearson_pvalue": 0.41004162636292685,
+    "pearson_statistic": 2.882854153171558,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.6875,
+      0.59375,
+      0.625,
+      0.6640625
+    ],
+    "channel": "transmitted_upper",
+    "counts": [
+      88,
+      76,
+      80,
+      85
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 25.0,
+    "pearson_pvalue": 0.41004162636292685,
+    "pearson_statistic": 2.882854153171558,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_lower",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 25.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "rpsh",
+    "momentum": 25.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.9609375,
+      0.9296875,
+      0.9453125,
+      0.953125
+    ],
+    "channel": "transmitted_lower",
+    "counts": [
+      123,
+      119,
+      121,
+      122
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 8.8,
+    "pearson_pvalue": 0.7129439535878106,
+    "pearson_statistic": 1.3684612447499045,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "transmitted_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 8.8,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.0390625,
+      0.0625,
+      0.0546875,
+      0.046875
+    ],
+    "channel": "reflected_lower",
+    "counts": [
+      5,
+      8,
+      7,
+      6
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 8.8,
+    "pearson_pvalue": 0.8469819710587547,
+    "pearson_statistic": 0.8103830326052548,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 8.8,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.6953125,
+      0.6484375,
+      0.6328125,
+      0.6015625
+    ],
+    "channel": "transmitted_lower",
+    "counts": [
+      89,
+      83,
+      81,
+      77
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 15.0,
+    "pearson_pvalue": 0.46499930907804177,
+    "pearson_statistic": 2.557442557442557,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.3046875,
+      0.3515625,
+      0.3671875,
+      0.3984375
+    ],
+    "channel": "transmitted_upper",
+    "counts": [
+      39,
+      45,
+      47,
+      51
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 15.0,
+    "pearson_pvalue": 0.46499930907804177,
+    "pearson_statistic": 2.557442557442557,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_lower",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 15.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 15.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.34375,
+      0.3359375,
+      0.421875,
+      0.3203125
+    ],
+    "channel": "transmitted_lower",
+    "counts": [
+      44,
+      43,
+      54,
+      41
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 25.0,
+    "pearson_pvalue": 0.3280950951933546,
+    "pearson_statistic": 3.4440226440226436,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": true,
+    "block_probabilities": [
+      0.65625,
+      0.6640625,
+      0.578125,
+      0.6796875
+    ],
+    "channel": "transmitted_upper",
+    "counts": [
+      84,
+      85,
+      74,
+      87
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 25.0,
+    "pearson_pvalue": 0.3280950951933546,
+    "pearson_statistic": 3.4440226440226436,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_lower",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 25.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  },
+  {
+    "asymptotic_test_applicable": false,
+    "block_probabilities": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "channel": "reflected_upper",
+    "counts": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "interpretation": "descriptive independent-seed check, not proof of seed independence or physical accuracy",
+    "method": "mash",
+    "momentum": 25.0,
+    "pearson_pvalue": null,
+    "pearson_statistic": null,
+    "totals": [
+      128,
+      128,
+      128,
+      128
+    ]
+  }
+]

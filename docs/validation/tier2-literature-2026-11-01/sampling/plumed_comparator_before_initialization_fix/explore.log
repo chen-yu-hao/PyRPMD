@@ -1,0 +1,68 @@
+PLUMED: PLUMED is starting
+PLUMED: Version: 2.9.4 (git: 52da2bb) compiled on Nov  1 2026 at 08:38:24
+PLUMED: Please cite these papers when using PLUMED [1][2]
+PLUMED: For further information see the PLUMED web page at http://www.plumed.org
+PLUMED: Root: /workspace/scratch/82b1e823c721/plumed-runtime/lib/plumed
+PLUMED: For installed feature, see /workspace/scratch/82b1e823c721/plumed-runtime/lib/plumed/src/config/config.txt
+PLUMED: Molecular dynamics engine: PyRPMD-literature-equations
+PLUMED: Precision of reals: 8
+PLUMED: Running over 1 node
+PLUMED: Number of threads: 1
+PLUMED: Cache line size: 512
+PLUMED: Number of atoms: 1
+PLUMED: File suffix: 
+PLUMED: Timestep: 0.005000
+PLUMED: KbT: 1.000000
+PLUMED: Relevant bibliography:
+PLUMED:   [1] The PLUMED consortium, Nat. Methods 16, 670 (2019)
+PLUMED:   [2] Tribello, Bonomi, Branduardi, Camilloni, and Bussi, Comput. Phys. Commun. 185, 604 (2014)
+PLUMED: Please read and cite where appropriate!
+PLUMED: Finished setup
+PLUMED: FILE: (temporary)
+PLUMED: Action UNITS
+PLUMED:   with label @0
+PLUMED:   length: nm
+PLUMED:   energy: kj/mol
+PLUMED:   time: ps
+PLUMED:   charge: e
+PLUMED:   mass: amu
+PLUMED:   using natural units
+PLUMED:   inside PLUMED, Boltzmann constant is 1
+PLUMED: Action POSITION
+PLUMED:   with label p
+PLUMED:   for atom 1
+PLUMED:   using periodic boundary conditions
+PLUMED:   added component to this action:  p.x 
+PLUMED:   added component to this action:  p.y 
+PLUMED:   added component to this action:  p.z 
+PLUMED:   WARNING: components will not have the proper periodicity - see manual
+PLUMED: Action OPES_METAD_EXPLORE
+PLUMED:   with label b
+PLUMED:   with arguments p.x
+PLUMED:   added component to this action:  b.bias 
+PLUMED:   added component to this action:  b.rct 
+PLUMED:   added component to this action:  b.zed 
+PLUMED:   added component to this action:  b.neff 
+PLUMED:   added component to this action:  b.nker 
+PLUMED:   temperature = 1
+PLUMED:   beta = 1
+PLUMED:   depositing new kernels with PACE = 1
+PLUMED:   expected BARRIER is 20
+PLUMED:   using target distribution with BIASFACTOR gamma = 20
+PLUMED:   kernels have initial SIGMA =  0.1
+PLUMED:  -- FIXED_SIGMA: sigma will not decrease as the simulation proceeds
+PLUMED:   kernels are truncated with KERNELS_CUTOFF = 12
+PLUMED:   the value at cutoff is = 5.38019e-32
+PLUMED:   regularization EPSILON = 0.349018
+PLUMED:   kernels will be compressed when closer than COMPRESSION_THRESHOLD = 0
+PLUMED:  +++ WARNING +++ kernels will never merge, expect slowdowns
+PLUMED:   Bibliography: [3][4]
+PLUMED: END FILE: (temporary)
+PLUMED:                                               Cycles        Total      Average      Minimum      Maximum
+PLUMED:                                                    1     0.082263     0.082263     0.082263     0.082263
+PLUMED: 1 Prepare dependencies                          1761     0.001279     0.000001     0.000000     0.000028
+PLUMED: 2 Sharing data                                  1761     0.000710     0.000000     0.000000     0.000043
+PLUMED: 3 Waiting for data                              1761     0.000245     0.000000     0.000000     0.000023
+PLUMED: 4 Calculating (forward loop)                    1761     0.024278     0.000014     0.000002     0.012045
+PLUMED: 5 Applying (backward loop)                      1761     0.022892     0.000013     0.000001     0.017077
+PLUMED: 6 Update                                          81     0.001617     0.000020     0.000015     0.000045

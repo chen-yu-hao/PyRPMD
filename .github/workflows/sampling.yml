@@ -72,7 +72,7 @@ jobs:
           ./configure --prefix="$PYRPMD_PLUMED_PREFIX" \
             --enable-shared --disable-mpi --disable-openmp --disable-gsl \
             --disable-python --disable-asmjit --disable-static-archive --disable-static-patch \
-            --enable-modules=none:setup:colvar:reference:bias:generic:xdrfile \
+            --enable-modules=none:setup:colvar:reference:bias:generic:xdrfile:opes \
             CXXFLAGS='-O2' 2>&1 | tee "$RUNNER_TEMP/plumed-configure.log"
           make -j2 lib 2>&1 | tee "$RUNNER_TEMP/plumed-build.log"
           make install 2>&1 | tee "$RUNNER_TEMP/plumed-install.log"
@@ -106,7 +106,7 @@ jobs:
           evidence = {
               'source_commit': commit, 'wrapper_version': '2.9.4',
               'kernel_path': os.environ['PLUMED_KERNEL'], 'api_version': int(api[0]),
-              'modules': ['setup', 'colvar', 'reference', 'bias', 'generic', 'xdrfile'],
+              'modules': ['setup', 'colvar', 'reference', 'bias', 'generic', 'xdrfile', 'opes'],
               'mpi': False, 'openmp': False,
           }
           Path(os.environ['RUNNER_TEMP'], 'plumed-runtime.json').write_text(
@@ -116,7 +116,7 @@ jobs:
 
       - name: Test the bridge against the real kernel
         run: |
-          python -m pytest -q tests/test_plumed.py \
+          python -m pytest -q tests/test_plumed.py tests/test_plumed_workflow.py tests/test_plumed_live_workflow.py tests/test_opes_initialization.py \
             --basetemp "$RUNNER_TEMP/plumed-tests" \
             --junitxml "$RUNNER_TEMP/plumed-junit.xml"
 

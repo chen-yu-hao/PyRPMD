@@ -1,0 +1,13 @@
+{
+  "blas_threads": 1,
+  "maximum_campaign_workers": 4,
+  "native_extensions": {
+    "src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "6bb4848d124dfd3f644af89c1a864401361f21752affee1b7fbcdbcc0a0fd99a",
+    "src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so": "8eacb2decc41cc908a4fec1f9eeaf72eccfaa2c0f74caf4286e470b668300627"
+  },
+  "numpy": "2.5.4",
+  "omp_threads": 1,
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "scipy": "1.17.0"
+}

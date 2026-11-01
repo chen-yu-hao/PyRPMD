@@ -1,0 +1,68 @@
+[
+  {
+    "clock_sample_interval": 0.001,
+    "deposition_events": 0,
+    "dt": 0.001,
+    "exact_unbiased_MFPT": 80.77443802977498,
+    "maximum_bias_gradient_in_transition_region": 0.0,
+    "maximum_bias_in_transition_region": 0.0,
+    "mean_boost": 1.0,
+    "rate_analysis": {
+      "censored": 0,
+      "converged": false,
+      "events": 128,
+      "exposure_au": 8832.953000000001,
+      "ks_refitted_bootstrap_pvalue": 0.186,
+      "ks_statistic": 0.07657575960837937,
+      "mean_first_passage_au": 69.00744531250001,
+      "method": "rescaled_exponential_first_passage",
+      "rate_au": 0.014491189979160986,
+      "rate_s_inv": 599085694999370.9,
+      "replicas": 128
+    },
+    "raw_mean_elapsed": 69.0074453125,
+    "reference_scope": "computed exact overdamped MFPT; not a published rate",
+    "relative_error_to_exact": -0.14567718456843293,
+    "replicas": 128,
+    "rescaled_MFPT": {
+      "95CI_halfwidth": 11.233676697447484,
+      "mean": 69.00744531250001,
+      "samples": 128
+    },
+    "static_flooding_bias": false,
+    "transition_region_x_min": -0.35
+  },
+  {
+    "clock_sample_interval": 0.001,
+    "deposition_events": 0,
+    "dt": 0.001,
+    "exact_unbiased_MFPT": 80.77443802977498,
+    "maximum_bias_gradient_in_transition_region": 0.0,
+    "maximum_bias_in_transition_region": 0.0,
+    "mean_boost": 4.734854831105736,
+    "rate_analysis": {
+      "censored": 0,
+      "converged": false,
+      "events": 128,
+      "exposure_au": 8988.169245101715,
+      "ks_refitted_bootstrap_pvalue": 0.384,
+      "ks_statistic": 0.06584762032089375,
+      "mean_first_passage_au": 70.22007222735715,
+      "method": "rescaled_exponential_first_passage",
+      "rate_au": 0.01424094234426618,
+      "rate_s_inv": 588740114098941.4,
+      "replicas": 128
+    },
+    "raw_mean_elapsed": 14.365031250000001,
+    "reference_scope": "computed exact overdamped MFPT; not a published rate",
+    "relative_error_to_exact": -0.1306646763488134,
+    "replicas": 128,
+    "rescaled_MFPT": {
+      "95CI_halfwidth": 13.864579911735937,
+      "mean": 70.22007222735715,
+      "samples": 128
+    },
+    "static_flooding_bias": true,
+    "transition_region_x_min": -0.35
+  }
+]

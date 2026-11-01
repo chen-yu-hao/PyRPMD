@@ -163,6 +163,32 @@ def _checkpoint_path(output, replica):
     return Path(output) / "checkpoints" / f"opes_{replica:04d}.npz"
 
 
+def _resume_initialization_schema(config, system, output):
+    """Choose an unambiguous initial convention for never-started replicas.
+
+    Checkpointed streams always retain their own version. A partial legacy
+    job also needs its missing streams to use the old initialization if the
+    complete job is to match its uninterrupted pre-upgrade trajectory.
+    """
+    versions, missing = set(), False
+    for replica in range(config.get("sampling", {}).get("replicas", 1)):
+        path = _checkpoint_path(output, replica)
+        if not path.exists():
+            missing = True
+            continue
+        with load_checkpoint(path) as data:
+            if str(data["fingerprint"]) != _stream_fingerprint(config, system, replica):
+                raise ValueError(f"checkpoint physics differs: {path}")
+            state = json.loads(str(data["bias_state"]))
+            version = state.get("schema_version") if isinstance(state, dict) else None
+            if isinstance(version, bool) or not isinstance(version, int) or version not in (1, 2):
+                raise ValueError(f"invalid OPES initialization schema: {path}")
+            versions.add(version)
+    if missing and len(versions) > 1:
+        raise ValueError("cannot initialize missing OPES replicas from mixed schema-1/schema-2 histories; existing checkpoints remain available for reanalysis")
+    return 1 if versions == {1} else 2
+
+
 def _checkpoint_clock(data, key):
     value = np.asarray(data[key])
     if (value.shape != () or value.dtype.kind not in "iu" or value < 0
@@ -226,7 +252,12 @@ def _sample_replica(task):
             seed=np.random.SeedSequence([int(config.get("seed", 0)), 811, replica]),
             native=config.get("native", config.get("dynamics", {}).get("native", True)),
             threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
-        bias = _new_bias(cv, options, config["beta"], None if saved is None else saved["bias_state"])
+        initial_state = None if saved is None else saved["bias_state"]
+        if saved is None and task.get("initialization_schema", 2) == 1:
+            initial_state = _new_bias(cv, options, config["beta"]).state_dict()
+            initial_state["schema_version"] = 1
+            initial_state.pop("initial_bias", None)
+        bias = _new_bias(cv, options, config["beta"], initial_state)
         samples, clocks, biases, energies = [], [], [], []
         elapsed = 0
         if saved is None:
@@ -379,6 +410,10 @@ def _analyze(streams, config, system, output, return_data):
         "Only frozen-bias samples after the requested relaxation are reweighted; adequate equilibration is the user's responsibility.")
     if options["adaptive_sigma"]:
         warnings.append("Adaptive widths use online observed fluctuations and Scott/ESS scaling at deposition events, not PLUMED's diffusion-window rule.")
+    state_versions = [bias.state_dict()["schema_version"] for bias in biases]
+    initial_biases = [bias.state_dict().get("initial_bias", 0.0) for bias in biases]
+    if 1 in state_versions:
+        warnings.append("Legacy OPES schema-1 histories retain their zero empty-history bias and original first-kernel weight; they have not been converted to schema-2 initialization.")
     if options["bias_mode"] == "explore" and options["method"] == "kde":
         warnings.append("Explore KDE reports -gamma/beta*log(sampled density); it is a free-energy estimate only after convergence to the well-tempered target. Frozen-bias reweighting is preferable for quantitative analysis.")
     if not common.any():
@@ -388,6 +423,7 @@ def _analyze(streams, config, system, output, return_data):
         "dimension": cv.dimension, "units": cv.units, "replicas": len(streams),
         "samples": sum(len(values) for values in arrays), "kernels_per_replica": [len(bias) for bias in biases],
         "log_z_per_replica": [bias.log_z for bias in biases], "weight_effective_sample_size": ess,
+        "bias_state_versions": state_versions, "initial_empty_bias_per_replica": initial_biases,
         "freeze_after_steps": options["freeze"], "freeze_equilibration_steps": options["freeze_equilibration_steps"],
         "common_support": bool(common.any()), "reference_bin": None if reference is None else list(reference),
         "converged": False, "propagation": [stream["propagation"] for stream in streams], "warnings": warnings,
@@ -401,7 +437,9 @@ def _analyze(streams, config, system, output, return_data):
 def run_opes(config, system, output, executor=None, return_data=False):
     """Run independent OPES histories through the existing task scheduler."""
     validate_opes(config, system)
-    tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica}
+    schema = root_call(_resume_initialization_schema, config, system, output)
+    tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica,
+              "initialization_schema": schema}
              for replica in range(config.get("sampling", {}).get("replicas", 1))]
     streams = (executor.map(_sample_replica, tasks) if executor is not None else
                run_tasks(_sample_replica, tasks, config.get("parallel", {})))

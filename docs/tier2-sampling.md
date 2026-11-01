@@ -143,8 +143,8 @@ estimator = "centroid"
 
 The existing `task="opes"` workflow now accepts these additional `[opes]`
 fields: `mode="metad"|"explore"`, `adaptive_sigma=true|false`, and
-`sigma_min` (or `sigma_min_au`). Existing inputs retain fixed-bandwidth OPES
-and the existing checkpoint schema. The modes have different estimators:
+`sigma_min` (or `sigma_min_au`). Existing inputs retain fixed-bandwidth OPES.
+The modes have different estimators:
 
 | Mode | KDE weights | Bias prefactor multiplying log(p/Z+ε) |
 | --- | --- | --- |
@@ -159,10 +159,27 @@ uses `-gamma/beta*log(p_target)` and is meaningful as free energy only after
 convergence to the well-tempered target. Frozen-bias histogram reweighting is
 available for quantitative analysis in either mode.
 
-`sigma` is the literal initial kernel width in the CV units. In particular,
-the explore interface does not divide a supplied sigma by sqrt(γ), unlike
-PLUMED's input convention. Kernels are normalized wrapped Gaussians for periodic
+`sigma` is the literal initial kernel width in the CV units. PLUMED's explore
+interface multiplies its input SIGMA by sqrt(γ); an equivalent fixed physical
+width therefore needs `sigma/sqrt(γ)` as PLUMED's input. Kernels are normalized wrapped Gaussians for periodic
 CVs, and no truncation or compression is applied.
+
+The empty-density limit is `V=prefactor*log(epsilon)=-barrier`, with zero force.
+The first metad kernel therefore has log-weight `-beta*barrier`. Although
+the initial bias is spatially constant, discarding it changes the first
+weight relative to later kernels and changes the resulting bias. New runs
+persist this convention as OPES bias state schema 2 with `initial_bias`.
+Recognized schema-1 checkpoints resume their original zero initial bias and
+weights, including empty histories; they remain schema 1 when saved again.
+Analysis reports each history's version and initial bias and warns about
+legacy histories. Unknown versions or inconsistent initialization fields
+are rejected. This preserves old trajectories without silently rewriting
+their algorithm or labeling them as new-initialization runs.
+When a partially started job has only schema-1 checkpoints, its never-started
+replicas also use schema 1, preserving whole-job restart behavior. If existing
+histories mix schemas and replicas are missing, continuation rejects the
+ambiguous initialization choice before constructing a potential. Existing
+histories can still be reanalyzed with their individual versions.
 
 The adaptive option uses the following **explicit reference rule**, which is
 different from PLUMED's diffusion-window algorithm:

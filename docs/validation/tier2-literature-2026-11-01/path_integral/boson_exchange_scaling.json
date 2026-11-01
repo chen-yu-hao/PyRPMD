@@ -1,0 +1,11 @@
+{
+  "fitted_slope": 1.2514440024980031,
+  "fit_particles": [
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "paper_ipi_slope": 1.9,
+  "note": "Single-process exchange energy and forces only, P=32. Different hardware and Python overhead; no absolute speedup claim."
+}

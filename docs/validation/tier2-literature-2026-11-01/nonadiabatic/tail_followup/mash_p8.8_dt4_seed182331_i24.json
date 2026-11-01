@@ -1,0 +1,45 @@
+{
+  "interpretation": "secondary tail diagnostic; main counts/denominators are unchanged",
+  "job_identity": {
+    "boundary": 8.0,
+    "code_identity": "c74fa6f024319d30af7de9d8038c7074344a4e31eb9635f2fb2e822915ab149f",
+    "count": 128,
+    "dt": 4.0,
+    "electronic_substeps": 4,
+    "method": "mash",
+    "momentum": 8.8,
+    "seed": 182331
+  },
+  "original_max_flight_times": 12,
+  "original_status": "unresolved",
+  "original_steps": 10910,
+  "secondary_max_flight_times": 48,
+  "secondary_result": {
+    "accepted_hops": 26,
+    "active_surface": 0,
+    "channel": "reflected_lower",
+    "final_energy_error": -1.1144902929052097e-06,
+    "final_p": -8.79974046509058,
+    "final_x": -8.003661329217433,
+    "frustrated_hops": 0,
+    "initial_coefficients_imag": [
+      0.0,
+      0.6235490665818721
+    ],
+    "initial_coefficients_real": [
+      0.7817123502038416,
+      -0.010600146398163203
+    ],
+    "max_energy_error": 1.3355013153398126e-06,
+    "max_norm_error": 1.0436096431476471e-13,
+    "seconds": 38.83931923500495,
+    "steps": 23551,
+    "time_au": 94204.0
+  },
+  "seed_entropy": [
+    182331,
+    8800,
+    24
+  ],
+  "trajectory": 24
+}

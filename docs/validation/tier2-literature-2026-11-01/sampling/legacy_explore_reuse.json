@@ -1,0 +1,14 @@
+[
+  {
+    "trajectory": "explore_fixed_y_dt0.005_s0.1_seed57859",
+    "reason": "Only the empty-history constant differs; explore deposition weights are all one, so forces and all post-first-deposition biases and trajectory coordinates are identical under schema 2.",
+    "initial_bias": 0.0,
+    "schema_version": 1
+  },
+  {
+    "trajectory": "explore_fixed_x_dt0.005_s0.1_seed57859",
+    "reason": "Only the empty-history constant differs; explore deposition weights are all one, so forces and all post-first-deposition biases and trajectory coordinates are identical under schema 2.",
+    "initial_bias": 0.0,
+    "schema_version": 1
+  }
+]

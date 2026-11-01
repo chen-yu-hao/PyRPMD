@@ -42,6 +42,7 @@ statistical conventions and convergence evidence.
 ## Additional scientific methods
 
 - [Tier 2 coverage and boundaries](docs/tier2-methods.md): PA-CMD and fitted-centroid spectroscopy, Raman/SFG and property models; force-based Suzuki–Chin, quadratic bosonic exchange and PIGS; extended CVs, shared MetaD and OPES variants; on-the-fly nonadiabatic data and ML lifecycle tools. The guide distinguishes working input workflows from Python APIs and explicitly lists QCMD/h-CMD and other remaining gaps.
+- [Tier 2 literature validation](docs/validation/tier2-literature-2026-11-01/README.md): published-model comparisons with independent quantum/statistical references, actual seeded trajectories, convergence and uncertainty, real PLUMED/TorchScript/quantum-chemistry/MPI tests, and the OPES initialization correction found by direct cross-code comparison. Short-run statistical agreement is distinguished from publication-level convergence.
 - [General-coordinate rates](docs/general-coordinate-rates.md): smooth nonlinear centroid coordinates with constrained-parent mass-metric and correlated-bootstrap corrections.
 - [Temperature, isotope and convergence studies](docs/rate-studies.md): `pyrpmd study` with Arrhenius fits, KIEs and explicit numerical equivalence checks.
 - [Ring-polymer instantons](docs/instanton.md): multidimensional paths and a one-dimensional low-temperature rate with explicit reactant normalization; a full multidimensional rate prefactor is not implemented.

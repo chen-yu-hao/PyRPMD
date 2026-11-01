@@ -1,0 +1,6 @@
+# Preserve the bytes of generated evidence so recorded checksums are portable.
+# CSV writers use CRLF; plotting/test tools retain whitespace in their output.
+docs/validation/tier2-literature-2026-11-01/**/*.csv -text whitespace=cr-at-eol linguist-generated
+docs/validation/tier2-literature-2026-11-01/**/*.svg -text -whitespace linguist-generated
+docs/validation/tier2-literature-2026-11-01/**/*.log -text -whitespace linguist-generated
+docs/validation/tier2-literature-2026-11-01/**/*.xml -text -whitespace linguist-generated

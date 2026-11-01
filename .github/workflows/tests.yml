@@ -14,7 +14,6 @@ jobs:
     env:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
-      OMPI_MCA_rmaps_base_oversubscribe: '1'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
@@ -24,14 +23,16 @@ jobs:
       - run: python -m pip install -e '.[test,ase,mpi]'
       - run: pyrpmd info
       - run: python -m pytest -q
-      - run: mpiexec -n 4 python tests/mpi_integration.py
-      - run: mpiexec -n 5 python tests/mpi_dynamic_integration.py
-      - run: mpiexec -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-workflows"
-      - run: mpiexec -n 4 python tests/mpi_adaptive_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-adaptive"
-      - run: mpiexec -n 4 python tests/mpi_opes_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-opes"
-      - run: mpiexec -n 4 python tests/mpi_materials_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-materials"
-      - run: mpiexec -n 4 python tests/mpi_surface_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface"
-      - run: mpiexec -n 4 python tests/mpi_surface_extensions_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface-extensions"
+      # The CLI option works across Open MPI 4/5; ORTE-era OMPI_MCA mapping
+      # variables are not honored by the newer PRRTE process launcher.
+      - run: mpiexec --oversubscribe -n 4 python tests/mpi_integration.py
+      - run: mpiexec --oversubscribe -n 5 python tests/mpi_dynamic_integration.py
+      - run: mpiexec --oversubscribe -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-workflows"
+      - run: mpiexec --oversubscribe -n 4 python tests/mpi_adaptive_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-adaptive"
+      - run: mpiexec --oversubscribe -n 4 python tests/mpi_opes_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-opes"
+      - run: mpiexec --oversubscribe -n 4 python tests/mpi_materials_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-materials"
+      - run: mpiexec --oversubscribe -n 4 python tests/mpi_surface_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface"
+      - run: mpiexec --oversubscribe -n 4 python tests/mpi_surface_extensions_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface-extensions"
       - run: python -m pip install build && python -m build
   torch-cpu:
     runs-on: ubuntu-latest
@@ -42,7 +43,7 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e '.[test]'
       - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py
+      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py tests/test_advanced_cv.py tests/test_tier2_spectroscopy.py tests/test_ml_lifecycle.py tests/test_spectroscopy_workflow.py
   electronic-structure:
     runs-on: ubuntu-latest
     timeout-minutes: 15

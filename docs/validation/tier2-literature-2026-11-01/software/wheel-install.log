@@ -1,0 +1,4 @@
+Processing /workspace/scratch/82b1e823c721/tier2-literature-package/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl
+Installing collected packages: pyrpmd
+Successfully installed pyrpmd-0.2.0
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
