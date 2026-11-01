@@ -1,0 +1,26 @@
+{
+  "schema": "pyrpmd.andersen-docs-validation.v1",
+  "checked_utc": "2026-11-01T15:27:38.256908+00:00",
+  "command": [
+    ".venv/bin/python",
+    "-m",
+    "sphinx",
+    "-n",
+    "-W",
+    "--keep-going",
+    "-b",
+    "html",
+    "docs",
+    "/workspace/scratch/a5e4820daedd/andersen-docs-html"
+  ],
+  "exit_code": 0,
+  "warning_is_error": true,
+  "output_guide_exists": true,
+  "source_sha256": {
+    "docs/andersen-sampling.md": "a98daca53103dbcfc7d83cdf65578f6d8a7ba008f28b202501f4688122921d40",
+    "docs/conf.py": "d202dc1f7b6b9de16edfdeb60a65758c0386c42e5a958af9bf4372a2bd1036a6",
+    "docs/index.md": "a612cf690db5b6e3e524b9a11c25465feb8e6036a5e4e6f7d15a98936f6be604",
+    "docs/input.md": "07f9ce5762c29f92b864a6b9d60d527ffee180b92f7ec5ece2903bbeb96c4c2e"
+  },
+  "log_sha256": "7faf70d503b005a98fb9e007ac5b349edc317e1769a0abfc7d65d746a5ed23e1"
+}

@@ -9,6 +9,105 @@ from ..dynamics import normalize_integrator
 from ..units import parse_quantity
 
 
+def validate_andersen_schedule(config, workflow=None):
+    """Validate an explicitly requested collision clock without adding defaults.
+
+    Omitting the option must leave historical resolved configs/fingerprints and
+    RNG consumption unchanged. Public entrypoints pass their actual workflow
+    name so a misleading ``task`` cannot silently enable an unsupported clock.
+    """
+    sampling = config.get("sampling", {})
+    if not isinstance(sampling, Mapping):
+        raise ValueError("sampling must be a table")
+    if "andersen_schedule" not in sampling:
+        return "fixed"
+    kind = sampling["andersen_schedule"]
+    if not isinstance(kind, str) or kind not in ("fixed", "geometric"):
+        raise ValueError("sampling.andersen_schedule must be 'fixed' or 'geometric'")
+    if sampling.get("thermostat", "andersen") != "andersen":
+        raise ValueError("sampling.andersen_schedule requires thermostat='andersen'")
+    workflow = config.get("task", "fes") if workflow is None else workflow
+    if workflow not in ("fes", "rate", "adaptive_umbrella"):
+        raise ValueError(
+            "sampling.andersen_schedule is supported only by umbrella FES and gas-phase rate workflows"
+        )
+    exchange = config.get("replica_exchange", {})
+    if not isinstance(exchange, Mapping):
+        raise ValueError("replica_exchange must be a table")
+    if exchange.get("enabled", bool(exchange)):
+        raise ValueError("sampling.andersen_schedule is not supported with replica exchange")
+    AndersenSchedule(sampling.get("andersen_interval", 10), kind)
+    return kind
+
+
+@dataclass
+class AndersenSchedule:
+    """A checkpointable global momentum-refresh clock, measured in MD steps.
+
+    ``geometric`` uses independent waits N>=1 with P(N=n)=p(1-p)**(n-1)
+    and p=1/interval. Its sole additional state is an absolute deadline; the
+    caller already checkpoints the RNG used for momenta and waiting times.
+    """
+
+    interval: int
+    kind: str = "fixed"
+    next_collision_step: int = 0
+
+    def __post_init__(self):
+        if (isinstance(self.interval, (bool, np.bool_))
+                or not isinstance(self.interval, (int, np.integer)) or self.interval < 1):
+            raise ValueError("sampling.andersen_interval must be a positive integer")
+        if self.kind not in ("fixed", "geometric"):
+            raise ValueError("sampling.andersen_schedule must be 'fixed' or 'geometric'")
+        self.interval = int(self.interval)
+        if self.kind == "geometric" and self.interval > np.iinfo(np.int64).max:
+            raise ValueError("geometric Andersen mean interval exceeds the checkpoint clock range")
+
+    def restore(self, saved, step):
+        keys = ("andersen_schedule", "andersen_next_collision_step")
+        if self.kind == "fixed":
+            if any(key in saved for key in keys):
+                raise ValueError("fixed Andersen checkpoint contains an incompatible collision clock")
+            return
+        if not all(key in saved for key in keys):
+            raise ValueError("geometric Andersen checkpoint is missing its collision clock")
+        name = np.asarray(saved[keys[0]])
+        deadline = np.asarray(saved[keys[1]])
+        if (name.shape != () or str(name) != self.kind
+                or deadline.shape != () or deadline.dtype.kind not in "iu"
+                or int(deadline) < step or int(deadline) > np.iinfo(np.int64).max):
+            raise ValueError("invalid geometric Andersen checkpoint collision clock")
+        self.next_collision_step = int(deadline)
+
+    def due(self, step):
+        if self.kind == "fixed":
+            return step % self.interval == 0
+        if step > self.next_collision_step:
+            raise ValueError("geometric Andersen collision deadline was skipped")
+        return step == self.next_collision_step
+
+    def refreshed(self, step, rng):
+        if self.kind == "geometric":
+            wait = int(rng.geometric(1.0 / self.interval))
+            if wait < 1 or step + wait > np.iinfo(np.int64).max:
+                raise ValueError("geometric Andersen collision clock overflow")
+            self.next_collision_step = int(step) + wait
+
+    def steps_until_collision(self, step):
+        if self.kind == "fixed":
+            return self.interval - step % self.interval
+        remaining = self.next_collision_step - step
+        if remaining <= 0:
+            raise ValueError("geometric Andersen collision must refresh before propagation")
+        return remaining
+
+    def checkpoint_fields(self):
+        if self.kind == "fixed":
+            return {}
+        return {"andersen_schedule": np.asarray(self.kind),
+                "andersen_next_collision_step": np.asarray(self.next_collision_step, dtype=np.int64)}
+
+
 def _checkpoint_cv_identity(cv):
     """Describe only mathematical built-ins whose method identities are known."""
     from ..analysis.metadynamics import _cv_signature
@@ -85,6 +184,7 @@ def fes_sampler(config):
     Andersen scheduling/RNG belongs to the caller. PILE-L reuses sample_step,
     including native free/OU/free and fixed-atom handling.
     """
+    validate_andersen_schedule(config)
     sampling = config.get("sampling", {})
     dynamics = config.get("dynamics", {})
     scheme = normalize_integrator(dynamics.get("integrator", "cayley-bcb"))

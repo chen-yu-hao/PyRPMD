@@ -382,6 +382,8 @@ def run_pcet(config, model, output):
     """Evaluate a deterministic PCET scan on the coordinating process."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(model, "pcet")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "pcet")
     from ..parallel import root_call
 
     return root_call(_run, config, model, output)

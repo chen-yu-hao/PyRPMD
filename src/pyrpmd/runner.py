@@ -151,8 +151,10 @@ def run(job, *, output=None, resume=False):
 
 def run_resolved(config, system, *, output=None, resume=False):
     from .workflows import validate_bond_constraint_workflow
+    from .workflows.sampling import validate_andersen_schedule
 
     validate_bond_constraint_workflow(system, config.get("task"))
+    validate_andersen_schedule(config, config.get("task"))
     if getattr(system, "bond_constraints", ()):
         # Direct resolved callers must fail before output creation, provider
         # construction or dispatch when the materials engine is incompatible.

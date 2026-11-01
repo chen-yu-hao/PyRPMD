@@ -2071,6 +2071,8 @@ def run_drpmd(config, system, output, executor=None):
     """
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "drpmd")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "drpmd")
     boundary = system if isinstance(system, dict) else system.to_dict()
     from ..geometry import validate_cell_pbc
     _, pbc = validate_cell_pbc(boundary.get("cell"), getattr(system, "pbc", boundary.get("pbc")))

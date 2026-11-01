@@ -838,6 +838,8 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
 
 def run_materials(config, system, output, executor=None, return_data=False):
     """Execute independent replica streams via serial/process/MPI task groups."""
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "materials")
     if config.get("sampling", {}).get("engine", "legacy") == "native":
         from .native_pimd import run_native_pimd
         return run_native_pimd(config, system, output, executor, return_data)

@@ -592,6 +592,8 @@ def run_adaptive_fes(config, system, output, executor=None, return_data=False):
     """Adapt pilot windows, freeze, then start independent production samples."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "adaptive_fes")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "adaptive_umbrella")
     from .fes import run_fes
     validate_adaptive_umbrella(config, system)
     options = adaptive_options(config)

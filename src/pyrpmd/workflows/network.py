@@ -183,6 +183,8 @@ def run_network(config, system, output, executor=None):
     """
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "network")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "network")
     inventory = root_call(validate_network, config, system)
     if not inventory["transition_states"]:
         raise ValueError("Network contains no work")

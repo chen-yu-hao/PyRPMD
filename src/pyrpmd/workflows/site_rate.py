@@ -901,6 +901,8 @@ def run_site_rate(config, system, output, executor=None):
     """Sample local umbrellas, constrained parent chains, and paired children."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "site_rate")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "site_rate")
     config = copy.deepcopy(config)
     root_call(validate_site_rate, config, system)
     config.setdefault("analysis", {})["measure"] = "cv_density"

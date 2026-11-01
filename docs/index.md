@@ -112,6 +112,7 @@ Quantum statistics <quantum-statistics>
 :caption: Enhanced sampling
 :hidden:
 
+Andersen collision timing <andersen-sampling>
 Replica exchange <replica-exchange>
 OPES <opes>
 PLUMED bridge <plumed>

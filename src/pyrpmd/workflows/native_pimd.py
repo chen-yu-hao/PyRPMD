@@ -293,6 +293,8 @@ def _summary(streams, config, system, output, return_data=False):
 
 
 def run_native_pimd(config, system, output, executor=None, return_data=False):
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "native_pimd")
     options = resolve_native_pimd(config, system)
     tasks = [dict(config=copy.deepcopy(config), system=system, output=str(output), replica=r) for r in range(options["replicas"])]
     streams = executor.map(_sample, tasks) if executor is not None else run_tasks(_sample, tasks, config.get("parallel", {}))

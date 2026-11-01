@@ -277,6 +277,8 @@ def run_surface_rate(config, system, output, executor=None):
     """Umbrella density -> basin QTST -> constrained parents -> paired flux."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "surface_rate")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "surface_rate")
     from .rate import _recrossing_options, _parent_task, _child_tasks, _aggregate, _dispatch_children
 
     config = copy.deepcopy(config)

@@ -1,0 +1,129 @@
+{
+  "schema": "pyrpmd.andersen-schedule-validation.v1",
+  "started_utc": "2026-11-01T15:16:38.801487+00:00",
+  "completed_utc": "2026-11-01T15:18:27.731897+00:00",
+  "git_head": "274f8289fcc2392278ba9ed894bdae88a92f8b01",
+  "working_tree_changed": true,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_andersen_schedule.py",
+    "tests/test_fes_block_sampling.py",
+    "tests/test_rate_workflows.py",
+    "tests/test_rate_mbar_backend.py",
+    "tests/test_fes_pile_l.py",
+    "tests/test_input_cli.py",
+    "tests/test_input_preflight.py",
+    "tests/test_constraint_workflow_guards.py",
+    "tests/test_adaptive_umbrella.py",
+    "tests/test_native_block_compatibility.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/andersen-final-gate",
+    "-o",
+    "junit_family=legacy",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/andersen-gate.xml"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 108.94448822899722,
+  "tests": {
+    "tests": 332,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "source_sha256_before": {
+    "docs/conf.py": "d202dc1f7b6b9de16edfdeb60a65758c0386c42e5a958af9bf4372a2bd1036a6",
+    "src/pyrpmd/input.py": "6b8b620ac8d7acf2c5b7958e49482cd89c9cf8de40294e4d31e8852e10938fd1",
+    "src/pyrpmd/runner.py": "f7d98864ad20404cc20c1c2118a20551b25f3d13685d920880469008c4c5c116",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "2d3d4365926fcd7bd87fe797498aa7ff4768d183ffc5eea020356875e4c0de7a",
+    "src/pyrpmd/workflows/drpmd.py": "75f402f072b67593c11526a02f3d22433e223452c3195edf4eb22a10b70fab33",
+    "src/pyrpmd/workflows/fes.py": "91c93d11d58097d3637613b495a00239bbb9563d153101b0c6c36910da2ea345",
+    "src/pyrpmd/workflows/materials.py": "d9ca4b9f26fd231144a4161500a5ffa7786b67b99bb5c9b5d2b04079177b59c9",
+    "src/pyrpmd/workflows/metadynamics.py": "4c76752815a87a7c33de433d16830304b10ffe425db46a59bd916407175b79c7",
+    "src/pyrpmd/workflows/native_pimd.py": "41f81758526a14daa7693ae42c384ba7b5ba6dec503a2c7e4417475a2656e7ff",
+    "src/pyrpmd/workflows/network.py": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7",
+    "src/pyrpmd/workflows/opes.py": "2043c2113e8f38c22f79c84429e048deaeade95e21a8c68567b8ed0dacf64f62",
+    "src/pyrpmd/workflows/pcet.py": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587",
+    "src/pyrpmd/workflows/replica_exchange.py": "93e6f3b761c26fbf0c0a2da8dceaaeeaed88e74a57fe2a54df9319b3698e2f99",
+    "src/pyrpmd/workflows/sampling.py": "d2bd91a0a6efec967b3b54d1720a5cab0a03aecadaa8b77bfb9ffe6c8ead7e1b",
+    "src/pyrpmd/workflows/site_rate.py": "2aafd5f341d3c9dc87b672e67f16734de8002b9828b7f0a54d8303820541a7cd",
+    "src/pyrpmd/workflows/surface.py": "c63e01b7a07fe8f73258938d557ae1042325cfaa2e29755f2db3028c93b49e1b",
+    "tests/data/andersen_legacy_parent.json": "5a29cb4c1e746e7744221f5f713de62c591a77886344e8eac02d908caf0fc5d7",
+    "tests/data/andersen_legacy_window.json": "2bcb9bebc47f5f043e98c011a99cab996dcb04879449bf41804d876eae90ba03",
+    "tests/test_adaptive_umbrella.py": "397684ca9a7ca3d130a33096b059c29ef6434b7c3e967905d71ec89e8a858e4b",
+    "tests/test_andersen_schedule.py": "dfca8714aeaf891136113f1d923de17baeeb3570fc02903095ec25b84c8b7cec",
+    "tests/test_constraint_workflow_guards.py": "ea34d48dd4c1b7cc9d3bbb062c0ceb423ed2afae384e2eaa9eb0260f83e3ab5b",
+    "tests/test_fes_block_sampling.py": "7fc8c12f118b279cd4d6f6c7773f9c3c7f6610dc8330004cd8660b7f328ad615",
+    "tests/test_fes_pile_l.py": "19f7e456c2c37eee8b051aed3c74ad20436ca8f2af5f14011e48ed7d08e690cc",
+    "tests/test_input_cli.py": "a2308361bbd68268cb8098425942677e79e0c2be91c5932b520c100e57da7e9f",
+    "tests/test_input_preflight.py": "26050be2777e506cd881e7a84b426c059a2a854b46cf25d1097f3d5e52519563",
+    "tests/test_native_block_compatibility.py": "9531382d45ce226ef82e3f3ed9c9a285ce517461ace86a9dae10814baf1b8bb8",
+    "tests/test_rate_mbar_backend.py": "879e532dc652b8f8c40700ba3754f12a31caa21c62954f9ad143c0a8f9f296db",
+    "tests/test_rate_workflows.py": "0c1f424d1e4ffc5e65241b8b244b6465e58c80d0b5bdecf8ad2e8f4ba9c5aec5"
+  },
+  "source_sha256_after": {
+    "docs/conf.py": "d202dc1f7b6b9de16edfdeb60a65758c0386c42e5a958af9bf4372a2bd1036a6",
+    "src/pyrpmd/input.py": "6b8b620ac8d7acf2c5b7958e49482cd89c9cf8de40294e4d31e8852e10938fd1",
+    "src/pyrpmd/runner.py": "f7d98864ad20404cc20c1c2118a20551b25f3d13685d920880469008c4c5c116",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "2d3d4365926fcd7bd87fe797498aa7ff4768d183ffc5eea020356875e4c0de7a",
+    "src/pyrpmd/workflows/drpmd.py": "75f402f072b67593c11526a02f3d22433e223452c3195edf4eb22a10b70fab33",
+    "src/pyrpmd/workflows/fes.py": "91c93d11d58097d3637613b495a00239bbb9563d153101b0c6c36910da2ea345",
+    "src/pyrpmd/workflows/materials.py": "d9ca4b9f26fd231144a4161500a5ffa7786b67b99bb5c9b5d2b04079177b59c9",
+    "src/pyrpmd/workflows/metadynamics.py": "4c76752815a87a7c33de433d16830304b10ffe425db46a59bd916407175b79c7",
+    "src/pyrpmd/workflows/native_pimd.py": "41f81758526a14daa7693ae42c384ba7b5ba6dec503a2c7e4417475a2656e7ff",
+    "src/pyrpmd/workflows/network.py": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7",
+    "src/pyrpmd/workflows/opes.py": "2043c2113e8f38c22f79c84429e048deaeade95e21a8c68567b8ed0dacf64f62",
+    "src/pyrpmd/workflows/pcet.py": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587",
+    "src/pyrpmd/workflows/replica_exchange.py": "93e6f3b761c26fbf0c0a2da8dceaaeeaed88e74a57fe2a54df9319b3698e2f99",
+    "src/pyrpmd/workflows/sampling.py": "d2bd91a0a6efec967b3b54d1720a5cab0a03aecadaa8b77bfb9ffe6c8ead7e1b",
+    "src/pyrpmd/workflows/site_rate.py": "2aafd5f341d3c9dc87b672e67f16734de8002b9828b7f0a54d8303820541a7cd",
+    "src/pyrpmd/workflows/surface.py": "c63e01b7a07fe8f73258938d557ae1042325cfaa2e29755f2db3028c93b49e1b",
+    "tests/data/andersen_legacy_parent.json": "5a29cb4c1e746e7744221f5f713de62c591a77886344e8eac02d908caf0fc5d7",
+    "tests/data/andersen_legacy_window.json": "2bcb9bebc47f5f043e98c011a99cab996dcb04879449bf41804d876eae90ba03",
+    "tests/test_adaptive_umbrella.py": "397684ca9a7ca3d130a33096b059c29ef6434b7c3e967905d71ec89e8a858e4b",
+    "tests/test_andersen_schedule.py": "dfca8714aeaf891136113f1d923de17baeeb3570fc02903095ec25b84c8b7cec",
+    "tests/test_constraint_workflow_guards.py": "ea34d48dd4c1b7cc9d3bbb062c0ceb423ed2afae384e2eaa9eb0260f83e3ab5b",
+    "tests/test_fes_block_sampling.py": "7fc8c12f118b279cd4d6f6c7773f9c3c7f6610dc8330004cd8660b7f328ad615",
+    "tests/test_fes_pile_l.py": "19f7e456c2c37eee8b051aed3c74ad20436ca8f2af5f14011e48ed7d08e690cc",
+    "tests/test_input_cli.py": "a2308361bbd68268cb8098425942677e79e0c2be91c5932b520c100e57da7e9f",
+    "tests/test_input_preflight.py": "26050be2777e506cd881e7a84b426c059a2a854b46cf25d1097f3d5e52519563",
+    "tests/test_native_block_compatibility.py": "9531382d45ce226ef82e3f3ed9c9a285ce517461ace86a9dae10814baf1b8bb8",
+    "tests/test_rate_mbar_backend.py": "879e532dc652b8f8c40700ba3754f12a31caa21c62954f9ad143c0a8f9f296db",
+    "tests/test_rate_workflows.py": "0c1f424d1e4ffc5e65241b8b244b6465e58c80d0b5bdecf8ad2e8f4ba9c5aec5"
+  },
+  "source_unchanged_during_gate": true,
+  "free_mode_variance_ratio_after_500fs": {
+    "fixed": {
+      "13": 0.375736387788622,
+      "37": 0.10635387874446087
+    },
+    "geometric": {
+      "13": 1.0072506405428157,
+      "37": 0.9853770727204769
+    }
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "cpu_affinity": [
+    8
+  ],
+  "thread_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "child_peak_rss_kib": 234784,
+  "scope": "Production geometric Andersen sampling, preflight, legacy checkpoint identity, restart/failure/native consistency and free-mode recovery; not a molecular rate validation.",
+  "artifact_sha256": {
+    "andersen-gate.log": "bd0b073491814dc2269e0aeaea5933b2e1c81c7c75046001871727ecb026bc5a",
+    "andersen-gate.xml": "2391a5d467976e38b16e85347bb55ceecc7d4896bc66c65b3a0854d654278f8a"
+  },
+  "pytest_summary": {
+    "passed": 318,
+    "subtests_passed": 14,
+    "skipped": 0,
+    "failed": 0,
+    "pytest_elapsed_seconds": 107.49
+  }
+}

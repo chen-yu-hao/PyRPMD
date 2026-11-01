@@ -533,6 +533,8 @@ def run_metadynamics(config, system, output, executor=None, return_data=False):
     """Run independent histories and export their finite-time bias estimates."""
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "metadynamics")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "metadynamics")
     validate_metadynamics(config, system)
     replicas = config.get("sampling", {}).get("replicas", 1)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": r}

@@ -27,7 +27,7 @@ extensions = [
 source_suffix = {".md": "markdown"}
 root_doc = "index"
 include_patterns = [
-    "index.md", "manual/*.md", "replica-exchange.md", "opes.md",
+    "index.md", "manual/*.md", "replica-exchange.md", "opes.md", "andersen-sampling.md",
     "plumed.md", "transition-interface-sampling.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",

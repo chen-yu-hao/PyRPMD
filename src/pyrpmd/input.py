@@ -49,7 +49,7 @@ _SECTIONS = {
     ),
     "dynamics": set("timestep integrator native loop_backend block_steps".split()),
     "sampling": set(
-        "engine integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval thermostat_params gamma_centroid replicas parents".split()
+        "engine integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval andersen_schedule thermostat_params gamma_centroid replicas parents".split()
     ),
     "potential": set(
         "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params abi_version periodic virial".split()
@@ -432,6 +432,12 @@ class JobSpec:
         raw_sampling = self.data.get("sampling", {})
         if not isinstance(raw_sampling, Mapping):
             raise InputError("sampling must be a table")
+        if self.data.get("task") in ("network", "pcet"):
+            from .workflows.sampling import validate_andersen_schedule
+            try:
+                validate_andersen_schedule(self.data, self.data["task"])
+            except (ValueError, TypeError) as error:
+                raise InputError(str(error)) from error
         raw_system = self.data.get("system", {})
         raw_bonds = (raw_system.bond_constraints if isinstance(raw_system, System)
                      else raw_system.get("bond_constraints", ()) if isinstance(raw_system, Mapping) else ())
@@ -1053,6 +1059,8 @@ class JobSpec:
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
         try:
+            from .workflows.sampling import validate_andersen_schedule
+            validate_andersen_schedule(resolved, task)
             if task in ("fes", "surface_rate") and not source_pmf:
                 from .workflows.fes import validate_fes_request
 

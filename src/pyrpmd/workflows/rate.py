@@ -7,7 +7,7 @@ Reference implementations are MIT licensed; see THIRD_PARTY_NOTICES.md.
 """
 
 from __future__ import annotations
-from pyrpmd.propagation import loop_options, scientific_config
+from pyrpmd.propagation import PropagationError, loop_options, scientific_config
 
 import copy
 import json
@@ -29,6 +29,7 @@ from ..input import rate_pmf_options
 from ..parallel import run_tasks, root_call, task_potential, execution_plan
 from ..units import parse_quantity, time_steps
 from .prepare import prepare_rate
+from .sampling import AndersenSchedule, validate_andersen_schedule
 from .fes import (
     run_fes,
     write_json,
@@ -257,6 +258,10 @@ def _recrossing_options(config):
 
 def _parent_task(task):
     config, system = task["config"], task["system"]
+    collision_clock = AndersenSchedule(
+        checked_integer(config["sampling"].get("andersen_interval", 10), "sampling.andersen_interval"),
+        validate_andersen_schedule(config),
+    )
     options = task["options"]
     surface = rate_coordinate(config, system).dividing_surface(task["xi_star"])
     chain = int(task["chain"])
@@ -296,6 +301,7 @@ def _parent_task(task):
                 )
                 dyn._check_fixed(state.q, state.p)
                 dyn.rng.bit_generator.state = json.loads(str(saved["rng"]))
+                collision_clock.restore(saved, state.step)
                 snapshots = list(saved["snapshots"])
                 for snapshot in snapshots:
                     dyn._check_fixed(snapshot, np.zeros_like(snapshot))
@@ -342,31 +348,48 @@ def _parent_task(task):
                 xi_star=task["xi_star"],
                 pmf_method=method,
                 propagation=json.dumps(dyn.propagation_stats),
+                **collision_clock.checkpoint_fields(),
             )
 
         stats_before = copy.deepcopy(dyn.propagation_stats)
-        interval = int(config["sampling"].get("andersen_interval", 10))
         checkpoint_steps = int(config.get("output", {}).get("checkpoint_steps", 1000))
         target = (
             options["equilibration_steps"]
             + options["parent_samples"] * options["parent_interval_steps"]
         )
         while elapsed < target:
-            if state.step % interval == 0:
-                state.p[:] = dyn.sample_momenta()
-                project_momenta(state.p, state.q, surface, system.masses)
-            count = min(dyn.block_steps, 4096, target - elapsed,
-                        interval - state.step % interval,
-                        checkpoint_steps - elapsed % checkpoint_steps)
-            production = elapsed + np.arange(1, count + 1) - options["equilibration_steps"]
-            observed = (production > 0) & (production % options["parent_interval_steps"] == 0)
-            block = dyn.propagate_block(
-                state, count, constraint=surface,
-                constraint_tolerance=options["constraint_tolerance"],
-                observe=observed, record_energy=False, record_states=True,
-            )
-            snapshots.extend(q for q in block.q if accept_parent(q))
-            elapsed += block.completed
+            initial_elapsed = elapsed
+            thermostat_p = thermostat_rng = None
+            thermostat_deadline = collision_clock.next_collision_step
+            try:
+                if collision_clock.due(state.step):
+                    thermostat_p = state.p.copy()
+                    thermostat_rng = copy.deepcopy(dyn.rng.bit_generator.state)
+                    state.p[:] = dyn.sample_momenta()
+                    project_momenta(state.p, state.q, surface, system.masses)
+                    collision_clock.refreshed(state.step, dyn.rng)
+                count = min(dyn.block_steps, 4096, target - elapsed,
+                            collision_clock.steps_until_collision(state.step),
+                            checkpoint_steps - elapsed % checkpoint_steps)
+                production = elapsed + np.arange(1, count + 1) - options["equilibration_steps"]
+                observed = (production > 0) & (production % options["parent_interval_steps"] == 0)
+                block = dyn.propagate_block(
+                    state, count, constraint=surface,
+                    constraint_tolerance=options["constraint_tolerance"],
+                    observe=observed, record_energy=False, record_states=True,
+                    raise_on_error=False,
+                )
+                elapsed += block.completed
+                snapshots.extend(q for q in block.q if accept_parent(q))
+                if block.error is not None:
+                    raise PropagationError(block)
+            except Exception:
+                if elapsed == initial_elapsed and thermostat_p is not None:
+                    state.p[:] = thermostat_p
+                    dyn.rng.bit_generator.state = thermostat_rng
+                    collision_clock.next_collision_step = thermostat_deadline
+                save()
+                raise
             if elapsed % checkpoint_steps == 0:
                 save()
         save()
@@ -1312,6 +1335,7 @@ def _dispatch_children(tasks, config, dispatch):
 def run_rate(config, system, output, executor=None):
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "rate")
+    validate_andersen_schedule(config, "rate")
     if any(system.pbc) or system.fixed_atoms:
         raise ValueError("Gas-phase run_rate does not support periodic/fixed-atom systems; use surface_rate")
     config = root_call(_prepare, config, system, str(output))

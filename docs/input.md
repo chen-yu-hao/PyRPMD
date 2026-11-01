@@ -122,6 +122,18 @@ BAOAB/PILE-L with normal modes, and Andersen with Verlet.
 trajectories must use the same timestep. Physical collisions, recrossing children and
 the default `diffusion` production segment propagate without a thermostat.
 
+For umbrella FES (including adaptive umbrellas) and gas-phase `rate`, the optional
+`sampling.andersen_schedule="geometric"` draws a random positive number of MD
+steps between global momentum refreshes, with mean `andersen_interval`. At
+`timestep="0.1 fs"`, `andersen_interval=50` therefore gives a mean interval of
+`5 fs`. The default is the historical fixed period. Random timing avoids
+persistent phase alignment between a fixed refresh period and free ring modes.
+The pending collision time is checkpointed with the chain's RNG; fixed-schedule
+legacy checkpoints remain readable. Explicitly using this setting with PILE-L,
+replica exchange or other workflows is rejected before a run starts. See
+[Andersen sampling](andersen-sampling.md) for the distribution, supported cases
+and convergence checks.
+
 `diffusion` may add `[electronic_friction]` for a physical electronic bath during
 production, using Markovian centroid EF-RPMD. This section accepts `method="centroid"`
 and `provider="constant"` or `"python"`. A constant provider requires exactly one of

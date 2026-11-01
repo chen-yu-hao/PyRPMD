@@ -25,7 +25,7 @@ from ..checkpoint import atomic_savez, load_checkpoint
 from ..io import atomic_write_text
 from ..parallel import run_tasks, task_potential, root_call
 from ..units import parse_quantity, unit_factor, DIMS
-from .sampling import fes_sampler
+from .sampling import AndersenSchedule, fes_sampler, validate_andersen_schedule
 
 
 def jsonable(value):
@@ -481,6 +481,7 @@ def _sample_window(task):
     andersen = checked_integer(
         sampling.get("andersen_interval", 10), "sampling.andersen_interval"
     )
+    collision_clock = AndersenSchedule(andersen, validate_andersen_schedule(config, "fes"))
     if nprod < interval:
         raise ValueError("production_steps must include at least one saved sample")
     checkpoint_steps = checked_integer(
@@ -541,6 +542,7 @@ def _sample_window(task):
                     saved["q"], saved["p"], int(saved["step"]), float(saved["time"])
                 )
                 dynamics.rng.bit_generator.state = json.loads(str(saved["rng"]))
+                collision_clock.restore(saved, state.step)
                 values = list(saved["values"])
                 energies = list(saved["energies"])
                 elapsed = int(saved["elapsed"])
@@ -585,6 +587,7 @@ def _sample_window(task):
                 elapsed=elapsed,
                 fingerprint=fingerprint,
                 propagation=json.dumps(dynamics.propagation_stats),
+                **collision_clock.checkpoint_fields(),
             )
             saved_elapsed = elapsed
 
@@ -592,16 +595,18 @@ def _sample_window(task):
         while elapsed < neq + nprod:
             initial_elapsed = elapsed
             thermostat_p = thermostat_rng = None
-            if sampler.thermostat == "andersen" and state.step % andersen == 0:
-                thermostat_p = state.p.copy()
-                thermostat_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
-                state.p[:] = dynamics.sample_momenta()
+            thermostat_deadline = collision_clock.next_collision_step
             try:
+                if sampler.thermostat == "andersen" and collision_clock.due(state.step):
+                    thermostat_p = state.p.copy()
+                    thermostat_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
+                    state.p[:] = dynamics.sample_momenta()
+                    collision_clock.refreshed(state.step, dynamics.rng)
                 if fused_loop:
                     # Observations are selected within the block. Only Python
                     # RNG/checkpoint boundaries require returning from native.
                     count = min(dynamics.block_steps, 4096, neq+nprod-elapsed,
-                                andersen-state.step % andersen,
+                                collision_clock.steps_until_collision(state.step),
                                 checkpoint_steps-elapsed % checkpoint_steps)
                     production = elapsed + np.arange(1, count + 1) - neq
                     observe = (production > 0) & (production % interval == 0)
@@ -647,6 +652,7 @@ def _sample_window(task):
                     # its pre-draw RNG/momenta so the redraw occurs exactly once.
                     state.p[:] = thermostat_p
                     dynamics.rng.bit_generator.state = thermostat_rng
+                    collision_clock.next_collision_step = thermostat_deadline
                 save()
                 raise
             if elapsed % checkpoint_steps == 0:
@@ -871,6 +877,7 @@ def _analyze_streams(streams, config, system, output, return_data, _postprocess=
 def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None):
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "fes")
+    validate_andersen_schedule(config, "fes")
     fes_sampler(config)
     if config.get("replica_exchange"):
         from .replica_exchange import exchange_options, run_replica_exchange_fes
