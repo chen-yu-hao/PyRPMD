@@ -108,6 +108,37 @@
       "equivalent_product_channels": 2
     },
     {
+      "id": "h_h2_bkmp2_classical_300k",
+      "reaction": "H + H2 -> H2 + H",
+      "pes": "BKMP2",
+      "reference_method": "Classical",
+      "temperature_K": 300.0,
+      "nbeads": 1,
+      "rate_cm3_molecule_s": 1.55e-18,
+      "source": {
+        "id": "rpmdrate_2013",
+        "doi": "10.1016/j.cpc.2012.10.017",
+        "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+        "table": "Table 2, H+H2 row, classical columns",
+        "retrieval_url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics"
+      },
+      "nuclear_spin_convention": "distinguishable_nuclei",
+      "electronic_convention": "single_adiabatic_surface",
+      "electronic_weight": 1.0,
+      "symmetry_convention": "equivalent_product_channels_included",
+      "symmetry_factor": 1.0,
+      "status": "verified_table",
+      "comparison_role": "classical_limit_reference",
+      "notes": [
+        "The one-bead control is compared to classical TST and classical dynamics; it is not an RPMD quantum benchmark.",
+        "The two equivalent product arrangements are already included; no further symmetry multiplier is applied.",
+        "The paper reports approximately 5 percent sampling precision, not a supplied confidence interval."
+      ],
+      "qtst_rate_cm3_molecule_s": 1.56e-18,
+      "transmission_coefficient": 0.994,
+      "equivalent_product_channels": 2
+    },
+    {
       "id": "h_ch4_eg_rpmd_300k",
       "reaction": "H + CH4 -> H2 + CH3",
       "pes": "Espinosa-Garcia modified/recalibrated Jordan-Gilbert, CPC2013 Ref.49",

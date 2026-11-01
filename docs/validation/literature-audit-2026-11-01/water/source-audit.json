@@ -1,0 +1,159 @@
+{
+  "derived_cubic_sides_angstrom": {
+    "D2O": 18.65072188956113,
+    "H2O": 18.642822871774577
+  },
+  "diffusion_targets_A2_ps": {
+    "D2O_RPMD": {
+      "standard_error": 0.001,
+      "table": "III",
+      "value": 0.172
+    },
+    "H2O_RPMD": {
+      "standard_error": 0.001,
+      "table": "III",
+      "value": 0.221
+    },
+    "H2O_classical": {
+      "standard_error": 0.002,
+      "table": "IV",
+      "value": 0.199
+    }
+  },
+  "force_field": {
+    "angle_potential": "k_theta*(theta-theta_eq)^2/2",
+    "author_source": {
+      "attribution": "Source header credits S. Habershon, D. Manolopoulos, T. Markland; dated 23 June 2014",
+      "sha256": "911047fc1133662723e5d07342214af82e2b60f49de17ef2d0f4074519ec5297",
+      "url": "https://raw.githubusercontent.com/i-pi/i-pi/93162d280d15fd954da6dc3580a5ed3503e207ac/drivers/f90/pes/qtip4pf.f90"
+    },
+    "author_source_parameters_converted": {
+      "D_r_kcal_mol": 116.08925270163603,
+      "alpha_r_per_angstrom": 2.286568612348417,
+      "epsilon_kcal_mol": 0.185207538741242,
+      "gamma": 0.73612,
+      "k_theta_kcal_mol_rad2": 87.85132636880564,
+      "q_M_e": 1.1128,
+      "r_eq_angstrom": 0.9419354347683199,
+      "sigma_angstrom": 3.1589021912539854,
+      "theta_eq_degrees": 107.4
+    },
+    "bond_potential": "D * (x^2 - x^3 + 7*x^4/12); x = alpha*(r-r_eq)",
+    "charges_e": {
+      "H": 0.5564,
+      "M": -1.1128,
+      "O": 0.0
+    },
+    "constraints": [],
+    "intramolecular_nonbonded": "all excluded",
+    "negative_site": "rM = gamma*rO + (1-gamma)*(rH1+rH2)/2",
+    "parameter_definitions": {
+      "q_M_e": "Positive charge magnitude q_M; actual M-site charge is -q_M and each H has +q_M/2. The separate charges_e map gives signed site charges."
+    },
+    "parameters_from_printed_table_I": {
+      "D_r_kcal_mol": 116.09,
+      "alpha_r_per_angstrom": 2.287,
+      "epsilon_kcal_mol": 0.1852,
+      "gamma": 0.73612,
+      "k_theta_kcal_mol_rad2": 87.85,
+      "q_M_e": 1.1128,
+      "r_eq_angstrom": 0.9419,
+      "sigma_angstrom": 3.1589,
+      "theta_eq_degrees": 107.4
+    }
+  },
+  "literature_reproduced": false,
+  "monomer_targets": {
+    "PIMD": {
+      "HOH_degrees": 104.7,
+      "HOH_standard_error": 0.1,
+      "OH_angstrom": 0.978,
+      "OH_standard_error": 0.001,
+      "dipole_D": 2.348,
+      "dipole_standard_error": 0.001
+    },
+    "classical": {
+      "HOH_degrees": 104.8,
+      "HOH_standard_error": 0.1,
+      "OH_angstrom": 0.963,
+      "OH_standard_error": 0.001,
+      "dipole_D": 2.311,
+      "dipole_standard_error": 0.001
+    },
+    "table": "VI"
+  },
+  "our_protocol_differences": [
+    "Full PME on every bead; no electrostatic contraction.",
+    "Single-step normal-mode BAB integration; no split inter/intramolecular force schedule.",
+    "PILE-L sampling instead of Andersen.",
+    "Selected stable-isotope atomic masses explicitly archived.",
+    "Printed Table I parameters rather than the later source atomic-unit rounding.",
+    "Fixed density, no pressure/virial or barostat calculation.",
+    "No PA-CMD implementation or IR reproduction.",
+    "Total centroid COM momentum is removed once at the start of each NVE segment; classical velocities recorded every5fs."
+  ],
+  "paper": {
+    "authors": [
+      "Scott Habershon",
+      "Thomas E. Markland",
+      "David E. Manolopoulos"
+    ],
+    "doi": "10.1063/1.3167790",
+    "download_sha256": "8cec8d797f6940a2757a28b0501676e1750a720d8e8aaef3aa5c0c6892d1c84a",
+    "journal": "J. Chem. Phys. 131, 024501 (2009)",
+    "locators": [
+      "Eqs. (1)-(4)",
+      "Table I",
+      "Sections III.B-D",
+      "Tables III, IV and VI"
+    ],
+    "url": "https://arxiv.org/pdf/1011.1047"
+  },
+  "physical_converged": false,
+  "schema": "pyrpmd.water-source-audit.v1",
+  "selected_mass_convention_Da": {
+    "D2": 2.01410177812,
+    "H1": 1.00782503223,
+    "O16": 15.99491461957
+  },
+  "selected_mass_sources": [
+    "https://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=H",
+    "https://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=O"
+  ],
+  "source_protocol": {
+    "D2O_density_g_cm3": 1.107,
+    "H2O_density_g_cm3": 0.997,
+    "IR_correlation_duration_ps": 10,
+    "IR_internal_frequency_cm1": 7414,
+    "IR_method": "PA-CMD",
+    "IR_segment_duration_ps": 20,
+    "IR_segments": 300,
+    "beads": 32,
+    "cell": "cubic, periodic, minimum image",
+    "classical_beads": 1,
+    "diffusion_batches": 20,
+    "diffusion_correlation_duration_ps": 2,
+    "diffusion_segment_duration_ps": 4,
+    "diffusion_segments_per_batch": 100,
+    "diffusion_total_NVE_ps": 8000,
+    "electrostatic_contraction_cutoff_angstrom": 5,
+    "electrostatics": "Ewald",
+    "equilibration_ps": 100,
+    "equilibration_thermostat": "Andersen",
+    "free_ring_propagation": "analytic in normal modes",
+    "intermolecular_timestep_fs": 0.5,
+    "intramolecular_timestep_fs": 0.1,
+    "molecules": 216,
+    "momentum_refresh": "Maxwell between consecutive NVE trajectories",
+    "short_range_cutoff_angstrom": 9,
+    "structural_sampling_ps": 250,
+    "temperature_K": 298
+  },
+  "unresolved_source_details": {
+    "COM_momentum_removal": "Main article specifies Maxwell refresh but not the precise total-COM momentum removal convention.",
+    "VACF_recording_interval": "The main article specifies the correlation length and integration timesteps but not an explicit saved-velocity sampling interval.",
+    "isotope_masses": "Numeric masses are not specified in the main paper; exact equality to its implementation cannot be verified.",
+    "tail_corrections": "Main paper does not state an LJ tail correction; the later author-attributed i-PI source adds a pressure correction only.",
+    "velocity_definition": "Main article gives the VACF integral and times but does not explicitly specify atomic vs molecular-COM weighting."
+  }
+}

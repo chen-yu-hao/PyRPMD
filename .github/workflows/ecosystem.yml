@@ -13,6 +13,9 @@ jobs:
       OMP_NUM_THREADS: '1'
       OPENBLAS_NUM_THREADS: '1'
       OPENMM_CPU_THREADS: '1'
+      # This job uses one host. Hosted runners can expose RDMA devices whose
+      # verbs operations are unavailable to the MPICH wheel's UCX runtime.
+      UCX_TLS: 'tcp,sm,self'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
@@ -48,7 +51,8 @@ jobs:
             tests/test_openmm_provider.py tests/test_lammps_provider.py \
             tests/test_trajectory_export.py tests/test_bond_constraints.py \
             tests/test_constraint_workflow_guards.py \
-            tests/test_qtip4pf_benchmark.py tests/test_literature_evidence.py
+            tests/test_qtip4pf_benchmark.py tests/test_water_campaign.py \
+            tests/test_literature_evidence.py
       - name: Public OpenMM and LAMMPS workflows
         run: |
           pyrpmd validate examples/potentials/openmm_harmonic.inp --check-pes

@@ -1,0 +1,7 @@
+{
+  "utc_epoch": 1793542405.9837608,
+  "memory.current": "6940258304",
+  "memory.max": "8589934592",
+  "memory.peak": "8590946304",
+  "memory.events": "low 0\nhigh 0\nmax 58107\noom 7\noom_kill 3\noom_group_kill 0"
+}

@@ -1,0 +1,257 @@
+{
+  "schema": "pyrpmd.h3.classical-tst-quadrature.v1",
+  "created_utc": "2026-11-01T13:43:41.078003+00:00",
+  "method": "direct Gauss-Legendre quadrature of the two classical transition-state surfaces",
+  "scope": "physical-reaction-channel classical TST only; no RPMD or recrossing simulation",
+  "temperature_K": 300.0,
+  "classical_tst_cm3_molecule_s": 1.553118786789885e-18,
+  "numerical_quadrature_converged": true,
+  "numerical_relative_tolerance": 1e-07,
+  "grid_relative_change": 1.1182166304024577e-12,
+  "maximum_domain_relative_change": 2.1038726316646716e-13,
+  "grid_refinement": [
+    {
+      "order_per_axis": 64,
+      "domain_bohr": [
+        0.5,
+        8.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.3478995347700734e-10,
+      "classical_tst_cm3_molecule_s": 1.4383606962653844e-18,
+      "transition_integral_scaled": 4.788228380095361e-12,
+      "reactant_radial_integral_scaled": 0.25627439129912943,
+      "energy_origin_hartree": -0.1744957708973077
+    },
+    {
+      "order_per_axis": 128,
+      "domain_bohr": [
+        0.5,
+        8.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.535198335336812e-10,
+      "classical_tst_cm3_molecule_s": 1.553102928291606e-18,
+      "transition_integral_scaled": 5.0866544979230615e-12,
+      "reactant_radial_integral_scaled": 0.2521332738237465,
+      "energy_origin_hartree": -0.1744957708973077
+    },
+    {
+      "order_per_axis": 192,
+      "domain_bohr": [
+        0.5,
+        8.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.5352242218650703e-10,
+      "classical_tst_cm3_molecule_s": 1.5531187867916219e-18,
+      "transition_integral_scaled": 5.086695254292549e-12,
+      "reactant_radial_integral_scaled": 0.2521327195300999,
+      "energy_origin_hartree": -0.1744957708973077
+    },
+    {
+      "order_per_axis": 256,
+      "domain_bohr": [
+        0.5,
+        8.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.535224221862235e-10,
+      "classical_tst_cm3_molecule_s": 1.553118786789885e-18,
+      "transition_integral_scaled": 5.086695254287257e-12,
+      "reactant_radial_integral_scaled": 0.2521327195301195,
+      "energy_origin_hartree": -0.1744957708973077
+    }
+  ],
+  "domain_checks": [
+    {
+      "order_per_axis": 256,
+      "domain_bohr": [
+        0.4,
+        8.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.5352242218617016e-10,
+      "classical_tst_cm3_molecule_s": 1.5531187867895582e-18,
+      "transition_integral_scaled": 5.086695254286482e-12,
+      "reactant_radial_integral_scaled": 0.25213271953013416,
+      "energy_origin_hartree": -0.1744957708973077
+    },
+    {
+      "order_per_axis": 256,
+      "domain_bohr": [
+        0.6,
+        8.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.5352242218626105e-10,
+      "classical_tst_cm3_molecule_s": 1.553118786790115e-18,
+      "transition_integral_scaled": 5.0866952542880896e-12,
+      "reactant_radial_integral_scaled": 0.25213271953012345,
+      "energy_origin_hartree": -0.1744957708973077
+    },
+    {
+      "order_per_axis": 256,
+      "domain_bohr": [
+        0.5,
+        6.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.5352242218618397e-10,
+      "classical_tst_cm3_molecule_s": 1.5531187867896428e-18,
+      "transition_integral_scaled": 5.086695254286568e-12,
+      "reactant_radial_integral_scaled": 0.2521327195301247,
+      "energy_origin_hartree": -0.1744957708973077
+    },
+    {
+      "order_per_axis": 256,
+      "domain_bohr": [
+        0.5,
+        10.0
+      ],
+      "temperature_K": 300.0,
+      "equal_nuclear_mass_au": 1837.1526474396187,
+      "equivalent_channels": 2,
+      "rate_au": 2.535224221861978e-10,
+      "classical_tst_cm3_molecule_s": 1.5531187867897277e-18,
+      "transition_integral_scaled": 5.086695254286749e-12,
+      "reactant_radial_integral_scaled": 0.2521327195301199,
+      "energy_origin_hartree": -0.1744957708973077
+    }
+  ],
+  "paper": {
+    "doi": "10.1016/j.cpc.2012.10.017",
+    "table": "Table 2, H+H2, classical k_TST column",
+    "value_cm3_molecule_s": 1.56e-18,
+    "relative_difference": -0.004411034109047973,
+    "reported_sampling_precision_about_percent": 5,
+    "precision_note": "Paper convergence statement; not a supplied statistical confidence interval."
+  },
+  "quantum_rpmd_validated": false,
+  "thermal_rate_validated": false,
+  "limitations": [
+    "The input mass is the repository's neutral 1H atomic-mass convention.",
+    "The spectator is held at equal 99-bohr distances in the reactant integral.",
+    "No transmission coefficient is calculated; comparison is to k_TST, not k_classical or k_RPMD.",
+    "The lower radial cutoff excludes unphysical short-range extrapolation of the legacy PES; this is not its unrestricted global canonical partition integral."
+  ],
+  "compact_extrapolation_diagnostic": [
+    {
+      "distances_bohr": [
+        0.2,
+        0.2,
+        0.3
+      ],
+      "energy_hartree": -2314.257148641179
+    },
+    {
+      "distances_bohr": [
+        0.3,
+        0.3,
+        0.45
+      ],
+      "energy_hartree": -7.171656406102983
+    },
+    {
+      "distances_bohr": [
+        0.4,
+        0.4,
+        0.6
+      ],
+      "energy_hartree": 2.3543065698482195
+    }
+  ],
+  "provenance": {
+    "pes": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    "build": {
+      "schema": "pyrpmd.h3.bkmp2-build.v1",
+      "created_utc": "2026-11-01T13:36:10.962604+00:00",
+      "source": {
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "paper": "A. I. Boothroyd, W. J. Keogh, P. G. Martin, M. R. Peterson, A refined H3 potential energy surface, J. Chem. Phys. 104, 7139-7152 (1996)",
+        "doi": "10.1063/1.471430",
+        "authors_page": "https://www.cita.utoronto.ca/~boothroy/bkmp2.html",
+        "authors_test": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.f",
+        "authors_test_output": "https://www.cita.utoronto.ca/~boothroy/data/bkmp2/bkmp2test.out",
+        "repository": "https://github.com/chen-yu-hao/RPMDrate",
+        "commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "path": "examples/H+H2/h3_bkmp2.f",
+        "url": "https://raw.githubusercontent.com/chen-yu-hao/RPMDrate/19ba2602bad5b2145b0d0ba0716d7ba3d90a1003/examples/H%2BH2/h3_bkmp2.f",
+        "sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "bytes": 61792,
+        "upstream_license": "No explicit redistribution license identified in this PES source; fetched at build time, not relicensed as PyRPMD MIT.",
+        "energy_zero": "three separated H atoms",
+        "distance_unit": "bohr",
+        "energy_unit": "hartree",
+        "minimum_pair_distance_bohr": 0.2,
+        "precision_note": "GNU -fdefault-real-8 -fdefault-double-8 promotes unsuffixed literals in the RPMDrate legacy source to binary64 without promoting DOUBLE PRECISION to binary128. Author test-point energies and derivatives independently verify the resulting PES."
+      },
+      "source_file": "/workspace/scratch/a5e4820daedd/literature-audit-assets/h3_bkmp2.f",
+      "wrapper_sha256": "57ce0ff2acdcc657f51693d9c7fbca5e7bed26e60ee2b446cd2c51eb4250d3a9",
+      "library": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609",
+      "compiler": "GNU Fortran (conda-forge gcc 16.2.0-7) 16.2.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8",
+        "/workspace/scratch/a5e4820daedd/literature-audit-assets/h3_bkmp2.f",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/wrapper.f90",
+        "-o",
+        "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so.2.tmp"
+      ],
+      "flags": [
+        "-O3",
+        "-fPIC",
+        "-shared",
+        "-std=legacy",
+        "-ffixed-line-length-none",
+        "-fdefault-real-8",
+        "-fdefault-double-8"
+      ],
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "compiler_stdout": "",
+      "compiler_stderr": "",
+      "author_saddle_energy_hartree": -0.1591760001210627
+    },
+    "source_sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+  }
+}

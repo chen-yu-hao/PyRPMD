@@ -1,0 +1,11 @@
+{
+  "observed_utc": "2026-11-01T13:59:21.905624+00:00",
+  "scope": "shared execution cgroup; counters have no per-process timestamps; cumulative OOM counts cannot identify a particular terminated process",
+  "values": {
+    "cpu.max": "800000 100000",
+    "memory.max": "8589934592",
+    "memory.current": "4502593536",
+    "memory.peak": "8590946304",
+    "memory.events": "low 0\nhigh 0\nmax 58107\noom 7\noom_kill 3\noom_group_kill 0"
+  }
+}

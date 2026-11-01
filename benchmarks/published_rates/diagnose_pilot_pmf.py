@@ -28,7 +28,7 @@ def sha256(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def pack(label, run, destination):
+def pack(label, run, destination, *, reference_id=None):
     if re.fullmatch(r"[a-z0-9_-]+", label) is None:
         raise ValueError("pilot label must contain lowercase letters, digits, underscores or hyphens")
     run = Path(run).resolve()
@@ -38,8 +38,15 @@ def pack(label, run, destination):
     pmf = json.loads(files["rate_pmf.json"].read_text())
     summary = json.loads(files["summary.json"].read_text())
     registry = ROOT/"benchmarks/published_rates/references.json"
+    if reference_id is None:
+        reference_id = ("h_h2_bkmp2_classical_300k" if config["beads"] == 1
+                        else "h_h2_bkmp2_rpmd_300k")
     reference = next(case for case in json.loads(registry.read_text())["cases"]
-                     if case["id"] == "h_h2_bkmp2_rpmd_300k")
+                     if case["id"] == reference_id)
+    expected_method = "Classical" if config["beads"] == 1 else "RPMD"
+    if (reference["reference_method"] != expected_method
+            or not np.isclose(config["temperature_K"], reference["temperature_K"], rtol=0, atol=1e-8)):
+        raise ValueError("replay reference must match the classical/quantum method and temperature")
     with h5py.File(files["umbrella/fes.h5"], "r") as saved:
         groups = [saved["streams"][str(i)] for i in range(len(saved["streams"]))]
         samples = [group["samples"][:, 0] for group in groups]
@@ -68,6 +75,7 @@ def pack(label, run, destination):
         "saved_kappa": summary["kappa"], "saved_rate_estimate_cm3_molecule_s": summary["rate_estimate_cm3_s"],
         "reactant_prefactor_au": pmf["reactant_prefactor_au"],
         "reference": {"id": reference["id"], "doi": reference["source"]["doi"],
+                      "method": reference["reference_method"],
                       "qtst_rate_cm3_molecule_s": reference["qtst_rate_cm3_molecule_s"],
                       "registry_sha256": sha256(registry)},
         "description": "Exact saved CV samples and umbrella definitions only; no PES or trajectory states needed.",
@@ -181,12 +189,13 @@ def main():
     parser.add_argument("--run", nargs=2, action="append", metavar=("LABEL", "DIRECTORY"), default=[])
     parser.add_argument("--replay", action="append", type=Path, default=[])
     parser.add_argument("--pack-directory", type=Path)
+    parser.add_argument("--reference-id", help="Reference row for new packs; default selects classical for one bead, RPMD otherwise")
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.run and args.pack_directory is None:
         parser.error("--run requires --pack-directory")
     paths = list(args.replay)
-    paths.extend(pack(label, run, args.pack_directory) for label, run in args.run)
+    paths.extend(pack(label, run, args.pack_directory, reference_id=args.reference_id) for label, run in args.run)
     if not paths:
         parser.error("provide --run or --replay")
     if args.output.resolve() in [path.resolve() for path in paths]:

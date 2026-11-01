@@ -1,0 +1,29 @@
+[
+  {
+    "executed_original_filename": "h3_stages.py",
+    "executed_original_sha256": "4a40e7a5a08399a85396bc73b12c4c53c8e2da5d3ab32ed3d4579b98fa897ea9",
+    "portable_repository_file": "benchmarks/h3/audit_stages.py",
+    "portable_repository_sha256": "112819a6322a961511f1429338e9de08da69d3c43eae89ed929e405cc09bd48a",
+    "difference": "Only ROOT discovery: original absolute checkout path replaced by Path(__file__).resolve().parents[2]. The original executed source is retained byte-for-byte in repository provenance.",
+    "executed_original_repository_file": "docs/validation/literature-audit-2026-11-01/h3/orchestration-original/h3_stages.py"
+  },
+  {
+    "executed_original_filename": "h3_ui_from_checkpoints.py",
+    "executed_original_sha256": "2b3a6043ae28564c2720ded044ad2ab2dc5837915afaed4db97a8b30b755a6eb",
+    "portable_repository_file": "benchmarks/h3/audit_ui.py",
+    "portable_repository_sha256": "52188ad02e3a4c910c112e973a2df1bb5a661bf493b9d955b0085e218e6c2fe0",
+    "difference": "ROOT discovery made portable; subsequently a narrow 300 K/ordinary-1H reference guard was added and covered by seven tests. All three complete CV data sets were reanalyzed by this final guarded script without new dynamics. Original executed source is retained byte-for-byte in repository provenance.",
+    "initial_portable_repository_sha256": "e56a66198b60178bd97b6618e14d59c446d3f50756a04219fb25199e448cf21a",
+    "executed_original_repository_file": "docs/validation/literature-audit-2026-11-01/h3/orchestration-original/h3_ui_from_checkpoints.py"
+  },
+  {
+    "executed_original_filename": "h3_recover_analysis.py",
+    "executed_original_sha256": "f207f20fe8b8cb58c97a34fbe6aa4a1111b35cea7c99bf95519983c2e6d9586c",
+    "portable_repository_file": "benchmarks/h3/audit_recover.py",
+    "portable_repository_sha256": "4b887ad4cea12f3512108570b7cad2d88dbfdbc736e477e80e08810e56ea5080",
+    "difference": "ROOT discovery made portable for long-b/classical execution; a later docstring-only edit identifies repository source retrieval instead of including code in the raw-data archive. Both executed source variants are retained byte-for-byte in repository provenance. The numerical statements and runtime hashes are unchanged.",
+    "executed_original_repository_file": "docs/validation/literature-audit-2026-11-01/h3/orchestration-original/h3_recover_analysis.py",
+    "executed_portable_repository_file": "docs/validation/literature-audit-2026-11-01/h3/orchestration-original/audit_recover_portable_executed.py",
+    "executed_portable_sha256": "31ad53d459b283a1d30db440b4a397cf09765a075846718c161cfc3fa5825a37"
+  }
+]

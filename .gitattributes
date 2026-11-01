@@ -1,2 +1,9 @@
 # Preserve original build stdout, including terminal trailing spaces.
 docs/validation/ecosystem-2026-11-01/distribution/*.log -whitespace
+
+# Retain checksummed audit output exactly, including traceback whitespace,
+# captured API response endings, and the CSV writer's standard CRLF records.
+docs/validation/literature-audit-2026-11-01/software/*.log -whitespace
+docs/validation/literature-audit-2026-11-01/software/*.xml -whitespace
+docs/validation/literature-audit-2026-11-01/software/github-*.json -whitespace
+docs/validation/literature-audit-2026-11-01/h3/compact-results.csv -whitespace

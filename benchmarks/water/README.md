@@ -101,3 +101,18 @@ relative-IR estimator has no absolute absorbance prefactor.
 The [campaign and evidence protocol](../literature/README.md) records these
 requirements; [`docs/literature-validation.md`](../../docs/literature-validation.md)
 tracks all requested benchmark families.
+
+## Source-size validation campaign (2026-11-01)
+
+The [detailed water audit](../../docs/validation/literature-audit-2026-11-01/water/README.md)
+extends this first software pilot with an independently compiled author-source
+comparison, CPU/Reference and direct-Ewald/PME checks, timestep/cell diagnostics,
+216-molecule classical sampling for 20 ps followed by two 4 ps NVE segments,
+and short P8/P16/P32 sampling checks. The local monomer geometry responds as
+expected, but transport remains sensitive to the time window and trajectory
+segment. **Diffusion and the paper's PA-CMD IR spectrum remain unreproduced.**
+
+`campaign.py` provides bounded, checkpointed runs; `analyze_campaign.py` analyzes
+raw chunks and replays compact correlation evidence; `numerics.py` performs the
+independent numerical checks. The audit contains configurations, exact source
+and artifact hashes, tested limitations, and the separate raw-data archive index.
