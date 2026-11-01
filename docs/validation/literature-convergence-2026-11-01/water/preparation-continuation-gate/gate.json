@@ -1,0 +1,67 @@
+{
+  "actual_long_extension_started": false,
+  "created_utc": "2026-11-01T18:34:43.137750+00:00",
+  "frozen_original_sources_and_binaries_verified_unchanged": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/checkpoint_validation.py": "1fe0d08d779671e27c4da0a7c2918e0d3397d3bbfe32d38587bba20a6bb04a06",
+    "benchmarks/water/compact_split.py": "7fbb62470381ea35706d41e077f22fef9751ae7db81092fb6a38e2099bc7abb4",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_optimizations.py": "59cc10baf566c79e3bb8769f9851d45b1b954e224fd5e3f9d103ca810c13e4df",
+    "benchmarks/water/native_quantum.py": "6ffe98313abfc0b74e4e63531a41e5dcbb830766537b45b934b1c0d614950715",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/native_validation.py": "3a85a0c5ed5cfbac76225db15c1a74436e30552c8acc10e144e04a9e65e6e759",
+    "benchmarks/water/plot_native_progress.py": "8cc0148b1d3dbc1c0f0546ed810be37675a249c62f038c4669aabda5c2024981",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/split_reference.py": "b60a908b479421ba07e5da9ced92e8cc25374007eca19428bbaba1799cf6c94f",
+    "benchmarks/water/validate_native_optimizations.py": "7532a0bf2449c9a861fc9817f75d8f21c766795eb36eb23163453c284512bdcb",
+    "benchmarks/water/validate_split.py": "b3026ff4725ccf88ae358ca333e3b3bdb3f0979c60682bbbfc5106353987ef83",
+    "benchmarks/water/velocity_cadence.py": "bac1e70a6e16e9bfb3164379b800086d82abdb6a509d4a5e9fee7c6c1556888d",
+    "src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220",
+    "src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so": "ff1e35344a9dd808ac94b7d1312a4a6718708a2af73cd4a527096979f3b1e61e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "tests/test_water_chain_statistics.py": "98fb3037d417e359ef13fb737b0c3ac5993a635ec42b81f92d9d7bec6ecfd0f9",
+    "tests/test_water_compact_split.py": "da981484ca1da34a89d154cb7483c033c2cd5d02dda350cf0d4b2e4f96004658",
+    "tests/test_water_native_optimizations.py": "ad72e3b91552df66dcda45b073217461a2767f3158a4996641bcc59417472390",
+    "tests/test_water_native_quantum.py": "3d7e7fe171c0cb2d3910d49e92ef95953da59fe9d744ca96b49284b07323ddb7",
+    "tests/test_water_native_reference.py": "6ed99f89b56953f02c02948091a971e9df52e907b27b8fbb053450e92ed7cd3b",
+    "tests/test_water_native_schedule.py": "60c58ca08da35a4c20539d8f831a7c5d15ad15966ecd9b503222c323ea7f55c2",
+    "tests/test_water_split_reference.py": "9df1e11aa408fc295f128501977431367ec8adde35354329d769f01f88caeacb",
+    "tests/test_water_velocity_cadence.py": "b99704290e44142bd7a07e8f54e8a7f09dc0a4cab2fb5ed9fc86dca1feac5fed"
+  },
+  "gates": [
+    {
+      "errors": 0,
+      "failures": 0,
+      "junit": "initial-nine-tests.xml",
+      "sha256": "82978ac16c41af6040a8b941ebd6d4771c7ec0448320f3e5bb6daaab4237c5b3",
+      "skipped": 0,
+      "tests": 9,
+      "time_seconds": 7.193
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "junit": "continuation-and-rdf-pytest.xml",
+      "sha256": "28556110c13f83c700759dc1f32d360739b4ff40f0a2c98ee719de34809a8468",
+      "skipped": 0,
+      "tests": 17,
+      "time_seconds": 7.918
+    }
+  ],
+  "independent_code_review_status": "completed: no phase/RNG blocker; independent-review.json records remaining cohort/uncertainty adoption requirements",
+  "notes": [
+    "The first gate contains nine real Reference/CPU boundary and provenance tests; the second contains those same nine plus eight analytic RDF tests. Do not add their counts as independent tests.",
+    "The original campaign and original unadopted proposal are unchanged. New source hash capture here follows the focused test run; no before/after test instrumentation is claimed.",
+    "CPU restore verifies raw q/v exactly and bounds the force-cache-induced canonical p difference; future trajectories are not claimed bitwise identical.",
+    "Small eight-molecule fixtures validate implementation and phase only; they do not establish liquid-water equilibrium."
+  ],
+  "schema": "pyrpmd.water-preparation-continuation-review-gate.v1",
+  "source_sha256": {
+    "benchmarks/water/analyze_rdf_sampling_noise.py": "57f5489bb84755489cf88bab312b430b19a5fb9f6bdd06a5223fa4a54fc42819",
+    "benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "tests/test_water_preparation_extension.py": "7d146730d2dd7b7a505328aa8e4344d450d2e696245f9d65639788800260f9ed",
+    "tests/test_water_rdf_sampling_noise.py": "1ffd2a4219d84026b516239809c9c95acbe8640b70e54877e1dee7f6af976121"
+  },
+  "test_command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENMM_CPU_THREADS=1 .venv/bin/python -m pytest -q tests/test_water_preparation_extension.py tests/test_water_rdf_sampling_noise.py"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "pyrpmd.publication-inventory.v1",
+  "created_utc": "2026-11-01T18:33:52.147400+00:00",
+  "file_count": 4,
+  "total_bytes": 6925,
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/umbrella-scheduler-review/README.md",
+      "bytes": 2212,
+      "sha256": "fb0fd76c0d2af294d14f77d3ae6ec30f55570dbae099c043a4738ad620ef2a65"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/umbrella-scheduler-review/failure-path-tests.log",
+      "bytes": 113,
+      "sha256": "1d883aed328955034bed84444e21d9808e2f52bd54433130a707190b73d6be01"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/umbrella-scheduler-review/failure-path-tests.xml",
+      "bytes": 586,
+      "sha256": "177196ffe1cb37b67e9c7ea8f4e0c375d0fd8adc668a9488c669dc6ff18a7af2"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/umbrella-scheduler-review/review-receipt.json",
+      "bytes": 4014,
+      "sha256": "464cd4baa050fd9d8b660e672c2cb6b1e7116f6461b886eff4174c3e1b41dbf6"
+    }
+  ]
+}

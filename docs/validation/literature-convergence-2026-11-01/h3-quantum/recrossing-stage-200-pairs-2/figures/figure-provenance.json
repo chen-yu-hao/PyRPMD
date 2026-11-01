@@ -1,0 +1,43 @@
+{
+  "schema": "pyrpmd.h3.quantum-convergence-figure.v1",
+  "created_utc": "2026-11-01T18:20:48.007302+00:00",
+  "plot_source_sha256": "b2405ecfa25350b638facdfe6b90bf3641d1feb1c4cf34ba14cb59fc1c652563",
+  "inputs": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/quantum-rate-comparison.json",
+      "sha256": "a8ed2999ab575e4c60141a416909cc1bd46e206601265933c431e3a0f31ae084"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/kappa-curve.csv",
+      "sha256": "51ddeb1abea2e511979e1b83b9706380044ce4cd29d40361700703801f48ab2a"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/protocol.json",
+      "sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589"
+    },
+    {
+      "path": "docs/validation/literature-audit-2026-11-01/h3/long-a/summary.json",
+      "sha256": "8a458acc9c60237608c99e54b98fa4ca4d2cf0ad906d6a7659c935d3ae737c22"
+    },
+    {
+      "path": "docs/validation/literature-audit-2026-11-01/h3/long-b/summary.json",
+      "sha256": "e11460b57120b56aa1e72bf27cc7a4acae487fc7c75567069ac4fd1c13b77344"
+    }
+  ],
+  "figures": {
+    "quantum-convergence.png": "66a8bfc2cf59a269ab58445854b774e13541b94432fb3c350ae26259e45fe485",
+    "quantum-convergence.pdf": "7b114d6fb726f23747b0173e5de8a20796b3a9e03fcee9f2f1280e06e797d915"
+  },
+  "complete_cohort": [
+    721301,
+    721303,
+    721307,
+    721309,
+    721313,
+    721317,
+    721321,
+    721323
+  ],
+  "fixed_P_gates_passed": false,
+  "plot_changes_no_scientific_estimator_or_gate": true
+}

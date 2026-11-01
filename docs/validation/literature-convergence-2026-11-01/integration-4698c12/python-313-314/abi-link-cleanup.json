@@ -1,0 +1,65 @@
+{
+  "schema": "pyrpmd.abi-import-link-postcheck.v1",
+  "created_utc": "2026-11-01T18:14:12.257973+00:00",
+  "scope": "Independent post-run namespace check found the six generated ABI symlinks still visible despite driver unlink calls; removed only owned links after verifying exact targets and hashes. Scientific sources, native products and cp312 binaries were not removed or changed.",
+  "links": [
+    {
+      "label": "py313",
+      "module": "_electronic",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+      "existed_after_driver_exit": true,
+      "absent_after_independent_cleanup": true
+    },
+    {
+      "label": "py313",
+      "module": "_native",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+      "existed_after_driver_exit": true,
+      "absent_after_independent_cleanup": true
+    },
+    {
+      "label": "py313",
+      "module": "_thermal",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+      "existed_after_driver_exit": true,
+      "absent_after_independent_cleanup": true
+    },
+    {
+      "label": "py314",
+      "module": "_electronic",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "existed_after_driver_exit": true,
+      "absent_after_independent_cleanup": true
+    },
+    {
+      "label": "py314",
+      "module": "_native",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "existed_after_driver_exit": true,
+      "absent_after_independent_cleanup": true
+    },
+    {
+      "label": "py314",
+      "module": "_thermal",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "existed_after_driver_exit": true,
+      "absent_after_independent_cleanup": true
+    }
+  ],
+  "all_absent_in_cleanup_process": true,
+  "separate_process_postcheck_remaining": [
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so"
+  ],
+  "all_absent_in_separate_process": false
+}

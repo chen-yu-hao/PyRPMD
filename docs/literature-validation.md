@@ -13,7 +13,7 @@ sampling into validated rate constants.
 | H + CH₄ | Pinned RPMDrate PES-2008 source/build; 15.0143 kcal/mol barrier versus paper 15.01; force, native-map and actual umbrella/checkpoint checks | Converged thermal-rate sampling; the short P128 0.1 fs NVE probe fails its fixed energy gate |
 | OH + H₂ | Source-verified NN1/YZCL2 entries with corrected/uncorrected conventions separated | Matched surface and a full converged rate campaign |
 | F + H₂ | Original paper and erratum identified; missing numeric reference stays null | Extract corrected source data and match PES/electronic conventions |
-| H + H₂ | Pinned BKMP2 builder; independent complete classical rate agrees within paper precision; independent quantum QTST, P128→256 and domain checks | Complete the registered quantum transmission; coarse P64 fails equivalence and production umbrella precision remains a separate question |
+| H + H₂ | Pinned BKMP2; classical reference agrees within paper precision; initial P128 quantum rate +1.126% with whole nominal 95% interval inside the paper's ±5% band; equilibrium P128→256 and domain checks | Complete predeclared extra momentum sampling: κ half-width 3.272% exceeds 3.000%; coarse P64 fails equilibrium equivalence; independent umbrella precision and dynamic bead convergence remain separate |
 | D/Mu + H₂; D + HMu | Primary-source index distinguishes the H₂ isotope series from deep-tunnelling muonium exchange; unresolved table versions stay unpromoted | Exact source-specific masses, implementation bytes, supplementary protocols and light-mass convergence |
 | H on Ni | Real EAM/ASE integration pilot with H/D and bead cases | Existing EAM/slab pilot is not the exact model of the 2012 Ni(100) study |
 | H in Pd | Published bulk/nanocluster study identified | Match potential, loading, geometry and transport estimator; run the campaign |
@@ -75,7 +75,7 @@ essential method distinction: a TRPMD spectrum may be compared scientifically
 with PA-CMD, but agreement is not a test that the same algorithm was reproduced.
 Rigidifying q-TIP4P/F changes the potential model and removes its stretch IR.
 
-## Completed classical reference and ongoing quantum follow-up
+## Classical reference and initial complete quantum comparison
 
 The 2026-11-01 follow-up obtains a complete classical 300 K H + H₂ rate of
 **1.54540638 × 10⁻¹⁸ cm³ molecule⁻¹ s⁻¹**, with an independent-seed 95% interval
@@ -92,7 +92,20 @@ A finite-P radial transfer matrix and a continuum radial Schrödinger calculatio
 independently check the quantum reactant normalization. The registered P=128
 transmission campaign retains eight independent parent chains and paired
 timesteps; its complete rate interval preserves correlation between each
-chain's partition and child estimates. Earlier failed estimates remain intact.
+chain's partition and child estimates. Its complete initial 200 fs cohort
+gives κ=0.77307729 and **1.97196035 × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹**,
+with a nominal 95% interval [1.91141982, 2.03441839] × 10⁻¹⁶. This is
+1.126% above the paper; the full interval lies inside its approximate ±5%
+band. The separately registered κ precision test still fails, with a 3.272%
+half-width against a 3.000% target, so every parent receives the predeclared
+additional momentum pairs. Earlier failed estimates remain intact.
+
+The independent eight-ladder umbrella estimate at 30,000 production sweeps
+is 11.583% above the paper and fails its 3% standard-error target. It advances
+to the registered 100,000-sweep prefix without dropping chains or changing
+parameters. Agreement of the independent surface reference cannot replace
+that sampler's own convergence checks. Equilibrium bead refinements also do
+not establish full dynamical bead convergence.
 Detailed protocols, tables and limitations are available in the
 [convergence record under review](https://github.com/chen-yu-hao/PyRPMD/blob/feat/literature-convergence-20261101/docs/validation/literature-convergence-2026-11-01/README.md).
 

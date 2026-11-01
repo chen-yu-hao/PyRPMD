@@ -198,8 +198,15 @@ The eight-chain 95% interval is [2.5167914228e-16, 2.5886907028e-16].
 The point is 1.69% above the paper's 2.51e-16, within its approximately 5%
 reported precision. The paper's rounded point is slightly below this new
 interval; no claim that it lies inside the interval is made.
-The [comparison record](independent-qtst-comparison.json) retains this
-distinction and explicitly leaves the full RPMD rate unvalidated.
+The earlier [QTST comparison record](independent-qtst-comparison.json)
+retains this distinction and did not yet validate a full RPMD rate.
+The [complete initial child cohort](recrossing-stage-200-pairs-2/README.md)
+now gives κ=0.77307729 and a full rate 1.97196035e-16, with nominal
+95% interval [1.91141982e-16, 2.03441839e-16]. The point is 1.126% above
+the paper and the entire interval lies inside its approximate ±5% band.
+The separate κ precision gate still fails: its relative 95% half-width
+is 3.272%, above the registered 3.000% target. The immutable all-parent
+extra-momentum decision is therefore active; this first failure is retained.
 
 The [registered native child protocol](recrossing-protocol.json) uses every
 one of the 1,600 saved equilibrium parents, two keyed Maxwell pairs per
@@ -245,6 +252,16 @@ but failed while printing a NumPy boolean in the console summary. The
 scientific fields from the two-chain diagnostic are exactly unchanged after
 the console-only conversion. That incomplete two-chain result cannot pass
 the eight-chain convergence criterion.
+
+The [complete 30,000-sweep umbrella cohort](umbrella-stage-30000/README.md)
+now includes all eight ladders. Its QTST is 2.80072503e-16, with nominal
+95% interval [2.33507586e-16, 3.35923162e-16]. The primary log standard
+error is 0.0768976 versus the registered 0.03 target; precision and paper
+point agreement both fail. All other registered equilibrium checks pass.
+The next registered 100,000-sweep prefix has been selected for every seed
+on the basis of the precision failure. Its exact first-stage checkpoint,
+RNG and sample prefixes are archived before continuation. A small window
+Rhat (maximum 1.0005765) does not establish precise integrated free energy.
 
 ## Reproduction and retained initialization failures
 

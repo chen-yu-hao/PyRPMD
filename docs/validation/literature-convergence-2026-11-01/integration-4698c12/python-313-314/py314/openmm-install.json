@@ -1,0 +1,73 @@
+{
+  "version": "1",
+  "pip_version": "26.2.2",
+  "install": [
+    {
+      "download_info": {
+        "url": "https://files.pythonhosted.org/packages/b8/4f/19380624c65ccc5a9f0b8baf2ef006833b8852a71fbb46a5bde5408ff3f5/openmm-8.6.1-cp314-cp314-manylinux_2_34_x86_64.whl",
+        "archive_info": {
+          "hashes": {
+            "sha256": "85fa5b75a16f57b3a6d98341653071f0fce1ae7b0864d99e4b0b6daf36aa1ae2"
+          },
+          "hash": "sha256=85fa5b75a16f57b3a6d98341653071f0fce1ae7b0864d99e4b0b6daf36aa1ae2"
+        }
+      },
+      "is_direct": false,
+      "is_yanked": false,
+      "requested": true,
+      "metadata": {
+        "metadata_version": "2.4",
+        "name": "OpenMM",
+        "version": "8.6.1",
+        "dynamic": [
+          "author",
+          "description",
+          "download-url",
+          "home-page",
+          "license",
+          "platform",
+          "provides-extra",
+          "requires-dist",
+          "summary"
+        ],
+        "platform": [
+          "Linux",
+          "Mac OS X",
+          "Windows"
+        ],
+        "summary": "Python wrapper for OpenMM (a C++ MD package)",
+        "description": "OpenMM is a toolkit for molecular simulation. It can be used either as a\n    stand-alone application for running simulations, or as a library you call\n    from your own code. It provides a combination of extreme flexibility\n    (through custom forces and integrators), openness, and high performance\n    (especially on recent GPUs) that make it truly unique among simulation codes.\n    \n",
+        "home_page": "https://openmm.org",
+        "download_url": "https://openmm.org",
+        "author": "Peter Eastman",
+        "license": "Python Software Foundation License (BSD-like)",
+        "requires_dist": [
+          "numpy",
+          "OpenMM-CUDA-12==8.6.1; platform_system != \"Darwin\" and extra == \"cuda12\"",
+          "OpenMM-CUDA-13==8.6.1; platform_system != \"Darwin\" and extra == \"cuda13\"",
+          "OpenMM-HIP-6==8.6.1; (platform_system != \"Darwin\" and platform_machine == \"x86_64\") and extra == \"hip6\"",
+          "OpenMM-HIP-7==8.6.1; (platform_system != \"Darwin\" and platform_machine == \"x86_64\") and extra == \"hip7\""
+        ],
+        "provides_extra": [
+          "cuda12",
+          "cuda13",
+          "hip6",
+          "hip7"
+        ]
+      }
+    }
+  ],
+  "environment": {
+    "implementation_name": "cpython",
+    "implementation_version": "3.14.10",
+    "os_name": "posix",
+    "platform_machine": "x86_64",
+    "platform_release": "6.18.57",
+    "platform_system": "Linux",
+    "platform_version": "#1 SMP Tue Oct 20 21:56:04 UTC 2026",
+    "python_full_version": "3.14.10",
+    "platform_python_implementation": "CPython",
+    "python_version": "3.14",
+    "sys_platform": "linux"
+  }
+}

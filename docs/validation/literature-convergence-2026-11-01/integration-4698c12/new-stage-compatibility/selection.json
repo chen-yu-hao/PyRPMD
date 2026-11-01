@@ -1,0 +1,125 @@
+{
+  "created_before_execution_utc": "2026-11-01T18:38:35.263794+00:00",
+  "earlier_217_selection": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/selection.json",
+    "sha256": "ac9930252484e201769dec652a08723b0f334ab3e7f2537850694fbab5372ce6"
+  },
+  "earlier_guard_differences_explained": [
+    "benchmarks/h3/quantum_convergence_plot.py"
+  ],
+  "existing_Py312_plot_gate": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/water-plot-py312.xml",
+    "sha256": "3df05a2fa7954c5028dd42f75e9d9ef5713a3baac0a3c154f0ab6c8d39cec19a"
+  },
+  "groups": {
+    "MC_scheduler": {
+      "count": 27,
+      "source": "benchmarks/h3/quantum_sampling_scheduler.py",
+      "test": "tests/test_h3_quantum_sampling_scheduler.py"
+    },
+    "RDF_noise": {
+      "count": 8,
+      "source": "benchmarks/water/analyze_rdf_sampling_noise.py",
+      "test": "tests/test_water_rdf_sampling_noise.py"
+    },
+    "water_plot": {
+      "count": 9,
+      "source": "benchmarks/water/plot_native_campaign.py",
+      "test": "tests/test_water_native_campaign_plot.py"
+    },
+    "water_preparation": {
+      "count": 9,
+      "source": "benchmarks/water/native_preparation_extension.py",
+      "test": "tests/test_water_preparation_extension.py"
+    }
+  },
+  "native_products": {
+    "py312": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+      }
+    },
+    "py313": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a"
+      }
+    },
+    "py314": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+      }
+    }
+  },
+  "new_frozen_sources_sha256": {
+    "benchmarks/h3/quantum_sampling_scheduler.py": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98",
+    "benchmarks/water/analyze_rdf_sampling_noise.py": "57f5489bb84755489cf88bab312b430b19a5fb9f6bdd06a5223fa4a54fc42819",
+    "benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "tests/test_h3_quantum_sampling_scheduler.py": "8814a2156667cd6211ef02740579b256dfc516591cae06ea205d103f6175b9a1",
+    "tests/test_water_native_campaign_plot.py": "a48ccae6fa370a27466d557221b3c7e1174b41b31eb57a6128d8fa44c28bed5b",
+    "tests/test_water_preparation_extension.py": "7d146730d2dd7b7a505328aa8e4344d450d2e696245f9d65639788800260f9ed",
+    "tests/test_water_rdf_sampling_noise.py": "1ffd2a4219d84026b516239809c9c95acbe8640b70e54877e1dee7f6af976121"
+  },
+  "no_builds_installs_mutations_or_previous_217_rerun": true,
+  "per_interpreter": {
+    "py312": {
+      "expected": 44,
+      "files": [
+        "tests/test_h3_quantum_sampling_scheduler.py",
+        "tests/test_water_preparation_extension.py",
+        "tests/test_water_rdf_sampling_noise.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+    },
+    "py313": {
+      "expected": 53,
+      "files": [
+        "tests/test_h3_quantum_sampling_scheduler.py",
+        "tests/test_water_native_campaign_plot.py",
+        "tests/test_water_preparation_extension.py",
+        "tests/test_water_rdf_sampling_noise.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python"
+    },
+    "py314": {
+      "expected": 53,
+      "files": [
+        "tests/test_h3_quantum_sampling_scheduler.py",
+        "tests/test_water_native_campaign_plot.py",
+        "tests/test_water_preparation_extension.py",
+        "tests/test_water_rdf_sampling_noise.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python"
+    }
+  },
+  "schema": "pyrpmd.new-stage-compatibility-selection.v1",
+  "source_head": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+  "source_state_note": "Eight frozen new source/test files and a root-frozen unrelated plot update copied after this HEAD; exact guards define the tested worktree."
+}

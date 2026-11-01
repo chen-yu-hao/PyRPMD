@@ -1,0 +1,19 @@
+{
+  "archive": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-30000-2026-11-01.tar.gz",
+    "bytes": 145968199,
+    "sha256": "24c1390e11791c9ed2092f98eeba30776bbbb5d46bb8f9a7801b09d62a027c07"
+  },
+  "sidecar": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-30000-2026-11-01.members.json",
+    "bytes": 30370,
+    "sha256": "9c73b0d8ab8e2db20c64e933e798993337f7cd287e19e3f09d81f7a782f47f69"
+  },
+  "member_count": 123,
+  "member_bytes": 146371757,
+  "stage_snapshot": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/stage-snapshot.json",
+    "bytes": 38119,
+    "sha256": "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4"
+  }
+}

@@ -118,6 +118,35 @@ other three original NVE spans are also exactly reproduced. Compatibility
 therefore preserves the known failure instead of converting it to a pass.
 These checks consume 6.66 CPU seconds and do not run a thermal-rate campaign.
 
+## Python 3.13 and 3.14
+
+The same **217 distinct cases** (123 H3, 64 water, 19 water-coordinator and
+11 methane) also pass independently on Python 3.13.18 and 3.14.10, with
+zero failures, errors or skips. Each environment builds and loads its own
+three native modules and uses OpenMM 8.6.1. The original Python 3.12
+experiment environment and all protected simulation sources remain unchanged.
+The [complete compatibility record](python-313-314/README.md) contains
+compiler and dependency identities, actual loaded binary paths/checksums,
+both JUnit reports and before/after source guards.
+
+The initial broader guard noticed a concurrently developed plotting helper;
+the explicit resolution excludes only that nonphysical, separately owned
+new file. Initial network/install failures are retained. Six owned, ignored
+ABI symlinks remained visible in the final tool-process check despite earlier
+cleanup receipts; the final retained-link record is authoritative. They are
+not included in Git. This compatibility result does not imply a full-suite
+rerun or a rerun of the long physical experiments.
+
+The later [new-stage compatibility record](new-stage-compatibility/README.md)
+adds 53 distinct coordinator, plotting, preparation-restart and analytic
+RDF-noise checks. Python 3.12 executes 44 new cases and reuses the already
+completed [nine plotting cases](water-plot-py312.xml); Python 3.13 and 3.14
+each execute all 53. The case-level union is exactly the same **270 distinct
+passing cases on each interpreter**, without double-counting retries.
+There are zero new failures, errors or skips. No rebuild, installation,
+source change or ABI-link mutation occurs during this later gate. These
+software checks do not supply liquid equilibration or diffusion evidence.
+
 ## Documentation
 
 The changed English manual passes the strict Sphinx HTML build with
@@ -127,3 +156,9 @@ limits. Historical validation records are intentionally outside Sphinx's
 include patterns; local links in the changed aggregate evidence pages are
 checked separately. No untranslated-manual rebuild or full-suite rerun is
 implied by this documentation check.
+
+The later complete-200fs documentation update has a separate
+[strict build receipt](documentation-200fs-stage-check.json) and
+[build log](documentation-200fs-stage-build.log), preserving the earlier
+check's exact source scope. Its new local evidence links are included in
+the [publication audit](publication-200fs-stage-audit.json).

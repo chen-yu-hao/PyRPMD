@@ -1,0 +1,87 @@
+{
+  "schema": "pyrpmd.integrated-method-selection.v1",
+  "created_before_execution_utc": "2026-11-01T18:04:27.097436+00:00",
+  "integrated_head": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+  "groups": {
+    "H3": {
+      "files": [
+        "tests/test_h3_classical_sampling.py",
+        "tests/test_h3_classical_sampling_surface.py",
+        "tests/test_h3_classical_sampling_xi_proposal.py",
+        "tests/test_h3_classical_sampling_v2.py",
+        "tests/test_h3_mixing_sampling.py",
+        "tests/test_h3_wham.py",
+        "tests/test_h3_diatom_partition.py",
+        "tests/test_h3_diatom_transfer.py",
+        "tests/test_h3_quantum_sampling_analysis.py",
+        "tests/test_h3_surface_partition.py",
+        "tests/test_h3_quantum_surface_recrossing.py",
+        "tests/test_h3_quantum_recrossing_analysis.py",
+        "tests/test_h3_surface_partition_controls.py"
+      ],
+      "expected_distinct_tests": 123,
+      "selection_receipt": "compatibility.json",
+      "selection_receipt_sha256": "01b9a1925d41fa359cc4ac4ef7ed9878e97d27e61549bece33f3dc96840e5b5d"
+    },
+    "water_original": {
+      "files": [
+        "tests/test_water_chain_statistics.py",
+        "tests/test_water_compact_split.py",
+        "tests/test_water_native_optimizations.py",
+        "tests/test_water_native_quantum.py",
+        "tests/test_water_native_reference.py",
+        "tests/test_water_native_schedule.py",
+        "tests/test_water_split_reference.py",
+        "tests/test_water_velocity_cadence.py"
+      ],
+      "expected_distinct_tests": 64,
+      "selection_receipt": "water-complete-check.json",
+      "selection_receipt_sha256": "935dc196678a78da99098d9ec77f5f9f0329e8eadbdc03f009d3a47972fac3e6"
+    },
+    "water_scheduler_v2": {
+      "files": [
+        "tests/test_water_native_schedule_v2.py"
+      ],
+      "expected_distinct_tests": 19,
+      "selection_receipt": "water-scheduling-v2-check.json",
+      "selection_receipt_sha256": "e709fd1832cb1bc74f705c9d51b2a2a9b870b52c2d79a74fead33001fe666881"
+    },
+    "HCH4": {
+      "files": [
+        "tests/test_hch4_native.py",
+        "tests/test_hch4_pes.py"
+      ],
+      "expected_distinct_tests": 11,
+      "selection_receipt": "hch4/receipt.json",
+      "selection_receipt_sha256": "67aa3e6ed686f4910a30389838dd0053d70ef36430c70ff5af4a86d33eec3ce8"
+    }
+  },
+  "expected_distinct_tests_per_interpreter": 217,
+  "selected_test_files_sha256": {
+    "tests/test_h3_classical_sampling.py": "c528d41ad564a0e8aee5ae4e44bf97b3e80ba94ccd77975b6bec08604285c987",
+    "tests/test_h3_classical_sampling_surface.py": "31b19b503d6ce89d4de5f179e7b5a96b07bbfe5b2fa0245513779e1316e743f2",
+    "tests/test_h3_classical_sampling_xi_proposal.py": "aa47e60d7c108343204ab020b7a5526ae6555b47e21ed3eecbde45163ec9694b",
+    "tests/test_h3_classical_sampling_v2.py": "4c53738f91ee71536b8f7ba376e40398bc8f1b64650d9f367ca95c330e1b3900",
+    "tests/test_h3_mixing_sampling.py": "b72e83813eb9de418c400fccd988869186d67dbaa5a6e7146f2a5a9f8999f30b",
+    "tests/test_h3_wham.py": "963aca069a329c5a4bf3fda54914055cdd0e96382b54697f425241fc1bf811de",
+    "tests/test_h3_diatom_partition.py": "812860534f57d3aefbdf95ba1c4cb882c6c4b3068566441aec93854581bc69a7",
+    "tests/test_h3_diatom_transfer.py": "0c27c18c4513ccdc578ea99873ab90e590b832cfd42d23b5d494980968ae10c5",
+    "tests/test_h3_quantum_sampling_analysis.py": "6b01d82679a87590af518e7a7b2578dc35460f52a7222c86b8d79df8727ac9a9",
+    "tests/test_h3_surface_partition.py": "109c9bd6412122cbba57e3174ba133d54316f91402f9488e508ef57437aeb228",
+    "tests/test_h3_quantum_surface_recrossing.py": "2f5974034d1dda0db1542d6b11d79cb2ef2f669809dafb593d6ca99ed9a2b8ea",
+    "tests/test_h3_quantum_recrossing_analysis.py": "baa8663d7aff6d6f16920c7eca89e1cfc737a740ffb2a1b0627bbf6fad6eaa4d",
+    "tests/test_h3_surface_partition_controls.py": "394f21d90082ed65410310f1b8645e75f53669cfb529474226df7170d29bf03b",
+    "tests/test_water_chain_statistics.py": "98fb3037d417e359ef13fb737b0c3ac5993a635ec42b81f92d9d7bec6ecfd0f9",
+    "tests/test_water_compact_split.py": "da981484ca1da34a89d154cb7483c033c2cd5d02dda350cf0d4b2e4f96004658",
+    "tests/test_water_native_optimizations.py": "ad72e3b91552df66dcda45b073217461a2767f3158a4996641bcc59417472390",
+    "tests/test_water_native_quantum.py": "3d7e7fe171c0cb2d3910d49e92ef95953da59fe9d744ca96b49284b07323ddb7",
+    "tests/test_water_native_reference.py": "6ed99f89b56953f02c02948091a971e9df52e907b27b8fbb053450e92ed7cd3b",
+    "tests/test_water_native_schedule.py": "aa86db798b491d74b96601767d39d4511a8920c73aa16bd70d8c2ffdddfb021f",
+    "tests/test_water_split_reference.py": "9df1e11aa408fc295f128501977431367ec8adde35354329d769f01f88caeacb",
+    "tests/test_water_velocity_cadence.py": "b99704290e44142bd7a07e8f54e8a7f09dc0a4cab2fb5ed9fc86dca1feac5fed",
+    "tests/test_water_native_schedule_v2.py": "5611446ccb7d9b2ea520dd04c237c723b37f47cd1106c270a9effebe6ddfc11c",
+    "tests/test_hch4_native.py": "88705a75346a48d091ddbe1d6fa48b2a4f7fb041753fddfd882a71f61f8c1eeb",
+    "tests/test_hch4_pes.py": "fdabafc7c99a3f6093754c8a925b482390925865f32ccbeb684f26d8f0c268cd"
+  },
+  "no_tolerance_or_source_changes_authorized": true
+}

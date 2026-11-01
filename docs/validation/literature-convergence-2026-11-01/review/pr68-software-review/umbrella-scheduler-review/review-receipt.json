@@ -1,0 +1,74 @@
+{
+  "schema": "pyrpmd.h3.umbrella-scheduler-independent-review.v1",
+  "created_utc": "2026-11-01T18:33:52.146562+00:00",
+  "reviewed_source": {
+    "path": "benchmarks/h3/quantum_sampling_scheduler.py",
+    "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+  },
+  "reviewed_tests": {
+    "path": "tests/test_h3_quantum_sampling_scheduler.py",
+    "sha256": "8814a2156667cd6211ef02740579b256dfc516591cae06ea205d103f6175b9a1"
+  },
+  "unchanged_worker_contract": {
+    "path": "benchmarks/h3/quantum_sampling_campaign.py",
+    "sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50"
+  },
+  "initial_source_sha256": "f429904e2b8eb7b7c35b29f51d0f28a63c55ec84be5caf50719eec0e94c1122e",
+  "finding": {
+    "severity": "blocking before launch",
+    "initial_defect": "The old stop_signals lifetime ended before exceptional pool.shutdown. SIGINT during that wait could abort draining and unwind campaign_lock while live workers remained.",
+    "resolution": "Deferred handlers now cover shutdown. The directory-lock release lease is disabled before constructing a pool and re-enabled only after confirmed draining. An interrupted/unconfirmed shutdown preserves the lock and produces no complete/resumable receipt. Persistent journal failures are handled after draining."
+  },
+  "independent_tests": {
+    "command": [
+      "taskset",
+      "-c",
+      "8",
+      "env",
+      "OMP_NUM_THREADS=1",
+      "OPENBLAS_NUM_THREADS=1",
+      "MKL_NUM_THREADS=1",
+      "NUMEXPR_NUM_THREADS=1",
+      "PYTHONDONTWRITEBYTECODE=1",
+      "PYTHONPATH=src:.",
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/test_h3_quantum_sampling_scheduler.py",
+      "-q",
+      "-k",
+      "broken_journal_and_shutdown_interrupt",
+      "--junitxml=docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/umbrella-scheduler-review/failure-path-tests.xml"
+    ],
+    "returncode_observed": 0,
+    "passed": 2,
+    "deselected": 25,
+    "skipped": 0,
+    "pytest_elapsed_seconds": 2.15,
+    "cases": [
+      "test_broken_journal_and_shutdown_interrupt_never_unlock_live_workers[signal]",
+      "test_broken_journal_and_shutdown_interrupt_never_unlock_live_workers[unconfirmed_shutdown]"
+    ],
+    "log_sha256": "1d883aed328955034bed84444e21d9808e2f52bd54433130a707190b73d6be01",
+    "junit_sha256": "177196ffe1cb37b67e9c7ea8f4e0c375d0fd8adc668a9488c669dc6ff18a7af2",
+    "physics_runs": 0,
+    "fake_workers_only": true,
+    "CPU_limit": 1
+  },
+  "read_only_checks": [
+    "Workers call the unchanged one_seed entry point and own distinct seed directories; the coordinator alone writes the global completion file.",
+    "Complete fixed eight-seed cohort, only the next registered 100000/300000 prefix, and precision-only all-cohort decision are required before workers launch.",
+    "Previous sample/diagnostic prefixes, restart-state files, settings, model, source and imported-module paths are guarded.",
+    "Failures stop admissions, drain submitted work, and bind the exact resulting checkpoint/RNG states for explicit failure-receipt resumption.",
+    "The completion file is newly linked atomically only after all eight seeds are complete and final guards pass; existing output is not overwritten.",
+    "Mutable worker count only controls admissions, with a ceiling of four and no alteration of scientific settings or seed order."
+  ],
+  "remaining_blockers": [],
+  "operational_limits": [
+    "The older direct quantum_sampling_campaign CLI does not acquire the new directory lock. It must remain stopped, and no old dispatcher or direct one_seed invocation may be launched concurrently.",
+    "A hard crash or unconfirmed drain intentionally leaves a lock requiring process/checkpoint inspection; do not auto-remove it.",
+    "The bounded tests validate coordinator failure handling with fake workers. They are not a new sampling or physical-convergence validation."
+  ],
+  "source_or_protocol_edits_by_reviewer": false,
+  "Git_mutations": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "pyrpmd.h3.child-archive-packaging-execution.v1",
+  "command": [
+    "env",
+    "PYTHONPATH=src:.",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/package_stage.py"
+  ],
+  "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "stdout_stderr_redirected_to": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/package.log",
+  "returncode": 0,
+  "exec_session_id": 15077,
+  "source": {
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/package_stage.py",
+    "sha256": "bec90ac63ff708efb0cb9753a4bf82380a95457de4398fd5844086f009297eab",
+    "bytes": 21394
+  },
+  "source_matches_builder_provenance": true,
+  "output": {
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/package.log",
+    "sha256": "db5029e5b053ed1120aee6a53f50f40a0aec4a4649e7ae79e4e634d8b8a90023",
+    "bytes": 2774
+  },
+  "no_simulation": true,
+  "no_git_mutation": true,
+  "no_upload": true,
+  "CPU_seconds": 16.499802,
+  "elapsed_seconds": 17.328066739995847,
+  "peak_RSS_KiB": 41868
+}

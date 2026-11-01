@@ -1,0 +1,28 @@
+{
+  "actual_incomplete_campaign_rejected_before_plotting": true,
+  "failed_preparation_remains_in_plot_and_table": true,
+  "frozen_utc": "2026-11-01T18:17:39.272785+00:00",
+  "independence_unit": "eight seed-chain means; t intervals df7",
+  "paper_reference_overlay": "only after every predeclared numeric eligibility check passes, consistent with analyze_native.py",
+  "real_complete_cohort_plot_generated": false,
+  "sampler_or_random_state_changed": false,
+  "schema": "pyrpmd.water-final-plot-gate.v1",
+  "source_sha256": {
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "tests/test_water_native_campaign_plot.py": "a48ccae6fa370a27466d557221b3c7e1174b41b31eb57a6128d8fa44c28bed5b"
+  },
+  "synthetic_layout_validation": {
+    "cases": [
+      "failed eligibility, paper comparison withheld",
+      "synthetic eligible fixture, paper1SE and chain95CI labels distinct"
+    ],
+    "explicit_SYNTHETIC_banner": true,
+    "images_are_excluded_from_scientific_evidence": true,
+    "layout_visually_inspected": true
+  },
+  "test_result": {
+    "junit_sha256": "a64b877cbc58a06c0491dab505ddb38f97104afc76751b84c260774551dcecde",
+    "passed": 9,
+    "seconds": 0.86
+  }
+}

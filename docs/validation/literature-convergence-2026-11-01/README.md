@@ -1,8 +1,12 @@
 # Literature convergence follow-up: 2026-11-01
 
-**The complete classical H + H₂ reference rate at 300 K agrees with the
-published RPMDrate result within the paper's stated precision.** Quantum
-H + H₂ and liquid-water transport are separate, ongoing convergence studies.
+**The complete classical and initial P128 quantum H + H₂ reference rates at
+300 K agree with the published RPMDrate results within the paper's stated
+precision.** The quantum rate's entire nominal 95% interval is inside that
+band, but its separate κ precision gate still fails (3.272% half-width
+versus a 3.000% limit); the predeclared all-parent momentum extension is
+running. Independent umbrella sampling and liquid-water transport remain
+separate, ongoing convergence studies.
 This record preserves the earlier failed estimates and distinguishes an
 independent equilibrium reference from the production MD umbrella workflow.
 
@@ -21,7 +25,10 @@ software-test results remain historical observations, not overwritten runs.
 | H₂ finite-P quantum/classical partition ratio, P=128 | 0.000694194285900783 | Independent radial transfer matrix; radial-grid log change 1.03 × 10⁻¹¹ |
 | H₂ continuum quantum/classical ratio | 0.000685451742716482 | Independent radial Schrödinger/DVR calculation; the finite-P difference is retained |
 | Stochastic P=128 H₂ normalization control | 0.0006879725, 95% CI [0.0006792694, 0.0006967870] | Four independent chains; exact finite-P value is inside the interval |
-| Independent P=128 H + H₂ QTST | 2.55248792 × 10⁻¹⁶, 95% CI [2.51679142, 2.58869070] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | Eight independent surface-partition chains and matching exact finite-P reactant denominator; +1.69% from paper QTST; complete quantum dynamics still running |
+| Independent P=128 H + H₂ QTST | 2.55248792 × 10⁻¹⁶, 95% CI [2.51679142, 2.58869070] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | Eight independent surface-partition chains and matching exact finite-P reactant denominator; +1.69% from paper QTST |
+| P=128 quantum transmission κ, initial two-pair cohort | 0.77307729, 95% CI [0.74778066, 0.79837393] | Paper 0.776; 3.272% relative half-width misses the 3.000% registered precision limit |
+| Complete initial P=128 quantum rate | 1.97196035 × 10⁻¹⁶, 95% CI [1.91141982, 2.03441839] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | +1.126% from paper 1.95 × 10⁻¹⁶; whole interval inside its ±5% band; fixed-P aggregate gate still false because of κ precision |
+| Separate P=128 umbrella MC, 30,000 production sweeps per ladder | 2.80072503 × 10⁻¹⁶, 95% CI [2.33507586, 3.35923162] × 10⁻¹⁶ | All eight ladders complete; precision and paper-point criteria fail; registered 100,000-sweep continuation selected |
 
 The classical paper point is slightly outside the much narrower new rate
 interval. Agreement here means agreement within the paper's approximately
@@ -55,6 +62,15 @@ cm³ molecule⁻¹ s⁻¹.
   [analysis specification](h3-quantum/recrossing-analysis-prespecification.json).
   These bind all parents, both timesteps, observation windows, precision-only
   continuation and the joint partition/transmission uncertainty.
+- [Complete initial quantum child cohort](h3-quantum/recrossing-stage-200-pairs-2/README.md).
+  This retains the full rate, all component checks, failed κ precision,
+  supplementary parent-time-half failure and the immutable extension decision.
+- [Verified raw child archive](h3-quantum/recrossing-stage-200-pairs-2/raw-archive/README.md).
+  All 400 base child chunks and 38.4 million native steps are preserved;
+  signed flux arrays replay exactly after actual archive extraction.
+- [Complete first quantum umbrella stage](h3-quantum/umbrella-stage-30000/README.md).
+  All eight 30,000-sweep chains and exact restart states remain available;
+  neither their broad interval nor small coordinate Rhat is called convergence.
 - [Completed independent bead/domain controls](surface-partition/controls/comparison.json).
   Every registered control is retained, including the coarse-P64 failure.
 - [Quantum equilibrium archive and exact-parent reconstruction](surface-partition/raw-archive/README.md).
@@ -118,8 +134,13 @@ All eight fixed-budget surface-partition chains are complete. Their
 is 1.69% above the paper. The paper QTST point lies slightly below our new
 95% interval, while the difference remains within the paper's approximately
 5% reported precision. A quantum transition-state factor is not a complete
-RPMD rate: it still needs its own transmission coefficient. The registered
-independent equilibrium bead/domain controls have now completed, with four
+RPMD rate. Its own complete initial native child cohort now supplies
+κ=0.77307729 and the full rate 1.97196035 × 10⁻¹⁶, 1.126% above the paper.
+The nominal 95% rate interval contains the paper and lies wholly inside
+its approximate ±5% band. The 3.272% κ interval half-width nevertheless
+fails its separate 3.000% precision target, so all parents receive the
+predeclared extra momentum pairs. The first-stage failure is preserved.
+The registered independent equilibrium bead/domain controls have completed, with four
 new independent seeds for each variant:
 
 | Variant relative to P=128 / minimum pair 0.5 bohr | QTST change | 95% interval | Registered equivalence |
@@ -170,6 +191,17 @@ replicas or add the two uncertainties under a false independence assumption.
 QTST, κ and their product are each compared with the paper, so compensating
 component errors cannot produce an unqualified pass.
 
+![Initial complete quantum reference](h3-quantum/recrossing-stage-200-pairs-2/figures/quantum-convergence.png)
+
+Both registered late-time windows have identical observed κ on every chain.
+That sampled equality is not a bound on arbitrarily rare later recrossing.
+The supplementary parent-time-half κ equivalence check fails and remains
+visible. The paired timestep comparison and primary-step energy screen
+pass. This fixed-P result does not establish dynamic bead convergence or
+validate production MD umbrella sampling. The separate MC umbrella stage
+still fails precision after all eight 30,000-sweep ladders; its continuation
+retains every chain and the original thresholds.
+
 ## Water and other requested systems
 
 The independently integrated OpenMM water reference retains 216 flexible
@@ -187,6 +219,15 @@ prefixes. The initial preparation audit of seed 1102 fails its predefined
 potential-energy stationarity threshold; this failure remains part of the
 fixed cohort. Completing the OpenMM reference would still require a separate
 long-time comparison of PyRPMD's own production transport workflow.
+
+The separate [preparation-only continuation tools](water/preparation-continuation-gate/README.md)
+pass exact phase/RNG and Reference/CPU checkpoint tests. The proposed
+additional 400 ps of canonical preparation has not yet been adopted or
+launched for the cohort. The original potential-energy, temperature and
+intramolecular-geometry thresholds remain fixed. An analytic toy audit
+shows why a new maximum-over-many-RDF-bins rule needs an explicit
+uncertainty design; the proposal retains those structural diagnostics
+without declaring the uncalibrated hard RDF threshold a validation gate.
 
 The predetermined 4 ps velocity-recording control has completed. At 5 fs
 recording, its 2 ps VACF integral differs from the dense 0.25 fs record by

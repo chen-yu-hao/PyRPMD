@@ -1,0 +1,44 @@
+{
+  "schema": "pyrpmd.publication-inventory.v1",
+  "created_utc": "2026-11-01T18:32:46.562706+00:00",
+  "description": "Separate complete-base-cohort review; existing frozen review inventories unchanged. Text and reviewer code only; no raw NPZ/PES/native binaries.",
+  "file_count": 7,
+  "total_bytes": 153572,
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/README.md",
+      "bytes": 8363,
+      "sha256": "6ec3126058f5543a2c1823854dde2cf8ea3aab7d241649b194b7bd2e07d706d3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/input-file-hashes.json",
+      "bytes": 97097,
+      "sha256": "d41cf619ef748005614cafbccf9b34b85e12a83c117f91dd3360744da05c5800"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/raw-replay.json",
+      "bytes": 15217,
+      "sha256": "a9c477a0079fb9ded6162f8c2fa16eddec45d9f1f521b6d473849f40fcedc238"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/replay.log",
+      "bytes": 3200,
+      "sha256": "67a97decd3e00e1c1d42f17aefb30df8d1e9007335401948c099890401be3267"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/replay.py",
+      "bytes": 23615,
+      "sha256": "722a452ef7b8371bd9a46c28ca5df63abb85a8978a421e83d0d3856ff630edd7"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/review-plan.json",
+      "bytes": 1940,
+      "sha256": "b76594857776f0cbbade5082e47f39fa948945642423fff6c034dac6e6c8870f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/review-receipt.json",
+      "bytes": 4140,
+      "sha256": "c7fdc91c351de7b9d97767b7c887d4a979747b391a53134dae033ff28f0a3a09"
+    }
+  ]
+}

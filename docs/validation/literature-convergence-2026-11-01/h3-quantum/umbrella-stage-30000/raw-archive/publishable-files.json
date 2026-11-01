@@ -1,0 +1,41 @@
+{
+  "schema": "pyrpmd.h3.umbrella-stage30000-archive-publishable.v1",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/README.md",
+      "sha256": "e2d36eec44e74df5676acc2b4b72963cb1d28a09495795384a162f1f28228790",
+      "bytes": 4966
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/archive-provenance.json",
+      "sha256": "303447fc37fbb62a71d73cb5ad9dbf73a3774f65e72f28f9e72df1dd91d32d17",
+      "bytes": 2397
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/archive.log",
+      "sha256": "b47136f28778af42aae1390fe518d8801f5a3aaf5e09994c663fbb7aec778f57",
+      "bytes": 811
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/freeze_stage.py",
+      "sha256": "ce6ecef585434c1b0796f0825b2dd12fbdeb10fbefb8b94ec4abca2f2f88fa48",
+      "bytes": 15143
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/member-inventory.json",
+      "sha256": "9c73b0d8ab8e2db20c64e933e798993337f7cd287e19e3f09d81f7a782f47f69",
+      "bytes": 30370
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/stage-snapshot.json",
+      "sha256": "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4",
+      "bytes": 38119
+    }
+  ],
+  "file_count": 6,
+  "total_bytes": 91806,
+  "include_this_inventory_file": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/publishable-files.json",
+  "inventory_self_checksum_omitted": true,
+  "raw_files_and_archive_excluded_from_Git": true,
+  "upload_performed": false
+}

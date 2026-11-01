@@ -1,0 +1,13 @@
+{
+  "schema": "pyrpmd.abi-preflight-concurrent-edit.v1",
+  "recorded_utc": "2026-11-01T18:09:13.303852+00:00",
+  "initial_test_or_build_launched": false,
+  "integrated_source_changes": [],
+  "only_original_change": "benchmarks/water/plot_native_campaign.py",
+  "source_change_owner": "separately assigned water plotting work",
+  "action": "Preserve initial guard and failure log; remove only the expressly authorized unrelated file from subsequent historical-original guard. All remaining source/model hashes reverified unchanged.",
+  "initial_snapshot_sha256": "37c1e48c58392f11a59b7e1a4e2028f55099b082a96ed73536ff413e08f3f3c4",
+  "active_snapshot_sha256": "77bcaab47b5c8f76879eb6b91a5bfcd08f3466afc0b2017c8881b8184528535e",
+  "protected_integrated_files": 777,
+  "protected_original_files": 547
+}

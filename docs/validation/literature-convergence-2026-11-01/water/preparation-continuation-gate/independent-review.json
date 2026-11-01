@@ -1,0 +1,26 @@
+{
+  "confirmed": [
+    "The selected final-preparation checkpoint is pre-NVE; the initial branch commit consumes no RNG.",
+    "The first preparation draw has remove_com=False and occurs exactly once; absolute pending deadlines and refresh counts are consistent at exact and off-boundary resumes.",
+    "There is no terminal NVE draw; a completed resume creates no engine.",
+    "Source/environment/XML and selected checkpoint identities are bound; the original files remain read-only.",
+    "The existing tests cover both split boundary cases and the independent CPU force-cache bound.",
+    "The proposed fixed all-eight history keeps eight uncertainty units, fixed windows and duration, no D-based stopping, and original cohort preservation.",
+    "The v2 proposal keeps v1 bytes, original energy criteria, and labels the Poisson model as an excluded uncalibrated fixture."
+  ],
+  "new_proposal_blocker_found": false,
+  "phase_RNG_blocker_found": false,
+  "recorded_utc": "2026-11-01T18:35:29.128613+00:00",
+  "remaining_limits": [
+    "The generic single-chain runner does not enforce all-eight adoption; cohort registration/coordinator decision remains required.",
+    "RDF and coordination equivalence are unadopted pending a predeclared blocked/simultaneous uncertainty design.",
+    "Code review and short tests do not demonstrate liquid equilibrium or paper agreement."
+  ],
+  "reviewed_source_sha256": {
+    "benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "tests/test_water_preparation_extension.py": "7d146730d2dd7b7a505328aa8e4344d450d2e696245f9d65639788800260f9ed"
+  },
+  "reviewer": "independent collaboration agent /root/distribution",
+  "schema": "pyrpmd.water-preparation-independent-review.v1",
+  "scope": "read-only source, tests and v2 proposal; no new dynamics or tests run by reviewer"
+}

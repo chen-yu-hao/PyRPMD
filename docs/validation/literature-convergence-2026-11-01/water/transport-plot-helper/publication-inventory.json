@@ -1,0 +1,34 @@
+{
+  "active_sampler_changed": false,
+  "file_count": 5,
+  "files": [
+    {
+      "bytes": 16782,
+      "path": "benchmarks/water/plot_native_campaign.py",
+      "sha256": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362"
+    },
+    {
+      "bytes": 6377,
+      "path": "tests/test_water_native_campaign_plot.py",
+      "sha256": "a48ccae6fa370a27466d557221b3c7e1174b41b31eb57a6128d8fa44c28bed5b"
+    },
+    {
+      "bytes": 2979,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/transport-plot-helper/README.md",
+      "sha256": "608e1b3c8b771d13c540e49135fa3e20e2f0ff4ec0a0656eceb2599428254ca2"
+    },
+    {
+      "bytes": 1241,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/transport-plot-helper/gate.json",
+      "sha256": "0d076dde5c7bee6e1a5f33fe106653ce17adb4276db81a6e59960277183453ef"
+    },
+    {
+      "bytes": 1592,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/transport-plot-helper/pytest.xml",
+      "sha256": "a64b877cbc58a06c0491dab505ddb38f97104afc76751b84c260774551dcecde"
+    }
+  ],
+  "schema": "pyrpmd.water-final-plot-publication-inventory.v1",
+  "sealed_utc": "2026-11-01T18:18:32.746626+00:00",
+  "synthetic_images_and_data_excluded": true
+}

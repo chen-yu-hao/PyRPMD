@@ -26,7 +26,11 @@ def plot(analysis, historical, output):
     analysis, historical, output = map(Path, (analysis, historical, output))
     report_path = analysis / "quantum-rate-comparison.json"
     curve_path = analysis / "kappa-curve.csv"
+    protocol_path = analysis / "protocol.json"
     report = json.loads(report_path.read_text())
+    protocol = json.loads(protocol_path.read_text())
+    if sha(protocol_path) != report["protocol_sha256"]:
+        raise ValueError("The figure protocol differs from the analyzed experiment")
     if (not report["criteria"]["complete_registered_cohort"]
             or report["completed_seeds"] != report["expected_seeds"]):
         raise ValueError("A complete registered cohort is required; partial diagnostics cannot produce this final figure")
@@ -103,15 +107,19 @@ def plot(analysis, historical, output):
     figure.suptitle("H + H₂ at 300 K on BKMP2: independently normalized P128 RPMD", fontsize=15)
     passed = report["fixed_P_independent_rate_gates_passed"]
     rate, interval = statistics["rate_geometric_mean_cm3_molecule_s"], statistics["rate_CI95_cm3_molecule_s"]
+    kappa_precision = (statistics["kappa_statistics"]["halfwidth95"]
+                       / statistics["kappa_arithmetic_mean"])
+    kappa_limit = protocol["precision_gate_relative_kappa_95_halfwidth"]
     footer = (
         f"Full rate: {rate:.6g} [{interval[0]:.6g}, {interval[1]:.6g}] cm³ molecule⁻¹ s⁻¹ (95%). "
         f"Registered fixed-P rate gates: {'PASS' if passed else 'FAIL'}.\n"
+        f"Transmission 95% relative half-width: {100 * kappa_precision:.2f}%; registered limit: {100 * kappa_limit:.2f}%.\n"
         "New intervals use complete independent chains; the full-rate interval retains partition–transmission covariance.\n"
         "Gray bands in A–C denote the paper's approximately ±5% precision, not a reconstructed confidence interval.\n"
         "Earlier points failed sampling convergence; their unreliable bootstrap intervals are not used here. "
         "Separate bead/domain controls remain separate evidence."
     )
-    figure.text(.08, .10, footer, va="center", fontsize=9, color=gray, linespacing=1.6)
+    figure.text(.08, .095, footer, va="center", fontsize=9, color=gray, linespacing=1.6)
     outputs = []
     for extension in ("png", "pdf"):
         path = output / f"quantum-convergence.{extension}"
@@ -123,7 +131,7 @@ def plot(analysis, historical, output):
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "plot_source_sha256": sha(__file__),
         "inputs": [{"path": str(path), "sha256": sha(path)}
-                   for path in [report_path, curve_path, *prior_paths]],
+                   for path in [report_path, curve_path, protocol_path, *prior_paths]],
         "figures": {path.name: sha(path) for path in outputs},
         "complete_cohort": report["completed_seeds"],
         "fixed_P_gates_passed": passed,

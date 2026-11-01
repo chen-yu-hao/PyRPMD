@@ -1,0 +1,41 @@
+{
+  "schema": "pyrpmd.h3.quantum-extra-pair-launch-receipt.v1",
+  "receipt_created_utc": "2026-11-01T18:28:12.872799+00:00",
+  "launch_time_status": "Exact process launch timestamp was not separately captured. The tool clock observed the returned running session no later than the timestamp below.",
+  "start_observed_no_later_than": "2026-11-01T18:17:51Z",
+  "observation_source": "Root tool call returned a running exec session after a 1-second yield; the immediately following clock tool returned 2026-11-01 18:17:51 UTC.",
+  "exec_session_id": 74559,
+  "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "command": [
+    "env",
+    "PYTHONPATH=src:.",
+    "OMP_NUM_THREADS=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "MKL_NUM_THREADS=1",
+    ".venv/bin/python",
+    "benchmarks/h3/quantum_recrossing_campaign.py",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary",
+    "--library",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+    "--horizon",
+    "200",
+    "--pair-batch",
+    "1",
+    "--workers",
+    "2"
+  ],
+  "stdout_stderr_log": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-extra-pairs-200.log",
+  "decision": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/precision-extension-decision.json",
+    "sha256": "dcbeaaa2338e2eb9f1d45f6c7ff2275cabbe9c3cbe9302c5f6529d4a2c5939b2"
+  },
+  "schedule": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/schedule-200-pairs-1.json",
+    "sha256": "dfaa2b848a6bbf3b1b946de3d8489b828101ffb54997b94835b4848a36d5732d"
+  },
+  "execution_order": "The immutable precision-extension decision was successfully written in a preceding sequential command before this process was launched.",
+  "selection": "All eight registered seeds, same immutable 1600 parents; add pair indices 2 and 3 at both registered timesteps; 200 fs; no partial-result selection.",
+  "precision_trigger": "The complete initial cohort failed the previously registered 3% relative 95% half-width for kappa; it passed plateau and timestep gates.",
+  "no_exact_launch_timestamp_inferred_from_file_mtime": true
+}

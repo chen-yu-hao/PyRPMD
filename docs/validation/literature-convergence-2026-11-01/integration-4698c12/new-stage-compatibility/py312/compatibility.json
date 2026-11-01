@@ -1,0 +1,116 @@
+{
+  "ABI_links_modified": false,
+  "builds": 0,
+  "case_ids": [
+    "tests.test_h3_quantum_sampling_scheduler::test_preflight_launches_no_workers_or_changes_prior_files",
+    "tests.test_h3_quantum_sampling_scheduler::test_tampered_prior_or_source_never_submits[checkpoint]",
+    "tests.test_h3_quantum_sampling_scheduler::test_tampered_prior_or_source_never_submits[settings]",
+    "tests.test_h3_quantum_sampling_scheduler::test_tampered_prior_or_source_never_submits[state]",
+    "tests.test_h3_quantum_sampling_scheduler::test_tampered_prior_or_source_never_submits[source]",
+    "tests.test_h3_quantum_sampling_scheduler::test_tampered_prior_or_source_never_submits[model]",
+    "tests.test_h3_quantum_sampling_scheduler::test_tampered_prior_or_source_never_submits[diagnostic_prefix]",
+    "tests.test_h3_quantum_sampling_scheduler::test_concurrent_coordinator_and_existing_global_manifest_are_rejected",
+    "tests.test_h3_quantum_sampling_scheduler::test_worker_ceiling_and_skipped_prefix_are_rejected[workers-5]",
+    "tests.test_h3_quantum_sampling_scheduler::test_worker_ceiling_and_skipped_prefix_are_rejected[stage-300000]",
+    "tests.test_h3_quantum_sampling_scheduler::test_four_workers_complete_all_seeds_once_and_preserve_exact_prefixes",
+    "tests.test_h3_quantum_sampling_scheduler::test_failure_stops_admission_drains_and_hash_bound_resume_reuses_completed_seed",
+    "tests.test_h3_quantum_sampling_scheduler::test_runtime_limit_increase_two_to_four_keeps_seed_order",
+    "tests.test_h3_quantum_sampling_scheduler::test_invalid_mutable_worker_control_rejected_before_sampling[0]",
+    "tests.test_h3_quantum_sampling_scheduler::test_invalid_mutable_worker_control_rejected_before_sampling[5]",
+    "tests.test_h3_quantum_sampling_scheduler::test_invalid_mutable_worker_control_rejected_before_sampling[True]",
+    "tests.test_h3_quantum_sampling_scheduler::test_invalid_mutable_worker_control_rejected_before_sampling[4]",
+    "tests.test_h3_quantum_sampling_scheduler::test_worker_return_corruption_cannot_publish_complete_cohort",
+    "tests.test_h3_quantum_sampling_scheduler::test_actual_entrypoint_forwards_unchanged_job",
+    "tests.test_h3_quantum_sampling_scheduler::test_next_300000_stage_uses_complete100000_manifest_and_preserves_both_prefixes",
+    "tests.test_h3_quantum_sampling_scheduler::test_hash_bound_partial_resume_keeps_partial_checkpoint_rng_state",
+    "tests.test_h3_quantum_sampling_scheduler::test_paper_point_or_incomplete_cohort_cannot_authorize_extension",
+    "tests.test_h3_quantum_sampling_scheduler::test_import_path_must_be_the_guarded_source",
+    "tests.test_h3_quantum_sampling_scheduler::test_runtime_bad_control_or_source_change_stops_admission_and_drains[control]",
+    "tests.test_h3_quantum_sampling_scheduler::test_runtime_bad_control_or_source_change_stops_admission_and_drains[source]",
+    "tests.test_h3_quantum_sampling_scheduler::test_broken_journal_and_shutdown_interrupt_never_unlock_live_workers[signal]",
+    "tests.test_h3_quantum_sampling_scheduler::test_broken_journal_and_shutdown_interrupt_never_unlock_live_workers[unconfirmed_shutdown]",
+    "tests.test_water_preparation_extension::test_branch_matches_continuous_preparation_at_exact_source_refresh_boundary",
+    "tests.test_water_preparation_extension::test_split_restart_preserves_pending_refresh_and_rng[4]",
+    "tests.test_water_preparation_extension::test_split_restart_preserves_pending_refresh_and_rng[6]",
+    "tests.test_water_preparation_extension::test_no_com_projection_or_terminal_nve_draw_and_completed_resume_creates_no_context",
+    "tests.test_water_preparation_extension::test_config_preparation_is_read_only_and_source_hash_change_fails_before_context",
+    "tests.test_water_preparation_extension::test_self_consistent_altered_serialized_model_is_rejected",
+    "tests.test_water_preparation_extension::test_source_checkpoint_after_nve_draw_is_rejected",
+    "tests.test_water_preparation_extension::test_cpu_raw_checkpoint_and_independent_force_cache_bound",
+    "tests.test_water_preparation_extension::test_corrupted_saved_phase_cannot_resume",
+    "tests.test_water_rdf_sampling_noise::test_unordered_finite_pair_normalization_over_sphere",
+    "tests.test_water_rdf_sampling_noise::test_two_window_variance_and_strict_integer_tail",
+    "tests.test_water_rdf_sampling_noise::test_multiple_bins_and_chains_are_explicit_additional_assumptions",
+    "tests.test_water_rdf_sampling_noise::test_unoccupied_shell_has_no_count_noise",
+    "tests.test_water_rdf_sampling_noise::test_invalid_exposure_design_is_rejected[kwargs0]",
+    "tests.test_water_rdf_sampling_noise::test_invalid_exposure_design_is_rejected[kwargs1]",
+    "tests.test_water_rdf_sampling_noise::test_invalid_exposure_design_is_rejected[kwargs2]",
+    "tests.test_water_rdf_sampling_noise::test_registered_185_bin_uniform_null_demonstrates_multiplicity"
+  ],
+  "child_import_command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/new-stage-compatibility/run_checks.py",
+    "--label",
+    "py312",
+    "--probe"
+  ],
+  "completed_utc": "2026-11-01T18:39:45.601388+00:00",
+  "dependency_changes": 0,
+  "distinct_case_ids": 44,
+  "driver_sha256": "b474ee6546d5eadbaed3b7d02255a5cc683b513dacd695fb96bf5acdc9a4bb44",
+  "elapsed_seconds": 28.94435146199976,
+  "environment_distributions_unchanged": true,
+  "expected_distinct_cases": 44,
+  "guard_after": {
+    "all_unchanged": true,
+    "external_files": {
+      "changed": [],
+      "files_checked": 10
+    },
+    "integrated": {
+      "changed": [],
+      "files_checked": 791
+    },
+    "original": {
+      "changed": [],
+      "files_checked": 555
+    },
+    "owned_ABI_links": {
+      "changed": [],
+      "files_checked": 6
+    }
+  },
+  "guard_sha256": "2cefe28e3e07b0cf35f575dc996f21183cb6227f2b20489a89feedf3ca2a8470",
+  "junit_counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 44
+  },
+  "junit_sha256": "492b63f46d3d7d09f9da7285fcdae09191e4f863f6c7af157b1fc172aff61d0b",
+  "label": "py312",
+  "passed": true,
+  "pytest_arguments": [
+    "-ra",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_h3_quantum_sampling_scheduler.py",
+    "tests/test_water_preparation_extension.py",
+    "tests/test_water_rdf_sampling_noise.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/distribution-check/new-stage-compatibility/py312/pytest-tmp",
+    "--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/new-stage-compatibility/py312/pytest.xml"
+  ],
+  "pytest_exit_code": 0,
+  "requested_files": [
+    "tests/test_h3_quantum_sampling_scheduler.py",
+    "tests/test_water_preparation_extension.py",
+    "tests/test_water_rdf_sampling_noise.py"
+  ],
+  "schema": "pyrpmd.new-stage-python-method-gate.v1",
+  "selection_count_matches": true,
+  "selection_sha256": "f454ad91e81e427444cab5c7f314e27c7403c3d3e686c1b5c957a4ae977ffd35",
+  "source_head": "c2c5ae2dce253f1407e7de25ec343ef5e1844a73",
+  "source_state_note": "Eight frozen new source/test files and a root-frozen unrelated plot update copied after this HEAD; exact guards define the tested worktree.",
+  "started_utc": "2026-11-01T18:39:16.657039+00:00"
+}

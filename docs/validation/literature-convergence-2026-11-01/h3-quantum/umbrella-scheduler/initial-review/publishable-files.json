@@ -1,0 +1,52 @@
+{
+  "schema": "pyrpmd.publication-inventory.v1",
+  "status": "Superseded scheduling-only code and receipts; no production workers launched with these sources.",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/README.md",
+      "sha256": "45c9ba91d804c82943be85a250eac7120866c7f379b76d8e1652cf0ccd12455f",
+      "bytes": 7280
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/check-only.log",
+      "sha256": "34bbc10f93e9656a39d75b9c2c937a4b41791a663aad7cb7e5e7c599d552e17a",
+      "bytes": 352
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/execution.json",
+      "sha256": "b1875361b7837c5c2da9882a2b4acc6f8a484f7b73e9e245be7d0bc9395e803a",
+      "bytes": 3176
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/launch-plan.json",
+      "sha256": "9b01e8b3cc5f3216c6b47f1399d1ed163a3de4aa15d7af17958274a79eaef246",
+      "bytes": 2272
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/quantum_sampling_scheduler.py",
+      "sha256": "f429904e2b8eb7b7c35b29f51d0f28a63c55ec84be5caf50719eec0e94c1122e",
+      "bytes": 28876
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/source-and-receipts.json",
+      "sha256": "e7bc58f52487447ef0b94191ff9025f3e2179ed02ebc0839bfdfdf4f10cca629",
+      "bytes": 1453
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/test_h3_quantum_sampling_scheduler.py",
+      "sha256": "54c4eb94acc49fbe4a873da2e96c98e56290d2535a896dc9a8d34d84757d6c58",
+      "bytes": 21873
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/tests.log",
+      "sha256": "e5d97f9ddac4e249d497df2fb2090d205bbbd4d2fd85565dd853d87f641a4b5c",
+      "bytes": 100
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/initial-review/tests.xml",
+      "sha256": "7fc8df7ccfdd59acf370eda2ffe54a9b0d9cce0fa236b39910a1c1f25740f9de",
+      "bytes": 3942
+    }
+  ],
+  "include_this_manifest_separately": true
+}

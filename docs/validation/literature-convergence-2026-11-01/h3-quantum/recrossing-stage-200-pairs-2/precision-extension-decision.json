@@ -1,0 +1,75 @@
+{
+  "schema": "pyrpmd.h3.quantum-child-precision-extension-decision.v1",
+  "decided_utc": "2026-11-01T18:17:50.040180+00:00",
+  "status_at_decision": "complete_first_cohort_assessed_before_extra_pair_launch",
+  "complete_report_sha256": "a8ed2999ab575e4c60141a416909cc1bd46e206601265933c431e3a0f31ae084",
+  "complete_execution_sha256": "404decdcf5bdb387cc83b9b91f4bb5e01060afcbec41dc3e4391ba6d1c1fdfd3",
+  "protocol_sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589",
+  "analysis_source_sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+  "all_independent_seeds": [
+    721301,
+    721303,
+    721307,
+    721309,
+    721313,
+    721317,
+    721321,
+    721323
+  ],
+  "trigger": {
+    "criterion": "kappa_statistical_precision",
+    "passed": false,
+    "observed_relative_95_halfwidth": 0.03272199946508305,
+    "registered_maximum": 0.03
+  },
+  "time_and_timestep_equivalence_pass": true,
+  "all_original_gate_results_retained": {
+    "complete_registered_cohort": true,
+    "parent_sampling_flags": true,
+    "time_plateau_equivalence": true,
+    "timestep_equivalence": true,
+    "kappa_statistical_precision": false,
+    "no_sampled_static_domain_crossings": true,
+    "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+    "full_rate_95_log_halfwidth_at_most_5_percent": true,
+    "paper_full_rate_point_within_reported_5_percent": true,
+    "paper_qtst_point_within_reported_5_percent": true,
+    "paper_kappa_point_within_reported_5_percent": true
+  },
+  "extension": {
+    "pair_batch": 1,
+    "momentum_pair_indices": [
+      2,
+      3
+    ],
+    "parents_per_seed": 200,
+    "seeds": [
+      721301,
+      721303,
+      721307,
+      721309,
+      721313,
+      721317,
+      721321,
+      721323
+    ],
+    "timestep_fs": [
+      0.1,
+      0.05
+    ],
+    "horizon_fs": 200,
+    "workers": 2,
+    "new_children_per_timestep": 6400,
+    "combine_with_existing_pair_indices": [
+      0,
+      1
+    ],
+    "no_existing_raw_data_overwrite": true
+  },
+  "continuation_does_not_depend_on_paper_closeness": true,
+  "existing_paper_point_within_CI": true,
+  "existing_CI_inside_paper_5percent_band": true,
+  "rule": "If all-chain time/timestep equivalence passes but kappa relative 95% halfwidth exceeds 3%, append the same pair indices 2 and 3 to every parent, seed and timestep in a separately retained batch. Reevaluate gates on all four pairs; no extension based on closeness to a paper point.",
+  "native_source_or_PES_or_integration_or_sampling_parameters_changed": false,
+  "decision_is_immutable": true
+}
