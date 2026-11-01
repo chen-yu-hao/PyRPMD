@@ -142,8 +142,21 @@ strict restoration, unit conversion and actual propagation with both methods.
 
 The independently compiled reference compares complete matrices and adiabatic
 energies at reproducible molecular geometries, plus Cartesian derivatives from
-five-point differences of the original energies. Passing this check establishes
-implementation equivalence, not new accuracy against electronic-structure data.
+five-point differences of the original energies. It **passed in GitHub Actions**
+on 2026-11-01 using GNU Fortran 15.2.0 and 64 molecular geometries. Maximum
+absolute differences were `1.51094e-15` hartree for the complete diabatic matrix,
+`1.44329e-15` hartree for the adiabatic eigenvalues, and `3.43297e-12`
+hartree/bohr for the Cartesian matrix gradients. The gradient reference used a
+five-point step of `2e-4` bohr.
+
+The [completed molecular job](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/job/124801235314)
+tested PR head `c53fd1dff83917d4b3137abaebf03135880d9b68` through merge checkout
+`a04d478f0b52d938fafe45d427d4906703bc12c6`. The subsequent head `4cc1049` changed
+only workflow concurrency and API documentation; the physical implementation
+was identical. The [retained result](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/molecular_nonadiabatic/results/original_fortran_ci.json)
+contains the measured errors, source hash, compiler flags and complete CI
+provenance. This establishes implementation equivalence to the published
+kernel, without establishing new accuracy against electronic-structure data.
 
 The physical scope is the historical two-state NaH₂ fit. It omits spin-orbit
 coupling, higher electronic states and all other chemical compositions. It is

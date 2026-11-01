@@ -72,10 +72,29 @@ compares 64 reproducible geometries and checks the port's gradients against
 five-point differences of the original energy. Its JSON result contains the
 compiler, exact source identity, thresholds and measured errors.
 
-The local environment used above has no gfortran. This independent comparison
-was **not executed locally**; its availability alone is not reported as a pass.
-Run it in a compiler-equipped environment or the dedicated CI job and preserve
-the generated `nah2_fortran_comparison.json` as the independent result.
+The local environment used above has no gfortran. The independent comparison
+was subsequently **executed and passed in GitHub Actions** on 2026-11-01:
+[molecular-dpem job 124801235314](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/job/124801235314).
+It used GNU Fortran 15.2.0 on Ubuntu 26.04.1, with 64 deterministic molecular
+geometries and a Cartesian finite-difference step of `2e-4` bohr.
+
+| Quantity | Maximum absolute difference | Acceptance threshold |
+| --- | ---: | ---: |
+| Complete diabatic matrix, hartree | 1.510944147575799e-15 | 3e-12 |
+| Adiabatic eigenvalues, hartree | 1.4432899320127035e-15 | 3e-12 |
+| Cartesian matrix gradients, hartree/bohr | 3.4329694035412084e-12 | 3e-8 |
+
+The original JSON emitted by the comparison, supplemented with exact CI
+provenance, is retained in `results/original_fortran_ci.json`. The
+[uploaded artifact](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/artifacts/13076588517)
+also contains the CI result. The tested PR head was
+`c53fd1dff83917d4b3137abaebf03135880d9b68`; Actions checked out its merge commit
+`a04d478f0b52d938fafe45d427d4906703bc12c6` against the base branch. The
+[comparison to head 4cc1049](https://github.com/chen-yu-hao/PyRPMD/compare/c53fd1dff83917d4b3137abaebf03135880d9b68...4cc1049109a9b05a8fae0139b7eb67306040f81e)
+changes only workflow concurrency and API documentation, leaving the physical
+implementation and original-source comparison unchanged. This records the
+commit actually tested rather than attributing the completed job to a later
+commit. The same molecular job also completed the NaH2 NRPMD and RPSH CLI runs.
 
 These checks distinguish source equivalence, numerical integration and physical
 model accuracy. None certifies a converged chemical prediction.

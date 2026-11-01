@@ -299,7 +299,9 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
         if mapping:
             allowed |= {"electronic_backend", "electronic_device"}
         if not isinstance(execution, dict) or set(execution) - allowed:
-            raise InputError("Resume execution overrides accept only " + ", ".join(sorted(allowed)))
+            names = ("loop_backend, block_steps, electronic_backend and electronic_device"
+                     if mapping else "loop_backend and block_steps")
+            raise InputError("Resume execution overrides accept only " + names)
         if "loop_backend" in execution and execution["loop_backend"] not in ("auto", "native", "python"):
             raise InputError("loop_backend must be auto/native/python")
         if "block_steps" in execution:

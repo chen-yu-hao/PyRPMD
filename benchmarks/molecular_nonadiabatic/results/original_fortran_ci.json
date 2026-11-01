@@ -1,0 +1,73 @@
+{
+  "compilation_flags": [
+    "-O2",
+    "-fPIC",
+    "-shared",
+    "-std=legacy",
+    "-ffixed-line-length-72"
+  ],
+  "compiler": "GNU Fortran (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "difference_step_bohr": 0.0002,
+  "format": "PyRPMD.NaH2.original_fortran_comparison.v1",
+  "geometries": 64,
+  "geometry_seed": 20261101,
+  "gradient_reference": "five-point Cartesian differences of independently compiled original POT energies",
+  "max_eigenvalue_error_hartree": 1.4432899320127035e-15,
+  "max_gradient_error_hartree_per_bohr": 3.4329694035412084e-12,
+  "max_matrix_error_hartree": 1.510944147575799e-15,
+  "passed": true,
+  "physical_converged": false,
+  "scope": "implementation equivalence; not validation of chemical accuracy or nonadiabatic dynamics",
+  "source": {
+    "commit": "4716d22e87ae01770cad9ec995c4a02a8e479296",
+    "license": "Apache-2.0",
+    "native_units": "hartree,bohr",
+    "path": "chempotpy/NaH2/NaH2_LEPS_5G_1992_DPEM.f",
+    "repository": "https://github.com/shuyinan/chempotpy",
+    "sha256": "b98e2cb6a7355d868346b2a901441998705f9dead1dd233146285fd618d08f61",
+    "translation": "numpy_forward_derivative_v1"
+  },
+  "thresholds": {
+    "eigenvalues_hartree": 3e-12,
+    "gradient_hartree_per_bohr": 3e-8,
+    "matrix_hartree": 3e-12
+  },
+  "ci": {
+    "repository": "chen-yu-hao/PyRPMD",
+    "workflow": "PyRPMD tests",
+    "event": "pull_request",
+    "run_id": 41290725504,
+    "run_attempt": 1,
+    "run_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504",
+    "job": "molecular-dpem",
+    "job_id": 124801235314,
+    "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/job/124801235314",
+    "job_conclusion": "success",
+    "tested_head_commit": "c53fd1dff83917d4b3137abaebf03135880d9b68",
+    "tested_checkout_commit": "a04d478f0b52d938fafe45d427d4906703bc12c6",
+    "base_commit": "60a449680275bd78b75ce13aedcff2d3f769d0ca",
+    "result_origin": "JSON emitted by compare_fortran.py, retrieved from the completed GitHub Actions job log",
+    "command": "python benchmarks/molecular_nonadiabatic/compare_fortran.py --output \"$RUNNER_TEMP/nah2-original-fortran.json\"",
+    "runner": {
+      "os": "Ubuntu 26.04.1 LTS",
+      "python": "3.12.15",
+      "numpy": "2.5.4"
+    },
+    "artifact": {
+      "id": 13076588517,
+      "name": "molecular-nonadiabatic-reference",
+      "created_at": "2026-11-01T09:58:17Z",
+      "digest": "sha256:e0fa70547511ba5483cc169e263c884e4a6dc74505458058a1bef7b5ac560f61",
+      "url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/artifacts/13076588517"
+    },
+    "source_equivalence_check": {
+      "compared_head_commit": "4cc1049109a9b05a8fae0139b7eb67306040f81e",
+      "comparison_url": "https://github.com/chen-yu-hao/PyRPMD/compare/c53fd1dff83917d4b3137abaebf03135880d9b68...4cc1049109a9b05a8fae0139b7eb67306040f81e",
+      "changed_files": [
+        ".github/workflows/tests.yml",
+        "docs/manual/api.md"
+      ],
+      "physical_source_unchanged": true
+    }
+  }
+}

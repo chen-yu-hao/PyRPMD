@@ -1,0 +1,109 @@
+{
+  "format": "PyRPMD.electronic_backend_ci_log_summary.v1",
+  "source": {
+    "repository": "chen-yu-hao/PyRPMD",
+    "head_commit": "c53fd1dff83917d4b3137abaebf03135880d9b68",
+    "merge_commit": "a04d478f0b52d938fafe45d427d4906703bc12c6",
+    "skip_reason": "Two CUDA tests skipped because CUDA hardware was unavailable; one optional ASE test skipped because ASE was not installed.",
+    "workflow_run": 41290725504,
+    "job": 124801235327,
+    "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/job/124801235327",
+    "full_artifact": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41290725504/artifacts/13077551898"
+  },
+  "tests": {
+    "passed": 109,
+    "skipped": 3,
+    "warnings": 3,
+    "subtests_passed": 3
+  },
+  "benchmark_summary": {
+    "correctness_passed": true,
+    "output": "/home/runner/work/_temp/electronic-backends-torch-cpu.json",
+    "unavailable_backends": [],
+    "end_to_end": [
+      {
+        "case": "complex_lvc",
+        "rows": [
+          {
+            "backend": "numpy",
+            "driver": "NRPMDDynamics_scalar_loop",
+            "median_seconds": 0.053216766000000006,
+            "speedup_vs_numpy_scalar": 1
+          },
+          {
+            "backend": "numpy",
+            "driver": "BatchedNRPMDDynamics",
+            "median_seconds": 0.015098577,
+            "speedup_vs_numpy_scalar": 3.524621293781527
+          },
+          {
+            "backend": "native",
+            "driver": "NRPMDDynamics_scalar_loop",
+            "median_seconds": 0.062012925,
+            "speedup_vs_numpy_scalar": 0.8581560376324775
+          },
+          {
+            "backend": "native",
+            "driver": "BatchedNRPMDDynamics",
+            "median_seconds": 0.013735528,
+            "speedup_vs_numpy_scalar": 3.874388083224759
+          },
+          {
+            "backend": "torch",
+            "driver": "NRPMDDynamics_scalar_loop",
+            "median_seconds": 0.17673635000000001,
+            "speedup_vs_numpy_scalar": 0.30110821005412863
+          },
+          {
+            "backend": "torch",
+            "driver": "BatchedNRPMDDynamics",
+            "median_seconds": 0.027038577,
+            "speedup_vs_numpy_scalar": 1.9681792425688676
+          }
+        ]
+      },
+      {
+        "case": "nah2_5g",
+        "rows": [
+          {
+            "backend": "numpy",
+            "driver": "NRPMDDynamics_scalar_loop",
+            "median_seconds": 0.308289858,
+            "speedup_vs_numpy_scalar": 1
+          },
+          {
+            "backend": "numpy",
+            "driver": "BatchedNRPMDDynamics",
+            "median_seconds": 0.03029553,
+            "speedup_vs_numpy_scalar": 10.176083996549986
+          },
+          {
+            "backend": "native",
+            "driver": "NRPMDDynamics_scalar_loop",
+            "median_seconds": 0.320301076,
+            "speedup_vs_numpy_scalar": 0.9625002258812269
+          },
+          {
+            "backend": "native",
+            "driver": "BatchedNRPMDDynamics",
+            "median_seconds": 0.029552408000000002,
+            "speedup_vs_numpy_scalar": 10.431970822817553
+          },
+          {
+            "backend": "torch",
+            "driver": "NRPMDDynamics_scalar_loop",
+            "median_seconds": 0.44717533400000004,
+            "speedup_vs_numpy_scalar": 0.6894160624700288
+          },
+          {
+            "backend": "torch",
+            "driver": "BatchedNRPMDDynamics",
+            "median_seconds": 0.040990005,
+            "speedup_vs_numpy_scalar": 7.521098326287103
+          }
+        ]
+      }
+    ]
+  },
+  "scope": "Exact numerical and timing summary parsed from the successful GitHub Actions job log. Full samples, environment and code identities are in the linked workflow artifact. This is CPU Torch validation, not CUDA hardware validation."
+}
