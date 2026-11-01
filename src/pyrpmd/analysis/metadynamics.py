@@ -21,6 +21,7 @@ def _cv_signature(cv):
                       PeriodicDistance, SurfaceHeight, SurfaceLateral)
     from ..cv_periodic import (PeriodicAngle, PeriodicBondDifference,
                                LinearProjection, FractionalCoordinate)
+    from ..advanced_cv import Dihedral, CoordinationNumber, RMSD, PathCV, TorchScriptCV
 
     kind = type(cv)
     if kind is CVStack:
@@ -51,6 +52,19 @@ def _cv_signature(cv):
                       tuple(cv.reference_difference), tuple(cv.paths))
     elif kind is RateSurface:
         parameters = (_cv_signature(cv.coordinate), cv.xi)
+    elif kind in (Dihedral, CoordinationNumber):
+        geometry = cv._geometry
+        cell = None if geometry.cell is None else tuple(geometry.cell.ravel())
+        selection = cv.atoms if kind is Dihedral else (cv.group_a, cv.group_b, cv.r0, cv.exponent)
+        parameters = (selection, cell, tuple(geometry.pbc))
+    elif kind is RMSD:
+        parameters = (cv.reference.shape, tuple(cv.reference.ravel()), cv.atoms,
+                      tuple(cv.weights), cv.align)
+    elif kind is PathCV:
+        parameters = (tuple(_cv_signature(reference) for reference in cv.references),
+                      cv.path_lambda, cv.scale, cv.component)
+    elif kind is TorchScriptCV:
+        parameters = (cv.model_sha256, cv.dimension, cv.device)
     else:
         # A plugin may have arbitrary mutable parameters and external state.
         # Introspection cannot establish equality of its mathematical mapping.

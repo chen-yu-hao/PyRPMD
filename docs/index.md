@@ -22,7 +22,7 @@ go straight to your task:
 | Standard or well-tempered metadynamics | `metadynamics` | [Gas phase and free energy](manual/workflows.md) |
 | OPES probability-based sampling | `opes` | [OPES](opes.md) |
 | Replica-exchange umbrellas | `fes` + `[replica_exchange]` | [Replica exchange](replica-exchange.md) |
-| Optional PLUMED centroid biases | Python API | [PLUMED bridge](plumed.md) |
+| Optional PLUMED centroid biases | `plumed` / Python API | [PLUMED bridge](plumed.md) |
 | Transition-interface path ensembles | Python API | [Transition-interface sampling](transition-interface-sampling.md) |
 | Equilibrium nuclear quantum statistics and energy estimators | `pimd` | [Materials and surfaces](manual/periodic.md) |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | [Materials and surfaces](manual/periodic.md) |
@@ -34,13 +34,19 @@ go straight to your task:
 | Temperature, isotope and numerical convergence scans | `pyrpmd study` | [Rate studies](rate-studies.md) |
 | Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
 | Higher-order equilibrium sampling and quantum estimators | Python API | [Quantum statistics](quantum-statistics.md) |
+| PA-CMD and relative IR/Raman/SFG spectra | `spectroscopy` | [Spectroscopy](tier2-spectroscopy.md) |
+| Suzuki–Chin, bosonic exchange and PIGS | `pimd` + `[path_integral]` | [Path-integral actions](tier2-path-integral.md) |
+| Thermal nonadiabatic population-flux calculation | `nonadiabatic-rate` command | [Direct data and rates](tier2-nonadiabatic.md) |
+| Method coverage, ML lifecycle and remaining gaps | Input / Python APIs | [Tier 2 overview](tier2-methods.md) |
 
 The examples use analytic model potentials so they run in seconds. Before a production study,
 work through [Scientific conventions and convergence](manual/science.md).
 
 ## The basic cycle
 
-Every task uses the same four commands. Give each new calculation its own output directory.
+Most input workflows use the same four commands. PLUMED cannot automatically restore its
+opaque kernel state; the thermal nonadiabatic rate command uses a separate input schema.
+Give each new calculation its own output directory.
 To create a ready input first, use `pyrpmd init my-first-run` and follow the
 [Quickstart](manual/quickstart.md). In the template below, `job.inp` is your own input file.
 
@@ -103,6 +109,11 @@ General-coordinate rates <general-coordinate-rates>
 Rate studies <rate-studies>
 Instantons <instanton>
 Quantum statistics <quantum-statistics>
+Tier 2 coverage <tier2-methods>
+PA-CMD and property spectra <tier2-spectroscopy>
+Main-engine path-integral actions <tier2-path-integral>
+Direct nonadiabatic data and rates <tier2-nonadiabatic>
+ML model lifecycle <tier2-ml-lifecycle>
 ```
 
 ```{toctree}
@@ -114,6 +125,7 @@ Replica exchange <replica-exchange>
 OPES <opes>
 PLUMED bridge <plumed>
 Transition-interface sampling <transition-interface-sampling>
+Extended CVs and sampling methods <tier2-sampling>
 ```
 
 ```{toctree}

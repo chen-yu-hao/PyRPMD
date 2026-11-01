@@ -1,11 +1,14 @@
-"""Fixed-bandwidth, uncompressed on-the-fly probability enhanced sampling.
+"""Uncompressed on-the-fly probability enhanced sampling.
 
 This implements the OPES_METAD probability/bias equations, not a sum of
 metadynamics hills. See Invernizzi & Parrinello, J. Phys. Chem. Lett. 11,
 2731 (2020), doi:10.1021/acs.jpclett.0c00497. The kernel-center estimate of
 Z follows the algorithm described by PLUMED's OPES implementation. Kernels
-are normalized, smooth wrapped Gaussians; bandwidth adaptation, kernel
-compression and shared walkers are deliberately absent.
+are normalized, smooth wrapped Gaussians. The optional explore mode estimates
+the sampled target density with unweighted kernels. Optional adaptive widths
+use online observed fluctuations and a Scott/ESS factor, storing each kernel's
+own width. This explicit rule is not PLUMED's diffusion-window adaptation.
+Kernel compression and shared walkers are absent.
 """
 
 from __future__ import annotations
@@ -42,8 +45,14 @@ class OPESBias:
     history_dependent = True
     method = "opes_metad_fixed_bandwidth"
 
-    def __init__(self, cv, sigma, beta, *, barrier, bias_factor=10.0, state=None):
+    def __init__(self, cv, sigma, beta, *, barrier, bias_factor=10.0, state=None,
+                 mode="metad", adaptive_sigma=False, sigma_min=None):
         self.cv = cv
+        if mode not in ("metad", "explore") or not isinstance(adaptive_sigma, (bool, np.bool_)):
+            raise ValueError("OPES mode must be metad/explore and adaptive_sigma must be boolean")
+        self.mode, self.adaptive_sigma = mode, bool(adaptive_sigma)
+        if mode != "metad" or adaptive_sigma:
+            self.method = "opes_" + mode + ("_adaptive_bandwidth" if adaptive_sigma else "_fixed_bandwidth")
         self.sigma = np.atleast_1d(np.asarray(sigma, float)).copy()
         with np.errstate(over="ignore", divide="ignore", invalid="ignore", under="ignore"):
             representable = np.isfinite(self.sigma**2).all() and np.isfinite(1.0 / self.sigma**2).all()
@@ -52,11 +61,23 @@ class OPESBias:
                 or not representable):
             raise ValueError("OPES sigma needs one positive representable width per CV (one or two dimensions)")
         self.sigma.flags.writeable = False
+        if sigma_min is not None and not adaptive_sigma:
+            raise ValueError("sigma_min requires adaptive_sigma=True")
+        self.sigma_min = (None if not adaptive_sigma else
+                          np.atleast_1d(np.asarray(self.sigma * 0.01 if sigma_min is None else sigma_min, float)).copy())
+        if self.sigma_min is not None:
+            with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
+                valid = np.isfinite(self.sigma_min**2).all() and np.isfinite(1 / self.sigma_min**2).all()
+            if (self.sigma_min.shape != self.sigma.shape or not valid or np.any(self.sigma_min <= 0)
+                    or np.any(self.sigma_min > self.sigma)):
+                raise ValueError("sigma_min needs positive representable widths no greater than initial sigma")
+            self.sigma_min.flags.writeable = False
         self.beta, self.barrier, self.bias_factor = map(float, (beta, barrier, bias_factor))
         if (not np.isfinite([self.beta, self.barrier, self.bias_factor]).all()
                 or self.beta <= 0 or self.barrier <= 0 or self.bias_factor <= 1):
             raise ValueError("OPES beta/barrier must be positive and finite; bias_factor must be finite and > 1")
-        self.prefactor = (1.0 - 1.0 / self.bias_factor) / self.beta
+        self.prefactor = ((self.bias_factor - 1.0) if mode == "explore"
+                          else (1.0 - 1.0 / self.bias_factor)) / self.beta
         self.log_epsilon = -self.barrier / self.prefactor
         if not np.isfinite(self.log_epsilon):
             raise ValueError("OPES barrier/beta combination is not representable")
@@ -74,6 +95,10 @@ class OPESBias:
         self._log_center_sums = np.empty(0)
         self._steps = np.empty(0, dtype=np.int64)
         self._times = np.empty(0)
+        self._sigmas = np.empty((0, cv.dimension))
+        self._mean = np.zeros(cv.dimension)
+        self._m2 = np.zeros(cv.dimension)
+        self._last_unwrapped = np.zeros(cv.dimension)
         self.log_z = 0.0
         if state is not None:
             self._load_state(state)
@@ -95,13 +120,13 @@ class OPESBias:
             raise ValueError("OPES values must be finite [...,D]")
         return values
 
-    def _kernel(self, values, centers, *, gradient=False):
+    def _fixed_kernel(self, values, centers, *, gradient=False, sigma=None):
         """Log normalized product kernel and its logarithmic derivative."""
         with np.errstate(over="ignore"):
             delta = values[..., None, :] - centers
         logs = np.zeros(delta.shape[:-1])
         scores = np.empty_like(delta) if gradient else None
-        for j, (sigma, period) in enumerate(zip(self.sigma, self.periods)):
+        for j, (sigma, period) in enumerate(zip(self.sigma if sigma is None else sigma, self.periods)):
             d = delta[..., j]
             if period is None:
                 with np.errstate(over="ignore"):
@@ -144,6 +169,46 @@ class OPESBias:
                         np.multiply(weights, -shifts / sigma**2, out=products, where=weights > 0)
                     scores[..., j] = np.sum(products, axis=-1)
         return logs, scores
+
+    def _kernel(self, values, centers, *, gradient=False, sigmas=None):
+        if not self.adaptive_sigma:
+            return self._fixed_kernel(values, centers, gradient=gradient)
+        sigmas = self._sigmas if sigmas is None else sigmas
+        if np.shape(sigmas) != np.shape(centers):
+            raise ValueError("adaptive OPES kernel widths must match centers")
+        logs = np.empty(values.shape[:-1] + (len(centers),))
+        scores = np.empty(logs.shape + (self.cv.dimension,)) if gradient else None
+        for index, (center, width) in enumerate(zip(centers, sigmas)):
+            local, derivative = self._fixed_kernel(values, center[None], gradient=gradient, sigma=width)
+            logs[..., index] = local[..., 0]
+            if gradient:
+                scores[..., index, :] = derivative[..., 0, :]
+        return logs, scores
+
+    def _adapt(self, center, weights):
+        """Welford observed fluctuation, then d-dimensional Scott/ESS scaling."""
+        n = len(weights)
+        if n == 1:
+            return self.sigma.copy(), center.copy(), np.zeros_like(center), center.copy()
+        delta = center - self._centers[-1]
+        for j, period in enumerate(self.periods):
+            if period is not None:
+                delta[j] = (delta[j] + period / 2) % period - period / 2
+        unwrapped = self._last_unwrapped + delta
+        increment = unwrapped - self._mean
+        mean = self._mean + increment / n
+        m2 = self._m2 + increment * (unwrapped - mean)
+        width = self.sigma.copy()
+        if n >= 3:
+            neff = 1.0 / np.sum(normalized_weights(weights)**2)
+            factor = (4.0 / (self.cv.dimension + 2) / max(neff, 1.0)) ** (1.0 / (self.cv.dimension + 4))
+            width = np.maximum(np.sqrt(np.maximum(m2, 0.0) / (n - 1)) * factor, self.sigma_min)
+        if not all(np.isfinite(x).all() for x in (width, mean, m2, unwrapped)):
+            raise ValueError("adaptive OPES fluctuation is not representable")
+        with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
+            if not np.isfinite(width**2).all() or not np.isfinite(1 / width**2).all():
+                raise ValueError("adaptive OPES width is not representable")
+        return width, mean, m2, unwrapped
 
     def _probability(self, values, *, gradient=False):
         values = self._values(values)
@@ -221,37 +286,59 @@ class OPESBias:
             if period is not None:
                 center[j] = (center[j] + period / 2) % period - period / 2
         before = float(self.physical_energy(center))
-        log_weight = self.beta * before
+        log_weight = 0.0 if self.mode == "explore" else self.beta * before
         centers = np.concatenate((self._centers, center[None]))
         weights = np.append(self._log_weights, log_weight)
-        pair_logs, _ = self._kernel(center, centers)
-        # K is symmetric at fixed bandwidth. Column sums update in O(n).
-        center_sums = np.append(np.logaddexp(self._log_center_sums, pair_logs[:-1]),
-                                logsumexp(pair_logs))
+        if self.adaptive_sigma:
+            width, mean, m2, last = self._adapt(center, weights)
+            sigmas = np.concatenate((self._sigmas, width[None]))
+            old_at_new, _ = self._kernel(center, self._centers)
+            new_at_all, _ = self._fixed_kernel(centers, center[None], sigma=width)
+            center_sums = np.append(np.logaddexp(self._log_center_sums, old_at_new),
+                                    logsumexp(new_at_all[..., 0]))
+        else:
+            pair_logs, _ = self._kernel(center, centers)
+            # K is symmetric at fixed bandwidth. Column sums update in O(n).
+            center_sums = np.append(np.logaddexp(self._log_center_sums, pair_logs[:-1]),
+                                    logsumexp(pair_logs))
         log_z = float(logsumexp(weights + center_sums) - logsumexp(weights) - np.log(len(weights)))
         if not np.isfinite(log_weight) or not np.isfinite(log_z):
             raise ValueError("OPES update produced an invalid normalization")
         self._centers, self._log_weights = centers, weights
         self._log_center_sums, self.log_z = center_sums, log_z
         self._steps, self._times = np.append(self._steps, step), np.append(self._times, time)
+        if self.adaptive_sigma:
+            self._sigmas, self._mean, self._m2, self._last_unwrapped = sigmas, mean, m2, last
         return {"step": int(step), "time": float(time), "center": center.tolist(),
                 "log_weight": log_weight, "bias_before": before, "log_z": log_z,
                 "weight_effective_sample_size": self.effective_sample_size}
 
     def state_dict(self):
         """Detached, JSON-compatible restart state, including exact accumulators."""
-        return {"schema_version": 1, "method": self.method, "sigma": self.sigma.tolist(),
+        state = {"schema_version": 1, "method": self.method, "sigma": self.sigma.tolist(),
                 "beta": self.beta, "barrier": self.barrier, "bias_factor": self.bias_factor,
                 "periods": list(self.periods), "centers": self._centers.tolist(),
                 "log_weights": self._log_weights.tolist(), "steps": self._steps.tolist(),
                 "times": self._times.tolist(), "log_center_sums": self._log_center_sums.tolist(),
                 "log_z": self.log_z}
+        if self.mode != "metad" or self.adaptive_sigma:
+            state.update(mode=self.mode, adaptive_sigma=self.adaptive_sigma)
+        if self.adaptive_sigma:
+            state.update(sigma_min=self.sigma_min.tolist(), kernel_sigmas=self._sigmas.tolist(),
+                         adaptive_mean=self._mean.tolist(), adaptive_m2=self._m2.tolist(),
+                         adaptive_last_unwrapped=self._last_unwrapped.tolist())
+        return state
 
     def _load_state(self, state):
         if not isinstance(state, Mapping) or set(state) != set(self.state_dict()):
             raise ValueError("invalid OPES state fields")
         current = self.state_dict()
-        for key in ("schema_version", "method", "sigma", "beta", "barrier", "bias_factor", "periods"):
+        identity = ["schema_version", "method", "sigma", "beta", "barrier", "bias_factor", "periods"]
+        if self.mode != "metad" or self.adaptive_sigma:
+            identity += ["mode", "adaptive_sigma"]
+        if self.adaptive_sigma:
+            identity += ["sigma_min"]
+        for key in identity:
             if state[key] != current[key]:
                 raise ValueError("OPES state parameters differ: " + key)
         centers = np.asarray(state["centers"], float)
@@ -272,12 +359,34 @@ class OPESBias:
         log_z = float(state["log_z"])
         if not np.isfinite(log_z):
             raise ValueError("invalid OPES normalization")
+        sigmas = None
+        if self.mode == "explore" and np.any(log_weights != 0):
+            raise ValueError("OPES explore requires unweighted kernels")
+        if self.adaptive_sigma:
+            sigmas = np.asarray(state["kernel_sigmas"], float).reshape(-1, self.cv.dimension)
+            if sigmas.shape != centers.shape or not np.isfinite(sigmas).all() or np.any(sigmas < self.sigma_min):
+                raise ValueError("invalid adaptive OPES kernel widths")
+            # Recompute the recurrence rather than trusting its restart caches.
+            replay = OPESBias(self.cv, self.sigma, self.beta, barrier=self.barrier, bias_factor=self.bias_factor,
+                              mode=self.mode, adaptive_sigma=True, sigma_min=self.sigma_min)
+            for index, center in enumerate(centers):
+                width, mean, m2, last = replay._adapt(center, log_weights[:index + 1])
+                if not np.allclose(width, sigmas[index], rtol=1e-12, atol=1e-12):
+                    raise ValueError("adaptive OPES kernel width disagrees with history")
+                replay._centers = centers[:index + 1]
+                replay._mean, replay._m2, replay._last_unwrapped = mean, m2, last
+            for key, expected in (("adaptive_mean", replay._mean), ("adaptive_m2", replay._m2),
+                                  ("adaptive_last_unwrapped", replay._last_unwrapped)):
+                value = np.asarray(state[key], float)
+                if value.shape != (self.cv.dimension,) or not np.isfinite(value).all() or not np.allclose(value, expected, rtol=1e-12, atol=1e-12):
+                    raise ValueError("inconsistent adaptive OPES recurrence state")
         # Validate cached sums against the kernel representation in bounded
         # chunks, then retain their saved bits for deterministic continuation.
         chunk = max(1, 65536 // max(n, 1))
         for start in range(0, n, chunk):
-            logs, _ = self._kernel(centers[start:start + chunk], centers)
-            if not np.allclose(logsumexp(logs, axis=-1), sums[start:start + chunk], rtol=0, atol=1e-10):
+            logs, _ = self._kernel(centers, centers[start:start + chunk],
+                                   sigmas=None if sigmas is None else sigmas[start:start + chunk])
+            if not np.allclose(logsumexp(logs, axis=0), sums[start:start + chunk], rtol=0, atol=1e-10):
                 raise ValueError("OPES state kernel normalization is inconsistent")
         expected_z = float(logsumexp(log_weights + sums) - logsumexp(log_weights) - np.log(n)) if n else 0.0
         if not np.isclose(log_z, expected_z, rtol=0, atol=1e-10):
@@ -285,3 +394,19 @@ class OPESBias:
         self._centers, self._log_weights = centers.copy(), log_weights.copy()
         self._steps, self._times = raw_steps.astype(np.int64), times.copy()
         self._log_center_sums, self.log_z = sums.copy(), log_z
+        if self.adaptive_sigma:
+            self._sigmas = sigmas.copy()
+            self._mean = np.asarray(state["adaptive_mean"], float).copy()
+            self._m2 = np.asarray(state["adaptive_m2"], float).copy()
+            self._last_unwrapped = np.asarray(state["adaptive_last_unwrapped"], float).copy()
+
+
+class OPESExploreBias(OPESBias):
+    """OPES-explore with literal kernel widths in the declared CV units.
+
+    Unlike PLUMED's SIGMA input convention, sigma is not divided by sqrt(gamma).
+    The kernel width used is exactly the supplied width (before adaptation).
+    """
+
+    def __init__(self, cv, sigma, beta, **kwargs):
+        super().__init__(cv, sigma, beta, mode="explore", **kwargs)

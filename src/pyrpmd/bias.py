@@ -152,6 +152,7 @@ class MetadynamicsBias:
 
     history_dependent = True
     _signed_bias_before = False
+    _shared_clocks = False
 
     def __init__(self, cv, sigma, height, beta, *, mode="well_tempered",
                  bias_factor=None, hills=None):
@@ -275,7 +276,21 @@ class MetadynamicsBias:
             raise ValueError("invalid metadynamics hill height/time/bias")
         if isinstance(step, (bool, np.bool_)) or not isinstance(step, (int, np.integer)) or step < 1:
             raise ValueError("metadynamics hill step must be a positive integer")
-        if self._hills and (step <= self._hills[-1]["step"] or time <= self._hills[-1]["time"]):
+        extra = {}
+        if self._shared_clocks:
+            walker = hill.get("walker")
+            if isinstance(walker, (bool, np.bool_)) or not isinstance(walker, (int, np.integer)) or not 0 <= walker < self.walkers:
+                raise ValueError("shared hill requires an in-range walker index")
+            last = self._hills[-1] if self._hills else None
+            same = last is not None and step == last["step"] and time == last["time"]
+            if same:
+                if walker != last["walker"] + 1:
+                    raise ValueError("shared hills must contain each walker in order")
+            elif (walker != 0 or (last is not None and
+                    (last["walker"] != self.walkers-1 or step <= last["step"] or time <= last["time"]))):
+                raise ValueError("shared deposition clocks must increase between complete walker batches")
+            extra["walker"] = int(walker)
+        elif self._hills and (step <= self._hills[-1]["step"] or time <= self._hills[-1]["time"]):
             raise ValueError("metadynamics hill clocks must strictly increase")
         count = self.hill_count
         if count == len(self._heights):
@@ -285,7 +300,7 @@ class MetadynamicsBias:
             self._centers, self._heights = centers, heights
         self._centers[count], self._heights[count] = center, height
         self._hills.append({"center": center.tolist(), "height": height,
-                           "step": int(step), "time": time, "bias_before": before})
+                           "step": int(step), "time": time, "bias_before": before, **extra})
 
     def truncate_history(self, count):
         """Discard hills after ``count``, for transactional step rollback."""

@@ -7,7 +7,7 @@
 **一个输入文件完成环聚合物分子动力学——从过渡态到经回穿校正的速率，支持带科学指纹的检查点续跑。**
 
 给 PyRPMD 一个过渡态和一个势能，它会自动搭建完整的 Bennett–Chandler 计算：数值 Hessian 与双向下降识别反应通道，伞抽样
-给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动 11 类任务，从气相速率、直接碰撞到自由能面、
+给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动 13 类任务，从气相速率、直接碰撞到自由能面、
 metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核为 C++17/OpenMP，并配有 NumPy 参考实现。
 
 ## 为什么选择 PyRPMD
@@ -27,6 +27,13 @@ metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核�
 [TRPMD、相关函数及相对 IR 谱](docs/trpmd-spectroscopy.md)。
 [文献速率比较工具](benchmarks/published_rates/README.md)检查模型身份、统计约定和收敛证据。
 这些扩展指南目前提供英文版。
+
+## Tier 2 方法扩展
+
+[覆盖范围与限制](docs/tier2-methods.md)列出每项功能的实际入口：PA-CMD、二次质心势拟合与相对 Raman/SFG 谱，
+主引擎中的 Suzuki–Chin 力、二次复杂度玻色交换及 PIGS，更多 CV、共享 MetaD 与 OPES 变体，
+直接绝热电子结构接口、双态 MASH、热 NRPMD 速率命令，以及委员会不确定度、候选数据收集和 Δ-learning/RPC。
+文档明确区分输入工作流与 Python API；完整 QCMD/h-CMD、RETIS minus ensemble 和经过真实体系验证的量化软件桥接仍未实现。
 
 
 ## 安装

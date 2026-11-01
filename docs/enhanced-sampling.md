@@ -6,10 +6,13 @@ Probability-based [OPES](opes.md), the optional [PLUMED bridge](plumed.md),
 and [transition-interface path sampling](transition-interface-sampling.md)
 have separate guides, examples and estimator contracts.
 
-These workflows sample ring-polymer configuration distributions. Biased
-trajectory time is not a reaction rate, and no infrequent-metadynamics rate
-estimator is provided. Production rate coefficients still use the rate
-workflow with its prescribed PMF measure and unbiased recrossing dynamics.
+These workflows sample ring-polymer configuration distributions. Their ordinary
+saved trajectories do not establish a reaction rate. A separate
+[biased-kinetics API](tier2-sampling.md#kinetics-from-audited-biased-trajectories)
+can rescale an audited infrequent-MetaD or OPES-flooding history with an explicit
+transition-region bias reference. It does not convert these standard FES runs
+to kinetics automatically. The gas-phase rate workflow retains its prescribed
+PMF measure and unbiased recrossing dynamics.
 
 ## Adaptive umbrella placement
 
@@ -277,8 +280,10 @@ periodic seams. The default spacing is at most `sigma/5`; grid refinement is
 a separate numerical convergence check. Nonperiodic values outside the domain
 raise an error and roll back the step. See [grid settings and cost](grid-metadynamics.md).
 
-`sampling.replicas` creates independent metadynamics runs that can use ordinary
-task parallelism. They do not share hills. A checkpoint atomically saves q/p,
+By default, `sampling.replicas` creates independent metadynamics runs that can
+use ordinary task parallelism. They do not share hills. Set
+`metadynamics.shared_walkers=true` to select the synchronous shared history
+described below. An independent-run checkpoint atomically saves q/p,
 RNG, NHC chain positions/momenta, absolute and production clocks, accumulated hills, observations and
 propagation counts, with the common checkpoint checksum envelope. Failed steps
 restore q/p, RNG and the entire thermostat before saving the valid prefix.
@@ -341,6 +346,30 @@ performs the full Gaussian sum without a grid approximation or cutoff.
 append and `truncate_hills(count)` to roll back; editing a returned dictionary
 or list does not change the live bias. Checkpoint JSON/HILLS formats are unchanged.
 
+### Shared multiple walkers
+
+Add `shared_walkers=true` to the existing `[metadynamics]` table and set
+`sampling.replicas` to the number of walkers (at least two). This mode uses a
+serial coordinator, direct Gaussian hills, and either PILE-L or Andersen
+sampling. It supports standard and well-tempered metadynamics; bias grids and
+Nose–Hoover chains are not supported in the shared workflow.
+
+Every walker advances against the same fixed history. At each common deposition
+step, all well-tempered heights are calculated from that history before any new
+hill is added. Each walker contributes the configured height, so total
+deposition per event grows with walker count. There is no implicit division of
+the height by the number of walkers.
+
+One atomic ensemble checkpoint retains every walker's q/p, RNG and clock,
+the complete ordered hill batches, and saved observations. A failure in a later
+walker rolls back the entire step. `pyrpmd resume` continues that ensemble, and
+`pyrpmd analyze RUN --recompute` can reanalyze its saved shared history.
+The output reports one correlated bias history and pools occupancy across the
+walkers. Their spread is not an independent-replica uncertainty estimate;
+uncertainty remains unavailable until an appropriate independent-run or joint
+resampling analysis is supplied. The Python building block is
+`pyrpmd.shared_metadynamics.SharedMetadynamicsBias`.
+
 ### Free-energy estimate and limits
 
 `analysis.method="bias_estimate"` exports `fes.npz` and `fes.csv`:
@@ -379,9 +408,11 @@ umbrella PMF or supply a rate from biased trajectory times.
 
 `analysis.bootstrap` must be zero; fixed-umbrella MBAR and ordinary equilibrium
 bootstrap are not applied to these evolving-bias samples. Time-dependent
-trajectory reweighting, well-tempered time-averaged estimators, automatic
-convergence certification and infrequent-metadynamics kinetics are not
-implemented. A periodic analysis range must span exactly one period.
+trajectory reweighting, well-tempered time-averaged estimators and automatic
+convergence certification are not implemented. Infrequent-metadynamics
+kinetics requires the separate audited-history API linked above; these sparse
+FES samples do not supply its interval-resolved acceleration clock. A periodic
+analysis range must span exactly one period.
 The default limit is ten million output grid bins; `analysis.max_grid_points`
 sets an explicit positive limit. Memory grows with the grid and replica count;
 the direct hill sum is chunked but is not a grid-accelerated dynamics engine.

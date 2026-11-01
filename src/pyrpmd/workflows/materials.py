@@ -56,6 +56,10 @@ def _indices(value, size, name, *, default=None):
 
 def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
+    from ..potentials.lifecycle import active_learning_options
+    active_learning_options(config)
+    if _rpc_details(config) is not None and "barostat" in config:
+        raise ValueError("delta RPC does not provide a pressure virial; use fixed-cell sampling")
     if config.get("sampling", {}).get("engine", "legacy") == "native":
         from .native_pimd import resolve_native_pimd
         return resolve_native_pimd(config, system)
@@ -199,13 +203,42 @@ def validate_materials(config, system):
     resolve_materials(config, system)
 
 
+def _rpc_details(config):
+    """Name the sampled split Hamiltonian without loading its model files."""
+    potential = config.get("potential", {})
+    if isinstance(potential, Mapping):
+        if potential.get("provider", potential.get("type")) != "delta" or "contracted_beads" not in potential:
+            return None
+        beads = checked_integer(potential.get("nbeads", config["beads"]), "potential.nbeads")
+        contracted = checked_integer(potential["contracted_beads"], "potential.contracted_beads")
+    else:
+        metadata = getattr(potential, "metadata", {})
+        if metadata.get("provider") != "ring-polymer-split":
+            return None
+        beads, contracted = metadata["nbeads"], metadata["contracted_beads"]
+    if beads != config["beads"] or contracted > beads:
+        raise ValueError("RPC nbeads must equal the simulation bead count and 1 <= contracted_beads <= nbeads")
+    return {"nbeads": beads, "contracted_beads": contracted,
+            "approximate_hamiltonian": contracted < beads,
+            "potential_energy": "U_RPC/P; U_RPC=sum_j V_reference(q_j)+(P/Pc)sum_a delta_V((Tq)_a)",
+            "force": "negative_gradient_of_U_RPC_on_the_full_ring",
+            "full_target_recomputed": False,
+            "per_bead_physical_energies_available": contracted == beads}
+
+
 def quantum_observables(state, potential, masses, beta, mobile_mask=None):
-    """Physical quantum estimators, distinct from the diagnostic H_P.
+    """Thermodynamic estimators of the supplied Hamiltonian, apart from H_P.
 
     For the sum-beads Hamiltonian sampled at beta/P, K_primitive =
     3N_mobile*P/(2 beta) - H_spring/P and K_cv = 3N_mobile/(2 beta)
     - sum((q-q_centroid)*F)/(2P). No fictitious-momentum kinetic energy
     enters the quantum internal energy estimator.
+
+    The full ring is evaluated once. For a beta-independent SplitPotential,
+    these are estimators of its contracted partition function: U_RPC/P and
+    the lifted gradient of U_RPC enter the expressions. They do not restore
+    the full-bead target PES, and the distributed energy rows are never used
+    as physical bead energies. Workflow exports label this scope explicitly.
     """
     q, p = state.q, state.p
     result = validate_result(potential.evaluate(q), q.shape)
@@ -340,6 +373,17 @@ def _read_stream(config, system, output, replica, options=None, *, materialize=T
             "storage": "stream" if kind == STREAM_CHECKPOINT_KIND else "memory",
             "barostat": json.loads(str(saved["barostat"])) if "barostat" in saved else None,
         }
+        if "active_learning" in config:
+            if "active_learning" not in saved:
+                raise ValueError("materials checkpoint is missing active-learning provenance")
+            from ..potentials.lifecycle import ActiveLearningMonitor, active_learning_options
+            metadata = json.loads(str(saved["active_learning"]))
+            if not isinstance(metadata, dict) or set(metadata) != {"identity", "model_identity"}:
+                raise ValueError("invalid active-learning checkpoint provenance")
+            ActiveLearningMonitor.audit_records(_active_learning_directory(config, output, replica),
+                expected_identity=metadata["identity"], model_identity=metadata["model_identity"],
+                through_step=elapsed, **active_learning_options(config))
+            result["active_learning"] = metadata
         if (result["barostat"] is None) != (options["barostat"] is None):
             raise ValueError("materials checkpoint is missing or has unexpected barostat state")
         if result["barostat"] is not None:
@@ -418,6 +462,13 @@ def _read_stream(config, system, output, replica, options=None, *, materialize=T
     return result
 
 
+def _active_learning_directory(config, output, replica):
+    directory = Path(config["active_learning"].get("directory", "active_learning"))
+    if not directory.is_absolute():
+        directory = Path(output) / directory
+    return directory / f"replica_{replica:04d}"
+
+
 def _sample_replica(task):
     config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
     options = resolve_materials(config, system)
@@ -436,6 +487,8 @@ def _sample_replica(task):
                        rng=json.dumps(saved["rng"]), propagation=json.dumps(saved["propagation"]))
         if saved["barostat"] is not None:
             payload["barostat"] = json.dumps(saved["barostat"])
+        if "active_learning" in saved:
+            payload["active_learning"] = json.dumps(saved["active_learning"])
         if options["storage"] == "stream":
             writer = TrajectoryStream(_stream_directory(output, replica), schema=schema,
                                       chunk_frames=options["chunk_frames"])
@@ -450,6 +503,15 @@ def _sample_replica(task):
     provider = StepEvaluationCache(make_task_potential(config["potential"], system))
     friction_provider = None
     try:
+        monitor = None
+        if "active_learning" in config:
+            from ..potentials.lifecycle import ActiveLearningMonitor, active_learning_options
+            from ..io import referenced_files, fingerprint
+            model_identity = fingerprint({"potential": config["potential"], "files": referenced_files(config)}, system)
+            monitor = ActiveLearningMonitor(provider, _active_learning_directory(config, output, replica),
+                model_identity=model_identity, **active_learning_options(config))
+            if saved is not None and monitor.identity != saved["active_learning"]["identity"]:
+                raise ValueError("active-learning model files changed since the checkpoint")
         rng = np.random.default_rng(np.random.SeedSequence([int(config.get("seed", 0)), 1301, replica]))
         kwargs = dict(seed=rng, native=config.get("native", config.get("dynamics", {}).get("native", True)),
                       threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
@@ -516,6 +578,9 @@ def _sample_replica(task):
                               "production": production.propagation_stats if production is not sampling else None}))
             if piston is not None:
                 arrays["barostat"] = json.dumps(piston.snapshot())
+            if monitor is not None:
+                arrays["active_learning"] = json.dumps({"identity": monitor.identity,
+                                                        "model_identity": monitor.model_identity})
             if writer is not None:
                 # Chunks are durable before the atomic state+prefix commit.
                 # A crash here leaves harmless orphan chunks, never extra frames.
@@ -582,6 +647,8 @@ def _sample_replica(task):
                     prospective = elapsed + 1
                     record = prospective >= options["neq"] and (prospective - options["neq"]) % options["interval"] == 0
                     observation = observe() if record else None
+                    if monitor is not None:
+                        monitor.observe(state.q, step=state.step, time=state.time)
                 if record:
                     append_record(observation)
             except BaseException:
@@ -617,6 +684,10 @@ def _write_trajectory(stream, config, system, output):
                 "production_timestep_au": options["production_dt"],
                 "beads": config["beads"], "beta_au": config["beta"],
                 "observable_names": OBSERVABLE_NAMES, "system": system.to_dict()}
+    rpc = _rpc_details(config)
+    if rpc is not None:
+        metadata["ring_polymer_contraction"] = rpc
+        metadata["estimator_scope"] = "rpc_contracted_hamiltonian" if rpc["approximate_hamiltonian"] else "full_bead_hamiltonian"
     if stream["storage"] == "stream":
         path = _stream_directory(output, stream["replica"]) / "manifest.json"
         # This is a derived export, not the authoritative simulation commit.
@@ -684,6 +755,15 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
         "files": {"checkpoints": [s["checkpoint"] for s in streams],
                   "trajectories": [str(path) for path in trajectories]},
     }
+    rpc = _rpc_details(config)
+    if rpc is not None:
+        result["ring_polymer_contraction"] = rpc
+        result["estimator_scope"] = "rpc_contracted_hamiltonian" if rpc["approximate_hamiltonian"] else "full_bead_hamiltonian"
+        if rpc["approximate_hamiltonian"]:
+            result["warnings"].append(
+                "RPC energies, equilibrium statistics and dynamics describe the contracted Hamiltonian. "
+                "The full-bead target potential is not recomputed; contraction error must be tested by increasing Pc toward P."
+            )
     if options["neq"] == 0:
         result["warnings"].append("No equilibration was requested; the collapsed-ring initial geometry is not an equilibrium configurational sample.")
     if system.fixed_atoms:
@@ -711,6 +791,9 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
         result["estimators"] = {name: {"mean": float(means[:, i].mean()),
                                        "standard_error_between_replicas": None if spread is None else float(spread[i])}
                                 for i, name in enumerate(OBSERVABLE_NAMES)}
+        if rpc is not None:
+            for estimate in result["estimators"].values():
+                estimate["scope"] = result["estimator_scope"]
         result["radius_of_gyration_squared_bohr2"] = np.mean(
             [s["radii_gyration_squared"].mean(axis=0) for s in streams], axis=0).tolist()
         result["sampling_diagnostics"] = [

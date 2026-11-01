@@ -110,6 +110,9 @@ def parser():
     rate.add_argument("--output", help="New result JSON (default: DIRECTORY/rate_postprocess.json)")
     rate.add_argument("--bootstrap", type=int, default=200)
     rate.add_argument("--seed", type=int, default=0)
+    na_rate = commands.add_parser("nonadiabatic-rate", help="Run a signed thermal NRPMD population-rate workflow")
+    na_rate.add_argument("input", help="TOML/JSON thermal NRPMD rate specification")
+    na_rate.add_argument("--output", required=True, help="New run directory")
     projection = commands.add_parser("project", help="Boltzmann-marginalize a saved CV-density FES")
     projection.add_argument("directory")
     projection.add_argument("--axes", type=int, nargs="+", required=True, help="Retained CV axes, zero based")
@@ -445,6 +448,10 @@ def main(argv=None):
                     }.items() if value is not None} or None,
                 )
             _print(_report_after_result(args, result, args.directory))
+        elif args.command == "nonadiabatic-rate":
+            from .workflows.nonadiabatic_rate import run_nonadiabatic_rate
+
+            print(json.dumps(jsonable(run_nonadiabatic_rate(args.input, args.output)), indent=2, allow_nan=False))
         elif args.command == "rate-postprocess":
             from .analysis.rate_io import postprocess_rate
             from .parallel import root_call
@@ -491,7 +498,7 @@ def main(argv=None):
                         "dependencies": dependencies,
                     },
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate"],
+                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate", "spectroscopy", "plumed"],
                     "materials": {
                         "cell": "fixed_or_isotropic_bzp",
                         "trajectory": "unwrapped_centroid",
@@ -500,8 +507,13 @@ def main(argv=None):
                         "streaming_trajectories": True,
                     },
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
-                    "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "opes"],
-                    "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling"],
+                    "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "shared_walker_metadynamics", "opes", "opes_explore", "adaptive_opes_bandwidth"],
+                    "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling", "temperature_hamiltonian_replica_exchange", "positive_ensemble_retis", "audited_biased_kinetics"],
+                    "path_integral_actions": ["suzuki_chin", "bosonic", "pigs"],
+                    "spectroscopy_methods": ["pa-cmd", "rpmd", "trpmd", "f-cmd_quadratic_centroid_pmf"],
+                    "nonadiabatic_python_apis": ["adiabatic_rpsh", "quasi_diabatic_nrpmd", "two_state_mash"],
+                    "ml_lifecycle": ["committee", "active_learning_candidates", "delta_rpc"],
+                    "unimplemented_methods": ["qcmd", "h-cmd"],
                     "scientific_tools": ["general_centroid_site_rates", "temperature_isotope_studies", "ring_polymer_instanton", "takahashi_imada_thermodynamics", "open_path_momentum"],
                     "initial_ensembles": ["thermal_parent", "ne_rpmd", "qct"],
                     "input_schema_version": 1,
@@ -509,6 +521,7 @@ def main(argv=None):
                     "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
                     "postprocessing": ["rate-postprocess"],
+                    "additional_workflow_commands": ["nonadiabatic-rate"],
                 }
             )
         elif args.command == "study":

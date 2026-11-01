@@ -17,6 +17,7 @@ import numpy as np
 from .constants import KB_AU
 from .units import parse_quantity, time_steps
 from .system import System, system_from_config
+from .potentials import _POTENTIAL_SPEC_FIELDS, _potential_spec_fields
 
 
 class InputError(ValueError):
@@ -38,9 +39,11 @@ def _unknown_fields(unknown, allowed, section):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble path_integral active_learning".split()
 )
 _SECTIONS = {
+    "path_integral": set("method alpha fd_step groups projection_time trial".split()),
+    "active_learning": set("interval_steps force_threshold energy_threshold directory max_frames".split()),
     "electronic_friction": set("method provider gamma tensor factory params".split()),
     "initial_ensemble": set("method beta fragments".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
@@ -51,9 +54,7 @@ _SECTIONS = {
     "sampling": set(
         "engine integrator thermostat timestep equilibration production save_interval interval interval_steps sample_interval equilibration_steps production_steps andersen_interval thermostat_params gamma_centroid replicas parents".split()
     ),
-    "potential": set(
-        "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params abi_version periodic virial".split()
-    ),
+    "potential": _POTENTIAL_SPEC_FIELDS,
     "parallel": set(
         "backend mode trajectory_groups trajectory_workers workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling reuse_potentials".split()
     ),
@@ -83,10 +84,10 @@ _SECTIONS = {
     ),
     "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid shared_walkers".split()
     ),
     "opes": set(
-        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps".split()
+        "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps mode adaptive_sigma sigma_min sigma_min_au".split()
     ),
     "replica_exchange": set("enabled interval_steps pairs".split()),
     "barostat": set("method pressure time_constant friction mode tau gamma compressibility cell_mask reference_cell reference_cell_unit stress".split()),
@@ -310,6 +311,59 @@ def _plugin_paths(value, base):
             _plugin_paths(item, base)
 
 
+def _nested_potential_paths(spec, base, nbeads):
+    """Resolve model files at every level of a committee/delta specification."""
+    if not isinstance(spec, dict):
+        raise InputError("nested potential specifications must be tables")
+    kind = spec.get("provider", spec.get("type", "builtin"))
+    allowed = _potential_spec_fields(kind)
+    if set(spec) - allowed:
+        raise _unknown_fields(set(spec) - allowed, allowed, "nested potential")
+    if kind == "committee":
+        members = spec.get("members")
+        if not isinstance(members, list) or len(members) < 2:
+            raise InputError("committee requires at least two potential.members")
+        for member in members:
+            _nested_potential_paths(member, base, nbeads)
+    elif kind == "delta":
+        for key in ("reference", "correction"):
+            _nested_potential_paths(spec.get(key), base, nbeads)
+        if "contracted_beads" in spec:
+            pc = _integer(spec["contracted_beads"], "contracted_beads")
+            if pc > nbeads:
+                raise InputError("contracted_beads cannot exceed beads")
+            if "nbeads" in spec and spec["nbeads"] != nbeads:
+                raise InputError("delta potential nbeads must match the input bead count")
+            spec["nbeads"] = nbeads
+    else:
+        for key in ("library", "manifest", "weights"):
+            if key in spec:
+                spec[key] = _path(base, spec[key])
+        if "model" in spec and kind not in ("builtin", "fairchem"):
+            spec["model"] = _path(base, spec["model"])
+        elif "model" in spec and kind == "fairchem":
+            model = spec["model"]
+            if isinstance(model, str) and (model.startswith((".", "~", "/"))
+                    or Path(model).suffix.lower() in (".pt", ".pth", ".ckpt", ".bin")
+                    or (base / model).is_file()):
+                spec["model"] = _path(base, model)
+        for key in ("model", "weights", "reference"):
+            if isinstance(spec.get("params", {}).get(key), str):
+                spec["params"][key] = _path(base, spec["params"][key])
+
+
+def _cv_model_paths(config, base):
+    specs = config.get("cvs", [])
+    if isinstance(specs, dict):
+        specs = specs.values()
+    for spec in specs:
+        if not isinstance(spec, dict):
+            continue
+        for key in ("model", "reference", "references"):
+            if isinstance(spec.get(key), str):
+                spec[key] = _path(base, spec[key])
+
+
 def _steps(table, key, duration_key, default, dt, *, allow_zero=False):
     # Do not evaluate a duration which the caller has replaced with exact steps.
     if key in table:
@@ -427,6 +481,12 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        if self.data.get("task") == "plumed":
+            from .workflows.plumed import resolve_plumed_job
+            return resolve_plumed_job(self.data, base_directory=self.base_directory, input_path=self.input_path)
+        if self.data.get("task") == "spectroscopy":
+            from .spectroscopy_input import resolve_spectroscopy_job
+            return resolve_spectroscopy_job(self.data, base_directory=self.base_directory, input_path=self.input_path)
         # Network and PCET have dedicated early-return resolvers; do not let
         # those routes silently ignore native PIMD-only ensemble controls.
         raw_sampling = self.data.get("sampling", {})
@@ -547,6 +607,10 @@ class JobSpec:
             key in d for key in ("umbrella", "reaction", "rate", "recrossing", "collision", "outcomes")
         ):
             raise InputError("OPES uses its own probability bias; umbrella and reaction/rate settings do not apply")
+        if "path_integral" in d and task != "pimd":
+            raise InputError("[path_integral] requires task='pimd'")
+        if "active_learning" in d and (task not in ("pimd", "diffusion") or "path_integral" in d):
+            raise InputError("[active_learning] currently requires ordinary pimd/diffusion")
         if "adaptive_umbrella" in d and task not in ("fes", "rate"):
             raise InputError("Adaptive umbrellas require task='fes' or task='rate'")
         if "replica_exchange" in d and task != "fes":
@@ -661,6 +725,7 @@ class JobSpec:
         if "integrator" in dyn:
             d["dynamics"]["integrator"] = integrator
         _plugin_paths(d, base)
+        _cv_model_paths(d, base)
         sys_spec = deepcopy(d.get("system", {}))
         if isinstance(sys_spec, System):
             system = sys_spec
@@ -708,6 +773,8 @@ class JobSpec:
         potential = deepcopy(d.get("potential", {}))
         if not potential:
             raise InputError("Specify [potential] or --pes; no PES is guessed")
+        if potential.get("provider", potential.get("type")) in ("committee", "delta"):
+            _nested_potential_paths(potential, base, beads)
         for k in ("library", "manifest", "weights"):
             if k in potential:
                 potential[k] = _path(base, potential[k])
@@ -1061,6 +1128,9 @@ class JobSpec:
                         diffusion["fit_range"] = [None if v is None else parse_quantity(v, "time")
                                                   for v in diffusion["fit_range"]]
                 validate_materials(resolved, system)
+                if "path_integral" in resolved:
+                    from .workflows.path_integral import resolve_path_integral
+                    resolve_path_integral(resolved, system)
             if task == "site_rate":
                 from .workflows.site_rate import validate_site_rate
 

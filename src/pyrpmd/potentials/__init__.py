@@ -21,6 +21,22 @@ from ..geometry import validate_cell_pbc
 import numpy as np
 
 
+_PHYSICAL_SPEC_FIELDS = frozenset(
+    "provider type name library manifest factory module function initializer initializer_params "
+    "with_dimensions model weights device dtype units derivative params abi_version periodic virial".split()
+)
+_LIFECYCLE_SPEC_FIELDS = {
+    "committee": frozenset({"provider", "type", "members"}),
+    "delta": frozenset({"provider", "type", "reference", "correction", "contracted_beads", "nbeads"}),
+}
+_POTENTIAL_SPEC_FIELDS = _PHYSICAL_SPEC_FIELDS.union(*_LIFECYCLE_SPEC_FIELDS.values())
+
+
+def _potential_spec_fields(kind):
+    """One input schema for nested providers; model-specific params stay opaque."""
+    return _LIFECYCLE_SPEC_FIELDS.get(kind, _PHYSICAL_SPEC_FIELDS)
+
+
 def energy_convention_identity(config):
     """Identify the ASE energy convention without constructing a calculator.
 
@@ -43,7 +59,7 @@ def energy_convention_identity(config):
     return None
 
 
-def validate_periodic_spec(config, system=None):
+def validate_periodic_spec(config, system=None, *, _nested=False):
     """Reject statically incompatible cell/provider choices without loading PESs.
 
     A Python factory's declared capability still needs provider construction;
@@ -55,6 +71,16 @@ def validate_periodic_spec(config, system=None):
     _, pbc = validate_cell_pbc(get("cell"), get("pbc"))
     periodic = bool(pbc.any())
     kind = config.get("provider", config.get("type", "builtin"))
+    if _nested or kind in _LIFECYCLE_SPEC_FIELDS:
+        unknown = set(config) - _potential_spec_fields(kind)
+        if unknown:
+            raise PotentialError(f"Unknown {kind} potential fields: {', '.join(sorted(map(str, unknown)))}")
+    if kind in ("committee", "delta"):
+        children = config.get("members") if kind == "committee" else [config.get("reference"), config.get("correction")]
+        if not isinstance(children, (list, tuple)) or len(children) < 2 or any(not isinstance(child, dict) for child in children):
+            raise PotentialError(f"{kind} requires complete nested potential specifications")
+        for child in children:
+            validate_periodic_spec(child, system, _nested=True)
     if kind in ("cabi", "native") and config.get("abi_version") is not None:
         version = config["abi_version"]
         if isinstance(version, (bool, np.bool_)) or not isinstance(version, (int, np.integer)) or version not in (1, 2):
@@ -142,6 +168,32 @@ def _make_potential(config, system=None):
     spec = dict(config)
     kind = spec.get("provider", spec.get("type", "builtin"))
     params = dict(spec.get("params", {}))
+
+    if kind in ("committee", "delta"):
+        from .lifecycle import CommitteePotential, DeltaLearningPotential, _close_all
+        providers = []
+        try:
+            children = spec["members"] if kind == "committee" else [spec["reference"], spec["correction"]]
+            for child in children:
+                providers.append(make_potential(child, system))
+            if kind == "committee":
+                return CommitteePotential(providers, owns_members=True)
+            combined = DeltaLearningPotential(*providers, owns_members=True)
+            if "contracted_beads" not in spec:
+                return combined
+            split = combined.split(spec["nbeads"], spec["contracted_beads"])
+            # The factory owns children while the generic SplitPotential API
+            # deliberately borrows them. Transfer close ownership explicitly.
+            split.close = combined.close
+            return split
+        except BaseException:
+            try:
+                _close_all(providers)
+            except BaseException:
+                # Preserve the construction failure while still attempting
+                # every provider's cleanup, including after a failed close.
+                pass
+            raise
 
     if kind in ("builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"):
         model = spec.get(

@@ -28,7 +28,7 @@ from ..thermostats import NoseHooverChain, nhc_options
 from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
 
 
-METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid"}
+METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid", "shared_walkers"}
 
 
 def resolve_walls(config, system):
@@ -212,6 +212,11 @@ def resolve_metadynamics(config, system):
         raise ValueError("output.store_configurations must be boolean")
     options.update(store_configurations=store_configurations, neq=neq, nprod=nprod, interval=interval,
                    min_count=checked_integer(analysis.get("min_count", 1), "analysis.min_count"))
+    if not isinstance(table.get("shared_walkers", False), bool):
+        raise ValueError("metadynamics.shared_walkers must be boolean")
+    if table.get("shared_walkers", False):
+        from .shared_metadynamics import validate_shared
+        validate_shared(config, options)
     return cv, selected, options
 
 
@@ -532,6 +537,11 @@ def _analyze(streams, config, system, output, return_data):
 def run_metadynamics(config, system, output, executor=None, return_data=False):
     """Run independent histories and export their finite-time bias estimates."""
     validate_metadynamics(config, system)
+    if config.get("metadynamics", {}).get("shared_walkers", False):
+        if executor is not None:
+            raise ValueError("shared walkers use a synchronous coordinator, without an external executor")
+        from .shared_metadynamics import run_shared_metadynamics
+        return run_shared_metadynamics(config, system, output, return_data=return_data)
     replicas = config.get("sampling", {}).get("replicas", 1)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": r}
              for r in range(replicas)]
@@ -542,6 +552,9 @@ def run_metadynamics(config, system, output, executor=None, return_data=False):
 
 def reanalyze_metadynamics(config, system, output, return_data=False):
     """Recompute the bias estimate from authoritative saved histories only."""
+    if config.get("metadynamics", {}).get("shared_walkers", False):
+        from .shared_metadynamics import reanalyze_shared_metadynamics
+        return reanalyze_shared_metadynamics(config, system, output, return_data=return_data)
     def analyze():
         cv, _, options = resolve_metadynamics(config, system)
         streams = [_read_stream(config, system, output, r, cv, options)

@@ -19,7 +19,7 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | Standard 或 well-tempered metadynamics | `metadynamics` | [气相与自由能](manual/workflows.md) |
 | 同温副本交换伞形采样 | `fes` + `[replica_exchange]` | [副本交换](replica-exchange.md) |
 | OPES 概率增强采样 | `opes` | [OPES 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/opes.md) |
-| PLUMED 质心偏置、过渡界面路径采样 | Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
+| PLUMED 质心偏置、过渡界面路径采样 | `plumed` / Python API | [PLUMED](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/plumed.md) · [TIS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/transition-interface-sampling.md) |
 | 平衡核量子统计与能量估计量 | `pimd` | [材料与表面](manual/periodic.md) |
 | RPMD 自扩散、MSD、VACF | `diffusion` | [材料与表面](manual/periodic.md) |
 | 材料中的有向位点跃迁 | `site_rate` | [材料与表面](manual/periodic.md) |
@@ -30,12 +30,14 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 温度、同位素与数值收敛扫描 | `pyrpmd study` | [速率研究英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | Instanton 路径与一维低温速率 | Python API | [Instanton 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
 | 高阶平衡采样与量子估计量 | Python API | [量子统计英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/quantum-statistics.md) |
+| PA-CMD、Raman/SFG、主引擎 SC/玻色交换/PIGS、非绝热及 ML 扩展 | 输入工作流 / Python API | [Tier 2 覆盖范围与限制](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/tier2-methods.md) |
 
 示例使用解析模型势，几秒内即可完成。进行正式研究前，请按[科学约定与收敛](manual/science.md)完成收敛流程。
 
 ## 基本循环
 
-所有任务使用同样四条命令，每个新计算使用独立的输出目录。
+大多数输入工作流使用同样四条命令，每个新计算使用独立的输出目录。PLUMED 外部内核状态不支持自动续跑；
+热 NRPMD 速率工作流使用独立的 `nonadiabatic-rate` 命令和输入格式。
 需要先创建可运行输入时，使用 `pyrpmd init my-first-run` 并按[快速入门](manual/quickstart.md)操作。
 下面的 `job.inp` 是你自己的输入文件占位符。
 

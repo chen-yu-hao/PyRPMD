@@ -3,7 +3,39 @@
 __version__ = "0.2.0"
 
 
+# Keep optional property/CV backends lazy: importing pyrpmd never imports Torch
+# or initializes an external electronic-structure or PLUMED process.
+_TIER2_EXPORTS = {
+    name: module
+    for module, names in {
+        "cmd": ("PACMDDynamics", "CentroidForceMatch", "QuadraticCentroidPotential",
+                "centroid_force_training_data", "fit_quadratic_centroid_pmf", "ibi_update"),
+        "properties": ("PropertyResult", "PropertyModel", "CallablePropertyModel",
+                       "TorchScriptPropertyModel", "validate_property_result", "evaluate_property_trajectory"),
+        "analysis.spectroscopy": ("relative_raman_spectrum", "relative_sfg_spectrum"),
+        "pimd_methods": ("SuzukiChinPotential", "BosonicExchangePotential", "ExchangeResult",
+                         "bosonic_exchange", "GaussianTrialWavefunction", "PIGSPotential"),
+        "advanced_cv": ("Dihedral", "CoordinationNumber", "RMSD", "PathCV", "TorchScriptCV"),
+        "opes": ("OPESExploreBias",),
+        "shared_metadynamics": ("SharedMetadynamicsBias",),
+        "replica_exchange": ("ReplicaExchange", "ReplicaExchangeMove", "reduced_configurational_energy"),
+        "biased_kinetics": ("rescale_biased_time", "estimate_biased_rate"),
+        "retis": ("ReplicaExchangeTIS", "RETISResult"),
+        "adiabatic": ("AdiabaticResult", "AdiabaticPythonPotential", "ElectronicFrame",
+                      "QDNRPMDState", "QDNRPMDDynamics", "AdiabaticRPSHState", "AdiabaticRPSHDynamics"),
+        "mash": ("MASHDynamics",),
+        "workflows.nonadiabatic_rate": ("run_nonadiabatic_rate",),
+        "potentials.lifecycle": ("CommitteeResult", "CommitteePotential", "ActiveLearningMonitor", "DeltaLearningPotential"),
+    }.items()
+    for name in names
+}
+
+
 def __getattr__(name):
+    if name in _TIER2_EXPORTS:
+        from importlib import import_module
+
+        return getattr(import_module("." + _TIER2_EXPORTS[name], __name__), name)
     if name == "JobSpec":
         from .input import JobSpec
 
@@ -121,3 +153,5 @@ __all__ = [
     "energy_heat_capacity", "quantum_kinetic_energy", "isotope_substitution_free_energy", "isotope_fractionation", "fractionation_mass_integration", "momentum_distribution_from_open_paths",
     "normalize_initial_ensemble", "prepare_initial_ensemble", "check_state_selected",
 ]
+
+__all__.extend(_TIER2_EXPORTS)

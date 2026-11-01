@@ -20,7 +20,7 @@ from .sampling import fes_sampler, checkpoint_cv_config
 
 
 OPES_FIELDS = {"cvs", "sigma", "sigma_au", "barrier", "barrier_au", "bias_factor", "pace",
-               "freeze_after_steps", "freeze_equilibration_steps"}
+               "freeze_after_steps", "freeze_equilibration_steps", "mode", "adaptive_sigma", "sigma_min", "sigma_min_au"}
 
 
 def _stream_fingerprint(config, system, replica):
@@ -73,7 +73,19 @@ def resolve_opes(config, system):
     if "barrier" not in table and "barrier_au" not in table:
         raise ValueError("opes.barrier is required")
     barrier = parse_quantity(table.get("barrier_au", table.get("barrier")), "energy")
-    bias = OPESBias(cv, sigma, config["beta"], barrier=barrier, bias_factor=table.get("bias_factor", 10))
+    if "sigma_min" in table and "sigma_min_au" in table:
+        raise ValueError("specify opes.sigma_min or sigma_min_au, not both")
+    minimum = table.get("sigma_min_au", table.get("sigma_min"))
+    if minimum is not None:
+        if cv.dimension == 1 and isinstance(minimum, (str, int, float, np.number)):
+            minimum = [minimum]
+        if not isinstance(minimum, (list, tuple, np.ndarray)) or len(minimum) != cv.dimension:
+            raise ValueError("opes.sigma_min needs one width per CV")
+        minimum = [parse_quantity(value, _dimension(unit)) *
+                   (scale if "sigma_min_au" not in table and isinstance(value, (int, float, np.number)) else 1.0)
+                   for value, unit, scale in zip(minimum, cv.units, scales)]
+    bias = OPESBias(cv, sigma, config["beta"], barrier=barrier, bias_factor=table.get("bias_factor", 10),
+                    mode=table.get("mode", "metad"), adaptive_sigma=table.get("adaptive_sigma", False), sigma_min=minimum)
     sampling = config.get("sampling", {})
     neq = checked_integer(sampling.get("equilibration_steps", 0), "sampling.equilibration_steps", 0)
     nprod = checked_integer(sampling["production_steps"], "sampling.production_steps")
@@ -131,6 +143,7 @@ def resolve_opes(config, system):
                 raise ValueError("analysis.ranges must increase and periodic ranges must span one period")
             ranges.append([lo, hi])
     return cv, selected, {"sigma": sigma, "barrier": barrier, "bias_factor": bias.bias_factor,
+        "bias_mode": bias.mode, "adaptive_sigma": bias.adaptive_sigma, "sigma_min": minimum,
         "pace": pace, "neq": neq, "nprod": nprod, "interval": interval, "freeze": freeze,
         "freeze_equilibration_steps": relax, "method": method, "bins": bins, "ranges": ranges,
         "min_count": checked_integer(analysis.get("min_count", 1), "analysis.min_count")}
@@ -142,7 +155,8 @@ def validate_opes(config, system):
 
 def _new_bias(cv, options, beta, state=None):
     return OPESBias(cv, options["sigma"], beta, barrier=options["barrier"],
-                    bias_factor=options["bias_factor"], state=state)
+                    bias_factor=options["bias_factor"], state=state, mode=options.get("bias_mode", "metad"),
+                    adaptive_sigma=options.get("adaptive_sigma", False), sigma_min=options.get("sigma_min"))
 
 
 def _checkpoint_path(output, replica):
@@ -317,7 +331,8 @@ def _analyze(streams, config, system, output, return_data):
     raw, ess = [], []
     for index, bias in enumerate(biases):
         if options["method"] == "kde":
-            raw.append(-bias.log_probability(grid) / config["beta"])
+            density_factor = bias.bias_factor if bias.mode == "explore" else 1.0
+            raw.append(-density_factor * bias.log_probability(grid) / config["beta"])
             ess.append(bias.effective_sample_size)
         else:
             weights = normalized_weights(log_weights[index])
@@ -356,15 +371,19 @@ def _analyze(streams, config, system, output, return_data):
         header=",".join([f"cv{j}_{unit}" for j, unit in enumerate(cv.units)] +
                         ["free_energy_hartree", "replica_spread_hartree", "masked", "raw_count"]))
     warnings = list(config.get("_warnings", [])) + [
-        "Fixed-bandwidth, uncompressed OPES: cost grows with kernel count; no PLUMED numerical parity is claimed.",
+        "Uncompressed OPES: cost grows with kernel count; no PLUMED numerical parity is claimed.",
         "No reaction rate follows from biased trajectory time. CV adequacy, equilibrium, bead and timestep convergence remain unverified.",
         "Weight-only effective sample size ignores autocorrelation. Replica spread is descriptive, not a standard error."]
     warnings.append("The KDE free energy retains finite-bandwidth smoothing and adaptation error."
         if options["method"] == "kde" else
         "Only frozen-bias samples after the requested relaxation are reweighted; adequate equilibration is the user's responsibility.")
+    if options["adaptive_sigma"]:
+        warnings.append("Adaptive widths use online observed fluctuations and Scott/ESS scaling at deposition events, not PLUMED's diffusion-window rule.")
+    if options["bias_mode"] == "explore" and options["method"] == "kde":
+        warnings.append("Explore KDE reports -gamma/beta*log(sampled density); it is a free-energy estimate only after convergence to the well-tempered target. Frozen-bias reweighting is preferable for quantitative analysis.")
     if not common.any():
         warnings.append("Independent histories have no common sampled bin; their aggregate FES is masked.")
-    summary = {"task": "opes", "status": "finite_time_estimate" if all(stream.get("complete", True) for stream in streams) else "partial_finite_time_estimate", "method": OPESBias.method,
+    summary = {"task": "opes", "status": "finite_time_estimate" if all(stream.get("complete", True) for stream in streams) else "partial_finite_time_estimate", "method": biases[0].method,
         "estimator": options["method"], "measure": "cv_density", "energy_unit": "hartree",
         "dimension": cv.dimension, "units": cv.units, "replicas": len(streams),
         "samples": sum(len(values) for values in arrays), "kernels_per_replica": [len(bias) for bias in biases],

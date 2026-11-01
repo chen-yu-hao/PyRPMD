@@ -10,7 +10,7 @@ recrossing-corrected rate, with fingerprinted checkpoint restart.**
 Give PyRPMD a transition state and a potential, and it builds the whole Bennett–Chandler
 calculation for you: a numerical Hessian and two-sided descent identify the reaction channel,
 umbrella sampling gives the PMF, and constrained parent chains launch paired recrossing
-trajectories for the transmission coefficient. The same Python or TOML input drives eleven tasks,
+trajectories for the transmission coefficient. The same Python or TOML input drives thirteen tasks,
 from gas-phase rates and direct collisions to free-energy surfaces, metadynamics, PIMD, diffusion,
 surface hops and electrochemical PCET, on C++17/OpenMP integrator kernels with a NumPy reference
 implementation alongside.
@@ -41,6 +41,7 @@ statistical conventions and convergence evidence.
 
 ## Additional scientific methods
 
+- [Tier 2 coverage and boundaries](docs/tier2-methods.md): PA-CMD and fitted-centroid spectroscopy, Raman/SFG and property models; force-based Suzuki–Chin, quadratic bosonic exchange and PIGS; extended CVs, shared MetaD and OPES variants; on-the-fly nonadiabatic data and ML lifecycle tools. The guide distinguishes working input workflows from Python APIs and explicitly lists QCMD/h-CMD and other remaining gaps.
 - [General-coordinate rates](docs/general-coordinate-rates.md): smooth nonlinear centroid coordinates with constrained-parent mass-metric and correlated-bootstrap corrections.
 - [Temperature, isotope and convergence studies](docs/rate-studies.md): `pyrpmd study` with Arrhenius fits, KIEs and explicit numerical equivalence checks.
 - [Ring-polymer instantons](docs/instanton.md): multidimensional paths and a one-dimensional low-temperature rate with explicit reactant normalization; a full multidimensional rate prefactor is not implemented.
@@ -93,7 +94,9 @@ pyrpmd analyze my-first-run/run
 pyrpmd resume my-first-run/run
 ```
 
-Every task uses this same `validate` → `run` → `analyze` → `resume` cycle. `--check-pes` also
+Most input workflows use this `validate` → `run` → `analyze` → `resume` cycle. The PLUMED input
+workflow owns external kernel history and explicitly rejects automatic resume; the thermal
+nonadiabatic rate workflow has a separate command and input schema. `--check-pes` also
 evaluates the potential and, for a TS-only rate input, runs the numerical preparation. Give each
 new calculation its own output directory; `resume` (or `run --resume` on the original input)
 continues an existing one. The starter produces 3 windows, 6 streams and 120 saved samples in
@@ -116,6 +119,8 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Adaptive umbrella windows | `fes` | `examples/fes/adaptive_harmonic.inp` | ~4 s |
 | Standard or well-tempered metadynamics | `metadynamics` | `examples/metadynamics/well_tempered_2d.inp` | ~2 s |
 | OPES probability-based enhanced sampling | `opes` | `examples/opes/harmonic_2d.inp` | — |
+| PA-CMD and relative IR/Raman/SFG | `spectroscopy` | `examples/spectroscopy/pacmd.inp` | — |
+| Force-based Suzuki–Chin, bosons or PIGS | `pimd` + `[path_integral]` | `examples/path_integral/suzuki_chin.inp` | — |
 | Fixed-cell PIMD and energy estimators | `pimd` | `examples/materials/pimd.inp` | ~2 s |
 | RPMD self-diffusion, MSD, VACF | `diffusion` | `examples/materials/diffusion.inp` | ~3 s |
 | Directed site-to-site hop in a material | `site_rate` | `examples/materials/site_rate.inp` | ~25 s |

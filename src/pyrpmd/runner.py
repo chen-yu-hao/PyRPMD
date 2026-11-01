@@ -151,6 +151,8 @@ def run(job, *, output=None, resume=False):
 
 def run_resolved(config, system, *, output=None, resume=False):
     config = copy.deepcopy(config)
+    if config.get("task") == "plumed" and resume:
+        raise InputError("PLUMED automatic resume is unsupported because its opaque kernel history is not in the MD checkpoint")
     if "electronic_friction" in config:
         from .electronic_friction import validate_electronic_friction
         validate_electronic_friction(config, system)
@@ -164,7 +166,15 @@ def run_resolved(config, system, *, output=None, resume=False):
     from .parallel import root_call, is_root
 
     root_call(_initialize_output, config, system, target, resume)
-    if config["task"] == "pcet":
+    if config["task"] == "spectroscopy":
+        from .workflows.spectroscopy import run_spectroscopy
+
+        result = run_spectroscopy(config, system, Path(target))
+    elif config["task"] == "plumed":
+        from .workflows.plumed import run_plumed
+
+        result = run_plumed(config, system, Path(target))
+    elif config["task"] == "pcet":
         from .workflows.pcet import run_pcet
 
         result = run_pcet(config, system, Path(target))
@@ -196,6 +206,10 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.network import run_network
 
         result = run_network(config, system, Path(target))
+    elif config["task"] == "pimd" and "path_integral" in config:
+        from .workflows.path_integral import run_path_integral
+
+        result = run_path_integral(config, system, Path(target))
     elif config["task"] in ("pimd", "diffusion"):
         from .workflows.materials import run_materials
 
@@ -332,13 +346,20 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             summary = path / "summary.json"
         return json.loads(summary.read_text())
     config = json.loads((path / "input" / "resolved.json").read_text())
-    if config["task"] not in ("fes", "metadynamics", "opes", "diffusion"):
+    if config["task"] not in ("fes", "metadynamics", "opes", "diffusion", "spectroscopy"):
         raise InputError(
             "Recomputing analysis supports FES, metadynamics, OPES and diffusion; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
+    if config["task"] == "spectroscopy":
+        if bins is not None or bootstrap is not None or diffusion is not None:
+            raise InputError("spectroscopy reanalysis does not use FES/diffusion overrides")
+        from .workflows.spectroscopy import reanalyze_spectroscopy
+        result = reanalyze_spectroscopy(config, system, path)
+        write_json(path / "results" / "summary.json", result)
+        return result
     if config["task"] == "diffusion":
         from .input import _SECTIONS
         from .units import parse_quantity
@@ -487,6 +508,23 @@ def prepare(job, *, numerical=False):
         result["network_preparation"] = prepare_network(config, system, numerical=numerical)
         result["ready"] = result["network_preparation"].get("ready", False)
         return result
+    elif config["task"] == "spectroscopy":
+        from .workflows.spectroscopy import prepare_spectroscopy
+
+        result["spectroscopy_preparation"] = prepare_spectroscopy(config, system)
+    elif config["task"] == "pimd" and "path_integral" in config:
+        from .workflows.path_integral import resolve_path_integral
+
+        method, options = resolve_path_integral(config, system)
+        result["path_integral_preparation"] = {
+            "method": method, "equilibrium_only": True,
+            "trajectory_storage": options["storage"],
+            "sampling_thermostat": options["thermostat"],
+            "replicas": options["replicas"],
+            "temperature_interpretation": "auxiliary_only_projection_sets_distribution" if method == "pigs" else "physical_temperature",
+            "observable": "projected_midpoint_potential" if method == "pigs" else
+                "even_bead_potential_alpha_zero_only" if method == "suzuki_chin" else "symmetric_bead_potential",
+        }
     elif config["task"] in ("pimd", "diffusion"):
         from .workflows.materials import resolve_materials
 
@@ -527,6 +565,9 @@ def prepare(job, *, numerical=False):
         native_engine = None
         try:
             x = system.geometry[None, :, :]
+            if (config["task"] == "spectroscopy"
+                    or (getattr(provider, "metadata", {}) or {}).get("ring_polymer_coupled")):
+                x = np.repeat(x, config["beads"], axis=0)
             from .potentials import validate_result
 
             if config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
@@ -552,6 +593,19 @@ def prepare(job, *, numerical=False):
                     "step": initial["step"],
                     "force_evaluations": initial["force_evaluations"],
                 }
+            elif config["task"] == "pimd" and "path_integral" in config:
+                from .workflows.path_integral import _action
+
+                action = _action(config, system, provider)
+                q = np.repeat(system.geometry[None], config["beads"], axis=0)
+                checked = validate_result(action.evaluate(q), q.shape)
+                result["pes_check"] = {
+                    "energy_hartree": checked.energy.tolist(),
+                    "status": checked.status.tolist(),
+                    "sampling_action_potential": True,
+                    "auxiliary_beta_au": action.beta,
+                    "force_max_au": float(np.max(np.abs(checked.forces))),
+                }
             elif "nonadiabatic" in config:
                 evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result
@@ -570,7 +624,11 @@ def prepare(job, *, numerical=False):
                     "energy_hartree": evaluated.energy.tolist(),
                     "status": evaluated.status.tolist(),
                 }
-                if config["task"] == "pimd" and materials_options["barostat"] is not None:
+                if config["task"] == "spectroscopy":
+                    result["spectroscopy_preparation"] = prepare_spectroscopy(
+                        config, system, potential=provider
+                    )
+                if config["task"] == "pimd" and "path_integral" not in config and materials_options["barostat"] is not None:
                     from .barostat import BZPBarostat
                     from .dynamics import State
                     piston = BZPBarostat(provider, system, config["beta"], config["beads"],

@@ -198,9 +198,13 @@ check is not a molecular-rate validation or proof of quantum accuracy. TIS
 samples the dynamics supplied to it; using RPMD does not remove RPMD's own
 physical approximations.
 
-This first implementation uses two-way shooting and coordinate-defined basins.
-It does not yet implement replica-exchange TIS, minus ensembles, stochastic
-one-way shooting, phase-space basin predicates or an automated flux run.
+The single-interface implementation uses two-way shooting and coordinate-defined
+basins. The separate
+[ReplicaExchangeTIS API](tier2-sampling.md#replica-exchange-tis) now exchanges
+paths between positive interface ensembles and retains repeated/rejected-path
+observations. It requires a matching, separately validated effective flux.
+Minus ensembles, stochastic one-way shooting, phase-space basin predicates and
+an automated flux run remain outside these implementations.
 
 ## References
 
