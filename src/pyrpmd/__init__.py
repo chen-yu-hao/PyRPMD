@@ -42,6 +42,10 @@ def __getattr__(name):
                 "ThermalRateCorrelation", "thermal_weight", "thermal_flux_side", "thermal_population_rate"):
         from . import thermal_nrpmd
         return getattr(thermal_nrpmd, name)
+    if name in ("AdaptivePathOptions", "AdaptiveNRPMDPathResult", "ReweightedThermalEnsemble",
+                "run_adaptive_nrpmd_path", "reweight_thermal_umbrellas"):
+        from . import adaptive_nrpmd
+        return getattr(adaptive_nrpmd, name)
     if name in ("MVRPMDState", "MVRPMDPotential", "MVRPMDDynamics", "MVRPMDSampler"):
         from . import mv_rpmd
         return getattr(mv_rpmd, name)
@@ -104,6 +108,8 @@ __all__ = [
     "RPSHDynamics", "RPSHState", "HopResult",
     "ThermalNRPMDSampler", "ThermalNRPMDDynamics", "ThermalEnsemble", "ThermalRateCorrelation",
     "thermal_weight", "thermal_flux_side", "thermal_population_rate",
+    "AdaptivePathOptions", "AdaptiveNRPMDPathResult", "ReweightedThermalEnsemble",
+    "run_adaptive_nrpmd_path", "reweight_thermal_umbrellas",
     "MVRPMDState", "MVRPMDPotential", "MVRPMDDynamics", "MVRPMDSampler",
     "KCCalibration", "KCRPMDState", "KCRPMDPotential", "KCRPMDDynamics", "KCRPMDSampler",
     "IsomorphicPotential", "IsomorphicResult", "IsomorphicEhrenfestState", "IsomorphicEhrenfestDynamics",

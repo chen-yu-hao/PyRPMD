@@ -43,6 +43,65 @@ def _nonnegative_integer(value, name):
     return int(value)
 
 
+def _static_umbrella_identity(bias):
+    """Describe a frozen mathematical umbrella, rejecting evolving callbacks.
+
+    The checkpoint identity helper deliberately accepts only known, unmodified
+    built-in CVs. Deep-copying an arbitrary Python callback cannot freeze its
+    external state and would not establish a stationary sampling distribution.
+    """
+    if bias is None:
+        return None
+    from .bias import UmbrellaBias, _BUILTIN_BIAS_METHODS
+    from .workflows.sampling import _checkpoint_cv_identity
+
+    if (type(bias) is not UmbrellaBias or "energy_force" in bias.__dict__
+            or UmbrellaBias.energy_force is not _BUILTIN_BIAS_METHODS[UmbrellaBias]):
+        raise ValueError("thermal sampling bias must be an unmodified static UmbrellaBias")
+    try:
+        cv_identity = _checkpoint_cv_identity(bias.cv)
+    except ValueError as error:
+        raise ValueError("static thermal umbrellas require unmodified supported built-in CVs") from error
+    # Revalidate mutable public parameters before accepting their identity.
+    checked = UmbrellaBias(bias.cv, bias.center, bias.stiffness)
+    return copy.deepcopy({
+        "kind": "static_umbrella", "cv": cv_identity,
+        "center": tuple(float(value) for value in checked.center),
+        "stiffness": tuple(tuple(float(value) for value in row) for row in checked.stiffness),
+    })
+
+
+def _prepare_static_umbrella(bias):
+    identity = _static_umbrella_identity(bias)
+    frozen = copy.deepcopy(bias)
+    if frozen is not None:
+        frozen.center.flags.writeable = False
+        frozen.stiffness.flags.writeable = False
+    return frozen, identity
+
+
+def _with_static_umbrella(weight, bias, q, beta):
+    if bias is None:
+        return weight
+    energy, force = bias.energy_force(q)
+    raw_energy, raw_force = np.asarray(energy), np.asarray(force)
+    if (raw_energy.ndim != 0 or raw_energy.dtype.kind not in "fiu"
+            or not np.isfinite(raw_energy)
+            or raw_force.shape != q.shape or raw_force.dtype.kind not in "fiu"
+            or not np.isfinite(raw_force).all()):
+        raise ValueError("static umbrella must return a finite scalar energy and real [P,N,3] force")
+    # Bias.energy_force supplies B(q)=P*W(q), the sum-bead Hamiltonian
+    # convention. The physical statistical factor is exp(-beta*W).
+    correction = beta / len(q) * float(raw_energy)
+    if not np.isfinite(correction):
+        raise FloatingPointError("static umbrella statistical weight overflowed")
+    log_density = weight.log_density - correction
+    if weight.sign and not np.isfinite(log_density):
+        raise FloatingPointError("biased thermal statistical weight overflowed")
+    return ThermalWeight(float(log_density), weight.sign,
+                         weight.electronic_populations, weight.log_abs_mapping_weight)
+
+
 @dataclass(frozen=True)
 class _SplitMatrix:
     scalar: np.ndarray
@@ -120,11 +179,13 @@ def _weight(split, q, x, y, masses, beta):
     return ThermalWeight(float(log_density), sign, population, log_abs)
 
 
-def thermal_weight(potential, state, masses, beta, nstates=None):
+def thermal_weight(potential, state, masses, beta, nstates=None, *, bias=None):
     """Evaluate the genuine SEO-projected signed thermal weight of a state.
 
     This is not ``exp(-beta/P * NRPMDDynamics.energy(state))``.  The latter
     distribution can be nonnormalizable because of inverted mapping surfaces.
+    An optional static ``UmbrellaBias`` multiplies this distribution by
+    ``exp(-beta * W)`` without changing its sign or SEO population estimator.
     """
     if not isinstance(state, NRPMDState):
         raise ValueError("thermal_weight requires NRPMDState")
@@ -136,8 +197,10 @@ def thermal_weight(potential, state, masses, beta, nstates=None):
     for array in (state.mapping_q, state.mapping_p):
         if array.dtype.kind not in "fiu" or not np.isfinite(array).all():
             raise ValueError("mapping variables must be finite real arrays")
+    frozen_bias, _ = _prepare_static_umbrella(bias)
     split = _split_matrix(potential, state.q, checker.beta, nstates)
-    return _weight(split, state.q, state.mapping_q, state.mapping_p, checker.masses, checker.beta)
+    weight = _weight(split, state.q, state.mapping_q, state.mapping_p, checker.masses, checker.beta)
+    return _with_static_umbrella(weight, frozen_bias, state.q, checker.beta)
 
 
 class ThermalNRPMDDynamics(NRPMDDynamics):
@@ -250,10 +313,14 @@ class ThermalNRPMDSampler:
     moves, and P Gaussian independence refreshes of the mapping variables.
     Physical time does not advance in sampling.  A potential failure rolls
     back the complete sweep, including the RNG state and acceptance counters.
+
+    ``bias`` optionally supplies a static built-in ``UmbrellaBias``. Its CV and
+    parameters are copied and bound to snapshots. Biased parents must be
+    reweighted before an equilibrium real-time correlation is evaluated.
     """
 
     def __init__(self, potential, masses, beta, q, nstates, seed=0,
-                 nuclear_step=0.1, centroid_step=0.1):
+                 nuclear_step=0.1, centroid_step=0.1, *, bias=None):
         self.q = np.array(coordinates(q), copy=True)
         self.nstates = _positive_integer(nstates, "nstates")
         self._checker = CayleyIntegrator(masses, beta, len(self.q), 0, native=False)
@@ -262,6 +329,7 @@ class ThermalNRPMDSampler:
         self.masses = self._checker.masses
         self.beta = self._checker.beta
         self.potential = potential
+        self._bias, self._bias_identity = _prepare_static_umbrella(bias)
         self.nuclear_step = _finite_positive(nuclear_step, "nuclear_step")
         self.centroid_step = _finite_positive(centroid_step, "centroid_step")
         self.rng = np.random.default_rng(seed)
@@ -272,11 +340,24 @@ class ThermalNRPMDSampler:
         for _ in range(100):
             self.x = self.rng.normal(scale=np.sqrt(0.5), size=(len(self.q), self.nstates))
             self.y = self.rng.normal(scale=np.sqrt(0.5), size=self.x.shape)
-            self._weight = _weight(self._split, self.q, self.x, self.y, self.masses, self.beta)
+            self._weight = self._sampling_weight(self._split, self.q, self.x, self.y)
             if self._weight.sign:
                 break
         else:
             raise ValueError("could not initialize a nonzero SEO thermal weight")
+
+    @property
+    def bias(self):
+        """A detached copy of the fixed umbrella; editing it cannot change a chain."""
+        return copy.deepcopy(self._bias)
+
+    def _check_static_bias(self):
+        if _static_umbrella_identity(self._bias) != self._bias_identity:
+            raise ValueError("thermal sampler static umbrella parameters are immutable")
+
+    def _sampling_weight(self, split, q, x, y):
+        weight = _weight(split, q, x, y, self.masses, self.beta)
+        return _with_static_umbrella(weight, self._bias, q, self.beta)
 
     def _accept(self, delta, kind):
         self.attempted[kind] += 1
@@ -292,11 +373,12 @@ class ThermalNRPMDSampler:
         else:
             q[bead] += self.rng.normal(scale=self.nuclear_step, size=q.shape[1:])
         split = _split_matrix(self.potential, q, self.beta, self.nstates)
-        weight = _weight(split, q, self.x, self.y, self.masses, self.beta)
+        weight = self._sampling_weight(split, q, self.x, self.y)
         if self._accept(weight.log_density - self._weight.log_density, kind):
             self.q, self._split, self._weight = q, split, weight
 
     def sweep(self):
+        self._check_static_bias()
         before = (self.q, self.x, self.y, self._split, self._weight, self.sweeps,
                   self.attempted.copy(), self.accepted.copy(), copy.deepcopy(self.rng.bit_generator.state))
         try:
@@ -307,7 +389,7 @@ class ThermalNRPMDSampler:
                 x, y = self.x.copy(), self.y.copy()
                 x[bead] = self.rng.normal(scale=np.sqrt(0.5), size=self.nstates)
                 y[bead] = self.rng.normal(scale=np.sqrt(0.5), size=self.nstates)
-                weight = _weight(self._split, self.q, x, y, self.masses, self.beta)
+                weight = self._sampling_weight(self._split, self.q, x, y)
                 # Independence-Hastings correction cancels the Gaussian
                 # mapping density.  Omitting this term biases thermal states.
                 gaussian_change = np.sum(x[bead]**2 + y[bead]**2 - self.x[bead]**2 - self.y[bead]**2)
@@ -324,20 +406,24 @@ class ThermalNRPMDSampler:
 
     def snapshot(self):
         """Return a detached continuation state; no provider is serialized."""
+        self._check_static_bias()
         return {
             "q": self.q.copy(), "mapping_q": self.x.copy(), "mapping_p": self.y.copy(),
             "beta": self.beta, "masses": self.masses.copy(), "nstates": self.nstates,
             "nuclear_step": self.nuclear_step, "centroid_step": self.centroid_step,
             "sweeps": self.sweeps, "attempted": self.attempted.copy(),
             "accepted": self.accepted.copy(), "rng": copy.deepcopy(self.rng.bit_generator.state),
+            "static_bias": copy.deepcopy(self._bias_identity),
         }
 
     def restore(self, snapshot):
         """Restore matching parameters transactionally, reevaluating the PES."""
+        self._check_static_bias()
         if (snapshot["beta"] != self.beta or snapshot["nstates"] != self.nstates
                 or not np.array_equal(snapshot["masses"], self.masses)
                 or snapshot["nuclear_step"] != self.nuclear_step
-                or snapshot["centroid_step"] != self.centroid_step):
+                or snapshot["centroid_step"] != self.centroid_step
+                or snapshot.get("static_bias") != self._bias_identity):
             raise ValueError("thermal sampler snapshot parameter mismatch")
         state = NRPMDState(snapshot["q"], np.zeros_like(self.q),
                            mapping_q=snapshot["mapping_q"], mapping_p=snapshot["mapping_p"])
@@ -353,7 +439,7 @@ class ThermalNRPMDSampler:
         generator = type(self.rng.bit_generator)()
         generator.state = copy.deepcopy(snapshot["rng"])
         split = _split_matrix(self.potential, state.q, self.beta, self.nstates)
-        weight = _weight(split, state.q, state.mapping_q, state.mapping_p, self.masses, self.beta)
+        weight = self._sampling_weight(split, state.q, state.mapping_q, state.mapping_p)
         if not weight.sign:
             raise ValueError("thermal sampler snapshot lies on a weight node")
         self.q, self.x, self.y = state.q, state.mapping_q, state.mapping_p
@@ -383,7 +469,11 @@ class ThermalNRPMDSampler:
             self.potential, sweeps,
             {"sweeps": self.sweeps, "burn_in_requested": burn_in, "sample_stride": stride,
              "attempted": self.attempted.copy(), "accepted": self.accepted.copy(),
-             "distribution": "absolute_SEO_projected_trace", "potential_split": "trace",
+             "distribution": ("absolute_SEO_projected_trace" if self._bias is None
+                              else "absolute_SEO_projected_trace_with_static_umbrella"),
+             "static_bias": self._bias is not None,
+             "static_bias_identity": copy.deepcopy(self._bias_identity),
+             "potential_split": "trace",
              "independent_chains": 1, "physical_converged": False},
         )
 
@@ -489,6 +579,15 @@ class ThermalRateCorrelation:
         # strongly oscillating curve.  Statistical uncertainty is separate.
         stable = estimate > 0 and np.max(abs(tail-estimate)) <= tolerance*estimate
         result["interval_shape_stable"] = bool(stable)
+        sampling = self.metadata.get("sampling", {})
+        if (sampling.get("uncertainty_requires_source_chain_bootstrap", False)
+                or sampling.get("parent_resampling") == "mbar_multinomial"):
+            # Resampling can duplicate parents and every target weight depends
+            # on the same fitted MBAR normalization. Blocking the resampled
+            # ordering cannot recover independent source-chain uncertainty.
+            result["uncertainty_reason"] = "source_chain_bootstrap_required_after_reweighting"
+            result["uncertainty_scope"] = "source_chains_and_fitted_reweighting_weights"
+            return result
         if block_size is None:
             result["uncertainty_reason"] = "parent_correlation_blocks_not_supplied"
             return result
@@ -521,6 +620,8 @@ class ThermalRateCorrelation:
 def _check_correlation(ensemble, dynamics, steps, stride):
     if not isinstance(ensemble, ThermalEnsemble) or not isinstance(dynamics, ThermalNRPMDDynamics):
         raise ValueError("thermal correlations require ThermalEnsemble and ThermalNRPMDDynamics")
+    if ensemble.sampling_diagnostics.get("static_bias", False):
+        raise ValueError("static-umbrella thermal parents must be reweighted before equilibrium correlations")
     if (ensemble.potential is not dynamics.potential or ensemble.beta != dynamics.beta
             or not np.array_equal(ensemble.masses, dynamics.masses)
             or ensemble.states[0].q.shape != dynamics.integrator.shape

@@ -14,6 +14,7 @@
 | `fes2d.inp` | 复用已有二维 umbrella/FES 工作流的恒电位有效势示例 |
 | `sample_grand_canonical.py` | 共享电子数的巨正则平衡采样与统计诊断 |
 | `her_scan.py` | Volmer–Heyrovsky–Tafel 模型中覆盖度、H₂ 生成及电流的后处理 |
+| `adaptive_constant_potential.py` | 公共充电项恒电势矩阵、自适应受限路径、有符号热初态重加权及无偏 NRPMD 短轨迹 |
 
 在仓库根目录运行：
 
@@ -22,6 +23,7 @@ pyrpmd validate examples/electrochemistry/fes2d.inp --check-pes
 pyrpmd run examples/electrochemistry/fes2d.inp --output runs/electrode-fes
 python examples/electrochemistry/sample_grand_canonical.py
 python examples/electrochemistry/her_scan.py
+python examples/electrochemistry/adaptive_constant_potential.py --beads 2 --output runs/adaptive-electrode.json
 ```
 
 `fes2d.inp` 使用每颗珠子独立电子最小化的绝热有效势
@@ -49,3 +51,8 @@ pyrpmd run examples/pcet/harmonic_scan.inp --output runs/pcet-harmonic
 它调用已验证的局域 golden-rule 模型，不调用本目录的绝热 PES。
 二维质子键差自由能可以沿用 FES；现有 `surface_rate` 仅支持线性质心坐标，
 不能直接把非线性质子键差交给表面速率入口。
+
+新增路径示例的完整定义见 [自适应恒电势 NRPMD](../../docs/adaptive-nrpmd.md)。
+公共充电项改变核力，但固定构型的电子态能隙不变；它不是一般的金属电子库
+跃迁模型。探索数据不进入生产 MBAR，原始正负 SEO 符号始终保留。
+当符号、窗口重叠或有效样本诊断未通过时，示例报告原因并停止动力学发射。
