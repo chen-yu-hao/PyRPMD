@@ -107,7 +107,7 @@ def main():
         result["difference"]=list(np.array(result["mean"])-ref_at)
         result["rmse"]=float(np.sqrt(np.mean(np.square(result["difference"]))))
         result["max_abs_error"]=float(np.max(np.abs(result["difference"])))
-        result["within_2sem"]=list(np.abs(result["difference"])<=2*np.array(result["sem"]))
+        result["within_2sem"]=(np.abs(result["difference"])<=2*np.array(result["sem"])).tolist()
         result["observable"]=("diabatic MMST W signed population" if method=="sm-nrpmd" else
             "diabatic MMST mapping signed population" if method=="nrpmd" else
             "active adiabatic-surface projected diabatic population (not amplitude population)")
