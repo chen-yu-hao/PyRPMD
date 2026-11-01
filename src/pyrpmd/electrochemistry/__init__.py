@@ -16,6 +16,9 @@ def __getattr__(name):
     if name in ("GrandCanonicalState", "GrandCanonicalSampler"):
         from . import sampling
         return getattr(sampling, name)
+    if name in ("ConstantPotentialDiabaticPotential", "ConstantPotentialDiabaticResult"):
+        from . import nonadiabatic
+        return getattr(nonadiabatic, name)
     raise AttributeError(name)
 
 
@@ -24,5 +27,6 @@ __all__ = [
     "AdiabaticElectrodeResult", "AdiabaticElectrodePotential",
     "build_adiabatic_electrode", "evaluate_electronic",
     "GrandCanonicalState", "GrandCanonicalSampler",
+    "ConstantPotentialDiabaticPotential", "ConstantPotentialDiabaticResult",
     "HERRates", "HERFluxes", "her_fluxes", "steady_state_her",
 ]

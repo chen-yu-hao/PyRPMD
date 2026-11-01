@@ -30,6 +30,7 @@ go straight to your task:
 | Directed escape on a fixed substrate | `surface_rate` | [Materials and surfaces](manual/periodic.md) |
 | Electrochemical PCET in the weak vibronic-coupling limit | `pcet` | [PCET](manual/pcet.md) |
 | Constant-potential effective PES, electron-number sampling and HER current | `fes` / Python API | [Electrode models](manual/electrochemistry.md) |
+| Adaptive restrained paths with constant-potential thermal NRPMD | Python API | [Adaptive NRPMD paths](manual/adaptive-nrpmd.md) |
 | Smooth nonlinear centroid escape coordinate | `site_rate` | [General-coordinate rates](general-coordinate-rates.md) |
 | Temperature, isotope and numerical convergence scans | `pyrpmd study` | [Rate studies](rate-studies.md) |
 | Instanton paths and one-dimensional low-temperature rates | Python API | [Instantons](instanton.md) |
@@ -114,6 +115,7 @@ Replica exchange <replica-exchange>
 OPES <opes>
 PLUMED bridge <plumed>
 Transition-interface sampling <transition-interface-sampling>
+Adaptive constant-potential NRPMD paths <manual/adaptive-nrpmd>
 ```
 
 ```{toctree}

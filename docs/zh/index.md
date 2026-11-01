@@ -26,6 +26,7 @@ PyRPMD 用一个 Python 或 TOML 输入运行环聚合物分子动力学。它�
 | 固定基底上的有向逃逸 | `surface_rate` | [材料与表面](manual/periodic.md) |
 | 弱振电耦合极限下的电化学 PCET | `pcet` | [PCET](manual/pcet.md) |
 | 恒电位有效势、电子数平衡采样与 HER 电流 | `fes` / Python API | [电极模型](manual/electrochemistry.md) |
+| 自适应受限路径、恒电势与热非绝热 RPMD | Python API | [自适应 NRPMD](manual/adaptive-nrpmd.md) |
 | 光滑非线性质心逃逸坐标 | `site_rate` | [广义坐标速率英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/general-coordinate-rates.md) |
 | 温度、同位素与数值收敛扫描 | `pyrpmd study` | [速率研究英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-studies.md) |
 | Instanton 路径与一维低温速率 | Python API | [Instanton 英文指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/instanton.md) |
@@ -81,6 +82,7 @@ pyrpmd resume runs/job                  # 从检查点续跑，科学设置保�
 PCET <manual/pcet>
 电极模型 <manual/electrochemistry>
 非绝热 NRPMD <manual/nonadiabatic>
+自适应恒电势 NRPMD <manual/adaptive-nrpmd>
 势能与插件 <manual/potentials>
 势能生成 <manual/pes-generation>
 JaxPIP 拟合与原生执行 <manual/jaxpip-generation>

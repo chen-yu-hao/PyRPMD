@@ -314,6 +314,7 @@ GitHub **Documentation** 工作流构建两个版本、运行入门示例，并�
 - [电子摩擦](docs/electronic-friction.md)、[热 NRPMD](docs/thermal-nrpmd.md)、[KC/MV/isomorphic 模型](docs/nonadiabatic-methods.md)、[SOC 与 RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP 恒压 PIMD](docs/materials-npt.md)、[网格 metadynamics](docs/grid-metadynamics.md)、[流式轨迹](docs/streaming-trajectories.md)
 - [恒电位电极模型与 HER 后处理](docs/electrochemistry.md)
+- [自适应受限反应路径、恒电势矩阵与有符号热 NRPMD](docs/zh/manual/adaptive-nrpmd.md)
 - [自适应伞抽样与 metadynamics](docs/enhanced-sampling.md)
 - [电化学 PCET 模型](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
 - [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)

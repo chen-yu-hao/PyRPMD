@@ -1,0 +1,17 @@
+# Keep source, tests, scripts, and scientific READMEs visible in PR review.
+# Machine-generated numerical evidence can be expanded separately on GitHub.
+docs/validation/adaptive-nrpmd-2026-11-01/*.json linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.json linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.csv linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.svg linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.png linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.npz linguist-generated=true
+docs/validation/adaptive-nrpmd-refinement-2026-11-01/**/*.json linguist-generated=true
+docs/validation/adaptive-nrpmd-refinement-2026-11-01/**/*.csv linguist-generated=true
+docs/validation/adaptive-nrpmd-refinement-2026-11-01/**/*.npz linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.json linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.svg linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.png linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.npz linguist-generated=true
+examples/nonadiabatic/data/richardson_thoss_2013_fig1c.csv linguist-generated=true
+examples/nonadiabatic/data/richardson_thoss_2013_fig1c.provenance.json linguist-generated=true
