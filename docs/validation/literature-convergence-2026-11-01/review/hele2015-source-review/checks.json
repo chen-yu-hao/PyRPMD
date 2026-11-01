@@ -1,0 +1,167 @@
+{
+  "CPU_seconds": 0.034180180999999976,
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "TableII_FH2_column_visually_checked": true,
+  "all_checks_passed": true,
+  "coordinate_sensitivity_is_confidence_interval": false,
+  "created_utc": "2026-11-01T22:15:33.950159+00:00",
+  "inputs": [
+    {
+      "bytes": 5950,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/source-protocol.json",
+      "sha256": "53af3b2481075ae0036af8afd3c37112cbdcda6578c314fab3394fd7a39bd79d"
+    },
+    {
+      "bytes": 52188,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/digitization.json",
+      "sha256": "2c26402ef22418c4c00d8c8708d770ead9e591e6b78c535acb8a9ff5e2151d8f"
+    },
+    {
+      "bytes": 7591,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/check_fh2.py",
+      "sha256": "dd7bc398af88a2263abd605a75dc9c68eff3d9e51964830f0afc69d5a31caa5c"
+    },
+    {
+      "bytes": 952566,
+      "path": "/workspace/scratch/a5e4820daedd/source-reading-hele2015/hel15trpmd.pdf",
+      "sha256": "3a3b1c2d257d7af0f56ffb8ec195e4e6db9e8d729d57390a4bcdb62623e3ace9"
+    },
+    {
+      "bytes": 317249,
+      "path": "/workspace/scratch/a5e4820daedd/source-reading-hele2015/arxiv-1506.07460v2-source.tar.gz",
+      "sha256": "f24cd312ced5125a8f67137314b1db7d0e1c9be381d16ec0cf7ef24fd4977546"
+    },
+    {
+      "bytes": 74832,
+      "path": "/workspace/scratch/a5e4820daedd/source-reading-hele2015/t.tex",
+      "sha256": "35f742da39e3747c6cb792b2eb856ed705db0f2cd9d2e0034dfafa4a0bb69fdf"
+    },
+    {
+      "bytes": 37981,
+      "path": "/workspace/scratch/a5e4820daedd/source-reading-hele2015/fhh.pdf",
+      "sha256": "f5953a36abf65ddb6ca3d2965a6bde62c26113d8e2a76357d5598d6c43d15347"
+    },
+    {
+      "bytes": 37304,
+      "path": "/workspace/scratch/a5e4820daedd/source-reading-hele2015/dmuh.pdf",
+      "sha256": "e38db2b3844f694e9801d4110284167917952a84ba193e56dc32d7c6aebfeddf"
+    },
+    {
+      "bytes": 37759,
+      "path": "/workspace/scratch/a5e4820daedd/source-reading-hele2015/hhh.pdf",
+      "sha256": "91ef2ee5dc824cacfa7022adad9672e1e1f617b8c30408acc74f2754b9787b94"
+    },
+    {
+      "bytes": 38487,
+      "path": "/workspace/scratch/a5e4820daedd/source-reading-hele2015/ch4h.pdf",
+      "sha256": "485ae36a16a1a46b12410fdc24f796beb4af158d2c9ba8b994a1b433a1a15a95"
+    }
+  ],
+  "maximum_absolute_relative_reader_difference": 1.806666189985151e-07,
+  "natural_log_axis": {
+    "intercept": -22.9672247204989,
+    "maximum_absolute_residual": 6.329404241500747e-05,
+    "slope": -0.0028613612589015874
+  },
+  "new_simulations": 0,
+  "paper_statistical_uncertainty": null,
+  "pdfplumber_version": "0.11.9",
+  "physical_equivalence_tolerance_created": false,
+  "prior_targets_changed": false,
+  "reader": "pdfplumber / PDFMiner, separately from the producer's PyMuPDF",
+  "schema": "pyrpmd.hele2015.fh2-independent-source-check.v1",
+  "seven_major_ticks_downward_points_and_rates": [
+    [
+      98.46000000000038,
+      8e-11
+    ],
+    [
+      145.1400000000002,
+      7e-11
+    ],
+    [
+      199.0200000000002,
+      6e-11
+    ],
+    [
+      262.7399999999999,
+      5e-11
+    ],
+    [
+      340.74,
+      4e-11
+    ],
+    [
+      441.24,
+      3e-11
+    ],
+    [
+      582.96,
+      2e-11
+    ]
+  ],
+  "source_only": true,
+  "temperature_assignment_independently_visually_confirmed": true,
+  "visual_review_external_images": [
+    "fhh-source-figure.png",
+    "page-07.png"
+  ],
+  "wall_seconds": 0.03533802900346927,
+  "zero_friction_rows": [
+    {
+      "below_lowest_printed_major_tick": true,
+      "independent_graph_rate_cm3_s": 1.9301814925974116e-11,
+      "lambda": 0,
+      "one_original_point_sensitivity_including_tick_fit_residual": [
+        1.9245446240293153e-11,
+        1.9358348711943514e-11
+      ],
+      "pdf_center_points": [
+        151.5,
+        595.38
+      ],
+      "producer_graph_rate_cm3_s": 1.9301814424289e-11,
+      "relative_reader_difference": 2.599160398020217e-08,
+      "temperature_K": 200,
+      "two_endpoint_log_interpolation_cm3_s": 1.930173654445132e-11,
+      "two_nearest_tick_log_interpolation_cm3_s": 1.930179866253119e-11
+    },
+    {
+      "below_lowest_printed_major_tick": false,
+      "independent_graph_rate_cm3_s": 2.860820398829366e-11,
+      "lambda": 0,
+      "one_original_point_sensitivity_including_tick_fit_residual": [
+        2.8524657085336736e-11,
+        2.8691995594805582e-11
+      ],
+      "pdf_center_points": [
+        151.5,
+        457.86
+      ],
+      "producer_graph_rate_cm3_s": 2.8608206737597767e-11,
+      "relative_reader_difference": -9.610193785203336e-08,
+      "temperature_K": 300,
+      "two_endpoint_log_interpolation_cm3_s": 2.8607802242455226e-11,
+      "two_nearest_tick_log_interpolation_cm3_s": 2.860617191164959e-11
+    },
+    {
+      "below_lowest_printed_major_tick": false,
+      "independent_graph_rate_cm3_s": 5.3562365761670986e-11,
+      "lambda": 0,
+      "one_original_point_sensitivity_including_tick_fit_residual": [
+        5.3405943157292714e-11,
+        5.371924651788993e-11
+      ],
+      "pdf_center_points": [
+        151.5,
+        238.68
+      ],
+      "producer_graph_rate_cm3_s": 5.356237543860426e-11,
+      "relative_reader_difference": -1.806666189985151e-07,
+      "temperature_K": 500,
+      "two_endpoint_log_interpolation_cm3_s": 5.356076143565659e-11,
+      "two_nearest_tick_log_interpolation_cm3_s": 5.3563384116724014e-11
+    }
+  ]
+}

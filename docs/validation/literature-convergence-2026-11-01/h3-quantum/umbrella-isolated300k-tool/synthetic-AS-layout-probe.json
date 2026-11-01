@@ -1,0 +1,69 @@
+{
+  "PES_calls": 0,
+  "RLIMIT_AS": [
+    1073741824,
+    1073741824
+  ],
+  "RLIMIT_CPU": [
+    30,
+    30
+  ],
+  "allocation_and_hash_checks_completed": true,
+  "array_bytes": 196134912,
+  "compressed_checkpoint_surrogate_bytes": 201000000,
+  "created_utc": "2026-11-01T22:14:14.842285+00:00",
+  "independent_hash_copy_largest_bytes": 115200000,
+  "not_a_measurement_of_real_sampling_peak": true,
+  "peak_RSS_bytes": 569126912,
+  "runtime": {
+    "numpy": "2.5.4",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "scipy": "1.18.1"
+  },
+  "sampler_calls": 0,
+  "schema": "pyrpmd.h3.isolated300k-AS-layout-probe.v1",
+  "scope": "One excluded synthetic memory-layout/import probe; no PES, model loading, primary arrays, sampling or archive restore. No /proc or other PID read.",
+  "source_sha256": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_sampling_scheduler.py": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+  },
+  "synthetic_descriptions": {
+    "R": {
+      "dtype": "<f8",
+      "sha256": "a8b2ee16ae8d5b617b5f6371b3c2eb33ed79d62733f939c68774c4f2b2562cb2",
+      "shape": [
+        48,
+        128,
+        3
+      ]
+    },
+    "diagnostics": {
+      "dtype": "<f8",
+      "sha256": "a0edd491e9d863c5b225fdd82941b4cf7d2f846aa3a0ec1a965ab30998b0a83a",
+      "shape": [
+        30000,
+        48,
+        7
+      ]
+    },
+    "r": {
+      "dtype": "<f8",
+      "sha256": "5d02f023235b09bc8b3a41ddb65d1ff77a077585dda8c163728e2dffef165a60",
+      "shape": [
+        48,
+        128,
+        3
+      ]
+    },
+    "samples": {
+      "dtype": "<f8",
+      "sha256": "930c5a5e1a3239aec6c9c072dc713fc91d51e1b79b22da6da367fc68bd9c56af",
+      "shape": [
+        300000,
+        48
+      ]
+    }
+  },
+  "wall_seconds": 0.9174772349942941,
+  "whole_process_CPU_seconds": 0.866246
+}

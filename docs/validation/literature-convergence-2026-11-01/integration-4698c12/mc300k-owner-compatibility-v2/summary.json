@@ -1,0 +1,81 @@
+{
+  "GitHub_official_runtime_pidfd_coverage_pending": true,
+  "all_available_cases_pass": true,
+  "combined_distinct_passing_identities": {
+    "py312": 872,
+    "py313": 865,
+    "py314": 865
+  },
+  "full76_case_coverage_on_every_interpreter": false,
+  "known_unavailable_ownership_cases_each_conda_interpreter": 7,
+  "new_complete_ownership_coverage": [
+    "py312"
+  ],
+  "original_scientific_sources_models_acceptance_criteria_unchanged": true,
+  "real_PES_evaluations": 0,
+  "real_sampling_or_dynamics_steps": 0,
+  "records": {
+    "py312": {
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 76
+      },
+      "full_method_coverage": true,
+      "launch": {
+        "bytes": 1310,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility-v2/py312/launch-receipt.json",
+        "sha256": "8bf13ac5ed9666b48963ad4aea94ece1565f0647b3c50010b3021e62b71bb060"
+      },
+      "passing_cases": 76,
+      "report": {
+        "bytes": 11405,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility-v2/py312/compatibility.json",
+        "sha256": "859f2657ac94eef949655d17efd0ba079d367e743f5adf626941fb9c3392cd6a"
+      }
+    },
+    "py313": {
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 7,
+        "tests": 76
+      },
+      "full_method_coverage": false,
+      "launch": {
+        "bytes": 1327,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility-v2/py313/launch-receipt.json",
+        "sha256": "516130ef1d872c11d478d7c080e5afaabda465dcd64a84dff034ac71ee64d36b"
+      },
+      "passing_cases": 69,
+      "report": {
+        "bytes": 12837,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility-v2/py313/compatibility.json",
+        "sha256": "d266d74438d3cc9189cc639f1e65548bf4eec8d02e83c9b143780e577eee6441"
+      }
+    },
+    "py314": {
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 7,
+        "tests": 76
+      },
+      "full_method_coverage": false,
+      "launch": {
+        "bytes": 1328,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility-v2/py314/launch-receipt.json",
+        "sha256": "117323c4ad4b52162fd5374d0f369c13e5a7d395a5c14249191f099d308a201e"
+      },
+      "passing_cases": 69,
+      "report": {
+        "bytes": 12834,
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility-v2/py314/compatibility.json",
+        "sha256": "c9e44d34b8c3829c502036f764dd8dfd95ecd34c1d7f9f0c8304dd5e3d9e8cb6"
+      }
+    }
+  },
+  "schema": "pyrpmd.mc300k-capability-aware-summary.v1",
+  "whole_repository_suite_rerun": false
+}

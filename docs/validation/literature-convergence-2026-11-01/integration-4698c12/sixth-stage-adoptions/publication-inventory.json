@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "bytes": 2138,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/sixth-stage-adoptions/hch4-normalization-copy-observation.json",
+      "sha256": "e4ab188ba0624d5fb2ecaadf3a72822e5e06d6792d1a2c5b4d7bfdb71e87095c"
+    },
+    {
+      "bytes": 2531,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/sixth-stage-adoptions/mc300k-historical-link-context.json",
+      "sha256": "cb134384b364ae7959d1e04b191db3f7960060ecf24ba5c3192d56ce7db0ceec"
+    },
+    {
+      "bytes": 1517,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/sixth-stage-adoptions/root-sealing-receipt.json",
+      "sha256": "2e676cf1ecc3d3b2d2382f0ed6692b8e0325070bae5b51f9a9f24155eb2f0f6a"
+    },
+    {
+      "bytes": 10402,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/sixth-stage-adoptions/seal_ci_and_source_evidence.py",
+      "sha256": "2a5e100d4eedb8dc51a3f467e69c8787dab6c444cc1189f72022cfa453f1ff70"
+    },
+    {
+      "bytes": 10263,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/sixth-stage-adoptions/seal_mc300k_integration_evidence.py",
+      "sha256": "af2c8eaa6bde23b4e6054c293b7af11c281a5ea70b4c744036a0ebbead4b14e7"
+    },
+    {
+      "bytes": 5374,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/mc300k-pidfd-capability-review.json",
+      "sha256": "615d3024ead3319ea833428d876c4134ef21b151e9e9615b75152a9ec2d85260"
+    }
+  ],
+  "listed_bytes": 32225,
+  "schema": "pyrpmd.sixth-stage-root-adoption-inventory.v1",
+  "scope": "Root copy/seal receipts, independentintegration-only capabilityreview andexacthistorical link context; no rawdata."
+}

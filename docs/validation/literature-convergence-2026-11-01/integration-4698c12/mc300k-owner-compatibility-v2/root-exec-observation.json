@@ -1,0 +1,12 @@
+{
+  "exec_session_id": 52956,
+  "passed_field_scope": "Every available test passes and exact predeclared capability skips match; only3.12 has complete76-case ownership coverage.",
+  "recorded_after_observation_utc": "2026-11-01T22:32:01.286117+00:00",
+  "schema": "pyrpmd.root-actual-exec-observation.v1",
+  "tool_result": {
+    "chunk_id": "d35510",
+    "exit_code": 0,
+    "output": "{\"label\": \"py312\", \"exit_code\": 0, \"wall_seconds\": 5.249456135003129, \"passed\": true}\n{\"label\": \"py313\", \"exit_code\": 0, \"wall_seconds\": 2.679044825010351, \"passed\": true}\n{\"label\": \"py314\", \"exit_code\": 0, \"wall_seconds\": 2.9834116010024445, \"passed\": true}\n",
+    "wall_time_seconds": 2.6039e-05
+  }
+}

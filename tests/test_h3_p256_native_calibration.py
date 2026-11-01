@@ -69,7 +69,10 @@ def test_checkpoint_integrity_is_required(tmp_path):
 @pytest.mark.parametrize("cpu,wall", [(55.0, 1.0), (1.0, 115.0)])
 def test_budget_is_checked_before_admission(monkeypatch, cpu, wall):
     monkeypatch.setattr(check, "cpu_seconds", lambda: cpu)
-    monkeypatch.setattr(check.time, "monotonic", lambda: check.ENTRY_WALL + wall)
+    # An actual clock origin can round the exact boundary below 115 seconds
+    # when the synthetic elapsed duration is added and then subtracted.
+    monkeypatch.setattr(check, "ENTRY_WALL", 0.0)
+    monkeypatch.setattr(check, "time", SimpleNamespace(monotonic=lambda: wall))
     with pytest.raises(TimeoutError, match="admission"):
         check.admission()
 

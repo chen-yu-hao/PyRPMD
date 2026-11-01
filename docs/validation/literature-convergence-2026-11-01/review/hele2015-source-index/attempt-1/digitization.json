@@ -1,0 +1,1671 @@
+{
+  "schema": "pyrpmd.hele2015.vector-source-digitization.v1",
+  "doi": "10.1063/1.4928599",
+  "arxiv_version": "1506.07460v2",
+  "source_sha256": {
+    "hel15trpmd.pdf": "3a3b1c2d257d7af0f56ffb8ec195e4e6db9e8d729d57390a4bcdb62623e3ace9",
+    "arxiv-1506.07460v2-source.tar.gz": "f24cd312ced5125a8f67137314b1db7d0e1c9be381d16ec0cf7ef24fd4977546",
+    "t.tex": "35f742da39e3747c6cb792b2eb856ed705db0f2cd9d2e0034dfafa4a0bb69fdf",
+    "fhh.pdf": "f5953a36abf65ddb6ca3d2965a6bde62c26113d8e2a76357d5598d6c43d15347",
+    "dmuh.pdf": "e38db2b3844f694e9801d4110284167917952a84ba193e56dc32d7c6aebfeddf",
+    "hhh.pdf": "91ef2ee5dc824cacfa7022adad9672e1e1f617b8c30408acc74f2754b9787b94",
+    "ch4h.pdf": "485ae36a16a1a46b12410fdc24f796beb4af158d2c9ba8b994a1b433a1a15a95"
+  },
+  "extractor_sha256": "6ab81f9de930197bd2ea73ec6993297beb618de55bea67e295f7149885cb9c11",
+  "pymupdf_version": "1.26.6",
+  "scope": "Author-published graph coordinates, not new molecular simulation results",
+  "statistical_uncertainty_supplied_by_figure": false,
+  "coordinate_sensitivity_is_confidence_interval": false,
+  "coordinate_sensitivity_is_physical_tolerance": false,
+  "source_PDF_or_TeX_redistributed": false,
+  "PES_calls": 0,
+  "random_draws": 0,
+  "physical_gate_pass": false,
+  "prior_reference_targets_changed": false,
+  "figures": {
+    "hhh.pdf": {
+      "reaction": "H + H2",
+      "figure": 4,
+      "temperatures_K": [
+        200,
+        300,
+        500
+      ],
+      "beads": [
+        128,
+        128,
+        128
+      ],
+      "tick_count": 5,
+      "original_figure": "hhh.pdf",
+      "original_figure_sha256": "91ef2ee5dc824cacfa7022adad9672e1e1f617b8c30408acc74f2754b9787b94",
+      "log_axis_fit": {
+        "slope": -0.021241168014804974,
+        "intercept": -28.60904974041437,
+        "maximum_absolute_residual": 0.0005099617577286608
+      },
+      "lambda_axis_fit": {
+        "slope": 0.0036918662700961675,
+        "intercept": -0.5192319594548163,
+        "maximum_absolute_residual": 0.00010289874240831942
+      },
+      "y_ticks": [
+        {
+          "label": "1E-18",
+          "rate_cm3_s": 1e-18,
+          "coordinate_y_points": 604.3800048828125,
+          "drawing_index": 21
+        },
+        {
+          "label": "1E-17",
+          "rate_cm3_s": 1e-17,
+          "coordinate_y_points": 495.9599609375,
+          "drawing_index": 31
+        },
+        {
+          "label": "1E-16",
+          "rate_cm3_s": 1e-16,
+          "coordinate_y_points": 387.53997802734375,
+          "drawing_index": 41
+        },
+        {
+          "label": "1E-15",
+          "rate_cm3_s": 1e-15,
+          "coordinate_y_points": 279.17999267578125,
+          "drawing_index": 51
+        },
+        {
+          "label": "1E-14",
+          "rate_cm3_s": 1e-14,
+          "coordinate_y_points": 170.75999450683594,
+          "drawing_index": 61
+        }
+      ],
+      "markers": [
+        {
+          "coordinate_x_points": 140.63999938964844,
+          "coordinate_y_points": 596.5799865722656,
+          "extracted_lambda": -7.889481827616507e-06,
+          "drawing_indices": [
+            67,
+            68
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 1.1798958884133266e-18,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.1545089183644441e-18,
+            1.2058411029573456e-18
+          ],
+          "temperature_K": 200,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 208.3800048828125,
+          "coordinate_y_points": 602.5799865722656,
+          "extracted_lambda": 0.2500791519345139,
+          "drawing_indices": [
+            69,
+            70
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 1.038709623689827e-18,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.0163604568141287e-18,
+            1.061550235560939e-18
+          ],
+          "temperature_K": 200,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 276.05999755859375,
+          "coordinate_y_points": 608.5799865722656,
+          "extracted_lambda": 0.49994463405458633,
+          "drawing_indices": [
+            71,
+            72
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 9.144176981553448e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            8.94742831124106e-19,
+            9.345252039060366e-19
+          ],
+          "temperature_K": 200,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 343.79998779296875,
+          "coordinate_y_points": 613.1999816894531,
+          "extracted_lambda": 0.7500316191375191,
+          "drawing_indices": [
+            73,
+            74
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 8.289446408838463e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            8.111088360666946e-19,
+            8.471726445272594e-19
+          ],
+          "temperature_K": 200,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 411.47998046875,
+          "coordinate_y_points": 617.3999938964844,
+          "extracted_lambda": 0.9998971012575917,
+          "drawing_indices": [
+            75,
+            76
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 7.581946976860185e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            7.418811684412808e-19,
+            7.748669518151982e-19
+          ],
+          "temperature_K": 200,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 546.9599914550781,
+          "coordinate_y_points": 623.2799987792969,
+          "extracted_lambda": 1.5000711840902745,
+          "drawing_indices": [
+            77,
+            78
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 6.691726095416779e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            6.547745044522431e-19,
+            6.838873204683236e-19
+          ],
+          "temperature_K": 200,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 140.63999938964844,
+          "coordinate_y_points": 356.1600036621094,
+          "extracted_lambda": -7.889481827616507e-06,
+          "drawing_indices": [
+            80,
+            81
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 1.948494980189796e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.9065706170419622e-16,
+            1.991341235351301e-16
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 208.3800048828125,
+          "coordinate_y_points": 357.7799987792969,
+          "extracted_lambda": 0.2500791519345139,
+          "drawing_indices": [
+            82,
+            83
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 1.8825865977272094e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.8420803377764282e-16,
+            1.923983566438924e-16
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 276.05999755859375,
+          "coordinate_y_points": 359.70001220703125,
+          "extracted_lambda": 0.49994463405458633,
+          "drawing_indices": [
+            84,
+            85
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 1.8073530168639395e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.7684655036880237e-16,
+            1.8470956435141378e-16
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 343.79998779296875,
+          "coordinate_y_points": 361.9200134277344,
+          "extracted_lambda": 0.7500316191375191,
+          "drawing_indices": [
+            86,
+            87
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 1.7241047570600336e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.6870084367334336e-16,
+            1.7620168035868167e-16
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 411.47998046875,
+          "coordinate_y_points": 363.6000061035156,
+          "extracted_lambda": 0.9998971012575917,
+          "drawing_indices": [
+            88,
+            89
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 1.6636648796269507e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.6278690006131985e-16,
+            1.700247888903571e-16
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 546.9599914550781,
+          "coordinate_y_points": 366.9599914550781,
+          "extracted_lambda": 1.5000711840902745,
+          "drawing_indices": [
+            90,
+            91
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 1.5490671550155405e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.5157369927069224e-16,
+            1.5831302279312518e-16
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 140.63999938964844,
+          "coordinate_y_points": 126.72000122070312,
+          "extracted_lambda": -7.889481827616507e-06,
+          "drawing_indices": [
+            93,
+            94
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 2.5483872923760266e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.4935554784000466e-14,
+            2.604424825595047e-14
+          ],
+          "temperature_K": 500,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 208.3800048828125,
+          "coordinate_y_points": 126.00003051757812,
+          "extracted_lambda": 0.2500791519345139,
+          "drawing_indices": [
+            95,
+            96
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 2.587659355619204e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.5319825529428626e-14,
+            2.6445604583416326e-14
+          ],
+          "temperature_K": 500,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 276.05999755859375,
+          "coordinate_y_points": 126.24002456665039,
+          "extracted_lambda": 0.49994463405458633,
+          "drawing_indices": [
+            97,
+            98
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 2.5745016708121173e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.5191079725633703e-14,
+            2.6311134438075976e-14
+          ],
+          "temperature_K": 500,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 343.79998779296875,
+          "coordinate_y_points": 126.72003173828125,
+          "extracted_lambda": 0.7500316191375191,
+          "drawing_indices": [
+            99,
+            100
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 2.548385640438004e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.493553862005585e-14,
+            2.604423137331882e-14
+          ],
+          "temperature_K": 500,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 411.47998046875,
+          "coordinate_y_points": 127.26002883911133,
+          "extracted_lambda": 0.9998971012575917,
+          "drawing_indices": [
+            101,
+            102
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 2.519322225875612e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.465115784002341e-14,
+            2.5747206354283032e-14
+          ],
+          "temperature_K": 500,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 546.9599914550781,
+          "coordinate_y_points": 128.40002822875977,
+          "extracted_lambda": 1.5000711840902745,
+          "drawing_indices": [
+            103,
+            104
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 2.4590497351437475e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.406140133044229e-14,
+            2.513122788181091e-14
+          ],
+          "temperature_K": 500,
+          "beads": 128
+        }
+      ],
+      "excluded_legend_cross": {
+        "coordinate_x_points": 198.66000366210938,
+        "coordinate_y_points": 412.3800048828125,
+        "extracted_lambda": 0.2141942072825065,
+        "drawing_indices": [
+          169,
+          170
+        ],
+        "stroke_width_points": 1.3799999952316284
+      },
+      "temperature_assignment": "bottom, middle, top correspond to the visible low, middle, high T labels",
+      "coordinate_sensitivity_points": 1.0,
+      "paper_statistical_uncertainty": null,
+      "physical_comparison_eligible": false
+    },
+    "dmuh.pdf": {
+      "reaction": "D + MuH",
+      "figure": 5,
+      "temperatures_K": [
+        200,
+        300,
+        500
+      ],
+      "beads": [
+        512,
+        512,
+        512
+      ],
+      "tick_count": 3,
+      "original_figure": "dmuh.pdf",
+      "original_figure_sha256": "e38db2b3844f694e9801d4110284167917952a84ba193e56dc32d7c6aebfeddf",
+      "log_axis_fit": {
+        "slope": -0.013240097899366797,
+        "intercept": -24.752755254411213,
+        "maximum_absolute_residual": 0.0002650605536516082
+      },
+      "lambda_axis_fit": {
+        "slope": 0.003660473965100636,
+        "intercept": -0.5591739011740924,
+        "maximum_absolute_residual": 9.411854730334568e-05
+      },
+      "y_ticks": [
+        {
+          "label": "1E-14",
+          "rate_cm3_s": 1e-14,
+          "coordinate_y_points": 565.2000122070312,
+          "drawing_index": 21
+        },
+        {
+          "label": "1E-13",
+          "rate_cm3_s": 1e-13,
+          "coordinate_y_points": 391.320068359375,
+          "drawing_index": 31
+        },
+        {
+          "label": "1E-12",
+          "rate_cm3_s": 1e-12,
+          "coordinate_y_points": 217.38006591796875,
+          "drawing_index": 41
+        }
+      ],
+      "markers": [
+        {
+          "coordinate_x_points": 152.75999450683594,
+          "coordinate_y_points": 556.5000305175781,
+          "extracted_lambda": 8.162709674852664e-08,
+          "drawing_indices": [
+            47,
+            48
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 1.1222337990602671e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.107179736341452e-14,
+            1.1374925483325869e-14
+          ],
+          "temperature_K": 200,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 221.04000854492188,
+          "coordinate_y_points": 574.1399841308594,
+          "extracted_lambda": 0.24993729535021625,
+          "drawing_indices": [
+            49,
+            50
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 8.884885215954037e-15,
+          "coordinate_sensitivity_interval_cm3_s": [
+            8.765700052040379e-15,
+            9.005690912536255e-15
+          ],
+          "temperature_K": 200,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 289.3800048828125,
+          "coordinate_y_points": 584.5799865722656,
+          "extracted_lambda": 0.5000940727201377,
+          "drawing_indices": [
+            51,
+            52
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 7.737857869673558e-15,
+          "coordinate_sensitivity_interval_cm3_s": [
+            7.634059358367905e-15,
+            7.843067704947691e-15
+          ],
+          "temperature_K": 200,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 357.6600036621094,
+          "coordinate_y_points": 597.2399597167969,
+          "extracted_lambda": 0.7500312305888572,
+          "drawing_indices": [
+            53,
+            54
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 6.5437186476502185e-15,
+          "coordinate_sensitivity_interval_cm3_s": [
+            6.455938765224208e-15,
+            6.632692052511764e-15
+          ],
+          "temperature_K": 200,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 425.94000244140625,
+          "coordinate_y_points": 605.6999816894531,
+          "extracted_lambda": 0.9999683884575765,
+          "drawing_indices": [
+            55,
+            56
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 5.850306688688509e-15,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.771828492888696e-15,
+            5.929851934076436e-15
+          ],
+          "temperature_K": 200,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 562.5600280761719,
+          "coordinate_y_points": 618.5400085449219,
+          "extracted_lambda": 1.5000624354050178,
+          "drawing_indices": [
+            57,
+            58
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 4.935682063162572e-15,
+          "coordinate_sensitivity_interval_cm3_s": [
+            4.869472983199735e-15,
+            5.002791372428385e-15
+          ],
+          "temperature_K": 200,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 152.75999450683594,
+          "coordinate_y_points": 381.4200134277344,
+          "extracted_lambda": 8.162709674852664e-08,
+          "drawing_indices": [
+            60,
+            61
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 1.1397542123402468e-13,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.1244651242634423e-13,
+            1.1552511825551242e-13
+          ],
+          "temperature_K": 300,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 221.04000854492188,
+          "coordinate_y_points": 392.3999938964844,
+          "extracted_lambda": 0.24993729535021625,
+          "drawing_indices": [
+            62,
+            63
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 9.855421527078218e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            9.723217227124685e-14,
+            9.989423377833913e-14
+          ],
+          "temperature_K": 300,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 289.3800048828125,
+          "coordinate_y_points": 400.55999755859375,
+          "extracted_lambda": 0.5000940727201377,
+          "drawing_indices": [
+            64,
+            65
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 8.846151142396389e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            8.727485571791375e-14,
+            8.966430180881834e-14
+          ],
+          "temperature_K": 300,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 357.6600036621094,
+          "coordinate_y_points": 405.0,
+          "extracted_lambda": 0.7500312305888572,
+          "drawing_indices": [
+            66,
+            67
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 8.34111081094108e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            8.229220039697504e-14,
+            8.454522934710058e-14
+          ],
+          "temperature_K": 300,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 425.94000244140625,
+          "coordinate_y_points": 411.4800109863281,
+          "extracted_lambda": 0.9999683884575765,
+          "drawing_indices": [
+            68,
+            69
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 7.655316841681066e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            7.552625566508691e-14,
+            7.759404385992387e-14
+          ],
+          "temperature_K": 300,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 562.5600280761719,
+          "coordinate_y_points": 429.4800109863281,
+          "extracted_lambda": 1.5000624354050178,
+          "drawing_indices": [
+            70,
+            71
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 6.032000153934594e-14,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.951084654229231e-14,
+            6.114015842676575e-14
+          ],
+          "temperature_K": 300,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 152.75999450683594,
+          "coordinate_y_points": 197.87997436523438,
+          "extracted_lambda": 8.162709674852664e-08,
+          "drawing_indices": [
+            73,
+            74
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 1.2947474134488877e-12,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.2773791887675427e-12,
+            1.3123517898001786e-12
+          ],
+          "temperature_K": 500,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 221.04000854492188,
+          "coordinate_y_points": 201.54000854492188,
+          "extracted_lambda": 0.24993729535021625,
+          "drawing_indices": [
+            75,
+            76
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 1.2335009383929769e-12,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.216954296769966e-12,
+            1.2502725608141386e-12
+          ],
+          "temperature_K": 500,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 289.3800048828125,
+          "coordinate_y_points": 204.42001342773438,
+          "extracted_lambda": 0.5000940727201377,
+          "drawing_indices": [
+            77,
+            78
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 1.1873511137177044e-12,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.1714235430545108e-12,
+            1.2034952478166725e-12
+          ],
+          "temperature_K": 500,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 357.6600036621094,
+          "coordinate_y_points": 207.66001892089844,
+          "extracted_lambda": 0.7500312305888572,
+          "drawing_indices": [
+            79,
+            80
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 1.1374931856871009e-12,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.122234427865074e-12,
+            1.1529594132538534e-12
+          ],
+          "temperature_K": 500,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 425.94000244140625,
+          "coordinate_y_points": 211.02001953125,
+          "extracted_lambda": 0.9999683884575765,
+          "drawing_indices": [
+            81,
+            82
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 1.0879989073912818e-12,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.0734040842772554e-12,
+            1.102792172885815e-12
+          ],
+          "temperature_K": 500,
+          "beads": 512
+        },
+        {
+          "coordinate_x_points": 562.5600280761719,
+          "coordinate_y_points": 223.19998168945312,
+          "extracted_lambda": 1.5000624354050178,
+          "drawing_indices": [
+            83,
+            84
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 9.259604580033849e-13,
+          "coordinate_sensitivity_interval_cm3_s": [
+            9.135392790818493e-13,
+            9.385505247760873e-13
+          ],
+          "temperature_K": 500,
+          "beads": 512
+        }
+      ],
+      "excluded_legend_cross": {
+        "coordinate_x_points": 238.97999572753906,
+        "coordinate_y_points": 475.6199951171875,
+        "extracted_lambda": 0.31560615136642567,
+        "drawing_indices": [
+          150,
+          151
+        ],
+        "stroke_width_points": 1.3799999952316284
+      },
+      "temperature_assignment": "bottom, middle, top correspond to the visible low, middle, high T labels",
+      "coordinate_sensitivity_points": 1.0,
+      "paper_statistical_uncertainty": null,
+      "physical_comparison_eligible": false
+    },
+    "ch4h.pdf": {
+      "reaction": "H + CH4",
+      "figure": 6,
+      "temperatures_K": [
+        250,
+        300,
+        500
+      ],
+      "beads": [
+        192,
+        128,
+        64
+      ],
+      "tick_count": 6,
+      "original_figure": "ch4h.pdf",
+      "original_figure_sha256": "485ae36a16a1a46b12410fdc24f796beb4af158d2c9ba8b994a1b433a1a15a95",
+      "log_axis_fit": {
+        "slope": -0.023082964035402286,
+        "intercept": -33.11280221001009,
+        "maximum_absolute_residual": 0.00043525865978466527
+      },
+      "lambda_axis_fit": {
+        "slope": 0.003660473965100636,
+        "intercept": -0.5591739011740924,
+        "maximum_absolute_residual": 9.411854730334568e-05
+      },
+      "y_ticks": [
+        {
+          "label": "1E-21",
+          "rate_cm3_s": 1e-21,
+          "coordinate_y_points": 660.300048828125,
+          "drawing_index": 14
+        },
+        {
+          "label": "1E-20",
+          "rate_cm3_s": 1e-20,
+          "coordinate_y_points": 560.5200805664062,
+          "drawing_index": 24
+        },
+        {
+          "label": "1E-19",
+          "rate_cm3_s": 1e-19,
+          "coordinate_y_points": 460.800048828125,
+          "drawing_index": 34
+        },
+        {
+          "label": "1E-18",
+          "rate_cm3_s": 1e-18,
+          "coordinate_y_points": 361.0200500488281,
+          "drawing_index": 44
+        },
+        {
+          "label": "1E-17",
+          "rate_cm3_s": 1e-17,
+          "coordinate_y_points": 261.300048828125,
+          "drawing_index": 54
+        },
+        {
+          "label": "1E-16",
+          "rate_cm3_s": 1e-16,
+          "coordinate_y_points": 161.52005004882812,
+          "drawing_index": 64
+        }
+      ],
+      "markers": [
+        {
+          "coordinate_x_points": 152.75999450683594,
+          "coordinate_y_points": 600.0599670410156,
+          "extracted_lambda": 8.162709674852664e-08,
+          "drawing_indices": [
+            70,
+            71
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 4.016143462849317e-21,
+          "coordinate_sensitivity_interval_cm3_s": [
+            3.9227929285364815e-21,
+            4.111715455805329e-21
+          ],
+          "temperature_K": 250,
+          "beads": 192
+        },
+        {
+          "coordinate_x_points": 221.04000854492188,
+          "coordinate_y_points": 601.3800354003906,
+          "extracted_lambda": 0.24993729535021625,
+          "drawing_indices": [
+            72,
+            73
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 3.895612867202828e-21,
+          "coordinate_sensitivity_interval_cm3_s": [
+            3.805063924916952e-21,
+            3.988316598767118e-21
+          ],
+          "temperature_K": 250,
+          "beads": 192
+        },
+        {
+          "coordinate_x_points": 289.3800048828125,
+          "coordinate_y_points": 603.7800598144531,
+          "extracted_lambda": 0.5000940727201377,
+          "drawing_indices": [
+            74,
+            75
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 3.685666349635409e-21,
+          "coordinate_sensitivity_interval_cm3_s": [
+            3.599997367384161e-21,
+            3.773373992966372e-21
+          ],
+          "temperature_K": 250,
+          "beads": 192
+        },
+        {
+          "coordinate_x_points": 357.6600036621094,
+          "coordinate_y_points": 605.7600402832031,
+          "extracted_lambda": 0.7500312305888572,
+          "drawing_indices": [
+            76,
+            77
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 3.52100872769288e-21,
+          "coordinate_sensitivity_interval_cm3_s": [
+            3.439167018328968e-21,
+            3.604798020688499e-21
+          ],
+          "temperature_K": 250,
+          "beads": 192
+        },
+        {
+          "coordinate_x_points": 425.94000244140625,
+          "coordinate_y_points": 607.5000305175781,
+          "extracted_lambda": 0.9999683884575765,
+          "drawing_indices": [
+            78,
+            79
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 3.382392796266999e-21,
+          "coordinate_sensitivity_interval_cm3_s": [
+            3.3037730513031586e-21,
+            3.4628834519145324e-21
+          ],
+          "temperature_K": 250,
+          "beads": 192
+        },
+        {
+          "coordinate_x_points": 562.5600280761719,
+          "coordinate_y_points": 610.0199890136719,
+          "extracted_lambda": 1.5000624354050178,
+          "drawing_indices": [
+            80,
+            81
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 3.191258252622197e-21,
+          "coordinate_sensitivity_interval_cm3_s": [
+            3.1170812054703072e-21,
+            3.267200487769355e-21
+          ],
+          "temperature_K": 250,
+          "beads": 192
+        },
+        {
+          "coordinate_x_points": 152.75999450683594,
+          "coordinate_y_points": 455.1600036621094,
+          "extracted_lambda": 8.162709674852664e-08,
+          "drawing_indices": [
+            83,
+            84
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 1.138683262549703e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.1122159084934106e-19,
+            1.1657804590901676e-19
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 221.04000854492188,
+          "coordinate_y_points": 456.05999755859375,
+          "extracted_lambda": 0.24993729535021625,
+          "drawing_indices": [
+            85,
+            86
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 1.1152716809159454e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.089348501557304e-19,
+            1.1418117530569236e-19
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 289.3800048828125,
+          "coordinate_y_points": 457.32000732421875,
+          "extracted_lambda": 0.5000940727201377,
+          "drawing_indices": [
+            87,
+            88
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 1.083301448559983e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.0581213796753927e-19,
+            1.1090807264589752e-19
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 357.6600036621094,
+          "coordinate_y_points": 458.6400146484375,
+          "extracted_lambda": 0.7500312305888572,
+          "drawing_indices": [
+            89,
+            90
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 1.0507913989443149e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.0263669879514888e-19,
+            1.0757970365932489e-19
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 425.94000244140625,
+          "coordinate_y_points": 459.9000244140625,
+          "extracted_lambda": 0.9999683884575765,
+          "drawing_indices": [
+            91,
+            92
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 1.0206695499305262e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            9.969452859135088e-20,
+            1.0449583792362328e-19
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 562.5600280761719,
+          "coordinate_y_points": 460.739990234375,
+          "extracted_lambda": 1.5000624354050178,
+          "drawing_indices": [
+            93,
+            94
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 1.001070505207205e-19,
+          "coordinate_sensitivity_interval_cm3_s": [
+            9.778017979485223e-20,
+            1.0248929368900256e-19
+          ],
+          "temperature_K": 300,
+          "beads": 128
+        },
+        {
+          "coordinate_x_points": 152.75999450683594,
+          "coordinate_y_points": 120.30001831054688,
+          "extracted_lambda": 8.162709674852664e-08,
+          "drawing_indices": [
+            96,
+            97
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 2.5900528522414053e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.5298501179786006e-16,
+            2.6516882283777194e-16
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 221.04000854492188,
+          "coordinate_y_points": 119.57998657226562,
+          "extracted_lambda": 0.24993729535021625,
+          "drawing_indices": [
+            98,
+            99
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 2.633460467648001e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.5722487743853657e-16,
+            2.6961288129379946e-16
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 289.3800048828125,
+          "coordinate_y_points": 119.99998474121094,
+          "extracted_lambda": 0.5000940727201377,
+          "drawing_indices": [
+            100,
+            101
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 2.6080529476319776e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.54743182230871e-16,
+            2.6701166712627943e-16
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 357.6600036621094,
+          "coordinate_y_points": 120.17998504638672,
+          "extracted_lambda": 0.7500312305888572,
+          "drawing_indices": [
+            102,
+            103
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 2.597239123584426e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.536869352890828e-16,
+            2.65904551111028e-16
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 425.94000244140625,
+          "coordinate_y_points": 119.81998443603516,
+          "extracted_lambda": 0.9999683884575765,
+          "drawing_indices": [
+            104,
+            105
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 2.618911795947577e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.5580382694584497e-16,
+            2.681233927123923e-16
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 562.5600280761719,
+          "coordinate_y_points": 121.13998413085938,
+          "extracted_lambda": 1.5000624354050178,
+          "drawing_indices": [
+            106,
+            107
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 2.5403182817427376e-16,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.4812715691143233e-16,
+            2.6007701264476325e-16
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        }
+      ],
+      "excluded_legend_cross": {
+        "coordinate_x_points": 210.72000122070312,
+        "coordinate_y_points": 260.8199768066406,
+        "extracted_lambda": 0.21216117722026573,
+        "drawing_indices": [
+          172,
+          173
+        ],
+        "stroke_width_points": 1.3799999952316284
+      },
+      "temperature_assignment": "bottom, middle, top correspond to the visible low, middle, high T labels",
+      "coordinate_sensitivity_points": 1.0,
+      "paper_statistical_uncertainty": null,
+      "physical_comparison_eligible": false
+    },
+    "fhh.pdf": {
+      "reaction": "F + H2",
+      "figure": 7,
+      "temperatures_K": [
+        200,
+        300,
+        500
+      ],
+      "beads": [
+        384,
+        256,
+        64
+      ],
+      "tick_count": 7,
+      "original_figure": "fhh.pdf",
+      "original_figure_sha256": "f5953a36abf65ddb6ca3d2965a6bde62c26113d8e2a76357d5598d6c43d15347",
+      "log_axis_fit": {
+        "slope": -0.002861361740341193,
+        "intercept": -22.96722435855767,
+        "maximum_absolute_residual": 6.333016941795222e-05
+      },
+      "lambda_axis_fit": {
+        "slope": 0.0036685316391645646,
+        "intercept": -0.5557982080843809,
+        "maximum_absolute_residual": 9.437781286059099e-05
+      },
+      "y_ticks": [
+        {
+          "label": "2E-11",
+          "rate_cm3_s": 2e-11,
+          "coordinate_y_points": 582.9600219726562,
+          "drawing_index": 17
+        },
+        {
+          "label": "3E-11",
+          "rate_cm3_s": 3e-11,
+          "coordinate_y_points": 441.24005126953125,
+          "drawing_index": 27
+        },
+        {
+          "label": "4E-11",
+          "rate_cm3_s": 4e-11,
+          "coordinate_y_points": 340.7400817871094,
+          "drawing_index": 37
+        },
+        {
+          "label": "5E-11",
+          "rate_cm3_s": 5e-11,
+          "coordinate_y_points": 262.7400817871094,
+          "drawing_index": 47
+        },
+        {
+          "label": "6E-11",
+          "rate_cm3_s": 6e-11,
+          "coordinate_y_points": 199.0200958251953,
+          "drawing_index": 57
+        },
+        {
+          "label": "7E-11",
+          "rate_cm3_s": 7e-11,
+          "coordinate_y_points": 145.14010620117188,
+          "drawing_index": 67
+        },
+        {
+          "label": "8E-11",
+          "rate_cm3_s": 8e-11,
+          "coordinate_y_points": 98.46009826660156,
+          "drawing_index": 77
+        }
+      ],
+      "markers": [
+        {
+          "coordinate_x_points": 151.5,
+          "coordinate_y_points": 595.3800354003906,
+          "extracted_lambda": -1.5664750949273554e-05,
+          "drawing_indices": [
+            80,
+            81
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 1.9301814424289e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.9245445035527406e-11,
+            1.935834891746795e-11
+          ],
+          "temperature_K": 200,
+          "beads": 384
+        },
+        {
+          "coordinate_x_points": 219.66000366210938,
+          "coordinate_y_points": 582.6600036621094,
+          "extracted_lambda": 0.2500314652090715,
+          "drawing_indices": [
+            82,
+            83
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 2.0017276291683468e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.9958817454372595e-11,
+            2.007590635335007e-11
+          ],
+          "temperature_K": 200,
+          "beads": 384
+        },
+        {
+          "coordinate_x_points": 287.82000732421875,
+          "coordinate_y_points": 585.3000183105469,
+          "extracted_lambda": 0.5000785951690923,
+          "drawing_indices": [
+            84,
+            85
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 1.986663474002302e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.9808615839186644e-11,
+            1.992482357665307e-11
+          ],
+          "temperature_K": 200,
+          "beads": 384
+        },
+        {
+          "coordinate_x_points": 355.9200134277344,
+          "coordinate_y_points": 586.8600158691406,
+          "extracted_lambda": 0.7499056221871394,
+          "drawing_indices": [
+            86,
+            87
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 1.977815332319244e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.9720392825181512e-11,
+            1.983608300014215e-11
+          ],
+          "temperature_K": 200,
+          "beads": 384
+        },
+        {
+          "coordinate_x_points": 424.08001708984375,
+          "coordinate_y_points": 599.7000427246094,
+          "extracted_lambda": 0.9999527521471603,
+          "drawing_indices": [
+            88,
+            89
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 1.906469126633348e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.9009014376586815e-11,
+            1.912053123218659e-11
+          ],
+          "temperature_K": 200,
+          "beads": 384
+        },
+        {
+          "coordinate_x_points": 560.3999938964844,
+          "coordinate_y_points": 599.7000427246094,
+          "extracted_lambda": 1.500046900112501,
+          "drawing_indices": [
+            90,
+            91
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 1.906469126633348e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            1.9009014376586815e-11,
+            1.912053123218659e-11
+          ],
+          "temperature_K": 200,
+          "beads": 384
+        },
+        {
+          "coordinate_x_points": 151.5,
+          "coordinate_y_points": 457.8600158691406,
+          "extracted_lambda": -1.5664750949273554e-05,
+          "drawing_indices": [
+            93,
+            94
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 2.8608206737597767e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.8524658782368522e-11,
+            2.869199940253156e-11
+          ],
+          "temperature_K": 300,
+          "beads": 256
+        },
+        {
+          "coordinate_x_points": 219.66000366210938,
+          "coordinate_y_points": 453.29998779296875,
+          "extracted_lambda": 0.2500314652090715,
+          "drawing_indices": [
+            95,
+            96
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 2.8983929331592153e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.8899284108898727e-11,
+            2.9068822477856894e-11
+          ],
+          "temperature_K": 300,
+          "beads": 256
+        },
+        {
+          "coordinate_x_points": 287.82000732421875,
+          "coordinate_y_points": 451.0199890136719,
+          "extracted_lambda": 0.5000785951690923,
+          "drawing_indices": [
+            97,
+            98
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 2.917363576529309e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.9088436520294985e-11,
+            2.9259084556578885e-11
+          ],
+          "temperature_K": 300,
+          "beads": 256
+        },
+        {
+          "coordinate_x_points": 355.9200134277344,
+          "coordinate_y_points": 449.5199890136719,
+          "extracted_lambda": 0.7499056221871394,
+          "drawing_indices": [
+            99,
+            100
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 2.9299119350915206e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.921355364124877e-11,
+            2.938493568023444e-11
+          ],
+          "temperature_K": 300,
+          "beads": 256
+        },
+        {
+          "coordinate_x_points": 424.08001708984375,
+          "coordinate_y_points": 452.5199890136719,
+          "extracted_lambda": 0.9999527521471603,
+          "drawing_indices": [
+            101,
+            102
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 2.9048689606413127e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.8963855256571995e-11,
+            2.913377243377389e-11
+          ],
+          "temperature_K": 300,
+          "beads": 256
+        },
+        {
+          "coordinate_x_points": 560.3999938964844,
+          "coordinate_y_points": 455.5199890136719,
+          "extracted_lambda": 1.500046900112501,
+          "drawing_indices": [
+            103,
+            104
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 2.8800400371875884e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            2.8716291130673725e-11,
+            2.888475596677405e-11
+          ],
+          "temperature_K": 300,
+          "beads": 256
+        },
+        {
+          "coordinate_x_points": 151.5,
+          "coordinate_y_points": 238.68002319335938,
+          "extracted_lambda": -1.5664750949273554e-05,
+          "drawing_indices": [
+            106,
+            107
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.0,
+          "rate_cm3_s": 5.356237543860426e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.3405950850857024e-11,
+            5.371925818974458e-11
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 219.66000366210938,
+          "coordinate_y_points": 236.45999145507812,
+          "extracted_lambda": 0.2500314652090715,
+          "drawing_indices": [
+            108,
+            109
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.25,
+          "rate_cm3_s": 5.390370342293305e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.374628201439886e-11,
+            5.4061585914521466e-11
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 287.82000732421875,
+          "coordinate_y_points": 233.51998901367188,
+          "extracted_lambda": 0.5000785951690923,
+          "drawing_indices": [
+            110,
+            111
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.5,
+          "rate_cm3_s": 5.4359076209623784e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.4200324921676185e-11,
+            5.451829247580651e-11
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 355.9200134277344,
+          "coordinate_y_points": 234.239990234375,
+          "extracted_lambda": 0.7499056221871394,
+          "drawing_indices": [
+            112,
+            113
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 0.75,
+          "rate_cm3_s": 5.424720179400886e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.4088777226248686e-11,
+            5.440609038304956e-11
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 424.08001708984375,
+          "coordinate_y_points": 234.239990234375,
+          "extracted_lambda": 0.9999527521471603,
+          "drawing_indices": [
+            114,
+            115
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.0,
+          "rate_cm3_s": 5.424720179400886e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.4088777226248686e-11,
+            5.440609038304956e-11
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        },
+        {
+          "coordinate_x_points": 560.3999938964844,
+          "coordinate_y_points": 235.739990234375,
+          "extracted_lambda": 1.500046900112501,
+          "drawing_indices": [
+            116,
+            117
+          ],
+          "stroke_width_points": 1.3799999952316284,
+          "lambda": 1.5,
+          "rate_cm3_s": 5.4014869439252753e-11,
+          "coordinate_sensitivity_interval_cm3_s": [
+            5.3857123379354026e-11,
+            5.417307753310079e-11
+          ],
+          "temperature_K": 500,
+          "beads": 64
+        }
+      ],
+      "excluded_legend_cross": {
+        "coordinate_x_points": 206.52000427246094,
+        "coordinate_y_points": 285.29998779296875,
+        "extracted_lambda": 0.20182696170954317,
+        "drawing_indices": [
+          182,
+          183
+        ],
+        "stroke_width_points": 1.3799999952316284
+      },
+      "temperature_assignment": "bottom, middle, top correspond to the visible low, middle, high T labels",
+      "coordinate_sensitivity_points": 1.0,
+      "paper_statistical_uncertainty": null,
+      "physical_comparison_eligible": false
+    }
+  },
+  "typeset_fh2_crosscheck": {
+    "journal_pdf_page_zero_based": 9,
+    "printed_page": "074107-9",
+    "y_ticks_points": [
+      265.12591552734375,
+      205.7093505859375,
+      163.5730743408203,
+      130.8695526123047,
+      104.15443420410156,
+      81.56448364257812,
+      61.99346923828125
+    ],
+    "log_axis_fit": {
+      "slope": -0.006824733854853116,
+      "intercept": -22.82586574260144,
+      "maximum_absolute_residual": 6.677898302953622e-05
+    },
+    "rows": [
+      {
+        "temperature_K": 200,
+        "journal_rate_cm3_s": 1.9301774698012948e-11,
+        "original_figure_rate_cm3_s": 1.9301814424289e-11,
+        "relative_difference": -2.058162780871342e-06,
+        "journal_drawing_index": 64
+      },
+      {
+        "temperature_K": 300,
+        "journal_rate_cm3_s": 2.860828715544889e-11,
+        "original_figure_rate_cm3_s": 2.8608206737597767e-11,
+        "relative_difference": 2.8110063612363234e-06,
+        "journal_drawing_index": 67
+      },
+      {
+        "temperature_K": 500,
+        "journal_rate_cm3_s": 5.356247440496751e-11,
+        "original_figure_rate_cm3_s": 5.356237543860426e-11,
+        "relative_difference": 1.8476843575143675e-06,
+        "journal_drawing_index": 70
+      }
+    ],
+    "all_relative_differences_below_0_0001": true
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "actual_tool_start": {
+    "chunk_id": "ff3e85",
+    "session_id": 15483,
+    "status": "running; no terminal return yet",
+    "wall_time_seconds": 1.000505541
+  },
+  "completion_or_scientific_analysis_claimed": false,
+  "exec_session_id": 15483,
+  "fixed_endpoint": 300000,
+  "fixed_total_seeds": 8,
+  "observed_utc": "2026-11-01T22:27:04.940847+00:00",
+  "once_claim": {
+    "bytes": 2373,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1/RUN_ONCE.json",
+    "sha256": "f5474a0f49dd31b45bb6f4678beb3033533abc1dd7c21eb4913fd1a3287cecc4"
+  },
+  "owned_workers_observed": 4,
+  "plan": {
+    "bytes": 1090,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1/attempt/plan.json",
+    "sha256": "74a87a0463cba9e854a64042e130bd9714a9384fef0ac1da6ac63c4b985d741a"
+  },
+  "raw_checkpoints_or_partial_results_read_by_observer": false,
+  "registration": {
+    "bytes": 139240,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage-300000-isolated-v1/registration.json",
+    "sha256": "5078b86cb16fe57da0a76f498aa98a3ccb2f84db3aeccca7083b2d37808c911f"
+  },
+  "resources": [
+    {
+      "scope": "Ownership/resource observation only; no MC state, acceptance rate, free energy or partial numerical estimate.",
+      "snapshot_of_mutable_resource_metadata": {
+        "CPU": 0,
+        "PID": 5,
+        "RLIMIT_AS": [
+          1073741824,
+          1073741824
+        ],
+        "RSS_is_peak_not_current": true,
+        "monotonic": 71681.980063425,
+        "owner_PID": 2,
+        "owner_token": "8473c95ba20541fe9da83acc7e67d5c7",
+        "peak_RSS_bytes": 224231424,
+        "registration_sha256": "5078b86cb16fe57da0a76f498aa98a3ccb2f84db3aeccca7083b2d37808c911f",
+        "schema": "pyrpmd.h3.isolated300k-worker-resource.v1",
+        "seed": 211017,
+        "source_sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7",
+        "whole_process_CPU_seconds": 89.05079
+      }
+    },
+    {
+      "scope": "Ownership/resource observation only; no MC state, acceptance rate, free energy or partial numerical estimate.",
+      "snapshot_of_mutable_resource_metadata": {
+        "CPU": 1,
+        "PID": 7,
+        "RLIMIT_AS": [
+          1073741824,
+          1073741824
+        ],
+        "RSS_is_peak_not_current": true,
+        "monotonic": 71682.093029894,
+        "owner_PID": 2,
+        "owner_token": "8473c95ba20541fe9da83acc7e67d5c7",
+        "peak_RSS_bytes": 225153024,
+        "registration_sha256": "5078b86cb16fe57da0a76f498aa98a3ccb2f84db3aeccca7083b2d37808c911f",
+        "schema": "pyrpmd.h3.isolated300k-worker-resource.v1",
+        "seed": 211019,
+        "source_sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7",
+        "whole_process_CPU_seconds": 89.112696
+      }
+    },
+    {
+      "scope": "Ownership/resource observation only; no MC state, acceptance rate, free energy or partial numerical estimate.",
+      "snapshot_of_mutable_resource_metadata": {
+        "CPU": 2,
+        "PID": 9,
+        "RLIMIT_AS": [
+          1073741824,
+          1073741824
+        ],
+        "RSS_is_peak_not_current": true,
+        "monotonic": 71682.192039239,
+        "owner_PID": 2,
+        "owner_token": "8473c95ba20541fe9da83acc7e67d5c7",
+        "peak_RSS_bytes": 225542144,
+        "registration_sha256": "5078b86cb16fe57da0a76f498aa98a3ccb2f84db3aeccca7083b2d37808c911f",
+        "schema": "pyrpmd.h3.isolated300k-worker-resource.v1",
+        "seed": 211021,
+        "source_sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7",
+        "whole_process_CPU_seconds": 89.051907
+      }
+    },
+    {
+      "scope": "Ownership/resource observation only; no MC state, acceptance rate, free energy or partial numerical estimate.",
+      "snapshot_of_mutable_resource_metadata": {
+        "CPU": 3,
+        "PID": 11,
+        "RLIMIT_AS": [
+          1073741824,
+          1073741824
+        ],
+        "RSS_is_peak_not_current": true,
+        "monotonic": 71682.243883018,
+        "owner_PID": 2,
+        "owner_token": "8473c95ba20541fe9da83acc7e67d5c7",
+        "peak_RSS_bytes": 224223232,
+        "registration_sha256": "5078b86cb16fe57da0a76f498aa98a3ccb2f84db3aeccca7083b2d37808c911f",
+        "schema": "pyrpmd.h3.isolated300k-worker-resource.v1",
+        "seed": 211023,
+        "source_sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7",
+        "whole_process_CPU_seconds": 89.119233
+      }
+    }
+  ],
+  "schema": "pyrpmd.h3.isolated300k-root-startup-observation.v1",
+  "source": {
+    "bytes": 59669,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+    "sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7"
+  }
+}

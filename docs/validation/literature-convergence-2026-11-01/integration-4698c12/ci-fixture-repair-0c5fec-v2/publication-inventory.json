@@ -1,0 +1,203 @@
+{
+  "created_utc": "2026-11-01T22:23:34.306991+00:00",
+  "files": [
+    {
+      "bytes": 600,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/driver-provenance.json",
+      "sha256": "aa3c5d089d9993ba9b072b16da24f4d78dd392e9a9886ecaccb77b851928e737"
+    },
+    {
+      "bytes": 4725,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/execution.json",
+      "sha256": "7347bfbe7b97648c1ce480a2bcee706617fe3ce46115af535818d01f8359eb5c"
+    },
+    {
+      "bytes": 301600,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/guard-before.json",
+      "sha256": "1fcb6c515b4424498b0514a09b0ef9231136dcb38b829701e1261b68baa308f1"
+    },
+    {
+      "bytes": 4395,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/prepare_gate.py",
+      "sha256": "d51b0c5b2ab99c5a1bb21ae93671820a8ae42b1683a2f0c770011f410fae97cd"
+    },
+    {
+      "bytes": 5246,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/child-import.json",
+      "sha256": "2079ec8edbf648f821466a9bdf179c651a15f199544eff7c4f11c0ae4a3f02cc"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/child-import.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 14401,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/compatibility.json",
+      "sha256": "99bea94fd98f81d078c79feb3723149307774e50d4b5a4844e577d6693594810"
+    },
+    {
+      "bytes": 3516,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/environment-after.json",
+      "sha256": "79407f77efe4332870ffaf9f707c8151336536b4410a59af1177ac5916dea572"
+    },
+    {
+      "bytes": 3516,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/environment-before.json",
+      "sha256": "79407f77efe4332870ffaf9f707c8151336536b4410a59af1177ac5916dea572"
+    },
+    {
+      "bytes": 1307,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/launch-receipt.json",
+      "sha256": "562f39b7bffb401f748754f2ed365718e6e0cb78dd5f609c397b2601c817a478"
+    },
+    {
+      "bytes": 8014,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/pytest-runtime-finish.json",
+      "sha256": "037f3a3896e77f9f1e1207b593373331d2aff81f3b59521d1572418b9cbdaaeb"
+    },
+    {
+      "bytes": 5246,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/pytest-runtime-start.json",
+      "sha256": "2079ec8edbf648f821466a9bdf179c651a15f199544eff7c4f11c0ae4a3f02cc"
+    },
+    {
+      "bytes": 180,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/pytest.log",
+      "sha256": "f409e94c5e742d7f0243d4a2bee1842d5e1753dcb101ff7c1dfac1f71cd22ea5"
+    },
+    {
+      "bytes": 15794,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py312/pytest.xml",
+      "sha256": "7acacf4bda8a98f8f7543d6d8655e6364e1feeb402e21dc6adf752fe8c89cc65"
+    },
+    {
+      "bytes": 3236,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/child-import.json",
+      "sha256": "5ae72fa619694d20481ea63967d96e2ca98745c84de32ada40abe7ebf360cbac"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/child-import.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 14418,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/compatibility.json",
+      "sha256": "fa3cfcde75bdf6a08e53b216d65d4edd8fed2910742c71d92870d039e96565de"
+    },
+    {
+      "bytes": 1556,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/environment-after.json",
+      "sha256": "25c8edd9b547ce4c51354f05ea9388162c72c408feedf9938738d05e4ec0e2f0"
+    },
+    {
+      "bytes": 1556,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/environment-before.json",
+      "sha256": "25c8edd9b547ce4c51354f05ea9388162c72c408feedf9938738d05e4ec0e2f0"
+    },
+    {
+      "bytes": 1324,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/launch-receipt.json",
+      "sha256": "352612cc4cec49f5f81900b6a1ac37d6ec6845d337204e36c69bc57b8bb07cbb"
+    },
+    {
+      "bytes": 6079,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/pytest-runtime-finish.json",
+      "sha256": "0e9e029e0a6aa2fc6ebf7858141727af2558dffe9c3594cbd91fceb018bdf022"
+    },
+    {
+      "bytes": 3236,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/pytest-runtime-start.json",
+      "sha256": "5ae72fa619694d20481ea63967d96e2ca98745c84de32ada40abe7ebf360cbac"
+    },
+    {
+      "bytes": 180,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/pytest.log",
+      "sha256": "020932429705a1b45442f95d42adf1ebe1aed209193b999a638fa227aefca92d"
+    },
+    {
+      "bytes": 15795,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py313/pytest.xml",
+      "sha256": "bb6f4f738c1a2628f37ce66a4bae98a4ccddbee4bcec9c45325f2f51dbcee7c8"
+    },
+    {
+      "bytes": 3184,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/child-import.json",
+      "sha256": "99c8791f464804a41b8bce7215d5c15474f1a5d4d34b270b0d5eb6aef4560b47"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/child-import.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 14416,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/compatibility.json",
+      "sha256": "a4710b0d409d884a9162fc44a363aba7e1213373b6e9bddd7b92aec8c4bc1a05"
+    },
+    {
+      "bytes": 1508,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/environment-after.json",
+      "sha256": "4a1c1e2500089afbf81e56baf86d99e7fded870bbdb48687855b06efb48e2e3b"
+    },
+    {
+      "bytes": 1508,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/environment-before.json",
+      "sha256": "4a1c1e2500089afbf81e56baf86d99e7fded870bbdb48687855b06efb48e2e3b"
+    },
+    {
+      "bytes": 1324,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/launch-receipt.json",
+      "sha256": "ba7533586027de4516f4568bf845db6a4b50f595f21c4cd8e9a1a6bf9048763c"
+    },
+    {
+      "bytes": 6027,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/pytest-runtime-finish.json",
+      "sha256": "74f7fe22f93a3261085e435497a57f45575d2e44c3e35a85293a75289d8e0a0e"
+    },
+    {
+      "bytes": 3184,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/pytest-runtime-start.json",
+      "sha256": "99c8791f464804a41b8bce7215d5c15474f1a5d4d34b270b0d5eb6aef4560b47"
+    },
+    {
+      "bytes": 180,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/pytest.log",
+      "sha256": "4cda4a2b2b44fa41a84298f51d5648202dc2e0594b67341b234ba153f5228c68"
+    },
+    {
+      "bytes": 15794,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/py314/pytest.xml",
+      "sha256": "23a2251b080e3aa63e0e01f1bec1f28f79791c9250033cbee8c6e3669845715d"
+    },
+    {
+      "bytes": 657,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/root-exec-observation.json",
+      "sha256": "d98b94cdeeaadd0d0895c9b120dbc971e736f415a1372c738f4fc1e463a3722e"
+    },
+    {
+      "bytes": 9635,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/run_checks.py",
+      "sha256": "7b8459ea607fb75e73a618b7c8032b1eb38a2cc07e9bfdd122b9c9e8b7a8a9a9"
+    },
+    {
+      "bytes": 3621,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/run_sequential.py",
+      "sha256": "026b177bead452ce9f3105ce93b578906f1c97e6d4b2d71c20bf16b5230642dc"
+    },
+    {
+      "bytes": 4980,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/selection.json",
+      "sha256": "60a19eca2d9cac472c060676c319fa41a4628292617cf8275120f9ec675bf6db"
+    },
+    {
+      "bytes": 39355,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/summary.json",
+      "sha256": "4c1f1e61c65aa2ac0e15861c8b3c621f6a1020aa0faceeb6b4f084c49c490a43"
+    }
+  ],
+  "listed_bytes": 521293,
+  "schema": "pyrpmd.compact-sixth-publication-inventory.v1",
+  "scope": "Three complete focused101-case runs; no new distinct identities and no physical execution."
+}

@@ -1,0 +1,45 @@
+{
+  "links": [
+    {
+      "directory_members": [
+        {
+          "bytes": 5222,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+          "sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da"
+        },
+        {
+          "bytes": 3076,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy.json",
+          "sha256": "6a3b93f045acd421507b407dd4b2b3c36600591c0488c4437b04957a3e326409"
+        },
+        {
+          "bytes": 16401,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/proposal.json",
+          "sha256": "65568f44ab61a40207c4b7bb3f72ba9e228eade37ca152fc753cb5612aa67e7a"
+        },
+        {
+          "bytes": 6654,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/resource-estimates.json",
+          "sha256": "0b9b99fc9a41714392ff98601d99c0194c0c485f64264704051bffc73a182bb0"
+        }
+      ],
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal",
+      "target": "../umbrella-stage-300000-proposal/"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/storage-stage-estimates.json",
+      "target": "storage-stage-estimates.json",
+      "target_sha256": "cc3b2b006ba86e3aed2cef72466cef451b5b455d017c0edce955e6986e9e1f66"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/gate.json",
+      "target": "inert-gate/gate.json",
+      "target_sha256": "3d2180978f853e96f502822eabb64ef79a90476a1678b87c8e67c6665d2acdc8"
+    }
+  ],
+  "original_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool",
+  "reason": "Exact initial candidate README retained undera snapshot subdirectory; its authoredrelative links resolve fromthe historical original directory. Frozenbytes are preserved.",
+  "schema": "pyrpmd.exact-snapshot-original-link-context.v1",
+  "source": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/README.md",
+  "source_sha256": "3d527b36dc15961e614700d71b1ffac9db3fc64d53e238e257ea299a01381c28"
+}

@@ -1,0 +1,118 @@
+{
+  "CPU_affinity": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "actual_resource_receipt": {
+    "bytes": 5208,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-execution-v1/resource-admission.json",
+    "sha256": "00f5a31c248247938b21039162d371e96dc857ec6a042a2c96dc95e2f87a0160"
+  },
+  "adopted": true,
+  "created_utc": "2026-11-01T22:25:22.778935+00:00",
+  "external_memory_reservations": [
+    {
+      "basis": "Prospective two512MiB worker AS caps plus256MiB stdlib owner cap.512MiB excluded import/context/layout probe passed; first actual PME force gate remains unexecuted. This is a reservation, not measured production RSS or runtime adoption.",
+      "bytes": 1342177280,
+      "hard_limit": false,
+      "name": "water"
+    },
+    {
+      "basis": "Planning reserve for two active workers and owner; exact completed-worker peak RSS88728/88820KiB is observed resource evidence, not an imposed cap or proof of future peak.",
+      "bytes": 536870912,
+      "hard_limit": false,
+      "name": "P256_children"
+    },
+    {
+      "basis": "Reserved1.25GiB for bounded sequential diagnostics, source operations and runtime/system margin. No ninth sustained compute worker is admitted.",
+      "bytes": 1342177280,
+      "hard_limit": false,
+      "name": "other_diagnostics_and_runtime"
+    }
+  ],
+  "fixed_endpoint_rationale": "Original registered300000 endpoint after failed100000 log-SE gate; never contingent on point agreement with paper.",
+  "implementation_inventory": {
+    "bytes": 9389,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/publication-inventory.json",
+    "sha256": "7fcb7706bc43b26721daae0c6e99f3f47458a982b3348bd6eab2b9712c9585c3"
+  },
+  "independent_review": {
+    "bytes": 11186,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-review-final.json",
+    "sha256": "776f9520a6db6212790cd5c7b35f559321b9aebca1754cfb6a6fe15c06a789c0"
+  },
+  "no_automatic_retry_or_extension": true,
+  "no_original_or_other_writer_running_or_pending": true,
+  "only_new_registered_working_copy_may_change": true,
+  "original_and_verified_evidence_remain_read_only": true,
+  "other_reservation_basis": "Current root resource-admission.json jointly reserves water, activeP256, MC and one global4GiB floor; archived evidence stays untouched.",
+  "owner_exclusion_basis": "All previously root-owned umbrella work completed with actual terminal observations. No other original/new umbrella writer is launched or authorized in this session. The anomalous original lease is preserved and never retired again; no unrelated process is probed.",
+  "physical_analysis_authorized_by_this_adoption": false,
+  "policy_sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da",
+  "remaining_external_reservations": [
+    {
+      "basis": "Revision2 prospective full400-branch raw cap5.75GB, one archive cap5.8GB and64MiB compact/streaming-replay metadata. No third physical full extraction. This reserves space; it does not authorize the still-unadopted water implementation.",
+      "name": "water",
+      "remaining_bytes": 11617108864
+    },
+    {
+      "basis": "Active registered800-chunk campaign: conservative remaining raw growth plus one future complete archive and extraction/analysis. Two completed worker receipts show resource use only; no partial physical estimates read.",
+      "name": "P256_children",
+      "remaining_bytes": 3500000000
+    }
+  ],
+  "remaining_other_reserved_bytes": 15117108864,
+  "root_adopter": "/root",
+  "sampling_envelope": {
+    "allowed_workers": [
+      2,
+      4
+    ],
+    "automatic_retry_or_extension": false,
+    "drain_reserve_seconds": 120,
+    "four_worker_plus_owner_address_space_cap_bytes": 5368709120,
+    "metadata_watchdog_interval_seconds": 1.0,
+    "mid_run_resize": false,
+    "owner_CPU_semantics": "Observed cooperative process-CPU budget checked by hash/guard operations and metadata watchdog; not an inherited low RLIMIT_CPU that would prevent children installing the6h hard cap.",
+    "owner_observed_CPU_limit_seconds": 600,
+    "per_process_RLIMIT_AS_bytes": 1073741824,
+    "per_seed_CPU_hard_limit_seconds": 21600,
+    "per_seed_wall_hard_limit_seconds": 21600,
+    "planned_total_observed_RSS_limit_bytes": 3221225472,
+    "resource_semantics": "RLIMIT_AS is an independently enforced per-process virtual-address cap. The sum is not a claim of measured RSS. Owner and known live workers report their own positive peak RSS; missing/stale/invalid live-worker evidence stops admission and draining is requested. The aggregate3GiB RSS screen remains an observed planning rule, not a kernel quota.",
+    "two_worker_plus_owner_address_space_cap_bytes": 3221225472,
+    "whole_owner_wall_seconds": 43200,
+    "worker_first_heartbeat_required_before_next_admission": true,
+    "worker_resource_heartbeat_interval_seconds": 1.0,
+    "worker_resource_heartbeat_stale_seconds": 10.0
+  },
+  "schema": "pyrpmd.h3.isolated300k-root-adoption.v1",
+  "scope": "restore_and_run_fixed300000",
+  "scope_of_no_other_writer": "No other dispatcher may write the original or new umbrella campaign. This does not forbid separately budgeted water/P256 jobs.",
+  "source_sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7",
+  "storage_revision": {
+    "MC_new_working_future_archive_and_fresh_replay_allowance_bytes": 5000000000,
+    "adoption_must_recheck_actual_headroom_and_remaining_other_reservations": true,
+    "four_worker_watchdog_free_threshold_bytes": 5174967296,
+    "historical_water_forecast_is_not_used_as_actual_admission_reservation": true,
+    "mandatory_free_reserve_bytes": 4294967296,
+    "no_deletion_or_cleanup_of_old_evidence": true,
+    "observation_arrays_bytes_per_seed": 195840000,
+    "other_prospective_water_reservation_bytes": 15300000000,
+    "per_active_checkpoint_temporary_buffer_allowance_bytes": 220000000,
+    "planning_only_no_OS_quota_or_other_workload_guarantee": true,
+    "root_reported_free_bytes_approximate": 25000000000,
+    "supersedes_only_initial10GiB_storage_forecast": true,
+    "two_worker_watchdog_free_threshold_bytes": 4734967296,
+    "watchdog_action": "Signal only this owner to stop admissions and bounded-drain owned children before reaching the reserved floor. It reads filesystem free bytes and only owned-worker RSS, never another project or process."
+  },
+  "template_is_non_executable": false,
+  "test_gate": {
+    "bytes": 4506,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-final/gate.json",
+    "sha256": "7d3359bbce96e1988e7a7b943485fc5d530f7f3f5836d8792c2b9569ed81bbbb"
+  },
+  "workers": 4
+}

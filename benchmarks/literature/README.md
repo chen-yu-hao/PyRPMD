@@ -25,7 +25,7 @@ The independent H + H₂ umbrella cohort is complete through 100,000
 production sweeps per ladder. Its QTST point is +3.084% from the paper,
 but the primary log standard error is 0.050874 against a fixed 0.03 limit.
 Actual archive extraction and exact numerical replay preserve that failure.
-The complete P256 dynamic comparison remains pending.
+The complete P256 dynamic comparison remains pending. The original fixed300000 MC endpoint has now been adopted and started from an exact isolated100000 restore; its complete-cohort result remains pending. No intermediate point estimate selects the endpoint.
 
 The original eight-chain classical water cohort gives VACF diffusion
 0.19780892 Å²/ps versus the paper's 0.199(2), but three preparation checks

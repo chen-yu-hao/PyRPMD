@@ -1,0 +1,254 @@
+{
+  "all_selected_sources_unchanged_during_build": true,
+  "allowed_derived_npz": [
+    "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/curves.npz",
+    "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/analysis/curves.npz",
+    "docs/validation/literature-convergence-2026-11-01/water/velocity-cadence/curves.npz"
+  ],
+  "created_utc": "2026-11-01T22:38:09.280244+00:00",
+  "distinct_verified_files": 1949,
+  "driver_sha256": "5176aceb1257f31e54b3220fd1f7098bc2ff3d7e939b4bc5e59e29151c7dbd9e",
+  "earlier_generated_scientific_PDFs_retained_byte_exact_to_published_Git": true,
+  "exact_historical_links_resolved_at_original_base": [
+    {
+      "directory_members": [
+        {
+          "bytes": 5222,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy-v2.json",
+          "sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da"
+        },
+        {
+          "bytes": 3076,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy.json",
+          "sha256": "6a3b93f045acd421507b407dd4b2b3c36600591c0488c4437b04957a3e326409"
+        },
+        {
+          "bytes": 16401,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/proposal.json",
+          "sha256": "65568f44ab61a40207c4b7bb3f72ba9e228eade37ca152fc753cb5612aa67e7a"
+        },
+        {
+          "bytes": 6654,
+          "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/resource-estimates.json",
+          "sha256": "0b9b99fc9a41714392ff98601d99c0194c0c485f64264704051bffc73a182bb0"
+        }
+      ],
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal",
+      "source": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/README.md",
+      "target": "../umbrella-stage-300000-proposal/"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/storage-stage-estimates.json",
+      "source": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/README.md",
+      "target": "storage-stage-estimates.json",
+      "target_sha256": "cc3b2b006ba86e3aed2cef72466cef451b5b455d017c0edce955e6986e9e1f66"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/gate.json",
+      "source": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-candidate/README.md",
+      "target": "inert-gate/gate.json",
+      "target_sha256": "3d2180978f853e96f502822eabb64ef79a90476a1678b87c8e67c6665d2acdc8"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/README.md",
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../hch4-reference-feasibility/README.md",
+      "target_sha256": "f1906030514d5162aba7072704f511a8a08761de6aff30f5130b36e089a3b85f"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/README.md",
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../hch4-reference-feasibility/pilot-design/README.md",
+      "target_sha256": "cb2ded20a210b10a169d0c44b9b287a156723dda608989ee8fab703a5b1062f5"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/README.md",
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../hch4-reference-pilot/README.md",
+      "target_sha256": "b87f56958d108a62a8057760ae8cabdc6a5bcb06af63de39376c31b3ebe6e834"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/saved-pilot-diagnosis.json",
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "saved-pilot-diagnosis.json",
+      "target_sha256": "5e05fa4c6c169d26acc7b9ff1ab4815e55b0d5f229635fe3e28adefea9e21df8"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/diagnose_saved_pilot.py",
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "diagnose_saved_pilot.py",
+      "target_sha256": "0d9b19fa6adbee41471933db1845ad51abdb14468ca538f30ae2d4dd2a8de87c"
+    },
+    {
+      "resolved_from_original_directory": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-diagnosis-schema-failure.json",
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "initial-diagnosis-schema-failure.json",
+      "target_sha256": "fc6c0e342ae79ed6f270e11d9ff578f6412b57fcbd6f7afcad53b7d71d2f879b"
+    },
+    {
+      "resolved_from_original_directory": "benchmarks/hch4/pes.py",
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../../../../../benchmarks/hch4/pes.py",
+      "target_sha256": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c"
+    }
+  ],
+  "explicit_test_only_supersessions": [
+    {
+      "current_path": "tests/test_water_production_stability.py",
+      "current_sha256": "bb41175285ee0d4b5771a9dde7d89ce3c749468b66cede9cae6af4cb52c957f8",
+      "historical_sha256": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef",
+      "preserved_snapshot_path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/test_water_production_stability.original.py"
+    },
+    {
+      "current_path": "tests/test_hch4_reference_pilot.py",
+      "current_sha256": "b19e275b7b6837584afeea8f17f8038ecf162be85f2bfa97447113ee1bd267e1",
+      "historical_sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e",
+      "preserved_snapshot_path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/test_hch4_reference_pilot.before.py"
+    },
+    {
+      "current_path": "tests/test_hch4_efficiency_pilot.py",
+      "current_sha256": "ec6c660065185388ba153e0f4537fa30e5a605da44b2d5b0ea5c852f257695f1",
+      "historical_sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6",
+      "preserved_snapshot_path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-test_hch4_efficiency_pilot.py"
+    },
+    {
+      "current_path": "tests/test_h3_p256_native_calibration.py",
+      "current_sha256": "4a3648fc242d7b28abfbb56b9189ffb7eb92c2bddb07dd705afe5d354500cf0f",
+      "historical_sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4",
+      "preserved_snapshot_path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-test_h3_p256_native_calibration.py"
+    },
+    {
+      "current_path": "tests/test_h3_quantum_isolated_continuation.py",
+      "current_sha256": "da0b38029eb88ee273dfba2de708f759ca079b36ef981620f1238e6796a1d980",
+      "historical_sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05",
+      "preserved_snapshot_path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/before-test_h3_quantum_isolated_continuation.py"
+    }
+  ],
+  "format_and_local_link_counts": {
+    "json": 1168,
+    "local_targets": 735,
+    "markdown": 112,
+    "python": 238,
+    "xml": 109
+  },
+  "frozen_source_EOF_blanks_preserved": [],
+  "inventories_sha256": {
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/execution-resources-1938-1949/publication-inventory.json": "9575d05d4a902a7ab239b175c23640735afb521ad05817db19ae3d65762a6fae",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/publication-inventory.json": "e53ce2dc1a99223a1f6e72b5c71506d2a63ed5149566d460e765f615baf01476",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/publication-inventory.json": "6197dd646f9326fc5d4cfdacd9c26ef8296daa86d20e679f6a35b8a012a791a7",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/publication-inventory.json": "1a769e61c4578d1fba0d1fd3dc7cc529e82d3b899c3cbf22d7df6d5dfa5fb256",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/publication-inventory.json": "c16c2d38582639169cb707b85a956686e89cdf1c604a33ad2d3be32c50328cb5",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/root-adopted-waiter/publication-inventory.json": "59950b0596b0afc06a02fd539ba83904b7bf4e87f581389870d32bb2f0de16be",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-dynamics-readiness/publishable-files.json": "409b71ea3c6dae5934472485d911c80e75dc633d693e6ed8df80701f6c3ae24d",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/publishable-files.json": "5eae0b65e6c7829e45e87eac843799060fa7901d47c69e3edf5ce2a63e8b5dc5",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/publication-inventory.json": "f7dd402d577e062eae14d00d50b1506dfd86cc08ceea2b31af2094699ab9e3a8",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/publication-inventory.json": "24ba0b8efe7fe873923da7a0d06d055de2016930c1fc11ab22f8486b62afe61a",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/publishable-files-v3.json": "0dd49f90e9dd4b038c9a665f63f1ae067bb73a56b4750180148f5008e5bd02cb",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/publication-inventory.json": "56efeabcf75fa4210f8265c68541d90b7d655d3125650e29ef921a86a16e86f8",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/publishable-files.json": "da18314172fb5f77e5a86726611b9e0b9b792a6243f0a25dac09f5d256c35728",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/archive-plan/publishable-files.json": "b81dc38538ecf83916c5e70d4cc28765a2122399fbe8af61d9424fd1d6755cba",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/publication-inventory.json": "945c4f1385f55142fd78a6f9f32bc510ec8cf39de0705b4cb524c5a9d67cee54",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/publication-inventory.json": "40dc3e500115a0bbff95be18ab25d82cfb1b6459da9e692b184606d65804ab46",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/publication-inventory.json": "a53da099bdb241ce013d50d6a37a59d03f07f7960085a291da08c4dbc17ba3f5",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-execution-v1/publication-inventory.json": "fdb7b5c96746d8ef01b62cb6cb8a4f296833757fcd24354980542ed9d7ba5d1f",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/publication-inventory.json": "7fcb7706bc43b26721daae0c6e99f3f47458a982b3348bd6eab2b9712c9585c3",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/publishable-files.json": "2212ff009bdeb95bbfadc59492b022476543730ccc608baa423ad69851e8afed",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/publication-inventory.json": "b69ac4725a8ada021d33b51f9e82e58b0fe59bdcd61d5cb5aee103d207b667a1",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/publication-inventory.json": "6fff89937fa5e11ef58c4fb70ed3e676a03b6fffd9fce784a000970c20e0f79c",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/publication-inventory.json": "e4e7da7f08e53f7e6f1e70e4439a80eb84cc67a7b25c839ddef19884d5d43e24",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/publication-inventory.json": "01bc9fe274f47531fc68e358f02a18e7a7cacf6c725fe2c55ba78b891a1f43ef",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/publication-inventory.json": "647f691b27a3126a07d2e57bb7fe4bbe3774b99a9a7cb684e0127e3f98267735",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-postcondition-review/publication-inventory.json": "606c225a96c35f5e2c5f8259770a46317e5718f8ef75a257d0aee3c3985d264e",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/publication-inventory.json": "ee93e0b97db5b00f1b6766f18c9094981ed3d8b1f935f50c8dcbe84bc35da949",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/publication-inventory.json": "0dc728a61b04fcc6d72098a7dab562d5eb1df305000f49ba420f962a710cb334",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/publication-inventory.json": "f8573e80123d7866a64d3826fe03b93b31b21367ba9903be13aae1e62ad0c673",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/publishable-files.json": "c43ba6eceb92a4818a0c28f98ff52fd753e722b1188b4504720f5dbd2a3c7d16",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/archive-method-compatibility/publication-inventory.json": "00fe00dfd6633921acf239e567e908fa2a7eea17ed49a2b94dd5ef09ba486210",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility-v2/publication-inventory.json": "54f96b741b42a5d97ede2bcb25b46a6563ba62daf62392560bb2dca6cd9e76f8",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility/publication-inventory.json": "7ae0b488f31f40369df75aa03637e350ca0127b2e44404073e896aca4d1010d3",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/publication-inventory.json": "ba3547a9431b5a9e46bf1cfde6cd2eaa917b575ef4aaa02cd7b4bca74554b42c",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/publication-inventory.json": "83ff5d498afb3d4761b186a3620da0d5954d408266e5b4abc8f71086fd1ee122",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/fifth-stage-compatibility/publication-inventory.json": "8b24c3671ebd3886a02a49e4a363be8ce8162490ab9c26acc460808217befdf9",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/four-pair-p256-compatibility/publication-inventory.json": "27b099d5fefe02e27d9e16c9dd86290924459c9df9b20ee224a3fd6fef26f36a",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314-v2/publication-inventory.json": "ae52792cf2c3f3c436d1762415c2fc8bd69b7d9151f79efe451a7f8986d4e35f",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/full-suite-36ec289-py314/publication-inventory.json": "90b510624794d3b87529250639d2f6cbec5bbf8ad3f9cc665859780989ec2179",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-cross-python/publication-inventory.json": "ee0f53335877c9493a9bab111bc79c4ebdb0d0d65d97f845e6c2118295acdbdc",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/publication-inventory.json": "86b1bde83db82173657684555385a8a11c8bec8da431d4d8c69c4b09a2ea6f6c",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/evidence-manifest.json": "cfdc0100feeeedca0289acd5c65fc379f69eda0eb585a0f35dcd68079c294537",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/publication-inventory.json": "551938678caee4050adb0034f921ff9b3bfa0ccf051f72f01d8361d830e3d291",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility-v2/publication-inventory.json": "89d2eb639160c93142d5a7a42559572759517ec4c3a1c69acb390f06ce58d6f0",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/publication-inventory.json": "cce94439b0815b5675b2fc8a34f575e205705715cf9cf84bf39e4ea53466ad61",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/new-stage-compatibility/publication-inventory.json": "10ca974e5a1d0aa1c852034c36a14df5ecba886aa2bd655d1c239de2f9381e7c",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/publication-inventory.json": "b6c21b417727d05689c8c0b1d96be1350c4426d493254fd0e37fed2ea0448e78",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/sixth-stage-adoptions/publication-inventory.json": "3e7820d6a8a8f0ba362374d45f368ff65d853efc298d8216e01af21a163066a9",
+    "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/publication-inventory.json": "25205905261d1f318de7ee2c9dd4cc24f12ea238807d46198978f2a450883434",
+    "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/publishable-files.json": "cf670ffafe6cb2dec4ab2199dd63aa2ea6cb3659252c8ef1428e96174d1debab",
+    "docs/validation/literature-convergence-2026-11-01/other-reactions/oh-source-consistency/publication-inventory.json": "4327ea9ceddce27c369a8c841a253eee46389f74187ad835e5fc096e2667ece5",
+    "docs/validation/literature-convergence-2026-11-01/other-reactions/publish-files.json": "8ef61b3790dbb17a230dc1b031c6b3d626adc32265ef04127862936bd6326e02",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/publication-inventory.json": "a3af0e413d7a140ef1da60ea92829d9979bf7bf328c1f03b06a16862fa787a89",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-efficiency-execution-guide/publication-inventory.json": "fcfb67a0b5db02a1ce50aa3ebf57e888b1182d5c7a3815cc6c55a2c612680272",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/publication-inventory.json": "d217dd52bc7f6280040393f885fa402f7552ce855d54124319aa57ab9dea0b7b",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/publication-inventory.json": "83d73d906ff8e345ee39761029ad36b889426c7c2c01b7b2ae7781718040511f",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/publication-inventory.json": "0662473b33f03494d58cde0c8a4a8b2dd66d600bf66b89bfd8647d5449490f73",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/publication-inventory.json": "d8d403e91b8928f4b9cc09933cc3f9dd282c1630dff99a05faa37f086a41e533",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/publication-inventory.json": "19932ab92f282c632227fbb473797963e221d785531127836ee55d75c21d27d3",
+    "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/publication-inventory.json": "10ce01b004b9870e283a79e746781543edcafa5d7598e6539a21c2bfd008528e",
+    "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/publication-inventory.json": "e0b8d5bec8a4a54eabbfb7acf5a6cfe18b5b66e00607a8c875f9bddaa4026062",
+    "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/publication-inventory.json": "6844344e4ef02504c34982e316173fb684f850f1921aaf0f07ae810733113101",
+    "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/publication-inventory.json": "bd91eb0ff5081cf15ccc4d57dae8313ee9a290539e8e8278836afdb27c660bf3",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/publication-inventory.json": "cef4ef06903fd113310d672e70d833b86506d31b179dae7b44e9124d3afcf7dd",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/publication-inventory.json": "cffb2e44d4a5f5dd874246d3b04bf1907ef64c2a05a4c279332230f5a2d10d46",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/publication-inventory.json": "6af08bc8dd4e0bf114e9e131cf6725abf8849fafcba67c6d5f79eb9f05262699",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review-files.json": "8331e2ab1d529527d7c10c6fcd684b10a5348ad2d715ebc56378125a7cff5466",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/umbrella-scheduler-review/publication-inventory.json": "cb6718371c5e18c5ff64473346133b544fbcd80d4b73fc2129b7e92c0570eb11",
+    "docs/validation/literature-convergence-2026-11-01/review/software-and-source-review-files.json": "5f6f2abfccfa77068f81293dd753ca728ee4c352146d768a902b38e01c18bdec",
+    "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/publishable-files.json": "f68456bddc3e340911ae91590507a2769ae0a17d67eba983325870b15ba87b68",
+    "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/publishable-files.json": "4f06465a8e4cb69b0b7abdc19b3561e3843918b97af23d43958dbc0e3d6c134e",
+    "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/publication-inventory.json": "28f547ed41f758e760a78ac561ff3a31d9a284d20c256a1a9b3ac9ea59881356",
+    "docs/validation/literature-convergence-2026-11-01/water/original-cohort-archive-replay/publication-inventory.json": "ed81dc97c108549006bda497f9832c64102e2309d798897f010e533610e43ac6",
+    "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/publication-inventory.json": "a547ecba7890116439f7bfd8f908805751d1ce72c68b1716cc67ac2d16d693b2",
+    "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/publication-inventory.json": "bfafe068355b68f36594ba4148452ee4753ea7c6d44fa09ef5204340ccecc5b4",
+    "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-timestep-outcome/publication-inventory.json": "2f60e915183c6924355b34fd57c4da679f0af67dc7c3d9fc662fcf51aab7dc40",
+    "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/publication-inventory.json": "7b186295269b666de793252b52f91e7d8a51db3017978663be157b1889c86863",
+    "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/publication-inventory.json": "09871c5277f29e681cba26d2c385740fe0e686c8f8a811ee1952f294b9631d06",
+    "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/publication-inventory.json": "fd2a9e421a3c274c869563b30e07c5759954944964077e5681d2783dd2b173fe",
+    "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/publication-inventory.json": "ac2c4283de357a1c06845f333702aa4bc870a474b52f235c5b44f9248796bc10",
+    "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/publication-inventory.json": "cb62d954a7fe314ea29df0af2319d7ff1a2e7bed704a48ca0b151c8cbd9c8a44",
+    "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/publication-inventory.json": "13681353f6fdfd23857accd2eb269619e2e161ce7073a683250a04700284c3dc",
+    "docs/validation/literature-convergence-2026-11-01/water/stable-publication-manifest.json": "edf79cc6f90fe8cb9e90e53d37f0b0df8ea437ef13b288326f3a10d2ca6b286f",
+    "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/publication-inventory.json": "ed974cc16cb5220101d2bb274fa9b5ea7137401699c071dd91e252467a03b6e6",
+    "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/publication-inventory.json": "3dc6fd9739e4d6b22b1a3beb01e6b3aa2d24fc0cf0079aef43fe9060b0407564",
+    "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption/publication-inventory.json": "6f4bffaf17b7e7041970c2d5de2d5948bb66080d6e508a24399218203460db56",
+    "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/publication-inventory.json": "fef19a7571f5ac5605c665d6a2e9d0964c208047df0d34497f4673596649072e",
+    "docs/validation/literature-convergence-2026-11-01/water/transport-plot-helper/publication-inventory.json": "8857e8e7cb99a21a452f2070c5ef9100624acd4f83762009679206a62081cb67",
+    "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/publication-inventory.json": "ef17405ea42c3068196c5f6d630a2819bcbef51ef862c6128cea2ed3fed799d9"
+  },
+  "missing_local_targets": [],
+  "new_source_PDFs_external_models_raw_archives_excluded": true,
+  "parent": "0c5fec22ce590634c45b8c46619cebf3e665eb85",
+  "schema": "pyrpmd.sixth-publication-audit.v1",
+  "staged_tree_at_start": "18fa779db190be2d03472a4497488fd47991fa43",
+  "staging_driver_sha256": "a5daf0b564b9e73d7f8566afdb46cfcc82dac2340e7f1725fd272b75d08c3e77",
+  "strict_documentation_exit_code": 0,
+  "whitespace_exclusions": [
+    "*.log",
+    "*.svg",
+    "*.patch",
+    "*.xml",
+    "*.csv",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/water-method-tests.xml",
+    "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/comparison-plot-data.csv",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/*.csv",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/per-seed/*/*/*.csv",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/*.csv",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/*/*/*.csv",
+    "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/*.csv",
+    "docs/validation/literature-convergence-2026-11-01/water/rdf-noise-audit/bin-noise.csv",
+    "docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/compiler.txt",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973258623-failure.txt",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261632-failure.txt",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261515-failure.txt",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261538-failure.txt",
+    "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-36ec289-20261101T211518Z/job-124973261478-failure.txt"
+  ]
+}

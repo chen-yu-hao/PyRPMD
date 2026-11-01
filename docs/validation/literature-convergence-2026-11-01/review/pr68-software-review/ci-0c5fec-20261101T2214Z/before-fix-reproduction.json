@@ -1,0 +1,26 @@
+{
+  "clock_fixture": {
+    "clock_origin": 13.000000000000014,
+    "computed_clock": 128.0,
+    "old_fixture_failed_to_raise": true,
+    "reproduced": true,
+    "requested_elapsed": 115.0,
+    "subtracted_elapsed": 114.99999999999999
+  },
+  "path_fixture": {
+    "error": "live pilot output must be a separate adopted workspace directory",
+    "project": "/workspace/scratch/a5e4820daedd/ci-fixture-reproduction-0c5fec/projects/project",
+    "reproduced": true,
+    "temporary_directory": "/workspace/scratch/a5e4820daedd/ci-fixture-reproduction-0c5fec/tmp/pytest-of-runner/case"
+  },
+  "real_PES_evaluations": 0,
+  "real_dynamics_steps": 0,
+  "recorded_utc": "2026-11-01T22:20:37Z",
+  "schema": "pyrpmd.ci-fixture-defect-reproduction.v1",
+  "source_sha256": {
+    "benchmarks/h3/p256_native_calibration.py": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8",
+    "benchmarks/hch4/efficiency_pilot.py": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb",
+    "tests/test_h3_p256_native_calibration.py": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4",
+    "tests/test_hch4_efficiency_pilot.py": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+  }
+}

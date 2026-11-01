@@ -1,0 +1,36 @@
+{
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "0,6",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/run_checks.py",
+    "--label",
+    "py312"
+  ],
+  "compatibility_sha256": null,
+  "declared_wall_timeout_seconds": 180,
+  "exit_code": 1,
+  "finished_utc": "2026-11-01T22:21:42.156447+00:00",
+  "label": "py312",
+  "log_sha256": "2dcbcaaa11cdac198f3c8108ef0fa939f76a065cae06b7101f9fbef40d584f6a",
+  "owned_test_group_reaped": true,
+  "passed": false,
+  "selected_environment": {
+    "MKL_NUM_THREADS": "1",
+    "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec/py312/matplotlib",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src:.",
+    "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec/py312"
+  },
+  "started_utc": "2026-11-01T22:21:41.689677+00:00",
+  "timed_out": false,
+  "wall_seconds": 0.4667782739998074
+}

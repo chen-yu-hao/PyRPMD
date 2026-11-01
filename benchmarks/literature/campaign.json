@@ -34,14 +34,18 @@
       "status": "not_reproduced",
       "blockers": [
         "Converged methane thermal-rate sampling has not been run; the fixed0.1fs shortP128 NVE energy gate fails while smaller-step diagnostics remain separate.",
-        "The improved excluded importance pilot still fails its xi1.007 pooled maximum-weight screen and channel2 ESS/maximum-weight screens. Absolute classical normalization, finite-domain tails and a fresh production cohort require separate validation."
+        "The improved excluded importance pilot still fails its xi1.007 pooled maximum-weight screen and channel2 ESS/maximum-weight screens. The Maxwell-flux/mass-metric algebraic normalization is independently checked; physical bound-reactant domains, tails/separation and a fresh production cohort still require validation."
       ],
       "available_evidence": [
         "Exact RPMDrate CBE PES-2008 source/build pinned; barrier 15.0142843 kcal/mol versus published 15.01; native/Python maps, unit checks and short umbrella/checkpoint probes pass.",
         "All 768 excluded independent-reference pilot draws retained, including 127 geometric zeros; importance ESS is only 4.33, 7.18 and 6.14 across the three full ensembles. No rate estimate is promoted.",
-        "The second excluded pilot completed800 calibration,3072 main and128 matched control draws with3672 successfulPES evaluations. Pooled ESS is336.17,165.49,704.02; xi1.007 pooled maxweight0.045147 exceeds0.025, and channel2 ESS27.53<32/maxweight0.15743>0.10. Independent calculation and fresh archive-extraction replay agree; no physical rate is promoted."
+        "The second excluded pilot completed800 calibration,3072 main and128 matched control draws with3672 successfulPES evaluations. Pooled ESS is336.17,165.49,704.02; xi1.007 pooled maxweight0.045147 exceeds0.025, and channel2 ESS27.53<32/maxweight0.15743>0.10. Independent calculation and fresh archive-extraction replay agree; no physical rate is promoted.",
+        "Independent SI/atomic-unit and mass-metric checks establish the Maxwell capture prefactor and show that active-channel selection already includes the four equivalent channels. This is a normalization derivation, not a converted pilot rate or a physical tail/separation certificate."
       ],
-      "evidence_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/FINAL_STATUS.md"
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/FINAL_STATUS.md",
+      "additional_evidence_paths": [
+        "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/FINAL_STATUS.md"
+      ]
     },
     {
       "id": "oh_h2",
@@ -96,7 +100,8 @@
       "source_urls": [
         "https://doi.org/10.1063/1.3127145",
         "https://doi.org/10.1063/1.3464477",
-        "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/"
+        "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/",
+        "https://doi.org/10.1063/1.4928599"
       ],
       "numeric_convergence_controls": [
         "beads",
@@ -114,12 +119,17 @@
       "status": "not_reproduced",
       "available_evidence": [
         "Exact author-distributed SW1 and HSW archives are separately pinned and built unchanged; ten static geometries, SW1 analytic distance gradients, H exchange and the original HSW verification program pass fixed checks.",
-        "The original default-real literal rounding is recorded without changing source or energy shifts; HSW forces and RPMD dynamics were not tested."
+        "The original default-real literal rounding is recorded without changing source or energy shifts; HSW forces and RPMD dynamics were not tested.",
+        "A separate2015 Hele-Suleimanov primary-source audit recovers the SW-family lambda0 graph rates approximately1.93e-11,2.86e-11,5.36e-11cm3/s at200/300/500K and TableII settings. An independent PDF parser agrees within0.181ppm. Graph-coordinate sensitivity is not paper statistical uncertainty; exact masses/SW bytes/state factors remain unresolved and no reference-registry substitution or physical comparison is made."
       ],
       "evidence_path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/README.md",
       "blockers": [
         "Original rate data plus erratum and the exact PES/adiabatic-spin-orbit conventions are still pending source verification.",
         "No numeric comparison is allowed against the pending registry entry."
+      ],
+      "additional_evidence_paths": [
+        "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/README.md",
+        "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/README.md"
       ]
     },
     {
@@ -153,15 +163,19 @@
       "blockers": [
         "Supplementary parent-time-half kappa equivalence still fails: 95% interval [-0.0231007344,+0.0362553622] is not wholly within +/-0.03.",
         "P128-to-P256 equilibrium refinement passes. All eight fixed P256 parent chains are complete and their raw archive is independently verified; the full dynamic bead comparison is not yet complete. The P64 equilibrium control remains a recorded failure.",
-        "Independent MC umbrella sampling fails the unchanged precision gate at complete30000 and100000 sweeps. At100000, logSE0.0508737487 exceeds0.03. A300000 continuation requires separate adoption from a new isolated verified restore; the anomalous original campaign remains unchanged. This MC/reference evidence does not validate production MD umbrella sampling."
+        "Independent MC umbrella sampling fails the unchanged precision gate at complete30000 and100000 sweeps. At100000, logSE0.0508737487 exceeds0.03. The originally registered300000 continuation has now been separately adopted and started from a new isolated verified restore; its full result and precision gate remain pending; the anomalous original campaign remains unchanged. This MC/reference evidence does not validate production MD umbrella sampling."
       ],
       "available_evidence": [
         "Complete independent classical reference rate 1.5454063761e-18 agrees with paper 1.55e-18 within its stated approximately 5% precision.",
         "Complete P128 four-pair quantum rate 1.9678563652801757e-16 has nominal 95% CI [1.9329386067562914e-16,2.003404899068246e-16], +0.915711% from paper 1.95e-16. All eleven fixed-P primary criteria pass; kappa relative half-width 2.317249% is below the unchanged 3% threshold.",
         "All eight chains and 800 raw child chunks were independently reconstructed and exactly replayed after actual base-plus-increment archive extraction. Same-chain partition/transmission covariance is retained.",
-        "Complete100000-sweep all-eight umbrella QTST2.5873968041771664e-16, nominal95%CI[2.294132956321048e-16,2.918149187395823e-16], +3.083538% from paperQTST. Seven criteria pass but statistical_precision fails. All checkpoint/RNG/prefix bytes and scientific analysis exactly replay after actual archive extraction."
+        "Complete100000-sweep all-eight umbrella QTST2.5873968041771664e-16, nominal95%CI[2.294132956321048e-16,2.918149187395823e-16], +3.083538% from paperQTST. Seven criteria pass but statistical_precision fails. All checkpoint/RNG/prefix bytes and scientific analysis exactly replay after actual archive extraction.",
+        "The fixed300000 endpoint resumes the same8 complete100000 checkpoints/RNG prefixes in a new isolated copy under an independently reviewed owner. Root admission binds4workers and joint resource reservations; actual startup records4owned workers. No partial scientific estimate, final completion or automatic extension is asserted."
       ],
-      "evidence_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/README.md"
+      "evidence_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/README.md",
+      "additional_evidence_paths": [
+        "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-execution-v1/README.md"
+      ]
     },
     {
       "id": "d_h2",

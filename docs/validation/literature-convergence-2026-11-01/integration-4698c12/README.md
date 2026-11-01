@@ -217,6 +217,25 @@ physics sources are unchanged. Complete remote CI logs at head `36ec289`
 show that same unpatched fixture as the sole failed case in five jobs;
 those historical remote failures are retained and are not relabelled as passes.
 
+At the next published head `0c5fec`, complete remote logs identify two further
+test-fixture defects: the HCH4 inert plan assumed pytest's temporary directory
+was under the checkout workspace, and the P256 admission-boundary fixture
+could lose one floating-point unit when adding/subtracting a real clock origin.
+Both were reproduced independently and corrected in tests only. The
+[complete focused gate](ci-fixture-repair-0c5fec-v2/summary.json) passes all101
+cases on each of Python3.12,3.13 and3.14 without skips; the
+[five original failed logs and supersession](../review/pr68-software-review/ci-0c5fec-20261101T2214Z/README.md)
+remain unchanged. Production deadlines and output containment are unchanged.
+
+The new [MC continuation gate](mc300k-owner-compatibility-v2/README.md) passes
+all76 cases on3.12. The observed local conda-forge3.13/3.14 interpreters lack
+both required pidfd interfaces, so each passes69 cases with7 explicitly
+unavailable real-ownership cases. The guard-only case still runs. These skips
+are not passes, and full ownership coverage is not claimed on those builds.
+The case-level passing unions are872 on3.12 and865 on each conda interpreter.
+The active physical run uses the original fully tested3.12 runtime. Its source,
+models, protocol and acceptance criteria remain frozen.
+
 ## Documentation
 
 The changed English manual passes the strict Sphinx HTML build with

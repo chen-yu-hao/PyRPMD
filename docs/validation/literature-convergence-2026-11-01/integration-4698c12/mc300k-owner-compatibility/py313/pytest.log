@@ -1,0 +1,304 @@
+........................................................FF...FF.......F. [ 94%]
+....                                                                     [100%]
+=================================== FAILURES ===================================
+______ test_full_inert_cohort_preserves_order_once_and_two_worker_ceiling ______
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_full_inert_cohort_preserv0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f15d0535710>
+
+    def test_full_inert_cohort_preserves_order_once_and_two_worker_ceiling(tmp_path, monkeypatch):
+        old = os.environ.get(owner.TOKEN_ENV)
+        result, monitor = dispatch_inert(tmp_path, monkeypatch)
+>       assert result["launched_seeds"] == list(owner.SEEDS) and not result["errors"]
+E       assert ([211017] == [211017, 2110..., 211031, ...]
+E         
+E         Right contains 7 more items, first extra item: 211019
+E         Use -v to get more diff)
+
+tests/test_h3_quantum_isolated_continuation.py:295: AssertionError
+_____ test_alarm_between_Popen_and_active_capture_drains_registered_child ______
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_alarm_between_Popen_and_a0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f15d056b450>
+
+    def test_alarm_between_Popen_and_active_capture_drains_registered_child(tmp_path, monkeypatch):
+        def pending_alarm(process): os.kill(os.getpid(), signal.SIGALRM)
+>       result, monitor = dispatch_inert(tmp_path, monkeypatch, popen_hook=pending_alarm)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_h3_quantum_isolated_continuation.py:307: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_h3_quantum_isolated_continuation.py:284: in dispatch_inert
+    value = owner.dispatch_owned(dispatch,
+benchmarks/h3/quantum_isolated_continuation.py:734: in dispatch_owned
+    signal.pthread_sigmask(signal.SIG_SETMASK, final_mask)
+../distribution-check/unit-py313/lib/python3.13/signal.py:71: in pthread_sigmask
+    sigs_set = _signal.pthread_sigmask(how, mask)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+signum = 14
+frame = <frame at 0x7f15d056b920, file '/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/signal.py', line 71, code pthread_sigmask>
+
+    def expired(signum, frame):
+        process = owned.get("process")
+        if process is not None and process.poll() is None:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+>       raise TimeoutError("registered post-ready work alarm expired; drain reserve remains")
+E       TimeoutError: registered post-ready work alarm expired; drain reserve remains
+
+benchmarks/h3/p256_complete_analysis.py:133: TimeoutError
+_____________ test_unconfirmed_drain_retains_exclusion_and_attempt _____________
+
+active = {211017: (<Popen: returncode: -15 args: ['/workspace/scratch/a5e4820daedd/distribution...>, 0)}
+
+    def drain_then_fail(active):
+        real(active)
+>       raise RuntimeError("inert confirmation failure after actual drain")
+E       RuntimeError: inert confirmation failure after actual drain
+
+tests/test_h3_quantum_isolated_continuation.py:330: RuntimeError
+
+The above exception was the direct cause of the following exception:
+
+dispatcher = <module 'benchmarks.h3.p256_parent_campaign' from '/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/p256_parent_campaign.py'>
+command_for = <function dispatch_inert.<locals>.<lambda> at 0x7f15d01cf100>
+verify_result = <function dispatch_inert.<locals>.<lambda> at 0x7f15d01cf380>
+cpus = [0, 1], deadline = 71693.365382965
+attempt = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_unconfirmed_drain_retains0/attempt')
+lease = {'release': False, 'path': '/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_unconfirmed_drain_retains0/.new-root-continuation-lock'}
+guard = <function <lambda> at 0x7f15d054ccc0>
+monitor = <test_h3_quantum_isolated_continuation.InertMonitor object at 0x7f15d0529370>
+
+    def dispatch_owned(dispatcher, command_for, verify_result, *, cpus, deadline, attempt,
+                       lease, guard, monitor):
+        """Add alarm-safe capture and an independent confirmed cleanup path."""
+        mask, captured = AdmissionAlarmMask(), OwnedChildren()
+        monitor.registry = captured
+        old_token = os.environ.get(TOKEN_ENV); os.environ[TOKEN_ENV] = PROCESS_TOKEN
+        outcome = None
+        try:
+            monitor.start()
+            def command(seed, cpu):
+                value = command_for(seed, cpu); mask.acquire(); return value
+            def event(row):
+                if row["event"] == "worker_started":
+                    captured.started(row)  # Before an alarm can interrupt ownership.
+                    mask.release()
+                elif row["event"] == "worker_reaped":
+                    captured.reaped(row)
+                monitor.event(row)
+>           outcome = dispatcher.dispatch_jobs(SEEDS, command, verify_result, cpus=cpus,
+                deadline=deadline, attempt=attempt, lease=lease, guard=guard, event_hook=event)
+
+benchmarks/h3/quantum_isolated_continuation.py:707: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+seeds = (211017, 211019, 211021, 211023, 211027, 211031, ...)
+command_for = <function dispatch_owned.<locals>.command at 0x7f15d01cf2e0>
+verify_result = <function dispatch_inert.<locals>.<lambda> at 0x7f15d01cf380>
+cpus = [0, 1], deadline = 71693.365382965
+attempt = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_unconfirmed_drain_retains0/attempt')
+lease = {'release': False, 'path': '/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_unconfirmed_drain_retains0/.new-root-continuation-lock'}
+guard = <function <lambda> at 0x7f15d054ccc0>
+event_hook = <function dispatch_owned.<locals>.event at 0x7f15d01cf420>
+
+    def dispatch_jobs(seeds, command_for, verify_result, *, cpus, deadline, attempt, lease,
+                      guard=lambda: None, event_hook=None):
+        """Scheduling-only engine; bounded tests supply inert subprocess commands."""
+        pending = deque(seeds)
+        active, results, errors, logs, launched = {}, {}, [], {}, []
+        attempt = Path(attempt)
+        journal = (attempt / "events.jsonl").open("x")
+    
+        def event(name, **fields):
+            row = {"utc": now(), "event": name, **fields}
+            if event_hook:
+                event_hook(row)
+            journal.write(json.dumps(row, sort_keys=True) + "\n"); journal.flush()
+    
+        with deferred_stop_signals() as stop:
+            def admission_stop_reason():
+                if stop["reason"]:
+                    return stop["reason"]
+                if time.monotonic() >= deadline:
+                    return "whole campaign wall deadline"
+                for seed, (process, _) in active.items():
+                    code = process.poll()
+                    if code is not None and code != 0:
+                        return f"seed {seed} worker exited {code} before next admission"
+                return None
+    
+            try:
+                while active or pending:
+                    if stop["reason"]:
+                        errors.append(stop["reason"]); break
+                    if time.monotonic() >= deadline:
+                        errors.append("whole campaign wall deadline"); break
+                    free = [cpu for cpu in cpus if cpu not in {slot for _, slot in active.values()}]
+                    if pending and free:
+                        # Full original-state guards include ~10MB of frozen NPZ.
+                        # Check them at admissions, not in a 20Hz polling loop.
+                        # The frozen producer also checks its own sources at every
+                        # checkpoint; final identity is checked after all workers.
+                        guard()
+                    while pending and free:
+                        reason = admission_stop_reason()
+                        if reason:
+                            errors.append(reason)
+                            break
+                        seed, cpu = pending.popleft(), free.pop(0)
+                        log = (attempt / f"seed-{seed}.log").open("x")
+                        logs[seed] = log
+                        environment = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", **{name: "1" for name in THREAD_VARIABLES})
+                        command = command_for(seed, cpu)
+                        reason = admission_stop_reason()
+                        if reason:
+                            pending.appendleft(seed)
+                            errors.append(reason)
+                            break
+                        lease["release"] = False
+                        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT,
+                                                   cwd=ROOT, env=environment, start_new_session=True)
+                        active[seed] = (process, cpu); launched.append(seed)
+                        event("worker_started", seed=seed, pid=process.pid, cpu=cpu)
+                    if errors:
+                        break
+                    finished = [seed for seed in seeds if seed in active and active[seed][0].poll() is not None]
+                    for seed in finished:
+                        process, cpu = active.pop(seed)
+                        code = process.wait(); logs[seed].close()
+                        event("worker_reaped", seed=seed, pid=process.pid, returncode=code)
+                        require(code == 0, f"seed {seed} worker exited {code}")
+                        results[seed] = verify_result(seed)
+                        event("seed_verified", seed=seed)
+                    if active:
+                        time.sleep(min(.05, max(0., deadline - time.monotonic())))
+            except BaseException as error:
+                errors.append(f"{type(error).__name__}: {error}")
+            finally:
+                # Keep deferred SIGINT/SIGTERM handlers installed until every owned
+                # child has drained, including after a journal/verification error.
+                try:
+                    drain_processes(active)
+                except BaseException as error:
+                    journal.close()
+                    for log in logs.values():
+                        log.close()
+>                   raise RuntimeError("worker draining unconfirmed; exclusive lease retained") from error
+E                   RuntimeError: worker draining unconfirmed; exclusive lease retained
+
+benchmarks/h3/p256_parent_campaign.py:452: RuntimeError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_unconfirmed_drain_retains0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f15d0384100>
+
+    def test_unconfirmed_drain_retains_exclusion_and_attempt(tmp_path, monkeypatch):
+        real = dispatch.drain_processes
+        def drain_then_fail(active):
+            real(active)
+            raise RuntimeError("inert confirmation failure after actual drain")
+        monkeypatch.setattr(dispatch, "drain_processes", drain_then_fail)
+        monkeypatch.setattr(owner.OwnedChildren, "drain", lambda *args:
+                            (_ for _ in ()).throw(RuntimeError("independent owner drain unconfirmed")))
+        with pytest.raises(RuntimeError, match="unconfirmed"):
+>           dispatch_inert(tmp_path, monkeypatch, event_hook=lambda row:
+                os.kill(os.getpid(), signal.SIGTERM) if row["event"] == "worker_started" else None)
+
+tests/test_h3_quantum_isolated_continuation.py:335: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_h3_quantum_isolated_continuation.py:284: in dispatch_inert
+    value = owner.dispatch_owned(dispatch,
+benchmarks/h3/quantum_isolated_continuation.py:716: in dispatch_owned
+    require(not captured.uncaptured or (outcome is not None and outcome["all_workers_drained"] is True),
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+condition = False
+message = 'uncaptured child and frozen drain unconfirmed; retain exclusion'
+
+    def require(condition, message):
+        if not condition:
+>           raise ValueError(message)
+E           ValueError: uncaptured child and frozen drain unconfirmed; retain exclusion
+
+benchmarks/h3/quantum_isolated_continuation.py:104: ValueError
+______ test_alarm_during_frozen_exceptional_drain_is_independently_reaped ______
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_alarm_during_frozen_excep0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f15d05ad590>
+
+    def test_alarm_during_frozen_exceptional_drain_is_independently_reaped(tmp_path, monkeypatch):
+        seen = []
+        def interrupted_drain(active):
+            seen.extend(process.pid for process, _ in active.values())
+            os.kill(os.getpid(), signal.SIGALRM)
+        monkeypatch.setattr(dispatch, "drain_processes", interrupted_drain)
+        def fail_event(row):
+            if row["event"] == "worker_started": raise OSError("inert event failure")
+        with pytest.raises(RuntimeError, match="unconfirmed"):
+>           dispatch_inert(tmp_path, monkeypatch, event_hook=fail_event)
+
+tests/test_h3_quantum_isolated_continuation.py:350: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_h3_quantum_isolated_continuation.py:284: in dispatch_inert
+    value = owner.dispatch_owned(dispatch,
+benchmarks/h3/quantum_isolated_continuation.py:734: in dispatch_owned
+    signal.pthread_sigmask(signal.SIG_SETMASK, final_mask)
+../distribution-check/unit-py313/lib/python3.13/signal.py:71: in pthread_sigmask
+    sigs_set = _signal.pthread_sigmask(how, mask)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+signum = 14
+frame = <frame at 0x7f15d03106c0, file '/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/signal.py', line 71, code pthread_sigmask>
+
+    def expired(signum, frame):
+        process = owned.get("process")
+        if process is not None and process.poll() is None:
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+>       raise TimeoutError("registered post-ready work alarm expired; drain reserve remains")
+E       TimeoutError: registered post-ready work alarm expired; drain reserve remains
+
+benchmarks/h3/p256_complete_analysis.py:133: TimeoutError
+___ test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission ___
+
+tmp_path = PosixPath('/workspace/scratch/a5e4820daedd/distribution-check/mc300k-owner-compatibility/py313/pytest-tmp/test_real_capped_worker_self_h0')
+
+    def test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission(tmp_path):
+        policy = json.loads(owner.POLICY.read_text())
+        monitor = owner.ResourceWatchdog(policy, [0, 1])
+        registration = dump(tmp_path/"registration.json", {"fixture": "no physics"})
+        monitor.bind(tmp_path, registration)
+        script = tmp_path/"inert_resource.py"
+        script.write_text(
+            "import os,time,json,sys\nfrom pathlib import Path\n"
+            "from benchmarks.h3.quantum_isolated_continuation import install_address_space_limit,WorkerResourceReporter,identity\n"
+            "install_address_space_limit()\n"
+            "with WorkerResourceReporter(Path(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3]),identity(Path(sys.argv[1])/'registration.json'),{'owner_process_token':os.environ['PYRPMD_ISOLATED300K_OWNER_TOKEN']}):time.sleep(.1)\n")
+        attempt = tmp_path/"attempt"; attempt.mkdir()
+        # Resource files and registration intentionally share the fixture root;
+        # production binds the actual attempt path independently.
+        with owner.exclusive_owner(tmp_path/"new-root") as lease, dispatch.deferred_stop_signals(), alarms.work_alarm(time.monotonic()+8, {}):
+            result = owner.dispatch_owned(dispatch,
+                lambda seed, cpu: [sys.executable, str(script), str(tmp_path), str(seed), str(cpu)],
+                lambda seed: {"seed": seed}, cpus=[0, 1], deadline=time.monotonic()+6,
+                attempt=attempt, lease=lease, guard=lambda: None, monitor=monitor)
+>       assert not result["errors"] and result["all_workers_drained"]
+E       assert (not ["AttributeError: module 'os' has no attribute 'pidfd_open'"])
+
+tests/test_h3_quantum_isolated_continuation.py:423: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_h3_quantum_isolated_continuation.py::test_full_inert_cohort_preserves_order_once_and_two_worker_ceiling
+FAILED tests/test_h3_quantum_isolated_continuation.py::test_alarm_between_Popen_and_active_capture_drains_registered_child
+FAILED tests/test_h3_quantum_isolated_continuation.py::test_unconfirmed_drain_retains_exclusion_and_attempt
+FAILED tests/test_h3_quantum_isolated_continuation.py::test_alarm_during_frozen_exceptional_drain_is_independently_reaped
+FAILED tests/test_h3_quantum_isolated_continuation.py::test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission
+5 failed, 71 passed in 2.16s

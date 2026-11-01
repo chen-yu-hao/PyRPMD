@@ -1,0 +1,104 @@
+{
+  "affinity_reason": "Single-threaded short fixture checks; CPU6 remains visible for the existing isolated calibration resource-contract test.",
+  "builds": 0,
+  "created_before_execution_utc": "2026-11-01T22:22:04.970199+00:00",
+  "installs": 0,
+  "native_products": {
+    "py312": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+      }
+    },
+    "py313": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a"
+      }
+    },
+    "py314": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+      }
+    }
+  },
+  "old_CI_failures_retained": true,
+  "per_interpreter": {
+    "py312": {
+      "expected": 101,
+      "files": [
+        "tests/test_hch4_efficiency_pilot.py",
+        "tests/test_h3_p256_native_calibration.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+    },
+    "py313": {
+      "expected": 101,
+      "files": [
+        "tests/test_hch4_efficiency_pilot.py",
+        "tests/test_h3_p256_native_calibration.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python"
+    },
+    "py314": {
+      "expected": 101,
+      "files": [
+        "tests/test_hch4_efficiency_pilot.py",
+        "tests/test_h3_p256_native_calibration.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python"
+    }
+  },
+  "real_PES_evaluations": 0,
+  "real_dynamics_steps": 0,
+  "required_cpu_affinity": [
+    0,
+    6
+  ],
+  "schema": "pyrpmd.ci-fixture-repair-selection.v1",
+  "source_head": "0c5fec22ce590634c45b8c46619cebf3e665eb85",
+  "source_state_note": "Published head plus exactly two test-fixture repairs, documented source-only literature evidence and no changes to scientific producers, models, runtime or acceptance criteria.",
+  "test_fixture_changes": {
+    "benchmarks/literature/campaign.json": {
+      "after": "69986bdcd49d64ac56ca30ab4ffe4577a4b9bc5fd1823483204687bb114c666f",
+      "before": "9d292c706f1a89998d4e8d3dff0e196c8d3bf83cac6d2e9bb97ea404df05bf02",
+      "current_bytes_equal_published_0c5fec": true,
+      "reason": "Already published fifth-commit aggregate; first gate retained a fourth-head campaign hash and stopped before collecting tests."
+    },
+    "tests/test_h3_p256_native_calibration.py": {
+      "after": "4a3648fc242d7b28abfbb56b9189ffb7eb92c2bddb07dd705afe5d354500cf0f",
+      "before": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4",
+      "original_scientific_tree_test_unchanged": true
+    },
+    "tests/test_hch4_efficiency_pilot.py": {
+      "after": "ec6c660065185388ba153e0f4537fa30e5a605da44b2d5b0ea5c852f257695f1",
+      "before": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6",
+      "original_scientific_tree_test_unchanged": true
+    }
+  }
+}

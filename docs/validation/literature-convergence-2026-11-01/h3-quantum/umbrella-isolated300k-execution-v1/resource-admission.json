@@ -1,0 +1,127 @@
+{
+  "CPU8_scope": "Only bounded sequential diagnostics, never a ninth sustained scientific worker.",
+  "MC_excluded_layout_probe": {
+    "bytes": 1993,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/synthetic-AS-layout-probe.json",
+    "sha256": "b0fba866f8ff531d0bbbdecb9c5a9ff0971915a6ecd6cb9f8b09c2c423773351"
+  },
+  "MC_four_workers_plus_owner_AS_sum_bytes": 5368709120,
+  "MC_own_incremental_budget_bytes": 5000000000,
+  "MC_per_process_RLIMIT_AS_bytes": 1073741824,
+  "P256_completed_worker_resource_evidence": [
+    {
+      "receipt": {
+        "bytes": 2321,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-attempts/abc9e44ad7c24313b23f64741046d2c1/seed-825601-execution.json",
+        "sha256": "b13e64232ba7655c305ef266e57a8fa624c382db37dd6ae036ff81691d396c45"
+      },
+      "resource_fields_only": {
+        "CPU_affinity": [
+          6
+        ],
+        "peak_RSS_KiB": 88728,
+        "whole_process_system_CPU_seconds": 57.299943,
+        "whole_process_user_CPU_seconds": 4540.011952,
+        "whole_worker_call_wall_seconds": 4638.820779354006
+      },
+      "seed": 825601
+    },
+    {
+      "receipt": {
+        "bytes": 2331,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-attempts/abc9e44ad7c24313b23f64741046d2c1/seed-825603-execution.json",
+        "sha256": "8f4a6f0ce358441dddb7a1de3052f049b339887a525ea34fc09a63d88dcae060"
+      },
+      "resource_fields_only": {
+        "CPU_affinity": [
+          7
+        ],
+        "peak_RSS_KiB": 88820,
+        "whole_process_system_CPU_seconds": 4.8500309999999995,
+        "whole_process_user_CPU_seconds": 4507.438108,
+        "whole_worker_call_wall_seconds": 4540.384056208008
+      },
+      "seed": 825603
+    }
+  ],
+  "excess_over_joint_reservation_bytes": 399300480,
+  "external_disk_reservations": [
+    {
+      "basis": "Revision2 prospective full400-branch raw cap5.75GB, one archive cap5.8GB and64MiB compact/streaming-replay metadata. No third physical full extraction. This reserves space; it does not authorize the still-unadopted water implementation.",
+      "name": "water",
+      "remaining_bytes": 11617108864
+    },
+    {
+      "basis": "Active registered800-chunk campaign: conservative remaining raw growth plus one future complete archive and extraction/analysis. Two completed worker receipts show resource use only; no partial physical estimates read.",
+      "name": "P256_children",
+      "remaining_bytes": 3500000000
+    }
+  ],
+  "external_memory_reservations": [
+    {
+      "basis": "Prospective two512MiB worker AS caps plus256MiB stdlib owner cap.512MiB excluded import/context/layout probe passed; first actual PME force gate remains unexecuted. This is a reservation, not measured production RSS or runtime adoption.",
+      "bytes": 1342177280,
+      "hard_limit": false,
+      "name": "water"
+    },
+    {
+      "basis": "Planning reserve for two active workers and owner; exact completed-worker peak RSS88728/88820KiB is observed resource evidence, not an imposed cap or proof of future peak.",
+      "bytes": 536870912,
+      "hard_limit": false,
+      "name": "P256_children"
+    },
+    {
+      "basis": "Reserved1.25GiB for bounded sequential diagnostics, source operations and runtime/system margin. No ninth sustained compute worker is admitted.",
+      "bytes": 1342177280,
+      "hard_limit": false,
+      "name": "other_diagnostics_and_runtime"
+    }
+  ],
+  "filesystem_free_bytes": 24811376640,
+  "fixed_assignment": {
+    "MC300k": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "active_P256": [
+      6,
+      7
+    ],
+    "prospective_water": [
+      4,
+      5
+    ]
+  },
+  "global_free_reserve_bytes_counted_once": 4294967296,
+  "joint_memory_reservation_bytes": 8589934592,
+  "joint_required_incremental_bytes": 24412076160,
+  "memory_budget_bytes": 8589934592,
+  "new_physical_water_adoption_supplied": false,
+  "no_proc_or_unrelated_process_access": true,
+  "observed_before_adoption_utc": "2026-11-01T22:25:22.778258+00:00",
+  "old_raw_archives_and_verified_extractions_deleted": false,
+  "schema": "pyrpmd.root-shared-resource-admission.v1",
+  "scientific_gates_models_protocols_or_seeds_changed": false,
+  "storage_scope": "Remaining growth only, from current free space. Later campaign admissions must subtract already-created owned bytes from their remaining allocations and recheck the same joint ledger; they cannot reuse the whole free-space figure independently.",
+  "sum_AS_caps_is_not_measured_RSS": true,
+  "sustained_CPU_ceiling": 8,
+  "unobservable_external_current_RSS": null,
+  "visible_CPU_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "water_excluded_context_layout_probe": {
+    "bytes": 2920,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-momentum-expansion-proposal/revision-2/memory-probe/cap-512/result.json",
+    "sha256": "2bc527ade65f545471132281398a41a557732feaefbe5a434057aee350d48dde"
+  }
+}

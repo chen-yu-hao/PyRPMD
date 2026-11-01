@@ -162,13 +162,24 @@ The independent eight-ladder umbrella calculation now has complete
 The point criterion passes, but the primary log standard error is 0.050874,
 above the unchanged 0.03 target. The entire cohort and its failed precision
 gate reproduce exactly after actual archive extraction. The historical
-30,000 estimate (+11.583%) and all chains remain intact. A future registered
-300,000 prefix requires separate adoption from a new verified restore;
-the original completed campaign remains unchanged after an unexplained
+30,000 estimate (+11.583%) and all chains remain intact. The registered
+300,000 prefix has now been separately adopted and started from an exact,
+isolated restore, with four workers and the same eight seeds. Its result is
+pending. The original completed campaign remains unchanged after an unexplained
 lease postcondition anomaly. Agreement of the independent surface reference
 does not establish production MD umbrella precision or dynamic bead convergence.
 Detailed protocols, tables and limitations are available in the
 [convergence record under review](https://github.com/chen-yu-hao/PyRPMD/blob/feat/literature-convergence-20261101/docs/validation/literature-convergence-2026-11-01/README.md).
+
+The separate Hele–Suleimanov 2015 source audit recovers original vector-figure
+rates and Table II settings for H + H₂, D + MuH, H + CH₄ and F + H₂.
+An independent PDF parser reproduces the F + H₂ zero-friction coordinates.
+These graph readings supply source evidence only: exact masses, the SW source
+variant, state factors and statistical uncertainties remain unresolved.
+They neither replace the registered targets nor establish a new reproduction.
+For methane, an independently checked Maxwell-flux/mass-metric derivation now
+fixes the algebraic absolute-normalization convention; finite bound-reactant
+domains, tail/separation controls and fresh production sampling remain required.
 
 ## Recommended campaign order
 

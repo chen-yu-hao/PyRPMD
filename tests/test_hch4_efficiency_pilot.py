@@ -625,6 +625,17 @@ print(json.dumps({'same':before[0]==after[0] and np.array_equal(before[1],after[
 
 
 def plan_fixture(tmp_path, monkeypatch):
+    # CI may place pytest's temporary directory outside the checkout workspace.
+    # Give this inert plan its own project and a sibling execution directory,
+    # preserving the live admission rule instead of depending on host layout.
+    project = tmp_path / "project"
+    for field in ("SELF", "TESTS"):
+        source = getattr(pilot, field)
+        target = project / source.relative_to(pilot.ROOT)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(source.read_bytes())
+        monkeypatch.setattr(pilot, field, target)
+    monkeypatch.setattr(pilot, "ROOT", project)
     library = tmp_path/"synthetic.so"; library.write_bytes(b"INERT FIXTURE: NOT A LIBRARY")
     build = library.with_suffix(".build.json"); pilot.write_new_json(build, {"synthetic": True})
     method = tmp_path/"method.json"; pilot.write_new_json(method, {"synthetic": True})

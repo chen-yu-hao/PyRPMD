@@ -1,0 +1,38 @@
+{
+  "actual_terminal_observation_required_later": true,
+  "adoption": {
+    "bytes": 6923,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-execution-v1/root-adoption.json",
+    "sha256": "4713cb7d32c683e574e1f9b083591c14316e4353d430c2240472306b80032aef"
+  },
+  "automatic_retry_or_extension": false,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+    "--authorization",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-execution-v1/root-adoption.json"
+  ],
+  "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "environment_overrides": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src:."
+  },
+  "free_bytes_immediately_before_exec": 24811343872,
+  "launcher": {
+    "bytes": 2510,
+    "path": "/workspace/scratch/a5e4820daedd/launch_isolated_mc300k.py",
+    "sha256": "81a0d3662b2009ab8f65144ddf722d9c34aac534cb846710a628466ffe6f93aa"
+  },
+  "recorded_immediately_before_exec_utc": "2026-11-01T22:25:24.726369+00:00",
+  "schema": "pyrpmd.h3.isolated300k-root-exec-handoff.v1",
+  "scientific_analysis_authorized": false,
+  "source": {
+    "bytes": 59669,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+    "sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7"
+  }
+}

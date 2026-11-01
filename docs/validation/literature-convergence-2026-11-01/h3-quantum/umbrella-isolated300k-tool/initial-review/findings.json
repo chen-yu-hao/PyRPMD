@@ -1,0 +1,51 @@
+{
+  "approved_for_fixed_isolated300000": false,
+  "created_utc": "2026-11-01T22:11:17.610665+00:00",
+  "findings": [
+    {
+      "description": "An earlier stop/error can enter frozen dispatch_jobs drain_processes while the owner work_alarm remains armed. SIGALRM arriving during this finally can interrupt confirmed cleanup; dispatch_owned/run currently have no independent owned-process cleanup reference. The retained lease and worker expiry prevent an approved overlapping continuation and bound worker work, but do not prove this owner reaped every child before returning.",
+      "id": "alarm_during_exceptional_drain",
+      "requested_regression": "Deliver owner work alarm while an inert child is in exceptional drain; prove every started child is confirmed reaped before lease release, or retain lease if still unconfirmed.",
+      "status": "requires_narrow_fix"
+    },
+    {
+      "description": "process_observation returns None when /proc cannot report self or an owned child. observe maps self None and absent/mismatched child identities to zero RSS. This can report a planning-envelope pass without observing the live owned process.",
+      "id": "unknown_RSS_reported_as_zero",
+      "requested_regression": "Use only self and owned inert children. Require observable RSS or explicit unknown/fail-stop for still-live ownership; exclude only known terminated/reaped workers. Never probe unrelated PIDs.",
+      "status": "requires_narrow_fix"
+    }
+  ],
+  "nonblocking_observations": [
+    "Exact archive/member inventory, actual archive session exit, full source/runtime/protocol and fixed-eight-seed identities are required before new working-copy continuation.",
+    "The copied archive is regular independent files, not symlink/hardlink aliases to original evidence. Old 100k settings/RNG/checkpoint/full observation prefix are inspected exactly.",
+    "Only the unchanged one_seed entrypoint can produce the next registered 300000 prefix. Global completion requires all eight 305000-total-sweep checkpoints and matching 300000 stage receipts.",
+    "New output and per-seed once claims prevent silent retry; root still separately authorizes resource adoption.",
+    "Historical other_prospective_water_reservation_bytes is a forecast; actual admission must use root-bound remaining water and P256 bytes plus the one shared 4 GiB reserve."
+  ],
+  "observed_files_at_receipt": [
+    {
+      "bytes": 47016,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+      "sha256": "403300a6ca82a040c98a1e847a78c47f45ee494a16a2c146afcf106fd1e208b4"
+    },
+    {
+      "bytes": 18025,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_h3_quantum_isolated_continuation.py",
+      "sha256": "cf738c22badbd7c51073181e8cecaea8b6b0959799c5d2385d638737b372e052"
+    },
+    {
+      "bytes": 4206,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate/gate.json",
+      "sha256": "3d2180978f853e96f502822eabb64ef79a90476a1678b87c8e67c6665d2acdc8"
+    },
+    {
+      "bytes": 3076,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-300000-proposal/implementation-policy.json",
+      "sha256": "6a3b93f045acd421507b407dd4b2b3c36600591c0488c4437b04957a3e326409"
+    }
+  ],
+  "reviewed_source_sha256": "403300a6ca82a040c98a1e847a78c47f45ee494a16a2c146afcf106fd1e208b4",
+  "reviewer": "/root/distribution",
+  "schema": "pyrpmd.h3.isolated300k-initial-independent-findings.v1",
+  "scope": "Read-only source, policy and inert-test review. No archive extraction, raw checkpoint decoding, PES calls, scientific RNG, simulation, source edits or test execution."
+}

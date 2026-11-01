@@ -99,6 +99,11 @@ cm³ molecule⁻¹ s⁻¹.
   and [exact archive replay](h3-quantum/umbrella-stage-100000/raw-archive-v2/README.md).
   The point criterion passes but statistical precision remains insufficient;
   every earlier prefix, independent ladder and failed result is retained.
+- [Adopted 300,000-sweep continuation](h3-quantum/umbrella-isolated300k-execution-v1/README.md)
+  and [reviewed process owner](h3-quantum/umbrella-isolated300k-tool/README.md).
+  Four workers have started from an exact isolated restore. The same eight
+  chains continue to the original fixed endpoint; no partial result is used
+  to stop or select it, and convergence remains pending.
 - [H + CH₄ model and native workflow](other-reactions/hch4/README.md).
   The paper's PES-2008 is now pinned, built and checked. Its published barrier
   and native/Python force workflow are reproduced; the thermal rate is unrun.
@@ -138,6 +143,16 @@ cm³ molecule⁻¹ s⁻¹.
   effective sampling improves, but ξ=1.007 still fails the pooled maximum-weight
   and channel-2 screens. Saved calculations and actual archive extraction
   replay agree. Neither pilot supplies a promoted physical rate.
+- [Methane absolute-normalization derivation](review/hch4-absolute-normalization/FINAL_STATUS.md).
+  Maxwell capture flux, finite-domain normalization and the full mass metric
+  agree in independent algebra/unit checks. This establishes the mathematical
+  convention, while physical bound-reactant, tail/separation and fresh-cohort
+  convergence remain open; the failed pilot is not converted into a rate.
+- [Hele–Suleimanov 2015 primary-source extraction](review/hele2015-source-index/README.md)
+  and [independent F + H₂ vector check](review/hele2015-source-review/README.md).
+  Original figure coordinates and Table II conditions are retained. Coordinate
+  sensitivity is not a statistical confidence interval, and the new source
+  does not settle the 2010 erratum or replace any registered comparison.
 - [OH cross-source discrepancy](other-reactions/oh-source-consistency/README.md).
   The two author tables agree at 300 K and differ at 1000 K; neither the
   registry nor a surface identity is changed to resolve that difference.

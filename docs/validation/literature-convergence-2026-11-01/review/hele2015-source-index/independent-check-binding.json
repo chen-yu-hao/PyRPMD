@@ -1,0 +1,18 @@
+{
+  "graph_coordinate_sensitivity_is_statistical_CI": false,
+  "inventory": {
+    "bytes": 1558,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/publication-inventory.json",
+    "sha256": "6844344e4ef02504c34982e316173fb684f850f1921aaf0f07ae810733113101"
+  },
+  "literature_reproduced": false,
+  "maximum_independent_reader_relative_difference": 1.806666189985151e-07,
+  "physical_comparison_eligible": false,
+  "review": {
+    "bytes": 7647,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/independent-review.json",
+    "sha256": "99dae2ad596531e2d87dda9718eb627d9bedbbf1656476597a66750e2420729e"
+  },
+  "review_scope": "F+H2 Fig7 only: independent PDFMiner/pdfplumber coordinates and stdlib log calibration; other three graphs were not independently redigitized.",
+  "schema": "pyrpmd.hele2015-source-audit-independent-binding.v1"
+}

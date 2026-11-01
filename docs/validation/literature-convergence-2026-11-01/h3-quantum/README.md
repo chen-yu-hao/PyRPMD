@@ -305,9 +305,14 @@ preserve all checkpoint, RNG and sample-prefix states and reproduce every
 scientific field and saved WHAM array exactly. The original campaign's
 unexplained lease reappearance is explicitly retained in a separate reviewed
 read-only admission. No further cleanup or original-directory writer was
-admitted. Any future registered 300,000 prefix must use a new isolated
-verified restore and a separate root adoption; it cannot be selected by
-closeness to the paper.
+admitted. The registered 300,000 prefix is now
+[separately adopted and started](umbrella-isolated300k-execution-v1/README.md)
+from an exact new isolated restore. Four fixed workers advance the same eight
+chains with no new warmup, thinning or seed replacement. The
+[reviewed scheduling tool](umbrella-isolated300k-tool/README.md) binds every
+old prefix, source and model and publishes completion only after all eight
+chains finish and all owned workers are drained. Its result remains pending;
+closeness to the paper cannot stop, extend or select this stage.
 
 ## Reproduction and retained initialization failures
 
