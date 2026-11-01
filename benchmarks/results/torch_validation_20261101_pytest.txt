@@ -1,0 +1,8 @@
+......................................................ss.............ss. [ 35%]
+........................................................................ [ 70%]
+...........................................................              [100%]
+=========================== short test summary info ============================
+SKIPPED [2] tests/test_torch_backend.py:359: CUDA hardware/runtime unavailable
+SKIPPED [1] tests/test_torch_backend.py:472: CUDA hardware/runtime unavailable
+SKIPPED [1] tests/test_torch_backend.py:491: full upstream checkout required
+199 passed, 4 skipped in 17.67s
