@@ -33,7 +33,7 @@ Original data are pinned to
 * The author-provided `Tully_DAC_p15.csv` contains a block of **zero/zero**
   electronic populations beyond t=3000 a.u.; these are not normalized states.
   The pinned `dac_p15_liu2024_reference.csv` stops at **2800 a.u.**
-  The p5 benchmark stops at **6000 a.u.** Both datasets are checked to
+  The p5 benchmark stops at **6000 a.u.** The p30 benchmark stops at **1200 a.u.** All datasets are checked to
   contain every 40-a.u. sample with total population one.
 
 ## Which approximation is being tested?
@@ -114,6 +114,38 @@ The original published SOFT results have separately been reproduced by
 p15 were at the approximately 1e-11 and 1e-12 levels, respectively, in
 the validated windows. GitHub Actions checks the pinned data and reruns
 the independent quantum and PyRPMD comparison.
+
+
+## High-momentum cross-check: p0=30
+
+The original published p30 SOFT dataset is pinned separately as
+`dac_p30_liu2024_reference.csv`, restricted to **t=0..1200 a.u.**
+because the finite periodic-box calculation has later wavepacket
+recurrences. This is a distinct high-momentum benchmark and **not**
+an extrapolation from p5 or p15.
+
+The independent two-channel Fourier SOFT solver reproduces the published
+p30 t=400,800,1200 anchors with maximum absolute discrepancy
+**3.27e-14** at grid=2048 and dt=1 a.u.; dt=2 a.u. has a larger
+**8.84e-6** error, confirming the manuscript's momentum-dependent
+reference timestep requirement.
+
+At dt=4 a.u., three independently sampled groups of 8,192 Wigner
+trajectories gave:
+
+| t=1200 a.u., p0=30 | P1 ± SEM |
+|---|---:|
+| Published quantum SOFT | **0.65991740** |
+| MMST-focused / one-bead NRPMD | 0.64165449 ± 0.00357018 |
+| W-focused / one-bead SM-NRPMD | 0.65159584 ± 0.00294398 |
+| Independent Ehrenfest baseline | 0.66963575 ± 0.00008794 |
+
+This higher-momentum result is **closer** to the reference than the p5
+or p15 late-time DAC tests, but it is still a finite-sample one-bead
+comparison, and the time horizons differ. The shorter window is
+intentional. It neither establishes statistical insignificance
+(at t=1200 the W-focused residual is ~2.8 SEM) nor proves quantum
+coherence has been recovered.
 
 ## Commands
 
