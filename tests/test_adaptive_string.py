@@ -5,7 +5,7 @@ from pyrpmd.adaptive_string import adaptive_mean_force_string
 
 
 def test_straight_valley_and_pinned_endpoints():
-    start = np.column_stack((np.linspace(-1, 1, 9), np.linspace(0, .4, 9)))
+    start = np.column_stack((np.linspace(-1, 1, 9), 0.15*np.sin(np.linspace(0, np.pi, 9))))
     def gradient(x):
         return np.column_stack((4*x[:, 0]*(x[:, 0]**2-1), 20*x[:, 1]))
     result = adaptive_mean_force_string(start, gradient, step=.02,
