@@ -21,6 +21,7 @@ spec.loader.exec_module(benchmark)
 @pytest.mark.parametrize("momentum, end, reference_end", [
     (5, 6000, 0.00069145052342991684),
     (15, 2800, 0.12901143457710037565),
+    (30, 1200, 0.65991740127597031673),
 ])
 def test_source_pinned_quantum_anchors_are_normalized(momentum, end, reference_end):
     data, path = benchmark.reference(momentum)
@@ -100,7 +101,7 @@ def test_fullsphere_w_representation_has_correct_initial_operator_trace():
     assert abs(np.sum(weights*2*initial*final1)/2.) < 1e-13
 
 
-@pytest.mark.parametrize("momentum", [5, 15])
+@pytest.mark.parametrize("momentum", [5, 15, 30])
 def test_seeded_statistical_smoke_never_clips_signed_population(momentum):
     methods=("mmst-focused","w-focused","spm-w-fullsphere","ehrenfest")
     a,_=benchmark.simulate(momentum, 32, 40., 17, 2, methods)
@@ -108,7 +109,7 @@ def test_seeded_statistical_smoke_never_clips_signed_population(momentum):
     assert a == b
     assert a["claims"]["physical_converged"] is False
     assert a["claims"]["paper_level_method_agreement_certified"] is False
-    assert a["reference"]["times"][-1] == (6000 if momentum == 5 else 2800)
+    assert a["reference"]["times"][-1] == ({5: 6000, 15: 2800, 30: 1200}[momentum])
     for name, result in a["methods"].items():
         assert len(result["mean"]) == len(a["reference"]["times"])
         assert result["max_spin_norm_error"] < 1e-10
@@ -120,6 +121,6 @@ def test_seeded_statistical_smoke_never_clips_signed_population(momentum):
 
 def test_invalid_reference_and_unknown_electronic_sampling_are_rejected():
     with pytest.raises(ValueError, match="only pinned"):
-        benchmark.reference(30)
+        benchmark.reference(99)
     with pytest.raises(ValueError, match="unknown method"):
         benchmark.starting_spin("fake", np.array([0.0]), np.array([0.0]))
