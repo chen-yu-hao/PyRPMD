@@ -1,0 +1,56 @@
+{
+  "schema": "pyrpmd.h3.classical-campaign-prefix-replay.v1",
+  "stage": 20000,
+  "runs": [
+    {
+      "seed": 2026110101,
+      "production_sweeps": 20000,
+      "current_source_checkpoint_sha256": "88a88896f9ccf98f9fce7bcd541da1ea8d9d38727a08abd951a496b6ab612731",
+      "historical_checkpoint_sha256": "68630d04f61a22216a6e590c9d4fee0fef79f5e8a3341bf19bbfe03f432d38ab",
+      "derived_checkpoint_sha256": "4c2a8351f5a7c56a05f191293ca881b1c0c039883b3f1f958f59ad820f6bcb12",
+      "samples_sha256": "f99dec11e7ea4411f91d68beeb8d585a389fc002a5175ae17658661f12a87561",
+      "state_snapshot_sha256": "91f2536a86ada75549dc42316254e6666025d893f92d08aa4279e981f30d0920",
+      "stage_receipt_sha256": "cc4a0953569861f7b4728ab77a2e9bb4b14fc85fb57a02f4a5d3e4ef0f9af71a",
+      "diagnostic_samples": 200,
+      "simulation_steps_executed": 0
+    },
+    {
+      "seed": 2026110102,
+      "production_sweeps": 20000,
+      "current_source_checkpoint_sha256": "fd3f670bd729884798b26475412176bcf3b249619dbb6498a99b830876f1d81c",
+      "historical_checkpoint_sha256": "f59745b0926776ca879e067e8e2aeaa766f66498d1eb5846b0fb5b7da319c329",
+      "derived_checkpoint_sha256": "3bc8e60ae006c1d303e690bfd0da27e4f1ec539bd550204dbb29b49864d26b7e",
+      "samples_sha256": "8d82fbde075b9349fe76172a22a8c56baf9e8951c1c14ce7b8107a4967206758",
+      "state_snapshot_sha256": "6697652e6576ee445b6f973837a943b6ba5b24c52f365de0efd59c30664cd867",
+      "stage_receipt_sha256": "884ca743edbf1e428cd6b240303a50be71c6b42077ae9a6fd07a09d34b5f96d2",
+      "diagnostic_samples": 200,
+      "simulation_steps_executed": 0
+    },
+    {
+      "seed": 2026110103,
+      "production_sweeps": 20000,
+      "current_source_checkpoint_sha256": "51d0e1bce4b9881192b59712f3a9897147bdd9f2d3d57fe1576d3d64ee811a87",
+      "historical_checkpoint_sha256": "c76ac5717accbbe925c453da63295d966e73f7772fbdc9ee320f5fcaa888ce1c",
+      "derived_checkpoint_sha256": "561857c993f4af9ec6c5cee22830fda22f618a7b8752ad4ad66e835b69fdeea0",
+      "samples_sha256": "25b724d2bd555d06724227c1192c2e904ab6a439f10b7693a95f5a42de917e04",
+      "state_snapshot_sha256": "25c411a682cd1e44f460d7feac82dad89b0f8560f563bd6dc3475ba3ef4ec704",
+      "stage_receipt_sha256": "a9554611e23d30c49a35c53f5dc2c0715d0f8d2159f7393a89eac6a86d0040f3",
+      "diagnostic_samples": 200,
+      "simulation_steps_executed": 0
+    },
+    {
+      "seed": 2026110104,
+      "production_sweeps": 20000,
+      "current_source_checkpoint_sha256": "622e4f37d1871381c3c1132e9b525ce933bf71407299f1f640ac3f1f8ce5baf4",
+      "historical_checkpoint_sha256": "d7df2480919bc2b12f43c9963b4ba729cddde271771a252ede6e7e1a3825fa69",
+      "derived_checkpoint_sha256": "f795e4284eff1cc38f662ab0b2ba2ab1beffa86242b81ce8adf25277647138ea",
+      "samples_sha256": "c02185022e2f53e0a9b15d3c56ce0dffa467ac72a6991dc737eabc55459f3052",
+      "state_snapshot_sha256": "6239237044ba9f80c90475500a389dc3919cf6f6d7395c7d6c13daf3f710ccc0",
+      "stage_receipt_sha256": "96978e6fa36e461b68cc910d04a2558bc5b2f5cd479b3c638f076e936c51cc47",
+      "diagnostic_samples": 200,
+      "simulation_steps_executed": 0
+    }
+  ],
+  "source_sha256": "acdf76fc686b4860cb887dc5e24f5b79c39d5f2f3897ce9bb9560b954bc0018e",
+  "scope": "Exact registered ordered CV prefixes and saved stage states; new zip-container identities are explicit."
+}

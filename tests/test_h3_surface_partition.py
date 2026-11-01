@@ -1,0 +1,335 @@
+"""Independent measures, Gaussian partition identities, BAR signs and restart."""
+from pathlib import Path
+from types import SimpleNamespace
+
+import numpy as np
+import pytest
+from scipy.special import logsumexp
+
+from benchmarks.h3.classical_tst import MASS_AU, quadrature
+from benchmarks.h3.mixing_sampling import free_ring, spring_action
+from benchmarks.h3.surface_partition import (
+    analyze_samples, bennett, estimate_reference_domain, evaluate_paths,
+    harmonic_log_ratio, importance_diagnostic, log_density, path_coordinates, reference_quadrature,
+    run, shape_log_weight, transition_centroids,
+)
+from pyrpmd.checkpoint import ENVELOPE, load_checkpoint
+from pyrpmd.constants import KB_AU
+
+
+class BondHarmonic:
+    """Translation/rotation-invariant test energy of bond 01, not a PES claim."""
+    def __init__(self, stiffness=.3):
+        self.stiffness = stiffness
+        self.partition_identity = {"type": "test-bond-harmonic", "stiffness": stiffness}
+
+    def evaluate(self, q):
+        difference = q[:, 0]-q[:, 1]
+        energy = .5*self.stiffness*np.sum(difference*difference, axis=1)
+        return SimpleNamespace(energy=energy, status=np.zeros(len(q), dtype=int))
+
+
+def payload(path):
+    with load_checkpoint(path, require_integrity=True) as saved:
+        return {name: saved[name].copy() for name in saved.files if name != ENVELOPE}
+
+
+def test_ts_centroids_satisfy_shape_distances_and_coarea_metric():
+    rng = np.random.default_rng(142)
+    radius = rng.uniform(.5, 5., 50)
+    ratio = rng.uniform(1., 2., 50)
+    q = transition_centroids(radius, ratio)
+    np.testing.assert_allclose(np.linalg.norm(q[:, 0]-q[:, 1], axis=1), radius, rtol=1e-15)
+    np.testing.assert_allclose(np.linalg.norm(q[:, 1]-q[:, 2], axis=1), radius, rtol=1e-15)
+    np.testing.assert_allclose(np.linalg.norm(q[:, 0]-q[:, 2], axis=1), radius*ratio, rtol=1e-15)
+    # Direct Cartesian gradient of |q2-q1|-|q0-q1|, independent of the helper.
+    first = (q[:, 0]-q[:, 1])/radius[:, None]
+    second = (q[:, 2]-q[:, 1])/radius[:, None]
+    gradient = np.stack((-first, first-second, second), axis=1)
+    metric = np.sum(gradient*gradient, axis=(1, 2))/MASS_AU
+    expected = radius**4*ratio*np.sqrt(MASS_AU*metric)
+    np.testing.assert_allclose(np.exp(shape_log_weight("ts", radius, ratio)), expected, rtol=3e-15)
+
+
+@pytest.mark.parametrize("surface,power", [("ts", 5), ("reactant", 3)])
+def test_full_support_reference_plateau_has_analytic_radial_normalization(surface, power):
+    reference = reference_quadrature(BondHarmonic(0.), surface, beta=2., minimum=.5,
+                                      maximum=1., radial_order=32, angular_order=32)
+    fraction = np.exp(reference.log_plateau-reference.log_reference)
+    assert fraction == pytest.approx(.5**power, rel=2e-14)
+    rng = np.random.default_rng(291)
+    radius, _ = reference.sample(rng, 40000)
+    assert radius.min() < .2 and radius.max() < 1.
+    assert np.mean(radius < .5) == pytest.approx(.5**power, abs=.004)
+    assert reference.report()["log_plateau_probability"] < 0
+
+
+@pytest.mark.parametrize("surface", ["ts", "reactant"])
+def test_reference_classical_integrals_agree_with_independent_tst_quadrature(surface):
+    potential = BondHarmonic(.3)
+    beta, mass = 2.1, 2.8
+    ts = reference_quadrature(potential, "ts", beta, radial_order=64, angular_order=64)
+    reactant = reference_quadrature(potential, "reactant", beta, radial_order=64, angular_order=64)
+    independent = quadrature(potential, temperature=1/(KB_AU*beta), mass=mass, order=64)
+    rate = 4*np.pi*np.exp(ts.log_classical-reactant.log_classical)/np.sqrt(2*np.pi*beta*mass)
+    assert rate == pytest.approx(independent["rate_au"], rel=3e-14)
+    reference = ts if surface == "ts" else reactant
+    domain = estimate_reference_domain(reference, beads=1, mass=mass, samples=1000, seed=1)
+    assert reference.log_reference-reference.log_classical+domain["log_probability"] == 0.
+
+
+def test_real_bkmp2_ts_measure_agrees_with_independent_classical_oracle():
+    from benchmarks.h3.pes import BKMP2Potential
+
+    library = Path(__file__).resolve().parents[1]/"benchmarks/h3/build/libbkmp2.so"
+    if not library.is_file():
+        pytest.skip("optional real BKMP2 library unavailable")
+    potential = BKMP2Potential(library)
+    beta = 1/(KB_AU*300.)
+    ts = reference_quadrature(potential, "ts", beta, radial_order=128, angular_order=128)
+    reactant = reference_quadrature(potential, "reactant", beta, radial_order=128, angular_order=128)
+    independent = quadrature(potential, order=128)
+    rate = 4*np.pi*np.exp(ts.log_classical-reactant.log_classical)/np.sqrt(2*np.pi*beta*MASS_AU)
+    assert rate == pytest.approx(independent["rate_au"], rel=3e-12)
+
+
+def test_allowed_quantum_centroids_below_cutoff_remain_in_target_support():
+    reference = reference_quadrature(BondHarmonic(.3), "reactant", beta=2., radial_order=32, angular_order=16)
+    eta_r = np.array([[[0., 1., 0.], [0., -1., 0.]]])
+    radius, ratio = np.array([.2]), np.array([1.])
+    values = evaluate_paths(BondHarmonic(.3), reference, radius, ratio, np.zeros_like(eta_r), eta_r)
+    assert values["valid"][0] and values["minimum_pair"][0] > .5
+    assert np.isfinite(log_density(values, np.array([0.]), 2.)).all()
+    assert np.isfinite(log_density(values, np.array([1.]), 2.)).all()
+    assert values["vref"][0] == pytest.approx(.5*.3*.5**2)
+
+
+def test_invalid_bead_domain_is_rejected_before_pes_evaluation():
+    provider = BondHarmonic()
+    reference = reference_quadrature(provider, "ts", beta=2., radial_order=16, angular_order=16)
+    provider.evaluate = lambda q: pytest.fail("invalid compact geometry reached PES")
+    eta = np.zeros((1, 8, 3))
+    values = evaluate_paths(provider, reference, np.array([.2]), np.array([1.5]), eta, eta)
+    assert not values["valid"][0]
+    assert np.isneginf(log_density(values, np.array([0.]), 2.)[0])
+
+
+def test_pcn_proposal_density_cancels_only_spring_prior():
+    rng = np.random.default_rng(2931)
+    beta, mass, alpha = 3.1, 2.7, .37
+    before = free_ring(rng, (40, 12, 3), beta, mass)
+    rho = np.sqrt(1-alpha*alpha)
+    after = rho*before+alpha*free_ring(rng, before.shape, beta, mass)
+    proposal_ratio = (spring_action(after-rho*before, beta, mass)
+                      - spring_action(before-rho*after, beta, mass))/alpha**2
+    np.testing.assert_allclose(proposal_ratio, spring_action(after, beta, mass)-spring_action(before, beta, mass),
+                               rtol=2e-12, atol=1e-12)
+    # A symmetric centroid-radius proposal still needs the Cartesian Jacobian.
+    assert np.exp(shape_log_weight("reactant", np.array([2.]))-
+                  shape_log_weight("reactant", np.array([1.]))) == pytest.approx([4.])
+
+
+def test_lambda_exchange_sign_matches_full_joint_density():
+    beta = 3.2
+    lam = np.array([.2, .8])
+    delta = np.array([1.5, .6])
+    base = np.array([.3, 1.1])
+    old = -beta*(base+lam*delta).sum()
+    new = -beta*(base[::-1]+lam*delta[::-1]).sum()
+    expected = beta*(lam[1]-lam[0])*(delta[1]-delta[0])
+    assert new-old == pytest.approx(expected, abs=2e-15)
+
+
+@pytest.mark.parametrize("shift", [-100., -.3, 0., 5., 100.])
+def test_bar_constant_shift_sign_and_unequal_sample_counts(shift):
+    result = bennett(np.full(700, shift), np.full(1300, shift))
+    assert result["delta_f"] == pytest.approx(shift, abs=1e-12)
+
+
+def test_bar_gaussian_stiffness_ratio_and_reverse_identity():
+    # Deterministic quantile quadrature avoids a fitted stochastic tolerance.
+    from scipy.special import ndtri
+
+    normal = ndtri((np.arange(200000)+.5)/200000)
+    k0, k1 = .7, 2.2
+    delta0 = .5*(k1-k0)*normal**2/k0
+    delta1 = .5*(k1-k0)*normal**2/k1
+    forward = bennett(delta0, delta1)["delta_f"]
+    reverse = bennett(-delta1, -delta0)["delta_f"]
+    assert forward == pytest.approx(.5*np.log(k1/k0), abs=2e-6)
+    assert reverse == pytest.approx(-forward, abs=1e-12)
+
+
+@pytest.mark.parametrize("beads", [1, 2, 8, 128])
+def test_finite_bead_harmonic_ratio_matches_independent_mode_determinant(beads):
+    beta, omega = 4.7, .61
+    modes = np.arange(1, beads)
+    spring = (2*beads/beta*np.sin(np.pi*modes/beads))**2
+    determinant = -1.5*np.log1p(omega*omega/spring).sum()
+    assert harmonic_log_ratio(beta, omega, beads, dimensions=3) == pytest.approx(determinant, abs=4e-14)
+
+
+def test_bar_recovers_exact_harmonic_free_ring_normalization():
+    rng = np.random.default_rng(89101)
+    beads, mass, beta, omega = 8, 2., 3., .6
+    lam = np.linspace(0., 1., 9)**2
+    # Each independent real Fourier mode has unit-normalized prior action.
+    # The noncentroid mode covariance at lambda is exactly known.
+    frequency = 2*beads/beta*np.sin(np.pi*np.arange(1, beads)/beads)
+    samples = np.empty((50000, len(lam)))
+    for index, value in enumerate(lam):
+        normal = rng.normal(size=(len(samples), beads-1, 3))
+        coordinate = normal*np.sqrt(beads/(beta*mass*(frequency**2+value*omega**2)))[None, :, None]
+        samples[:, index] = .5*mass*omega**2*np.sum(coordinate**2, axis=(1, 2))/beads
+    result = analyze_samples(samples, lam, beta, 0., {"log_probability": 0.})
+    assert result["log_quantum_classical_ratio"] == pytest.approx(
+        harmonic_log_ratio(beta, omega, beads, 3), abs=.008)
+    assert result["minimum_BAR_overlap"] > .97
+
+
+def test_direct_reference_importance_recovers_harmonic_partition_without_chain():
+    potential = BondHarmonic(.3)
+    reference = reference_quadrature(potential, "reactant", beta=2., minimum=0.,
+                                      maximum=4., radial_order=64, angular_order=16)
+    report, raw = importance_diagnostic(potential, reference, beads=16, mass=2.,
+                                        samples=4096, seed=927)
+    expected = harmonic_log_ratio(2., np.sqrt(.3), 16, 3)
+    assert report["log_quantum_classical_ratio"] == pytest.approx(expected, abs=.006)
+    assert report["effective_fraction"] > .98
+    assert np.isfinite(raw["log_weights"]).all()
+    assert report["phase"] == "excluded calibration"
+    assert not report["physical_converged"]
+
+
+def test_harmonic_ratio_is_stable_in_classical_small_frequency_limit():
+    assert harmonic_log_ratio(1., 1e-14, 128, 3) == pytest.approx(0., abs=3e-14)
+
+
+def test_analysis_does_not_require_numpy2_trapezoid(monkeypatch):
+    # NumPy 1.26 is supported and does not provide the NumPy 2.x spelling.
+    monkeypatch.delattr(np, "trapezoid", raising=False)
+    result = analyze_samples(np.ones((8, 3)), np.array([0., .5, 1.]),
+                             2., 0., {"log_probability": 0.})
+    assert result["TI_trapezoid_log_ratio"] == -2.
+    assert result["TI_simpson_log_ratio"] == -2.
+    assert result["log_quantum_classical_ratio"] == pytest.approx(-2.)
+
+
+@pytest.mark.parametrize("surface", ["ts", "reactant"])
+def test_one_bead_pipeline_has_exact_unit_correction_with_full_reference_support(tmp_path, surface):
+    result = run(tmp_path, potential=BondHarmonic(.3), surface=surface, beads=1,
+                 temperature=1/(2*KB_AU), mass=2., warmup=7, production=31,
+                 lambdas=np.linspace(0., 1., 5)**2, radial_order=32, angular_order=32,
+                 minimum=.5, maximum=2., seed=291, checkpoint_interval=9,
+                 domain_samples=50)
+    assert result["complete"]
+    assert result["analysis"]["log_quantum_classical_ratio"] == 0.
+    assert result["analysis"]["quantum_classical_ratio"] == 1.
+    assert result["reference"]["log_plateau_probability"] > -10
+    assert result["reference_domain"]["probability"] < 1.
+
+
+@pytest.mark.parametrize("surface", ["ts", "reactant"])
+def test_partition_restart_is_exact_across_unaligned_boundaries(tmp_path, surface):
+    options = dict(potential=BondHarmonic(.3), surface=surface, beads=8,
+                   temperature=1/(2*KB_AU), mass=2., warmup=7, production=31,
+                   lambdas=np.linspace(0., 1., 5)**2, radial_order=32, angular_order=32,
+                   minimum=.3, maximum=4., seed=91831, checkpoint_interval=9,
+                   sample_interval=2, diagnostic_interval=3, domain_samples=200,
+                   snapshot_interval=5 if surface == "ts" else 0)
+    run(tmp_path/"complete", **options)
+    run(tmp_path/"resumed", stop_after=17, **options)
+    result = run(tmp_path/"resumed", resume=True, **options)
+    assert result["complete"]
+    a, b = payload(tmp_path/"complete/checkpoint.npz"), payload(tmp_path/"resumed/checkpoint.npz")
+    assert set(a) == set(b)
+    for name in a:
+        np.testing.assert_array_equal(a[name], b[name], err_msg=name)
+    if surface == "ts":
+        assert a["endpoint_q"].shape == (6, 8, 3, 3)
+        np.testing.assert_array_equal(a["endpoint_completed_sweeps"], 7+np.arange(1, 7)*5)
+        np.testing.assert_allclose(a["endpoint_q"].sum(axis=-2), 0., atol=1e-15)
+        center = a["endpoint_q"].mean(axis=1)
+        d01 = np.linalg.norm(center[:, 0]-center[:, 1], axis=-1)
+        d12 = np.linalg.norm(center[:, 1]-center[:, 2], axis=-1)
+        d02 = np.linalg.norm(center[:, 0]-center[:, 2], axis=-1)
+        np.testing.assert_allclose(d01, d12, atol=1e-15)
+        assert np.all(d02 >= d01)
+
+
+def test_endpoint_observations_consume_no_rng_and_keep_all_registered_parents(tmp_path):
+    options = dict(potential=BondHarmonic(.3), surface="ts", beads=8,
+                   temperature=1/(2*KB_AU), mass=2., warmup=7, production=31,
+                   lambdas=np.linspace(0., 1., 5)**2, radial_order=32, angular_order=32,
+                   minimum=.3, maximum=4., seed=91832, checkpoint_interval=9,
+                   domain_samples=100)
+    run(tmp_path/"without", **options)
+    report = run(tmp_path/"with", snapshot_interval=5, **options)
+    a = payload(tmp_path/"without/checkpoint.npz")
+    b = payload(tmp_path/"with/checkpoint.npz")
+    for key in a:
+        if key not in ("fingerprint", "endpoint_q", "endpoint_completed_sweeps"):
+            np.testing.assert_array_equal(a[key], b[key], err_msg=key)
+    assert a["endpoint_q"].shape == (0, 8, 3, 3)
+    assert b["endpoint_q"].shape == (6, 8, 3, 3)
+    assert report["endpoint_snapshot_count"] == 6
+    assert "static equilibrium Monte Carlo" in report["endpoint_snapshot_source"]
+
+
+def test_reactant_parent_snapshots_fail_preflight(tmp_path):
+    with pytest.raises(ValueError, match="snapshots require the TS"):
+        run(tmp_path/"rejected", potential=BondHarmonic(), surface="reactant", snapshot_interval=10)
+    assert not (tmp_path/"rejected").exists()
+
+
+@pytest.mark.parametrize("surface", ["ts", "reactant"])
+def test_interruption_inside_sweep_replays_only_committed_prefix(tmp_path, monkeypatch, surface):
+    from benchmarks.h3 import surface_partition as module
+
+    options = dict(potential=BondHarmonic(.3), surface=surface, beads=8,
+                   temperature=1/(2*KB_AU), mass=2., warmup=7, production=31,
+                   lambdas=np.linspace(0., 1., 5), radial_order=32, angular_order=16,
+                   minimum=0., maximum=4., seed=91841, checkpoint_interval=9, domain_samples=50,
+                   snapshot_interval=5 if surface == "ts" else 0)
+    run(tmp_path/"complete", **options)
+    original = module.evaluate_paths
+    calls = 0
+
+    def interrupted(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        if calls == (83 if surface == "ts" else 25):
+            raise KeyboardInterrupt("interrupted inside a sweep")
+        return original(*args, **kwargs)
+
+    with monkeypatch.context() as patch:
+        patch.setattr(module, "evaluate_paths", interrupted)
+        with pytest.raises(KeyboardInterrupt):
+            run(tmp_path/"resumed", **options)
+    interrupted_payload = payload(tmp_path/"resumed/checkpoint.npz")
+    assert int(interrupted_payload["completed"]) == (18 if surface == "ts" else 9)
+    if surface == "ts":
+        assert interrupted_payload["endpoint_q"].shape == (2, 8, 3, 3)
+    run(tmp_path/"resumed", resume=True, **options)
+    a, b = payload(tmp_path/"complete/checkpoint.npz"), payload(tmp_path/"resumed/checkpoint.npz")
+    for name in a:
+        np.testing.assert_array_equal(a[name], b[name], err_msg=name)
+
+
+def test_resume_rejects_changed_protocol(tmp_path):
+    options = dict(potential=BondHarmonic(.3), surface="reactant", beads=4,
+                   temperature=1/(2*KB_AU), mass=2., warmup=3, production=10,
+                   lambdas=np.linspace(0., 1., 3), radial_order=16, angular_order=16,
+                   minimum=0., maximum=4., checkpoint_interval=4, domain_samples=20)
+    run(tmp_path, stop_after=5, **options)
+    with pytest.raises(ValueError, match="settings/source identity changed"):
+        run(tmp_path, resume=True, **(options | {"alpha_r": .6}))
+
+
+def test_reference_domain_experiment_uses_normalized_free_ring_prior():
+    reference = reference_quadrature(BondHarmonic(.3), "reactant", beta=2., minimum=0.,
+                                      maximum=4., radial_order=32, angular_order=16)
+    result = estimate_reference_domain(reference, beads=128, mass=2., samples=500, seed=319)
+    assert result["accepted"] == result["draws"] == 500
+    assert result["probability"] == 1.
+    assert result["binomial_CI95"][0] < 1.

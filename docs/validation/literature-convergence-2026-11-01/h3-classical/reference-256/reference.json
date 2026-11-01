@@ -1,0 +1,70 @@
+{
+  "schema": "pyrpmd.h3.classical-conditional-reference.v1",
+  "created_utc": "2026-11-01T14:55:05.818220+00:00",
+  "temperature_K": 300.0,
+  "radial_order": 256,
+  "angular_order": 128,
+  "grid_step": 0.001,
+  "xi_integration_range": [
+    -0.2,
+    1.25
+  ],
+  "radial_domain_bohr": [
+    0.5,
+    8.0
+  ],
+  "minimum_pair_distance_bohr": 0.5,
+  "rate_at_xi_one_cm3_molecule_s": 1.5531113253972289e-18,
+  "independent_tst_quadrature_cm3_molecule_s": 1.553118786789885e-18,
+  "ratio_to_independent_tst_quadrature": 0.9999951958647854,
+  "exact_maximum_xi": 1.0,
+  "exact_maximum_rate_cm3_molecule_s": 1.5531113253972302e-18,
+  "gaussian_ui_maximum_xi": 1.0,
+  "gaussian_ui_infinite_sampling_rate_cm3_molecule_s": 1.592306350270568e-18,
+  "stiffness_checks": [
+    {
+      "stiffness_hartree": 2.0,
+      "center_spacing": 0.02,
+      "maximum_xi": 1.0050000000000001,
+      "infinite_sample_ui_rate_cm3_molecule_s": 9.071224677741146e-15,
+      "ratio_to_direct_tst": 5840.650924383129
+    },
+    {
+      "stiffness_hartree": 2.0,
+      "center_spacing": 0.01,
+      "maximum_xi": 1.0030000000000001,
+      "infinite_sample_ui_rate_cm3_molecule_s": 9.474802928752e-15,
+      "ratio_to_direct_tst": 6100.501139603951
+    },
+    {
+      "stiffness_hartree": 30.0,
+      "center_spacing": 0.01,
+      "maximum_xi": 1.0,
+      "infinite_sample_ui_rate_cm3_molecule_s": 1.592306350270568e-18,
+      "ratio_to_direct_tst": 1.025231530140511
+    }
+  ],
+  "elapsed_seconds": 54.305426564998925,
+  "source_sha256": "4181a4f83e437d109a9799d9b6b72949686b9a12cc397507c30b3dc11641e9c1",
+  "potential_metadata": {
+    "provider": "BKMP2",
+    "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+    "execution_device": "cpu",
+    "thread_safety": "process_serial",
+    "native_batch": true,
+    "dtype": "float64",
+    "trajectory_batch_safe": true,
+    "atomic_numbers": [
+      1,
+      1,
+      1
+    ],
+    "charge": 0,
+    "multiplicity": 2,
+    "energy_zero": "three separated H atoms",
+    "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+    "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+    "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+  },
+  "scientific_scope": "Independent classical conditional quadrature; not a trajectory or quantum RPMD validation."
+}

@@ -1,0 +1,148 @@
+{
+  "schema": "pyrpmd.h3.classical-ts-transmission-comparison.v1",
+  "independent_seeds": [
+    2026110201,
+    2026110202,
+    2026110203,
+    2026110204
+  ],
+  "parents_per_seed": 2048,
+  "results": [
+    {
+      "timestep_fs": 0.1,
+      "plateau_mean_across_seeds": [
+        0.9950342428709464,
+        0.9950342428709464,
+        0.9950342428709464
+      ],
+      "standard_error_across_seeds": [
+        0.0003774639045476361,
+        0.0003774639045476361,
+        0.0003774639045476361
+      ],
+      "student_t_95_halfwidth": [
+        0.0012012586084055867,
+        0.0012012586084055867,
+        0.0012012586084055867
+      ],
+      "per_seed_plateaus": [
+        [
+          0.9940382561817855,
+          0.9940382561817855,
+          0.9940382561817855
+        ],
+        [
+          0.9953273735780263,
+          0.9953273735780263,
+          0.9953273735780263
+        ],
+        [
+          0.9949470197314496,
+          0.9949470197314496,
+          0.9949470197314496
+        ],
+        [
+          0.9958243219925246,
+          0.9958243219925246,
+          0.9958243219925246
+        ]
+      ],
+      "maximum_energy_error_kbt": 0.02484802070696999
+    },
+    {
+      "timestep_fs": 0.05,
+      "plateau_mean_across_seeds": [
+        0.9950342428709464,
+        0.9950342428709464,
+        0.9950342428709464
+      ],
+      "standard_error_across_seeds": [
+        0.0003774639045476361,
+        0.0003774639045476361,
+        0.0003774639045476361
+      ],
+      "student_t_95_halfwidth": [
+        0.0012012586084055867,
+        0.0012012586084055867,
+        0.0012012586084055867
+      ],
+      "per_seed_plateaus": [
+        [
+          0.9940382561817855,
+          0.9940382561817855,
+          0.9940382561817855
+        ],
+        [
+          0.9953273735780263,
+          0.9953273735780263,
+          0.9953273735780263
+        ],
+        [
+          0.9949470197314496,
+          0.9949470197314496,
+          0.9949470197314496
+        ],
+        [
+          0.9958243219925246,
+          0.9958243219925246,
+          0.9958243219925246
+        ]
+      ],
+      "maximum_energy_error_kbt": 0.006209775598351449
+    }
+  ],
+  "surface_moments_pooled": [
+    1.7724227511177204,
+    1.9735168526361002,
+    3.1445905887855776,
+    3.8954522157772473,
+    -0.15777662321252053
+  ],
+  "surface_moments_quadrature": [
+    1.7716742679879047,
+    1.973447591635013,
+    3.1419141648589,
+    3.8951548079319362,
+    -0.15777941042916552
+  ],
+  "surface_moments_z": [
+    1.1655860088788597,
+    0.256732991312602,
+    1.1732038260043733,
+    0.28179079573059224,
+    0.21400921026122802
+  ],
+  "paired_timestep_differences_mean": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "paired_timestep_differences_se": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "kappa_candidate": 0.9950342428709464,
+  "kappa_student_t_95_interval": [
+    0.9938329842625409,
+    0.996235501479352
+  ],
+  "paper_classical_kappa": 0.994,
+  "independent_classical_tst_cm3_molecule_s": 1.553118786789885e-18,
+  "independent_classical_rate_cm3_molecule_s": 1.5454063761021161e-18,
+  "independent_classical_rate_95_interval": [
+    1.5435406787896084e-18,
+    1.547272073414624e-18
+  ],
+  "paper_classical_rate_cm3_molecule_s": 1.55e-18,
+  "criteria": {
+    "surface_moments_within_3_standard_errors": true,
+    "relative_kappa_95_halfwidth_at_most_1_percent": true,
+    "maximum_time_plateau_difference_at_most_01": true,
+    "maximum_timestep_difference_at_most_01": true
+  },
+  "classical_reference_criteria_passed": true,
+  "umbrella_sampling_validated_by_this_result": false,
+  "quantum_rpmd_validated": false,
+  "source_sha256": "891a14a32b6394933179510d59aab02297af91e2f37b1bb6ec2101e9fecab9a1"
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "pyrpmd.h3.independent-reactant-control.v1",
+  "registered_control_complete": true,
+  "beads": 128,
+  "independent_seed_interval": {
+    "seed_count": 4,
+    "mean": -7.281761724001473,
+    "standard_error": 0.004000370606698603,
+    "CI95": [
+      -7.294492688658527,
+      -7.26903075934442
+    ],
+    "uncertainty_unit": "independent seed chain",
+    "individual_seed_values": [
+      -7.29131567002231,
+      -7.273656158677191,
+      -7.285161160865671,
+      -7.276913906440721
+    ]
+  },
+  "ratio_geometric_mean": 0.0006879724778187684,
+  "ratio_CI95": [
+    0.0006792694410919784,
+    0.0006967870208841125
+  ],
+  "reference_log_ratio": -7.27275868577072,
+  "reference_ratio": 0.000694194285900783,
+  "reference_sha256": "ac5402749115c8fecb43220b2afed2bd0b69d558eb3779d72364ff29d9dffdbc",
+  "difference_in_log_ratio": -0.009003038230753546,
+  "relative_point_difference": -0.008962632231899066,
+  "CI95_contains_reference": true,
+  "paired_seed_half_log_difference": {
+    "seed_count": 4,
+    "mean": 0.0014523926501959217,
+    "standard_error": 0.01578612448225864,
+    "CI95": [
+      -0.04878610088311677,
+      0.051690886183508616
+    ],
+    "uncertainty_unit": "independent seed chain",
+    "individual_seed_values": [
+      -0.01611863390821444,
+      0.047899335757844774,
+      -0.02031536566915726,
+      -0.005655765579689387
+    ]
+  },
+  "seeds": [
+    {
+      "seed": 721401,
+      "log_ratio": -7.29131567002231,
+      "first_half": -7.2832439494294805,
+      "second_half": -7.299362583337695,
+      "minimum_BAR_overlap": 0.953703401120494,
+      "minimum_energy_ESS": 2607.1226182775836,
+      "report_sha256": "6f76526a64c81035195b494301f502350f570ccf4e7de4d5854e5fb0a221f475",
+      "checkpoint_sha256": "b768d34eb29e9ffe2014c6e6c3dba3f67e86df1b1414a4c29d27c1c823bd5d49"
+    },
+    {
+      "seed": 721403,
+      "log_ratio": -7.273656158677191,
+      "first_half": -7.297590363059088,
+      "second_half": -7.249691027301243,
+      "minimum_BAR_overlap": 0.9540805783528625,
+      "minimum_energy_ESS": 1541.0538798228836,
+      "report_sha256": "2bbbbf327ae7db1d53874083bf4f99daed94f2f96393544c38e42b13a7376add",
+      "checkpoint_sha256": "d6fb33969c7d2baf8544d962aa3a92c9434b42042ac0d9ec60f0ba9fd452eabd"
+    },
+    {
+      "seed": 721407,
+      "log_ratio": -7.285161160865671,
+      "first_half": -7.275008130034019,
+      "second_half": -7.295323495703176,
+      "minimum_BAR_overlap": 0.9540075454027407,
+      "minimum_energy_ESS": 2730.9283664192835,
+      "report_sha256": "666c659b21c73d135beceb39dea706be4c593f48fc370f39840717c1935eaaff",
+      "checkpoint_sha256": "7b566b9503e880dc9609eb1489601b56bace6783700aa2a1d14d371b6fca7bbe"
+    },
+    {
+      "seed": 721409,
+      "log_ratio": -7.276913906440721,
+      "first_half": -7.274087965732281,
+      "second_half": -7.27974373131197,
+      "minimum_BAR_overlap": 0.954272645790585,
+      "minimum_energy_ESS": 1950.3122240099212,
+      "report_sha256": "6cb1a850250f6b7bc5a8b7edefc3e2125a279d4c667b4852eafbc72b017fd9ad",
+      "checkpoint_sha256": "8d2224fc1474ec951142961228ad0c8216c85762f5a42af5d2ca5ee61bd58cc6"
+    }
+  ],
+  "physical_converged": false,
+  "literature_reproduced": false,
+  "limitations": [
+    "Independent reactant normalization control, not a TS or reaction-rate reproduction.",
+    "A reference inside a statistical interval establishes compatibility at that precision, not exact equivalence.",
+    "The transfer reference has beadwise upper radius8 while sampling has centroid upper radius8; independently bounded remote tails remain documented."
+  ]
+}

@@ -1,0 +1,455 @@
+{
+  "code_location": "PyRPMD repository, benchmarks/h3/classical_sampling*.py; exact source hashes are in the per-run receipts and repository evidence.",
+  "excluded": [
+    "BKMP2 source",
+    "compiled potential/library files",
+    "Git-backed program source",
+    "duplicate CV prefix checkpoints"
+  ],
+  "group": "v2-calibration",
+  "initial_oracle_provenance_limit": "The initial 128/64 oracle retains its original source hash and raw arrays, but its full script snapshot was not saved. A portable endpoint replay differs by only 5.33e-15. Final 256/384 oracle source snapshots and all production/TS/V2 sampler sources are retained in the repository.",
+  "members": [
+    {
+      "bytes": 4130,
+      "path": "v2-calibration/protocol.json",
+      "sha256": "f87c8bbe5de3fdebf139730498ab70c83604e2ee8f01060eb3af20be2b7c23a8"
+    },
+    {
+      "bytes": 8109,
+      "path": "v2-calibration/schedule.json",
+      "sha256": "0799d38f37bb75aaee74e1f24d802d32365f9537fd327ef530097e52bd63e9ae"
+    },
+    {
+      "bytes": 7400683,
+      "path": "v2-calibration/xi-0/seed-2026110301/checkpoint.npz",
+      "sha256": "b17f9330aabbe0cc9af252d2ee50d95d2d80b3e617c8a89a8bfd065c61748771"
+    },
+    {
+      "bytes": 173,
+      "path": "v2-calibration/xi-0/seed-2026110301/progress.json",
+      "sha256": "f955668840f3ae4459d8c223c17aed6d51f1147072df4ccbe054bd0ffb13b4ef"
+    },
+    {
+      "bytes": 6137,
+      "path": "v2-calibration/xi-0/seed-2026110301/run-report.json",
+      "sha256": "d8c366f81bc1b9aece80e06b4ca78d4a8f8934a8a4f7070a3695109eae7180fa"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-0/seed-2026110301/settings.json",
+      "sha256": "870c5f9715adb7e6ce7e7959ea004459ad0d8349db0a20492bfd6d9236326cc9"
+    },
+    {
+      "bytes": 7400834,
+      "path": "v2-calibration/xi-0/seed-2026110302/checkpoint.npz",
+      "sha256": "332a5c3fa67bd07e85abe03fb07e1778544fa8917afa4d45ff9bd3985b98a9bb"
+    },
+    {
+      "bytes": 170,
+      "path": "v2-calibration/xi-0/seed-2026110302/progress.json",
+      "sha256": "43360aceb0a44ef8cb19cfc615bc5d2f45ae5a54918eb91f66b849ef5ab74705"
+    },
+    {
+      "bytes": 6200,
+      "path": "v2-calibration/xi-0/seed-2026110302/run-report.json",
+      "sha256": "02e3c0ab9b28d9591faed54c939d58a095659cd2c1bb9510e330ae2580ab4070"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-0/seed-2026110302/settings.json",
+      "sha256": "baaf1732c45311bfb7272d4e315933308a8c6ab778694e44d0674529dbe6aa7a"
+    },
+    {
+      "bytes": 7402710,
+      "path": "v2-calibration/xi-0/seed-2026110303/checkpoint.npz",
+      "sha256": "085f7c7400b428949705bfe79dca5c1ea1da3f7f581dc4c24e37e6e1a874f5db"
+    },
+    {
+      "bytes": 173,
+      "path": "v2-calibration/xi-0/seed-2026110303/progress.json",
+      "sha256": "8b1a2d48cd26007bf83cdab63f1dbfbb77c1c2550b7544c25cc31339db76d11d"
+    },
+    {
+      "bytes": 6191,
+      "path": "v2-calibration/xi-0/seed-2026110303/run-report.json",
+      "sha256": "b476320f16a049290ce4827360dbb216e37a165c9fb3d9ccf386d94b46a1ae00"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-0/seed-2026110303/settings.json",
+      "sha256": "db07c9c2ac4611fd70dfa88af48f677727ce08810027eb9c7049abd86044eeaf"
+    },
+    {
+      "bytes": 7402274,
+      "path": "v2-calibration/xi-0/seed-2026110304/checkpoint.npz",
+      "sha256": "819cd9b1892ec89edd6877114985269802432322e6f860296d2be69e1e314f91"
+    },
+    {
+      "bytes": 172,
+      "path": "v2-calibration/xi-0/seed-2026110304/progress.json",
+      "sha256": "77ee85e1b6a4ab39387f4efeaad7edf9fe307450bc2ea53fae551dda8ca39c9c"
+    },
+    {
+      "bytes": 6207,
+      "path": "v2-calibration/xi-0/seed-2026110304/run-report.json",
+      "sha256": "2f4a5d71c27c5d65257c43f1843cacecf240e3c792b8c420e450ff0915db295b"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-0/seed-2026110304/settings.json",
+      "sha256": "b6ca62743cdad9b62051a8d7b4fe71e249281bb3cc058d40997f0eb1427b5015"
+    },
+    {
+      "bytes": 7403252,
+      "path": "v2-calibration/xi-1/seed-2026110311/checkpoint.npz",
+      "sha256": "d7419a5313e864920bb9f85004492d8fc42290dfc7588e45f2dc565d0582c588"
+    },
+    {
+      "bytes": 172,
+      "path": "v2-calibration/xi-1/seed-2026110311/progress.json",
+      "sha256": "eaead75c35684a0e3dcc0a4edbc1cd32c418b05a6ea72e4dfeb630b2a004ce41"
+    },
+    {
+      "bytes": 6470,
+      "path": "v2-calibration/xi-1/seed-2026110311/run-report.json",
+      "sha256": "e5aca9605aaf2bc915e08abd48f486a4358c2f70f642b945a79d1e02a02f642e"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-1/seed-2026110311/settings.json",
+      "sha256": "c4f31b911fde14a3532e491702189fbd5233655662b526a2694d4faa688f646b"
+    },
+    {
+      "bytes": 7404270,
+      "path": "v2-calibration/xi-1/seed-2026110312/checkpoint.npz",
+      "sha256": "92afb0ae71a4a8287278ebc84ab548ceb825192e6e4aa97c21406c889051e16c"
+    },
+    {
+      "bytes": 172,
+      "path": "v2-calibration/xi-1/seed-2026110312/progress.json",
+      "sha256": "fa047e7b91a66e7c0d85f32a145d56bffdb8e93d9d325b679aff516aff8cfce6"
+    },
+    {
+      "bytes": 6509,
+      "path": "v2-calibration/xi-1/seed-2026110312/run-report.json",
+      "sha256": "a48c001c2871a8478e1066a99f451b9a280cac13a87bfb052c54cc5203dcb494"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-1/seed-2026110312/settings.json",
+      "sha256": "486187eaf2ebf3c7d83037bdfe7c4904881f69f3c381f81eded672229fecabdc"
+    },
+    {
+      "bytes": 7404391,
+      "path": "v2-calibration/xi-1/seed-2026110313/checkpoint.npz",
+      "sha256": "9fc0aba189d9dd14102a9abcb9cc9ff241edfc9190c469f2128b2bd81efce16a"
+    },
+    {
+      "bytes": 172,
+      "path": "v2-calibration/xi-1/seed-2026110313/progress.json",
+      "sha256": "25b25f012d84b59bbac93eefaa9da3c8d3a3826f6f49f59d6ae6fc2d1a7eb8b3"
+    },
+    {
+      "bytes": 6544,
+      "path": "v2-calibration/xi-1/seed-2026110313/run-report.json",
+      "sha256": "5f93ce9d4cf11318ba9f4ff9b068a3c7d2452b4e2d82b8a853d321d410ea523b"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-1/seed-2026110313/settings.json",
+      "sha256": "5be2dc9b09b62a976f84bd0cb9f27e2d86b7dd7c67fc5281c3cb7f0030335dc1"
+    },
+    {
+      "bytes": 7402122,
+      "path": "v2-calibration/xi-1/seed-2026110314/checkpoint.npz",
+      "sha256": "ac03c8bd11090641166eef524eba6320705fbf8f342b1c8f3c7d2b8ecb366859"
+    },
+    {
+      "bytes": 172,
+      "path": "v2-calibration/xi-1/seed-2026110314/progress.json",
+      "sha256": "81a163bdb02ee784af63ad6a9f6036482558e9d915fc722fbfb8c406680fc353"
+    },
+    {
+      "bytes": 6448,
+      "path": "v2-calibration/xi-1/seed-2026110314/run-report.json",
+      "sha256": "dadb30efdce395d6cdbc0579253febd3a0759b99b0369167f0591dca3611c15b"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-1/seed-2026110314/settings.json",
+      "sha256": "1c9889a90c395471df1df8a97dde115f51b9537a68795a51f78b47f335db7740"
+    },
+    {
+      "bytes": 7404054,
+      "path": "v2-calibration/xi-3/seed-2026110321/checkpoint.npz",
+      "sha256": "82ee4ff470667cfe62ddbe476ff9af7772b6b147f3687ec12476574292eeb735"
+    },
+    {
+      "bytes": 173,
+      "path": "v2-calibration/xi-3/seed-2026110321/progress.json",
+      "sha256": "1e3fbf7107b0765cf14f5f68a9cfdd303329a6f51e7ebd03ed7f8d73665a0276"
+    },
+    {
+      "bytes": 6476,
+      "path": "v2-calibration/xi-3/seed-2026110321/run-report.json",
+      "sha256": "367bd7c798be4c11588c364b350a78fd0547a93c4be8ed1d179908b67dab154f"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-3/seed-2026110321/settings.json",
+      "sha256": "eb510e9d99d80f7a2a3045f0d87ac4831dbd0fe03fceef3e431037884fe6ed7a"
+    },
+    {
+      "bytes": 7404909,
+      "path": "v2-calibration/xi-3/seed-2026110322/checkpoint.npz",
+      "sha256": "4343070bbaaa9b2cffcb3440ed501eed822f8d74c13314287ebe5599571d71b6"
+    },
+    {
+      "bytes": 173,
+      "path": "v2-calibration/xi-3/seed-2026110322/progress.json",
+      "sha256": "b1c7266edde264a335eba8654b30dd06dbc50972db782eae59cf6fcbd8a7b7ce"
+    },
+    {
+      "bytes": 6518,
+      "path": "v2-calibration/xi-3/seed-2026110322/run-report.json",
+      "sha256": "155d7cd0d9e2ccc415df24e694ee47f39112bb5a0af9a2b55d68787a06cd9c61"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-3/seed-2026110322/settings.json",
+      "sha256": "d4be656842b6fa988f93a7c8b9e47ae85dafef5982e45e50f4bfe399bcf35cc1"
+    },
+    {
+      "bytes": 7403383,
+      "path": "v2-calibration/xi-3/seed-2026110323/checkpoint.npz",
+      "sha256": "7d77eb9a7a6431c835fa0a23e663e800e34795d9c47f46c1f4e530f4fc221b57"
+    },
+    {
+      "bytes": 173,
+      "path": "v2-calibration/xi-3/seed-2026110323/progress.json",
+      "sha256": "a443f97ff48238f9aa2fde9cd2e1a4bc51bc9c85df36ea49be925335e4fcc480"
+    },
+    {
+      "bytes": 6496,
+      "path": "v2-calibration/xi-3/seed-2026110323/run-report.json",
+      "sha256": "b7ceb2356e7813720521ee98cbe54852af683e5913d6b34d8bd0605351005527"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-3/seed-2026110323/settings.json",
+      "sha256": "f954d6091bac2ee2f97761f1e5740d27ca084a279282c87a684519fff355c112"
+    },
+    {
+      "bytes": 7402681,
+      "path": "v2-calibration/xi-3/seed-2026110324/checkpoint.npz",
+      "sha256": "20439ac28f0855f88362616defe91ea29cf5456ca6788249216343b64f651ece"
+    },
+    {
+      "bytes": 173,
+      "path": "v2-calibration/xi-3/seed-2026110324/progress.json",
+      "sha256": "d9a8e15f98eac2ca2d68b166150ce9f305aaa24f7eb77d8382eabb87255b4453"
+    },
+    {
+      "bytes": 6553,
+      "path": "v2-calibration/xi-3/seed-2026110324/run-report.json",
+      "sha256": "4597ce80c67afd44fc57b964a1496e0884e691166449faaf861f987b6d536ed5"
+    },
+    {
+      "bytes": 3019,
+      "path": "v2-calibration/xi-3/seed-2026110324/settings.json",
+      "sha256": "0e9a8f9ff853b072da669a5c51c4c8653e888ac2e3aebac0decf14665020998b"
+    },
+    {
+      "bytes": 133585,
+      "path": "v2-calibration-analysis/calibration-comparison.json",
+      "sha256": "46eeecd1bc4e7f9cd0681248aa619bfde602c91329d71a73ac57b7f41a5b3fbb"
+    },
+    {
+      "bytes": 8282,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110301/calibration-record.json",
+      "sha256": "24a28154700f59a278b61f3b2f565136f543516aeb75effe43e1111966a792a4"
+    },
+    {
+      "bytes": 94044,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110301/wham-fit.npz",
+      "sha256": "42cb0709b0276d44135efbfa966f7a26de7dca8e45f56d30c01b352f11a29611"
+    },
+    {
+      "bytes": 12554,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110301/wham-report.json",
+      "sha256": "4ac674419856d83edc201b35aa3d7debf29855a8b3bc51286a9eef4f50d90d8d"
+    },
+    {
+      "bytes": 8286,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110302/calibration-record.json",
+      "sha256": "69c6b3d71afba4b5da6fc6b55d2e2aa82fd1852c4fcf6519e7f0e4fd3e8bbe3b"
+    },
+    {
+      "bytes": 94146,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110302/wham-fit.npz",
+      "sha256": "4703e3101ef248b9039494a62b8555d53236e9f01d478a5fde2d1ed62797e8e2"
+    },
+    {
+      "bytes": 12562,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110302/wham-report.json",
+      "sha256": "4f0bd8669d073ee6e42ca8d0d260f3c27d21e25ab4738e88c09526198c1127de"
+    },
+    {
+      "bytes": 8301,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110303/calibration-record.json",
+      "sha256": "ec61708c0d024bafa7c7b07b7b6dd881492db00712603e7966cf226c188cca47"
+    },
+    {
+      "bytes": 94097,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110303/wham-fit.npz",
+      "sha256": "bc98b1ffd096d0a13609ff84b7d7f1d6a5efb5d2865e0e194a2a26d821fd2377"
+    },
+    {
+      "bytes": 12533,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110303/wham-report.json",
+      "sha256": "9ac42f1f6299915e0bdb980a5005cadf8570d5fcf9978ab5b2e3854e8dcc8f77"
+    },
+    {
+      "bytes": 8297,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110304/calibration-record.json",
+      "sha256": "3b6e747c934db6bfef99a921d60278979729f23b916b3c2c35354e58d15b7a48"
+    },
+    {
+      "bytes": 94386,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110304/wham-fit.npz",
+      "sha256": "20a15749f12ed38282e4c3a2929f723e0ab306d449536ec35685ea7db0d3708d"
+    },
+    {
+      "bytes": 12589,
+      "path": "v2-calibration-analysis/xi-0/seed-2026110304/wham-report.json",
+      "sha256": "f456fb795cac09268079cf9a18b35b9ac5bf343c4a5d2e81fb32ece4e99926aa"
+    },
+    {
+      "bytes": 8312,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110311/calibration-record.json",
+      "sha256": "e5e7e05c50d339dd4c6947114451d56fd1dce22d7ca84b83b1bd6e99617dbb2f"
+    },
+    {
+      "bytes": 94212,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110311/wham-fit.npz",
+      "sha256": "e37b1bc292a1c5521f19262923c9a10c6aef577c2b62d7f640f2abdf902b2733"
+    },
+    {
+      "bytes": 12569,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110311/wham-report.json",
+      "sha256": "6360bf624c745293a3c2d5f05eec70c8d21fb87871993fd70434b1e3b92d901d"
+    },
+    {
+      "bytes": 8315,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110312/calibration-record.json",
+      "sha256": "e9ebc1ad38024d9460d8594223d93932cdd350d3b9c6c42e33915a196f68d5f7"
+    },
+    {
+      "bytes": 94407,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110312/wham-fit.npz",
+      "sha256": "b268b6ce6964fb89b4c7a313857fc5c6dcf147818c4034044272b165d00cfe64"
+    },
+    {
+      "bytes": 12569,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110312/wham-report.json",
+      "sha256": "228f0d3495f3d014ff732f9f4af8e8efd5cfe56124e1949341e0d5259e90d849"
+    },
+    {
+      "bytes": 8287,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110313/calibration-record.json",
+      "sha256": "319e4ddcc9745b754442cd37267dc7f4143d0cd51d20cf65ce39048dcb7da220"
+    },
+    {
+      "bytes": 94527,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110313/wham-fit.npz",
+      "sha256": "cdec379782d2677459f96a3d9df4b9f3a4fd7deddf4407f0bc4ef56585655def"
+    },
+    {
+      "bytes": 12562,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110313/wham-report.json",
+      "sha256": "afff9c6b246df3b11598d3874ab90953b443300b87fe6b076d62d46951a597b1"
+    },
+    {
+      "bytes": 8319,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110314/calibration-record.json",
+      "sha256": "f37e63ec441e9f78afd020590a72b2d18ca67113a9978d229f3888e6d8b5c464"
+    },
+    {
+      "bytes": 94192,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110314/wham-fit.npz",
+      "sha256": "bf1c5dddfe7db5653e43f635799f0dea7aeb54ac9cda6d5b4ef9ac84cfbbcf71"
+    },
+    {
+      "bytes": 12601,
+      "path": "v2-calibration-analysis/xi-1/seed-2026110314/wham-report.json",
+      "sha256": "b8c066fe98c43cbe45a1c7382ebc186ecfb0444486a8b1a03ac65b47e6856a8c"
+    },
+    {
+      "bytes": 8161,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110321/calibration-record.json",
+      "sha256": "788533836feb98bb59af8871d4dba8b620be976175683c19f151e391c8edd84c"
+    },
+    {
+      "bytes": 94591,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110321/wham-fit.npz",
+      "sha256": "b1712669258bc873739ebc1672e8a596b8c8d2d91c297e225a8eed8dba8e72a0"
+    },
+    {
+      "bytes": 12337,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110321/wham-report.json",
+      "sha256": "b9297393835772f61fef47512c618d9a1c2ac0d32ef966d315a180306a4cb861"
+    },
+    {
+      "bytes": 8217,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110322/calibration-record.json",
+      "sha256": "26ca921daa4d5638b06bd1b404382bb1262fe6954086d5eaf88369bed4808761"
+    },
+    {
+      "bytes": 94389,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110322/wham-fit.npz",
+      "sha256": "17a4684b5c4a0a44a74eacc6fc6ce757578d5404d2c12d202055f41afcd55a8d"
+    },
+    {
+      "bytes": 12403,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110322/wham-report.json",
+      "sha256": "abe1c692a0dee3e762607b159d39632dc1641c171b2d39be8451ffd6b92100ad"
+    },
+    {
+      "bytes": 8245,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110323/calibration-record.json",
+      "sha256": "e02c8f37e4af15b69a865d6e14b9a4811ee94ea5b345537b2c5e29e650d27ff4"
+    },
+    {
+      "bytes": 94254,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110323/wham-fit.npz",
+      "sha256": "8de5bbf0c54b85ed6ceacded3b7d7fc2da1138a54984c34bb7ca93be7540ddcf"
+    },
+    {
+      "bytes": 12454,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110323/wham-report.json",
+      "sha256": "b8f41ed5c4c39ec74dd8ff0583233fb947f92caa7a2c2b85f8f56e2d50a95658"
+    },
+    {
+      "bytes": 8250,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110324/calibration-record.json",
+      "sha256": "e78ef4aee16de934fb4d244a7ea9730edbae43007c4f0a3ca510b7f923b8db28"
+    },
+    {
+      "bytes": 94396,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110324/wham-fit.npz",
+      "sha256": "67c8e609077c82d52905a237aa3a6133ed6c8b983e6c249ab1a77607ead0f607"
+    },
+    {
+      "bytes": 12472,
+      "path": "v2-calibration-analysis/xi-3/seed-2026110324/wham-report.json",
+      "sha256": "c5871206cc074e57c4e74bec021603da9de635baef67ece3484cf5adf75ae532"
+    },
+    {
+      "bytes": 902,
+      "path": "README.txt",
+      "sha256": "974084899895f8068e8a70e3ad071643b9526c092a01bc2315a562f9ee880aff"
+    }
+  ],
+  "raw_data_only": true,
+  "schema": "pyrpmd.h3.classical-raw-data-manifest.v1"
+}

@@ -1,0 +1,104 @@
+{
+  "schema": "pyrpmd.h3.classical-stage-increment-audit.v1",
+  "rows": [
+    {
+      "seed": 2026110101,
+      "stage": 20000,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "f99dec11e7ea4411f91d68beeb8d585a389fc002a5175ae17658661f12a87561",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110101,
+      "stage": 65536,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "19610d41e35a40b1cd90e3260711e578b9cd8d1db9340914b92f743b171d6517",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110101,
+      "stage": 262144,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "72771c5b124cec9c2915c69ec494ceada571e7537eaa1624257b66cdf90fee50",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110102,
+      "stage": 20000,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "8d82fbde075b9349fe76172a22a8c56baf9e8951c1c14ce7b8107a4967206758",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110102,
+      "stage": 65536,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "72a9948e2262d749b247a23a516f9d4c27ee3349539ec2a462d642b760cf08b3",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110102,
+      "stage": 262144,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "3161053cce407f611bebb5e4d02e081c417976833017e239ae4eaf43ee61392f",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110103,
+      "stage": 20000,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "25b724d2bd555d06724227c1192c2e904ab6a439f10b7693a95f5a42de917e04",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110103,
+      "stage": 65536,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "d5f725cf8aea77477952ea7ff679e5f029fa4ae8728e6138c46d0d4935a5c50b",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110103,
+      "stage": 262144,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "9edcb4263d6f6b3a5ab6faade90a19033d78bca3d031e9a6dfd0014b3df2f2f0",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110104,
+      "stage": 20000,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "c02185022e2f53e0a9b15d3c56ce0dffa467ac72a6991dc737eabc55459f3052",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110104,
+      "stage": 65536,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "3f97ac00e2bfda31024773ee6975eb62be565cd580f646cbedda2ea4687919a7",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "seed": 2026110104,
+      "stage": 262144,
+      "original_source_unchanged": true,
+      "prefix_matches_original_receipt": true,
+      "samples_sha256": "395b641ec90c256a25a5d2fb39c7582075d55dbe1d2b2c8d242d5ede0acc9822",
+      "sampler_source_sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    }
+  ],
+  "all_previous_samples_preserved": true,
+  "one_frozen_sampler_source_for_all_stages": true,
+  "maximum_production_stage_completed": 262144
+}

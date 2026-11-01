@@ -1,0 +1,42 @@
+{
+  "archives": [
+    {
+      "all_member_hashes_verified_after_compression": true,
+      "archive_root": "pyrpmd-h3-classical-equilibrium-2026-11-01",
+      "bytes": 390566991,
+      "data_members": 113,
+      "filename": "pyrpmd-h3-classical-equilibrium-2026-11-01.tar.gz",
+      "group": "equilibrium",
+      "manifest_sha256": "a3ff33c1c64ae156ae7c2ded906252d87cfc956a74defc40ac1a916584b162f4",
+      "packing_source_sha256": "54513e0dfd0e81a89ead33e81b4643f7e84e68ba925014cd676367e1cc5b64b4",
+      "payload_bytes": 391451671,
+      "sha256": "b13c9e6557fff785618215bcfa903effa5e8fa7865b544bd367a67c3b710fc59"
+    },
+    {
+      "all_member_hashes_verified_after_compression": true,
+      "archive_root": "pyrpmd-h3-classical-transmission-2026-11-01",
+      "bytes": 107395236,
+      "data_members": 35,
+      "filename": "pyrpmd-h3-classical-transmission-2026-11-01.tar.gz",
+      "group": "transmission",
+      "manifest_sha256": "3781686e7aad9c5d38795b6a1841a1a7293b8ce1c6afd74048a7e06a7625cdba",
+      "packing_source_sha256": "54513e0dfd0e81a89ead33e81b4643f7e84e68ba925014cd676367e1cc5b64b4",
+      "payload_bytes": 107592916,
+      "sha256": "0a6ab3cd5e0284935aad0f3536e0bcf27f7e905c37bb690f478b38dc767af9eb"
+    },
+    {
+      "all_member_hashes_verified_after_compression": true,
+      "archive_root": "pyrpmd-h3-classical-v2-calibration-2026-11-01",
+      "bytes": 90030646,
+      "data_members": 88,
+      "filename": "pyrpmd-h3-classical-v2-calibration-2026-11-01.tar.gz",
+      "group": "v2-calibration",
+      "manifest_sha256": "dc1924b45b8d3a8b70325f28bee1332ad0028563e3d18247da76c92f14171f58",
+      "packing_source_sha256": "54513e0dfd0e81a89ead33e81b4643f7e84e68ba925014cd676367e1cc5b64b4",
+      "payload_bytes": 90478452,
+      "sha256": "5165843de5ff0f1740e7d4d8f125dce087b7b59d3133ffbb94b33402fcf4831c"
+    }
+  ],
+  "raw_data_only": true,
+  "schema": "pyrpmd.h3.classical-raw-data-index.v1"
+}

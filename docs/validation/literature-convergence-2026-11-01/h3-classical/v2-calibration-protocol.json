@@ -1,0 +1,90 @@
+{
+  "schema": "pyrpmd.h3.classical-xi-calibration-predeclaration.v2",
+  "role": "Excluded calibration only; no observation from these runs enters the later primary campaign.",
+  "physical_target": "Identical classical H+H2 BKMP2 Cartesian Jacobi rate-flux ensemble and physical-domain guard as the original frozen P1 campaign.",
+  "temperature_K": 300.0,
+  "beads": 1,
+  "warmup_sweeps": 2000,
+  "production_sweeps": 20000,
+  "candidates": [
+    {
+      "xi_moves": 0,
+      "seeds": [
+        2026110301,
+        2026110302,
+        2026110303,
+        2026110304
+      ],
+      "label": "Exact old-kernel control, independently verified byte-for-byte on a separate small test."
+    },
+    {
+      "xi_moves": 1,
+      "seeds": [
+        2026110311,
+        2026110312,
+        2026110313,
+        2026110314
+      ]
+    },
+    {
+      "xi_moves": 3,
+      "seeds": [
+        2026110321,
+        2026110322,
+        2026110323,
+        2026110324
+      ]
+    }
+  ],
+  "xi_move": {
+    "center_limit": 0.82,
+    "proposal_mean": "umbrella center",
+    "proposal_variance": "1/(beta*stiffness)",
+    "xi_interval": [
+      -0.2,
+      0.9
+    ],
+    "out_of_interval": "Reject to the same state; no truncation renormalization or target-domain change.",
+    "log_acceptance": "base_old-base_new + log(R_new^2*abs(dR_new/dxi)) - log(R_old^2*abs(dR_old/dxi)); base=beta*V-log(fs)."
+  },
+  "unchanged_other_moves": [
+    "R Cartesian translation",
+    "r Cartesian translation",
+    "R symmetric rotation mixture",
+    "r symmetric rotation mixture",
+    "adjacent-window exchange with random parity and unequal stiffness"
+  ],
+  "mathematical_checks": "Four inverse/Jacobian/spring/MH identity tests; zero-xi version exactly reproduces original P1 observations, RNG and geometries; one/three-xi exact restart checks.",
+  "analysis": {
+    "histogram_bin_width": 0.0005,
+    "local_log_density_fit_halfwidth": 0.004,
+    "blocks_per_seed": 4,
+    "block_sweeps": 5000,
+    "selection_metric": "Maximum of whole-seed log-rate variance times 20000 and block log-rate variance times 5000, multiplied by process CPU seconds per sweep. No paper value or distance to the oracle enters selection.",
+    "cpu_cost": "Use process CPU time for fresh complete calibration runs; wall time is retained but is affected by other shared jobs.",
+    "minimum_measured_efficiency_gain_to_start_primary": 1.25,
+    "diagnostics": [
+      "WHAM overlap connectivity",
+      "exact-oracle window moments",
+      "temporal halves",
+      "complete per-seed and per-block rates retained"
+    ],
+    "uncertainty_scope": "Block fluctuations are calibration diagnostics. They are not silently substituted for independent full-seed primary uncertainty."
+  },
+  "primary_campaign": "Choose and register one fixed kernel/budget using only this excluded calibration, then start new seeds; retain the same 1% precision, 2% oracle agreement and stationarity criteria. This calibration JSON does not define the later primary campaign.",
+  "maximum_workers": 2,
+  "sampler_source_sha256": "75c3c5da43612d4f30f5f7f23aa2bd7fb7b303cceba71cc7c24ca2132cb92eed",
+  "proposal_source_sha256": "a79f3cd117c6f1f652f788c8430f61ef18bfde294545fbe23bb090b330d731f2",
+  "schedule_sha256": "0799d38f37bb75aaee74e1f24d802d32365f9537fd327ef530097e52bd63e9ae",
+  "reference_sha256": "6269635e27d9e4763179afb37e4379592865885f32fb6fcd32082449b3955869",
+  "paper_value_used_for_selection": false,
+  "registration_events": [
+    {
+      "event": "Before all calibration data: harden checkpoint integrity, complete-settings fingerprint, shape/counter validation, and source guard.",
+      "previous_sampler_source_sha256": "7b1740fddac25c9070dadfd42edc0ca2ff415bf42fa90374239f4b1ac0419db1",
+      "sampler_source_sha256": "75c3c5da43612d4f30f5f7f23aa2bd7fb7b303cceba71cc7c24ca2132cb92eed",
+      "physical_proposals_and_rng_algorithm_changed": false
+    }
+  ],
+  "checkpoint_integrity": "Per-array SHA256 envelope, complete settings fingerprint, declared array dimensions, and source guard before atomic replace; the zero-additional-move physics remains byte-identical to the old sampler."
+}

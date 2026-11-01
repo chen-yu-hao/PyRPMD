@@ -1,0 +1,41 @@
+{
+  "schema": "pyrpmd.h3.classical-numpy-compatibility.v1",
+  "files": [
+    {
+      "source": "benchmarks/h3/classical_sampling.py",
+      "executed_sha256": "4181a4f83e437d109a9799d9b6b72949686b9a12cc397507c30b3dc11641e9c1",
+      "archived_exact_copy": "executed-source/classical_sampling_numpy2_original.py",
+      "portable_sha256": "b33e4cdd7875a1bfeedd0d2cd353c0d88234c9694802df45db880cb8aa332f69"
+    },
+    {
+      "source": "benchmarks/h3/classical_sampling_schedule.py",
+      "executed_sha256": "67d2d47ebc0e2e283b36d8ddca50d5f41b99a7f59aecfe642a856edf2dce5fb6",
+      "archived_exact_copy": "executed-source/classical_sampling_schedule_numpy2_original.py",
+      "portable_sha256": "04afc9c20729a067a37d240616e2afb50470931783cecf52222aa3a0be509dd7"
+    }
+  ],
+  "reason": "NumPy1.26 is supported by PyRPMD but np.trapezoid was introduced in NumPy2. Replace only the integration function import with scipy.integrate.trapezoid; retain exact executed sources and original result hashes.",
+  "actual_schedule_48_window_moment_max_abs_differences": [
+    0.0,
+    0.0
+  ],
+  "schedule_rebuild_max_abs_differences": {
+    "centers": 0.0,
+    "stiffness": 0.0,
+    "adjacent_bhattacharyya_overlap": 0.0,
+    "equilibrium_mean": 0.0,
+    "equilibrium_variance": 0.0,
+    "probability_in_xi_1_plusminus_002_per_window": 0.0
+  },
+  "numpy_version_for_equivalence_check": "2.5.4",
+  "numpy_trapezoid_attribute_removed_check": {
+    "centers": 0.0,
+    "stiffness": 0.0,
+    "adjacent_bhattacharyya_overlap": 0.0,
+    "equilibrium_mean": 0.0,
+    "equilibrium_variance": 0.0,
+    "probability_in_xi_1_plusminus_002_per_window": 0.0
+  },
+  "actual_numpy_1_26_environment_available": false,
+  "api_floor_scope": "Remove only the NumPy2 integration attribute in the current NumPy2.5.4 runtime; this is an API-floor regression, not a complete NumPy1.26 environment run."
+}

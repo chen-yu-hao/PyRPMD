@@ -1,0 +1,44 @@
+{
+  "schema": "pyrpmd.h3.classical-ts-transmission.v1",
+  "seed": 2026110204,
+  "timestep_fs": 0.1,
+  "parents": 2048,
+  "antithetic_children": 4096,
+  "horizon_fs": 400.0,
+  "plateaus": {
+    "80-100": 0.9958243219925246,
+    "180-200": 0.9958243219925246,
+    "380-400": 0.9958243219925246
+  },
+  "mean_denominator": 2.012486471482994,
+  "expected_mean_denominator": 2.0,
+  "maximum_energy_error_kbt": 0.020295000749527396,
+  "energy_error_kbt_quantiles": [
+    0.00016541030021684897,
+    0.002000121450146581,
+    0.007833338520397304,
+    0.012189781135202825,
+    0.020295000749527396
+  ],
+  "propagation": {
+    "native_steps": 16384000,
+    "python_steps": 0,
+    "fallback_reasons": {}
+  },
+  "source_at_start": {
+    "benchmarks/h3/classical_sampling_surface.py": "891a14a32b6394933179510d59aab02297af91e2f37b1bb6ec2101e9fecab9a1",
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+    "src/pyrpmd/propagation.py": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "loaded_native:_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+  },
+  "source_unchanged": true,
+  "source_parent_sha256": "ef9b033e68f7c14c2ee78cfe4650686c4a3f5b4a565e7a1a4c2694d71fe7f3e8",
+  "children_sha256": "8dc10f3816b1db1501168031f74384f70ca79b811151baf541d7ecd94bac2678",
+  "elapsed_seconds": 108.88840748900111,
+  "created_utc": "2026-11-01T15:34:06.542041+00:00",
+  "scope": "Independent classical surface sampler plus unchanged native PyRPMD child dynamics."
+}

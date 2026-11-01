@@ -1,0 +1,66 @@
+{
+  "schema": "pyrpmd.h3.classical-evidence-figure.v1",
+  "plot_source_sha256": "ff888a55c20ac47733d30d61df69782e27c1e80ce6a343ee0ec84fd3c3a8ecd6",
+  "inputs": [
+    {
+      "path": "reference-384/conditional-reference.npz",
+      "sha256": "6269635e27d9e4763179afb37e4379592865885f32fb6fcd32082449b3955869"
+    },
+    {
+      "path": "reference-384/reference.json",
+      "sha256": "347f084b31193bcd610c817b71df03601ddc956e651ef45d0e0c5ab9a02a3281"
+    },
+    {
+      "path": "transmission/transmission-comparison.json",
+      "sha256": "61d00d64a235a9b3a11ebb06540c32cfcc40b2652b94fbd80f969be2eb3de7e5"
+    },
+    {
+      "path": "window-diagnosis-pmf.csv",
+      "sha256": "a8f3c7aa546610158dc6ad552edb4741a7a872e16cdf1efc8adfa7bb71a8e0be"
+    },
+    {
+      "path": "stage-20000/campaign-comparison.json",
+      "sha256": "357a4deee6d597afc03f84c1d1d382e3dc72c4f8121f96a4da40f07524ffe353"
+    },
+    {
+      "path": "stage-65536/campaign-comparison.json",
+      "sha256": "0067df76c6d018572eea5b8bef0091aeed4b6685995a4cc9d770c39796437665"
+    },
+    {
+      "path": "transmission/seed-2026110201/dt-0.1/kappa.csv",
+      "sha256": "02c705764c9825e7ee623f99455cd00dc91b92912b35bb6098719bfdc2a8edc1"
+    },
+    {
+      "path": "transmission/seed-2026110202/dt-0.1/kappa.csv",
+      "sha256": "722839a588fdad17ed4677bb7c7799b195a7800e47c7dff9d80dad0e088ec86a"
+    },
+    {
+      "path": "transmission/seed-2026110203/dt-0.1/kappa.csv",
+      "sha256": "2e7a6f43d6dc4013451d82369cc72164ebcd32d21cceb98662f2fe9b79edadad"
+    },
+    {
+      "path": "transmission/seed-2026110204/dt-0.1/kappa.csv",
+      "sha256": "410fec6a1ead2eb3f3c071c821b2c0e8caf7953353794ca1edea35c961065f16"
+    },
+    {
+      "path": "transmission/seed-2026110201/dt-0.05/kappa.csv",
+      "sha256": "02c705764c9825e7ee623f99455cd00dc91b92912b35bb6098719bfdc2a8edc1"
+    },
+    {
+      "path": "transmission/seed-2026110202/dt-0.05/kappa.csv",
+      "sha256": "2f422b95d02c33acc837ffce15e08d6ee4557322359923e34a6a1b99caa56905"
+    },
+    {
+      "path": "transmission/seed-2026110203/dt-0.05/kappa.csv",
+      "sha256": "2e7a6f43d6dc4013451d82369cc72164ebcd32d21cceb98662f2fe9b79edadad"
+    },
+    {
+      "path": "transmission/seed-2026110204/dt-0.05/kappa.csv",
+      "sha256": "410fec6a1ead2eb3f3c071c821b2c0e8caf7953353794ca1edea35c961065f16"
+    }
+  ],
+  "figures": {
+    "classical-convergence.pdf": "e3fcd70d73bdbe2748dac3911df8106d5f3a6e3d6cd832c4ddbb81bbd6afdc7a",
+    "classical-convergence.png": "3a05b70e5bb2e3122029fef34f01fdce67904e92b0ecaf3affa468ec7bedec5f"
+  }
+}

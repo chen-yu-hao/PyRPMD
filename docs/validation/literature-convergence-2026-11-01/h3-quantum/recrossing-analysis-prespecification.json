@@ -1,0 +1,21 @@
+{
+  "schema": "pyrpmd.h3.quantum-rate-analysis-prespecification.v1",
+  "registered_utc": "2026-11-01T16:25:49.999850+00:00",
+  "timing": "Registered after primary child propagation began, before any primary transmission point or full-rate result was inspected. Existing excluded calibration numerical errors and static reactant normalization were available.",
+  "source_sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+  "uncertainty": "Eight independent chains; combine same-chain BAR logZ and logkappa before Student-t interval, retaining covariance.",
+  "additional_gates": {
+    "primary_maximum_full_H_error_times_beta_over_P": 0.1,
+    "full_rate_log_CI95_halfwidth_max": "log(1.05)",
+    "paper_component_point_relative_tolerance": {
+      "QTST": 0.05,
+      "kappa": 0.05,
+      "full_rate": 0.05
+    }
+  },
+  "primary_protocol_gates": "Preserve registered time/timestep equivalence, 3% kappa precision, complete cohort, parent sampler diagnostics and domain observations.",
+  "numerical_error_threshold_scope": "Stability screen informed by excluded calibration, not a claimed bound on rate bias.",
+  "reference_preflight": "Temperature, reduced mass, P, beta from the free-kernel width, physical radial domain, exact model/source/binary metadata and primary correction all match.",
+  "supplementary_parent_time_halves": "Report independently with 0.03 absolute diagnostic margin; does not replace registered acceptance gates.",
+  "controls": "Bead/domain controls reported separately; fixed-P dynamical gates do not imply continuum or production-umbrella validation."
+}
