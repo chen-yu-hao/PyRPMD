@@ -135,4 +135,3 @@ __all__ = [
     "energy_heat_capacity", "quantum_kinetic_energy", "isotope_substitution_free_energy", "isotope_fractionation", "fractionation_mass_integration", "momentum_distribution_from_open_paths",
     "normalize_initial_ensemble", "prepare_initial_ensemble", "check_state_selected",
 ]
-

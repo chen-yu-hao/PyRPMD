@@ -212,4 +212,3 @@ correction-stage failure.
   [accepted manuscript](https://link.aps.org/accepted/10.1103/PhysRevA.107.062810).
   Section II D distinguishes the centroid and bead approximations. The new
   density-matrix RPSH method in that paper is not implemented here.
-

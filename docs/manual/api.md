@@ -352,4 +352,3 @@ version. Package 0.2.0 supports the molecular PES C ABI v1 and the cell-aware C 
 Names that start with an underscore are internal. Interface
 and capability negotiation are described in the
 [public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md).
-

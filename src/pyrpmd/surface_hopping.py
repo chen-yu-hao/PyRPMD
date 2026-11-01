@@ -352,4 +352,3 @@ class RPSHDynamics:
         self.last_hop = hop
         self.last_probabilities = tuple(float(x) for x in probabilities)
         return state
-

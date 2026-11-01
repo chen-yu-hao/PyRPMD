@@ -348,4 +348,3 @@ Cayley 积分器、反应坐标与速率算法改编自 [RPMDrate](https://githu
 不包含 Caracal 的 QMDFF、xTB 和机器学习模型。
 
 许可证：[MIT](LICENSE)。
-

@@ -89,4 +89,3 @@ EAM 模型上运行镍中的 H 和 D（P=1 与 4），模型需单独下载。
 
 `preset="production"` 检查必填字段和任务限制，省略的参数仍可使用缺省值。固定方案前用
 `pyrpmd validate INPUT --write-resolved resolved.json` 检查完整配置；第 3、4 步确立收敛，见[科学约定](science.md)。
-

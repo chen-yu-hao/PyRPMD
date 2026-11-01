@@ -163,4 +163,3 @@ couplings between states, and converge the asymptotic states, the energy and map
 number, the time step, parent correlation, collision parameters and product commitment. Method and
 sources are in the [NRPMD topic](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic.md)
 and the [example notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/nonadiabatic/README.md).
-

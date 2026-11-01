@@ -414,4 +414,3 @@ notices and paper DOIs are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICE
 QMDFF, xTB and machine-learning models are not bundled.
 
 License: [MIT](LICENSE).
-

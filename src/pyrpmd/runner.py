@@ -620,4 +620,3 @@ def prepare(job, *, numerical=False):
                 if callable(close):
                     close()
     return result
-

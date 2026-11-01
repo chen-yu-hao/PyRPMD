@@ -102,4 +102,3 @@ matches a pinned pyPCET commit to within 0.062% on the harmonic model.
 `preset="production"` enforces required fields and task restrictions; omitted parameters can
 still use defaults. Inspect `pyrpmd validate INPUT --write-resolved resolved.json` before fixing the
 protocol. Steps 3 and 4 establish convergence; see [Scientific conventions](science.md).
-

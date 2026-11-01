@@ -1099,4 +1099,3 @@ class JobSpec:
 
 def load_input(path):
     return JobSpec.from_file(path)
-

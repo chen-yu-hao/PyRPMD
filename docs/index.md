@@ -143,4 +143,3 @@ available only in English link to the Chinese manual contents instead. Detailed 
 [public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md),
 and the [validation records](https://github.com/chen-yu-hao/PyRPMD/tree/main/docs/validation)
 live alongside the manual in the repository.
-

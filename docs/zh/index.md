@@ -109,4 +109,3 @@ HTML 版本中，导航栏的语言按钮会打开同一页面的另一语言版
 [输入规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md)、
 [公共接口约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md)等详细规范和
 [验证记录](https://github.com/chen-yu-hao/PyRPMD/tree/main/docs/validation)与手册一同保存在仓库中。
-
