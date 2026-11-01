@@ -122,7 +122,8 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Directed escape on a fixed substrate | `surface_rate` | `examples/surface/diffusion.inp` | ~1.5 min |
 | Electrochemical PCET, H/D, potential and temperature scans | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | State-selected nonadiabatic scattering (NRPMD, experimental) | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
-| Model population/coherence ensembles (NRPMD or RPSH) | `nonadiabatic` | `examples/nonadiabatic/population.inp` | — |
+| Model population/coherence ensembles (NRPMD, SM-NRPMD, CA-RP-MASH, BA/DM/SOC RPSH) | `nonadiabatic` | `examples/nonadiabatic/extensions/` | — |
+| Published molecular NaH2 two-state PES | `nonadiabatic` | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | — |
 
 Run any of them with `pyrpmd run INPUT --output runs/NAME`. Two more patterns worth knowing:
 
@@ -376,6 +377,7 @@ Reference specifications (some in Chinese):
 - [Multiple entrances and TSs](docs/reaction-networks.md)
 - [Experimental NRPMD and state-resolved collisions](docs/nonadiabatic.md)
 - [Nonadiabatic population workflow](docs/nonadiabatic-workflow.md), [model library](docs/nonadiabatic-models.md), [ensemble API](docs/nonadiabatic-ensembles.md), [comparison and remaining gaps](docs/nonadiabatic-comparison.md)
+- [SM-NRPMD and CA-RP-MASH](docs/nonadiabatic-spin-methods.md), [BA/DM RPSH, DBOC and complex SOC](docs/nonadiabatic-hopping-extensions.md), [published molecular PES](docs/molecular-nonadiabatic.md), [native/batched/Torch electronics](docs/nonadiabatic-performance.md)
 - [Electronic friction](docs/electronic-friction.md), [thermal NRPMD](docs/thermal-nrpmd.md), [KC/MV/isomorphic methods](docs/nonadiabatic-methods.md), [SOC and RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP constant-pressure PIMD](docs/materials-npt.md), [grid metadynamics](docs/grid-metadynamics.md), [streaming trajectories](docs/streaming-trajectories.md)
 - [Constant-potential electrode models and HER postprocessing](docs/electrochemistry.md)

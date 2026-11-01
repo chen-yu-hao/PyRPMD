@@ -1,0 +1,39 @@
+# Two-state W-spin SM-NRPMD; focused fixed-diabatic state 0.
+# Harmonic nuclear reference only; no coupled electronic thermal preparation.
+task = "nonadiabatic"
+method = "sm-nrpmd"
+beta = 4.0
+beads = 4
+seed = 20261101
+
+[model]
+name = "spin_boson"
+
+[model.params]
+frequencies = [0.5]
+couplings = [0.08]
+masses = [1.0]
+bias = 0.1
+tunnelling = 0.15
+
+[initial]
+kind = "harmonic_ring"
+frequencies = [0.5]
+centers = [0.0]
+initial_state = 0
+
+[ensemble]
+trajectories = 4
+steps = 12
+sample_stride = 4
+
+[dynamics]
+dt = "0.02 autime"
+integrator = "cayley-bcb"
+native = false
+electronic_backend = "numpy"
+electronic_device = "cpu"
+block_steps = 5
+
+[output]
+directory = "runs/sm-nrpmd"

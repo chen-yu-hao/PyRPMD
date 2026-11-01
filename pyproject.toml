@@ -8,7 +8,7 @@ version = "0.2.0"
 description = "Ring-polymer dynamics, reaction networks and adaptive free-energy sampling"
 readme = "README.md"
 requires-python = ">=3.11"
-license = "MIT"
+license = "MIT AND Apache-2.0"
 authors = [{name = "PyRPMD contributors"}]
 dependencies = ["numpy>=1.26", "scipy>=1.11", "h5py>=3.10", "threadpoolctl>=3.1"]
 
@@ -44,3 +44,5 @@ addopts = "-ra"
 [tool.setuptools.package-data]
 "pyrpmd" = ["templates/*.inp"]
 "pyrpmd.pesgen" = ["_native/*.cpp", "_native/*.f90", "_native/*.h"]
+"pyrpmd.potentials" = ["_licenses/*.txt"]
+

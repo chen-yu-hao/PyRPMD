@@ -294,8 +294,12 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
     if parallel is not None:
         config["parallel"] = _resume_parallel(config.get("parallel", {}), parallel)
     if execution is not None:
-        if not isinstance(execution, dict) or set(execution) - {"loop_backend", "block_steps"}:
-            raise InputError("Resume execution overrides accept only loop_backend and block_steps")
+        allowed = {"loop_backend", "block_steps"}
+        mapping = config["task"] == "nonadiabatic" and config["method"] in {"nrpmd", "sm-nrpmd"}
+        if mapping:
+            allowed |= {"electronic_backend", "electronic_device"}
+        if not isinstance(execution, dict) or set(execution) - allowed:
+            raise InputError("Resume execution overrides accept only " + ", ".join(sorted(allowed)))
         if "loop_backend" in execution and execution["loop_backend"] not in ("auto", "native", "python"):
             raise InputError("loop_backend must be auto/native/python")
         if "block_steps" in execution:
@@ -303,6 +307,17 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
             if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 65536:
                 raise InputError("block_steps must be an integer in 1..65536")
         config.setdefault("dynamics", {}).update(execution)
+        if mapping:
+            from .nonadiabatic_input import _choice
+            import re
+            options = config["dynamics"]
+            backend = _choice(options.get("electronic_backend", "numpy"),
+                              "electronic_backend", {"numpy", "native", "torch"})
+            device = options.get("electronic_device", "cpu")
+            if not isinstance(device, str) or re.fullmatch(r"cpu|cuda(?::[0-9]+)?", device) is None:
+                raise InputError("electronic_device must be cpu or cuda[:index]")
+            if backend != "torch" and device != "cpu":
+                raise InputError("a CUDA electronic_device requires electronic_backend='torch'")
     if adaptive_budget is not None:
         from .parallel import root_call
         from .workflows.adaptive_umbrella import extend_adaptive_budget

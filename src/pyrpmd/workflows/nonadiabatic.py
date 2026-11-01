@@ -21,7 +21,7 @@ from ..io import atomic_write_text, fingerprint, jsonable, write_json
 from ..nonadiabatic import NRPMDState, NRPMDDynamics
 from ..nonadiabatic_ensemble import density_matrix, NonadiabaticEnsembleResult
 from ..parallel import execution_plan, run_tasks
-from ..potentials.nonadiabatic_models import model_from_dict
+from ..nonadiabatic_registry import potential_from_identity as model_from_dict, make_dynamics
 from ..propagation import scientific_config
 from ..surface_hopping import RPSHState, RPSHDynamics
 from ..system import System
@@ -32,18 +32,7 @@ _HISTORY = ("density", "energy", "norm", "centroid_q", "centroid_p")
 
 
 def _driver(config, system, potential, rng):
-    options = config["dynamics"]
-    common = dict(native=options.get("native", config.get("native", True)),
-                  integrator=options["integrator"],
-                  threads=execution_plan(config["parallel"]).threads)
-    args = (potential, system.masses, config["beta"], config["beads"],
-            config["dt_au"], potential.nstates)
-    if config["method"] == "nrpmd":
-        return NRPMDDynamics(*args, **common)
-    return RPSHDynamics(*args, seed=rng, **common, **{
-        key: options[key] for key in (
-            "electronic_substeps", "rescaling", "frustrated_hops", "gap_tolerance",
-            "decoherence", "decoherence_constant") if key in options})
+    return make_dynamics(config, system, rng, potential=potential)
 
 
 def _streams(config, index):
@@ -284,6 +273,9 @@ def _trajectory(task):
 
 
 def prepare_nonadiabatic(config, system, *, numerical=False):
+    if config["method"] not in {"nrpmd", "rpsh"}:
+        from .nonadiabatic_extensions import prepare_extended_nonadiabatic
+        return prepare_extended_nonadiabatic(config, system, numerical=numerical)
     potential = model_from_dict(config["model"])
     streams = _streams(config, 0)
     try:
@@ -304,6 +296,9 @@ def prepare_nonadiabatic(config, system, *, numerical=False):
 
 
 def run_nonadiabatic(config, system, directory):
+    if config["method"] not in {"nrpmd", "rpsh"}:
+        from .nonadiabatic_extensions import run_extended_nonadiabatic
+        return run_extended_nonadiabatic(config, system, directory)
     plan = execution_plan(config["parallel"])
     if plan.backend not in ("serial", "process") or plan.mode != "serial" or plan.bead_workers != 1:
         raise ValueError("model nonadiabatic ensembles support serial or trajectory-process execution")
@@ -317,6 +312,9 @@ def run_nonadiabatic(config, system, directory):
 
 def analyze_nonadiabatic(config, system, directory):
     """Verify and reduce all completed trajectory checkpoints, without propagation."""
+    if config["method"] not in {"nrpmd", "rpsh"}:
+        from .nonadiabatic_extensions import analyze_extended_nonadiabatic
+        return analyze_extended_nonadiabatic(config, system, directory)
     directory = Path(directory)
     identity = fingerprint(scientific_config(config), system)
     histories, states, rng_states = [], [], []

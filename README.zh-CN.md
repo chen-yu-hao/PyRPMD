@@ -96,7 +96,8 @@ pyrpmd resume my-first-run/run
 | 固定基底上的有向逃逸 | `surface_rate` | `examples/surface/diffusion.inp` | ~1.5 min |
 | 电化学 PCET，H/D、电势与温度扫描 | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | 态选择非绝热散射（NRPMD，实验性） | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
-| 模型体系的布居与相干性系综（NRPMD / RPSH） | `nonadiabatic` | `examples/nonadiabatic/population.inp` | — |
+| 布居系综（NRPMD、SM-NRPMD、CA-RP-MASH、BA/DM/SOC RPSH） | `nonadiabatic` | `examples/nonadiabatic/extensions/` | — |
+| 已发表的真实 NaH2 双态分子势能面 | `nonadiabatic` | `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | — |
 
 用 `pyrpmd run INPUT --output runs/NAME` 运行其中任意一个。另外两种常用方式：
 
@@ -313,6 +314,7 @@ GitHub **Documentation** 工作流构建两个版本、运行入门示例，并�
 - [多入口与多 TS](docs/reaction-networks.md)
 - [实验性 NRPMD 与态分辨碰撞](docs/nonadiabatic.md)
 - [非绝热布居工作流](docs/nonadiabatic-workflow.md)、[模型库](docs/nonadiabatic-models.md)、[系综 API](docs/nonadiabatic-ensembles.md)、[实现对比与剩余缺口](docs/nonadiabatic-comparison.md)
+- [SM-NRPMD 与 CA-RP-MASH](docs/nonadiabatic-spin-methods.md)、[BA/DM RPSH、DBOC 和复 SOC](docs/nonadiabatic-hopping-extensions.md)、[真实分子多态 PES](docs/molecular-nonadiabatic.md)、[原生／批量／Torch 电子传播](docs/nonadiabatic-performance.md)
 - [电子摩擦](docs/electronic-friction.md)、[热 NRPMD](docs/thermal-nrpmd.md)、[KC/MV/isomorphic 模型](docs/nonadiabatic-methods.md)、[SOC 与 RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP 恒压 PIMD](docs/materials-npt.md)、[网格 metadynamics](docs/grid-metadynamics.md)、[流式轨迹](docs/streaming-trajectories.md)
 - [恒电位电极模型与 HER 后处理](docs/electrochemistry.md)

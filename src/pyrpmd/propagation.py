@@ -342,6 +342,8 @@ def scientific_config(config):
     if "dynamics" in result:
         result["dynamics"].pop("loop_backend", None)
         result["dynamics"].pop("block_steps", None)
+        result["dynamics"].pop("electronic_backend", None)
+        result["dynamics"].pop("electronic_device", None)
         if not result["dynamics"]:
             result.pop("dynamics")
     # These controls change resource ownership / launch grouping only, never
@@ -364,3 +366,4 @@ def scientific_config(config):
 
 # The valid-prefix API is additive; propagate() retains whole-block rollback.
 from .block_propagation import BlockResult, PropagationError, propagate_block
+

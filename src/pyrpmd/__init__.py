@@ -4,6 +4,26 @@ __version__ = "0.2.0"
 
 
 def __getattr__(name):
+    if name in ("SMNRPMDState", "SMNRPMDDynamics"):
+        from . import spin_mapping
+        return getattr(spin_mapping, name)
+    if name in ("RPMASHState", "RPMASHDynamics"):
+        from . import rp_mash
+        return getattr(rp_mash, name)
+    if name in ("AdvancedRPSHDynamics", "RPSHBADynamics", "RPSHDMDynamics",
+                "ComplexRPSHDynamics", "RPSHBAState", "RPSHDMState"):
+        from . import advanced_surface_hopping
+        return getattr(advanced_surface_hopping, name)
+    if name in ("BatchedNRPMDState", "BatchedNRPMDDynamics"):
+        from . import batched_nonadiabatic
+        return getattr(batched_nonadiabatic, name)
+    if name in ("electronic_mapping_flow", "torch_electronic_mapping_flow",
+                "electronic_backend_capabilities"):
+        from . import electronic_backends
+        return getattr(electronic_backends, name)
+    if name in ("NaH2LEPS5G", "ChemPotPyDPEM", "molecular_potential_from_dict"):
+        from .potentials import multistate_external
+        return getattr(multistate_external, name)
     if name in ("NonadiabaticEnsembleResult", "EnsemblePropagationError",
                 "run_nonadiabatic_ensemble", "density_matrix"):
         from . import nonadiabatic_ensemble
@@ -111,6 +131,11 @@ def __getattr__(name):
 
 
 __all__ = [
+    "SMNRPMDState", "SMNRPMDDynamics", "RPMASHState", "RPMASHDynamics",
+    "AdvancedRPSHDynamics", "RPSHBADynamics", "RPSHDMDynamics", "ComplexRPSHDynamics",
+    "RPSHBAState", "RPSHDMState", "BatchedNRPMDState", "BatchedNRPMDDynamics",
+    "electronic_mapping_flow", "torch_electronic_mapping_flow", "electronic_backend_capabilities",
+    "NaH2LEPS5G", "ChemPotPyDPEM", "molecular_potential_from_dict",
     "NonadiabaticEnsembleResult", "EnsemblePropagationError", "run_nonadiabatic_ensemble",
     "density_matrix", "sample_harmonic_ring", "TullyModelOne", "TullyModelTwo", "TullyModelThree",
     "LinearVibronicCoupling", "DiscreteSpinBoson", "model_from_dict",

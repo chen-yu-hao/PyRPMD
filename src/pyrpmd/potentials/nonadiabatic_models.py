@@ -130,6 +130,7 @@ class _MatrixModel(Potential):
     def metadata(self):
         """Detached, JSON-safe provider information and full model identity."""
         return {"provider": "nonadiabatic_model", "thread_safety": "reentrant",
+                "trajectory_batch_safe": True,
                 "execution_device": "cpu", "periodic": False,
                 "energy_unit": "hartree", "length_unit": "bohr",
                 "derivative": "gradient", "nstates": self.nstates,

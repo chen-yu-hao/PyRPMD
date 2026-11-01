@@ -25,6 +25,8 @@ For a first run without locating repository files, use `pyrpmd init my-first-run
 | `examples/nonadiabatic/exchange.inp` | NRPMD scattering from a selected state on a coupled two-state model | ~15 s | [Nonadiabatic NRPMD](nonadiabatic.md) |
 | `examples/nonadiabatic/population.inp` | NRPMD populations and coherences after a harmonic spin-boson preparation | — | [Nonadiabatic populations](nonadiabatic.md) |
 | `examples/nonadiabatic/rpsh_population.inp` | Centroid RPSH on Tully I with optional energy-based decoherence | — | [Nonadiabatic populations](nonadiabatic.md) |
+| `examples/nonadiabatic/extensions/` | SM-NRPMD, CA-RP-MASH, BA/DM RPSH, DBOC and complex SOC inputs | — | [Extended methods](../nonadiabatic-workflow.md) |
+| `examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp` | Published NaH2 molecular two-state PES with Cartesian gradients | — | [Molecular potentials](../molecular-nonadiabatic.md) |
 | `examples/rate/pilot.inp` | TS preparation, PMF and recrossing on an analytic reaction potential | ~15 s | [Gas phase and free energy](workflows.md) |
 | `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 2D well-tempered metadynamics | ~2 s | [Gas phase and free energy](workflows.md) |

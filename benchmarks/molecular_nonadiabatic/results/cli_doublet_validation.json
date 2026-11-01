@@ -1,0 +1,235 @@
+{
+  "format": "PyRPMD.molecular_cli_validation.v1",
+  "purpose": "Fresh short CLI cycle after neutral-doublet System provenance correction",
+  "trajectories": 2,
+  "steps": 3,
+  "sample_stride": 1,
+  "methods": {
+    "nrpmd": {
+      "output_directory": "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-nrpmd",
+      "input_sha256": "0f70249ed46737101b911ecff7c2147ece80826e643dda8e6a8a5f9a02f00fa5",
+      "system": {
+        "symbols": [
+          "Na",
+          "H",
+          "H"
+        ],
+        "masses": [
+          41907.7857228091,
+          1837.1526474396187,
+          1837.1526474396187
+        ],
+        "geometry": [
+          [
+            3.2,
+            0.8,
+            0.0
+          ],
+          [
+            -0.85,
+            0.0,
+            0.0
+          ],
+          [
+            0.85,
+            0.0,
+            0.0
+          ]
+        ],
+        "fragments": [],
+        "charge": 0,
+        "multiplicity": 2
+      },
+      "actions": [
+        {
+          "action": "validate",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "validate",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-doublet-nrpmd.inp",
+            "--output",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-nrpmd",
+            "--check-pes"
+          ],
+          "returncode": 0,
+          "valid": true,
+          "completed": null,
+          "physics_fingerprint": null,
+          "checkpoints_unchanged": null
+        },
+        {
+          "action": "run",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "run",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-doublet-nrpmd.inp",
+            "--output",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-nrpmd"
+          ],
+          "returncode": 0,
+          "valid": null,
+          "completed": true,
+          "physics_fingerprint": "668ac2e6ae928f4484bf33a6a8c22979ac4ac608c5acc6d5529f0eb6fb0d40fd",
+          "checkpoints_unchanged": null
+        },
+        {
+          "action": "analyze",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "analyze",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-nrpmd",
+            "--recompute"
+          ],
+          "returncode": 0,
+          "valid": null,
+          "completed": true,
+          "physics_fingerprint": "668ac2e6ae928f4484bf33a6a8c22979ac4ac608c5acc6d5529f0eb6fb0d40fd",
+          "checkpoints_unchanged": true
+        },
+        {
+          "action": "resume",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "resume",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-nrpmd"
+          ],
+          "returncode": 0,
+          "valid": null,
+          "completed": true,
+          "physics_fingerprint": "668ac2e6ae928f4484bf33a6a8c22979ac4ac608c5acc6d5529f0eb6fb0d40fd",
+          "checkpoints_unchanged": true
+        }
+      ],
+      "final_populations": [
+        -0.0028608633266357653,
+        1.0028608633266365
+      ],
+      "physics_fingerprint": "668ac2e6ae928f4484bf33a6a8c22979ac4ac608c5acc6d5529f0eb6fb0d40fd",
+      "checkpoint_sha256": {
+        "nonadiabatic_000000.npz": "8e61e5bc79622fc002cea861e9d983e41752b91f9769449022bcb44300a81666",
+        "nonadiabatic_000001.npz": "c02a61c3983e98e3a5bd12d7db2474aa04539a8d685f6b0b44ffe585378e9b7a"
+      }
+    },
+    "rpsh": {
+      "output_directory": "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-rpsh",
+      "input_sha256": "3635c4035794a3a55e472164829d995655251276777531f4ef6c8f9ee5d5a9c1",
+      "system": {
+        "symbols": [
+          "Na",
+          "H",
+          "H"
+        ],
+        "masses": [
+          41907.7857228091,
+          1837.1526474396187,
+          1837.1526474396187
+        ],
+        "geometry": [
+          [
+            3.2,
+            0.8,
+            0.0
+          ],
+          [
+            -0.85,
+            0.0,
+            0.0
+          ],
+          [
+            0.85,
+            0.0,
+            0.0
+          ]
+        ],
+        "fragments": [],
+        "charge": 0,
+        "multiplicity": 2
+      },
+      "actions": [
+        {
+          "action": "validate",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "validate",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-doublet-rpsh.inp",
+            "--output",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-rpsh",
+            "--check-pes"
+          ],
+          "returncode": 0,
+          "valid": true,
+          "completed": null,
+          "physics_fingerprint": null,
+          "checkpoints_unchanged": null
+        },
+        {
+          "action": "run",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "run",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-doublet-rpsh.inp",
+            "--output",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-rpsh"
+          ],
+          "returncode": 0,
+          "valid": null,
+          "completed": true,
+          "physics_fingerprint": "c9007ce401b5e210765481ddba2a2dbaa4feef0bb85778b2f9bd74678fc4242b",
+          "checkpoints_unchanged": null
+        },
+        {
+          "action": "analyze",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "analyze",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-rpsh",
+            "--recompute"
+          ],
+          "returncode": 0,
+          "valid": null,
+          "completed": true,
+          "physics_fingerprint": "c9007ce401b5e210765481ddba2a2dbaa4feef0bb85778b2f9bd74678fc4242b",
+          "checkpoints_unchanged": true
+        },
+        {
+          "action": "resume",
+          "command": [
+            "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "-m",
+            "pyrpmd",
+            "resume",
+            "/workspace/scratch/3e6096a7ca4a/phase2-molecular-cli-doublet-rpsh"
+          ],
+          "returncode": 0,
+          "valid": null,
+          "completed": true,
+          "physics_fingerprint": "c9007ce401b5e210765481ddba2a2dbaa4feef0bb85778b2f9bd74678fc4242b",
+          "checkpoints_unchanged": true
+        }
+      ],
+      "final_populations": [
+        0.3263678364464729,
+        0.6736321635535307
+      ],
+      "physics_fingerprint": "c9007ce401b5e210765481ddba2a2dbaa4feef0bb85778b2f9bd74678fc4242b",
+      "checkpoint_sha256": {
+        "nonadiabatic_000000.npz": "28b3c60a22874d1ff8f98a7909ed6fb4e839d5b18d92d6da776107434bbc1047",
+        "nonadiabatic_000001.npz": "eb7b7cdf9ed7533ff74838373d490fcd7c7d53ce90bf3a8a83ae96f37c5c7ab1"
+      }
+    }
+  }
+}

@@ -156,7 +156,12 @@ def _mint(state, result, duration):
 class NRPMDDynamics:
     """Reversible MInt/free-ring/MInt splitting of the MMST Hamiltonian."""
     def __init__(self, potential, masses, beta, nbeads, dt, nstates, threads=1,
-                 native=True, integrator="cayley-bcb"):
+                 native=True, integrator="cayley-bcb", electronic_backend="numpy",
+                 electronic_device="cpu"):
+        from .electronic_backends import validate_electronic_backend
+        validate_electronic_backend(electronic_backend, electronic_device)
+        self.electronic_backend, self.electronic_device = electronic_backend, electronic_device
+        self._electronic_parameters = (electronic_backend, electronic_device)
         self.nstates = _positive_integer(nstates, "nstates")
         self.potential = potential
         self.integrator = CayleyIntegrator(masses, beta, nbeads, dt, threads=threads,
@@ -167,6 +172,8 @@ class NRPMDDynamics:
         self.native = self.integrator.native
 
     def _check(self, state):
+        if (self.electronic_backend, self.electronic_device) != self._electronic_parameters:
+            raise ValueError("NRPMDDynamics electronic backend parameters are immutable")
         if (self.dt != self.integrator.dt or self.beta != self.integrator.beta
                 or self.nbeads != self.integrator.nbeads or self.integrator_name != self.integrator.scheme):
             raise ValueError("NRPMDDynamics parameters are immutable")
@@ -186,12 +193,25 @@ class NRPMDDynamics:
     def _evaluate(self, q):
         return validate_diabatic_result(self.potential.evaluate(q), q.shape, self.nstates)
 
+    def _mapping_step(self, state, duration):
+        result = self._evaluate(state.q)
+        if self.electronic_backend == "numpy":
+            _mint(state, result, duration)
+        else:
+            from .electronic_backends import electronic_mapping_flow
+            z, change = electronic_mapping_flow(
+                state.mapping_q+1j*state.mapping_p, result.matrix, result.gradients,
+                duration, backend=self.electronic_backend, device=self.electronic_device,
+                threads=self.integrator.threads)
+            state.p += change
+            state.mapping_q[:], state.mapping_p[:] = z.real, z.imag
+
     def step(self, state):
         self._check(state)
         trial = state.copy()
-        _mint(trial, self._evaluate(trial.q), 0.5*self.dt)
+        self._mapping_step(trial, 0.5*self.dt)
         self.integrator.free_step(trial.q, trial.p)
-        _mint(trial, self._evaluate(trial.q), 0.5*self.dt)
+        self._mapping_step(trial, 0.5*self.dt)
         trial.step = int(trial.step) + 1
         trial.time += self.dt
         self._check(trial)
@@ -222,3 +242,4 @@ class NRPMDDynamics:
         index = np.arange(self.nstates)
         matrix[:, index, index] = 0
         return float(np.max(np.abs(matrix)))
+

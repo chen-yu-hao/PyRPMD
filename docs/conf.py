@@ -34,6 +34,8 @@ include_patterns = [
     "rpc-mts.md", "trpmd-spectroscopy.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
+    "nonadiabatic-spin-methods.md", "nonadiabatic-hopping-extensions.md",
+    "molecular-nonadiabatic.md", "nonadiabatic-performance.md",
     "validation/tier1-2026-10-31/README.md",
     "validation/tier1-2026-10-31/pmf-replay.md",
 ]

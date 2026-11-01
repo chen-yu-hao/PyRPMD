@@ -345,6 +345,47 @@ The model classes `TullyModelOne`, `TullyModelTwo`, `TullyModelThree`,
 Their parameters and coordinate conventions are in the
 [model guide](../nonadiabatic-models.md).
 
+## Extended nonadiabatic methods and molecular potentials
+
+The [spin-method guide](../nonadiabatic-spin-methods.md) defines the two-state
+W-spin and CA-MASH variants and their different estimators. The
+[hopping guide](../nonadiabatic-hopping-extensions.md) defines the BA/DM,
+DBOC and complex SOC conventions.
+
+```{autoclass} pyrpmd.spin_mapping.SMNRPMDDynamics
+:members: initialize, step, energy, density_matrix, populations
+```
+
+```{autoclass} pyrpmd.rp_mash.RPMASHDynamics
+:members: initialize, step, energy, populations, correlation
+```
+
+```{autoclass} pyrpmd.advanced_surface_hopping.AdvancedRPSHDynamics
+:members: initialize, step, energy, density_matrix, populations, attempt_hop
+```
+
+```{autoclass} pyrpmd.batched_nonadiabatic.BatchedNRPMDDynamics
+:members: step, energy, density_matrix, populations
+```
+
+```{autoclass} pyrpmd.batched_nonadiabatic.BatchedNRPMDState
+:members: from_states, to_states
+```
+
+```{autofunction} pyrpmd.electronic_backends.electronic_mapping_flow
+```
+
+```{autofunction} pyrpmd.electronic_backends.torch_electronic_mapping_flow
+```
+
+```{autoclass} pyrpmd.potentials.nah2_leps.NaH2LEPS5G
+:members: evaluate, to_dict
+```
+
+```{autoclass} pyrpmd.potentials.multistate_external.ChemPotPyDPEM
+:members: evaluate, to_dict
+```
+
 ## Versioning
 
 The package, input schema, run manifest, checkpoint container and PES ABI each carry their own

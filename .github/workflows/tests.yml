@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: pyrpmd-tests-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   cpu:
     runs-on: ubuntu-latest
@@ -34,6 +37,9 @@ jobs:
       - run: python -m pip install build && python -m build
   torch-cpu:
     runs-on: ubuntu-latest
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v5
@@ -41,7 +47,41 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e '.[test]'
       - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py
+      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py tests/test_electronic_backends.py tests/test_batched_nonadiabatic.py tests/test_spin_mapping.py
+      - run: python benchmarks/nonadiabatic/electronic_backends.py --backends numpy native torch --torch-device cpu --output "$RUNNER_TEMP/electronic-backends-torch-cpu.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: electronic-backends-torch-cpu
+          path: ${{ runner.temp }}/electronic-backends-torch-cpu.json
+  molecular-dpem:
+    runs-on: ubuntu-latest
+    env:
+      OMP_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update && sudo apt-get install -y gfortran
+      - run: python -m pip install -e '.[test]'
+      - run: python benchmarks/molecular_nonadiabatic/compare_fortran.py --output "$RUNNER_TEMP/nah2-original-fortran.json"
+      - run: pyrpmd validate benchmarks/molecular_nonadiabatic/nah2_nrpmd.inp --check-pes
+      - run: pyrpmd run benchmarks/molecular_nonadiabatic/nah2_nrpmd.inp --output "$RUNNER_TEMP/nah2-nrpmd"
+      - run: pyrpmd run benchmarks/molecular_nonadiabatic/nah2_rpsh.inp --output "$RUNNER_TEMP/nah2-rpsh"
+      - name: Extended-method CLI examples
+        run: |
+          for input in examples/nonadiabatic/extensions/*.inp; do
+            pyrpmd validate "$input" --check-pes
+            pyrpmd run "$input" --output "$RUNNER_TEMP/extensions/$(basename "$input" .inp)"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: molecular-nonadiabatic-reference
+          path: |
+            ${{ runner.temp }}/nah2-original-fortran.json
+            ${{ runner.temp }}/nah2-nrpmd/results/summary.json
+            ${{ runner.temp }}/nah2-rpsh/results/summary.json
   electronic-structure:
     runs-on: ubuntu-latest
     timeout-minutes: 15

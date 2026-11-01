@@ -54,11 +54,22 @@ if os.environ.get("PYRPMD_NO_NATIVE", "0") != "1":
             extra_link_args=link_args,
         )
     )
+    extensions.append(
+        Extension(
+            "pyrpmd._electronic",
+            ["native/electronic.cpp"],
+            language="c++",
+            extra_compile_args=compile_args,
+            extra_link_args=link_args,
+        )
+    )
 setup(
     ext_modules=extensions,
-    license_files=["LICENSE", "THIRD_PARTY_NOTICES.md", "native/thermal-NOTICE.md"],
+    license_files=["LICENSE", "THIRD_PARTY_NOTICES.md", "native/thermal-NOTICE.md",
+                   "src/pyrpmd/potentials/_licenses/chempotpy-APACHE-2.0.txt"],
     data_files=[
         ("include/pyrpmd", ["native/include/pyrpmd/pes_api_v1.h", "native/include/pyrpmd/pes_api_v2.h", "native/include/pyrpmd/thermal_pes.h"]),
         ("share/pyrpmd/examples", ["native/examples/harmonic_pes.c", "native/examples/periodic_cosine_pes.c"]),
     ],
 )
+

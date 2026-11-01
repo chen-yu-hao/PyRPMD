@@ -1,0 +1,43 @@
+# RPSH-DM: bead wavefunctions and common-centroid density/hop current.
+# The DM construction is used without an additional EDC correction.
+task = "nonadiabatic"
+method = "rpsh-dm"
+beta = 4.0
+beads = 4
+seed = 20261104
+
+[model]
+name = "spin_boson"
+
+[model.params]
+frequencies = [0.5]
+couplings = [0.08]
+masses = [1.0]
+bias = 0.1
+tunnelling = 0.15
+
+[initial]
+kind = "harmonic_ring"
+frequencies = [0.5]
+centers = [0.0]
+active_surface = 1
+
+[ensemble]
+trajectories = 4
+steps = 12
+sample_stride = 4
+
+[dynamics]
+dt = "0.02 autime"
+integrator = "cayley-bcb"
+native = false
+electronic_substeps = 8
+rescaling = "bead"
+frustrated_hops = "reverse"
+decoherence = "none"
+dboc = false
+geometric_force = false
+block_steps = 5
+
+[output]
+directory = "runs/rpsh-dm"

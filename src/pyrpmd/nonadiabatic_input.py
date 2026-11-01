@@ -1,4 +1,4 @@
-"""Strict input resolution for unweighted model nonadiabatic trajectories.
+"""Strict input resolution for model and molecular nonadiabatic trajectories.
 
 This task chooses a fixed diabatic model and an explicit nonequilibrium
 initial ensemble.  ``point`` repeats the supplied nuclear phase point on every
@@ -14,6 +14,7 @@ files, trajectory states, random draws or native libraries are created here.
 
 from __future__ import annotations
 
+import copy
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -26,12 +27,15 @@ from .potentials.nonadiabatic_models import (
     LinearVibronicCoupling, DiscreteSpinBoson,
 )
 from .system import System
+from .potentials.nah2_leps import NaH2LEPS5G
+from .nonadiabatic_registry import METHODS
 from .units import parse_quantity
 
 
 _ROOT = set("schema_version task method beta temperature beads seed model system "
             "initial ensemble dynamics parallel output native description".split())
 _MODELS = {
+    "nah2_leps_5g_1992": (NaH2LEPS5G, {"symbols"}),
     "tully1": (TullyModelOne, {"a", "b", "c", "d", "natoms", "coordinate"}),
     "tully2": (TullyModelTwo, {"a", "b", "c", "d", "e0", "natoms", "coordinate"}),
     "tully3": (TullyModelThree, {"a", "b", "c", "natoms", "coordinate"}),
@@ -44,6 +48,14 @@ _MODELS = {
 _RPSH = set("electronic_substeps rescaling frustrated_hops gap_tolerance "
             "decoherence decoherence_constant".split())
 _MISSING = object()
+_MAPPING = {"nrpmd", "sm-nrpmd"}
+_ADVANCED_SH = {"rpsh-ca", "rpsh-ba", "rpsh-dm", "soc-rpsh"}
+
+
+def _boolean(value, name):
+    if not isinstance(value, (bool, np.bool_)):
+        raise _error(f"{name} must be boolean")
+    return bool(value)
 
 
 def _error(message):
@@ -158,6 +170,9 @@ def _model(raw):
 
 def _masses(raw, model):
     if raw is _MISSING:
+        if isinstance(model, NaH2LEPS5G):
+            from .system import _masses_for_symbols
+            return _masses_for_symbols(model.symbols)
         if isinstance(model, DiscreteSpinBoson):
             return np.array(model.nuclear_masses, copy=True)
         raise _error("system.masses is required, with one positive atom mass per model atom")
@@ -189,7 +204,7 @@ def _coordinates(value, count, natoms):
 
 
 def _initial(raw, method, model, system_spec):
-    electronic_key = "initial_state" if method == "nrpmd" else "active_surface"
+    electronic_key = "initial_state" if method in _MAPPING else "active_surface"
     common = {"kind", electronic_key}
     if not isinstance(raw, Mapping):
         raise _error("initial must be a table")
@@ -237,28 +252,60 @@ def _initial(raw, method, model, system_spec):
 
 def _dynamics(raw, method, root):
     allowed = {"dt", "integrator", "native", "loop_backend", "block_steps"}
-    spec = _table(raw, "dynamics", allowed | (_RPSH if method == "rpsh" else set()))
-    native = _native(root.get("native", True), "native")
+    if method in _MAPPING:
+        allowed |= {"electronic_backend", "electronic_device"}
+    if method == "rpsh" or method in _ADVANCED_SH:
+        allowed |= _RPSH
+    if method in _ADVANCED_SH:
+        allowed |= {"dboc", "dboc_step", "geometric_force"}
+    if method == "rp-mash":
+        allowed |= {"rtol", "atol", "max_step", "max_events", "gap_tolerance"}
+    spec = _table(raw, "dynamics", allowed)
+    native = _native(root.get("native", method != "rp-mash"), "native")
     if "native" in spec:
         chosen = _native(spec["native"], "dynamics.native")
         if "native" in root and chosen != native:
             raise _error("native and dynamics.native conflict; supply only one or the same value")
         native = chosen
-    try:
-        integrator = normalize_integrator(spec.get("integrator", "cayley-bcb"))
-    except ValueError as exc:
-        raise _error(f"dynamics.integrator: {exc}") from exc
+    if method == "rp-mash":
+        integrator = _choice(spec.get("integrator", "adaptive-dop853"), "dynamics.integrator", {"adaptive-dop853"})
+        if native is not False:
+            raise _error("rp-mash uses adaptive-dop853 event integration and requires native=false")
+    else:
+        try:
+            integrator = normalize_integrator(spec.get("integrator", "cayley-bcb"))
+        except ValueError as exc:
+            raise _error(f"dynamics.integrator: {exc}") from exc
     dt = _quantity(spec.get("dt", 0.1), "dynamics.dt", "time")
     options = {
         "integrator": integrator, "native": native,
         "loop_backend": _choice(spec.get("loop_backend", "auto"), "dynamics.loop_backend", {"auto", "python"}),
         "block_steps": _integer(spec.get("block_steps", 128), "dynamics.block_steps"),
     }
-    if method == "rpsh":
+    if method in _MAPPING and ({"electronic_backend", "electronic_device"} & set(spec)):
+        backend = _choice(spec.get("electronic_backend", "numpy"), "dynamics.electronic_backend", {"numpy", "native", "torch"})
+        device = spec.get("electronic_device", "cpu")
+        import re
+        if not isinstance(device,str) or re.fullmatch(r"cpu|cuda(?::[0-9]+)?",device) is None:
+            raise _error("dynamics.electronic_device must be cpu or cuda[:index]")
+        if backend != "torch" and device != "cpu":
+            raise _error("a CUDA electronic_device requires electronic_backend='torch'")
+        options.update(electronic_backend=backend,electronic_device=device)
+    if method == "rp-mash":
+        options.update(rtol=_quantity(spec.get("rtol",1e-9),"dynamics.rtol",(0,0,0,0,0,0)),
+                       atol=_quantity(spec.get("atol",1e-11),"dynamics.atol",(0,0,0,0,0,0)),
+                       max_step=_quantity(spec.get("max_step",dt/4),"dynamics.max_step","time"),
+                       max_events=_integer(spec.get("max_events",64),"dynamics.max_events"),
+                       gap_tolerance=_quantity(spec.get("gap_tolerance",1e-10),"dynamics.gap_tolerance","energy"))
+    if method == "rpsh" or method in _ADVANCED_SH:
         decoherence = _choice(spec.get("decoherence", "none"), "dynamics.decoherence", {"none", "edc"})
+        if method == "rpsh-dm" and decoherence != "none":
+            raise _error("RPSH-DM uses its density-matrix decoherence and requires decoherence='none'")
+        advanced = method in _ADVANCED_SH
         options.update(
             electronic_substeps=_integer(spec.get("electronic_substeps", 8), "dynamics.electronic_substeps"),
-            rescaling=_choice(spec.get("rescaling", "centroid"), "dynamics.rescaling", {"centroid", "ring"}),
+            rescaling=_choice(spec.get("rescaling", "bead" if advanced else "centroid"), "dynamics.rescaling",
+                              {"centroid", "bead"} if advanced else {"centroid", "ring"}),
             frustrated_hops=_choice(spec.get("frustrated_hops", "keep"), "dynamics.frustrated_hops", {"keep", "reverse"}),
             gap_tolerance=_quantity(spec.get("gap_tolerance", 1e-10), "dynamics.gap_tolerance", "energy"),
             decoherence=decoherence,
@@ -268,6 +315,13 @@ def _dynamics(raw, method, root):
                 spec.get("decoherence_constant", 0.1), "dynamics.decoherence_constant", "energy")
         elif "decoherence_constant" in spec:
             raise _error("dynamics.decoherence_constant requires decoherence='edc'")
+        if advanced:
+            options["dboc"] = _boolean(spec.get("dboc",False),"dynamics.dboc")
+            options["geometric_force"] = _boolean(spec.get("geometric_force",True),"dynamics.geometric_force")
+            if options["dboc"]:
+                options["dboc_step"] = _quantity(spec.get("dboc_step",1e-4),"dynamics.dboc_step","length")
+            elif "dboc_step" in spec:
+                raise _error("dynamics.dboc_step requires dboc=true")
     return options, dt, native
 
 
@@ -296,12 +350,15 @@ def _check_reference(model, geometry, method, options):
 
     try:
         result = model.evaluate(geometry[None])
-        if method != "rpsh":
+        if method in ("sm-nrpmd", "rp-mash") and model.nstates != 2:
+            raise ValueError(f"{method} currently requires exactly two electronic states")
+        if method in _MAPPING:
             return
-        if np.any(np.imag(result.matrix) != 0) or np.any(np.imag(result.gradients) != 0):
+        if method in {"rpsh","rpsh-ba","rp-mash"} and (
+                np.any(np.imag(result.matrix) != 0) or np.any(np.imag(result.gradients) != 0)):
             raise ValueError("RPSH requires a real symmetric matrix and real gradients; "
-                             "complex Hermitian models require method='nrpmd'")
-        energies = np.linalg.eigvalsh(result.matrix.real)[0]
+                             "choose a method supporting complex Hermitian models")
+        energies = np.linalg.eigvalsh(result.matrix)[0]
         if not np.isfinite(energies).all():
             raise ValueError("RPSH reference energies are not finite")
         if np.any(np.diff(energies) <= options["gap_tolerance"]):
@@ -315,12 +372,12 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
     """Return ``(canonical_config, System)`` for task='nonadiabatic'.
 
     Exactly one of positive ``beta`` (hartree^-1) and ``temperature`` (kelvin)
-    is required.  ``method`` is explicitly nrpmd or rpsh, and ``ensemble.steps``
+    is required.  ``method`` explicitly selects a registered method; ``ensemble.steps``
     is required (zero permits initialization-only output).  Defaults are one
     bead, 32 trajectories, stride 1, seed 0, dt=0.1 atomic time and block 128.
 
-    RPSH ``active_surface`` is a zero-based adiabatic index. NRPMD
-    ``initial_state`` is a zero-based fixed diabatic index. The opposite key,
+    Surface hopping/MASH ``active_surface`` is a zero-based adiabatic index.
+    NRPMD/SM-NRPMD ``initial_state`` is a zero-based fixed diabatic index. The opposite key,
     unused method options and all unknown input fields are rejected.
 
     ``model`` becomes its complete versioned ``to_dict()`` identity.  Numeric
@@ -335,7 +392,7 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
     if _integer(root.get("schema_version", 1), "schema_version") != 1:
         raise _error("Supported schema_version is 1")
     _choice(root.get("task"), "task", {"nonadiabatic"})
-    method = _choice(root.get("method"), "method", {"nrpmd", "rpsh"})
+    method = _choice(root.get("method"), "method", METHODS)
     if ("beta" in root) == ("temperature" in root):
         raise _error("Specify exactly one of beta or temperature for nonadiabatic dynamics; "
                      "remove beta before applying a temperature override")
@@ -351,11 +408,44 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
         raise _error("beta and its corresponding temperature must be representable positive finite floats")
     beads = _integer(root.get("beads", 1), "beads")
     seed = _integer(root.get("seed", 0), "seed", 0)
-    model = _model(root.get("model", {}))
-    system_spec = _table(root.get("system", {}), "system", {"masses", "positions"})
+    system_spec = _table(root.get("system", {}), "system", {"masses", "positions", "symbols", "unit"})
+    if "symbols" in system_spec:
+        value = system_spec["symbols"]
+        if (not isinstance(value,(list,tuple,np.ndarray))
+                or isinstance(value, np.ndarray) and value.ndim != 1
+                or any(not isinstance(x,str) for x in value)):
+            raise _error("system.symbols must be a list of element symbols")
+        system_spec["symbols"] = list(value)
+    model_spec = copy.deepcopy(root.get("model", {}))
+    if isinstance(model_spec,Mapping) and model_spec.get("name") == "nah2_leps_5g_1992" and "symbols" in system_spec:
+        params = model_spec.setdefault("params",{})
+        if not isinstance(params,dict):
+            raise _error("model.params must be a table")
+        if "symbols" in params:
+            value = params["symbols"]
+            if (not isinstance(value, (list, tuple, np.ndarray))
+                    or isinstance(value, np.ndarray) and value.ndim != 1
+                    or any(not isinstance(x, str) for x in value)):
+                raise _error("model.params.symbols must be a list of element symbols")
+            if list(value) != system_spec["symbols"]:
+                raise _error("model.params.symbols and system.symbols disagree")
+        params["symbols"] = system_spec["symbols"]
+    model = _model(model_spec)
+    symbols = tuple(getattr(model,"symbols",("X",)*model.natoms))
+    if "symbols" in system_spec and tuple(system_spec["symbols"]) != symbols:
+        raise _error("system.symbols must match the molecular PES atom order; reduced models use X")
+    if "unit" in system_spec:
+        unit = _choice(system_spec["unit"],"system.unit",{"bohr","angstrom"})
+        if "positions" not in system_spec:
+            raise _error("system.unit requires explicit system.positions")
+        system_spec["positions"] = (_real_array(system_spec["positions"],"system.positions",(model.natoms,3))
+                                    *parse_quantity("1 "+unit,"length")).tolist()
     masses = _masses(system_spec.get("masses", _MISSING), model)
     initial, geometry, warning = _initial(root.get("initial", {}), method, model, system_spec)
-    system = System(symbols=("X",)*model.natoms, masses=masses, geometry=geometry)
+    metadata = getattr(model, "metadata", {})
+    system = System(symbols=symbols, masses=masses, geometry=geometry,
+                    charge=metadata.get("charge", 0),
+                    multiplicity=metadata.get("multiplicity", 1))
     ensemble = _table(root.get("ensemble", {}), "ensemble", {"trajectories", "steps", "sample_stride"})
     if "steps" not in ensemble:
         raise _error("ensemble.steps is required (a nonnegative integer)")

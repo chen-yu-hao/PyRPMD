@@ -87,11 +87,15 @@ Gas phase <manual/workflows>
 Materials and surfaces <manual/periodic>
 PCET <manual/pcet>
 Electrode models <manual/electrochemistry>
-Nonadiabatic NRPMD <manual/nonadiabatic>
+Nonadiabatic dynamics <manual/nonadiabatic>
 Nonadiabatic population workflow <nonadiabatic-workflow>
 Nonadiabatic models <nonadiabatic-models>
 Nonadiabatic ensembles <nonadiabatic-ensembles>
 Nonadiabatic comparison and gaps <nonadiabatic-comparison>
+SM-NRPMD and RP-MASH <nonadiabatic-spin-methods>
+BA/DM hopping, DBOC and SOC <nonadiabatic-hopping-extensions>
+Molecular multistate potentials <molecular-nonadiabatic>
+Electronic propagation performance <nonadiabatic-performance>
 Potentials and plugins <manual/potentials>
 PES generation <manual/pes-generation>
 JaxPIP fitting and native execution <manual/jaxpip-generation>
