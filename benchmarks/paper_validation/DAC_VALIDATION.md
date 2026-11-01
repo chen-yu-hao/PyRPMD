@@ -138,7 +138,10 @@ trajectories gave:
 | Published quantum SOFT | **0.65991740** |
 | MMST-focused / one-bead NRPMD | 0.64165449 ± 0.00357018 |
 | W-focused / one-bead SM-NRPMD | 0.65159584 ± 0.00294398 |
+| **W-full-sphere, paper Eq. (20)** | **0.65615890 ± 0.00559182** |
 | Independent Ehrenfest baseline | 0.66963575 ± 0.00008794 |
+
+The full-sphere W estimator's RMSE across all 31 high-momentum sampled times is **0.00308**, and its endpoint lies only **0.67 SEM** below the published value. This supplies a genuine *positive* one-bead benchmark in contrast to p5 and p15. The full-sphere measurement was separately sampled in three 8192-trajectory batches with signed weights, and its statistical error includes the full between-batch variance.
 
 This higher-momentum result is **closer** to the reference than the p5
 or p15 late-time DAC tests, but it is still a finite-sample one-bead
