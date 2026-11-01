@@ -1,0 +1,129 @@
+{
+  "schema": "pyrpmd.h3.classical-ts-independent-replay.v1",
+  "runs": [
+    {
+      "seed": 2026110201,
+      "timestep_fs": 0.1,
+      "numerator_max_abs_replay_error": 3.552713678800501e-15,
+      "denominator_max_abs_replay_error": 3.552713678800501e-15,
+      "source_unchanged": true,
+      "native_steps": 16384000,
+      "python_steps": 0,
+      "child_sha256": "f3babbcdad1643a081cf75e6f058a489a79f8870e623e10187165eb21a3e5e27"
+    },
+    {
+      "seed": 2026110201,
+      "timestep_fs": 0.05,
+      "numerator_max_abs_replay_error": 3.552713678800501e-15,
+      "denominator_max_abs_replay_error": 3.552713678800501e-15,
+      "source_unchanged": true,
+      "native_steps": 32768000,
+      "python_steps": 0,
+      "child_sha256": "129d1ec27037f02b2ea26de82fc4ae82d143537b80b333db5d5816ea313e6cac"
+    },
+    {
+      "seed": 2026110202,
+      "timestep_fs": 0.1,
+      "numerator_max_abs_replay_error": 3.552713678800501e-15,
+      "denominator_max_abs_replay_error": 3.552713678800501e-15,
+      "source_unchanged": true,
+      "native_steps": 16384000,
+      "python_steps": 0,
+      "child_sha256": "3cc3b89b6c95934841db45da072471c7d7587ddb7a78354fb8bb7dd4c07609c5"
+    },
+    {
+      "seed": 2026110202,
+      "timestep_fs": 0.05,
+      "numerator_max_abs_replay_error": 3.552713678800501e-15,
+      "denominator_max_abs_replay_error": 3.552713678800501e-15,
+      "source_unchanged": true,
+      "native_steps": 32768000,
+      "python_steps": 0,
+      "child_sha256": "509b1ea0edcddbce06909d4551d5cda8748360dc13db6cd9f028f934b776efa2"
+    },
+    {
+      "seed": 2026110203,
+      "timestep_fs": 0.1,
+      "numerator_max_abs_replay_error": 3.552713678800501e-15,
+      "denominator_max_abs_replay_error": 3.552713678800501e-15,
+      "source_unchanged": true,
+      "native_steps": 16384000,
+      "python_steps": 0,
+      "child_sha256": "8c8f36d41908e4ae7aa5dabf9a30bfedef550a1ab22d1270aad8b5998e921d04"
+    },
+    {
+      "seed": 2026110203,
+      "timestep_fs": 0.05,
+      "numerator_max_abs_replay_error": 3.552713678800501e-15,
+      "denominator_max_abs_replay_error": 3.552713678800501e-15,
+      "source_unchanged": true,
+      "native_steps": 32768000,
+      "python_steps": 0,
+      "child_sha256": "4cd99a3317b06efcbea652c47ef4a2f0eb37a412df948e2ee9ae087f30d4c037"
+    },
+    {
+      "seed": 2026110204,
+      "timestep_fs": 0.1,
+      "numerator_max_abs_replay_error": 2.6645352591003757e-15,
+      "denominator_max_abs_replay_error": 2.6645352591003757e-15,
+      "source_unchanged": true,
+      "native_steps": 16384000,
+      "python_steps": 0,
+      "child_sha256": "8dc10f3816b1db1501168031f74384f70ca79b811151baf541d7ecd94bac2678"
+    },
+    {
+      "seed": 2026110204,
+      "timestep_fs": 0.05,
+      "numerator_max_abs_replay_error": 2.6645352591003757e-15,
+      "denominator_max_abs_replay_error": 2.6645352591003757e-15,
+      "source_unchanged": true,
+      "native_steps": 32768000,
+      "python_steps": 0,
+      "child_sha256": "fea8399cc033fae031fcc5843e9311e61c36cf1d5a5af4406f5a4484e9e743c1"
+    }
+  ],
+  "total_native_physical_steps": 196608000,
+  "paired_timestep_diagnostics": [
+    {
+      "seed": 2026110201,
+      "initial_momenta_identical": true,
+      "changed_classifications_all_times": 0,
+      "changed_classifications_after_80fs": 0,
+      "maximum_surface_value_difference_bohr": 0.12570040475951316
+    },
+    {
+      "seed": 2026110202,
+      "initial_momenta_identical": true,
+      "changed_classifications_all_times": 2,
+      "changed_classifications_after_80fs": 0,
+      "maximum_surface_value_difference_bohr": 0.3580443547012351
+    },
+    {
+      "seed": 2026110203,
+      "initial_momenta_identical": true,
+      "changed_classifications_all_times": 0,
+      "changed_classifications_after_80fs": 0,
+      "maximum_surface_value_difference_bohr": 0.16947977550053395
+    },
+    {
+      "seed": 2026110204,
+      "initial_momenta_identical": true,
+      "changed_classifications_all_times": 0,
+      "changed_classifications_after_80fs": 0,
+      "maximum_surface_value_difference_bohr": 0.7474975906414727
+    }
+  ],
+  "parent_chain_block_diagnostic": {
+    "blocks": 128,
+    "parents_per_block": 64,
+    "pooled_ratio": 0.995040012921835,
+    "delta_method_standard_error": 0.00044724146822833867,
+    "student_t_95_interval": [
+      0.9941550027677756,
+      0.9959250230758944
+    ],
+    "scope": "Supplementary chain-block diagnostic; the predeclared main uncertainty uses four independent full seeds."
+  },
+  "zero_observed_timestep_difference_note": "No observed late-time classification changes is finite-sample evidence, not proof of exactly zero systematic error. Paired timesteps are not independent statistical replicas.",
+  "source_sha256": "020e3571e5c0d8f8e52d3b2ab14369fcdeebc630d08fe7bea991d50c0d24a3a0"
+}

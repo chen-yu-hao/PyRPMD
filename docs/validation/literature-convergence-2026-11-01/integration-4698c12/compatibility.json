@@ -1,0 +1,147 @@
+{
+  "schema": "pyrpmd.h3.external-main-integration-check.v1",
+  "created_utc": "2026-11-01T17:11:21.774478+00:00",
+  "main_commit": "4698c1202d0726bce7d63742e7cd31a6f137a847",
+  "frozen_experiment_commit": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "scope": "Method/API tests and one excluded native H3 calibration at two time steps; not a rerun of the primary statistical campaigns or the complete project suite.",
+  "python": "3.12.14",
+  "numpy": "2.5.4",
+  "runtime": {
+    "pyrpmd.dynamics": {
+      "path": "src/pyrpmd/dynamics.py",
+      "sha256": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db"
+    },
+    "pyrpmd.propagation": {
+      "path": "src/pyrpmd/propagation.py",
+      "sha256": "d2955376772d7351390b4f0ab8ed52db50989f3b92ff7a240d1db822c8b62b2e"
+    },
+    "pyrpmd.cv": {
+      "path": "src/pyrpmd/cv.py",
+      "sha256": "640d9ee61d76f847e0260acb2456723ff76c1b9fd11dd61dcdf16de3fc58a114"
+    },
+    "pyrpmd.checkpoint": {
+      "path": "src/pyrpmd/checkpoint.py",
+      "sha256": "058a4be46de68b812a27ab37960b3dcf57fcf18b5bd89d55e3e9472268100aec"
+    },
+    "pyrpmd.constants": {
+      "path": "src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "pyrpmd.io": {
+      "path": "src/pyrpmd/io.py",
+      "sha256": "e1e8f3e62f1c87bdf20dc28119b46f85a1c0fe6c8e3312cc2e5c82555c4ef07f"
+    },
+    "pyrpmd._native": {
+      "path": "src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+    }
+  },
+  "source_unchanged_during_check": true,
+  "test_command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_classical_sampling.py",
+    "tests/test_h3_classical_sampling_surface.py",
+    "tests/test_h3_classical_sampling_xi_proposal.py",
+    "tests/test_h3_classical_sampling_v2.py",
+    "tests/test_h3_mixing_sampling.py",
+    "tests/test_h3_wham.py",
+    "tests/test_h3_diatom_partition.py",
+    "tests/test_h3_diatom_transfer.py",
+    "tests/test_h3_quantum_sampling_analysis.py",
+    "tests/test_h3_surface_partition.py",
+    "tests/test_h3_quantum_surface_recrossing.py",
+    "tests/test_h3_quantum_recrossing_analysis.py",
+    "tests/test_h3_surface_partition_controls.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/h3-method-tests.xml"
+  ],
+  "test_files_sha256": {
+    "tests/test_h3_classical_sampling.py": "c528d41ad564a0e8aee5ae4e44bf97b3e80ba94ccd77975b6bec08604285c987",
+    "tests/test_h3_classical_sampling_surface.py": "31b19b503d6ce89d4de5f179e7b5a96b07bbfe5b2fa0245513779e1316e743f2",
+    "tests/test_h3_classical_sampling_xi_proposal.py": "aa47e60d7c108343204ab020b7a5526ae6555b47e21ed3eecbde45163ec9694b",
+    "tests/test_h3_classical_sampling_v2.py": "4c53738f91ee71536b8f7ba376e40398bc8f1b64650d9f367ca95c330e1b3900",
+    "tests/test_h3_mixing_sampling.py": "b72e83813eb9de418c400fccd988869186d67dbaa5a6e7146f2a5a9f8999f30b",
+    "tests/test_h3_wham.py": "963aca069a329c5a4bf3fda54914055cdd0e96382b54697f425241fc1bf811de",
+    "tests/test_h3_diatom_partition.py": "812860534f57d3aefbdf95ba1c4cb882c6c4b3068566441aec93854581bc69a7",
+    "tests/test_h3_diatom_transfer.py": "0c27c18c4513ccdc578ea99873ab90e590b832cfd42d23b5d494980968ae10c5",
+    "tests/test_h3_quantum_sampling_analysis.py": "6b01d82679a87590af518e7a7b2578dc35460f52a7222c86b8d79df8727ac9a9",
+    "tests/test_h3_surface_partition.py": "109c9bd6412122cbba57e3174ba133d54316f91402f9488e508ef57437aeb228",
+    "tests/test_h3_quantum_surface_recrossing.py": "2f5974034d1dda0db1542d6b11d79cb2ef2f669809dafb593d6ca99ed9a2b8ea",
+    "tests/test_h3_quantum_recrossing_analysis.py": "baa8663d7aff6d6f16920c7eca89e1cfc737a740ffb2a1b0627bbf6fad6eaa4d",
+    "tests/test_h3_surface_partition_controls.py": "394f21d90082ed65410310f1b8645e75f53669cfb529474226df7170d29bf03b"
+  },
+  "test_summary": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "9",
+    "tests": "123",
+    "time": "13.095",
+    "timestamp": "2026-11-01T12:10:54.239363-05:00",
+    "hostname": "13d968332fed"
+  },
+  "junit_sha256": "c9888fc78aa13aebe81fdfce5d440bd50cce41a7d8b0fd44d3e3ce66f7b05494",
+  "old_replay_report_sha256": "2ff9ecd7f1c43889ecf0d5ca0b9227979650f6ac1c7c1f010ae9a64bb5dfba11",
+  "new_replay_report_sha256": "9d97e7ff2ac14ae54e5f62e2e284fcebda2057e44bfd9ef447dd5ac213d0f170",
+  "old_new_native_comparisons": [
+    {
+      "timestep_fs": 0.1,
+      "old_sha256": "a6f6630c55fbb038815bb5c0399c8f2790311504f9b7e216c94bb5e0f1d6a688",
+      "new_sha256": "a6f6630c55fbb038815bb5c0399c8f2790311504f9b7e216c94bb5e0f1d6a688",
+      "arrays": {
+        "time_fs": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "continuous": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "restored": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "final_q": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "final_p": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      }
+    },
+    {
+      "timestep_fs": 0.05,
+      "old_sha256": "feef0a96006345a191ade9986831d535ea342b5a5338ce6cbd44066ed87c159b",
+      "new_sha256": "feef0a96006345a191ade9986831d535ea342b5a5338ce6cbd44066ed87c159b",
+      "arrays": {
+        "time_fs": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "continuous": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "restored": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "final_q": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "final_p": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      }
+    }
+  ],
+  "all_compared_trajectory_arrays_bitwise_equal": true,
+  "new_native_restart_exact": true,
+  "driver_sha256": "0d6931977f1b942b72049849a7dbdfb6474f573ba3ec0a991b56930c0aef658d"
+}

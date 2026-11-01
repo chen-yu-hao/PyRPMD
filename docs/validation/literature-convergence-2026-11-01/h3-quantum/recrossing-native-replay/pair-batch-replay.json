@@ -1,0 +1,32 @@
+{
+  "schema": "pyrpmd.h3.quantum-child-pair-batch-replay.v1",
+  "excluded_parent_seed": 319051,
+  "parents": 2,
+  "horizon_fs": 10,
+  "timestep_fs": 0.05,
+  "compared_arrays": [
+    "channel",
+    "denominator",
+    "energy_extrema",
+    "final_p",
+    "final_q",
+    "final_step",
+    "final_time_au",
+    "flux_metric",
+    "initial_p",
+    "minimum_pair_at_1fs",
+    "native_steps_this_stage",
+    "numerator",
+    "parent_completed_sweeps",
+    "parent_index",
+    "previous_chunk_sha256",
+    "surface_values",
+    "time_fs",
+    "velocity"
+  ],
+  "all_scientific_arrays_bitwise_equal": true,
+  "changes": "Add explicitly predeclared precision-only second momentum-pair batch; initial pair batch0 physics and RNG unchanged.",
+  "old_chunk_sha256": "dd5bbf2d4af22339d33bbf47d957e1d1b82cdcc008c7149fc0b53bb91189486c",
+  "new_chunk_sha256": "f78545ec105e02d3387450087430b40a92df9ba2e134ba26ee8c15fb6d80e0e6",
+  "final_driver_sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+}

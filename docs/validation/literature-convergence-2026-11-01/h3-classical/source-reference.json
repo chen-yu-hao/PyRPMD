@@ -1,0 +1,103 @@
+{
+  "schema": "pyrpmd.h3.classical-source-reference.v1",
+  "repository_commit_for_new_benchmark_files": null,
+  "commit_note": "Parent task records the actual final PR commit after staging. File hashes bind the sources used here; no uncommitted artifact is assigned a fabricated committed SHA.",
+  "current_files": [
+    {
+      "path": "benchmarks/h3/classical_sampling.py",
+      "sha256": "b33e4cdd7875a1bfeedd0d2cd353c0d88234c9694802df45db880cb8aa332f69"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_analyze.py",
+      "sha256": "8c0475faa9f3d8635689165ae5ecfc37bdc15d87f7603159e3a0d6f81bb2a344"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_campaign.py",
+      "sha256": "174f97197304e600acea9b9ad3d8a4d41f4678333e790224572db691c071900e"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_diagnose.py",
+      "sha256": "678ef886687431cf0d78d1a2108008cda6ef885755d23bd2ca3db912093ee6be"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_pack.py",
+      "sha256": "54513e0dfd0e81a89ead33e81b4643f7e84e68ba925014cd676367e1cc5b64b4"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_plot.py",
+      "sha256": "5abef8a5bbbe06e1209cfd8926f01200cef0bfb4ce11a7610fa1f4d3a7be776d"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_replay.py",
+      "sha256": "acdf76fc686b4860cb887dc5e24f5b79c39d5f2f3897ce9bb9560b954bc0018e"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_schedule.py",
+      "sha256": "04afc9c20729a067a37d240616e2afb50470931783cecf52222aa3a0be509dd7"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_surface.py",
+      "sha256": "891a14a32b6394933179510d59aab02297af91e2f37b1bb6ec2101e9fecab9a1"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_surface_diagnose.py",
+      "sha256": "020e3571e5c0d8f8e52d3b2ab14369fcdeebc630d08fe7bea991d50c0d24a3a0"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_v2.py",
+      "sha256": "75c3c5da43612d4f30f5f7f23aa2bd7fb7b303cceba71cc7c24ca2132cb92eed"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_v2_analyze.py",
+      "sha256": "7f1d3e21a16f650885578927d3ad0ea3a4c36cca81f5727387284fdcb6eb8ace"
+    },
+    {
+      "path": "benchmarks/h3/classical_sampling_xi_proposal.py",
+      "sha256": "a79f3cd117c6f1f652f788c8430f61ef18bfde294545fbe23bb090b330d731f2"
+    },
+    {
+      "path": "tests/test_h3_classical_sampling.py",
+      "sha256": "c528d41ad564a0e8aee5ae4e44bf97b3e80ba94ccd77975b6bec08604285c987"
+    },
+    {
+      "path": "tests/test_h3_classical_sampling_surface.py",
+      "sha256": "31b19b503d6ce89d4de5f179e7b5a96b07bbfe5b2fa0245513779e1316e743f2"
+    },
+    {
+      "path": "tests/test_h3_classical_sampling_v2.py",
+      "sha256": "4c53738f91ee71536b8f7ba376e40398bc8f1b64650d9f367ca95c330e1b3900"
+    },
+    {
+      "path": "tests/test_h3_classical_sampling_xi_proposal.py",
+      "sha256": "aa47e60d7c108343204ab020b7a5526ae6555b47e21ed3eecbde45163ec9694b"
+    }
+  ],
+  "exact_executed_snapshots": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-classical/executed-source/classical_sampling_campaign_initial.py",
+      "sha256": "e6ceda1e1f3c2b8c10e802a6fa537e3c054565b3f84d2d9ac4d0d79532073f63"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-classical/executed-source/classical_sampling_numpy2_original.py",
+      "sha256": "4181a4f83e437d109a9799d9b6b72949686b9a12cc397507c30b3dc11641e9c1"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-classical/executed-source/classical_sampling_plot_through_65536.py",
+      "sha256": "ff888a55c20ac47733d30d61df69782e27c1e80ce6a343ee0ec84fd3c3a8ecd6"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-classical/executed-source/classical_sampling_schedule_numpy2_original.py",
+      "sha256": "67d2d47ebc0e2e283b36d8ddca50d5f41b99a7f59aecfe642a856edf2dce5fb6"
+    }
+  ],
+  "snapshot_execution_note": "Exact snapshots are archival copies. Restore them to their original repository relative paths in an isolated checkout before direct execution; portable current scripts are used for routine replay.",
+  "initial_128_oracle_snapshot_available": false,
+  "initial_128_oracle_portable_endpoint_replay": "reference-128/portable-point-replay.json",
+  "frozen_original_ladder_stages": [
+    20000,
+    65536,
+    262144
+  ],
+  "original_ladder_prefix_audit": "stage-increment-audit.json",
+  "classical_surface_executed_sha256": "891a14a32b6394933179510d59aab02297af91e2f37b1bb6ec2101e9fecab9a1"
+}

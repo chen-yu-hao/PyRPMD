@@ -1,0 +1,7 @@
+{
+  "ladder_windows": 48,
+  "maximum_absolute_mean_change": 1.8280701397088706e-09,
+  "maximum_relative_variance_change": 4.274335764109516e-06,
+  "relative_tolerance": 1e-05,
+  "passed": true
+}

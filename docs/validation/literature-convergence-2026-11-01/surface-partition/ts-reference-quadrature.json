@@ -1,0 +1,65 @@
+[
+  {
+    "surface": "ts",
+    "radial_order": 128,
+    "angular_order": 64,
+    "centroid_domain_bohr": [
+      0.0,
+      8.0
+    ],
+    "classical_radial_domain_bohr": [
+      0.5,
+      8.0
+    ],
+    "log_reference_shape_integral": 165.8233798708122,
+    "log_classical_shape_integral": 165.8233798708122,
+    "log_reference_over_classical": 0.0,
+    "log_plateau_shape_integral": -1341.8576750024413,
+    "log_plateau_probability": -1507.6810548732535,
+    "plateau_radial_integration": "analytic r^5/5",
+    "reference_distribution_approximation": "Gauss-Legendre centroid quadrature; domain probability needs quadrature refinement",
+    "classical_log_difference_from_finest": -8.012378970079226e-06
+  },
+  {
+    "surface": "ts",
+    "radial_order": 192,
+    "angular_order": 96,
+    "centroid_domain_bohr": [
+      0.0,
+      8.0
+    ],
+    "classical_radial_domain_bohr": [
+      0.5,
+      8.0
+    ],
+    "log_reference_shape_integral": 165.82338788319177,
+    "log_classical_shape_integral": 165.82338788319177,
+    "log_reference_over_classical": 0.0,
+    "log_plateau_shape_integral": -1341.857635616439,
+    "log_plateau_probability": -1507.6810234996308,
+    "plateau_radial_integration": "analytic r^5/5",
+    "reference_distribution_approximation": "Gauss-Legendre centroid quadrature; domain probability needs quadrature refinement",
+    "classical_log_difference_from_finest": 5.968558980384842e-13
+  },
+  {
+    "surface": "ts",
+    "radial_order": 256,
+    "angular_order": 128,
+    "centroid_domain_bohr": [
+      0.0,
+      8.0
+    ],
+    "classical_radial_domain_bohr": [
+      0.5,
+      8.0
+    ],
+    "log_reference_shape_integral": 165.82338788319117,
+    "log_classical_shape_integral": 165.82338788319117,
+    "log_reference_over_classical": 0.0,
+    "log_plateau_shape_integral": -1341.8576356168976,
+    "log_plateau_probability": -1507.6810235000887,
+    "plateau_radial_integration": "analytic r^5/5",
+    "reference_distribution_approximation": "Gauss-Legendre centroid quadrature; domain probability needs quadrature refinement",
+    "classical_log_difference_from_finest": 0.0
+  }
+]

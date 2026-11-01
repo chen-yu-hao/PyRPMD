@@ -1,0 +1,48 @@
+{
+  "schema": "pyrpmd.h3.integration-optional-model-followup.v1",
+  "initial_tests": 123,
+  "initial_passed": 114,
+  "initial_skipped_missing_model": 9,
+  "followup_test_nodes": [
+    "tests/test_h3_classical_sampling_v2.py::test_zero_additional_moves_preserves_original_chain_exactly",
+    "tests/test_h3_classical_sampling_v2.py::test_new_kernel_restart_is_exact[1]",
+    "tests/test_h3_classical_sampling_v2.py::test_new_kernel_restart_is_exact[3]",
+    "tests/test_h3_classical_sampling_v2.py::test_array_tamper_is_rejected_before_any_new_sample",
+    "tests/test_h3_classical_sampling_v2.py::test_valid_envelope_does_not_bypass_configuration_or_shape_guard[fingerprint]",
+    "tests/test_h3_classical_sampling_v2.py::test_valid_envelope_does_not_bypass_configuration_or_shape_guard[shape]",
+    "tests/test_h3_classical_sampling_v2.py::test_source_mutation_refuses_checkpoint_write",
+    "tests/test_h3_mixing_sampling.py::test_real_pes_checkpoint_resume_is_exact",
+    "tests/test_h3_surface_partition.py::test_real_bkmp2_ts_measure_agrees_with_independent_classical_oracle"
+  ],
+  "followup_summary": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "9",
+    "time": "5.686",
+    "timestamp": "2026-11-01T12:12:25.958349-05:00",
+    "hostname": "13d968332fed"
+  },
+  "unique_tests_now_passed": 123,
+  "scope": "Resolve every initial skip by making the identical byte-pinned external BKMP2 binary available in this isolated checkout; no source or physical model change. The earlier native replay was already run with the exact external library and is retained.",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_classical_sampling_v2.py::test_zero_additional_moves_preserves_original_chain_exactly",
+    "tests/test_h3_classical_sampling_v2.py::test_new_kernel_restart_is_exact[1]",
+    "tests/test_h3_classical_sampling_v2.py::test_new_kernel_restart_is_exact[3]",
+    "tests/test_h3_classical_sampling_v2.py::test_array_tamper_is_rejected_before_any_new_sample",
+    "tests/test_h3_classical_sampling_v2.py::test_valid_envelope_does_not_bypass_configuration_or_shape_guard[fingerprint]",
+    "tests/test_h3_classical_sampling_v2.py::test_valid_envelope_does_not_bypass_configuration_or_shape_guard[shape]",
+    "tests/test_h3_classical_sampling_v2.py::test_source_mutation_refuses_checkpoint_write",
+    "tests/test_h3_mixing_sampling.py::test_real_pes_checkpoint_resume_is_exact",
+    "tests/test_h3_surface_partition.py::test_real_bkmp2_ts_measure_agrees_with_independent_classical_oracle",
+    "--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/model-dependent-tests.xml"
+  ],
+  "external_library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609",
+  "initial_junit_sha256": "c9888fc78aa13aebe81fdfce5d440bd50cce41a7d8b0fd44d3e3ce66f7b05494",
+  "followup_junit_sha256": "ff92bfc19f14cfe674baa892b7347484359da817dbee4f5ce57714630de4ed4d"
+}

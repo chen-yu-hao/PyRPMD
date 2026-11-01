@@ -1,0 +1,51 @@
+{
+  "schema": "pyrpmd.h3.quantum-surface-recrossing.v1",
+  "phase": "excluded calibration",
+  "seed": 319051,
+  "timestep_fs": 0.05,
+  "horizon_fs": 10,
+  "pair_batch": 0,
+  "momentum_pair_indices": [
+    0,
+    1
+  ],
+  "complete": true,
+  "parents_completed": 2,
+  "pairs_per_parent": 2,
+  "plateaus": {},
+  "mean_denominator": 1.6095925561241453,
+  "expected_mean_denominator": 2.0,
+  "native_steps_this_stage": 1600,
+  "unique_native_steps_all_stages": 1600,
+  "python_steps": 0,
+  "maximum_energy_error_kbt_per_bead": 0.014225642629054385,
+  "energy_error_quantiles_kbt_per_bead": [
+    0.00684070758909763,
+    0.009627969336466678,
+    0.014201619429321518,
+    0.014220837989107811,
+    0.014225642629054385
+  ],
+  "minimum_pair_at_1fs_bohr": 0.9325345633899242,
+  "children_with_sampled_pair_below_static_domain": 0,
+  "minimum_pair_scope": "Only initial and 1-fs boundaries; every-step PES guard and full-H extrema are separate checks.",
+  "source_unchanged": true,
+  "settings_sha256": "98922077935500489bc844417a9741a6acf45e73195ae5137d2a0cbd70155501",
+  "chunks": [
+    {
+      "file": "chunk-0000.npz",
+      "sha256": "f78545ec105e02d3387450087430b40a92df9ba2e134ba26ee8c15fb6d80e0e6"
+    }
+  ],
+  "parent_identity": {
+    "checkpoint_sha256": "657413b8df4511c4b8aaf75a8d14f2d2c061338fc57b7cee144a2ed59c01d5b9",
+    "settings_sha256": "924f4e316b179121250fad86c0897f6c29cd9aefd9a068db6316f298fa1c743f",
+    "report_sha256": "4f434614ad63985bb883893e2f07e0292eec49b97352db6c441a335ff96f47f5",
+    "seed": 319051,
+    "BAR_log_TS_quantum_classical_ratio": -2.1451929876698643
+  },
+  "elapsed_this_call_seconds": 0.9081971909981803,
+  "created_utc": "2026-11-01T16:13:48.065056+00:00",
+  "physical_converged": false,
+  "literature_reproduced": false
+}

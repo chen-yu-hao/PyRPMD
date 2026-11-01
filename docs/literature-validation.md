@@ -13,7 +13,7 @@ sampling into validated rate constants.
 | H + CH₄ | Source-verified RPMDrate table entry and convention-aware comparator | Exact historical PES/license/build and converged trajectories |
 | OH + H₂ | Source-verified NN1/YZCL2 entries with corrected/uncorrected conventions separated | Matched surface and a full converged rate campaign |
 | F + H₂ | Original paper and erratum identified; missing numeric reference stays null | Extract corrected source data and match PES/electronic conventions |
-| H + H₂ | Pinned BKMP2 builder, full workflow, actual pilots and source comparison | Resolve the documented PMF pilot discrepancy; demonstrate statistical/numerical convergence |
+| H + H₂ | Pinned BKMP2 builder; independent complete classical rate agrees within paper precision; new finite-P normalization and quantum campaigns | Complete the registered quantum transmission and bead/domain controls; production umbrella precision remains a separate question |
 | D/Mu + H₂ | Published isotope studies identified; missing values stay null | Source-specific masses, tabulated targets and particularly demanding light-mass convergence |
 | H on Ni | Real EAM/ASE integration pilot with H/D and bead cases | Existing EAM/slab pilot is not the exact model of the 2012 Ni(100) study |
 | H in Pd | Published bulk/nanocluster study identified | Match potential, loading, geometry and transport estimator; run the campaign |
@@ -75,10 +75,31 @@ essential method distinction: a TRPMD spectrum may be compared scientifically
 with PA-CMD, but agreement is not a test that the same algorithm was reproduced.
 Rigidifying q-TIP4P/F changes the potential model and removes its stretch IR.
 
+## Completed classical reference and ongoing quantum follow-up
+
+The 2026-11-01 follow-up obtains a complete classical 300 K H + H₂ rate of
+**1.54540638 × 10⁻¹⁸ cm³ molecule⁻¹ s⁻¹**, with an independent-seed 95% interval
+[1.54354068, 1.54727207] × 10⁻¹⁸. It combines deterministic surface quadrature
+with independent surface-flux parents and unchanged native PyRPMD children.
+The paper's rounded 1.55 × 10⁻¹⁸ value differs by 0.30%, within its approximately
+5% stated precision; the published point is slightly outside the narrower
+new interval. This reference does not by itself validate production umbrella
+sampling or quantum RPMD.
+
+The follow-up also identifies fixed-interval Andersen mode under-sampling
+and supplies the separately tested [geometric collision clock](andersen-sampling.md).
+A finite-P radial transfer matrix and a continuum radial Schrödinger calculation
+independently check the quantum reactant normalization. The registered P=128
+transmission campaign retains eight independent parent chains and paired
+timesteps; its complete rate interval preserves correlation between each
+chain's partition and child estimates. Earlier failed estimates remain intact.
+Detailed protocols, tables and limitations are available in the
+[convergence record under review](https://github.com/chen-yu-hao/PyRPMD/blob/feat/ecosystem-trust-20261101/docs/validation/literature-convergence-2026-11-01/README.md).
+
 ## Recommended campaign order
 
-1. Resolve the H + H₂ PMF discrepancy with the pinned BKMP2 surface and obtain
-   a complete, independent thermal-rate record. Reuse that procedure for D/Mu,
+1. Complete the quantum H + H₂ convergence record with the pinned BKMP2
+   surface and separately establish production-umbrella precision. Reuse that procedure for D/Mu,
    with source-verified isotope targets and extra light-mass convergence.
 2. Establish water force-model agreement first, then source-sized liquid
    equilibrium and classical diffusion, then RPMD isotope diffusion. Treat IR

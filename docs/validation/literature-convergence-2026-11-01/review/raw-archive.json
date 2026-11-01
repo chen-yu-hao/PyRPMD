@@ -9,6 +9,6 @@
     "workflow-geometric-checkpoint.npz",
     "raw-manifest.json"
   ],
-  "availability": "Prepared in the task workspace. Persistent upload has not completed; do not infer public availability from this receipt.",
+  "availability": "The complete archive was delivered privately to the requesting user after its contents and checksum were verified. It contains only newly generated synthetic free-ring validation observations and checkpoints; this receipt does not imply public hosting.",
   "raw_checkpoints_committed_to_git": false
 }

@@ -1,0 +1,190 @@
+{
+  "code_location": "PyRPMD repository, benchmarks/h3/classical_sampling*.py; exact source hashes are in the per-run receipts and repository evidence.",
+  "excluded": [
+    "BKMP2 source",
+    "compiled potential/library files",
+    "Git-backed program source",
+    "duplicate CV prefix checkpoints"
+  ],
+  "group": "transmission",
+  "initial_oracle_provenance_limit": "The initial 128/64 oracle retains its original source hash and raw arrays, but its full script snapshot was not saved. A portable endpoint replay differs by only 5.33e-15. Final 256/384 oracle source snapshots and all production/TS/V2 sampler sources are retained in the repository.",
+  "members": [
+    {
+      "bytes": 13360107,
+      "path": "transmission/seed-2026110201/dt-0.05/children.npz",
+      "sha256": "129d1ec27037f02b2ea26de82fc4ae82d143537b80b333db5d5816ea313e6cac"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110201/dt-0.05/kappa.csv",
+      "sha256": "02c705764c9825e7ee623f99455cd00dc91b92912b35bb6098719bfdc2a8edc1"
+    },
+    {
+      "bytes": 1972,
+      "path": "transmission/seed-2026110201/dt-0.05/transmission.json",
+      "sha256": "7b9920ba395b853da9d9258b0e635706c77873d89d49312b3204307d486fe0b4"
+    },
+    {
+      "bytes": 13361484,
+      "path": "transmission/seed-2026110201/dt-0.1/children.npz",
+      "sha256": "f3babbcdad1643a081cf75e6f058a489a79f8870e623e10187165eb21a3e5e27"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110201/dt-0.1/kappa.csv",
+      "sha256": "02c705764c9825e7ee623f99455cd00dc91b92912b35bb6098719bfdc2a8edc1"
+    },
+    {
+      "bytes": 1971,
+      "path": "transmission/seed-2026110201/dt-0.1/transmission.json",
+      "sha256": "1a9231c6e5d0de54ab1c26a12156e3b84df22bc15689e94540df010afc79c082"
+    },
+    {
+      "bytes": 123505,
+      "path": "transmission/seed-2026110201/surface-parents.npz",
+      "sha256": "4c2b2b50340e6bc15fa043cf57432bbfb08eda77fca3a0cf9d28fe162244fd2c"
+    },
+    {
+      "bytes": 7933,
+      "path": "transmission/seed-2026110201/surface-source.json",
+      "sha256": "11d55f5ceaa7d3e6b25415610a701951019ffa0691f9c986c30e0d4ab111960d"
+    },
+    {
+      "bytes": 13359866,
+      "path": "transmission/seed-2026110202/dt-0.05/children.npz",
+      "sha256": "509b1ea0edcddbce06909d4551d5cda8748360dc13db6cd9f028f934b776efa2"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110202/dt-0.05/kappa.csv",
+      "sha256": "2f422b95d02c33acc837ffce15e08d6ee4557322359923e34a6a1b99caa56905"
+    },
+    {
+      "bytes": 1973,
+      "path": "transmission/seed-2026110202/dt-0.05/transmission.json",
+      "sha256": "ddb1f2d4065d505047bee92c2912986adee61438a906aeda2111de68ceaa7d1e"
+    },
+    {
+      "bytes": 13360852,
+      "path": "transmission/seed-2026110202/dt-0.1/children.npz",
+      "sha256": "3cc3b89b6c95934841db45da072471c7d7587ddb7a78354fb8bb7dd4c07609c5"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110202/dt-0.1/kappa.csv",
+      "sha256": "722839a588fdad17ed4677bb7c7799b195a7800e47c7dff9d80dad0e088ec86a"
+    },
+    {
+      "bytes": 1969,
+      "path": "transmission/seed-2026110202/dt-0.1/transmission.json",
+      "sha256": "8946bddcbc4e59b2026810682e6b06cc434cc7bb9fe04632f45ed97b1826b6ac"
+    },
+    {
+      "bytes": 123157,
+      "path": "transmission/seed-2026110202/surface-parents.npz",
+      "sha256": "2d9e3578831e5aef640aa7152cc3560febc55d5c6886411f2b3423715caed597"
+    },
+    {
+      "bytes": 7943,
+      "path": "transmission/seed-2026110202/surface-source.json",
+      "sha256": "50c66e2b51560ddb2d8702e6352dc703941f3bd3d77aee058e3ebbd6d001092b"
+    },
+    {
+      "bytes": 13359956,
+      "path": "transmission/seed-2026110203/dt-0.05/children.npz",
+      "sha256": "4cd99a3317b06efcbea652c47ef4a2f0eb37a412df948e2ee9ae087f30d4c037"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110203/dt-0.05/kappa.csv",
+      "sha256": "2e7a6f43d6dc4013451d82369cc72164ebcd32d21cceb98662f2fe9b79edadad"
+    },
+    {
+      "bytes": 1977,
+      "path": "transmission/seed-2026110203/dt-0.05/transmission.json",
+      "sha256": "63e5d7e4aef59122dc5b405fdfc211bdb85293978186a7eae323ef654b337623"
+    },
+    {
+      "bytes": 13360728,
+      "path": "transmission/seed-2026110203/dt-0.1/children.npz",
+      "sha256": "8c8f36d41908e4ae7aa5dabf9a30bfedef550a1ab22d1270aad8b5998e921d04"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110203/dt-0.1/kappa.csv",
+      "sha256": "2e7a6f43d6dc4013451d82369cc72164ebcd32d21cceb98662f2fe9b79edadad"
+    },
+    {
+      "bytes": 1970,
+      "path": "transmission/seed-2026110203/dt-0.1/transmission.json",
+      "sha256": "e510fd08d7b4c231580bd38d5f14c4587a6d8ff602512f4e67abd3e70d91d96c"
+    },
+    {
+      "bytes": 123349,
+      "path": "transmission/seed-2026110203/surface-parents.npz",
+      "sha256": "c7763f7b0bd143005f9ccb2deb468b7296fd20375c0a8b2992494a1f9d119f5a"
+    },
+    {
+      "bytes": 7977,
+      "path": "transmission/seed-2026110203/surface-source.json",
+      "sha256": "7549927dfd1e252e0867cb852a6ad0439d95d59f6162af598e0145b600fb879a"
+    },
+    {
+      "bytes": 13359037,
+      "path": "transmission/seed-2026110204/dt-0.05/children.npz",
+      "sha256": "fea8399cc033fae031fcc5843e9311e61c36cf1d5a5af4406f5a4484e9e743c1"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110204/dt-0.05/kappa.csv",
+      "sha256": "410fec6a1ead2eb3f3c071c821b2c0e8caf7953353794ca1edea35c961065f16"
+    },
+    {
+      "bytes": 1974,
+      "path": "transmission/seed-2026110204/dt-0.05/transmission.json",
+      "sha256": "0f2633408609051a18a0a02a5cd5cc1b21df47860bc7cc1c309cf33d1e4900af"
+    },
+    {
+      "bytes": 13360510,
+      "path": "transmission/seed-2026110204/dt-0.1/children.npz",
+      "sha256": "8dc10f3816b1db1501168031f74384f70ca79b811151baf541d7ecd94bac2678"
+    },
+    {
+      "bytes": 20014,
+      "path": "transmission/seed-2026110204/dt-0.1/kappa.csv",
+      "sha256": "410fec6a1ead2eb3f3c071c821b2c0e8caf7953353794ca1edea35c961065f16"
+    },
+    {
+      "bytes": 1970,
+      "path": "transmission/seed-2026110204/dt-0.1/transmission.json",
+      "sha256": "2045e6dbb2007fe2d548cf967dc31d82056eed8f2b66ebd3c5d1dc5f2ac92973"
+    },
+    {
+      "bytes": 123300,
+      "path": "transmission/seed-2026110204/surface-parents.npz",
+      "sha256": "ef9b033e68f7c14c2ee78cfe4650686c4a3f5b4a565e7a1a4c2694d71fe7f3e8"
+    },
+    {
+      "bytes": 7940,
+      "path": "transmission/seed-2026110204/surface-source.json",
+      "sha256": "f4b5bcce055719c7ac379bd5cdc96d081de153c4e82ba930405d97660a24d8e9"
+    },
+    {
+      "bytes": 3682,
+      "path": "transmission/transmission-comparison.json",
+      "sha256": "61d00d64a235a9b3a11ebb06540c32cfcc40b2652b94fbd80f969be2eb3de7e5"
+    },
+    {
+      "bytes": 4802,
+      "path": "transmission-diagnostics/transmission-replay.json",
+      "sha256": "f1f77a7e3213ad0334cf4dd4a568ca35bc7c2414a5ba4c5f572eddf19004a578"
+    },
+    {
+      "bytes": 900,
+      "path": "README.txt",
+      "sha256": "839a7945deeee2144deac44cf19b4065c1503cd5aa968f88bbd1bf154dbbee3f"
+    }
+  ],
+  "raw_data_only": true,
+  "schema": "pyrpmd.h3.classical-raw-data-manifest.v1"
+}

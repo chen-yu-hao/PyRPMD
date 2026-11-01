@@ -1,0 +1,255 @@
+# Independent quantum H + H2 convergence work
+
+This work follows the nonstationary trajectories retained in the
+[earlier audit](../../literature-audit-2026-11-01/README.md). The goal is a
+statistically and numerically controlled comparison with Table 2 of
+[Suleimanov, Allen and Green, CPC 184 (2013), DOI 10.1016/j.cpc.2012.10.017](https://doi.org/10.1016/j.cpc.2012.10.017).
+At 300 K that table reports P128 QTST = 2.51e-16, transmission coefficient
+0.776, and full RPMD rate = 1.95e-16 cm³ molecule⁻¹ s⁻¹. The paper's
+approximately 5% sampling-precision statement is not a supplied modern
+confidence interval.
+
+No potential parameter, isotope mass, temperature or rate prefactor is fitted
+to these values. Calibration runs, failed initializations, independent seeds
+and all completed prefixes remain distinguishable.
+
+## Registered umbrella campaign
+
+[protocol.json](protocol.json) was written before primary rate estimates.
+Its SHA256 is
+`5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a`.
+The primary run uses 128 beads, 300 K, Rinf = 30 bohr, equal neutral-1H masses
+1837.1526474396187 in atomic units, and the same pinned BKMP2 potential as
+the independent classical quadrature. Eight independent ladder seeds are
+211017, 211019, 211021, 211023, 211027, 211031, 211033 and 211039.
+
+Each ladder has 5,000 warmup sweeps and registered production prefixes of
+30,000, 100,000 and 300,000 sweeps. Every sweep contains global centroid,
+orientation and Gaussian-prior path moves, followed at fixed intervals by
+adjacent umbrella exchanges. A sweep is a Monte Carlo unit, not physical MD
+time. The initial 600-sweep calibration seed 211013 is excluded from all
+primary estimates.
+
+The 48-window stiffness/center schedule comes from independent classical
+overlap calculations, not from optimizing agreement with the quantum paper.
+It uses soft incoming windows and dense strong windows around the barrier.
+The complete
+[schedule](../h3-classical/umbrella-schedule.json) retains its generation
+criterion and SHA256. The same schedule is used by every seed.
+
+### Equilibrium measure
+
+For equal atomic masses m, define Jacobi vectors
+
+\[
+ R=q_0-(q_1+q_2)/2,\qquad r=q_2-q_1,
+ \qquad \mu_R=2m/3,\quad\mu_r=m/2.
+\]
+
+The beadwise total center of mass is a decoupled free coordinate and is
+integrated out analytically. A zero-centroid periodic free ring has action
+
+\[
+ S_\mu(x)=\frac{\mu P}{2\beta}\sum_j|x_{j+1}-x_j|^2.
+\]
+
+Projected independent Gaussian increments of variance beta/(mu P), followed
+by cumulative summation and centroid subtraction, draw exactly this prior.
+The pCN move is
+
+\[
+ x'=\bar x+\sqrt{1-\alpha^2}(x-\bar x)+\alpha\eta.
+\]
+
+It is reversible with respect to the Gaussian spring prior, so its Metropolis
+ratio contains only the remaining action
+
+\[
+ \Phi=\beta\overline V+\beta W(\xi)-\log f_s,
+ \qquad
+ f_s=\sqrt{\frac{\nabla\xi^T M^{-1}\nabla\xi}{2\pi\beta}}.
+\]
+
+Cartesian centroid shifts and rigid Jacobi rotations preserve their stated
+volume and spring measure. Exchanges include each window's actual, possibly
+different, stiffness. The derivation follows the Gaussian-prior pCN
+construction of [Cotter et al., Statistical Science 28 (2013),
+DOI 10.1214/13-STS421](https://arxiv.org/abs/1202.0709), applied here to the
+explicit Jacobi free-ring measure. Independent tests check Fourier covariance,
+the mass/spring identity, proposal-density cancellation, production CV/flux
+agreement and exact interrupted replay.
+
+This is an alternative equilibrium sampler used by the benchmark. Real-time
+recrossing must still use the physical, unthermostatted PyRPMD equations.
+
+### Explicit physical domain
+
+The old BKMP2 extrapolation has unphysical compact wells. All bead pair
+distances must be at least 0.5 bohr, the breaking-bond centroid is bounded above
+by 8 bohr, and the coordinate denominator must be positive. The latter keeps
+global moves in the incoming reaction-coordinate component instead of jumping
+through its pole. No lower bound is imposed on the centroid bond itself:
+allowed extended bead paths can have a smaller centroid distance.
+
+The registered lower-cutoff checks are 0.4 and 0.6 bohr. Classical cutoff
+insensitivity does not automatically establish quantum cutoff insensitivity.
+Bead controls at P64 and P256, the physical-domain controls, and a fresh
+transmission coefficient remain separate requirements for a full rate claim.
+
+## Free-energy estimation and uncertainty
+
+The primary analysis is histogram WHAM with bin widths 0.001, 0.0005 and
+0.00025 in xi. It makes no Gaussian assumption about a window's biased
+distribution. All CV observations contribute; a histogram range that drops
+even one sample is rejected. Solver success additionally requires its actual
+self-consistency residual and a connected overlap graph.
+
+The rate uses the fixed geometrical surface xi = 1 and a quadratic local fit
+to log density at xi = 0 and xi = 1. The primary fit halfwidth is 0.004, with
+0.002, 0.003 and 0.006 controls. This does not select the noisiest apparent
+barrier bin. The independent classical density oracle verifies the WHAM
+equations and measures the finite-bin/local-fit bias separately; see
+[wham-oracle.json](../h3-classical/wham-oracle.json).
+
+Complete independently seeded exchange ladders determine statistical
+uncertainty. Splitting a ladder in time keeps all its exchanged windows
+together. Windows, beads, individual observations and bootstrap replicates
+are not independent experimental replicas. The registered precision target
+is 3% relative standard error, with temporal-half and independent-seed
+consistency checks. A systematic discrepancy after convergence calls for
+diagnosis; sampling must not stop selectively when a fluctuating result
+happens to cross the paper value.
+
+Method reference: [Kumar et al., J. Comput. Chem. 13 (1992),
+DOI 10.1002/jcc.540130812](https://doi.org/10.1002/jcc.540130812).
+
+## Independent reactant normalization
+
+Two deterministic calculations provide a check of the H2 reactant quantum
+normalization without any umbrella data.
+
+1. [diatom_partition.py](../../../../benchmarks/h3/diatom_partition.py) solves
+   the radial Schrodinger equation for each J using a sine DVR, and sums
+   `(2J+1) exp(-beta E_vJ)`. The classical denominator is
+   `(mu/(2 pi beta))^(3/2) 4 pi integral r² exp(-beta V) dr`. Analytic 3D
+   oscillator tests independently verify the radial spectrum and all factors.
+2. [diatom_transfer.py](../../../../benchmarks/h3/diatom_transfer.py) expands
+   the exact free 3D heat kernel into partial waves, inserts primitive potential
+   factors, and evaluates the finite-P trace by radial quadrature. This checks
+   the same bead discretization used by primitive path-integral sampling.
+
+For reduced radial measure dr the free kernel is
+
+\[
+ K_J(r,r';\tau)=\frac{\mu\sqrt{rr'}}{\tau}
+ I_{J+1/2}\!\left(\frac{\mu rr'}{\tau}\right)
+ \exp\!\left[-\frac{\mu(r^2+r'^2)}{2\tau}\right].
+\]
+
+On quadrature nodes the symmetric transfer matrix is
+`A_ij = sqrt(w_i w_j) exp[-tau(V_i+V_j)/2] K_J(r_i,r_j;tau)`.
+With tau = beta/P, the partition function is
+`sum_J (2J+1) trace(A_J^P)`. Scaled Bessel functions avoid overflow. Tests
+recover the J=0 half-line image kernel, the Cartesian free diagonal, the
+classical P1 partition, and the exact finite-P 3D harmonic result. Small
+negative transfer eigenvalues are checked against roundoff and their possible
+trace contribution is bounded, rather than silently accepting an indefinite
+matrix.
+
+The computed Q_quantum/Q_classical ratios at 300 K are:
+
+| Calculation | Ratio |
+| --- | ---: |
+| Continuum radial spectrum | 0.00068545174271648 |
+| Primitive P128 transfer trace | 0.00069419428590078 |
+
+The finite-P128 log difference is 0.0126737742 (about 1.275% in the ratio).
+The transfer calculation's radial quadrature log change across its prescribed
+256/384/512 checks is 1.03e-11. A continuum answer must therefore not be used
+as an exactly matching P128 normalization. Full outputs and refinement tables
+are in [diatom-partition.json](diatom-partition.json) and
+[diatom-transfer.json](diatom-transfer.json).
+
+All J have their ordinary 2J+1 multiplicity, without nuclear-spin or exchange
+weights. The 99-bohr isolated spectator limit and beadwise radial walls are
+explicit: they are not identical to a finite-Rinf H3 integral with a centroid
+upper bound. Upper-box checks quantify the remote radial tail. The initial
+DVR gate and its overly strict harmonic endpoint test are retained with an
+explanation in [diatom-initial-gate](diatom-initial-gate/README.md); no computed
+physical value was adjusted when the convergence diagnostics were clarified.
+
+These normalizations alone do not reproduce a reaction rate.
+
+## Independent surface partition and native recrossing
+
+The separate [surface-partition campaign](../surface-partition/README.md)
+now has all eight fixed-budget TS chains complete. Combining their BAR
+surface corrections with the independently converged finite-P H₂
+normalization and classical surface integral gives
+**QTST=2.5524879152e-16 cm³ molecule⁻¹ s⁻¹** at P=128 and 300 K.
+The eight-chain 95% interval is [2.5167914228e-16, 2.5886907028e-16].
+The point is 1.69% above the paper's 2.51e-16, within its approximately 5%
+reported precision. The paper's rounded point is slightly below this new
+interval; no claim that it lies inside the interval is made.
+The [comparison record](independent-qtst-comparison.json) retains this
+distinction and explicitly leaves the full RPMD rate unvalidated.
+
+The [registered native child protocol](recrossing-protocol.json) uses every
+one of the 1,600 saved equilibrium parents, two keyed Maxwell pairs per
+parent, and identical initial states at 0.1 and 0.05 fs. Both p and −p are
+propagated without a thermostat. The primary horizon is 200 fs; a failed
+plateau comparison triggers the all-child 400-fs continuation. A separate,
+predeclared extra momentum batch can improve precision without selecting
+geometries, seeds or favorable rate points.
+
+The source already includes fs(q), so child flux weights divide by fs.
+The full-rate analysis combines the partition and κ within each original
+chain before constructing its Student-t interval. It retains their covariance
+and never treats individual children as independent parent ensembles.
+The [analysis specification](recrossing-analysis-prespecification.json)
+records its timing and the additional numerical-stability/component checks.
+
+An excluded real-PES continuation check verifies bitwise-equal q, p,
+observations and clocks for continuous 400-fs propagation versus a 200-fs
+save/recreate/reload plus 200 fs at both timesteps. See the
+[native replay report](recrossing-native-replay/native-restart-validation.json)
+and [pair-batch regression](recrossing-native-replay/pair-batch-replay.json).
+Minimum bead-pair distances in production children are observations at
+1-fs boundaries, not a claimed every-step distance minimum. Full-H energy
+extrema and the PES hard guard are evaluated at every physical step.
+
+The umbrella cohort analyzer initially saved its complete numerical report
+but failed while printing a NumPy boolean in the console summary. The
+[retained fix receipt](analysis-stdout-fix/receipt.json) verifies that all
+scientific fields from the two-chain diagnostic are exactly unchanged after
+the console-only conversion. That incomplete two-chain result cannot pass
+the eight-chain convergence criterion.
+
+## Reproduction and retained initialization failures
+
+Build the pinned external BKMP2 library using the repository's documented
+provenance workflow. Then, from the repository root:
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python benchmarks/h3/quantum_sampling_campaign.py \
+  --library /absolute/path/to/libbkmp2.so \
+  --output /new/path/to/quantum-campaign \
+  --protocol docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json \
+  --production-stage 30000 --workers 2
+```
+
+The protocol verifies source and schedule hashes. Subsequent prescribed
+prefixes continue the exact saved geometry/RNG state and verify every earlier
+CV prefix hash. A new scientific target or sampler version needs its own
+explicit protocol and output directory.
+
+The initial driver created a log inside a new sampling directory before the
+sampler's freshness guard. That initialization was rejected before any
+sampling step. The log placement was corrected, and all empty/zero-step
+attempts remain recorded by [initialization-failure.json](initialization-failure.json)
+and the preserved initial driver. The active campaign uses a fresh output
+directory, rather than deleting any ambiguous prior run.
+
+The production Andersen fix is separately reviewed in
+[the sampling-correction evidence](../review/README.md). Its successful tests
+do not replace the convergence checks of this Monte Carlo benchmark.

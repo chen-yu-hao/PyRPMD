@@ -78,3 +78,10 @@ GitHub 页面为准；此文档记录本地实际执行结果，不把尚未运�
 二维 FES、伞抽样 PMF 和 recrossing；实际运行参数、数值、图表、GitHub 作业
 与测试提交见 [2026-10-29 真实体系记录](validation/h3-bkmp2-2026-10-29/README.md)。
 该记录明确区分数值门槛通过、PMF 估计器差异与尚未建立的物理收敛。
+
+2026-11-01 的 [文献审计](validation/literature-audit-2026-11-01/README.md)
+保留了短轨迹与未收敛的速率结果；其后的
+[收敛与独立参考记录](validation/literature-convergence-2026-11-01/README.md)
+已完成经典 H + H₂ 全速率对比，并记录 Andersen 采样修正、有限珠数归一化、
+量子子轨迹协议和水的长时间采样计划。程序测试、独立参考验证与生产采样收敛
+均按实际证据分别报告。

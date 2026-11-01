@@ -1,0 +1,18 @@
+{
+  "schema": "pyrpmd.h3.independent-quantum-tst.v1",
+  "beads": 128,
+  "temperature_K": 300,
+  "independent_chains": 8,
+  "qtst_cm3_molecule_s": 2.55248791520624e-16,
+  "independent_chain_CI95": [
+    2.516791422831724e-16,
+    2.588690702840778e-16
+  ],
+  "relative_difference_from_paper": 0.016927456257466167,
+  "paper_qtst_cm3_molecule_s": 2.51e-16,
+  "paper_point_inside_new_CI95": false,
+  "matches_paper_approximately_5_percent_precision": true,
+  "transmission_computed": false,
+  "full_rate_validated": false,
+  "note": "Static finite-P transition-state result only; fresh native recrossing and independent bead/domain controls continue."
+}

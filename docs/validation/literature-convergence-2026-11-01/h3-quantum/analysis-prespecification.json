@@ -1,0 +1,23 @@
+{
+  "schema": "pyrpmd.h3.quantum-analysis-prespecification.v1",
+  "registered_utc": "2026-11-01T15:44:00.296531+00:00",
+  "registered_before_any_primary_30000_sweep_ladder_was_complete": true,
+  "primary_point": "WHAM fit to the sum of all eight complete ladder histograms, finest registered bin width",
+  "independent_unit": "entire independent exchange ladder",
+  "primary_log_standard_error": "maximum of the leave-one-ladder-out pooled-fit jackknife SE and SE of independent per-ladder log rates",
+  "interval": "pooled log rate plus/minus t_0.975,7 times primary log SE, exponentiated",
+  "within_ladder_variance_for_heterogeneity": "maximum of independent time-block log-rate sample variance divided by block count, using4 and8 equal full-ladder blocks",
+  "heterogeneity_test": "Cochran-style weighted chi-square using within-ladder variances; approximate calibration explicitly labelled",
+  "time_stability": "paired log-rate difference of second and first temporal halves per whole ladder, assessed across the independent ladders",
+  "histogram_range": [
+    -0.5,
+    1.5
+  ],
+  "tail_rule": "reject any range losing an observation; no silent clipping",
+  "incomplete_cohort": "only explicit --available-only monitoring, cannot pass campaign",
+  "physical_status": "equilibrium gate success does not imply bead/domain convergence or a full rate",
+  "source_sha256": {
+    "benchmarks/h3/quantum_sampling_analyze.py": "7585fc3e732eef8f0fb5d621a160c3b84a94fe2d9a80701965a4be46bde04c44",
+    "benchmarks/h3/mixing_analysis.py": "47bd4c33043dee36196c4c4828fb3993e174d735a80e22df4112ae93f20878dc"
+  }
+}

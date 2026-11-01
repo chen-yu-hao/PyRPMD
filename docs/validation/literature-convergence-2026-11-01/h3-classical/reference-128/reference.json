@@ -1,0 +1,43 @@
+{
+  "schema": "pyrpmd.h3.classical-conditional-reference.v1",
+  "created_utc": "2026-11-01T14:52:22.123631+00:00",
+  "temperature_K": 300.0,
+  "radial_order": 128,
+  "angular_order": 64,
+  "grid_step": 0.001,
+  "radial_domain_bohr": [
+    0.5,
+    8.0
+  ],
+  "minimum_pair_distance_bohr": 0.5,
+  "rate_at_xi_one_cm3_molecule_s": 1.553095466974243e-18,
+  "independent_tst_quadrature_cm3_molecule_s": 1.553118786789885e-18,
+  "ratio_to_independent_tst_quadrature": 0.9999849851692991,
+  "exact_maximum_xi": 1.0,
+  "exact_maximum_rate_cm3_molecule_s": 1.5530954669742436e-18,
+  "gaussian_ui_maximum_xi": 1.0,
+  "gaussian_ui_infinite_sampling_rate_cm3_molecule_s": 1.5923029280246477e-18,
+  "elapsed_seconds": 11.978924935996474,
+  "source_sha256": "fe42d4bf89fd8dfd7a18b1e87b0c9778c0dff7c849891bc8d825dce857a864d2",
+  "potential_metadata": {
+    "provider": "BKMP2",
+    "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+    "execution_device": "cpu",
+    "thread_safety": "process_serial",
+    "native_batch": true,
+    "dtype": "float64",
+    "trajectory_batch_safe": true,
+    "atomic_numbers": [
+      1,
+      1,
+      1
+    ],
+    "charge": 0,
+    "multiplicity": 2,
+    "energy_zero": "three separated H atoms",
+    "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+    "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+    "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+  },
+  "scientific_scope": "Independent classical conditional quadrature; not a trajectory or quantum RPMD validation."
+}

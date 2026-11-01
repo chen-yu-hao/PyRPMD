@@ -1,0 +1,207 @@
+{
+  "schema": "pyrpmd.h3.method-test-environments.v1",
+  "scope": "Post-test interpreter/source probes for the 119 new H3 method tests; the pure Python modules used by both installed version-specific wheels match the frozen checkout byte for byte.",
+  "runtimes": [
+    {
+      "python": "3.12.14",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "modules": [
+        {
+          "module": "pyrpmd.constants",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+          "loaded_sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+          "checkout_path": "src/pyrpmd/constants.py",
+          "checkout_sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.cv",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+          "loaded_sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+          "checkout_path": "src/pyrpmd/cv.py",
+          "checkout_sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.dynamics",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py",
+          "loaded_sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+          "checkout_path": "src/pyrpmd/dynamics.py",
+          "checkout_sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.propagation",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py",
+          "loaded_sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+          "checkout_path": "src/pyrpmd/propagation.py",
+          "checkout_sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.checkpoint",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py",
+          "loaded_sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+          "checkout_path": "src/pyrpmd/checkpoint.py",
+          "checkout_sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.io",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py",
+          "loaded_sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+          "checkout_path": "src/pyrpmd/io.py",
+          "checkout_sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.analysis.fes",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+          "loaded_sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+          "checkout_path": "src/pyrpmd/analysis/fes.py",
+          "checkout_sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+          "equal": true
+        }
+      ],
+      "native": {
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+      }
+    },
+    {
+      "python": "3.13.18",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "modules": [
+        {
+          "module": "pyrpmd.constants",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/constants.py",
+          "loaded_sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+          "checkout_path": "src/pyrpmd/constants.py",
+          "checkout_sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.cv",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/cv.py",
+          "loaded_sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+          "checkout_path": "src/pyrpmd/cv.py",
+          "checkout_sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.dynamics",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/dynamics.py",
+          "loaded_sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+          "checkout_path": "src/pyrpmd/dynamics.py",
+          "checkout_sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.propagation",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/propagation.py",
+          "loaded_sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+          "checkout_path": "src/pyrpmd/propagation.py",
+          "checkout_sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.checkpoint",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/checkpoint.py",
+          "loaded_sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+          "checkout_path": "src/pyrpmd/checkpoint.py",
+          "checkout_sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.io",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/io.py",
+          "loaded_sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+          "checkout_path": "src/pyrpmd/io.py",
+          "checkout_sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.analysis.fes",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/analysis/fes.py",
+          "loaded_sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+          "checkout_path": "src/pyrpmd/analysis/fes.py",
+          "checkout_sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+          "equal": true
+        }
+      ],
+      "native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "a742988cd507538cfc3cd7977231f77a2b2af30124bb8a116187f53f1b48f886"
+      }
+    },
+    {
+      "python": "3.14.10",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "modules": [
+        {
+          "module": "pyrpmd.constants",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/constants.py",
+          "loaded_sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+          "checkout_path": "src/pyrpmd/constants.py",
+          "checkout_sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.cv",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/cv.py",
+          "loaded_sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+          "checkout_path": "src/pyrpmd/cv.py",
+          "checkout_sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.dynamics",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/dynamics.py",
+          "loaded_sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+          "checkout_path": "src/pyrpmd/dynamics.py",
+          "checkout_sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.propagation",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/propagation.py",
+          "loaded_sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+          "checkout_path": "src/pyrpmd/propagation.py",
+          "checkout_sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.checkpoint",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/checkpoint.py",
+          "loaded_sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+          "checkout_path": "src/pyrpmd/checkpoint.py",
+          "checkout_sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.io",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/io.py",
+          "loaded_sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+          "checkout_path": "src/pyrpmd/io.py",
+          "checkout_sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+          "equal": true
+        },
+        {
+          "module": "pyrpmd.analysis.fes",
+          "loaded_path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/analysis/fes.py",
+          "loaded_sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+          "checkout_path": "src/pyrpmd/analysis/fes.py",
+          "checkout_sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+          "equal": true
+        }
+      ],
+      "native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "ddc04524cf732e5fdcff569482c5558e30938221e8e5a12acd36699c3ec1ed49"
+      }
+    }
+  ]
+}

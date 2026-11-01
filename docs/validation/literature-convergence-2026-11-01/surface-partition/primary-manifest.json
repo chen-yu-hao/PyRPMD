@@ -1,0 +1,406 @@
+{
+  "schema": "pyrpmd.h3.immutable-primary-partition-manifest.v1",
+  "created_utc": "2026-11-01T16:35:30.395116+00:00",
+  "registered_protocol_sha256": "4657032eb8e10d59061a52a45adba6cac9d4d0d87213461af11e5589de49c99c",
+  "complete_summary_sha256": "830cb6f9bf615724b07ad69b26c0a58e1e96b5b3a11dd45d59345e6fc7de4ed8",
+  "source_sha256": {
+    "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+    "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+  },
+  "all_registered_sources_unchanged": true,
+  "cohorts": [
+    {
+      "surface": "ts",
+      "seed": 721301,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "eebd1809b4a0a5011ed6298ab44973cd89bb576f8d7091019f6bfb3555ca3dbf",
+          "bytes": 4113196
+        },
+        "settings.json": {
+          "sha256": "7ebb1dcefb2abdc3d91586fdd3a397573293bf425167f22ed2213e04b2e7798a",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "d0849e64cbeb5f1ba3c654c9999c57095c7645c227ef415fed6b69fe5fde4bfa",
+          "bytes": 8654
+        },
+        "reference-domain.json": {
+          "sha256": "2fce3b883b4ad0b509e1d044bff93cbe08065a93c4fbbe8e4bb2cfa42bb646e2",
+          "bytes": 491
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "4f23eb6eca7f6d1e9606621340150de6c005b91a008423cafa7f04426a0295e8",
+          "bytes": 305
+        }
+      }
+    },
+    {
+      "surface": "ts",
+      "seed": 721303,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "aaf11b6ea143c7166456d46d2f4b767481eb0319d7e46816783ad57baacc0c14",
+          "bytes": 4113028
+        },
+        "settings.json": {
+          "sha256": "acb58ecb3dfba08f2188c958e88d259b6ff355bbf65e9b732aef9e544d0d5d3d",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "e46d5420e9a5b1390fef7ad967aa87fe07976f40acf4d209f64b77edf20cff22",
+          "bytes": 8698
+        },
+        "reference-domain.json": {
+          "sha256": "04edc9c6b31084630b9595f44cbcc78070c5b167cec7c0999a1c0ddead443b71",
+          "bytes": 495
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "ae453d6c5894876d552a2a82564c117183c84120186dfeab7932535c43e587f5",
+          "bytes": 303
+        }
+      }
+    },
+    {
+      "surface": "ts",
+      "seed": 721307,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "d1cf4de76ade549ab74391e12eb4b42e3e06be44dab3cbd3037f470a044b8519",
+          "bytes": 4112604
+        },
+        "settings.json": {
+          "sha256": "88c37c59cad156f1a395418ead315de50f25f4d32833ab83ccfa976529a24b71",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "c2cebae072d51a03f0ce47b590775d8b3292373cfdac0de26142d16281c9a9e1",
+          "bytes": 8695
+        },
+        "reference-domain.json": {
+          "sha256": "bfa317465c2b3e877fb98d9478ac57a55325fcf2c3e09a4aa000cb969233f45a",
+          "bytes": 495
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "5ffc041ae9247631959bacc0e41d98cc6802a6b7a5a2a7a0ce9fe0c2398f30e8",
+          "bytes": 305
+        }
+      }
+    },
+    {
+      "surface": "ts",
+      "seed": 721309,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "d7c9c82121fed1fa75adef7b2c49cb97d0d5d410f6eee485ae4e2ca46d31b469",
+          "bytes": 4113120
+        },
+        "settings.json": {
+          "sha256": "82dc90c8a3e1fbe716144718b8ce9e00e60118b3963056b1f10a1eb3064f4d76",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "2a0e3c71cd6aca33cf33106695cac81cd44b316ce7fb9d3fcaca5c277892a07a",
+          "bytes": 8665
+        },
+        "reference-domain.json": {
+          "sha256": "afb5896ae911f831aa8b79f5eaf306b2e5793ada370f3a901d978b79ec7afb26",
+          "bytes": 488
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "9536c0221618f068a17815d20b33939f1dfe9cbeda562db3a63f51bf3ab80b27",
+          "bytes": 305
+        }
+      }
+    },
+    {
+      "surface": "ts",
+      "seed": 721313,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "a91a6dba5428a1b9b1e2f08a19f6a6388965b0d5039a45d07e55a00cbad0c86f",
+          "bytes": 4113109
+        },
+        "settings.json": {
+          "sha256": "4ccb943c13734aebbcc48427b7a0d69747141850e3723eeffb7028a4ac998af7",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "af0569bf5e2ef86436c5d922aa9a44b6e22a5f38363841d7468e027c16ef619b",
+          "bytes": 8637
+        },
+        "reference-domain.json": {
+          "sha256": "73e25a0a5a4e9705efd12a6200ff4cd31bac4932a0cc5a5b7ffbf2fda1c2ac3f",
+          "bytes": 495
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "cb65ab68530f83e605099735b109d9ff38a9da22a204ae68ca115eaa3e61317b",
+          "bytes": 303
+        }
+      }
+    },
+    {
+      "surface": "ts",
+      "seed": 721317,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "d6d0d0c2b063523ad549e00ddda311b1f5dd60040f6317842c7da1851421bea9",
+          "bytes": 4112792
+        },
+        "settings.json": {
+          "sha256": "12f6497afe191cf971488cca9ba3eedf9e56f0ecde6e10461ca052e27c732d89",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "b99e2996efdb6550d64a863cb1540f043819f41415ed2bc36662439a659bc45a",
+          "bytes": 8707
+        },
+        "reference-domain.json": {
+          "sha256": "e7aaf0a8375fcff00d0c1a8b95d818e02075920c0c4f8037dbbe6ac4400026ed",
+          "bytes": 494
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "c5b7e65fdc0b496e68473e755cbea17772584d3266d09b08d435831dcabaab19",
+          "bytes": 305
+        }
+      }
+    },
+    {
+      "surface": "ts",
+      "seed": 721321,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "fe74abf796ebb757c887f30afdb864d388cd1ce8e3b520445dc9653d96dfea64",
+          "bytes": 4113780
+        },
+        "settings.json": {
+          "sha256": "c2a92347474317ea0bc91ca38928caa2d1bba88299fc665742001f5ac5744dc4",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "8ca26884df01d061a56ab379dca4af20c2702bd7eea856d73aac96638a4ecb78",
+          "bytes": 8663
+        },
+        "reference-domain.json": {
+          "sha256": "cbdaeaa9ff70a1124e00fa1011e906b22945a5655ef0d31a6d0661526bc58429",
+          "bytes": 495
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "ffdc8ce7f042175af3879b00682ac6f63d1a38369434cb47a4a552659a0b94fb",
+          "bytes": 304
+        }
+      }
+    },
+    {
+      "surface": "ts",
+      "seed": 721323,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323",
+      "endpoint_parents": 200,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "207d8801820a18b928fc84d54227798a01a5c7f53e84c93943edde524469adfa",
+          "bytes": 4113187
+        },
+        "settings.json": {
+          "sha256": "22b3bf6a4a82116009351050e55266587b7b65ee4cb82d94851667d649055982",
+          "bytes": 2893
+        },
+        "report.json": {
+          "sha256": "ccd31b2149bbefe42d71495fd55933a190db43b4d4a6f75d5b7aef2ce43bda6f",
+          "bytes": 8688
+        },
+        "reference-domain.json": {
+          "sha256": "f31e1ae01491e99c512760efb610a79b4481bd679ba8a4bb84aaa4bbe48e9478",
+          "bytes": 495
+        },
+        "reference.json": {
+          "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+          "bytes": 603
+        },
+        "progress.json": {
+          "sha256": "9db9dbfc13d746a5530741c80947a3cfab57da23c2ef179106c10ee25e3eb15a",
+          "bytes": 305
+        }
+      }
+    },
+    {
+      "surface": "reactant",
+      "seed": 721401,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721401",
+      "endpoint_parents": 0,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "b768d34eb29e9ffe2014c6e6c3dba3f67e86df1b1414a4c29d27c1c823bd5d49",
+          "bytes": 1939165
+        },
+        "settings.json": {
+          "sha256": "36f9dd4f0f7dd4b329f04119864399b9a5f7067845294e223f070fe0fa1a38b9",
+          "bytes": 2898
+        },
+        "report.json": {
+          "sha256": "6f76526a64c81035195b494301f502350f570ccf4e7de4d5854e5fb0a221f475",
+          "bytes": 8367
+        },
+        "reference-domain.json": {
+          "sha256": "51db0704d3d1d54fc9c65340d0ca2c09b6bd94d0cbb59713ae164e6f386b4972",
+          "bytes": 495
+        },
+        "reference.json": {
+          "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+          "bytes": 607
+        },
+        "progress.json": {
+          "sha256": "ae6a5d678eeabed0e9dceda4dc2ddc06a0a30ecbda9246d642d364cd3f66976d",
+          "bytes": 275
+        }
+      }
+    },
+    {
+      "surface": "reactant",
+      "seed": 721403,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721403",
+      "endpoint_parents": 0,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "d6fb33969c7d2baf8544d962aa3a92c9434b42042ac0d9ec60f0ba9fd452eabd",
+          "bytes": 1937656
+        },
+        "settings.json": {
+          "sha256": "220aae2c586d6cbca49e11e3b7f992937df36c087129f8328f809d53bd0424c3",
+          "bytes": 2898
+        },
+        "report.json": {
+          "sha256": "2bbbbf327ae7db1d53874083bf4f99daed94f2f96393544c38e42b13a7376add",
+          "bytes": 8358
+        },
+        "reference-domain.json": {
+          "sha256": "8ddc4ea1b62f6588d15dac29bbcda4485178a92e8c6532bc30749e3cee194a23",
+          "bytes": 494
+        },
+        "reference.json": {
+          "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+          "bytes": 607
+        },
+        "progress.json": {
+          "sha256": "164388acd252ca779e269596b87404333e304b23710cf8503b6c61b594d86f13",
+          "bytes": 274
+        }
+      }
+    },
+    {
+      "surface": "reactant",
+      "seed": 721407,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721407",
+      "endpoint_parents": 0,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "7b566b9503e880dc9609eb1489601b56bace6783700aa2a1d14d371b6fca7bbe",
+          "bytes": 1939549
+        },
+        "settings.json": {
+          "sha256": "3b7799bb55f1a8b5d851e9cca9f7c99f2076c7b417cf4b5892871f78a915c1e2",
+          "bytes": 2898
+        },
+        "report.json": {
+          "sha256": "666c659b21c73d135beceb39dea706be4c593f48fc370f39840717c1935eaaff",
+          "bytes": 8344
+        },
+        "reference-domain.json": {
+          "sha256": "0c48c792304ecbc0f0b8d6c70525312f671e02a89d7d2dfe09107a0ed66585a4",
+          "bytes": 494
+        },
+        "reference.json": {
+          "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+          "bytes": 607
+        },
+        "progress.json": {
+          "sha256": "47cf4c0c53435539bb0881de122855b1d9330d35f92a5402585e46c696041cc8",
+          "bytes": 274
+        }
+      }
+    },
+    {
+      "surface": "reactant",
+      "seed": 721409,
+      "directory": "docs/validation/literature-convergence-2026-11-01/surface-partition/primary/reactant/seed-721409",
+      "endpoint_parents": 0,
+      "files": {
+        "checkpoint.npz": {
+          "sha256": "8d2224fc1474ec951142961228ad0c8216c85762f5a42af5d2ca5ee61bd58cc6",
+          "bytes": 1936566
+        },
+        "settings.json": {
+          "sha256": "ff5c8aa62cf51bb089ee298b8e5dee49ff2f9327d35ba66c3f46344f3edb22cc",
+          "bytes": 2898
+        },
+        "report.json": {
+          "sha256": "6cb1a850250f6b7bc5a8b7edefc3e2125a279d4c667b4852eafbc72b017fd9ad",
+          "bytes": 8373
+        },
+        "reference-domain.json": {
+          "sha256": "3b53472e0d43e743f61be24df17ceb45af83c481fc041cbf07b4427847de8c62",
+          "bytes": 494
+        },
+        "reference.json": {
+          "sha256": "85fbaa364409315f01e96dd660a809d2605efe55b34c6f3120e3f40e9244c229",
+          "bytes": 607
+        },
+        "progress.json": {
+          "sha256": "724813542e4c8684bf308536833029334d9ab8ca5ed8ffe00c5bb94c5b24555f",
+          "bytes": 275
+        }
+      }
+    }
+  ],
+  "total_TS_parents": 1600,
+  "raw_NPZ_availability": "Local workspace only; this manifest does not claim binary payload publication.",
+  "immutability": "No completed cohort file is rewritten or extended; new controls use distinct seeds/directories/protocol."
+}

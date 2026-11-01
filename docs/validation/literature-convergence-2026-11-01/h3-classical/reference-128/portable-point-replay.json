@@ -1,0 +1,13 @@
+{
+  "schema": "pyrpmd.h3.classical-initial-oracle-portable-replay.v1",
+  "original_source_sha256": "fe42d4bf89fd8dfd7a18b1e87b0c9778c0dff7c849891bc8d825dce857a864d2",
+  "original_full_source_snapshot_archived": false,
+  "portable_source_sha256": "b33e4cdd7875a1bfeedd0d2cd353c0d88234c9694802df45db880cb8aa332f69",
+  "replay_scope": "Only the two defining endpoint quadratures at xi=0 and 1. The later script adds grid-tail/umbrella diagnostics; this does not claim an exact replay of the initial full script container.",
+  "radial_order": 128,
+  "angular_order": 64,
+  "original_rate_cm3_molecule_s": 1.553095466974243e-18,
+  "replayed_rate_cm3_molecule_s": 1.5530954669742513e-18,
+  "relative_difference": 5.329070518200751e-15,
+  "original_failure_retained": "The 128/64 quadrature differs from the independently integrated TST by 1.5015e-5, exceeding the registered 1e-5 gate. Final conclusions use the refined 384/192 reference with archived exact source."
+}

@@ -1,0 +1,463 @@
+{
+  "schema": "pyrpmd.h3.equilibrium-bead-domain-controls.v1",
+  "created_before_control_sampling_utc": "2026-11-01T16:32:01.795626+00:00",
+  "phase": "registered independent equilibrium controls",
+  "cases": [
+    {
+      "name": "p64-cutoff05",
+      "beads": 64,
+      "minimum": 0.5,
+      "seeds": [
+        826401,
+        826403,
+        826407,
+        826409
+      ]
+    },
+    {
+      "name": "p256-cutoff05",
+      "beads": 256,
+      "minimum": 0.5,
+      "seeds": [
+        825601,
+        825603,
+        825607,
+        825609
+      ]
+    },
+    {
+      "name": "p128-cutoff04",
+      "beads": 128,
+      "minimum": 0.4,
+      "seeds": [
+        820401,
+        820403,
+        820407,
+        820409
+      ]
+    },
+    {
+      "name": "p128-cutoff06",
+      "beads": 128,
+      "minimum": 0.6,
+      "seeds": [
+        820601,
+        820603,
+        820607,
+        820609
+      ]
+    }
+  ],
+  "temperature_K": 300.0,
+  "mass_au": 1837.1526474396187,
+  "warmup": 2000,
+  "production": 20000,
+  "lambda_grid": [
+    0.0,
+    0.015625,
+    0.0625,
+    0.140625,
+    0.25,
+    0.390625,
+    0.5625,
+    0.765625,
+    1.0
+  ],
+  "radius_step": 0.08,
+  "ratio_step": 0.03,
+  "alpha_R": 0.7,
+  "alpha_r": 0.7,
+  "swap_interval": 1,
+  "sample_interval": 1,
+  "diagnostic_interval": 10,
+  "snapshot_interval": 0,
+  "domain_samples": 131072,
+  "maximum_centroid_bond_bohr": 8.0,
+  "radial_order": 192,
+  "angular_order": 96,
+  "checkpoint_interval": 1000,
+  "seed_sampling_flags": {
+    "minimum_BAR_overlap": 0.2,
+    "minimum_energy_ESS": 200,
+    "maximum_absolute_half_log_difference": 0.2
+  },
+  "primary_TS_settings_template": {
+    "schema": "pyrpmd.h3.surface-partition.v1",
+    "phase": "production",
+    "surface": "ts",
+    "beads": 128,
+    "seed": 721301,
+    "warmup": 2000,
+    "production": 20000,
+    "lambdas": [
+      0.0,
+      0.015625,
+      0.0625,
+      0.140625,
+      0.25,
+      0.390625,
+      0.5625,
+      0.765625,
+      1.0
+    ],
+    "temperature_K": 300.0,
+    "beta": 1052.5834160132904,
+    "mass_au": 1837.1526474396187,
+    "minimum_bead_pair_bohr": 0.5,
+    "maximum_centroid_bond_bohr": 8.0,
+    "radial_order": 192,
+    "angular_order": 96,
+    "domain_samples": 131072,
+    "radius_step": 0.08,
+    "ratio_step": 0.03,
+    "alpha_R": 0.7,
+    "alpha_r": 0.7,
+    "swap_interval": 1,
+    "checkpoint_interval": 1000,
+    "sample_interval": 1,
+    "diagnostic_interval": 10,
+    "snapshot_interval": 100,
+    "source_sha256": {
+      "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+      "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+      "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+      "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+      "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+      "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    "model": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    "runtime": {
+      "python": "3.12.14",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+    },
+    "endpoint_snapshot_source": "static equilibrium Monte Carlo at lambda=1; normalized total COM analytically marginalized",
+    "endpoint_snapshot_channel": "r01=r12<=r02; equivalent channel and Maxwell momenta assigned only by separate child RNG",
+    "target": "physical bead domain and continuous centroid shape; normalized Jacobi free-ring prior",
+    "reference": "centroid PES at max(r, minimum); full centroid support (0, maximum)",
+    "sampling_is_real_time_dynamics": false,
+    "uncertainty_unit": "independent seed chain"
+  },
+  "primary_TS_settings_sha256": "7ebb1dcefb2abdc3d91586fdd3a397573293bf425167f22ed2213e04b2e7798a",
+  "classical_normalization": {
+    "0.4": {
+      "ts": {
+        "log_classical_shape_integral": 165.82338788326732,
+        "log_reference_shape_integral": 165.82338788326732,
+        "log_plateau_probability": -1790.2677523622478,
+        "refinement_log_difference": 7.622702469234355e-11
+      },
+      "reactant": {
+        "log_classical_shape_integral": 182.29355494565968,
+        "log_reference_shape_integral": 182.29355494565968,
+        "log_plateau_probability": -1112.1517747628277,
+        "refinement_log_difference": 6.87805368215777e-12
+      }
+    },
+    "0.5": {
+      "ts": {
+        "log_classical_shape_integral": 165.82338788319177,
+        "log_reference_shape_integral": 165.82338788319177,
+        "log_plateau_probability": -1507.6810234996308,
+        "refinement_log_difference": 5.968558980384842e-13
+      },
+      "reactant": {
+        "log_classical_shape_integral": 182.2935549456527,
+        "log_reference_shape_integral": 182.2935549456527,
+        "log_plateau_probability": -684.2293335710413,
+        "refinement_log_difference": -5.684341886080802e-14
+      }
+    },
+    "0.6": {
+      "ts": {
+        "log_classical_shape_integral": 165.82338788319026,
+        "log_reference_shape_integral": 165.82338788319026,
+        "log_plateau_probability": -1086.586911184694,
+        "refinement_log_difference": -9.947598300641403e-13
+      },
+      "reactant": {
+        "log_classical_shape_integral": 182.29355494565277,
+        "log_reference_shape_integral": 182.29355494565277,
+        "log_plateau_probability": -427.6899464157768,
+        "refinement_log_difference": 0.0
+      }
+    }
+  },
+  "exact_reactant_rows": {
+    "p64-cutoff05": {
+      "beads": 64,
+      "radial_order": 384,
+      "domain_bohr": [
+        0.5,
+        8.0
+      ],
+      "jmax": 24,
+      "free_kernel_width_bohr": 0.13380755988019968,
+      "maximum_radial_grid_spacing": 0.030639609155077352,
+      "log_partition": -9.043319100238008,
+      "classical_log_partition": -1.8078577481667506,
+      "log_quantum_classical_ratio": -7.235461352071258,
+      "quantum_classical_ratio": 0.0007205747849026152,
+      "last_rotational_shell_fraction": 5.881869327165166e-52,
+      "minimum_transfer_eigenvalue": -8.570596140250129e-16,
+      "roundoff_negative_eigenvalues": 2802,
+      "log_relative_absolute_negative_trace_bound": -2207.942010242021,
+      "relative_absolute_negative_trace_bound": 0.0,
+      "partial_log_traces": [
+        -10.400305824526761,
+        -9.87033103696477,
+        -10.491496459555126,
+        -11.839975037261484,
+        -13.811401973368737,
+        -16.35178742062375,
+        -19.42089132912006,
+        -22.98273227326698,
+        -27.00252870609598,
+        -31.445715222448833,
+        -36.27774503174053,
+        -41.464207049166674,
+        -46.971058561117985,
+        -52.76488181489417,
+        -58.81312108131314,
+        -65.08428057522899,
+        -71.54807614532149,
+        -78.17554035399195,
+        -84.9390840406922,
+        -91.812519037401,
+        -98.77104713783376,
+        -105.79122015884104,
+        -112.8508752387178,
+        -119.92904853908817,
+        -127.00586931175822
+      ],
+      "log_difference_from_continuum": 0.049971107893954425
+    },
+    "p256-cutoff05": {
+      "beads": 256,
+      "radial_order": 384,
+      "domain_bohr": [
+        0.5,
+        8.0
+      ],
+      "jmax": 24,
+      "free_kernel_width_bohr": 0.06690377994009984,
+      "maximum_radial_grid_spacing": 0.030639609155077352,
+      "log_partition": -9.090109981385885,
+      "classical_log_partition": -1.8078577481667506,
+      "log_quantum_classical_ratio": -7.282252233219134,
+      "quantum_classical_ratio": 0.0006876351037262167,
+      "last_rotational_shell_fraction": 5.6465277317704995e-52,
+      "minimum_transfer_eigenvalue": -4.0072166103259953e-16,
+      "roundoff_negative_eigenvalues": 1206,
+      "log_relative_absolute_negative_trace_bound": -9063.095479483998,
+      "relative_absolute_negative_trace_bound": 0.0,
+      "partial_log_traces": [
+        -10.448043748134316,
+        -9.917449093384157,
+        -10.5374454080129,
+        -11.88433851077645,
+        -13.853943367397546,
+        -16.392476908230698,
+        -19.45991146032952,
+        -23.020463485001578,
+        -27.039518335455607,
+        -31.482634996695488,
+        -36.31534245603744,
+        -41.503255768559505,
+        -47.012311883054714,
+        -52.80903241281867,
+        -58.86076869201808,
+        -65.13590841890435,
+        -71.60403593103469,
+        -78.23604511634709,
+        -85.00420767372181,
+        -91.88220121195538,
+        -98.84510226113262,
+        -105.86934911181622,
+        -112.93267876617675,
+        -120.01404133609404,
+        -127.09349402158635
+      ],
+      "log_difference_from_continuum": 0.0031802267460783185
+    },
+    "p128-cutoff04": {
+      "beads": 128,
+      "radial_order": 384,
+      "domain_bohr": [
+        0.4,
+        8.0
+      ],
+      "jmax": 24,
+      "free_kernel_width_bohr": 0.09461623296531421,
+      "maximum_radial_grid_spacing": 0.031048137277144505,
+      "log_partition": -9.080616433915969,
+      "classical_log_partition": -1.807857748166728,
+      "log_quantum_classical_ratio": -7.272758685749241,
+      "quantum_classical_ratio": 0.0006941942859156933,
+      "last_rotational_shell_fraction": 5.692147301760353e-52,
+      "minimum_transfer_eigenvalue": -5.790639869044901e-16,
+      "roundoff_negative_eigenvalues": 1939,
+      "log_relative_absolute_negative_trace_bound": -4478.447279907587,
+      "relative_absolute_negative_trace_bound": 0.0,
+      "partial_log_traces": [
+        -10.438357313822005,
+        -9.907888784703783,
+        -10.528123145444056,
+        -11.875339477029291,
+        -13.84531654378131,
+        -16.384229589061263,
+        -19.452008064473223,
+        -23.012828411092293,
+        -27.032042151201885,
+        -31.4751829708095,
+        -36.307764345055126,
+        -41.495395834139956,
+        -47.004018290229624,
+        -52.8001653924039,
+        -58.851207093857084,
+        -65.12555450260913,
+        -71.5928184177948,
+        -78.22392065211622,
+        -84.99116093257783,
+        -91.86824390598538,
+        -98.83027132948523,
+        -105.85370434616806,
+        -112.91630010157841,
+        -119.99702600175617,
+        -127.07595371097845
+      ]
+    },
+    "p128-cutoff06": {
+      "beads": 128,
+      "radial_order": 384,
+      "domain_bohr": [
+        0.6,
+        8.0
+      ],
+      "jmax": 24,
+      "free_kernel_width_bohr": 0.09461623296531421,
+      "maximum_radial_grid_spacing": 0.030231081033008422,
+      "log_partition": -9.08061645894553,
+      "classical_log_partition": -1.8078577481667442,
+      "log_quantum_classical_ratio": -7.272758710778786,
+      "quantum_classical_ratio": 0.0006941942685403267,
+      "last_rotational_shell_fraction": 5.692147444234586e-52,
+      "minimum_transfer_eigenvalue": -5.279170745272998e-16,
+      "roundoff_negative_eigenvalues": 1997,
+      "log_relative_absolute_negative_trace_bound": -4489.8010699507195,
+      "relative_absolute_negative_trace_bound": 0.0,
+      "partial_log_traces": [
+        -10.438357342615113,
+        -9.907888810875944,
+        -10.528123167072426,
+        -11.87533949328396,
+        -13.845316554896707,
+        -16.38422959598128,
+        -19.452008068398683,
+        -23.01282841312264,
+        -27.032042152160166,
+        -31.475182971223113,
+        -36.30776434521859,
+        -41.49539583419923,
+        -47.00401829024947,
+        -52.800165392409866,
+        -58.851207093858605,
+        -65.12555450260977,
+        -71.59281841779476,
+        -78.22392065211626,
+        -84.99116093257749,
+        -91.86824390598514,
+        -98.83027132948502,
+        -105.85370434616799,
+        -112.91630010157841,
+        -119.99702600175596,
+        -127.07595371097806
+      ]
+    }
+  },
+  "base_exact_reactant_log_ratio": -7.27275868577072,
+  "equivalence_log_margin": 0.04879016416943204,
+  "equivalence_rule": "full independent-group 95% Welch interval inside +/-log(1.05)",
+  "insufficient_power_rule": "Report diagnostic/inconclusive; no adaptation to literature point agreement.",
+  "uncertainty_unit": "independent seed chain; exact reactant quadrature error checked separately",
+  "scope": "Equilibrium QTST factor only; no recrossing or full-rate bead convergence claim.",
+  "immutable_parent_rule": "Do not modify or extend any primary20k parent cohort or its provenance files.",
+  "termination": "all16 new seeds reach their fixed counts, irrespective of literature proximity",
+  "maximum_concurrent_CPUs": 2,
+  "estimated_wall_seconds_from_completed_primary": 3095.3176879151233,
+  "wall_estimate_assumptions": "Linear bead-count cost, two CPUs, same shared-host contention; excludes any queue delay.",
+  "source_identity": {
+    "source_sha256": {
+      "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+      "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+      "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+      "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+      "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+      "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    "model": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    "runtime": {
+      "python": "3.12.14",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+    }
+  },
+  "controls_source_sha256": "4440394a6358221bca6c304afa9aa10571abdc23d1c692980ffd37cbc56c9d76",
+  "primary_protocol_sha256": "4657032eb8e10d59061a52a45adba6cac9d4d0d87213461af11e5589de49c99c",
+  "primary_summary_sha256": "830cb6f9bf615724b07ad69b26c0a58e1e96b5b3a11dd45d59345e6fc7de4ed8",
+  "reactant_reference_sha256": "ac5402749115c8fecb43220b2afed2bd0b69d558eb3779d72364ff29d9dffdbc",
+  "primary_log_TS_corrections": [
+    -2.1729527596143,
+    -2.1710019263607525,
+    -2.195497923928297,
+    -2.185363628497235,
+    -2.147205314435375,
+    -2.171850721050559,
+    -2.146750611890244,
+    -2.175657058766744
+  ]
+}
