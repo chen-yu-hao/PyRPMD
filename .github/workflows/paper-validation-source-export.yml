@@ -11,15 +11,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - name: Package exact validation code and associated test suite
+      - name: Package exact source and published quantum anchors
         run: |
-          tar -czf pyrpmd-paper-validation-source.tar.gz \
-            src benchmarks/paper_validation tests pyproject.toml setup.py setup.cfg README.md \
-            2>/dev/null || \
-          tar -czf pyrpmd-paper-validation-source.tar.gz \
-            src benchmarks/paper_validation tests pyproject.toml README.md
+          tar -czf pyrpmd-paper-validation-source.tar.gz src benchmarks/paper_validation tests pyproject.toml README.md
           sha256sum pyrpmd-paper-validation-source.tar.gz
+          head -n 6 benchmarks/paper_validation/dac_p15_liu2024_reference.csv
+          head -n 6 benchmarks/paper_validation/dac_p5_liu2024_reference.csv
       - uses: actions/upload-artifact@v4
         with:
-          name: pyrpmd-paper-validation-source-snapshot
+          name: pyrpmd-paper-validation-source-with-authors-dac-refs
           path: pyrpmd-paper-validation-source.tar.gz
