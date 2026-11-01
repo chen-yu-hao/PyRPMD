@@ -1,9 +1,9 @@
-"""Persistent C++ NVT/NPT trajectories; Python runs only at block boundaries.
+"""Persistent NVT/NPT operator executor with explicit force-provider boundaries.
 
-This is an explicit native API, not a silent replacement for existing RPMD
-reaction workflows. All numeric inputs are atomic units. Only immutable native
-PES evaluators are accepted; ASE/Torch/Python callables cannot be made native by
-wrapping their step loop. See docs/native-ensembles.md for equations and limits.
+All numeric inputs are atomic units. Native PES bindings execute complete
+blocks without Python callbacks. The explicit ``allow_python=True`` bridge
+uses the same operators with copied force buffers and reports every Python
+force callback. See docs/native-ensembles.md for equations and limits.
 """
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ import numpy as np
 
 _THERMOSTATS = {name: i for i, name in enumerate((
     "none", "andersen", "langevin", "pile-l", "pile-g", "svr", "gle",
-    "nm-gle", "nm-gle-g", "piglet", "trpmd", "ffl",
+    "nm-gle", "nm-gle-g", "piglet", "trpmd", "ffl", "nhc",
 ))}
 _BAROSTATS = {"none": 0, "bzp": 1, "mttk": 2, "rgb": 3, "scr": 4}
 _COLUMNS = ("step", "time", "potential_energy", "kinetic_primitive",
@@ -34,6 +34,7 @@ _ARRAYS = ("q", "p", "aux", "energy", "force", "virial", "cell", "cell_p")
 _FORMAT = "pyrpmd.native-ensemble.v1"
 _LIBRARY_LOCKS: dict[str, threading.RLock] = {}
 _LIBRARY_LOCKS_GUARD = threading.Lock()
+_PYTHON_POTENTIAL_LOCKS: dict[int, threading.RLock] = {}
 
 
 def _integer(value: Any, name: str, minimum: int = 0) -> int:
@@ -165,7 +166,20 @@ class NativePeriodicPES:
         with self.lock:
             if getattr(self.owner, "closed", False):
                 raise RuntimeError("native PES context is closed")
-            yield ("thermal-v1", self.address, self.context, self.natoms)
+            # The compiled callback receives its cell explicitly, while
+            # evaluate() uses this wrapper's bound reference geometry. Keep
+            # their Python-visible binding transactional at block boundaries.
+            previous = {key: getattr(self, key) for key in ("cell", "pbc", "metadata")
+                        if hasattr(self, key)}
+            try:
+                yield ("thermal-v1", self.address, self.context, self.natoms)
+            except BaseException:
+                for key in ("cell", "pbc", "metadata"):
+                    if key in previous:
+                        setattr(self, key, previous[key])
+                    elif hasattr(self, key):
+                        delattr(self, key)
+                raise
 
 
     def bind_system(self, system):
@@ -201,6 +215,64 @@ class NativePeriodicPES:
             raise PotentialError(f"native thermal PES failed: {message.value.decode(errors='replace')}")
         return validate_result(PESResult(e, f, virial=v), x.shape)
 
+
+class _PythonPotentialBinding:
+    """Explicit copied-buffer interpreter bridge, separate from native PES ABIs.
+
+    The outer lease holds the provider cell stable across an entire accepted
+    block. On failure it restores the previous cell alongside C++ rollback.
+    Provider evaluations themselves retain the ordinary stateless PES contract.
+    """
+    def __init__(self, potential, beads, natoms, cell, *, variable_cell):
+        if not callable(getattr(potential, "evaluate", None)):
+            raise ValueError("Python ensemble potential requires evaluate(q)")
+        if variable_cell and not callable(getattr(potential, "set_cell", None)):
+            raise ValueError("Python NPT requires explicit potential.set_cell(cell) support")
+        self.potential, self.beads, self.natoms = potential, beads, natoms
+        self.cell = None if cell is None else np.array(cell, dtype=np.float64, copy=True)
+        self.variable_cell = variable_cell
+        self.calls = 0
+        with _LIBRARY_LOCKS_GUARD:
+            self.lock = _PYTHON_POTENTIAL_LOCKS.setdefault(id(potential), threading.RLock())
+
+    def set_cell(self, cell):
+        if self.cell is None:
+            return
+        value = np.array(cell, dtype=np.float64, copy=True).reshape(3, 3)
+        setter = getattr(self.potential, "set_cell", None)
+        if callable(setter):
+            setter(value.copy())
+        elif not np.array_equal(value, self.cell):
+            raise ValueError("Python potential cannot change its periodic cell")
+        self.cell = value
+
+    @contextmanager
+    def acquire(self):
+        with self.lock:
+            before = None if self.cell is None else self.cell.copy()
+            try:
+                yield None
+            except BaseException:
+                if before is not None:
+                    self.set_cell(before)
+                raise
+
+    def evaluate(self, coordinates, cell):
+        from .potentials.base import PotentialError, validate_result
+        q = np.frombuffer(coordinates, dtype=np.float64).reshape(self.beads, self.natoms, 3).copy()
+        if self.cell is not None:
+            self.set_cell(np.frombuffer(cell, dtype=np.float64).reshape(3, 3))
+        self.calls += 1
+        result = validate_result(self.potential.evaluate(q), q.shape)
+        virial = result.virial
+        if virial is None:
+            if self.cell is not None:
+                raise PotentialError("periodic ensemble propagation requires per-bead physical configurational virials")
+            virial = np.zeros((self.beads, 3, 3), dtype=np.float64)
+        return (np.ascontiguousarray(result.energy, dtype=np.float64).tobytes(),
+                np.ascontiguousarray(result.forces, dtype=np.float64).tobytes(),
+                np.ascontiguousarray(virial, dtype=np.float64).tobytes())
+
 class NativeEnsemble:
     """A persistent C++ trajectory with immutable physics configuration.
 
@@ -208,12 +280,16 @@ class NativeEnsemble:
     dt: atomic time; p: optional [P,N,3] atomic momenta. Omitted p is drawn in
     C++, including the joint GLE auxiliary distribution. Thermostat/barostat
     parameters use inverse atomic time, atomic time and hartree/bohr^3.
+    ``allow_python=True`` explicitly selects a copied-buffer Python PES bridge
+    for ordinary evaluator objects. Native bindings remain the default. The
+    bridge reports its force callbacks and requires real virials for a cell.
     """
     def __init__(self, q, masses, beta: float, dt: float, *, p=None,
                  potential=None, potential_identity: str | None = None,
                  thermostat: str | dict = "pile-l", barostat: str | dict = "none",
                  integrator: str = "cayley-bcb", cell=None, pbc=None,
-                 fixed_atoms=(), seed: int = 0, fuse_modes: bool = True):
+                 fixed_atoms=(), seed: int = 0, fuse_modes: bool = True,
+                 allow_python: bool = False):
         try:
             from . import _thermal
         except ImportError as exc:
@@ -229,6 +305,9 @@ class NativeEnsemble:
         beta = _scalar(beta, "beta", positive=True)
         dt = _scalar(dt, "dt", positive=True)
         self.dt = dt
+        from .engine import PropagationPlan
+        self.plan = PropagationPlan(integrator, thermostat, barostat)
+        integrator = self.plan.integrator
         if integrator not in ("cayley-bcb", "normal-mode-bab"):
             raise ValueError("native ensembles support Cayley BCOCB or exact-normal-mode BAOAB, not Verlet")
         fixed = np.zeros(self.natoms)
@@ -244,39 +323,15 @@ class NativeEnsemble:
             raise ValueError("pbc must contain three booleans")
         if cell is None and any(flags):
             raise ValueError("PBC requires a cell")
-        t = {"mode": thermostat} if isinstance(thermostat, str) else dict(thermostat)
-        _unknown(t, {"mode", "gamma", "gamma_centroid", "pile_scale", "tau", "interval", "gle"}, "thermostat")
-        mode = t.get("mode", "pile-l")
-        if mode not in _THERMOSTATS:
-            raise ValueError(f"unsupported thermostat {mode!r}")
-        thermostat_fields = {
-            "none": set(), "andersen": {"interval"}, "langevin": {"gamma"},
-            "pile-l": {"gamma_centroid", "pile_scale"}, "pile-g": {"tau", "pile_scale"},
-            "svr": {"tau"}, "gle": {"gle"}, "nm-gle": {"gle"},
-            "nm-gle-g": {"gle", "tau"}, "piglet": {"gle"},
-            "trpmd": {"pile_scale", "gamma_centroid"}, "ffl": {"gamma"},
-        }
-        _unknown(t, {"mode"} | thermostat_fields[mode], f"{mode} thermostat")
-        b = {"mode": barostat} if isinstance(barostat, str) else dict(barostat)
-        _unknown(b, {"mode", "pressure", "tau", "gamma", "compressibility", "cell_mask", "reference_cell", "stress"}, "barostat")
-        bmode = b.get("mode", "none")
-        aliases = {"isotropic": "bzp", "flexible": "mttk", "mtk": "mttk", "anisotropic": "rgb", "stochastic-rescaling": "scr"}
-        bmode = aliases.get(bmode, bmode)
-        if bmode in ("sc-isotropic", "suzuki-chin"):
-            raise NotImplementedError("Suzuki-Chin NPT requires the high-order action and its force/virial derivatives; primitive PIMD is not a substitute")
-        if bmode not in _BAROSTATS:
-            raise ValueError(f"unsupported barostat {bmode!r}")
-        barostat_fields = {
-            "none": set(), "bzp": {"pressure", "tau", "gamma"},
-            "mttk": {"pressure", "tau", "gamma", "cell_mask"},
-            "rgb": {"stress", "reference_cell", "tau", "gamma", "cell_mask"},
-            "scr": {"pressure", "tau", "compressibility"},
-        }
-        _unknown(b, {"mode"} | barostat_fields[bmode], f"{bmode} barostat")
-        if bmode != "none" and "pressure" not in b and bmode != "rgb":
-            raise ValueError("NPT requires an explicit external pressure")
-        if bmode == "rgb" and ("stress" not in b or "reference_cell" not in b):
-            raise ValueError("RGB requires explicit stress and reference_cell")
+        # The public adapters and the persistent executor share one canonical
+        # configuration schema. Native matrix/shape/ensemble checks remain here.
+        t = self.plan.thermostat_spec
+        b = self.plan.barostat_spec
+        if not isinstance(b, dict):
+            raise ValueError("NativeEnsemble requires a barostat specification")
+        mode, bmode = t["mode"], b["mode"]
+        if mode not in _THERMOSTATS or bmode not in _BAROSTATS:
+            raise ValueError("requested operator is unavailable in the native executor")
         cell_mask = _array(b.get("cell_mask", [[1, 1, 1], [0, 1, 1], [0, 0, 1]]), (3, 3), allow_bool=True)
         external = _array(b.get("stress", np.zeros((3, 3))), (3, 3))
         if not np.allclose(external, external.T, atol=1e-12, rtol=1e-12):
@@ -303,6 +358,14 @@ class NativeEnsemble:
             "external_stress": external.ravel(),
             "potential": 0, "address": 0, "context": 0, "parameters": np.ones(3),
         }
+        if mode == "nhc":
+            if "tau" in t and "tdamp" in t:
+                raise ValueError("specify only one of NHC tau and tdamp")
+            cfg["tau"] = _scalar(t.get("tdamp", t.get("tau", 1.0)), "NHC tdamp", positive=True)
+            cfg["nhc_length"] = _integer(t.get("chain_length", 3), "NHC chain_length", 1)
+            cfg["nhc_substeps"] = _integer(t.get("substeps", 1), "NHC substeps", 1)
+            if cfg["nhc_length"] > 64 or cfg["nhc_substeps"] > 100000:
+                raise ValueError("NHC chain_length must be <=64 and substeps <=100000")
         if mode in ("gle", "nm-gle", "nm-gle-g", "piglet"):
             if "gle" not in t:
                 raise ValueError("GLE requires an explicit drift matrix")
@@ -319,8 +382,13 @@ class NativeEnsemble:
             cfg["gamma0"] = 0.0
         self.thermostat, self.barostat = mode, bmode
         self.splitting = ("BCOCB" if cfg["cayley"] else "BAOAB") if bmode == "none" else "OBABO"
+        if mode == "nhc" and bmode == "none":
+            self.splitting = "OBCBO" if cfg["cayley"] else "OBABO"
         self._binding = None
+        self._python_binding = None
         self._potential = potential
+        if not isinstance(allow_python, bool):
+            raise ValueError("allow_python must be boolean")
         if potential is None or isinstance(potential, dict):
             spec = {"kind": "free"} if potential is None else dict(potential)
             kind = spec.get("kind", "free")
@@ -340,6 +408,16 @@ class NativeEnsemble:
                 self._binding = potential
                 self._potential_identity = potential.identity
                 cfg["potential"] = 3
+            elif allow_python:
+                if not isinstance(potential_identity, str) or not potential_identity.strip():
+                    raise ValueError("Python provider requires potential_identity for safe restart")
+                self._binding = self._python_binding = _PythonPotentialBinding(
+                    potential, self.beads, self.natoms, None if cell is None else h,
+                    variable_cell=bmode != "none",
+                )
+                self._potential_identity = {"kind": "python-pes", "model": potential_identity}
+                cfg["potential"] = 6
+                cfg["python_callback"] = self._python_binding.evaluate
             else:
                 from .potentials.native import descriptor_binding
                 binding = potential.native_binding() if callable(getattr(potential, "native_binding", None)) else potential
@@ -359,11 +437,13 @@ class NativeEnsemble:
                     raise ValueError("native PES atom count mismatch")
                 cfg["address"], cfg["context"] = int(address), int(context)
             self._handle = _thermal.create(cfg, coordinates, mom, h.ravel(), self._binding)
+            if isinstance(self._binding, NativePeriodicPES):
+                self._sync_bound_cell(h)
         # Addresses and initialization draws are not physics. All model, units,
         # fixed positions, integrator and stochastic matrices are fingerprinted.
         physics = {key: (value.tolist() if isinstance(value, np.ndarray) else value)
                    for key, value in cfg.items()
-                   if key not in {"address", "context", "initialize_momenta", "seed"}}
+                   if key not in {"address", "context", "initialize_momenta", "seed", "python_callback"}}
         physics.update(potential_identity=self._potential_identity, initial_cell=h.tolist(),
                        fixed_positions=coordinates[0, fixed.astype(bool)].tolist(),
                        rng_abi=getattr(_thermal, "rng_abi", "std-cxx17-local-build-v1"), format=_FORMAT)
@@ -373,15 +453,76 @@ class NativeEnsemble:
     def _lease(self):
         return nullcontext(None) if self._binding is None else self._binding.acquire()
 
+    def _sync_bound_cell(self, cell):
+        if self._python_binding is not None:
+            self._python_binding.set_cell(cell)
+        elif isinstance(self._binding, NativePeriodicPES):
+            self._binding.bind_system({
+                "cell": np.asarray(cell).reshape(3, 3) if self._cfg["has_cell"] else None,
+                "pbc": [bool(flag) for flag in self._cfg["pbc"]],
+            })
+
     def run(self, steps: int, *, stride: int = 1, record_centroids: bool = False,
             trajectory: str | Path | None = None, record_moments: bool = False, sample_start: int = 0) -> dict:
         """Advance one complete C++ block; observation times use the absolute clock.
 
         A native/PES failure restores the complete pre-block state and RNG.
-        Unsupported Python potentials are rejected; no fallback is attempted.
+        Python evaluators require explicit construction with allow_python=True;
+        native evaluator failures never trigger a backend fallback.
         No final frame is inserted off the stride clock, so concatenated blocks
         have exactly the same samples as a single call.
         """
+        return self._run(steps, stride=stride, record_centroids=record_centroids,
+                         trajectory=trajectory, record_moments=record_moments,
+                         sample_start=sample_start)
+
+    def run_prefix(self, steps: int, *, stride: int = 1, record_centroids: bool = True,
+                   record_moments: bool = True, sample_start: int = 0,
+                   observe=None, record_energy: bool | None = None,
+                   check_energy: bool = False, energy_parts: bool = False,
+                   ring_radii: bool = False) -> dict:
+        """Advance a C++ block and retain every fully accepted step on failure.
+
+        Force and observation validation share a per-step transaction including
+        RNG, auxiliaries, cached forces and cell. The result adds ``completed``
+        and ``error`` (None on success). Failed-step observations are discarded.
+        Prefix records stay in memory; streaming ``run`` remains block-atomic.
+
+        Supplying ``observe`` or energy/diagnostic options selects the common
+        propagation observation contract. Its binary mask has length ``steps``;
+        only selected rows are recorded, with centroid momenta returned directly
+        in ``centroid_momenta``. ``record_energy`` defaults to True in this mode.
+        Unrequested thermal estimators and ring radii are neither computed nor
+        validated. ``check_energy`` validates the total Hamiltonian initially
+        and after every step, including steps without an observation. Optional
+        ``energy_parts`` contains physical potential/P, centroid kinetic,
+        noncentroid kinetic/P and spring/P. This mode requires the default
+        stride/start and enabled centroid/momentum records.
+        """
+        common = None
+        for name, flag in (("check_energy", check_energy), ("energy_parts", energy_parts),
+                           ("ring_radii", ring_radii)):
+            if not isinstance(flag, (bool, np.bool_)):
+                raise ValueError(f"{name} must be boolean")
+        if record_energy is not None and not isinstance(record_energy, (bool, np.bool_)):
+            raise ValueError("record_energy must be boolean or None")
+        if observe is not None or record_energy is not None or check_energy or energy_parts or ring_radii:
+            steps = _integer(steps, "steps")
+            values = np.ones(steps, dtype=np.uint8) if observe is None else np.asarray(observe)
+            if values.shape != (steps,) or values.dtype.kind not in "bui" or np.any((values != 0) & (values != 1)):
+                raise ValueError("observe must be a boolean/binary mask with length steps")
+            if stride != 1 or sample_start != 0 or not record_centroids or not record_moments:
+                raise ValueError("common observations require stride=1, sample_start=0 and centroid/momentum records")
+            common = {"mask": np.asarray(values, dtype=np.uint8).tobytes(),
+                      "record_energy": True if record_energy is None else bool(record_energy),
+                      "check_energy": bool(check_energy), "energy_parts": bool(energy_parts),
+                      "ring_radii": bool(ring_radii)}
+        return self._run(steps, stride=stride, record_centroids=record_centroids,
+                         record_moments=record_moments, sample_start=sample_start,
+                         keep_prefix=True, common_options=common)
+
+    def _run(self, steps, *, stride=1, record_centroids=False, trajectory=None,
+             record_moments=False, sample_start=0, keep_prefix=False, common_options=None):
         steps = _integer(steps, "steps")
         stride = _integer(stride, "stride", 1)
         sample_start = _integer(sample_start, "sample_start")
@@ -397,7 +538,9 @@ class NativeEnsemble:
         # Otherwise another thread could advance this engine before an I/O
         # failure restores its state. The extra snapshot is O(P*N), not O(steps).
         with self._call_lock, self._lease():
-            before = None
+            callback_start = 0 if self._python_binding is None else self._python_binding.calls
+            before = (self._native.state(self._handle)
+                      if keep_prefix or isinstance(self._binding, NativePeriodicPES) else None)
             try:
                 if path is not None:
                     if path.exists():
@@ -406,8 +549,13 @@ class NativeEnsemble:
                     fd, temporary = tempfile.mkstemp(prefix=path.name + ".", suffix=".tmp", dir=path.parent)
                     os.close(fd)
                     before = self._native.state(self._handle)
-                result = self._native.run(self._handle, steps, stride, record_centroids,
-                                          temporary or "", record_moments, sample_start)
+                advance = self._native.run_prefix if keep_prefix else self._native.run
+                result = advance(self._handle, steps, stride, record_centroids,
+                                 temporary or "", record_moments, sample_start,
+                                 *(() if common_options is None else (common_options,)))
+                if keep_prefix and result["error"] and self._python_binding is not None:
+                    accepted = self._native.state(self._handle)
+                    self._python_binding.set_cell(np.frombuffer(accepted["cell"], dtype=np.float64).reshape(3, 3))
                 frames = result["frames"]
                 if path is None:
                     samples = np.frombuffer(result["samples"], dtype=np.float64).reshape(frames, len(_COLUMNS))
@@ -424,8 +572,17 @@ class NativeEnsemble:
                 centroids = (records[:, :3*self.natoms].reshape(frames, self.natoms, 3)
                              if record_centroids else None)
                 velocities = (records[:, 3*self.natoms:6*self.natoms].reshape(frames, self.natoms, 3)
-                              if record_moments else None)
-                radii = records[:, 6*self.natoms:] if record_moments else None
+                              if record_moments and common_options is None else None)
+                radii = (records[:, 6*self.natoms:]
+                         if record_moments and (common_options is None or common_options["ring_radii"]) else None)
+                common_records = {}
+                if common_options is not None:
+                    common_records["centroid_momenta"] = records[:, 3*self.natoms:6*self.natoms].reshape(frames, self.natoms, 3)
+                    common_records["energy_parts"] = (np.frombuffer(result["energy_parts"], dtype=np.float64).reshape(frames, 4)
+                                                       if common_options["energy_parts"] else None)
+                if isinstance(self._binding, NativePeriodicPES):
+                    current = self._native.state(self._handle)
+                    self._sync_bound_cell(np.frombuffer(current["cell"], dtype=np.float64).reshape(3, 3))
                 if temporary is not None:
                     os.unlink(temporary)
                     temporary = None
@@ -443,9 +600,83 @@ class NativeEnsemble:
         return {"samples": samples, "columns": _COLUMNS, "centroids": centroids,
                 "velocities": velocities, "radii_gyration_squared": radii,
                 "step": result["step"], "force_evaluations": result["force_evaluations"],
-                "backend": "native-cxx17", "python_step_callbacks": 0,
+                "backend": "native-cxx17" if self._python_binding is None else "native-operators-python-pes",
+                "python_step_callbacks": 0 if self._python_binding is None else self._python_binding.calls-callback_start,
                 "thermostat": self.thermostat, "barostat": self.barostat,
-                "splitting": self.splitting, "trajectory": None if path is None else str(path)}
+                "splitting": self.splitting, "trajectory": None if path is None else str(path),
+                **common_records,
+                **({"completed": result["completed"], "error": result["error"] or None} if keep_prefix else {})}
+
+    def set_state(self, q, p, step: int = 0) -> None:
+        """Import physical coordinates, momenta and clock without resetting baths.
+
+        All cached forces, energies and virials are reevaluated at the imported
+        coordinates. A rejected state or failed PES leaves the entire engine
+        unchanged. This is an explicit state edit, not a checkpoint restore.
+        """
+        shape = (self.beads, self.natoms, 3)
+        coordinates, momenta = _array(q, shape), _array(p, shape)
+        clock = _integer(step, "step")
+        with self._call_lock, self._lease():
+            before = self._native.state(self._handle) if isinstance(self._binding, NativePeriodicPES) else None
+            try:
+                self._native.set_state(self._handle, coordinates, momenta, clock)
+                if before is not None:
+                    self._sync_bound_cell(np.frombuffer(before["cell"], dtype=np.float64).reshape(3, 3))
+            except BaseException:
+                if before is not None:
+                    self._native.restore(self._handle, before)
+                raise
+
+    def copy_thermostat_from(self, other: "NativeEnsemble", *, step: int | None = None) -> None:
+        """Transfer compatible bath variables and RNG across execution backends.
+
+        Coordinates, momenta, force caches and piston state remain unchanged.
+        The native layer verifies thermostat parameters and masses. GLE also
+        verifies its prepared transition matrices; changing the bath duration
+        requires a new declared propagation scheme rather than a silent copy.
+        """
+        if not isinstance(other, NativeEnsemble) or other._native is not self._native:
+            raise TypeError("thermostat source must use the same native extension")
+        clock = None if step is None else _integer(step, "step")
+        first, second = sorted((self, other), key=id)
+        with first._call_lock, second._call_lock:
+            self._native.copy_thermostat(self._handle, other._handle, clock)
+
+    def apply_thermostat(self, q, p, dt: float | None = None, *, step: int | None = None) -> np.ndarray:
+        """Apply this engine's bath to external momenta, without force calls.
+
+        ``p`` is updated in place and returned; external and internal ``q``
+        are never changed. Use a separate free-potential helper for a bath in
+        another propagator rather than alternating this operation with run(). RNG,
+        auxiliary variables and the bath-application counter persist in the
+        ordinary checkpoint. Optional ``step`` supplies the physical collision
+        clock (for Andersen) when called as an externally scheduled operator.
+        The operation is transactional, including a failed
+        copy back to the external array. For GLE, the duration must match the
+        transition prepared at construction. This operator accepts no barostat.
+        """
+        if self.barostat != "none":
+            raise ValueError("a standalone thermostat cannot apply a barostat")
+        duration = self.dt if dt is None else _scalar(dt, "thermostat duration", positive=True)
+        clock = None if step is None else _integer(step, "step")
+        coordinates = _array(q, (self.beads, self.natoms, 3))
+        if (not isinstance(p, np.ndarray) or p.dtype != np.dtype(np.float64)
+                or p.shape != coordinates.shape or not p.flags.writeable):
+            raise ValueError("thermostat momenta must be a writable float64 array with shape [P,N,3]")
+        if np.shares_memory(np.asarray(q), p):
+            raise ValueError("thermostat coordinates and momenta must not overlap")
+        momenta = _array(p, coordinates.shape)
+        with self._call_lock:
+            before = self._native.state(self._handle)
+            try:
+                raw = self._native.apply_thermostat(self._handle, coordinates, momenta, duration, clock)
+                updated = np.frombuffer(raw, dtype=np.float64).reshape(p.shape)
+                p[:] = updated
+            except BaseException:
+                self._native.restore(self._handle, before)
+                raise
+        return p
 
     def state(self) -> dict:
         """Return a detached, checksummed restart record, not mutable live arrays."""
@@ -455,6 +686,8 @@ class NativeEnsemble:
                   "aux": (self.beads, self.natoms, 3, max(0, self._cfg["gle_size"] - 1)),
                   "energy": (self.beads,), "force": (self.beads, self.natoms, 3),
                   "virial": (self.beads, 3, 3), "cell": (3, 3), "cell_p": (3, 3)}
+        if self.thermostat == "nhc":
+            shapes["aux"] = (2, self._cfg["nhc_length"])
         for key in _ARRAYS:
             raw[key] = np.frombuffer(raw[key], dtype=np.float64).reshape(shapes[key]).copy()
         raw.update(format=_FORMAT, fingerprint=self.fingerprint)
@@ -474,7 +707,15 @@ class NativeEnsemble:
         for key in _ARRAYS:
             raw[key] = _array(state[key]).tobytes()
         with self._call_lock, self._lease():
-            self._native.restore(self._handle, raw)
+            before = (self._native.state(self._handle)
+                      if self._python_binding is not None or isinstance(self._binding, NativePeriodicPES) else None)
+            try:
+                self._native.restore(self._handle, raw)
+                self._sync_bound_cell(state["cell"])
+            except BaseException:
+                if before is not None:
+                    self._native.restore(self._handle, before)
+                raise
 
     def save(self, path: str | Path) -> None:
         """Atomic NPZ checkpoint; contains no pickle or executable objects."""
@@ -555,8 +796,9 @@ def ensemble_from_config(config: dict, *, base_directory: str | Path = ".",
     for key in ("gamma", "gamma_centroid"):
         if key in t:
             t[key] = parse_quantity(t[key], "frequency")
-    if "tau" in t:
-        t["tau"] = parse_quantity(t["tau"], "time")
+    for key in ("tau", "tdamp"):
+        if key in t:
+            t[key] = parse_quantity(t[key], "time")
     if "gle" in t:
         g = t["gle"]
         factor = unit_factor(g.pop("A_unit", "autime^-1"), "frequency")

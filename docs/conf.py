@@ -31,7 +31,7 @@ include_patterns = [
     "plumed.md", "transition-interface-sampling.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
-    "rpc-mts.md", "trpmd-spectroscopy.md",
+    "rpc-mts.md", "trpmd-spectroscopy.md", "propagation-stack.md",
     "validation/tier1-2026-10-31/README.md",
     "validation/tier1-2026-10-31/pmf-replay.md",
 ]

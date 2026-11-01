@@ -25,13 +25,19 @@ block_steps = 256
 | `loop_backend="native"` | Require fused whole-block propagation; error if unavailable |
 | `block_steps` | Execution block size, 1–65536 |
 
-With the default workflow engine, periodic and fixed-atom systems, PILE-L sampling and metadynamics
-run in the Python outer loop with compiled deterministic substeps. The `pimd`, `diffusion` and `metadynamics` summaries report
+Fixed atoms are supported by the native deterministic blocks when the PES and
+other requested operators have native descriptors. Legacy automatic PILE-L
+sampling retains its Python/NumPy noise sequence; an explicit composed plan
+also has a complete native PILE-L route for compatible callback-free inputs.
+Python PES/bias callbacks continue to use Python orchestration. The
+`pimd`, `diffusion` and `metadynamics` summaries report
 native and Python step counts with fallback reasons under `propagation`; in the API,
 `Dynamics.loop_stats` gives the same counters.
 
-For equilibrium `pimd`, `sampling.engine="native"` selects a separate C++ ensemble engine with its own
-thermostat, PES and checkpoint contracts. It supports fixed atoms in NVT and supported periodic
+For equilibrium `pimd`, `sampling.engine="native"` selects the persistent C++ ensemble workflow
+with its established PES and checkpoint contracts. The same thermostat/barostat
+kernels are available through the [common propagation stack](../propagation-stack.md).
+The workflow supports fixed atoms in NVT and supported periodic
 NVT/NPT models; no Python-PES fallback is available. Its checkpoint cadence controls transaction
 size, and `dynamics.block_steps` does not override that cadence. Changing the engine requires a
 new run. See the [native PIMD guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md).
@@ -56,6 +62,15 @@ threads_per_rank = 1
 `mode="serial"` keeps each PES call in one process and runs four trajectory processes. With
 `mode="bead"` and `bead_workers=2`, each concurrent trajectory gets a persistent pool of two bead PES
 processes. `collision.trajectories` is always the total for the task.
+
+Independent fixed-window umbrellas, dRPMD collisions and `site_rate` can also
+set `parallel.trajectory_batch_size=8` to group up to eight existing tasks into
+shared force calls. The supported size is 1–256 per cooperative group.
+Task-local clocks, RNGs, thermostat states and checkpoints
+remain independent. Set `bead_workers=1`; the task scheduler uses Python
+orchestration and requires `loop_backend="auto"` or `"python"`. See
+[Trajectory batching](../batched-dynamics.md) for capability checks, the dRPMD
+two-phase launch schedule and fixed-cell restrictions.
 
 For cheap analytic potentials, process communication dominates the cost. Choose trajectory
 processes × bead processes × potential/BLAS threads to match the allocated CPUs, typically with:

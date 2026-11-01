@@ -55,7 +55,7 @@ _SECTIONS = {
         "provider type name library manifest factory module function initializer initializer_params with_dimensions model weights device dtype units derivative params abi_version periodic virial".split()
     ),
     "parallel": set(
-        "backend mode trajectory_groups trajectory_workers workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling reuse_potentials".split()
+        "backend mode trajectory_groups trajectory_workers trajectory_batch_size workers bead_workers pes_ranks threads_per_rank devices trajectories_per_gpu coordinator_ranks scheduling reuse_potentials".split()
     ),
     "collision": set(
         "sampling impact_sampling bmax trajectories max_time max_steps energy orientation".split()
@@ -747,18 +747,38 @@ class JobSpec:
             if not isinstance(sampling["thermostat"], str):
                 raise InputError("sampling.thermostat must be a name such as 'andersen', 'pile-l' or 'nose-hoover-chain'")
             sampler = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(integrator)
+            if native_pimd and sampling["thermostat"] == "nhc" and sampler is not None:
+                from .workflows.native_pimd import sampling_splitting
+                sampler = sampling_splitting(integrator, "nhc", d.get("barostat", {}).get("mode", "none"))
             expected_sampler = sampler if native_pimd or sampling["thermostat"] == "pile-l" else integrator + "-" + sampling["thermostat"]
-            sampling["integrator"] = sampling.get("integrator", expected_sampler)
+            from .workflows.sampling import legacy_metadynamics_sampling
+            common_sampler = task in ("fes", "opes") or (
+                task == "metadynamics" and not legacy_metadynamics_sampling(sampling))
+            if native_pimd or not common_sampler:
+                sampling["integrator"] = sampling.get("integrator", expected_sampler)
             if native_pimd:
                 from .native_ensemble import _THERMOSTATS
                 if sampling["thermostat"] not in _THERMOSTATS or sampling["thermostat"] in ("none", "trpmd"):
                     raise InputError("native PIMD requires an equilibrium sampling thermostat")
                 if sampler is None or sampling["integrator"] != sampler:
-                    raise InputError("Native PIMD requires matching BCOCB/BAOAB sampling")
+                    raise InputError("Native PIMD sampling.integrator must match its selected thermostat splitting")
                 if "gamma_centroid" in sampling:
                     if sampling["thermostat"] != "pile-l":
                         raise InputError("sampling.gamma_centroid requires PILE-L")
                     sampling["gamma_centroid"] = _positive(parse_quantity(sampling["gamma_centroid"], "frequency"), "gamma_centroid")
+            elif common_sampler:
+                from .workflows.sampling import fes_sampler
+                try:
+                    resolved_sampler = fes_sampler({
+                        **d, "sampling": sampling,
+                        "dynamics": {**dyn, "integrator": integrator},
+                        "beta": beta, "beads": beads, "dt_au": dt,
+                    })
+                except (ValueError, TypeError, KeyError) as error:
+                    raise InputError(str(error)) from error
+                sampling.setdefault("integrator", resolved_sampler.integrator)
+                if resolved_sampler.gamma_centroid is not None:
+                    sampling["gamma_centroid"] = resolved_sampler.gamma_centroid
             elif task == "metadynamics" and sampling["thermostat"] == "nose-hoover-chain":
                 from .thermostats import nhc_options
                 try:
@@ -776,8 +796,6 @@ class JobSpec:
                     parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency"),
                     "sampling.gamma_centroid",
                 )
-                if dyn.get("loop_backend", "auto") == "native":
-                    raise InputError("PILE-L sampling requires loop_backend='auto' or 'python'; its deterministic substeps may still be native")
             elif sampling["integrator"] != integrator + "-andersen" or sampling["thermostat"] != "andersen":
                 raise InputError(
                     "Workflow sampling requires sampling.integrator='"
@@ -862,6 +880,9 @@ class JobSpec:
             "backend", "process" if parallel["trajectory_workers"] > 1 else "serial"
         )
         parallel.setdefault("threads_per_rank", 1)
+        if "trajectory_batch_size" in parallel:
+            parallel["trajectory_batch_size"] = _integer(
+                parallel["trajectory_batch_size"], "parallel.trajectory_batch_size")
         parallel.setdefault("pes_ranks", 1)
         parallel.setdefault("scheduling", "static")
         parallel.setdefault("coordinator_ranks", 1 if parallel["scheduling"] == "dynamic" else 0)
@@ -876,6 +897,8 @@ class JobSpec:
 
         try:
             execution_plan(parallel)
+            from .trajectory_batch import trajectory_batch_size
+            trajectory_batch_size({**d, "parallel": parallel})
         except ValueError as e:
             raise InputError(str(e)) from e
         if "nonadiabatic" in d or potential.get("provider", potential.get("type")) == "diabatic_python":

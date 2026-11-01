@@ -87,13 +87,16 @@ python examples/manual/low_level.py
 最后一行打印 `loop_stats`：Python `HarmonicPotential` 没有原生 PES 绑定，因此每一步都在 Python 中运行，回退原因中会写明。
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
-:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, loop_stats
+:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, operator_state_dict, load_operator_state_dict, loop_stats
 ```
 
 ```{autofunction} pyrpmd.dynamics.native_capabilities
 ```
 
-`step()` 执行一步无恒温的确定性传播。`sample_step()` 用匹配的恒温器执行一步采样。`energy()` 返回对珠子求和的环
+默认构造时，`step()` 执行一步无恒温的确定性传播。显式设置 `thermostat`、`barostat` 或 `force_splitting` 后，
+同一步传播组合相应算符；见[统一传播栈](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/propagation-stack.md)。
+`sample_step()` 用请求的恒温器执行一步采样。附加恒温器时须把 `operator_state_dict()` 与物理状态一同保存。
+`energy()` 返回对珠子求和的环
 Hamiltonian。`propagate()` 与 `propagate_block()` 在失败时提交的内容不同，见[执行与续跑](execution.md)。
 
 ## 批量轨迹、RPC/MTS 与谱分析

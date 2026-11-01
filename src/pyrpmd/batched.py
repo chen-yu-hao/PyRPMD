@@ -4,14 +4,16 @@ Only the PES frame axis is flattened.  The free-ring map retains ``P`` beads:
 the existing native/NumPy kernel sees ``[P, K*N, 3]`` with repeated atom masses,
 so no spring ever connects different trajectories.  All units are atomic.
 
-This is a deterministic NVE API.  It does not change thermostat definitions,
-random streams, or the scalar :class:`pyrpmd.dynamics.Dynamics` defaults.
+NVE retains its vectorized ring kernel. Optional thermostats and force splitting
+use the canonical :class:`pyrpmd.dynamics.Dynamics` operators independently in
+each lane, sharing only independent physical PES frames.
 """
 
 from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass
+import copy
 import numbers
 import threading
 
@@ -193,7 +195,12 @@ class BatchedPropagationError(PotentialError):
 
 
 class BatchedDynamics:
-    """Batch deterministic trajectories using the established ring-polymer map.
+    """Batch trajectories using the shared scalar propagation operators.
+
+    ``thermostat`` and ``force_splitting`` accept the canonical Dynamics options.
+    These composed trajectories use one RNG and bath state per original lane,
+    seeded with ``SeedSequence([seed, lane_index])``. Checkpoint their operator
+    state with ``operator_state_dict()`` alongside the physical BatchedState.
 
     ``stop(index, state)`` is an optional per-trajectory callback returning a
     boolean after a trial full step.  The supplied State is an independent
@@ -206,19 +213,34 @@ class BatchedDynamics:
     """
 
     def __init__(self, potential, masses, beta, nbeads, dt, *, native=True,
-                 threads=1, integrator="cayley-bcb", fixed_atoms=(), fixed_positions=None):
-        validate_batch_potential(potential)
+                 threads=1, integrator="cayley-bcb", fixed_atoms=(), fixed_positions=None,
+                 thermostat=None, force_splitting=None, seed=0):
+        from .trajectory_batch import validate_trajectory_potential
+        self._composed = thermostat is not None or force_splitting is not None
+        from .engine import PropagationPlan
+        plan = PropagationPlan(integrator, thermostat, force_splitting=force_splitting)
+        self._thermostat = plan.thermostat_spec
+        self._force_splitting = plan.force_splitting
+        self._seed = _integer(seed, "seed")
+        self._lane_operator_states = {}
+        if self._composed:
+            validate_trajectory_potential(potential)
+        else:
+            validate_batch_potential(potential)
         self._prototype = Dynamics(
             potential, masses, beta, nbeads, dt, native=native, threads=threads,
             integrator=integrator, loop_backend="python", fixed_atoms=fixed_atoms,
-            fixed_positions=fixed_positions,
+            fixed_positions=fixed_positions, force_splitting=self._force_splitting,
         )
         self.potential = potential
         self.integrator = self._prototype.integrator
         self.masses = self.integrator.masses
         self.beta = self.integrator.beta
         self.nbeads = self.integrator.nbeads
-        self.dt = self.integrator.dt
+        # State clocks count outer steps; the spring map uses dt / inner_steps.
+        # Validate that inner map when checking VV stability, just as Dynamics
+        # does. An otherwise valid MTS plan need not have a stable outer VV map.
+        self.dt = self._prototype.dt
         self.integrator_name = self.integrator.scheme
         self.native = self.integrator.native
         self._native_requested = native
@@ -227,10 +249,43 @@ class BatchedDynamics:
         self.pes_calls = 0
         self.pes_frames = 0
 
+    def _lane_dynamics(self, index, provider):
+        """A scalar engine with an independent, reproducible operator state."""
+        return Dynamics(
+            provider, self.masses, self.beta, self.nbeads, self.dt,
+            native=self._native_requested, threads=self.integrator.threads,
+            integrator=self.integrator_name, loop_backend="python",
+            fixed_atoms=self._prototype.fixed_atoms,
+            fixed_positions=self._prototype.fixed_positions,
+            thermostat=self._thermostat, force_splitting=self._force_splitting,
+            seed=np.random.SeedSequence([self._seed, int(index)]),
+        )
+
+    def operator_state_dict(self):
+        """Checkpoint per-lane thermostat/RNG state alongside BatchedState."""
+        return {"version": 1, "seed": self._seed,
+                "lanes": {str(index): copy.deepcopy(value)
+                          for index, value in self._lane_operator_states.items()}}
+
+    def load_operator_state_dict(self, value):
+        if (not isinstance(value, dict) or set(value) != {"version", "seed", "lanes"}
+                or value["version"] != 1 or value["seed"] != self._seed
+                or not isinstance(value["lanes"], dict)):
+            raise ValueError("batched operator checkpoint parameters differ")
+        loaded = {}
+        for key, snapshot in value["lanes"].items():
+            if not isinstance(key, str) or not key.isdecimal() or str(int(key)) != key:
+                raise ValueError("batched operator checkpoint has invalid lane identities")
+            dynamics = self._lane_dynamics(int(key), self.potential)
+            dynamics.load_operator_state_dict(snapshot)
+            loaded[int(key)] = copy.deepcopy(snapshot)
+        self._lane_operator_states = loaded
+
     def _check(self, state):
         if not isinstance(state, BatchedState):
             raise TypeError("state must be a BatchedState")
-        if (self.beta != self.integrator.beta or self.dt != self.integrator.dt
+        if (self.beta != self.integrator.beta or self.dt != self._prototype.dt
+                or self.dt / self._prototype.inner_steps != self.integrator.dt
                 or self.nbeads != self.integrator.nbeads
                 or self.integrator_name != self.integrator.scheme):
             raise ValueError("BatchedDynamics integration parameters are immutable")
@@ -251,7 +306,7 @@ class BatchedDynamics:
         plan = self._plans.pop(count, None)
         if plan is None:
             plan = CayleyIntegrator(
-                np.tile(self.masses, count), self.beta, self.nbeads, self.dt,
+                np.tile(self.masses, count), self.beta, self.nbeads, self.integrator.dt,
                 threads=self.integrator.threads, native=self._native_requested,
                 scheme=self.integrator_name,
             )
@@ -276,6 +331,8 @@ class BatchedDynamics:
             p[:, :, fixed, :] = 0.0
 
     def _evaluate(self, q, indices, biases):
+        if self._composed:
+            return self._evaluate_components(q, indices, biases)
         count, beads, atoms, _ = q.shape
         flat = np.ascontiguousarray(q).reshape(count * beads, atoms, 3)
         self.pes_calls += 1
@@ -309,6 +366,71 @@ class BatchedDynamics:
                     errors[j] = f"{type(exc).__name__}: {exc}"
         force[:, :, self._prototype._fixed_indices, :] = 0.0
         return energy, force, errors
+
+    def _evaluate_components(self, q, indices, biases):
+        from .trajectory_batch import make_trajectory_potential
+
+        def evaluate(task):
+            try:
+                positions = task["q"]
+                provider = make_trajectory_potential(task)
+                result = validate_result(provider.evaluate(positions), positions.shape)
+                energy, forces = float(result.energy.sum()), result.forces.copy()
+                bias = biases[task["index"]]
+                if bias is not None:
+                    extra_energy, extra_force = bias.energy_force(positions)
+                    if (np.ndim(extra_energy) != 0 or not np.isfinite(extra_energy)
+                            or np.shape(extra_force) != positions.shape
+                            or not np.isfinite(extra_force).all()):
+                        raise ValueError("bias returned invalid energy/forces")
+                    energy += float(extra_energy)
+                    forces += extra_force
+                forces[:, self._prototype._fixed_indices, :] = 0.0
+                return energy, forces, None
+            except Exception as exc:
+                return np.nan, np.zeros_like(task["q"]), f"{type(exc).__name__}: {exc}"
+
+        results = self._run_composed_tasks(evaluate, [dict(q=positions, index=int(index))
+            for positions, index in zip(q, indices)])
+        return (np.array([value[0] for value in results]),
+                np.stack([value[1] for value in results]), [value[2] for value in results])
+
+    def _composed_step(self, state, indices, biases):
+        """Use the canonical scalar engine; only PES calls are shared."""
+        from .trajectory_batch import make_trajectory_potential
+
+        def advance(task):
+            index = task["index"]
+            candidate = State(state.q[index], state.p[index],
+                              int(state.step[index]), float(state.time[index]))
+            try:
+                dynamics = self._lane_dynamics(index, make_trajectory_potential(task))
+                if index in self._lane_operator_states:
+                    dynamics.load_operator_state_dict(self._lane_operator_states[index])
+                dynamics.step(candidate, biases[index])
+                energy = float(dynamics.energy(candidate, biases[index]))
+                if not np.isfinite(energy):
+                    raise FloatingPointError("nonfinite trajectory energy")
+                return candidate, energy, dynamics.operator_state_dict(), None
+            except Exception as exc:
+                return candidate, np.nan, None, f"{type(exc).__name__}: {exc}"
+
+        return self._run_composed_tasks(advance, [dict(index=int(index)) for index in indices])
+
+    def _run_composed_tasks(self, worker, tasks):
+        from .trajectory_batch import MAX_TRAJECTORY_BATCH_SIZE, run_trajectory_batch
+
+        results = []
+        for start in range(0, len(tasks), MAX_TRAJECTORY_BATCH_SIZE):
+            stats = {}
+            try:
+                results.extend(run_trajectory_batch(
+                    worker, tasks[start:start + MAX_TRAJECTORY_BATCH_SIZE],
+                    self.potential, stats=stats))
+            finally:
+                self.pes_calls += stats.get("pes_calls", 0)
+                self.pes_frames += stats.get("pes_frames", 0)
+        return results
 
     def _hamiltonian(self, q, p, energy):
         dq = q - np.roll(q, -1, axis=1)
@@ -366,8 +488,10 @@ class BatchedDynamics:
                         raise_on_error=True):
         """Advance selected trajectories, retaining every valid completed prefix.
 
-        A physical PES call is made once at block entry and once per subsequent
-        integration step, on all still-active trajectories.  Force errors are
+        NVE makes one physical PES call at block entry and one per subsequent
+        integration step. Composed operators use the canonical scalar force
+        schedule, with each physical component batched across active lanes.
+        Force errors are
         never retried with a different backend.  Frame-level PES errors affect
         only their trajectory; exceptions/malformed whole-batch results affect
         every trajectory in that attempted call.  With ``raise_on_error=True``
@@ -434,17 +558,45 @@ class BatchedDynamics:
                 break
             indices = np.flatnonzero(active)
             q, p = state.q[indices].copy(), state.p[indices].copy()
-            # Work arrays isolate every attempted step from the live state.
-            p += 0.5*self.dt*force[indices]
-            self._project_fixed(q, p)
-            try:
-                self._free_step(q, p)
-                self._project_fixed(q, p)
-            except Exception as exc:
-                fail(indices, [f"{type(exc).__name__}: {exc}"]*len(indices))
-                break
-            energy, forces, reasons = evaluate(q, indices)
-            fail(indices, reasons)
+            operator_states = {}
+            if self._composed:
+                try:
+                    trials = self._composed_step(state, indices, biases)
+                except Exception as exc:
+                    fail(indices, [f"{type(exc).__name__}: {exc}"] * len(indices))
+                    break
+                q = np.stack([trial[0].q for trial in trials])
+                p = np.stack([trial[0].p for trial in trials])
+                energy = np.array([trial[1] for trial in trials])
+                forces = np.zeros_like(q)
+                fail(indices, [trial[3] for trial in trials])
+                operator_states = {int(index): trial[2] for index, trial in zip(indices, trials)}
+            else:
+                # Work arrays isolate every attempted step from the live state.
+                # Scalar Dynamics and this vectorized adapter share the same split
+                # ordering. Only PES evaluation and lane-local commit differ.
+                from .engine import deterministic_step
+                energy = forces = None
+                first_kick = True
+
+                def kick(q, p):
+                    nonlocal first_kick, energy, forces
+                    if first_kick:
+                        p += 0.5*self.dt*force[indices]
+                        first_kick = False
+                    else:
+                        energy, forces, reasons = evaluate(q, indices)
+                        fail(indices, reasons)
+                        if forces is not None:
+                            good = np.array([reason is None for reason in reasons])
+                            p[good] += 0.5*self.dt*forces[good]
+
+                try:
+                    deterministic_step(q, p, kick=kick, free=self._free_step,
+                                       project=self._project_fixed)
+                except Exception as exc:
+                    fail(indices, [f"{type(exc).__name__}: {exc}"]*len(indices))
+                    break
             committed = np.zeros(count, dtype=bool)
             trial_stopped = np.zeros(count, dtype=bool)
             row_energy = np.full(count, np.nan)
@@ -454,8 +606,6 @@ class BatchedDynamics:
                     if failed[index]:
                         continue
                     try:
-                        p[j] += 0.5*self.dt*forces[j]
-                        self._project_fixed(q[j:j+1], p[j:j+1])
                         if not np.isfinite(q[j]).all() or not np.isfinite(p[j]).all():
                             raise FloatingPointError("nonfinite integration state")
                         if state.step[index] == np.iinfo(np.int64).max:
@@ -473,7 +623,8 @@ class BatchedDynamics:
                             int(index), State(q[j], p[j], next_step, next_time))
                         if not isinstance(should_stop, (bool, np.bool_)):
                             raise ValueError("stop callback must return one boolean")
-                        hamiltonian = self._hamiltonian(q[j:j+1], p[j:j+1], energy[j:j+1])[0]
+                        hamiltonian = (energy[j] if self._composed else
+                                       self._hamiltonian(q[j:j+1], p[j:j+1], energy[j:j+1])[0])
                         if not np.isfinite(hamiltonian):
                             raise FloatingPointError("nonfinite trajectory energy")
                     except Exception as exc:
@@ -482,6 +633,8 @@ class BatchedDynamics:
                     state.q[index], state.p[index] = q[j], p[j]
                     state.step[index], state.time[index] = next_step, next_time
                     force[index] = forces[j]
+                    if self._composed:
+                        self._lane_operator_states[int(index)] = operator_states[int(index)]
                     completed[index] += 1
                     committed[index] = True
                     row_energy[index] = hamiltonian
@@ -517,7 +670,8 @@ class BatchedDynamics:
             centroid_momenta=stack(6, (count, atoms, 3)) if record_centroids else None,
             values=stack(7, (count, dimension)) if observe is not None else None,
             pes_calls=self.pes_calls-calls, pes_frames=self.pes_frames-frames,
-            backend="native-ring/batched-pes" if self.native else "numpy-ring/batched-pes",
+            backend=(("native-ring" if self.native else "numpy-ring")
+                     + ("/composed-batched-pes" if self._composed else "/batched-pes")),
         )
         if raise_on_error and failed.any():
             raise BatchedPropagationError(result)

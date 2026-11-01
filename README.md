@@ -35,6 +35,9 @@ implementation alongside.
 Expensive-potential workflows can use [provider reuse and trajectory batching](docs/performance-dynamics.md),
 [explicit RPC/MTS Python APIs](docs/rpc-mts.md), and
 [TRPMD, correlation functions and relative IR spectra](docs/trpmd-spectroscopy.md).
+The [common propagation stack](docs/propagation-stack.md) composes integrators,
+thermostats, barostats and force splitting through `Dynamics`, with complete
+operator checkpoints and independent trajectory batching.
 The [published-rate comparison tools](benchmarks/published_rates/README.md) check model identity,
 statistical conventions and convergence evidence.
 
@@ -158,8 +161,10 @@ to a research calculation.
 | Integrators | `cayley-bcb`, `normal-mode-bab`, `velocity-verlet`, each with native block propagation, Andersen parents and centroid RATTLE |
 | Restart | v2 atomic checkpoints with per-array SHA256 (v1 still readable); block size and backend adjustable on restart |
 
-The [native ensemble driver](docs/native-ensembles.md) provides opt-in C++ thermostat/barostat
-trajectories with persistent state and compiled PES callbacks. The [potential adapters](docs/potential-adapters.md)
+The [native ensemble driver](docs/native-ensembles.md) provides the persistent C++
+thermostat/barostat backend of the [common stack](docs/propagation-stack.md),
+including native Nosé–Hoover chains. Its existing direct API and checkpoint
+format remain available. The [potential adapters](docs/potential-adapters.md)
 cover C ABI v2, periodic Torch, named ML calculators, tblite, PySCF and multi-client i-PI.
 The [offline PES-generation workflow](docs/manual/pes-generation.md) connects PySCF references
 to source-pinned Caracal QMDFF/EVB/TREQ, with explicit pilot and validation requirements.

@@ -57,7 +57,7 @@ pyrpmd resume runs/job                  # 从检查点续跑，科学设置保�
 | 开始使用 | [安装](manual/installation.md) · [快速入门](manual/quickstart.md) · [输入与命令行](manual/input.md) · [科学约定](manual/science.md) |
 | 计算任务 | [气相与自由能](manual/workflows.md) · [材料与表面](manual/periodic.md) · [PCET](manual/pcet.md) · [非绝热 NRPMD](manual/nonadiabatic.md) · [示例](manual/examples.md) |
 | 模型与运行 | [势能与插件](manual/potentials.md) · [执行、并行与续跑](manual/execution.md) · [输出与分析](manual/results.md) |
-| 动力学扩展（英文指南） | [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
+| 动力学扩展（英文指南） | [统一传播栈](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/propagation-stack.md) · [昂贵势能](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md) · [批量轨迹](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md) · [RPC/MTS](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rpc-mts.md) · [TRPMD 与谱](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/trpmd-spectroscopy.md) |
 | 参考 | [Python API](manual/api.md) · [常见问题](manual/troubleshooting.md) · [开发者指南](manual/development.md) |
 
 ```{toctree}

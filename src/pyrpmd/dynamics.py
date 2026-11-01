@@ -2,9 +2,10 @@
 
 Cayley BCB remains the default. Exact normal-mode BAB and full-Hamiltonian
 velocity Verlet use the same real masses and physical force convention.
-No thermostat is applied in step(). Andersen sampling has bead momentum
-variance m*P/beta. PILE-L sampling and internal-mode-only TRPMD are explicit,
-distinct APIs; neither changes the physical masses.
+step() is unthermostatted by default; an explicit propagation plan composes
+its selected bath and pressure operators. Andersen sampling has bead momentum
+variance m*P/beta. PILE-L sampling and internal-mode-only TRPMD are explicit
+choices; neither changes the physical masses.
 """
 
 from dataclasses import dataclass
@@ -279,11 +280,24 @@ class Dynamics:
     def __init__(
         self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1,
         loop_backend="auto", block_steps=256, integrator="cayley-bcb",
-        fixed_atoms=(), fixed_positions=None
+        fixed_atoms=(), fixed_positions=None, *, thermostat=None, barostat=None,
+        force_splitting=None, cell=None, pbc=None, potential_identity=None,
     ):
+        from .engine import PropagationPlan, _Composition
+        self.plan = PropagationPlan(integrator, thermostat, barostat, force_splitting)
+        self.force_splitting = self.plan.force_splitting
+        self.inner_steps = 1 if force_splitting is None else force_splitting.inner_steps
+        if isinstance(dt, (bool, np.bool_)) or not isinstance(dt, numbers.Real):
+            raise ValueError("beta/dt must be real numerical scalars")
+        if force_splitting is not None:
+            from .potentials.contraction import SplitPotential
+            if not isinstance(potential, SplitPotential):
+                raise TypeError("force splitting requires an explicit SplitPotential")
+            if potential.nbeads != nbeads:
+                raise ValueError("Dynamics and SplitPotential bead counts must agree")
         self.potential = potential
         self.integrator = CayleyIntegrator(
-            masses, beta, nbeads, dt, threads=threads, native=native, scheme=integrator
+            masses, beta, nbeads, dt / self.inner_steps, threads=threads, native=native, scheme=integrator
         )
         self.integrator_name = self.integrator.scheme
         self.masses = self.integrator.masses
@@ -331,6 +345,91 @@ class Dynamics:
         self.loop_backend = loop_backend
         self.block_steps = int(block_steps)
         self.propagation_stats = {"native_steps": 0, "python_steps": 0, "fallback_reasons": {}}
+        self.force_evaluations = {"fast": 0, "slow": 0}
+        if not isinstance(self.plan.barostat_spec, dict):
+            piston_cell = self.plan.barostat_spec.cell
+            if cell is not None and not np.array_equal(np.asarray(cell), piston_cell):
+                raise ValueError("barostat and Dynamics initial cells differ")
+            if pbc is not None and tuple(pbc) != (True, True, True):
+                raise ValueError("BZP requires a fully periodic 3D cell")
+            cell, pbc = piston_cell, (True, True, True)
+        if cell is not None or pbc is not None:
+            from .geometry import validate_cell_pbc
+            cell, flags = validate_cell_pbc(cell, pbc)
+            pbc = tuple(bool(flag) for flag in flags)
+        self.cell = None if cell is None else np.array(cell, dtype=float, copy=True)
+        self._initial_cell = None if self.cell is None else self.cell.copy()
+        self.pbc = None if pbc is None else tuple(pbc)
+        if potential_identity is not None and (not isinstance(potential_identity, str) or not potential_identity.strip()):
+            raise ValueError("potential_identity must be a nonempty string")
+        self.potential_identity = potential_identity
+        import uuid
+        self._runtime_potential_identity = potential_identity or "runtime:" + uuid.uuid4().hex
+        self._composition = _Composition(self, self.plan)
+        self._sampling_compositions = {}
+        self.last_step_backend = "python"
+        self._composition.validate_binding()
+
+    def operator_state_dict(self):
+        """JSON-serializable bath/RNG/cell state for a physical checkpoint.
+
+        This accompanies q/p/clock and the caller's PES/physics identity; it
+        does not replace those records. Execution backend and block size are
+        deliberately absent, so changing them never resets a heat bath.
+        """
+        from .engine import _json
+        return _json({"version": 1, "rng": copy.deepcopy(self.rng.bit_generator.state),
+                      "composition": self._composition.snapshot(),
+                      "sampling": {key: component.snapshot()
+                                   for key, component in self._sampling_compositions.items()}})
+
+    def load_operator_state_dict(self, data):
+        """Restore all operators atomically, including lazily created baths."""
+        from .engine import PropagationPlan, _Composition
+        import json
+        if not isinstance(data, dict) or set(data) != {"version", "rng", "composition", "sampling"} or data["version"] != 1:
+            raise ValueError("invalid propagation operator checkpoint")
+        if not isinstance(data["sampling"], dict):
+            raise ValueError("invalid sampling operator checkpoint")
+        # Check the generator schema before touching any coupled operator.
+        candidate_rng = copy.deepcopy(self.rng.bit_generator)
+        candidate_rng.state = copy.deepcopy(data["rng"])
+        previous = self._composition.snapshot()
+        previous_sampling = {key: helper.snapshot() for key, helper in self._sampling_compositions.items()}
+        try:
+            component = _Composition(self, self.plan)
+            component.baths = dict(self._composition.baths)
+            component.native_engine = self._composition.native_engine
+            component.restore(data["composition"])
+            sampling = {}
+            for key, saved in data["sampling"].items():
+                spec = json.loads(key)
+                plan = PropagationPlan(self.integrator_name, spec, self.plan.barostat_spec, self.force_splitting)
+                helper = _Composition(self, plan)
+                existing = self._sampling_compositions.get(key)
+                if existing is not None:
+                    helper.baths = dict(existing.baths)
+                    helper.native_engine = existing.native_engine
+                helper.restore(saved)
+                sampling[key] = helper
+            self.rng.bit_generator.state = copy.deepcopy(data["rng"])
+        except BaseException:
+            self._composition.restore(previous)
+            for key, saved in previous_sampling.items():
+                self._sampling_compositions[key].restore(saved)
+            raise
+        self._composition, self._sampling_compositions = component, sampling
+
+    def _sample_composition(self, spec):
+        from .engine import PropagationPlan, _Composition, normalize_thermostat
+        import json
+        normalized = normalize_thermostat(spec)
+        key = json.dumps(normalized, sort_keys=True)
+        if key not in self._sampling_compositions:
+            self._sampling_compositions[key] = _Composition(
+                self, PropagationPlan(self.integrator_name, normalized,
+                                      self.plan.barostat_spec, self.force_splitting))
+        return self._sampling_compositions[key]
 
     def propagate(self, state, steps, **options):
         """Advance a block, using native PES/CVs when available, else Python."""
@@ -382,10 +481,6 @@ class Dynamics:
     def _record_python_steps(self, steps):
         """Record workflow steps, including the fixed-atom compatibility route."""
         self.propagation_stats["python_steps"] += int(steps)
-        if self.fixed_atoms and self.loop_backend != "python":
-            reason = "fixed atoms require the Python propagation loop"
-            reasons = self.propagation_stats["fallback_reasons"]
-            reasons[reason] = reasons.get(reason, 0) + int(steps)
 
     def _force(self, q, bias=None):
         """Return an independent, writable force for Python extension hooks."""
@@ -418,14 +513,17 @@ class Dynamics:
         self.integrator.kick(p, force, 0.5 * self.dt)
 
     def step(self, state, bias=None):
+        if self.plan.active:
+            return self._composition.step(state, bias)
         return self._propagate(state, bias)
 
     def _check_parameters(self):
         if (
-            self.dt != self.integrator.dt
+            self.dt / self.inner_steps != self.integrator.dt
             or self.beta != self.integrator.beta
             or self.nbeads != self.integrator.nbeads
             or self.integrator_name != self.integrator.scheme
+            or self.inner_steps != (1 if self.force_splitting is None else self.force_splitting.inner_steps)
         ):
             raise ValueError(
                 "Dynamics parameters are immutable; create a new Dynamics to change dt, beta, P or integrator"
@@ -443,15 +541,12 @@ class Dynamics:
         # cannot leave a half-stepped state masquerading as a completed step.
         q = state.q.copy()
         p = state.p.copy()
-        self._kick(q, p, bias)
-        self._project_fragments(q, p, fragment_data)
-        self._project_fixed(q, p)
-        self.integrator.free_step(q, p)
-        self._project_fragments(q, p, fragment_data)
-        self._project_fixed(q, p)
-        self._kick(q, p, bias)
-        self._project_fragments(q, p, fragment_data)
-        self._project_fixed(q, p)
+        from .engine import deterministic_step
+        def project(q, p):
+            self._project_fragments(q, p, fragment_data)
+            self._project_fixed(q, p)
+        deterministic_step(q, p, kick=lambda q, p: self._kick(q, p, bias),
+                           free=self.integrator.free_step, project=project)
         if not np.isfinite(q).all() or not np.isfinite(p).all():
             raise FloatingPointError("nonfinite integration state")
         state.q[:] = q
@@ -540,6 +635,8 @@ class Dynamics:
             raise ValueError("interval must be positive integer")
         if self.dt <= 0:
             raise ValueError("thermostatted sampling requires positive dt")
+        if self.plan.thermostat_spec["mode"] != "none":
+            raise ValueError("thermalize owns legacy Andersen collisions; use propagate for a configured thermostat")
         self._check_parameters()
         _, time = _state_clock(state.step, state.time)
         try:
@@ -570,7 +667,10 @@ class Dynamics:
                 if state.step % interval == 0:
                     state.p[:] = self.sample_momenta()
                     self._fix_fragments(state, data)
-                self._propagate(state, bias, data)
+                if self.plan.active:
+                    self._composition.step(state, bias, data)
+                else:
+                    self._propagate(state, bias, data)
                 self._record_python_steps(1)
         return state
 
@@ -589,7 +689,7 @@ class Dynamics:
 
     def sample_step(
         self, state, bias=None, *, gamma_centroid=None, method=None,
-        thermostat="pile-l", friction_scale=1.0,
+        thermostat="pile-l", friction_scale=1.0, thermostat_params=None,
     ):
         """BCOCB/BAOAB with explicit PILE-L sampling or TRPMD dynamics.
 
@@ -602,6 +702,49 @@ class Dynamics:
         Auto uses a native free/OU/free kernel when available; Python still
         owns the two PES calls and the exact real-mode NumPy noise sequence.
         """
+        from .engine import normalize_thermostat
+        import json
+        if (isinstance(friction_scale, (bool, np.bool_))
+                or not isinstance(friction_scale, numbers.Real)
+                or not np.isfinite(friction_scale) or friction_scale < 0):
+            raise ValueError("friction_scale must be a finite nonnegative number")
+        spec = dict(thermostat) if isinstance(thermostat, dict) else {"mode": thermostat}
+        if thermostat_params is not None:
+            if not isinstance(thermostat_params, dict) or set(spec).intersection(thermostat_params):
+                raise ValueError("thermostat_params must be a nonduplicating parameter mapping")
+            spec.update(thermostat_params)
+        if gamma_centroid is not None:
+            if "gamma_centroid" in spec and spec["gamma_centroid"] != gamma_centroid:
+                raise ValueError("conflicting centroid friction parameters")
+            spec["gamma_centroid"] = gamma_centroid
+        normalized = normalize_thermostat(spec)
+        if normalized["mode"] == "trpmd":
+            if ("pile_scale" in normalized and friction_scale != 1.0
+                    and normalized["pile_scale"] != friction_scale):
+                raise ValueError("conflicting TRPMD friction_scale and pile_scale")
+            normalized.setdefault("pile_scale", friction_scale)
+        elif friction_scale != 1.0:
+            raise ValueError("friction_scale is a TRPMD option")
+        key = json.dumps(normalized, sort_keys=True)
+        barostat = self.plan.barostat_spec
+        if not isinstance(barostat, dict) or barostat.get("mode", "none") != "none":
+            if normalized != self.plan.thermostat_spec:
+                raise ValueError("use the configured pressure-plan thermostat through step(); do not attach a second piston")
+            return self._composition.step(state, bias)
+        if (isinstance(thermostat, dict) or thermostat_params is not None
+                or thermostat not in ("pile-l", "trpmd") or self.loop_backend == "native"
+                or self.force_splitting is not None or key in self._sampling_compositions):
+            if method is not None:
+                expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
+                if method != expected:
+                    raise ValueError("sampling method must match the selected integrator")
+            existed = key in self._sampling_compositions
+            try:
+                return self._sample_composition(normalized).step(state, bias)
+            except BaseException:
+                if not existed:
+                    self._sampling_compositions.pop(key, None)
+                raise
         self._check_parameters()
         step, time = _state_clock(state.step, state.time)
         if thermostat not in ("pile-l", "trpmd"):

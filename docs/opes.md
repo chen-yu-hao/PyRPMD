@@ -70,8 +70,14 @@ The example is a short harmonic model check. It retains `converged=false`.
 | `opes.freeze_after_steps` | Optional production-relative adaptation duration. Must be a multiple of `pace`. The final update occurs at this step. |
 | `opes.freeze_equilibration_steps` | Additional fixed-bias relaxation to discard for histogram analysis; default 0. |
 
-The workflow currently requires an Andersen thermostat and a nonperiodic
-system with mobile atoms. A periodic **CV** is supported through its declared
+The workflow accepts the canonical thermostats in the
+[common propagation stack](propagation-stack.md), including Andersen, PILE-L/G,
+NHC, SVR and canonical GLE. Configure their parameters through
+`sampling.thermostat_params`; new stateful modes checkpoint their auxiliary
+variables and RNG with the probability history. A failed force evaluation or
+probability update restores both states before resuming.
+
+OPES currently requires a nonperiodic system with mobile atoms. A periodic **CV** is supported through its declared
 period; periodic atomic cells are a separate unsupported workflow case.
 The full native propagation loop cannot include history updates, but native
 free-ring substeps remain available. Independent complete histories use the

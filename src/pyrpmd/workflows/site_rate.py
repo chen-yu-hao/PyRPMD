@@ -33,6 +33,7 @@ from ..cv_periodic import FractionalCoordinate, LinearProjection
 from ..dynamics import Dynamics, State
 from ..parallel import task_potential, root_call, run_tasks
 from ..propagation import loop_options
+from ..trajectory_batch import map_trajectory_tasks, task_provider, trajectory_batch_size
 from ..units import parse_quantity, unit_factor
 from .fes import (
     _dimension,
@@ -117,8 +118,7 @@ def _validate_centroid_contract(cv, geometry, beads):
 def _setup(config, system):
     if _recrossing_dynamics(config)[0] != "rpmd":
         raise ValueError("site_rate does not yet support TRPMD recrossing")
-    if _recrossing_spec(config).get("child_batch_pairs", 1) != 1:
-        raise ValueError("site_rate does not yet support batched recrossing checkpoints")
+    trajectory_batch_size(config)
     if system.fixed_atoms:
         raise ValueError("site_rate requires all atoms mobile; use surface_rate for fixed layers")
     table = config.get("site_rate", {})
@@ -515,8 +515,7 @@ def _parent_task(task):
     identity = _fingerprint(config, system, {
         "workflow_version": 1, "stage": "site_parent", "chain": chain,
         "surface": metadata, "options": options, "initial_q": task["initial_q"]})
-    with task_potential(config["potential"], system,
-                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
+    with task_provider(task, factory=task_potential) as provider:
         dyn = _dynamics(config, system, provider, 1211, chain)
         elapsed, snapshots = 0, []
         target = options["equilibration_steps"] + options["parent_samples"] * options["parent_interval_steps"]
@@ -607,8 +606,7 @@ def _child_task(task):
     identity = _fingerprint(config, system, {
         "workflow_version": 1, "stage": "site_child", "chain": chain, "parent": parent,
         "pair": pair, "surface": metadata, "child_steps": nsteps, "q": q0})
-    with task_potential(config["potential"], system,
-                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
+    with task_provider(task, factory=task_potential) as provider:
         dyn = _dynamics(config, system, provider, 1307, chain, parent, pair)
         if checkpoint.exists():
             with load_checkpoint(checkpoint, expected_kind="site_rate_child") as saved:
@@ -908,8 +906,10 @@ def run_site_rate(config, system, output, executor=None):
     sampling_config["analysis"]["bootstrap"] = 0
     sampled = run_fes(sampling_config, system, Path(output) / "pmf", executor=executor, return_data=True)
     pmf, tasks = root_call(_estimate_pmf, sampled, config, system, str(output))
-    mapper = executor.map if executor is not None else lambda function, jobs: run_tasks(function, jobs, config.get("parallel", {}))
-    parents = mapper(_parent_task, tasks)
+    parents = map_trajectory_tasks(_parent_task, tasks, config, executor)
     tasks = root_call(_child_tasks, parents, config, system, str(output))
-    children = mapper(_child_task, tasks)
+    child_batch_size = max(trajectory_batch_size(config),
+                           _recrossing_spec(config).get("child_batch_pairs", 1))
+    children = map_trajectory_tasks(_child_task, tasks, config, executor,
+                                    batch_size=child_batch_size)
     return root_call(_aggregate, children, pmf, config, str(output))

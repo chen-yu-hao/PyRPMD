@@ -16,7 +16,7 @@ from ..parallel import run_tasks, make_task_potential, root_call
 from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
 from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
-from .sampling import fes_sampler, checkpoint_cv_config
+from .sampling import fes_sampler, checkpoint_cv_config, read_operator_checkpoint
 
 
 OPES_FIELDS = {"cvs", "sigma", "sigma_au", "barrier", "barrier_au", "bias_factor", "pace",
@@ -90,9 +90,7 @@ def resolve_opes(config, system):
     checked_integer(sampling.get("andersen_interval", 10), "sampling.andersen_interval")
     checked_integer(sampling.get("replicas", 1), "sampling.replicas")
     checked_integer(config.get("output", {}).get("checkpoint_steps", 1000), "output.checkpoint_steps")
-    if sampling.get("thermostat", "andersen") != "andersen":
-        raise ValueError("OPES workflow currently requires the Andersen thermostat")
-    fes_sampler(config)  # Reuse the checked Andersen/integrator contract.
+    fes_sampler(config)
     dt = sampling.get("dt_au", config["dt_au"])
     if not np.isfinite(dt) or dt <= 0:
         raise ValueError("OPES timestep must be positive and finite")
@@ -191,7 +189,9 @@ def _read_stream(config, system, output, replica, cv, options):
         rng = json.loads(str(data["rng"]))
         # Validate saved RNG before constructing an expensive potential.
         np.random.default_rng().bit_generator.state = rng
+        operators = read_operator_checkpoint(data, fes_sampler(config), elapsed, "OPES")
         return {"replica": replica, "state": state, "elapsed": elapsed, "rng": rng,
+                **({"operator_state": operators} if operators is not None else {}),
                 "samples": samples, "sample_steps": clocks, **observable,
                 "bias_state": bias_state, "propagation": json.loads(str(data["propagation"])),
                 "checkpoint": str(checkpoint), "complete": elapsed == options["neq"] + options["nprod"]}
@@ -200,6 +200,8 @@ def _read_stream(config, system, output, replica, cv, options):
 def _sample_replica(task):
     config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
     cv, _, options = resolve_opes(config, system)
+    sampler = fes_sampler(config)
+    store_operators = sampler.operator_checkpoint
     checkpoint = _checkpoint_path(output, replica)
     saved = _read_stream(config, system, output, replica, cv, options) if checkpoint.exists() else None
     if saved is not None and saved["complete"]:
@@ -219,19 +221,25 @@ def _sample_replica(task):
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
         else:
             state, elapsed = saved["state"], saved["elapsed"]
+            if "operator_state" in saved:
+                dynamics.load_operator_state_dict(saved["operator_state"])
+                store_operators = True
             dynamics.rng.bit_generator.state = saved["rng"]
             dynamics.propagation_stats = saved["propagation"]
             samples, clocks = list(saved["samples"]), list(saved["sample_steps"])
             biases, energies = list(saved["sample_bias"]), list(saved["sample_energies"])
 
         def save():
+            operators = ({"operator_state": json.dumps(dynamics.operator_state_dict(), allow_nan=False)}
+                         if store_operators else {})
             _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=elapsed,
                 q=state.q, p=state.p, step=state.step, time=state.time,
                 rng=json.dumps(dynamics.rng.bit_generator.state),
                 bias_state=json.dumps(bias.state_dict(), allow_nan=False),
                 samples=np.asarray(samples).reshape(-1, cv.dimension),
                 sample_steps=np.asarray(clocks, dtype=int), sample_bias=np.asarray(biases),
-                sample_energies=np.asarray(energies), propagation=json.dumps(dynamics.propagation_stats))
+                sample_energies=np.asarray(energies), propagation=json.dumps(dynamics.propagation_stats),
+                **operators)
 
         save()
         interval = config["sampling"].get("andersen_interval", 10)
@@ -239,15 +247,16 @@ def _sample_replica(task):
         while elapsed < options["neq"] + options["nprod"]:
             previous, old_rng = state.copy(), copy.deepcopy(dynamics.rng.bit_generator.state)
             old_stats = copy.deepcopy(dynamics.propagation_stats)
+            old_operators = dynamics.operator_state_dict() if store_operators else None
             production = elapsed + 1 - options["neq"]
             record = production > 0 and production % options["interval"] == 0
             update = (production > 0 and production % options["pace"] == 0
                       and (options["freeze"] is None or production <= options["freeze"]))
             old_bias = bias.state_dict() if update else None
             try:
-                if state.step % interval == 0:
+                if sampler.thermostat == "andersen" and state.step % interval == 0:
                     state.p[:] = dynamics.sample_momenta()
-                dynamics.step(state, bias)
+                sampler.step(dynamics, state, bias)
                 value = cv.value(state.q) if record or update else None
                 observed = float(bias.physical_energy(value)) if record else None
                 energy = float(dynamics.energy(state, bias)) if record else None
@@ -257,6 +266,8 @@ def _sample_replica(task):
                     bias.update(value, step=state.step, time=state.time)
             except BaseException:
                 state = previous
+                if old_operators is not None:
+                    dynamics.load_operator_state_dict(old_operators)
                 dynamics.rng.bit_generator.state = old_rng
                 dynamics.propagation_stats = old_stats
                 if old_bias is not None:

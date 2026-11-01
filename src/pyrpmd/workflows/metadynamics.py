@@ -26,6 +26,7 @@ from ..propagation import loop_options
 from ..units import parse_quantity, unit_factor
 from ..thermostats import NoseHooverChain, nhc_options
 from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
+from .sampling import fes_sampler, legacy_metadynamics_sampling, read_operator_checkpoint
 
 
 METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid"}
@@ -161,11 +162,11 @@ def resolve_metadynamics(config, system):
     checked_integer(sampling.get("replicas", 1), "sampling.replicas")
     checked_integer(config.get("output", {}).get("checkpoint_steps", 1000), "output.checkpoint_steps")
     thermostat = sampling.get("thermostat", "andersen")
-    if thermostat not in ("andersen", "nose-hoover-chain", "pile-l"):
-        raise ValueError("metadynamics thermostat must be andersen, nose-hoover-chain or pile-l")
+    if not legacy_metadynamics_sampling(sampling):
+        fes_sampler(config)
     if thermostat == "nose-hoover-chain":
         nhc_options(sampling)
-    if thermostat == "pile-l":
+    if thermostat == "pile-l" and legacy_metadynamics_sampling(sampling):
         if loop_options(config)["integrator"] == "velocity-verlet":
             raise ValueError("PILE-L requires Cayley or normal-mode dynamics")
         gamma = parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency")
@@ -304,6 +305,10 @@ def _read_stream(config, system, output, replica, cv, options):
                   "sample_bias": data["sample_bias"].copy(), "sample_energies": data["sample_energies"].copy(),
                   "hills": bias.hills, "propagation": json.loads(str(data["propagation"])),
                   "checkpoint": str(checkpoint), "complete": elapsed == options["neq"] + options["nprod"]}
+        sampler = None if legacy_metadynamics_sampling(config["sampling"]) else fes_sampler(config)
+        operators = read_operator_checkpoint(data, sampler, elapsed, "metadynamics")
+        if operators is not None:
+            result["operator_state"] = operators
         if isinstance(bias, GridMetadynamicsBias):
             result["grid_state"] = bias.grid_state()
     if result["sample_bias"].shape != (expected_samples,) or result["sample_energies"].shape != (expected_samples,):
@@ -343,6 +348,8 @@ def _sample_replica(task):
                             threads=config.get("parallel", {}).get("threads_per_rank", 1),
                             fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry, **loop_options(config))
         thermostat = config["sampling"].get("thermostat", "andersen")
+        sampler = None if legacy_metadynamics_sampling(config["sampling"]) else fes_sampler(config)
+        store_operators = sampler is not None and sampler.operator_checkpoint
         chain = NoseHooverChain(dynamics, **nhc_options(config["sampling"])) if thermostat == "nose-hoover-chain" else None
         walls = resolve_walls(config, system)
         bias = _new_bias(cv, options, config["beta"])
@@ -356,6 +363,9 @@ def _sample_replica(task):
             dynamics._check_fixed(state.q, state.p)
             if chain is not None:
                 chain.load_state_dict(saved["thermostat_state"])
+            if "operator_state" in saved:
+                dynamics.load_operator_state_dict(saved["operator_state"])
+                store_operators = True
             dynamics.rng.bit_generator.state = saved["rng"]
             dynamics.propagation_stats = saved["propagation"]
             bias = _new_bias(cv, options, config["beta"], saved["hills"], saved.get("grid_state"))
@@ -370,6 +380,8 @@ def _sample_replica(task):
 
         def save():
             observations = {}
+            if store_operators:
+                observations["operator_state"] = json.dumps(dynamics.operator_state_dict(), allow_nan=False)
             if options["store_configurations"]:
                 observations["sample_configurations"] = np.asarray(configurations).reshape(
                     -1, config["beads"], len(system.masses), 3)
@@ -398,6 +410,8 @@ def _sample_replica(task):
             previous = state.copy()
             old_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
             old_bath = chain.state_dict() if chain else None
+            old_operators = dynamics.operator_state_dict() if store_operators else None
+            old_stats = copy.deepcopy(dynamics.propagation_stats)
             nhills = bias.hill_count
             try:
                 if chain is not None and elapsed == options["neq"] and config["sampling"].get("thermostat_params", {}).get("reset_after_equilibration", False):
@@ -407,7 +421,9 @@ def _sample_replica(task):
                     state.p[:] = dynamics.sample_momenta()
                 # No propagation block can straddle a deposition. Both kicks
                 # use this unchanged history; the new hill affects the next step.
-                if chain is not None:
+                if sampler is not None:
+                    sampler.step(dynamics, state, active_bias)
+                elif chain is not None:
                     chain.step(state, active_bias)
                 elif thermostat == "pile-l":
                     gamma = parse_quantity(config["sampling"].get("gamma_centroid", "0.01 fs^-1"), "frequency")
@@ -424,7 +440,10 @@ def _sample_replica(task):
                     bias.deposit(value, step=state.step, time=state.time)
             except BaseException:
                 state = previous
+                if old_operators is not None:
+                    dynamics.load_operator_state_dict(old_operators)
                 dynamics.rng.bit_generator.state = old_rng
+                dynamics.propagation_stats = old_stats
                 if chain is not None:
                     chain.load_state_dict(old_bath)
                 bias.truncate_history(nhills)

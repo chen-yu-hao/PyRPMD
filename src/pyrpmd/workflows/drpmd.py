@@ -30,6 +30,8 @@ import numpy as np
 
 from pyrpmd.dynamics import Dynamics, State
 from pyrpmd.parallel import execution_plan, make_task_potential, run_tasks, root_call
+from pyrpmd.trajectory_batch import (map_trajectory_tasks, make_trajectory_potential,
+                                     trajectory_batch_size)
 
 KB = 3.1668115634556e-6
 RATE_AU_TO_CM3_S = (5.29177210903e-9) ** 3 / 2.4188843265857e-17
@@ -1353,7 +1355,7 @@ def _saved_collision(task, production, classifier):
 
 def _collision_task(task):
     """Independent collision unit for the dynamic MPI work queue."""
-    potential = make_task_potential(task["config"]["potential"], task["system"])
+    potential = make_trajectory_potential(task, factory=make_task_potential)
     try:
         production = _production_dynamics(task["config"], task["system"],
                                          potential, task["parent_id"])
@@ -1395,7 +1397,7 @@ def _parent_task(task):
             f"dRPMD parent sampling requires {method}-andersen with Andersen thermostat; "
             "sampling and production must use the same selected integrator"
         )
-    potential = make_task_potential(config["potential"], system)
+    potential = make_trajectory_potential(task, factory=make_task_potential)
     plan = execution_plan(config.get("parallel"))
     seed = int(config.get("seed", 0))
     native = config.get("native", config.get("dynamics", {}).get("native", True))
@@ -1600,7 +1602,7 @@ def _initial_ensemble_task(task):
               "vibrational_quanta": ensemble.vibrational_quanta, "rotation": "j0"}
     plan = execution_plan(config.get("parallel"))
     seed = int(config.get("seed", 0))
-    potential = make_task_potential(config["potential"], system)
+    potential = make_trajectory_potential(task, factory=make_task_potential)
     records = []
     try:
         production = Dynamics(
@@ -2075,6 +2077,7 @@ def run_drpmd(config, system, output, executor=None):
     if pbc.any() or boundary.get("fixed_atoms"):
         raise ValueError("Gas-phase dRPMD does not support periodic/fixed-atom systems; use a surface workflow")
     config = copy.deepcopy(config)
+    batch_size = trajectory_batch_size(config)
     state_selected = bool(config.get("initial_ensemble"))
     if state_selected:
         if config.get("nonadiabatic"):
@@ -2131,19 +2134,17 @@ def run_drpmd(config, system, output, executor=None):
     worker = _initial_ensemble_task if state_selected else _parent_task
     # Independent selected states already sample and propagate in one task;
     # only thermal parents need a separate collision queue after sampling.
-    dynamic = (plan.backend == "mpi" and plan.scheduling == "dynamic"
-               and not state_selected)
+    dynamic = ((plan.backend == "mpi" and plan.scheduling == "dynamic"
+                or batch_size > 1) and not state_selected)
     if dynamic:
         for task in tasks:
             task["sample_only"] = True
-    results = (
-        executor.map(worker, tasks)
-        if executor is not None
-        else run_tasks(worker, tasks, config.get("parallel"))
-    )
+    work = ([dict(task, trajectory_ids=[trajectory_id])
+             for task in tasks for trajectory_id in task["trajectory_ids"]]
+            if batch_size > 1 and state_selected else tasks)
+    results = map_trajectory_tasks(worker, work, config, executor)
     if dynamic:
         collisions = root_call(_deferred_collision_tasks, tasks, results)
-        records = (executor.map(_collision_task, collisions) if executor is not None
-                   else run_tasks(_collision_task, collisions, config.get("parallel")))
+        records = map_trajectory_tasks(_collision_task, collisions, config, executor)
         return root_call(_write_dynamic_summary, results, records, config, system, directory, n)
     return root_call(_write_summary, results, config, system, directory, n)

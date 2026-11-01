@@ -109,6 +109,10 @@ FES 中是两次保存样本之间的时间。
 `pyrpmd validate INPUT --write-resolved resolved.json` 写出前端解析后的输入。部分工作流设置，例如自动生成的
 速率窗口和自适应计划，在运行阶段解析并记录到相应采样输出中。
 
+FES、metadynamics 和 OPES 可通过 `sampling.thermostat_params` 选择正则系综恒温器，
+包括 `nhc`、SVR 和正则 GLE。新模式将恒温器辅助变量及随机数状态与采样历史一起保存，
+失败时一起回滚。既有 metadynamics `nose-hoover-chain` 输入保留其平衡段结束后的显式重置策略。
+
 气相 `rate` 工作流还会为省略的参数补充下列起始值：
 
 | 字段 | 缺省值 | 含义 |

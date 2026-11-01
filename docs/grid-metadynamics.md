@@ -55,6 +55,14 @@ a converged surface free-energy calculation.
 
 ## Fixed atoms and periodic geometry
 
+Metadynamics uses the canonical thermostats in the
+[common propagation stack](propagation-stack.md). `svr`, `nhc`, PILE-G,
+Langevin, FFL and canonical GLE modes use the same operator state and restart
+handling as umbrella sampling. Historical Andersen, PILE-L and
+`nose-hoover-chain` inputs retain their previous trajectories and chain-reset
+policy. Grid/hill updates and bath state are committed together; a failed
+deposition cannot advance the thermostat beyond the saved physical step.
+
 Set `system.fixed_atoms` to distinct zero-based atom indices. On every bead,
 their coordinates stay exactly at the input reference geometry and their
 momenta stay exactly zero, including after Andersen momentum resampling.

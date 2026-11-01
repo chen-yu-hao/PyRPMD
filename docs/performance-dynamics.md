@@ -62,16 +62,35 @@ keep `child_batch_pairs=1` for bead-process or MPI-bead execution.
 Use batching when PES launch cost or GPU utilization dominates. For a cheap
 analytic/Fortran PES, the existing fully fused scalar native loop can be faster.
 Cross-trajectory GPU batching does not imply fully device-resident integration:
-the present public PES contract returns host arrays. Stateful, ring-coupled and
-undeclared custom providers are rejected. The `site_rate` checkpoint workflow,
-dRPMD production runner and thermostatted umbrella runner do not yet dispatch
-trajectory batches; the latter two can use the low-level batch API in custom
-drivers. Existing trajectory parallelism continues to work.
+the present public PES contract returns host arrays. Stateful and undeclared
+custom providers are rejected.
+
+The `site_rate`, dRPMD and independent fixed-window umbrella workflows batch
+their existing task-level PES requests with:
+
+```toml
+[parallel]
+trajectory_batch_size = 8
+bead_workers = 1
+```
+
+Each task retains its original sampler, random stream, classifier, clock and
+checkpoint. dRPMD first saves the usual launch states and then groups the
+collision tasks; site rates group parents and children separately. Completed
+or failed tasks leave the group without blocking the remaining requests.
+This grouping is compatible with process trajectory workers and MPI groups
+with one bead rank. Mutable-cell/NPT tasks, adaptive umbrella scheduling and
+replica-exchange ladders reject this batch option. The
+[batching guide](batched-dynamics.md) documents the shared task scheduler and
+the composed `BatchedDynamics` API, including the per-ring RPC route.
 
 ## RPC and multiple time stepping
 
 [RPC/MTS](rpc-mts.md) adds explicit Python APIs `RingPolymerContraction`,
-`DifferencePotential`, `SplitPotential` and `MTSDynamics`. The slow term is a
+`DifferencePotential`, `SplitPotential` and the `MTSDynamics` compatibility
+adapter. The common [propagation stack](propagation-stack.md) composes the same
+force split with a thermostat using `Dynamics(..., force_splitting=...)`.
+The slow term is a
 declared physical correction, evaluated on a contracted ring and lifted with the
 chain-rule normalization. The fast term and springs retain the full ring.
 These APIs are not enabled implicitly in rate or sampling inputs. Validate the

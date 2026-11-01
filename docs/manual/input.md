@@ -116,6 +116,12 @@ requirements.
 Some workflow settings, including automatically prepared rate windows and adaptive plans, are
 resolved at runtime and recorded in their sampling outputs.
 
+FES, metadynamics and OPES accept canonical thermostat parameters through
+`sampling.thermostat_params`; see the [common propagation stack](../propagation-stack.md).
+New NHC (`nhc`), SVR and GLE modes checkpoint their bath state with the sampling
+history. Existing metadynamics `nose-hoover-chain` inputs retain their explicit
+equilibration-reset policy.
+
 The gas-phase `rate` workflow supplies these additional starting values when omitted:
 
 | Field | Default | Meaning |

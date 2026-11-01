@@ -26,6 +26,9 @@ def __getattr__(name):
     if name == "MTSDynamics":
         from .multitime import MTSDynamics
         return MTSDynamics
+    if name in ("ForceSplitting", "PropagationPlan"):
+        from . import engine
+        return getattr(engine, name)
     if name in ("RingPolymerContraction", "SplitPotential", "DifferencePotential"):
         from .potentials import contraction
         return getattr(contraction, name)
@@ -107,7 +110,7 @@ __all__ = [
     "MVRPMDState", "MVRPMDPotential", "MVRPMDDynamics", "MVRPMDSampler",
     "KCCalibration", "KCRPMDState", "KCRPMDPotential", "KCRPMDDynamics", "KCRPMDSampler",
     "IsomorphicPotential", "IsomorphicResult", "IsomorphicEhrenfestState", "IsomorphicEhrenfestDynamics",
-    "BatchedState", "BatchedDynamics", "BatchedPropagationError", "MTSDynamics",
+    "BatchedState", "BatchedDynamics", "BatchedPropagationError", "MTSDynamics", "ForceSplitting", "PropagationPlan",
     "RingPolymerContraction", "SplitPotential", "DifferencePotential",
     "NRPMDState", "NRPMDDynamics", "DiabaticResult",
     "JobSpec", "System", "State", "Dynamics", "NoseHooverChain", "run", "prepare",

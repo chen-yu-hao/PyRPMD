@@ -67,6 +67,12 @@ def execution_plan(config=None):
         c.get("trajectory_workers", c.get("trajectory_groups", 1)), "trajectory_workers"
     )
     beads = _int(c.get("bead_workers", 1), "bead_workers")
+    batch_size = _int(c.get("trajectory_batch_size", 1), "trajectory_batch_size")
+    from ..trajectory_batch import MAX_TRAJECTORY_BATCH_SIZE
+    if batch_size > MAX_TRAJECTORY_BATCH_SIZE:
+        raise ValueError(f"trajectory_batch_size must be <= {MAX_TRAJECTORY_BATCH_SIZE}")
+    if batch_size > 1 and beads != 1:
+        raise ValueError("trajectory batching requires parallel.bead_workers=1")
     threads = _int(c.get("threads_per_rank", c.get("threads", 1)), "threads_per_rank")
     groups = _int(c.get("trajectory_groups", workers), "trajectory_groups")
     if _int(c.get("pes_ranks", 1), "pes_ranks") != 1:

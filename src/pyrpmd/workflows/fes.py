@@ -24,6 +24,7 @@ from ..block_propagation import PropagationError
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..io import atomic_write_text
 from ..parallel import run_tasks, task_potential, root_call
+from ..trajectory_batch import map_trajectory_tasks, task_provider, trajectory_batch_size
 from ..units import parse_quantity, unit_factor, DIMS
 from .sampling import fes_sampler
 
@@ -505,8 +506,7 @@ def _sample_window(task):
         },
     )
     seed = np.random.SeedSequence([int(config.get("seed", 0)), 101, window, replica])
-    with task_potential(config["potential"], system,
-                        reuse=config.get("parallel", {}).get("reuse_potentials", True)) as provider:
+    with task_provider(task, factory=task_potential) as provider:
         dynamics = Dynamics(
             provider,
             system.masses,
@@ -531,6 +531,7 @@ def _sample_window(task):
         energies = []
         elapsed = 0
         saved_elapsed = None
+        store_operators = sampler.operator_checkpoint
         if checkpoint.exists():
             with load_checkpoint(checkpoint) as saved:
                 if str(saved["fingerprint"]) != fingerprint:
@@ -545,6 +546,11 @@ def _sample_window(task):
                 energies = list(saved["energies"])
                 elapsed = int(saved["elapsed"])
                 saved_elapsed = elapsed
+                if "operator_state" in saved:
+                    dynamics.load_operator_state_dict(json.loads(str(saved["operator_state"])))
+                    store_operators = True
+                elif store_operators and elapsed:
+                    raise ValueError("umbrella checkpoint is missing thermostat operator state")
                 if "propagation" in saved:
                     dynamics.propagation_stats = json.loads(str(saved["propagation"]))
         else:
@@ -585,6 +591,8 @@ def _sample_window(task):
                 elapsed=elapsed,
                 fingerprint=fingerprint,
                 propagation=json.dumps(dynamics.propagation_stats),
+                **({"operator_state": json.dumps(dynamics.operator_state_dict(), allow_nan=False)}
+                   if store_operators else {}),
             )
             saved_elapsed = elapsed
 
@@ -621,6 +629,8 @@ def _sample_window(task):
                     # schedule: energy is evaluated only at a sampled step.
                     previous = state.copy()
                     previous_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
+                    previous_operators = dynamics.operator_state_dict() if store_operators else None
+                    previous_stats = copy.deepcopy(dynamics.propagation_stats)
                     try:
                         sampler.step(dynamics, state, bias)
                         production = elapsed + 1 - neq
@@ -634,13 +644,21 @@ def _sample_window(task):
                     except Exception:
                         state.q[:] = previous.q; state.p[:] = previous.p
                         state.step, state.time = previous.step, previous.time
+                        if store_operators:
+                            dynamics.load_operator_state_dict(previous_operators)
                         dynamics.rng.bit_generator.state = previous_rng
+                        dynamics.propagation_stats = previous_stats
                         raise
                     if production > 0 and production % interval == 0:
                         values.append(value.copy())
                         energies.append(energy)
                     elapsed += 1
-                    dynamics._record_python_steps(1)
+                    if (dynamics.propagation_stats["python_steps"] == previous_stats["python_steps"]
+                            and dynamics.propagation_stats["native_steps"] == previous_stats["native_steps"]):
+                        if store_operators and getattr(dynamics, "last_step_backend", "python") == "native":
+                            dynamics.propagation_stats["native_steps"] += 1
+                        else:
+                            dynamics._record_python_steps(1)
             except Exception:
                 if elapsed == initial_elapsed and thermostat_p is not None:
                     # Resume will encounter this same Andersen boundary. Keep
@@ -870,6 +888,9 @@ def _analyze_streams(streams, config, system, output, return_data, _postprocess=
 
 def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None):
     fes_sampler(config)
+    batch_size = trajectory_batch_size(config)
+    if batch_size > 1 and (config.get("replica_exchange") or config.get("adaptive_umbrella")):
+        raise ValueError("trajectory batching currently requires independent fixed umbrella windows")
     if config.get("replica_exchange"):
         from .replica_exchange import exchange_options, run_replica_exchange_fes
         if exchange_options(config, system)["enabled"]:
@@ -903,11 +924,7 @@ def run_fes(config, system, output, executor=None, return_data=False, *, _postpr
         for i, center in enumerate(centers)
         for r in range(replicas)
     ]
-    streams = (
-        executor.map(_sample_window, tasks)
-        if executor is not None
-        else run_tasks(_sample_window, tasks, config.get("parallel", {}))
-    )
+    streams = map_trajectory_tasks(_sample_window, tasks, config, executor)
     return root_call(
         _analyze_streams, streams, config, system, str(output), return_data, _postprocess
     )

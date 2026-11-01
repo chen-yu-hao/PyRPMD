@@ -145,14 +145,18 @@ you. The last line prints `loop_stats`: the Python `HarmonicPotential` has no na
 every step runs in Python and the fallback reason says so.
 
 ```{autoclass} pyrpmd.dynamics.Dynamics
-:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, loop_stats
+:members: step, energy, sample_momenta, propagate, propagate_block, sample_step, trpmd_step, operator_state_dict, load_operator_state_dict, loop_stats
 ```
 
 ```{autofunction} pyrpmd.dynamics.native_capabilities
 ```
 
-`step()` takes one thermostat-free deterministic step. `sample_step()` takes one sampling step with
-the matching thermostat. `energy()` returns the summed-bead ring Hamiltonian. `propagate()` and
+With the default constructor, `step()` takes one thermostat-free deterministic step.
+An explicit `thermostat`, `barostat` or `force_splitting` composes the corresponding operators
+into that step; see the [common propagation stack](../propagation-stack.md).
+`sample_step()` takes one sampling step with the requested thermostat. Save
+`operator_state_dict()` with the physical state when using attached baths.
+`energy()` returns the summed-bead ring Hamiltonian. `propagate()` and
 `propagate_block()` differ in what they commit on failure; see [Execution and restart](execution.md).
 
 ## Trajectory batches, RPC/MTS and spectroscopy
