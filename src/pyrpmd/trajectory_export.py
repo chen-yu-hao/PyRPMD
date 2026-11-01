@@ -237,7 +237,9 @@ def write_trajectory(path, frames, system, *, format=None, representation="confi
         if not count:
             raise ValueError("cannot export an empty trajectory")
         writer.close(); writer = None
-        with open(temporary, "rb") as stream:
+        # Windows' _commit (used by os.fsync) requires a writable descriptor.
+        # All writers have closed; keep the flush before atomic publication.
+        with open(temporary, "rb+") as stream:
             os.fsync(stream.fileno())
         if overwrite:
             os.replace(temporary, path)

@@ -1,5 +1,6 @@
 """External-reader roundtrips, unit checks and transactional export failures."""
 import json
+import os
 
 import numpy as np
 import pytest
@@ -23,6 +24,28 @@ def frames():
     for index in range(3):
         yield TrajectoryFrame(np.array([[25. + index, 2., 3.], [4., 5., 6.]]),
                               7 + index * 4, index * 20., np.full((2, 3), .001 + index * .0001))
+
+
+@pytest.mark.parametrize("suffix", ["extxyz", "h5md", "traj"])
+def test_atomic_publish_fsync_uses_a_writable_descriptor(tmp_path, monkeypatch, suffix):
+    """Exercise Windows _commit's writable-FD contract on every platform."""
+    if suffix == "traj":
+        pytest.importorskip("ase")
+    original_fsync = os.fsync
+    flushed = []
+
+    def writable_fsync(fd):
+        # A zero-byte write leaves the file untouched but raises EBADF for a
+        # read-only descriptor, just as Windows _commit does during fsync.
+        assert os.write(fd, b"") == 0
+        flushed.append(fd)
+        return original_fsync(fd)
+
+    monkeypatch.setattr(os, "fsync", writable_fsync)
+    path = tmp_path / f"export.{suffix}"
+    assert write_trajectory(path, frames(), system())["frames"] == 3
+    assert flushed and path.is_file()
+    assert not list(tmp_path.glob("*.tmp"))
 
 
 @pytest.mark.parametrize("periodic", [False, True])
