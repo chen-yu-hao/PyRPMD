@@ -1,0 +1,25 @@
+name: Reproducible paper-validation source snapshot
+on:
+  push:
+    paths:
+      - '.github/workflows/paper-validation-source-export.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Package exact validation code and associated test suite
+        run: |
+          tar -czf pyrpmd-paper-validation-source.tar.gz \
+            src benchmarks/paper_validation tests pyproject.toml setup.py setup.cfg README.md \
+            2>/dev/null || \
+          tar -czf pyrpmd-paper-validation-source.tar.gz \
+            src benchmarks/paper_validation tests pyproject.toml README.md
+          sha256sum pyrpmd-paper-validation-source.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pyrpmd-paper-validation-source-snapshot
+          path: pyrpmd-paper-validation-source.tar.gz
