@@ -1,0 +1,117 @@
+{
+  "schema": "pyrpmd.ci-heartbeat-import-failure-evidence.v1",
+  "recorded_utc": "2026-11-01T23:13:56Z",
+  "parent_commit": "bbb950528db2f43f59cb24acea5097568cd393a3",
+  "provenance": "Decoded complete job logs retrieved through the GitHub workflow-job-logs connector; no local test execution.",
+  "jobs": [
+    {
+      "job_id": 125005230063,
+      "run_id": 41358919562,
+      "python": "3.11",
+      "passed": 7472,
+      "skipped": 225,
+      "subtests_passed": 478,
+      "warnings": 63,
+      "elapsed_seconds": 613.03,
+      "failed": 1,
+      "conclusion": "failure",
+      "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41358919562/job/125005230063",
+      "failed_test": "tests/test_h3_quantum_isolated_continuation.py::test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission",
+      "error": "ValueError: worker exited before initial resource observation",
+      "decoded_full_job_log": {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230063.log",
+        "bytes": 107530,
+        "sha256": "fb25b93f8caa8470e47db448774e81802a12fbbe1b21ce1d9ade4a5d71f80fb8"
+      },
+      "child_stderr_in_main_log": false
+    },
+    {
+      "job_id": 125005230131,
+      "run_id": 41358919562,
+      "python": "3.12",
+      "passed": 7472,
+      "skipped": 225,
+      "subtests_passed": 478,
+      "warnings": 984,
+      "elapsed_seconds": 430.4,
+      "failed": 1,
+      "conclusion": "failure",
+      "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41358919562/job/125005230131",
+      "failed_test": "tests/test_h3_quantum_isolated_continuation.py::test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission",
+      "error": "ValueError: worker exited before initial resource observation",
+      "decoded_full_job_log": {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230131.log",
+        "bytes": 111395,
+        "sha256": "758dba8d1267309e01c8f509334a0c34fc7c95cc904f26e6c79699d6f3a9bdeb"
+      },
+      "child_stderr_in_main_log": false
+    },
+    {
+      "job_id": 125005230125,
+      "run_id": 41358919562,
+      "python": "3.13",
+      "passed": 7472,
+      "skipped": 225,
+      "subtests_passed": 478,
+      "warnings": 984,
+      "elapsed_seconds": 312.05,
+      "failed": 1,
+      "conclusion": "failure",
+      "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41358919562/job/125005230125",
+      "failed_test": "tests/test_h3_quantum_isolated_continuation.py::test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission",
+      "error": "ValueError: worker exited before initial resource observation",
+      "decoded_full_job_log": {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230125.log",
+        "bytes": 111398,
+        "sha256": "bccd873de59a4ac982c438aeb97a4defe51ba7949b4431527450d79c0d897b1d"
+      },
+      "child_stderr_in_main_log": false
+    },
+    {
+      "job_id": 125005230167,
+      "run_id": 41358919562,
+      "python": "3.14",
+      "passed": 7472,
+      "skipped": 225,
+      "subtests_passed": 478,
+      "warnings": 984,
+      "elapsed_seconds": 304.02,
+      "failed": 1,
+      "conclusion": "failure",
+      "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41358919562/job/125005230167",
+      "failed_test": "tests/test_h3_quantum_isolated_continuation.py::test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission",
+      "error": "ValueError: worker exited before initial resource observation",
+      "decoded_full_job_log": {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125005230167.log",
+        "bytes": 111360,
+        "sha256": "2a6d8b5a3e7a1ef2e2825553d64963686ba4cba0b743ec0fea8c261b39ceff61"
+      },
+      "child_stderr_in_main_log": false
+    },
+    {
+      "job_id": 125004861946,
+      "run_id": 41358919482,
+      "python": "fused-native job",
+      "passed": 7501,
+      "skipped": 196,
+      "subtests_passed": 486,
+      "warnings": 985,
+      "elapsed_seconds": 652.24,
+      "failed": 1,
+      "conclusion": "failure",
+      "job_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41358919482/job/125004861946",
+      "failed_test": "tests/test_h3_quantum_isolated_continuation.py::test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission",
+      "error": "ValueError: worker exited before initial resource observation",
+      "decoded_full_job_log": {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-job-125004861946.log",
+        "bytes": 104319,
+        "sha256": "b1e30e4b0d4a299920042bf093c521d2b2846a5e48a7835c9897b79b469b539c"
+      },
+      "child_stderr_in_main_log": false
+    }
+  ],
+  "passing_counts_are_per_job_not_distinct_across_versions": true,
+  "unit_matrix_following_MPI_and_package_build_steps": "skipped after pytest failure",
+  "new_candidate_execution": "pending; no execution pass claimed",
+  "scientific_simulations_or_acceptance_criteria_changed": false
+}

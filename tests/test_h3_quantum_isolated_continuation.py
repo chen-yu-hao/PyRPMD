@@ -412,7 +412,10 @@ def test_only_kernel_confirmed_exited_worker_can_be_excluded(tmp_path, monkeypat
 
 
 @requires_pidfd
-def test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission(tmp_path):
+def test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission(tmp_path, monkeypatch):
+    # The temporary child must import the checkout without pytest's sys.path or
+    # a PYTHONPATH supplied by a local focused-test launcher.
+    monkeypatch.delenv("PYTHONPATH", raising=False)
     policy = json.loads(owner.POLICY.read_text())
     monitor = owner.ResourceWatchdog(policy, [0, 1])
     registration = dump(tmp_path/"registration.json", {"fixture": "no physics"})
@@ -420,6 +423,7 @@ def test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission(tmp
     script = tmp_path/"inert_resource.py"
     script.write_text(
         "import os,time,json,sys\nfrom pathlib import Path\n"
+        f"sys.path.insert(0, {str(owner.ROOT)!r})\n"
         "from benchmarks.h3.quantum_isolated_continuation import install_address_space_limit,WorkerResourceReporter,identity\n"
         "install_address_space_limit()\n"
         "with WorkerResourceReporter(Path(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3]),identity(Path(sys.argv[1])/'registration.json'),{'owner_process_token':os.environ['PYRPMD_ISOLATED300K_OWNER_TOKEN']}):time.sleep(.1)\n")
@@ -431,7 +435,9 @@ def test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission(tmp
             lambda seed, cpu: [sys.executable, str(script), str(tmp_path), str(seed), str(cpu)],
             lambda seed: {"seed": seed}, cpus=[0, 1], deadline=time.monotonic()+6,
             attempt=attempt, lease=lease, guard=lambda: None, monitor=monitor)
-    assert not result["errors"] and result["all_workers_drained"]
+    child_logs = ({path.name: path.read_text() for path in sorted(attempt.glob("seed-*.log"))}
+                  if result["errors"] else {})
+    assert not result["errors"] and result["all_workers_drained"], (result["errors"], child_logs)
     assert result["independent_owner_drain"]["all_captured_children_confirmed_reaped"]
     assert monitor.maximum_observed_RSS > 0 and monitor.last_observation_complete
 
