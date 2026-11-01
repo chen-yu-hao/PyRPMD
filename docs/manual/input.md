@@ -179,7 +179,7 @@ to choose lengths, replicas, bead number and uncertainty precision for the actua
 | `[output]` | All | `directory`, `checkpoint_interval` / `checkpoint_steps`, `trajectory_stride` |
 
 Every field and combination rule is in the
-[input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)*.
+[input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md).
 
 ## Atoms, isotopes and geometry
 
@@ -323,4 +323,4 @@ pyrpmd info > environment.json
 report with the error; the [troubleshooting guide](troubleshooting.md) explains recovery.
 
 The full section reference is in
-[docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)*.
+[docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md).

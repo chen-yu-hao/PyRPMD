@@ -74,6 +74,10 @@ def validate_periodic_spec(config, system=None):
         raise PotentialError("Periodic Torch models require potential.periodic=true and a cell/PBC contract")
     if periodic and kind == "deepmd" and not pbc.all():
         raise PotentialError("DeePMD requires all or no periodic axes; partial PBC is unsupported")
+    if periodic and kind == "openmm" and not pbc.all():
+        raise PotentialError("OpenMM requires all or no periodic axes; partial PBC is unsupported")
+    if kind in ("openmm", "lammps") and "units" in config:
+        raise PotentialError(f"{kind} reads fixed engine units; potential.units is unsupported")
     if kind in ("builtin", "free", "harmonic", "morse_pair", "double_well", "periodic_cosine"):
         model = config.get("name", config.get("model", kind if kind != "builtin" else "harmonic"))
         if periodic and model not in ("free", "periodic_cosine"):
@@ -212,6 +216,20 @@ def _make_potential(config, system=None):
 
         return ASEPotential(
             get("symbols"), import_object(spec["factory"])(**params), cell=cell, pbc=pbc
+        )
+    if kind == "openmm":
+        from .openmm import OpenMMPotential
+
+        return OpenMMPotential(
+            spec.get("model"), get("symbols"), factory=spec.get("factory"),
+            device=spec.get("device", "cpu"), cell=cell, pbc=pbc, **params,
+        )
+    if kind == "lammps":
+        from .lammps import LAMMPSPotential
+
+        return LAMMPSPotential(
+            get("symbols"), spec.get("model"), factory=spec.get("factory"),
+            device=spec.get("device", "cpu"), cell=cell, pbc=pbc, **params,
         )
     if kind == "torch":
         from .optional import TorchPotential

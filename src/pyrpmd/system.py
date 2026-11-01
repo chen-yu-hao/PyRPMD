@@ -65,6 +65,7 @@ class System:
     cell: np.ndarray | None = None
     pbc: tuple[bool, bool, bool] | None = None
     fixed_atoms: tuple[int, ...] = ()
+    bond_constraints: tuple[tuple[int, int, float], ...] = ()
 
     def __post_init__(self):
         self.symbols = tuple(self.symbols)
@@ -96,6 +97,10 @@ class System:
             i >= n for i in self.fixed_atoms
         ):
             raise ValueError("fixed_atoms must contain distinct in-range 0-based indices")
+        from .bond_constraints import normalize_bond_constraints
+        self.bond_constraints = normalize_bond_constraints(self.bond_constraints, n)
+        if any(i in self.fixed_atoms or j in self.fixed_atoms for i, j, _ in self.bond_constraints):
+            raise ValueError("bond constraints cannot include fixed atoms")
         if self.fragments:
             all_ids = [i for f in self.fragments for i in f]
             if any(not f for f in self.fragments) or sorted(all_ids) != list(range(n)):
@@ -139,6 +144,10 @@ class System:
                 result["pbc"] = list(self.pbc)
         if self.fixed_atoms:
             result["fixed_atoms"] = list(self.fixed_atoms)
+        if self.bond_constraints:
+            result["bond_constraints"] = [
+                {"atoms": [i, j], "length": length} for i, j, length in self.bond_constraints
+            ]
         return result
 
     @classmethod
@@ -153,6 +162,7 @@ class System:
             d.get("cell"),
             d.get("pbc", (False, False, False)),
             d.get("fixed_atoms", ()),
+            d.get("bond_constraints", ()),
         )
         # Both precursor branches used the same manifest version, but the
         # surface branch omitted explicit false flags. Keep that byte-level
@@ -244,7 +254,8 @@ def system_from_config(spec):
     elif "cell_unit" in spec:
         raise ValueError("cell_unit requires a cell")
     cell, pbc = validate_cell_pbc(cell, spec.get("pbc"))
-    boundaries = {"cell": cell, "pbc": pbc, "fixed_atoms": spec.get("fixed_atoms", ())}
+    boundaries = {"cell": cell, "pbc": pbc, "fixed_atoms": spec.get("fixed_atoms", ()),
+                  "bond_constraints": spec.get("bond_constraints", ())}
     if (
         "symbols" in spec
         and "geometry" in spec

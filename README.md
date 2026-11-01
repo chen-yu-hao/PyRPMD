@@ -26,7 +26,7 @@ implementation alongside.
   fingerprint, written atomically with per-array SHA256. Change the block size or loop backend
   on restart; changes to the science are refused.
 - **Bring your own potential.** Python, RPMDrate/f2py, a versioned C ABI `.so`, a plain `.o`
-  linked from a manifest, ASE, Torch or an i-PI socket.
+  linked from a manifest, ASE, Torch, OpenMM, LAMMPS as a library, or an i-PI socket.
 - **Laptop to cluster.** Trajectory and window process pools, persistent bead-PES pools, MPI
   `G × B` groups, OpenMP and several trajectories per GPU across multiple cards.
 - **Checked against published references.** H + H₂ on the BKMP2 surface, PCET rates within
@@ -37,6 +37,13 @@ Expensive-potential workflows can use [provider reuse and trajectory batching](d
 [TRPMD, correlation functions and relative IR spectra](docs/trpmd-spectroscopy.md).
 The [published-rate comparison tools](benchmarks/published_rates/README.md) check model identity,
 statistical conventions and convergence evidence.
+
+[Standard trajectory export](docs/trajectory-export.md) writes extxyz, H5MD and ASE `.traj`
+with explicit units, cells and isotope masses. [Bond constraints](docs/bond-constraints.md)
+add per-bead SHAKE/RATTLE for fixed-cell velocity-Verlet/Andersen calculations.
+The [literature validation inventory](docs/literature-validation.md) and
+[q-TIP4P/F water pilot](benchmarks/water/README.md) distinguish tested software and short
+physical-model checks from completed, converged literature reproductions.
 
 
 ## Additional scientific methods
@@ -72,6 +79,8 @@ PYRPMD_NO_NATIVE=1 python -m pip install -e .
 | --- | --- |
 | MPI | Site MPI with a matching mpi4py, then `.[mpi]` |
 | ASE | `.[ase]` |
+| OpenMM force engine | `.[openmm]` |
+| LAMMPS force engine | `.[lammps]` with a compatible MPI/shared-library runtime |
 | Torch / GPU | The PyTorch build matching the node's CUDA, then `.[gpu]` |
 
 `native='required'` demands the compiled kernels, and requesting several dynamics threads without

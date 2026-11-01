@@ -45,7 +45,7 @@ _SECTIONS = {
     "initial_ensemble": set("method beta fragments".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
-        "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
+        "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms bond_constraints".split()
     ),
     "dynamics": set("timestep integrator native loop_backend block_steps".split()),
     "sampling": set(
@@ -432,6 +432,11 @@ class JobSpec:
         raw_sampling = self.data.get("sampling", {})
         if not isinstance(raw_sampling, Mapping):
             raise InputError("sampling must be a table")
+        raw_system = self.data.get("system", {})
+        raw_bonds = (raw_system.bond_constraints if isinstance(raw_system, System)
+                     else raw_system.get("bond_constraints", ()) if isinstance(raw_system, Mapping) else ())
+        if raw_bonds and self.data.get("task") not in ("pimd", "diffusion"):
+            raise InputError("bond constraints currently require task='pimd' or 'diffusion'")
         if self.data.get("task") != "pimd" and (
             "barostat" in self.data or raw_sampling.get("engine") == "native"
         ):
@@ -683,6 +688,8 @@ class JobSpec:
                 raise InputError(str(e)) from e
         if task == "drpmd" and len(system.fragments) != 2:
             raise InputError("dRPMD requires two disjoint reactant fragments")
+        if system.bond_constraints and task not in ("pimd", "diffusion"):
+            raise InputError("bond constraints currently require task='pimd' or 'diffusion'")
         if task in ("rate", "drpmd") and (any(system.pbc) or system.fixed_atoms):
             raise InputError(
                 "Gas-phase rate/drpmd normalization does not apply to periodic or fixed-atom systems; "
@@ -727,6 +734,12 @@ class JobSpec:
         for k in ("model", "weights", "reference"):
             if isinstance(potential.get("params", {}).get(k), str):
                 potential["params"][k] = _path(base, potential["params"][k])
+        if potential.get("provider", potential.get("type")) == "lammps":
+            assets = potential.get("params", {}).get("asset_files", [])
+            if not isinstance(assets, (list, tuple)) or not all(isinstance(p, str) for p in assets):
+                raise InputError("LAMMPS params.asset_files must be a list of external input-file paths")
+            if "asset_files" in potential.get("params", {}):
+                potential["params"]["asset_files"] = [_path(base, p) for p in assets]
         from .potentials import PotentialError, validate_periodic_spec
 
         try:

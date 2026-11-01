@@ -41,6 +41,8 @@ class NoseHooverChain:
     """
 
     def __init__(self, dynamics, *, tdamp, chain_length=3, substeps=1):
+        if getattr(dynamics, "bond_constraints", ()):
+            raise ValueError("Nose-Hoover bond-constraint sampling is not implemented; use Andersen")
         self.dynamics = dynamics
         self.length = _integer(chain_length, "chain_length")
         self.substeps = _integer(substeps, "substeps")

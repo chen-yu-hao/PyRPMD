@@ -427,6 +427,8 @@ def _analyze(ladders, config, system, output, return_data):
 
 def run_replica_exchange_fes(config, system, output, executor=None, return_data=False):
     """Run independent same-temperature ladders and reconstruct the unbiased FES."""
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "replica_exchange_fes")
     options = exchange_options(config, system)
     if not options["enabled"]:
         raise ValueError("replica_exchange must be enabled")

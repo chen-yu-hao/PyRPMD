@@ -64,6 +64,8 @@ def _atomic_binding(binding):
 def _check_dynamics_methods(dynamics):
     from .dynamics import (Dynamics, CayleyIntegrator, _BLOCK_DYNAMICS_METHODS,
                            _BLOCK_INTEGRATOR_METHODS)
+    if getattr(dynamics, "bond_constraints", ()):
+        raise NativeUnavailableError("bond constraints require the Python RATTLE propagation loop")
     if getattr(dynamics, "fixed_atoms", ()):
         raise NativeUnavailableError("fixed atoms require the Python propagation loop")
     if type(dynamics) is not Dynamics or not _original_methods(dynamics, _BLOCK_DYNAMICS_METHODS):

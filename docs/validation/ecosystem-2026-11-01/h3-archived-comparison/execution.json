@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "generated_utc": "2026-11-01T13:03:04.882837+00:00",
+  "scope": "New comparator execution on previously committed real-pilot manifests; no new dynamics",
+  "new_dynamics_runs": 0,
+  "new_pmf_replays": 0,
+  "physical_validated": false,
+  "base_revision": "2f907ba96d22cb134198715e398b1d9f8d83d929",
+  "python": "3.12.14",
+  "source_sha256": {
+    "benchmarks/published_rates/compare.py": "76eb9e1fd858458c7d2dc6776f0ab124c591712ba73d6c662804c65002360c28",
+    "benchmarks/published_rates/references.json": "12ae0316e8461a77c8f729292677629bdb37034b3bba28fe81990589772ad07b",
+    "docs/validation/tier1-2026-10-31/broad-pilot/calculation.json": "b10975a368e72e8f055b87d12051c678d63b7e2e47829302d4b105e1517b97bf",
+    "docs/validation/tier1-2026-10-31/stiff-pilot/calculation.json": "1e5fbb59324993df40efff0859d00736f7af278064c84390989ac70a1cbb280f",
+    "docs/validation/ecosystem-2026-11-01/h3-archived-comparison/broad-pilot.json": "afde29b32b2d4bbc5865f7fefff42c8da6e653131f87ef0ed6b17048ca38183f",
+    "docs/validation/ecosystem-2026-11-01/h3-archived-comparison/stiff-pilot.json": "5ce2ac30afdb7afd2679c34f22fda8645ec97ff8b35662dc5f1ba118862045f9"
+  },
+  "reports": [
+    {
+      "path": "broad-pilot.json",
+      "status": "pilot_comparison",
+      "gate_eligible": false,
+      "passed": null
+    },
+    {
+      "path": "stiff-pilot.json",
+      "status": "pilot_comparison",
+      "gate_eligible": false,
+      "passed": null
+    }
+  ]
+}

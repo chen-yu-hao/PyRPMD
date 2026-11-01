@@ -24,6 +24,8 @@ from .rate import run_rate
 
 def prepare_network(config, system, numerical=False):
     """Prepare every declared path, checking each effective PES when requested."""
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "network preparation")
     inventory = validate_network(config, system)
     paths = []
     for job, local, path_system in network_jobs(config, system):
@@ -179,6 +181,8 @@ def run_network(config, system, output, executor=None):
     Every MPI rank follows the same ordered path list. Existing trajectory/
     window executors parallelize each path; no nested process pools are added.
     """
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "network")
     inventory = root_call(validate_network, config, system)
     if not inventory["transition_states"]:
         raise ValueError("Network contains no work")

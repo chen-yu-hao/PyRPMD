@@ -381,6 +381,8 @@ def _analyze(streams, config, system, output, return_data):
 
 def run_opes(config, system, output, executor=None, return_data=False):
     """Run independent OPES histories through the existing task scheduler."""
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "opes")
     validate_opes(config, system)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica}
              for replica in range(config.get("sampling", {}).get("replicas", 1))]

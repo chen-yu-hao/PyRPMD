@@ -32,6 +32,8 @@ include_patterns = [
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
     "rpc-mts.md", "trpmd-spectroscopy.md",
+    "trajectory-export.md", "bond-constraints.md", "distribution.md",
+    "literature-validation.md", "publication-readiness.md",
     "validation/tier1-2026-10-31/README.md",
     "validation/tier1-2026-10-31/pmf-replay.md",
 ]

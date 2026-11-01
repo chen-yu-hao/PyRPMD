@@ -531,6 +531,8 @@ def _analyze(streams, config, system, output, return_data):
 
 def run_metadynamics(config, system, output, executor=None, return_data=False):
     """Run independent histories and export their finite-time bias estimates."""
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "metadynamics")
     validate_metadynamics(config, system)
     replicas = config.get("sampling", {}).get("replicas", 1)
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": r}

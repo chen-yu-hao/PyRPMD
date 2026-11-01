@@ -17,6 +17,8 @@ hartree/bohr. Cell vectors are rows; trajectories remain unwrapped.
 | `tblite` / `xtb` | `pip install 'pyrpmd[tblite]'` | Full, partial, or no PBC | Reused tblite xTB calculator; sequential electronic calculations |
 | `pyscf` | `pip install 'pyrpmd[pyscf]'` | Isolated molecules | Reused HF/DFT object with fresh geometry and analytic gradients |
 | `torch` | `pip install 'pyrpmd[gpu]'` | Explicit periodic model contract below | Native tensor batch |
+| `openmm` | `pip install 'pyrpmd[openmm]'` | All or no PBC; reduced lower-triangular cells | Reused OpenMM Context, including virtual-site force redistribution |
+| `lammps` | Matching LAMMPS Python module and shared library, or `pip install 'pyrpmd[lammps]'` | Full, partial, or no PBC; restricted-triclinic cells | Reused one-rank library instance; `run 0` energies, forces and physical virial |
 
 ASE-backed models accept a batch at the PyRPMD interface but call the calculator
 once per frame. They do not advertise native GPU batching. This choice reuses
@@ -28,6 +30,130 @@ outputs to NumPy float64 does not increase a model's inference precision.
 The fixed System supplies atom identities, cell, PBC, charge and multiplicity.
 `D` and `T` map to the chemical element `H` in potential engines; isotope masses
 remain in PyRPMD dynamics. Do not repeat System fields inside `potential.params`.
+
+## OpenMM
+
+An OpenMM `System` XML file defines the force field, particle order, charges,
+nonbonded method and virtual sites. A Python factory returning an
+`openmm.System` is an alternative. The adapter makes an owned copy and never
+advances an OpenMM integrator. PyRPMD remains responsible for the ring springs,
+nuclear masses, timestep, thermostats and bond constraints.
+
+```toml
+[potential]
+provider = "openmm"
+model = "water-system.xml"
+device = "cpu"
+params = {platform = "CPU", properties = {Threads = "1"}}
+```
+
+For a factory, replace `model` with `factory = "water.py:build_system"` and put
+its keyword arguments in `params.factory_kwargs`. The
+[harmonic teaching input](../examples/potentials/openmm_harmonic.inp) is runnable
+without a separately supplied force field. `model` and `factory` are exclusive.
+
+PyRPMD atom arrays contain **only non-virtual particles**, in increasing OpenMM
+particle-index order. After setting each frame, the adapter updates virtual
+sites and reads the forces already redistributed to their parent atoms. This
+supports four-site water layouts without inventing masses for their charge
+sites. The caller must preserve atom identity/order when building the model;
+an OpenMM System does not contain element names to verify against coordinates.
+
+Periodic forces must already be configured in the model, including Ewald/PME,
+cutoff, error tolerance and dispersion correction choices. Model periodicity
+must agree with System PBC. Use the OpenMM reduced lower-triangular row-cell
+convention; partial PBC and arbitrary cell rotations are rejected. The adapter
+converts nm and kJ/mol to PyRPMD atomic units. It does not currently provide a
+physical virial, so it is a fixed-cell force route rather than an NPT provider.
+
+`device="cuda:0"` selects CUDA device 0 and defaults to double precision;
+`device="opencl:0"` selects OpenCL. `params.properties` accepts the installed
+platform's string properties. Conflicting platform/device choices fail.
+PyRPMD CUDA worker routing supports this provider; frames are still evaluated
+sequentially in one reused Context, not as a native multi-frame batch. GPU
+availability and force accuracy must be checked on the intended hardware.
+
+OpenMM constraints must also appear with the same pairs and lengths in
+`system.bond_constraints`. `bind_system` checks them; the force provider never
+silently projects coordinates. Use a compatible PyRPMD constrained propagator.
+Remove OpenMM barostats, Andersen thermostats and center-of-mass removers from
+the force-only model. XML/source files and dependency versions enter the run
+provenance; the adapter also reports its serialized-model SHA256.
+
+Upstream contracts: [Context evaluation and virtual sites](https://docs.openmm.org/latest/api-python/generated/openmm.openmm.Context.html),
+[periodic boxes, serialization and virtual sites](https://docs.openmm.org/latest/userguide/theory/05_other_features.html),
+[platform properties](https://docs.openmm.org/latest/userguide/library/04_platform_specifics.html).
+
+## LAMMPS as a library
+
+A LAMMPS setup script supplies atoms, IDs, types, charges, topology and force
+field. It must create a complete three-dimensional system and contain no fixes
+or dumps. PyRPMD evaluates `run 0 pre yes post no`, without a LAMMPS integration
+step. Standard static force fields can use the installed KSPACE package for
+Ewald/PPPM and the accelerator packages available in that LAMMPS build.
+The initial adapter accepts standalone LJ, Buckingham/Born, Coulomb, Morse,
+soft/table, EAM/MEAM, Tersoff/SW/EDIP, AIREBO/REBO/BOP and selected static ML
+pair families, including accelerator suffixes. Hybrid and velocity-dependent
+styles (including DPD), engine r-RESPA and shrink-wrap boundaries are rejected.
+
+```toml
+[potential]
+provider = "lammps"
+model = "potential.in"
+params = {type_map = ["O", "H"], asset_files = ["water.data", "forcefield.inc"]}
+```
+
+Atom IDs must be consecutive `1..N` in PyRPMD's atom order. `type_map[0]` names
+LAMMPS type 1, and so on; the adapter verifies the resulting element order,
+including H aliases for D/T. LAMMPS may reorder its local arrays during neighbor
+rebuilds: forces are reordered by atom ID before returning them to PyRPMD.
+Use `units real` or `units metal`; the adapter reads the actual style from the
+engine and rejects reduced LJ units and `potential.units` overrides.
+
+The script's box/PBC must match `system.cell` and `system.pbc`. Full and partial
+PBC are supported with LAMMPS restricted-triclinic row vectors. Isolated systems
+still need a sufficiently large fixed nonperiodic LAMMPS box. Coordinates outside
+its nonperiodic bounds raise an error. Periodic wrapping affects only an engine
+copy, preserving the unwrapped PyRPMD trajectory used for diffusion.
+
+Physical virials come from `compute pressure NULL virial`, including the
+reciprocal-space contribution and excluding kinetic and ring-spring terms.
+They are converted using the engine's pressure conversion, not reconstructed
+from wrapped positions and forces. Full-periodic cell updates use `change_box`
+without remapping the caller's positions.
+
+Alternatively, `factory="potential.py:build_engine"` calls
+`build_engine(comm=..., **factory_kwargs)`. It must return a fully configured
+`lammps.lammps` instance and honor the supplied communicator. PyRPMD supplies
+`MPI.COMM_SELF` inside a multi-rank job and requires one rank per provider.
+An MPI-enabled LAMMPS wheel requires its matching runtime, such as MPICH; a
+successful Python import alone does not establish that the shared library loads.
+Do not call `lammps.finalize()` in a factory: provider cleanup uses `close()` and
+preserves the host application's MPI state.
+
+`params.cmdargs` and `params.library_name` apply to script loading. Accelerator
+selection belongs to LAMMPS; PyRPMD does not claim a GPU device from a generic
+`device` string, and its GPU worker scheduler rejects this provider. LAMMPS
+potential/setup data use their own licensing and validity domains. **Every
+external dependency must be listed in `params.asset_files`**, including data,
+EAM/table files, include scripts and files loaded by a factory. Paths resolve
+relative to the PyRPMD input. Their SHA256 values enter both provider metadata
+and the run manifest; resume rejects changed or missing listed assets. An empty
+list is appropriate for a self-contained setup. PyRPMD does not attempt to infer
+dependencies from LAMMPS variables, nested includes or arbitrary factory code;
+omitting an external file leaves that dependency outside the restart guarantee.
+Script asset paths can use `${pyrpmd_model_dir}/filename`; the adapter never
+changes the process working directory.
+
+The [Lennard-Jones teaching input](../examples/potentials/lammps_lj.inp) exercises
+the public workflow. These are coordinate-only force providers: no LAMMPS
+thermostat, SHAKE, charge-equilibration fix, driven or velocity-dependent force
+can be substituted for a PyRPMD potential.
+
+Upstream contracts: [Python library](https://docs.lammps.org/Python_module.html),
+[units](https://docs.lammps.org/units.html),
+[configurational pressure](https://docs.lammps.org/compute_pressure.html),
+and [populated-box changes](https://docs.lammps.org/change_box.html).
 
 ### ASE energy and force consistency
 

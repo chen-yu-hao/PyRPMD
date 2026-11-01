@@ -2069,6 +2069,8 @@ def run_drpmd(config, system, output, executor=None):
     never overwritten by the departing collision trajectory. All ranks call this
     function in MPI mode; its final summary is broadcast to all ranks.
     """
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "drpmd")
     boundary = system if isinstance(system, dict) else system.to_dict()
     from ..geometry import validate_cell_pbc
     _, pbc = validate_cell_pbc(boundary.get("cell"), getattr(system, "pbc", boundary.get("pbc")))

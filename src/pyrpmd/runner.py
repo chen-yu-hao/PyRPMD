@@ -89,7 +89,7 @@ def _initialize_output(config, system, output, resume=False):
     for child in ("input", "results", "checkpoints", "samples", "logs"):
         (path / child).mkdir(exist_ok=True)
     versions = {}
-    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch", "ase"):
+    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch", "ase", "openmm", "lammps"):
         try:
             versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
@@ -150,6 +150,14 @@ def run(job, *, output=None, resume=False):
 
 
 def run_resolved(config, system, *, output=None, resume=False):
+    from .workflows import validate_bond_constraint_workflow
+
+    validate_bond_constraint_workflow(system, config.get("task"))
+    if getattr(system, "bond_constraints", ()):
+        # Direct resolved callers must fail before output creation, provider
+        # construction or dispatch when the materials engine is incompatible.
+        from .workflows.materials import resolve_materials
+        resolve_materials(config, system)
     config = copy.deepcopy(config)
     if "electronic_friction" in config:
         from .electronic_friction import validate_electronic_friction

@@ -222,6 +222,8 @@ def _same_channel(fragments_a, fragments_b, symbols, bonds_a, bonds_b, masses=No
 
 
 def prepare_rate(config, system, potential=None, numerical=False):
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "rate preparation")
     reaction = copy.deepcopy(config.get("reaction", {}))
     reaction["rinf"] = reaction.get(
         "rinf_au", reaction.get("rinf", reaction.get("Rinf", "12 angstrom"))

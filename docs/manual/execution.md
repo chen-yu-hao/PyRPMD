@@ -175,7 +175,7 @@ successful prefix. Workflows commit state at thermostat, observation, hill depos
 boundaries. After a PES failure, the exception and the saved stage information show where the run
 stopped; fix the cause and resume from the last checkpoint.
 
-Detailed contracts are in [parallelism](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/parallel.md) *(Chinese)*,
+Detailed contracts are in [parallelism](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/parallel.md),
 [native propagation](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-propagation.md),
 the [block API](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/block-propagation.md) *(Chinese)* and
 [checkpoints](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/checkpoints.md).

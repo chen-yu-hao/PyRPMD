@@ -1310,6 +1310,8 @@ def _dispatch_children(tasks, config, dispatch):
 
 
 def run_rate(config, system, output, executor=None):
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "rate")
     if any(system.pbc) or system.fixed_atoms:
         raise ValueError("Gas-phase run_rate does not support periodic/fixed-atom systems; use surface_rate")
     config = root_call(_prepare, config, system, str(output))

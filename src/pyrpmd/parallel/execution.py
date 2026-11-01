@@ -561,6 +561,7 @@ def make_task_potential(spec, system):
             "mace",
             "nequip",
             "fairchem",
+            "openmm",
         ):
             raise ValueError(
                 "GPU execution requires a provider with an actual GPU implementation"

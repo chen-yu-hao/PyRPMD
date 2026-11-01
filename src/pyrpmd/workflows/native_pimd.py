@@ -29,6 +29,8 @@ _NAMES = ("potential_energy", "kinetic_primitive", "kinetic_centroid_virial",
 
 def resolve_native_pimd(config, system):
     """Preflight the opt-in route; the native constructor checks all matrices."""
+    if system.bond_constraints:
+        raise ValueError("native PIMD does not implement bond constraints; use legacy velocity-verlet")
     if config.get("task") != "pimd":
         raise ValueError("sampling.engine='native' currently requires task='pimd'")
     s = config.get("sampling", {})

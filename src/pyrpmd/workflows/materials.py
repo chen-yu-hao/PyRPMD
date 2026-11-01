@@ -37,6 +37,13 @@ OBSERVABLE_NAMES = (
     "internal_energy_centroid_virial",
     "ring_polymer_hamiltonian",
 )
+CONSTRAINED_OBSERVABLE_NAMES = ("potential_energy", "ring_polymer_hamiltonian")
+
+
+def _observable_names(system):
+    return CONSTRAINED_OBSERVABLE_NAMES if system.bond_constraints else OBSERVABLE_NAMES
+
+
 DIFFUSION_FIELDS = {
     "atom_indices", "axes", "reference_atoms", "fit_range", "max_lag",
     "bootstrap", "seed", "block_length",
@@ -56,6 +63,17 @@ def _indices(value, size, name, *, default=None):
 
 def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
+    if system.bond_constraints:
+        from ..bond_constraints import BondConstraints
+        BondConstraints(system.masses, system.bond_constraints, cell=system.cell, pbc=system.pbc)
+        loop = loop_options(config)
+        if (config.get("sampling", {}).get("engine", "legacy") != "legacy"
+                or loop["integrator"] != "velocity-verlet" or loop["loop_backend"] == "native"):
+            raise ValueError("bond constraints require the legacy Python RATTLE loop and velocity-verlet")
+        if config.get("barostat") or config.get("electronic_friction"):
+            raise ValueError("bond constraints currently require a fixed cell without electronic friction")
+        if config.get("native", config.get("dynamics", {}).get("native", True)) == "required":
+            raise ValueError("native='required' is not supported by the Python bond-constraint solver")
     if config.get("sampling", {}).get("engine", "legacy") == "native":
         from .native_pimd import resolve_native_pimd
         return resolve_native_pimd(config, system)
@@ -232,6 +250,24 @@ def quantum_observables(state, potential, masses, beta, mobile_mask=None):
     return values, radii
 
 
+def constrained_observables(state, potential, masses, beta):
+    """Physical mean PES and diagnostic H_P, without invalid quantum estimators.
+
+    Unconstrained primitive/centroid-virial formulas omit constraint/metric
+    terms. They must not be reported for a bead-constrained Hamiltonian.
+    """
+    q, p = state.q, state.p
+    result = validate_result(potential.evaluate(q), q.shape)
+    mass = np.asarray(masses)[None, :, None]
+    spring = 0.5 * (len(q) / beta)**2 * np.sum(mass * (q - np.roll(q, -1, axis=0))**2)
+    hamiltonian = np.sum(result.energy) + spring + np.sum(p * p / (2 * mass))
+    values = np.array([np.mean(result.energy), hamiltonian], dtype=float)
+    radii = np.mean(np.sum((q - q.mean(axis=0))**2, axis=-1), axis=0)
+    if not np.isfinite(values).all() or not np.isfinite(radii).all():
+        raise FloatingPointError("nonfinite constrained materials observable")
+    return values, radii
+
+
 def _identity(config, system, replica):
     # Every atom is saved, so changing a transport selection or fit is strictly
     # offline analysis and does not alter the sampled Hamiltonian or RNG stream.
@@ -257,7 +293,7 @@ def _trajectory_schema(system, options):
         "sample_steps": {"dtype": "<i8", "shape": []},
         "positions": {"dtype": "<f8", "shape": [system.natoms, 3]},
         "velocities": {"dtype": "<f8", "shape": [system.natoms, 3]},
-        "observables": {"dtype": "<f8", "shape": [len(OBSERVABLE_NAMES)]},
+        "observables": {"dtype": "<f8", "shape": [len(_observable_names(system))]},
         "radii_gyration_squared": {"dtype": "<f8", "shape": [system.natoms]},
     }
     if options["barostat"] is not None:
@@ -268,6 +304,10 @@ def _trajectory_schema(system, options):
 
 
 def _check_fixed_state(state, system):
+    if system.bond_constraints:
+        from ..bond_constraints import BondConstraints
+        BondConstraints(system.masses, system.bond_constraints,
+                        cell=system.cell, pbc=system.pbc).check(state.q, state.p)
     if system.fixed_atoms:
         fixed = list(system.fixed_atoms)
         if (not np.array_equal(state.q[:, fixed], np.broadcast_to(
@@ -455,6 +495,9 @@ def _sample_replica(task):
                       threads=config.get("parallel", {}).get("threads_per_rank", 1), **loop_options(config))
         if system.fixed_atoms:
             kwargs.update(fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry)
+        if system.bond_constraints:
+            kwargs.update(bond_constraints=system.bond_constraints,
+                          constraint_cell=system.cell, constraint_pbc=system.pbc)
         sampling = Dynamics(provider, system.masses, config["beta"], config["beads"], options["sample_dt"], **kwargs)
         if options["electronic_friction"] is not None:
             from ..electronic_friction import ElectronicFrictionDynamics, make_electronic_friction
@@ -499,7 +542,13 @@ def _sample_replica(task):
                 last_saved = (elapsed, saved["frames"])
             del saved
         else:
-            state = State(np.repeat(system.geometry[None], config["beads"], axis=0), sampling.sample_momenta())
+            q = np.repeat(system.geometry[None], config["beads"], axis=0)
+            if system.bond_constraints:
+                state = State(q, np.zeros_like(q))
+                sampling.initialize_constraints(state)
+                state.p[:] = sampling.sample_momenta(state.q)
+            else:
+                state = State(q, sampling.sample_momenta())
 
         def frame_count():
             return writer.frames if writer is not None else len(records["sample_steps"])
@@ -530,8 +579,11 @@ def _sample_replica(task):
 
         def observe():
             args = (state, provider, system.masses, config["beta"])
-            values, radius = (quantum_observables(*args, mobile_mask=system.mobile_mask)
-                              if system.fixed_atoms else quantum_observables(*args))
+            if system.bond_constraints:
+                values, radius = constrained_observables(*args)
+            else:
+                values, radius = (quantum_observables(*args, mobile_mask=system.mobile_mask)
+                                  if system.fixed_atoms else quantum_observables(*args))
             record = dict(sample_steps=state.step, positions=state.q.mean(axis=0),
                           velocities=state.p.mean(axis=0) / system.masses[:, None],
                           observables=values, radii_gyration_squared=radius)
@@ -577,7 +629,8 @@ def _sample_replica(task):
                         reasons[reason] = reasons.get(reason, 0) + 1
                     else:
                         if is_sampling and state.step % options["andersen_interval"] == 0:
-                            state.p[:] = dynamics.sample_momenta()
+                            state.p[:] = (dynamics.sample_momenta(state.q) if system.bond_constraints
+                                          else dynamics.sample_momenta())
                         dynamics.propagate(state, 1, record_centroids=False)
                     prospective = elapsed + 1
                     record = prospective >= options["neq"] and (prospective - options["neq"]) % options["interval"] == 0
@@ -616,7 +669,7 @@ def _write_trajectory(stream, config, system, output):
                 "sample_interval_steps": options["interval"],
                 "production_timestep_au": options["production_dt"],
                 "beads": config["beads"], "beta_au": config["beta"],
-                "observable_names": OBSERVABLE_NAMES, "system": system.to_dict()}
+                "observable_names": _observable_names(system), "system": system.to_dict()}
     if stream["storage"] == "stream":
         path = _stream_directory(output, stream["replica"]) / "manifest.json"
         # This is a derived export, not the authoritative simulation commit.
@@ -660,6 +713,7 @@ def _analysis_stream(stream, config, system, options, *, return_data):
 
 def _analyze(streams, config, system, output, return_data=False, *, stream_data_prepared=False):
     options = resolve_materials(config, system)
+    observable_names = _observable_names(system)
     if not streams or any(s["frames"] < 2 for s in streams):
         raise ValueError("materials analysis requires saved production samples")
     trajectories = [_write_trajectory(s, config, system, output) for s in streams]
@@ -688,6 +742,14 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
         result["warnings"].append("No equilibration was requested; the collapsed-ring initial geometry is not an equilibrium configurational sample.")
     if system.fixed_atoms:
         result["warnings"].append("Fixed atoms are external coordinates; quantum kinetic-energy estimators count mobile atoms only.")
+    if system.bond_constraints:
+        result["bond_constraints"] = system.to_dict()["bond_constraints"]
+        result["constraint_method"] = "per_bead_shake_rattle"
+        result["quantum_kinetic_estimators_available"] = False
+        result["warnings"].append(
+            "Bond constraints define a constrained Cartesian ring Hamiltonian; unconstrained quantum kinetic/internal-energy estimators are omitted. "
+            "This does not implement a rigid-rotor path integral or a Fixman correction. Centroid bond lengths need not equal bead bond lengths."
+        )
     if options["barostat"] is not None:
         from ..constants import BOHR_M, HARTREE_J
         from ..analysis.diagnostics import correlated_mean_diagnostics
@@ -710,13 +772,13 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
         result["energy_unit"] = "hartree"
         result["estimators"] = {name: {"mean": float(means[:, i].mean()),
                                        "standard_error_between_replicas": None if spread is None else float(spread[i])}
-                                for i, name in enumerate(OBSERVABLE_NAMES)}
+                                for i, name in enumerate(observable_names)}
         result["radius_of_gyration_squared_bohr2"] = np.mean(
             [s["radii_gyration_squared"].mean(axis=0) for s in streams], axis=0).tolist()
         result["sampling_diagnostics"] = [
             {"replica": s["replica"], "observables": {
                 name: correlated_mean_diagnostics(s["observables"][:, i])
-                for i, name in enumerate(OBSERVABLE_NAMES)
+                for i, name in enumerate(observable_names)
             }} for s in streams
         ]
         result["warnings"].append("PIMD sampling times are not physical dynamical times; H_P is reported only as an integration diagnostic.")
@@ -729,7 +791,7 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
             raise ValueError("diffusion replicas need the same completed sample clock for aggregation")
         if options["electronic_friction"] is None:
             result["nve_energy_diagnostics"] = nve_energy_diagnostics(
-                [s["observables"][:, OBSERVABLE_NAMES.index("ring_polymer_hamiltonian")] for s in streams],
+                [s["observables"][:, observable_names.index("ring_polymer_hamiltonian")] for s in streams],
                 times, beads=config["beads"], beta=config["beta"],
             )
             if not result["nve_energy_diagnostics"]["within_tolerance"]:

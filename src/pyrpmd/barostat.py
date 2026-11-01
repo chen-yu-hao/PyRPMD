@@ -84,6 +84,8 @@ class BZPBarostat:
         self.friction_au = _real(1.0 / self.tau_au if friction_au is None else friction_au,
                                  "friction_au", nonnegative=True)
         get = system.get if isinstance(system, Mapping) else lambda k, d=None: getattr(system, k, d)
+        if get("bond_constraints", ()):
+            raise ValueError("BZP does not implement bond-constraint virials; use a fixed cell")
         self._cell, pbc = validate_cell_pbc(get("cell"), get("pbc"))
         if self._cell is None or not pbc.all():
             raise ValueError("BZP requires a fully periodic 3D cell")

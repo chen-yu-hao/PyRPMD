@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "created_date": "2026-11-01",
+  "scope": "Explicit reproduction targets and remaining evidence; no case is represented as reproduced.",
+  "cases": [
+    {
+      "id": "h_ch4",
+      "title": "H + CH4 -> H2 + CH3",
+      "method": "RPMD",
+      "observable": "bimolecular_rate",
+      "unit": "cm3 molecule-1 s-1",
+      "reference_registry": "benchmarks/published_rates/references.json",
+      "reference_ids": [
+        "h_ch4_eg_rpmd_300k"
+      ],
+      "source_urls": [
+        "https://doi.org/10.1016/j.cpc.2012.10.017",
+        "https://doi.org/10.1063/1.4793394"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "rinf",
+        "sampling",
+        "plateau"
+      ],
+      "required_scientific_reviews": [
+        "Exact PES/version and isotope masses match the reference; archive model bytes and licenses.",
+        "Electronic, nuclear-spin and equivalent-channel conventions match; never reapply factors already in the table.",
+        "Inspect PMF overlap, correlated uncertainty including PMF and recrossing, and the full transmission plateau.",
+        "Check replica independence, source integrity, and all rate outputs with benchmarks/published_rates/compare.py."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "Historical Espinosa-Garcia PES source/license/hash and matching model build are not supplied by this campaign.",
+        "Converged methane trajectories have not been run; a modern PIP-NN PES is a separate benchmark."
+      ]
+    },
+    {
+      "id": "oh_h2",
+      "title": "OH + H2 -> H2O + H",
+      "method": "RPMD",
+      "observable": "bimolecular_rate",
+      "unit": "cm3 molecule-1 s-1",
+      "reference_registry": "benchmarks/published_rates/references.json",
+      "reference_ids": [
+        "oh_h2_nn1_rpmd_corrected_300k",
+        "oh_h2_nn1_rpmd_uncorrected_300k",
+        "oh_h2_nn1_rpmd_uncorrected_1000k"
+      ],
+      "source_urls": [
+        "https://pubs.rsc.org/en/content/articlelanding/2017/cp/c7cp05266a",
+        "https://pubs.rsc.org/en/content/articlehtml/2018/cp/c8cp06037a"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "rinf",
+        "sampling",
+        "plateau"
+      ],
+      "required_scientific_reviews": [
+        "Exact PES/version and isotope masses match the reference; archive model bytes and licenses.",
+        "Electronic, nuclear-spin and equivalent-channel conventions match; never reapply factors already in the table.",
+        "Inspect PMF overlap, correlated uncertainty including PMF and recrossing, and the full transmission plateau.",
+        "Check replica independence, source integrity, and all rate outputs with benchmarks/published_rates/compare.py."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "NN1/YZCL2 surfaces and model files must be matched explicitly.",
+        "Corrected and uncorrected electronic factors are separate targets; converged PyRPMD results are absent."
+      ]
+    },
+    {
+      "id": "f_h2",
+      "title": "F + H2 -> HF + H",
+      "method": "RPMD",
+      "observable": "bimolecular_rate",
+      "unit": "cm3 molecule-1 s-1",
+      "reference_registry": "benchmarks/published_rates/references.json",
+      "reference_ids": [
+        "f_h2_rpmd_pending"
+      ],
+      "source_urls": [
+        "https://doi.org/10.1063/1.3127145",
+        "https://doi.org/10.1063/1.3464477"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "rinf",
+        "sampling",
+        "plateau"
+      ],
+      "required_scientific_reviews": [
+        "Exact PES/version and isotope masses match the reference; archive model bytes and licenses.",
+        "Electronic, nuclear-spin and equivalent-channel conventions match; never reapply factors already in the table.",
+        "Inspect PMF overlap, correlated uncertainty including PMF and recrossing, and the full transmission plateau.",
+        "Check replica independence, source integrity, and all rate outputs with benchmarks/published_rates/compare.py."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "Original rate data plus erratum and the exact PES/adiabatic-spin-orbit conventions are still pending source verification.",
+        "No numeric comparison is allowed against the pending registry entry."
+      ]
+    },
+    {
+      "id": "h_h2",
+      "title": "H + H2 -> H2 + H",
+      "method": "RPMD",
+      "observable": "bimolecular_rate",
+      "unit": "cm3 molecule-1 s-1",
+      "reference_registry": "benchmarks/published_rates/references.json",
+      "reference_ids": [
+        "h_h2_bkmp2_rpmd_300k"
+      ],
+      "source_urls": [
+        "https://doi.org/10.1016/j.cpc.2012.10.017",
+        "https://pubs.rsc.org/en/content/articlelanding/2013/cp/c2cp44364c"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "rinf",
+        "sampling",
+        "plateau"
+      ],
+      "required_scientific_reviews": [
+        "Exact PES/version and isotope masses match the reference; archive model bytes and licenses.",
+        "Electronic, nuclear-spin and equivalent-channel conventions match; never reapply factors already in the table.",
+        "Inspect PMF overlap, correlated uncertainty including PMF and recrossing, and the full transmission plateau.",
+        "Check replica independence, source integrity, and all rate outputs with benchmarks/published_rates/compare.py."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "Pinned BKMP2 builder and a real pilot already exist; the pilot is not a converged thermal-rate reproduction.",
+        "Resolve the documented PMF pilot discrepancy and all convergence checks before claiming agreement."
+      ]
+    },
+    {
+      "id": "d_h2",
+      "title": "D + H2 -> HD + H",
+      "method": "RPMD",
+      "observable": "bimolecular_rate",
+      "unit": "cm3 molecule-1 s-1",
+      "reference_registry": "benchmarks/published_rates/references.json",
+      "reference_ids": [
+        "d_h2_rpmd_pending"
+      ],
+      "source_urls": [
+        "https://pubs.rsc.org/en/content/articlelanding/2013/cp/c2cp44364c"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "rinf",
+        "sampling",
+        "plateau"
+      ],
+      "required_scientific_reviews": [
+        "Exact PES/version and isotope masses match the reference; archive model bytes and licenses.",
+        "Electronic, nuclear-spin and equivalent-channel conventions match; never reapply factors already in the table.",
+        "Inspect PMF overlap, correlated uncertainty including PMF and recrossing, and the full transmission plateau.",
+        "Check replica independence, source integrity, and all rate outputs with benchmarks/published_rates/compare.py."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "Numeric RPMD table entries and isotope-specific masses/channel conventions require source extraction.",
+        "No converged D + H2 thermal-rate campaign has been run."
+      ]
+    },
+    {
+      "id": "mu_h2",
+      "title": "Mu + H2 -> MuH + H",
+      "method": "RPMD",
+      "observable": "bimolecular_rate",
+      "unit": "cm3 molecule-1 s-1",
+      "reference_registry": "benchmarks/published_rates/references.json",
+      "reference_ids": [
+        "mu_h2_rpmd_pending"
+      ],
+      "source_urls": [
+        "https://pubs.acs.org/doi/10.1021/jz201702q",
+        "https://pubs.rsc.org/en/content/articlelanding/2013/cp/c2cp44364c"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "rinf",
+        "sampling",
+        "plateau"
+      ],
+      "required_scientific_reviews": [
+        "Exact PES/version and isotope masses match the reference; archive model bytes and licenses.",
+        "Electronic, nuclear-spin and equivalent-channel conventions match; never reapply factors already in the table.",
+        "Inspect PMF overlap, correlated uncertainty including PMF and recrossing, and the full transmission plateau.",
+        "Check replica independence, source integrity, and all rate outputs with benchmarks/published_rates/compare.py."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "Numeric source data and source-specific Mu mass must be verified.",
+        "Light-mass bead, timestep, entrance-channel and tunnelling convergence require dedicated calculations."
+      ]
+    },
+    {
+      "id": "h_ni100",
+      "title": "H surface diffusion on Ni(100)",
+      "method": "RPMD",
+      "observable": "self_diffusion",
+      "unit": "angstrom2 ps-1",
+      "reference_ids": [],
+      "source_urls": [
+        "https://doi.org/10.1021/jp302453z"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "sampling",
+        "system_size",
+        "correlation_length"
+      ],
+      "required_scientific_reviews": [
+        "Match the exact metal/hydrogen model, isotope, lattice constant, coverage or loading and movable/frozen layers.",
+        "Separate two-dimensional surface diffusion from three-dimensional bulk diffusion and finite-cluster escape.",
+        "Inspect unwrapped centroid MSD and VACF, drift subtraction, fit windows and independent-replica error bars.",
+        "Transcribe a source-matched table or digitized curve with uncertainty and provenance before comparison."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "Existing NiAlH_jea EAM software pilot does not match the lattice/PES specification of the 2012 study.",
+        "Reference values remain unavailable; no number is manufactured from a plot or a short ballistic trajectory."
+      ]
+    },
+    {
+      "id": "h_pd",
+      "title": "H diffusion in bulk Pd and Pd nanoclusters",
+      "method": "RPMD",
+      "observable": "self_diffusion",
+      "unit": "angstrom2 ps-1",
+      "reference_ids": [],
+      "source_urls": [
+        "https://doi.org/10.1021/ct900554r"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "sampling",
+        "system_size",
+        "correlation_length"
+      ],
+      "required_scientific_reviews": [
+        "Match the exact metal/hydrogen model, isotope, lattice constant, coverage or loading and movable/frozen layers.",
+        "Separate two-dimensional surface diffusion from three-dimensional bulk diffusion and finite-cluster escape.",
+        "Inspect unwrapped centroid MSD and VACF, drift subtraction, fit windows and independent-replica error bars.",
+        "Transcribe a source-matched table or digitized curve with uncertainty and provenance before comparison."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "Match the published loading, cluster/bulk geometry, boundaries and PES; no matched Pd simulation is present.",
+        "Reference values remain unavailable; no number is manufactured from a plot or a short ballistic trajectory."
+      ]
+    },
+    {
+      "id": "qtip4pf_h2o_diffusion",
+      "title": "q-TIP4P/F H2O self-diffusion at 298 K",
+      "method": "RPMD",
+      "observable": "self_diffusion",
+      "unit": "angstrom2 ps-1",
+      "reference_registry": "benchmarks/water/references.json",
+      "reference_ids": [
+        "qtip4pf_h2o_216_298k"
+      ],
+      "source_urls": [
+        "https://doi.org/10.1063/1.3167790",
+        "https://arxiv.org/abs/1011.1047"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "sampling",
+        "electrostatic_accuracy",
+        "correlation_length"
+      ],
+      "required_scientific_reviews": [
+        "Match 216 molecules, density 0.997 g/cm3, temperature, isotope masses, unthermostatted physical production and the source finite-size convention.",
+        "Match or converge the 9-A short-range cutoff, long-range electrostatics and tail corrections; never impose rigid bonds on q-TIP4P/F.",
+        "Establish liquid equilibrium (structure and stationarity), unwrapped molecular-centroid VACF/MSD consistency, plateau and independent replica uncertainty.",
+        "Compare the finite 216-molecule diffusion value separately from an infinite-size extrapolation; finite-size dependence is expected."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "The model factory and tiny periodic integration pilot are available; a source-sized equilibrated liquid campaign has not been run.",
+        "The P=4 eight-molecule pilot and its 2.5-A cutoff cannot be compared quantitatively with the paper."
+      ]
+    },
+    {
+      "id": "qtip4pf_d2o_diffusion",
+      "title": "q-TIP4P/F D2O self-diffusion at 298 K",
+      "method": "RPMD",
+      "observable": "self_diffusion",
+      "unit": "angstrom2 ps-1",
+      "reference_registry": "benchmarks/water/references.json",
+      "reference_ids": [
+        "qtip4pf_d2o_216_298k"
+      ],
+      "source_urls": [
+        "https://doi.org/10.1063/1.3167790",
+        "https://arxiv.org/abs/1011.1047"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "sampling",
+        "electrostatic_accuracy",
+        "correlation_length"
+      ],
+      "required_scientific_reviews": [
+        "Match 216 molecules, density 1.107 g/cm3, temperature, isotope masses, unthermostatted physical production and the source finite-size convention.",
+        "Match or converge the 9-A short-range cutoff, long-range electrostatics and tail corrections; never impose rigid bonds on q-TIP4P/F.",
+        "Establish liquid equilibrium (structure and stationarity), unwrapped molecular-centroid VACF/MSD consistency, plateau and independent replica uncertainty.",
+        "Compare the finite 216-molecule diffusion value separately from an infinite-size extrapolation; finite-size dependence is expected."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "The model factory and tiny periodic integration pilot are available; a source-sized equilibrated liquid campaign has not been run.",
+        "The P=4 eight-molecule pilot and its 2.5-A cutoff cannot be compared quantitatively with the paper."
+      ]
+    },
+    {
+      "id": "qtip4pf_ir",
+      "title": "q-TIP4P/F liquid infrared spectrum (cross-method comparison)",
+      "method": "TRPMD",
+      "observable": "OH_stretch_band_peak",
+      "unit": "cm-1",
+      "reference_ids": [],
+      "source_urls": [
+        "https://doi.org/10.1063/1.3167790",
+        "https://arxiv.org/abs/1011.1047"
+      ],
+      "numeric_convergence_controls": [
+        "beads",
+        "timestep",
+        "sampling",
+        "record_length"
+      ],
+      "required_scientific_reviews": [
+        "Original Figure 5 is PA-CMD; TRPMD/RPMD spectra are method comparisons, not implementation agreement with PA-CMD.",
+        "Evaluate whole-molecule dipoles on each bead and average dipoles; preserve a flexible O-H potential.",
+        "Compare full bending/stretching/librational bands, not just a fitted peak, using archived source curves and explicit broadening/normalization.",
+        "Converge thermostat friction for TRPMD, cadence/Nyquist frequency, record length, window function and liquid equilibrium; relative IR is not absolute absorbance."
+      ],
+      "status": "not_reproduced",
+      "blockers": [
+        "No source digitization or source-sized liquid production spectrum has been generated.",
+        "The tiny pilot outputs an RPMD spectrum diagnostic only; it is neither PA-CMD nor a physically converged liquid IR result."
+      ]
+    }
+  ]
+}

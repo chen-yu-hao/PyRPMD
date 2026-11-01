@@ -53,6 +53,12 @@ python -m build
 sdist 包含源码、原生头文件、手册源文件、示例与来源说明；wheel 包含编译扩展和公开 ABI 头文件。把 wheel 安装到独立环境
 并在源码目录之外测试，避免 editable 安装掩盖缺失的模块。wheel 文件名取决于 Python 与平台，安装实际生成的文件。
 
+
+[发行流程](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/distribution.md)说明
+cibuildwheel 的 CPython 3.11–3.14 wheel 构建与逐包安装验证、显式启用的
+PyPI/TestPyPI Trusted Publishing，以及 conda-forge 配方提交流程。
+本地 conda 配方和 CI 只构建、测试并保存产物，不自动上传到公开频道。
+
 ## 手册
 
 手册有两个版本，各为一个 Sphinx 项目：

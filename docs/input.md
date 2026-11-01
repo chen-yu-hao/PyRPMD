@@ -1,59 +1,94 @@
-# 输入规范 v1
+# Input specification v1
 
-`.inp` 和 `.toml` 使用 TOML 语法；`.py` 执行模块内的 `build()`，返回 `JobSpec` 或字典。两种入口经同一个解析器产生规范配置。输入中相对路径以**输入文件所在目录**为基准；命令行 `--pes`、`--pes-manifest`、`--output` 以启动目录为基准。`module:object` 和 `file.py:object` 均可作为插件入口。
+**English** · [中文](zh/input.md)
 
-## 通用字段
+`.inp` and `.toml` files use TOML syntax. A `.py` input executes the module's `build()`
+function, which returns a `JobSpec` or dictionary. Both routes use the same parser to
+produce a normalized configuration. Relative paths inside an input are resolved from
+**the input file's directory**. Command-line `--pes`, `--pes-manifest` and `--output`
+paths are relative to the launch directory. Plugin entry points accept both
+`module:object` and `file.py:object`.
 
-| 字段 | 类型、单位与含义 |
+## Common fields
+
+| Field | Type, units and meaning |
 | --- | --- |
-| `schema_version` | 当前为整数 1 |
-| `task` | `rate`、`drpmd`、`fes`、`surface_rate`、`network`、`metadynamics`、`pcet`、`pimd`、`diffusion`、`site_rate` |
-| `preset` | `pilot`（缺省）或 `production` |
-| `temperature` | 正温度，例如 `"300 K"`；数值也按 K 解释 |
-| `beads` | 正整数；`auto` 只在 pilot 中使用 P=32 并标记未收敛 |
-| `seed` | 非负整数，任务的随机流由稳定任务 ID 派生 |
-| `dynamics.timestep` | 例如 `"0.1 fs"`；纯数值按原子时间 |
-| `dynamics.integrator` | `cayley-bcb`（缺省）、`normal-mode-bab`、`velocity-verlet`；参见[积分器规范](integrators.md) |
-| `dynamics.native` | `true` 优先编译内核并允许串行 NumPy 回退；`false` 用 NumPy；`"required"` 必须有编译内核 |
-| `output.directory` | 运行目录；新任务不覆盖已有非空目录 |
-| `output.checkpoint_interval` / `checkpoint_steps` | 时间间隔或正整数步数；步数优先 |
-| `output.trajectory_stride` | dRPMD 轨迹保存的正整数步数间隔 |
-| `output.store_configurations` | MetaD每个生产采样时刻保存完整ring坐标；布尔值，默认false，续算时不能更改 |
-| `output.trajectory_storage` / `chunk_frames` | 材料任务默认 `"stream"`、256 帧；`"memory"` 使用旧格式 |
+| `schema_version` | Currently the integer 1 |
+| `task` | `rate`, `drpmd`, `fes`, `surface_rate`, `network`, `metadynamics`, `opes`, `pcet`, `pimd`, `diffusion`, `site_rate` |
+| `preset` | `pilot` (default) or `production` |
+| `temperature` | Positive temperature, for example `"300 K"`; bare numbers also mean K |
+| `beads` | Positive integer; `auto` uses P=32 only in a pilot and marks it unconverged |
+| `seed` | Nonnegative integer; task random streams are derived from stable task IDs |
+| `dynamics.timestep` | For example `"0.1 fs"`; a bare number is in atomic time units |
+| `dynamics.integrator` | `cayley-bcb` (default), `normal-mode-bab`, or `velocity-verlet`; see [integrators](integrators.md) |
+| `dynamics.native` | `true` prefers compiled kernels and allows serial NumPy fallback; `false` uses NumPy; `"required"` requires compiled kernels |
+| `output.directory` | Run directory; a new job does not overwrite a nonempty directory |
+| `output.checkpoint_interval` / `checkpoint_steps` | Time interval or positive integer step count; the step count takes precedence |
+| `output.trajectory_stride` | Positive integer interval in steps between saved dRPMD frames |
+| `output.store_configurations` | Save complete ring coordinates at each MetaD production sample; Boolean, default `false`, immutable on restart |
+| `output.trajectory_storage` / `chunk_frames` | Materials defaults: `"stream"` and 256 frames; `"memory"` uses the older format |
 
-`production` 要求显式指定温度、珠子数、dynamics 和 sampling；dRPMD 还要求显式 `bmax`。这只是输入完整性要求，
-不会切换为更高精度参数；dynamics/sampling 内省略的子项仍取默认值。科学收敛仍需用系列计算确认。
-未知顶层和常用 section 字段会报错，不会自动忽略。完整默认表见[中文手册](zh/manual/input.md#缺省值)。
+`production` requires explicit temperature, bead count, dynamics and sampling settings;
+dRPMD also requires explicit `bmax`. This checks input completeness. It does not select
+more accurate parameters: omitted subfields within dynamics/sampling still use their
+defaults. Scientific convergence requires a series of calculations. Unknown top-level
+and common section fields raise errors. See the [manual's defaults](manual/input.md).
 
-`pcet` 使用下述独立模型输入，不使用分子系统、PES、珠子数、传播与采样
-预设；其 `temperature` 也接受温度列表以运行扫描。
+`pcet` uses the separate model input below. It does not use a molecular system, PES,
+beads, propagation, or sampling presets. Its `temperature` also accepts a list for scans.
 
-时间数量必须是步长的整数倍。需要非整除的时间时请先选择实际整数步数，例如 `equilibration_steps=333`。纯数值的内部单位是 bohr、hartree、原子时间、电子质量；XYZ 坐标缺省为 angstrom。力常数支持 `"10 kcal/mol/angstrom^2"` 等组合单位。所有原子索引均为 **0-based**。
+Times must be integer multiples of the timestep. To request a duration that is not an
+exact multiple, choose the actual integer step count explicitly, for example
+`equilibration_steps=333`. Internal units for bare numbers are bohr, hartree, atomic
+time and electron mass. XYZ coordinates default to angstrom. Force constants accept
+compound units such as `"10 kcal/mol/angstrom^2"`. All atom indices are **zero-based**.
 
-## 系统
+## System
 
-`[system]` 可使用 `transition_state="ts.xyz"`、`geometry="system.xyz"`，或 `reactants=["A.xyz","B.xyz"]` 加 `separation="12 angstrom"`。dRPMD 的 separation 是两个反应物 centroid COM 的初始**径向距离** R0；发射时使用 `z=sqrt(R0^2-b^2)` 保持径向距离，需 `bmax<R0`。
+`[system]` accepts `transition_state="ts.xyz"`, `geometry="system.xyz"`, or
+`reactants=["A.xyz","B.xyz"]` with `separation="12 angstrom"`. In dRPMD, separation is
+the initial **radial distance** R0 between the two reactant centroid centers of mass.
+Launches use `z=sqrt(R0^2-b^2)` to preserve that radial distance and require `bmax<R0`.
 
-Python 或 TOML 也可提供 `symbols`、`geometry=[[...], ...]` 与 `masses`（电子质量）或 `masses_amu`。`geometry_unit` 可覆盖坐标单位。同位素可用 `isotopes=[{atom=0, mass="2.01410177812 amu"}]`。质量在反应物居中和放置前解析。电荷 `charge` 为整数，`multiplicity` 为正整数，默认 0 和 1；须与所选电子势能面一致。软件不从几何自动推断自旋统计权重。
+Python or TOML inputs may instead provide `symbols`, `geometry=[[...], ...]`, and
+`masses` (electron masses) or `masses_amu`. `geometry_unit` overrides coordinate units.
+Specify isotopes with, for example, `isotopes=[{atom=0, mass="2.01410177812 amu"}]`.
+Masses are resolved before reactants are centered and placed. `charge` is an integer;
+`multiplicity` is a positive integer. Their defaults are 0 and 1, and they must match
+the selected electronic potential energy surface. Spin statistical weights are not
+inferred from geometry.
 
-固定晶胞使用 `cell=[[...],[...],[...]]`（每行一个矢量）、`cell_unit="angstrom"`
-及 `pbc=[true,true,false]`。有 cell 时默认全周期，无 cell 时默认非周期。
-晶胞、部分 PBC、连续质心坐标及支持的势能接口见[材料计算](materials.md)。
-## 周期表面
+Use `cell=[[...],[...],[...]]` (one vector per row), `cell_unit="angstrom"` and
+`pbc=[true,true,false]` for a fixed cell. The default is full periodicity when a cell
+is present and nonperiodic boundaries otherwise. See [materials](materials.md) for
+cells, partial PBC, continuous centroid coordinates and supported potential interfaces.
 
-周期表面新增 `system.cell`（3×3 行向量）、`cell_unit`（缺省继承 geometry_unit；inline 默认 bohr，XYZ 默认 angstrom）、
-`pbc=[true,true,false]` 和 `fixed_atoms=[...]`。这些字段参与恢复的科学指纹。
-`task="surface_rate"` 还要求 `[surface]` 的 `reactant_basin` 和 `dividing_surface`；
-`product_side` 为 `higher`（默认）或 `lower`。速率使用位置密度 PMF 和一阶盆地
-归一化，单位 s^-1，支持内置线性 centroid 坐标、连续展开的 `distance` 以及满足光滑分割面条件的 `periodic_distance`。
-`surface.normalization` 显式指定面积／覆盖度换算；`surface.free_energy` 可接入
-已保存的多维 FES，并沿用源体系的 CV、静态墙与通道区域。已有气相 `rate`／`drpmd`／
-`network` 会拒绝周期／固定原子系统。表面 FES 可使用自适应伞抽样；当前
-`surface_rate` 不接受 `[adaptive_umbrella]`。`metadynamics` 支持 1–3 个 CV、周期／固定
-原子系统、NHC/PILE-L/Andersen 和二次墙。完整配置、公式与限制见 [表面催化](surface-catalysis.md)。
-1–2 维偏置网格设置见 [网格 metadynamics](grid-metadynamics.md)。
+`system.bond_constraints` accepts records such as
+`[{atoms=[0,1], length="0.9572 angstrom"}]`. These per-bead constraints currently require
+`velocity-verlet`, Andersen sampling, and fixed-cell `pimd` or `diffusion`; consult the
+[bond-constraint guide](bond-constraints.md) for their supported combinations and constrained-ensemble scope.
 
-## 热化与持续母轨迹
+## Periodic surfaces
+
+Periodic surfaces use `system.cell` (3×3 row vectors), `cell_unit` (inherited from
+`geometry_unit` by default: bohr for inline geometry, angstrom for XYZ),
+`pbc=[true,true,false]`, and `fixed_atoms=[...]`. These fields enter the scientific
+restart fingerprint. `task="surface_rate"` also requires `reactant_basin` and
+`dividing_surface` in `[surface]`; `product_side` is `higher` (default) or `lower`.
+Rates use a position-density PMF and first-order basin normalization, in s^-1.
+Supported coordinates include built-in linear centroid coordinates, continuously
+unwrapped `distance`, and `periodic_distance` satisfying the smooth-surface conditions.
+
+`surface.normalization` explicitly specifies area/coverage conversion.
+`surface.free_energy` can use a saved multidimensional FES, retaining the source
+system's CVs, static walls and channel regions. Gas-phase `rate`, `drpmd` and `network`
+reject periodic or fixed-atom systems. Surface FES calculations can use adaptive
+umbrellas; `surface_rate` currently rejects `[adaptive_umbrella]`. `metadynamics`
+supports 1–3 CVs, periodic/fixed-atom systems, NHC/PILE-L/Andersen and quadratic walls.
+See [surface catalysis](surface-catalysis.md) for configuration, formulas and limitations,
+and [grid metadynamics](grid-metadynamics.md) for 1D/2D bias grids.
+
+## Thermalization and persistent parent trajectories
 
 ```toml
 [sampling]
@@ -67,32 +102,57 @@ replicas = 2
 parents = 8
 ```
 
-`equilibration` 是每条链首次平衡时间。dRPMD 的 `interval`/`interval_steps` 是**同一母轨迹两次抽取之间推进的时间/步数**；不是温度，也不会每次从初始几何重新热化。`parents` 控制母链数，省略时使用轨迹工作进程数。`collision.trajectories=N` 是总碰撞数，按 `N//parents` 加余数分配。若要改变进程数量后续跑，首次就显式固定 `parents`。
+`equilibration` is each chain's initial equilibration time. For dRPMD,
+`interval`/`interval_steps` is **the time/number of steps advanced between successive
+draws from the same parent trajectory**. It is not a temperature, and a new draw does
+not restart thermalization from the initial geometry. `parents` sets the number of
+parent chains; if omitted, it defaults to the trajectory worker count.
+`collision.trajectories=N` is the total number of collisions, distributed as
+`N//parents` plus the remainder. Set `parents` explicitly on the first run if you
+intend to change the worker count on restart.
 
-FES 使用 `replicas` 指定每个窗口的独立链数，`production` 是每条链的生产采样时间，`interval` 是保存 CV 样本的间隔。
-FES、气相和位点速率工作流默认使用所选动力学积分器 + Andersen；省略 `sampling.integrator` 时自动匹配，
-显式选择 Andersen 时须为所选 canonical 名称加 `-andersen`。FES 也可选择 PILE-L，`pimd`/`diffusion` 在
-Cayley 下默认使用 BCOCB/PILE-L、正常模下默认使用 BAOAB/PILE-L；Verlet 对应 Andersen。
-`sampling.gamma_centroid` 设置 PILE-L 的质心摩擦。采样和子轨迹步长须相同。真实碰撞、回穿子轨迹和默认的
-`diffusion` 生产段使用无温控传播。
+For FES, `replicas` sets the independent chains per window, `production` is the
+production duration per chain, and `interval` is the CV sampling interval. FES,
+gas-phase and site-rate workflows default to the selected dynamical integrator plus
+Andersen. An omitted `sampling.integrator` is matched automatically; explicit
+Andersen selection uses the canonical integrator name with `-andersen` appended.
+FES also supports PILE-L. `pimd`/`diffusion` default to BCOCB/PILE-L with Cayley,
+BAOAB/PILE-L with normal modes, and Andersen with Verlet.
+`sampling.gamma_centroid` sets the PILE-L centroid friction. Sampling and child
+trajectories must use the same timestep. Physical collisions, recrossing children and
+the default `diffusion` production segment propagate without a thermostat.
 
-`diffusion` 可额外配置 `[electronic_friction]`，在生产段启用物理电子浴的 Markovian 质心 EF-RPMD。该 section 接受 `method = "centroid"` 与 `provider = "constant"` 或 `"python"`：常量 provider 必须在松弛率 `gamma` 和物理摩擦张量 `tensor` 中二选一；Python provider 使用 `factory` 和 `params`。数值 `gamma` 使用原子时间的倒数，也可写为 `"0.01 fs^-1"`；`tensor` 使用电子质量/原子时间，维度为 `[3*N,3*N]`。固定基底原子可保留，摩擦只作用于移动自由度。此时生产轨迹与电子浴交换能量，不进行 NVE 能量漂移判定。其他任务、显式 `loop_backend = "native"` 以及混合 mapping 势均拒绝该配置。完整接口、相关噪声、模型限制和示例见[电子摩擦](electronic-friction.md)。
+`diffusion` may add `[electronic_friction]` for a physical electronic bath during
+production, using Markovian centroid EF-RPMD. This section accepts `method="centroid"`
+and `provider="constant"` or `"python"`. A constant provider requires exactly one of
+the relaxation rate `gamma` and physical friction `tensor`; a Python provider uses
+`factory` and `params`. Bare `gamma` values are inverse atomic time; strings such as
+`"0.01 fs^-1"` are also accepted. `tensor` has shape `[3*N,3*N]` in electron
+mass/atomic time. Fixed substrate atoms are allowed; friction acts only on mobile
+degrees of freedom. Production exchanges energy with the electronic bath, so the NVE
+drift criterion is not applied. Other tasks, explicit `loop_backend="native"` and
+mixed mapping potentials reject this configuration. See [electronic friction](electronic-friction.md)
+for the interface, correlated noise, model limitations and examples.
 
-## 材料任务
+## Materials tasks
 
-`pimd` 和 `diffusion` 使用上述 sampling 时间配置，不接受 reaction、umbrella 或
-metadynamics 偏置。`diffusion` 增加 `[diffusion]`：`atom_indices`、`axes`、
-`reference_atoms`、`fit_range`、`max_lag`、`bootstrap`、`seed`、`block_length`。
-`max_lag`/`block_length` 的单位是保存帧，`fit_range` 是两个时间数量；所有选择索引
-均从零起始。`site_rate` 使用一个线性 centroid CV、固定 umbrella 和 `[recrossing]`，
-并显式设置 `[site_rate]` 的 `cv`、`basin`、`dividing_surface`、`direction`。
-三种任务的完整配置与结果解释见[材料计算](materials.md)。
+`pimd` and `diffusion` use the sampling times above and reject reaction, umbrella and
+metadynamics biases. `diffusion` adds `[diffusion]` with `atom_indices`, `axes`,
+`reference_atoms`, `fit_range`, `max_lag`, `bootstrap`, `seed` and `block_length`.
+`max_lag`/`block_length` are measured in saved frames; `fit_range` contains two times.
+All selection indices are zero-based. The linear-coordinate `site_rate` setup uses a
+centroid CV, fixed umbrellas and `[recrossing]`, with explicit `cv`, `basin`,
+`dividing_surface` and `direction` in `[site_rate]`. See [materials](materials.md)
+for all three tasks and their results; [general-coordinate rates](general-coordinate-rates.md)
+describes the nonlinear extension.
 
-`pimd` 和 `diffusion` 可固定部分原子；扩散选择的测量原子必须可动，参考原子可固定。
-`pimd` 可添加 `[barostat]`：`method="bzp"`、`pressure="1 bar"`、
-`time_constant="1000 fs"`，可选 `friction`。它要求三维完全周期、全部原子可动、
-支持变晶胞及物理 virial 的 PES；各向同性压力不改变晶胞形状。详见 [NPT](materials-npt.md)。
-材料轨迹默认流式保存，见 [分块与续跑](streaming-trajectories.md)。
+`pimd` and `diffusion` allow some atoms to be fixed. Measured diffusion atoms must be
+mobile; reference atoms may be fixed. `pimd` may add `[barostat]` with `method="bzp"`,
+`pressure="1 bar"`, `time_constant="1000 fs"` and optional `friction`. This requires
+three-dimensional full periodicity, all-mobile atoms and a PES supporting variable
+cells and physical virials. Isotropic pressure does not change cell shape. See
+[NPT](materials-npt.md). Materials trajectories stream by default; see
+[chunks and restart](streaming-trajectories.md).
 
 ## dRPMD
 
@@ -111,15 +171,33 @@ bond_cutoffs = { "O-H" = "1.3 angstrom", "H-H" = "0.9 angstrom" }
 channels = { water = ["H2O", "O2"] }
 ```
 
-示例 channel 名/组成只是语法展示，必须与实际反应原子守恒一致。`thermal_flux` 使用 E~Gamma(2,kBT) 的通量分布；`maxwell` 使用普通相对速度分布并逐轨迹按 v 加权；`fixed_energy` 另需 `energy`，只给该能量散射截面，不给热速率。冲量参数按面积均匀采样，整体空间取向各向同性。
+The example channel name/composition illustrates syntax and must conserve the actual
+reaction's atoms. `thermal_flux` samples the flux distribution E~Gamma(2,kBT).
+`maxwell` samples the ordinary relative-speed distribution and weights each trajectory
+by v. `fixed_energy` additionally requires `energy` and yields a scattering cross
+section at that energy, not a thermal rate. Impact parameters are uniform in area,
+and overall spatial orientations are isotropic.
 
-最小 pilot 输入省略分类设置时，程序按共价半径和 1.25 倍系数推断连通 cutoff，并输出暂定候选标签、推断值和假设。它不推断电荷、键级或全部化学身份；热速率、散射截面和化学结果上下界均暂不报告。正式 production 输入必须提供显式 cutoff 或自定义分类器。
+When a minimal pilot omits classification settings, the program infers connectivity
+cutoffs from covalent radii with a factor of 1.25 and reports provisional candidate
+labels, inferred values and assumptions. It does not infer charge, bond order or
+complete chemical identity. Thermal rates, cross sections and chemical-outcome bounds
+are withheld. Production inputs require explicit cutoffs or a custom classifier.
 
-显式内置分类器由 centroid 连通图、分子式、远离条件与持续时间分类。它不能可靠区分所有相同组成异构体或同元素交换通道；这些情况必须给 `outcomes.factory="classify.py:build"`。插件返回 `reactants`、产品通道名或未决状态，并应自行定义必要的物理判据；实际协议见 [势能和插件说明](potentials.md)。未决和失败样本单独计数，存在它们时热速率点值留空并给出观察下界/可能上界。统计置信区间与这些截断界不是同一概念。
+The explicit built-in classifier uses centroid connectivity, molecular formulas,
+separation and persistence. It cannot reliably distinguish all isomers of the same
+composition or same-element exchange channels. Those cases require
+`outcomes.factory="classify.py:build"`. The plugin returns `reactants`, a product
+channel name, or an unresolved status and must define the relevant physical criteria.
+See [potentials and plugins](potentials.md) for the protocol. Unresolved and failed
+samples are counted separately; when present, the thermal-rate point estimate is
+withheld and observed lower/possible upper bounds are supplied. Statistical confidence
+intervals and these truncation bounds have different meanings.
 
-## 标准 RPMD 速率
+## Standard RPMD rates
 
-最小 `rate` 输入从 TS 和 PES 自动准备。无法唯一选择入口时，填写：
+A minimal `rate` input prepares the calculation from a TS and PES. When the entrance
+cannot be selected uniquely, provide:
 
 ```toml
 [reaction]
@@ -131,9 +209,10 @@ electronic_weight = 1.0
 symmetry_factor = 1.0
 ```
 
-单个 `task="rate"` 使用一个 TS 参考几何和等长、成对的成键/断键列表。不同入口或非等价 TS 结构使用下述 `task="network"`。通过
-`equivalent_paths` 可声明由原子置换生成的等价过渡态。例如 H + H₂ 的
-两个交换出口可写为：
+A single `task="rate"` uses one TS reference geometry and equal-length, paired lists
+of forming/breaking bonds. Use `task="network"` below for different entrances or
+inequivalent TS structures. `equivalent_paths` declares equivalent transition states
+constructed by atom permutation. For example, the two H + H₂ exchange exits are:
 
 ```toml
 [reaction]
@@ -146,22 +225,30 @@ symmetry_factor = 1.0
 electronic_weight = 1.0
 ```
 
-置换列表使用 0-based 的 `旧原子索引 → 新原子索引` 映射；原始 TS 已包含，
-不要再列恒等置换。程序检查完整双射、元素、同位素质量和入口片段划分，
-同时置换参考几何与成断键。多个不同 TS 结构由 `network.transition_states` 声明。
-组合方式严格沿用 RPMDrate 的 `min_bond(max_TS(s1))`，其分支交界处是
-分段可微的。等价出口已经显式包含时，不应再用 `symmetry_factor` 重复
-乘一次路径数。`electronic_weight` 和额外的 `symmetry_factor` 仍由用户
-根据势能和通道定义给出；`reaction.entry_side` 可选择数值下坡两端之一。
+Permutations are zero-based `old atom index → new atom index` mappings. The original
+TS is already included; do not add the identity permutation. The program checks a
+complete bijection, elements, isotope masses and entrance fragment partition, then
+permutes both reference geometry and bonds. Declare distinct TS structures through
+`network.transition_states`. Combination follows RPMDrate's
+`min_bond(max_TS(s1))` exactly and is piecewise differentiable at branch boundaries.
+Do not multiply by the path count again through `symmetry_factor` when equivalent
+exits are explicitly included. Users still supply `electronic_weight` and any
+additional `symmetry_factor` for the selected PES and channel definition.
+`reaction.entry_side` selects either end of the numerical downhill paths.
 
-`[recrossing]` 的主要字段是 `parent_replicas`、`parent_samples`、`equilibration`、`parent_interval`、`child_pairs`、`child_time`、`dividing_surface`、`plateau_fraction`、`plateau_tolerance`、`bootstrap`。时间也可用相应 `_steps` 字段。每个 child pair 以相反动量传播，禁止以未计算的 κ=1 替代回穿。完整可运行语法见 `examples/rate/pilot.inp`。
+The main `[recrossing]` fields are `parent_replicas`, `parent_samples`,
+`equilibration`, `parent_interval`, `child_pairs`, `child_time`, `dividing_surface`,
+`plateau_fraction`, `plateau_tolerance` and `bootstrap`. Corresponding `_steps` fields
+can specify times. Each child pair propagates with opposite momenta; an uncomputed
+κ=1 is not a substitute for recrossing. See `examples/rate/pilot.inp` for runnable syntax.
 
-### 速率 PMF 后端与分割面
+### Rate PMF backend and dividing surface
 
-默认 `rate.pmf_method = "ui"` 保留 Gaussian umbrella integration。
-它假设每窗分布接近高斯；偏斜、多峰及尾部外推可能产生统计误差条之外的偏差。
-UI 在实测端点缺少支持时仍可保留模型值并警告，不能据此认定端点已有可靠采样。
-选择 histogram MBAR 并固定分割面可写：
+The default `rate.pmf_method="ui"` retains Gaussian umbrella integration. It assumes
+nearly Gaussian window distributions; skewness, multiple modes and tail extrapolation
+can introduce bias outside statistical error bars. UI can retain model values with a
+warning when measured endpoint support is missing. This does not establish reliable
+endpoint sampling. To select histogram MBAR and fix a dividing surface:
 
 ```toml
 [rate]
@@ -177,28 +264,34 @@ bootstrap = 40
 seed = 12345
 ```
 
-这里的分割面、bin 范围是 H₃ 示例参数，需根据其他反应的坐标和采样支撑设置。
-MBAR 下 `compare_ui` 默认开启，UI 使用相同样本与相同 block-bootstrap draw，
-可以计算配对差值，且不重复运行 MBAR 重采样。
-`bootstrap = 0` 可用于单纯曲线诊断；不能据此报告完整速率误差。
-`bootstrap = 1` 不足以估计方差，会在输入阶段报错。
-若任意速率 PMF bootstrap draw 因支持或估计失败被拒绝，主势垒及最终速率误差/置信区间不可用；
-`supported_draw_*` 仅描述支持完整且拟合有效的接受子集，不能作为无条件误差。
-应同时查看请求数、尝试数、有效数、拒绝数和 block 状态。增加 bootstrap 次数不能替代增加独立生产样本。
+The dividing surface and bin range above are H₃ example parameters; adapt them to
+other reactions' coordinates and sampling support. With MBAR, `compare_ui` defaults
+to true. UI uses the same samples and block-bootstrap draws, allowing paired
+differences without repeating MBAR resampling. `bootstrap=0` is suitable for curve
+diagnostics only and cannot provide a complete rate uncertainty. `bootstrap=1` cannot
+estimate a variance and is rejected during input parsing.
 
-省略 `dividing_surface` 或写 `"auto"` 时自动选峰，
-可用 `rate.pmf_search_range = [0.8, 1.1]` 限定搜索区间。
-MBAR 使用未平滑的支撑 bin 中心；参考点到分割面的全部区间须有连续支撑。
-Bootstrap 保持选定分割面固定，不包含自动选峰的不确定度。
-旧的 `recrossing.dividing_surface` 仍可用；两处同时指定不一致会报错。
-改变 PMF 方法或分割面不能复用另一设置的母/子轨迹 checkpoint。
+If any rate-PMF bootstrap draw fails support or estimation, the main barrier and
+final rate errors/confidence intervals are unavailable. `supported_draw_*` describes
+only the accepted subset with complete support and valid fits; it is not an
+unconditional uncertainty. Inspect requested, attempted, valid and rejected counts
+and block status. More bootstrap draws do not replace more independent production data.
 
-结果保存在 `rate_pmf.npz` 和 `rate_pmf.json`，包含密度、mask、误差、
-端点支撑、求解残差和逐次重采样状态。断连、缺失端点/中间 bin 或求解失败
-会给出独立失败状态，并停止启动 recrossing；不会跨越 mask 补出势垒。
-进一步说明见 [MBAR 速率 PMF](mbar-rate-pmf.md)。
+Omitting `dividing_surface` or using `"auto"` selects the peak automatically;
+`rate.pmf_search_range=[0.8,1.1]` restricts the search. MBAR uses supported, unsmoothed
+bin centers; the entire interval from reference point to dividing surface must have
+continuous support. Bootstrap keeps the chosen surface fixed and excludes uncertainty
+in automatic peak selection. Legacy `recrossing.dividing_surface` remains available;
+inconsistent values specified in both places raise an error. Parent/child checkpoints
+cannot be reused after changing the PMF method or dividing surface.
 
-## 一维与二维 FES
+`rate_pmf.npz` and `rate_pmf.json` store densities, masks, uncertainties, endpoint
+support, solver residuals and individual resampling statuses. Disconnected support,
+missing endpoint/interior bins, and solver failure receive distinct failure statuses
+and stop recrossing launch. Barriers are not interpolated across masks. See
+[MBAR rate PMFs](mbar-rate-pmf.md).
+
+## One- and two-dimensional FES
 
 ```toml
 [[cvs]]
@@ -228,34 +321,49 @@ bootstrap = 100
 min_count = 5
 ```
 
-内置 CV 包括 distance、bond_difference、angle、cartesian、com_distance、rpmdrate_xi、surface_height、surface_lateral、periodic_distance 和 python。内置几何 CV 可选择 `centroid` 或 `bead_average`；自定义 CV 返回自己定义的完整 estimator 和导数。`stiffness` 可为标量、对角数组或对称正定矩阵。数值 centers 使用声明的 CV 输入单位；`centers_au` 与数值 stiffness 使用原子单位，带单位字符串按量纲验证。
+Built-in CVs are `distance`, `bond_difference`, `angle`, `cartesian`, `com_distance`,
+`rpmdrate_xi`, `surface_height`, `surface_lateral`, `periodic_distance` and `python`.
+Geometric CVs support `centroid` or `bead_average`; custom CVs return their own full
+estimator and derivatives. `stiffness` may be a scalar, diagonal array, or symmetric
+positive-definite matrix. Numeric centers use the declared CV input units;
+`centers_au` and bare numeric stiffness use atomic units. Unit-bearing strings are
+checked dimensionally.
 
-输出 FES 是相对于所选 CV 测度的密度：例如距离 CV 的自由能自然包含径向熵，不自动把它变成去除 Jacobian 的两体势。没有样本或连通重叠支持的区域 mask，不外推。`analyze --recompute --bins ... --bootstrap ...` 使用保存的样本重新估计而不调用 PES。
-逐 bin 的主 `standard_error` 仅在所有请求的 bootstrap draw 都支持该 bin、且相关性分块可用时报告；
-否则为 NaN，保留 `supported_draw_standard_error` 与 `bootstrap_valid_per_bin` 供诊断接受子集。
-点估计有支持不代表其统计误差已经可估计，条件误差也不能代替无条件置信区间。
+The FES is a density relative to the chosen CV measure. For example, a distance-CV
+free energy naturally includes radial entropy; it is not automatically converted into
+a Jacobian-corrected pair potential. Regions lacking samples or connected overlap
+support are masked, not extrapolated. `analyze --recompute --bins ... --bootstrap ...`
+re-estimates from saved samples without calling the PES.
 
-## 多入口与不同 TS
+The main per-bin `standard_error` is reported only when every requested bootstrap
+draw supports that bin and correlation blocking is available. Otherwise it is NaN,
+with `supported_draw_standard_error` and `bootstrap_valid_per_bin` retained for
+accepted-subset diagnostics. Support for a point estimate does not establish that
+its uncertainty is estimable; conditional errors do not replace unconditional intervals.
 
-`task="network"` 使用 `[network]` 中的 `entrances`、`channels`、
-`transition_states` 记录列表。每个 TS 显式引用一个入口和通道标签，提供
-自己的结构、成断键，按全局 → 入口 → TS 继承或覆盖 PES 与采样设置。
-入口指定自己的两个片段、`rinf` 和电子统计权重；所有路径共享有序原子与
-同位素身份。每条路径经过普通 `rate` 的严格验证并运行完整 PMF/recrossing。
+## Multiple entrances and distinct transition states
 
-当前 `network.aggregation` 仅允许 `"separate"`。结果保留独立入口/TS
-归一化和误差；通道名称不会被当作通量不重叠的证明。完整 TOML/Python
-语法与可运行四路径例子见[多入口与多 TS](reaction-networks.md)。
+`task="network"` uses lists of `entrances`, `channels` and `transition_states` records
+in `[network]`. Each TS explicitly references an entrance and channel label and
+supplies its own structure and bonds. PES and sampling settings inherit or override
+in the order global → entrance → TS. Each entrance specifies two fragments, `rinf`
+and electronic statistical weight. All paths share an ordered atom/isotope inventory.
+Each path undergoes ordinary `rate` validation and a full PMF/recrossing calculation.
 
-## 自适应伞抽样
+Currently `network.aggregation` accepts only `"separate"`. Results preserve independent
+entrance/TS normalizations and uncertainties. A channel name does not prove that
+fluxes are disjoint. See [reaction networks](reaction-networks.md) for TOML/Python
+syntax and a runnable four-path example.
 
-为 `fes` 或 `rate` 添加 `[adaptive_umbrella]`：
+## Adaptive umbrella sampling
+
+Add `[adaptive_umbrella]` to `fes` or `rate`:
 
 ```toml
 [adaptive_umbrella]
 enabled = true
 pilot_steps = 1000
-# 省略 pilot_equilibration_steps 时继承 sampling.equilibration_steps。
+# An omitted pilot_equilibration_steps inherits sampling.equilibration_steps.
 max_rounds = 8
 max_windows = 128
 max_pilot_steps = 16000
@@ -264,18 +372,23 @@ min_effective_samples = 20.0
 min_spacing = 0.000001
 ```
 
-初始窗口、范围与刚度仍由 `[umbrella]` 给出；适应阶段按实际 MBAR
-overlap 与有效样本数插窗、延长 pilot。窗口冻结后使用独立种子重新平衡并
-采集 production；pilot 不进入最终 FES/PMF。预算耗尽明确失败，不静默跳过
-重叠要求。参数单位、阶段恢复及适用边界见[增强采样](enhanced-sampling.md)。
+`[umbrella]` still defines initial windows, ranges and stiffness. Adaptation inserts
+windows and extends pilots using measured MBAR overlap and effective sample size.
+Once windows are frozen, independent seeds are used for re-equilibration and
+production. Pilot samples do not enter the final FES/PMF. Budget exhaustion fails
+explicitly rather than bypassing overlap requirements. See [enhanced sampling](enhanced-sampling.md)
+for parameter units, stage restart and applicability.
 
-新 schema-3 计划的重叠分数为 `sqrt(O_ij * O_ji / (O_ii * O_jj))`，
-记录为 `normalized_mbar_cosine`。完全相同的窗口分布得分为 1，避免旧分数随窗口数增加而被稀释。
-这不是副本交换接受率；默认 0.03 只是启发式筛选阈值，不能证明全局混合。
-旧 schema-1/2 计划保留 `sqrt(O_ij * O_ji)`（`mbar_symmetric_transition`）与已提交的决策。
-新旧阈值不可直接数值类比；要采用新指标重新选窗，使用新的输出目录。
+New schema-3 plans score overlap as `sqrt(O_ij * O_ji / (O_ii * O_jj))`, recorded as
+`normalized_mbar_cosine`. Identical window distributions score 1, avoiding dilution
+of the old score as window count increases. This is not a replica-exchange acceptance
+probability; the default 0.03 is a heuristic screen, not proof of global mixing.
+Existing schema-1/2 plans retain `sqrt(O_ij * O_ji)` (`mbar_symmetric_transition`) and
+their committed decisions. Thresholds in the two definitions are not directly
+comparable. Start a new output directory to reselect windows using the new metric.
 
-二维面建议显式启用空间覆盖检查，在同一表中增加：
+For two-dimensional surfaces, explicitly enabling spatial coverage checks is
+recommended. Add these entries to the same table:
 
 ```toml
 coverage_bins = [4, 8]
@@ -284,33 +397,48 @@ min_bin_effective_samples = 5.0
 target_coverage = 0.95
 ```
 
-上述范围仅为示例，应按实际 CV 修改。两项网格参数必须一起指定，默认不启用。
-检查使用 MBAR 权重与轨迹相关性修正后的局部有效样本数，在薄弱格中心补窗；
-它与最终分析分箱相互独立。全局窗口 ESS 还检查坐标二阶矩，防止快速振荡掩盖
-振幅分布的慢收敛。生产数据会独立重验相同的 overlap/ESS/可选 coverage 判据：
-`pilot_target_met` 与 `production_target_met` 分别报告两阶段结果，旧 `target_met` 仅为 pilot 的兼容别名。
-FES 在 `RUN/results/summary.json` 的 `adaptive_umbrella` 中报告这些字段；气相速率可直接读取同一最终摘要的
-`pmf.adaptive_umbrella`，`RUN/rate_pmf.json` 和 `RUN/umbrella/summary.json` 仍保留 `adaptive_umbrella`。
-查看 `production_overlap_connected_at_target`、`production_effective_samples_target_met`，以及分开的
-`pilot_coverage` / `production_coverage`（旧 `coverage` 是 pilot 别名）。未要求覆盖检查不能视为全域已有支持。
-生产检查失败会警告，但不会自动延长采样或删除点估计；仍需独立重复与物理收敛验证。
+These ranges are examples and must match the actual CVs. Both grid parameters are
+required together; checks are disabled by default. Local effective sample sizes use
+MBAR weights and trajectory-correlation corrections; weak grid centers receive new
+windows. This grid is independent of final analysis bins. Global window ESS also
+checks coordinate second moments so fast oscillations do not hide slow amplitude
+convergence. Production independently rechecks the same overlap, ESS and optional
+coverage criteria. `pilot_target_met` and `production_target_met` report each stage;
+legacy `target_met` aliases the pilot result only.
 
-窗口 ESS 不足，或覆盖不足且无法继续插窗时，将下一轮 pilot 加倍；单纯插窗不增加每窗长度。
-`max_pilot_steps` 默认是 `16 * pilot_steps`。未显式指定生产长度时，启用
-自适应或 metadynamics 的任务默认生产 1000 fs；其他任务的 pilot 默认仍为
-200 fs。显式长度不变，生产 ESS 和覆盖率仍须单独检查。预算耗尽后可用
-`pyrpmd resume RUN --adaptive-max-rounds 12 --adaptive-max-windows 192`
-增加上限，已完成的 pilot 不重算；不能用这个接口降低统计门槛或重开冻结的窗口。
+FES reports these fields under `adaptive_umbrella` in `RUN/results/summary.json`.
+Gas-phase rates expose them under `pmf.adaptive_umbrella` in the same final summary;
+`RUN/rate_pmf.json` and `RUN/umbrella/summary.json` retain `adaptive_umbrella` as well.
+Inspect `production_overlap_connected_at_target`,
+`production_effective_samples_target_met`, and the separate `pilot_coverage` and
+`production_coverage` (`coverage` is the legacy pilot alias). A run without coverage
+checks does not establish support over the whole domain. Failed production checks
+warn but do not automatically extend sampling or delete the point estimate.
+Independent repeats and physical convergence studies remain necessary.
 
-默认 0.1 fs 步长下，首轮 1000 步仅为 100 fs、最多 16000 步为每窗每副本 1.6 ps；
-pilot 平衡默认继承生产设置的 100 fs（1000 步），保存间隔默认 1 fs，默认每窗一个副本。
-ESS 20 是选窗筛选要求，默认 20 次 bootstrap 是较短的分析预算，两者都不是物理精度保证。
-气相速率默认仍使用 UI，自适应阶段的 MBAR 重叠检查不会把最终估计器自动改成 MBAR。
-可靠性验收及目标误差预算见[科学收敛指南](zh/manual/science.md#评估自适应伞抽样结果)。
+Insufficient window ESS, or insufficient coverage when no more windows can be added,
+doubles the next pilot duration. Inserting windows alone does not lengthen each
+window. `max_pilot_steps` defaults to `16 * pilot_steps`. When production duration is
+not explicitly set, adaptive and metadynamics jobs default to 1000 fs; other pilot
+jobs retain 200 fs. Explicit durations are unchanged, and production ESS/coverage
+still need separate checks. After exhausting the budget, increase limits with
+`pyrpmd resume RUN --adaptive-max-rounds 12 --adaptive-max-windows 192`.
+Completed pilots are reused. This interface cannot lower statistical thresholds or
+reopen frozen windows.
+
+At the default 0.1 fs timestep, 1000 initial steps are only 100 fs and 16000 maximum
+steps are 1.6 ps per window/replica. Pilot equilibration inherits the default production
+setting of 100 fs (1000 steps), samples are saved every 1 fs, and there is one replica
+per window by default. ESS 20 is a window-selection screen; the default 20 bootstrap
+draws are a short analysis budget. Neither guarantees physical precision. Gas-phase
+rates still default to UI; MBAR overlap checks during adaptation do not switch the
+final estimator to MBAR. See the [scientific convergence guide](manual/science.md)
+for acceptance criteria and uncertainty budgets.
 
 ## Metadynamics
 
-`task="metadynamics"` 使用普通 `[[cvs]]` 和 `[sampling]`，替换 umbrella 为：
+`task="metadynamics"` uses ordinary `[[cvs]]` and `[sampling]` and replaces umbrella
+settings with:
 
 ```toml
 [metadynamics]
@@ -327,19 +455,21 @@ measure = "cv_density"
 bootstrap = 0
 ```
 
-`mode="standard"` 使用固定 hill 高度并省略 `bias_factor`。`sigma_au`、
-`height_au` 可指定原子单位，但不得与对应未带 `_au` 的字段重复。
-`pace` 是生产步数间隔；1–3 维 CV、周期 CV 与独立 replicas 均支持；可选偏置网格限于 1D/2D。
-`loop_backend="native"` 会预先报错，因为偏置历史随时间改变；`auto` 的
-兼容传播仍能使用所选积分器的编译子步。有限时间 FES 估计及 HILLS/恢复
-时序见[增强采样规范](enhanced-sampling.md)。
+`mode="standard"` uses fixed hill heights and omits `bias_factor`. `sigma_au` and
+`height_au` specify atomic units but must not duplicate the corresponding fields
+without `_au`. `pace` is an interval in production steps. One to three CVs, periodic
+CVs and independent replicas are supported; optional bias grids are limited to 1D/2D.
+`loop_backend="native"` fails before propagation because bias history changes over
+time. The compatible `auto` path may still use the chosen integrator's compiled
+substeps. See [enhanced sampling](enhanced-sampling.md) for finite-time FES estimates
+and HILLS/restart timing.
 
-## 电化学 PCET 模型
+## Electrochemical PCET model
 
-`task="pcet"` 计算固定局域复合物的一维单质子 golden-rule 速率，输出
-还原/氧化的 s⁻¹ 速率和 H/D KIE；它不执行 RPMD 轨迹。输入不需要
-`[system]` 或 `[potential]`，而使用 `[pcet]`、`[pcet.electrode]`、
-`[pcet.proton]` 及两电子态的质子势：
+`task="pcet"` computes one-dimensional single-proton golden-rule rates for a fixed
+local complex: reduction/oxidation rates in s⁻¹ and H/D KIEs. It does not propagate
+RPMD trajectories. Instead of `[system]` and `[potential]`, supply `[pcet]`,
+`[pcet.electrode]`, `[pcet.proton]` and the proton potentials of the two electronic states:
 
 ```toml
 task = "pcet"
@@ -377,35 +507,48 @@ center = "0.2 angstrom"
 force_constant = "5 eV/angstrom^2"
 ```
 
-这些是无真实材料归属的教学参数。`driving_force` 是参考电势下 reduced
-减 oxidized 的最低点自由能差，不含转移质子的零点能与热振动自由能；
-两个质子势分别去除自身最低值，由本征态求解器提供质子量子贡献。
-电势增加时按 `+e*(U-U_ref)` 增大还原自由能。`potential_reference` 只记录
-标尺，不自动转换 SHE/RHE 或加入 pH 依赖。
+These are teaching parameters without a real-material assignment. `driving_force`
+is the reduced-minus-oxidized minimum free-energy difference at the reference
+potential, excluding the transferring proton's zero-point and thermal vibrational
+free energies. Each proton potential has its own minimum removed; the eigenstate
+solver supplies the proton quantum contribution. Increasing potential increases the
+reduction free energy by `+e*(U-U_ref)`. `potential_reference` records the reference
+scale only; it does not convert SHE/RHE or introduce pH dependence.
 
-`[pcet.numerics]` 可设置 `quadrature_rtol`、`quadrature_atol`、
-`convergence_check`、`relative_tolerance` 和 `absolute_tolerance_s`。
-数值收敛与弱耦合/宽带/经典环境的物理适用性分开报告。完整可运行示例、
-表格势字段、速率公式和输出解释见 [PCET 规范](pcet.md)与
-[教学示例](../examples/pcet/README.md)。
+`[pcet.numerics]` accepts `quadrature_rtol`, `quadrature_atol`, `convergence_check`,
+`relative_tolerance` and `absolute_tolerance_s`. Numerical convergence is reported
+separately from applicability of the weak-coupling, wide-band and classical-environment
+assumptions. See the [PCET specification](pcet.md) and [teaching examples](../examples/pcet/README.md)
+for runnable inputs, tabulated potentials, rate formulas and output interpretation.
 
-## 运行与重启记录
+## Run and restart records
 
-`manifest.json` v2 记录程序版本、环境、并行配置、单位、科学指纹和本地输入/PES/plugin 内容 SHA256。`input/resolved.json` 是解析后的规范输入，`input/system.json` 保存原子和质量。新 NPZ checkpoint 使用 v2 容器与逐数组校验，始终以 `allow_pickle=False` 读数组；RNG/进度采用同一容器内的 JSON 字符串或明确的工作流元数据。旧 v1 文件的兼容读取与 manifest 迁移见[恢复规范](checkpoints.md)。任意 Python 间接依赖和远程 PES 服务内部状态不属于自动依赖闭包，应另行固定运行环境。
+`manifest.json` v2 records program version, environment, parallel configuration,
+units, scientific fingerprint and SHA256 hashes of local input/PES/plugin contents.
+`input/resolved.json` is the normalized configuration; `input/system.json` stores
+atoms and masses. New NPZ checkpoints use v2 containers with per-array integrity
+checks and always read arrays with `allow_pickle=False`. RNG/progress state is stored
+as JSON strings in the same container or explicit workflow metadata. See
+[checkpoints](checkpoints.md) for legacy v1 reads and manifest migration. Arbitrary
+transitive Python dependencies and remote PES service state are not automatically
+included in the dependency closure; pin the execution environment separately.
 
-PCET 用 `input/model.json` 保存一维模型，不创建分子 `system.json`；
-其扫描点 checkpoint 是带模型身份与校验的 JSON，不包含 q/p 或 RNG。
+PCET stores its one-dimensional model in `input/model.json`, without a molecular
+`system.json`. Scan-point checkpoints are JSON with model identity and integrity
+checks; they contain neither q/p nor RNG state.
 
-## 连续原生传播
+## Continuous native propagation
 
-`[dynamics]` 新增 `loop_backend="auto"|"native"|"python"` 和
-`block_steps=256`（1..65536）。`auto` 对已支持的原生 PES/CV 使用 C++17
-连续传播，其余情况保留 Python；`native` 在请求的 block 路径不支持时明确报错。
-`python` 保留逐步调度，不必关闭所选积分器的 C++ 单步内核。
-受约束 recrossing 母轨迹、dRPMD 碰撞与支持原生执行的 FES/PMF 采样使用
-`propagate_block()`，其单次调用
-上限为 4096 步；工作流自动把较大的 `block_steps` 限制到这个上限，并继续
-遵守原有热浴、分类、采样和 checkpoint 时间轴。输入范围与默认值仍为
-1..65536 和 256；recrossing child 与普通 Andersen 热化继续使用 `propagate()`。
-支持范围及两种 API 的故障语义见 [连续传播说明](native-propagation.md) 和
-[分段 API](block-propagation.md)。
+`[dynamics]` accepts `loop_backend="auto"|"native"|"python"` and `block_steps=256`
+(range 1..65536). `auto` uses C++17 continuous propagation for supported native PES/CV
+combinations and retains Python elsewhere. `native` fails explicitly if the requested
+block path is unsupported. `python` keeps per-step scheduling without disabling the
+selected integrator's compiled single-step kernels.
+
+Constrained recrossing parents, dRPMD collisions and native-capable FES/PMF sampling
+use `propagate_block()`, limited to 4096 steps per call. Workflows cap larger
+`block_steps` at that limit while preserving thermostat, classification, sampling and
+checkpoint schedules. The accepted input range and default remain 1..65536 and 256.
+Recrossing children and ordinary Andersen thermalization continue to use `propagate()`.
+See [native propagation](native-propagation.md) and the [block API](block-propagation.md)
+for supported combinations and the two APIs' failure semantics.

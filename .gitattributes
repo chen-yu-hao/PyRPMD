@@ -1,0 +1,2 @@
+# Preserve original build stdout, including terminal trailing spaces.
+docs/validation/ecosystem-2026-11-01/distribution/*.log -whitespace

@@ -102,6 +102,12 @@ def parser():
                    help="Diffusion Cartesian axes (0=x, 1=y, 2=z)")
     a.add_argument("--atoms", nargs="+", type=int, help="Diffusion atom indices")
     a.add_argument("--max-lag", type=int, help="Maximum diffusion lag in saved frames")
+    export = commands.add_parser("export", help="Export a saved materials centroid trajectory as extxyz, H5MD or ASE .traj")
+    export.add_argument("source", help="Run directory, trajectory manifest.json or materials trajectory .npz")
+    export.add_argument("destination", help="Output .extxyz/.xyz, .h5md/.h5 or .traj file")
+    export.add_argument("--replica", type=int, default=0, help="0-based replica within a run (default: 0)")
+    export.add_argument("--format", choices=("extxyz", "h5md", "traj"))
+    export.add_argument("--overwrite", action="store_true", help="Atomically replace an existing export after validation")
     rate = commands.add_parser(
         "rate-postprocess", help="Compute rates from saved PMF/FES and signed channel fluxes"
     )
@@ -445,6 +451,11 @@ def main(argv=None):
                     }.items() if value is not None} or None,
                 )
             _print(_report_after_result(args, result, args.directory))
+        elif args.command == "export":
+            from .trajectory_export import export_materials_trajectory
+            from .parallel import root_call
+            _print(root_call(export_materials_trajectory, args.source, args.destination,
+                replica=args.replica, format=args.format, overwrite=args.overwrite))
         elif args.command == "rate-postprocess":
             from .analysis.rate_io import postprocess_rate
             from .parallel import root_call
@@ -475,7 +486,7 @@ def main(argv=None):
             from .dynamics import native_capabilities
 
             dependencies = {}
-            for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "pymbar", "matplotlib"):
+            for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "openmm", "lammps", "pymbar", "matplotlib"):
                 try:
                     dependencies[distribution] = importlib.metadata.version(distribution)
                 except importlib.metadata.PackageNotFoundError:
@@ -498,7 +509,9 @@ def main(argv=None):
                         "pressure_ensemble": True,
                         "fixed_atoms": True,
                         "streaming_trajectories": True,
+                        "bond_constraints": "per_bead_shake_rattle_velocity_verlet_fixed_cell",
                     },
+                    "trajectory_formats": ["extxyz", "h5md", "ase_traj"],
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
                     "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "opes"],
                     "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling"],
@@ -508,7 +521,7 @@ def main(argv=None):
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
-                    "postprocessing": ["rate-postprocess"],
+                    "postprocessing": ["rate-postprocess", "export"],
                 }
             )
         elif args.command == "study":

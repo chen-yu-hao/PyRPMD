@@ -279,7 +279,9 @@ class Dynamics:
     def __init__(
         self, potential, masses, beta, nbeads, dt, seed=0, native=True, threads=1,
         loop_backend="auto", block_steps=256, integrator="cayley-bcb",
-        fixed_atoms=(), fixed_positions=None
+        fixed_atoms=(), fixed_positions=None, bond_constraints=(),
+        constraint_cell=None, constraint_pbc=None, constraint_tolerance=1e-12,
+        constraint_max_iterations=1000,
     ):
         self.potential = potential
         self.integrator = CayleyIntegrator(
@@ -331,6 +333,34 @@ class Dynamics:
         self.loop_backend = loop_backend
         self.block_steps = int(block_steps)
         self.propagation_stats = {"native_steps": 0, "python_steps": 0, "fallback_reasons": {}}
+        from .bond_constraints import BondConstraints
+        self.constraints = BondConstraints(
+            self.masses, bond_constraints, cell=constraint_cell, pbc=constraint_pbc,
+            tolerance=constraint_tolerance, max_iterations=constraint_max_iterations,
+        )
+        self.bond_constraints = self.constraints.bonds
+        required_bonds = getattr(potential, "required_bond_constraints", None)
+        if required_bonds is None:
+            required_bonds = getattr(potential, "metadata", {}).get("required_bond_constraints", ())
+        if required_bonds:
+            from .bond_constraints import normalize_bond_constraints
+            declared = {(i, j): length for i, j, length in self.bond_constraints}
+            for i, j, length in normalize_bond_constraints(required_bonds, len(self.masses)):
+                if (i, j) not in declared or not np.isclose(declared[i, j], length, rtol=1e-10, atol=1e-12):
+                    raise ValueError("potential-required bond constraints must be declared with matching lengths in Dynamics")
+        if self.bond_constraints:
+            if type(self) is not Dynamics:
+                raise ValueError("bond constraints are supported by Dynamics, not specialized dynamics subclasses")
+            if native == "required":
+                raise ValueError("native='required' is not supported by the Python bond-constraint solver")
+            if self.integrator_name != "velocity-verlet":
+                raise ValueError("bond constraints require integrator='velocity-verlet'")
+            if loop_backend == "native":
+                raise ValueError("bond constraints require loop_backend='auto' or 'python'")
+            if self.dt == 0:
+                raise ValueError("bond constraints require a nonzero timestep")
+            if any(i in self.fixed_atoms or j in self.fixed_atoms for i, j, _ in self.bond_constraints):
+                raise ValueError("bond constraints cannot include fixed atoms")
 
     def propagate(self, state, steps, **options):
         """Advance a block, using native PES/CVs when available, else Python."""
@@ -352,12 +382,38 @@ class Dynamics:
         from .propagation import native_supported
         return native_supported(self, bias=bias, observe=observe)
 
-    def sample_momenta(self):
+    def sample_momenta(self, q=None):
+        if self.bond_constraints and q is None:
+            raise ValueError("constrained momenta require the current bead positions q")
+        if self.bond_constraints:
+            self.constraints.check(q)
+        rng_state = copy.deepcopy(self.rng.bit_generator.state) if self.bond_constraints else None
         momenta = self.rng.normal(size=self.integrator.shape) * np.sqrt(
             self.masses[None, :, None] * self.nbeads / self.beta
         )
         momenta[:, self._fixed_indices, :] = 0.0
+        if self.bond_constraints:
+            try:
+                self.constraints.project_momenta(q, momenta)
+            except BaseException:
+                self.rng.bit_generator.state = rng_state
+                raise
         return momenta
+
+    def initialize_constraints(self, state):
+        """Explicitly project a starting geometry and its momenta, atomically.
+
+        Restarted states are checked, never repaired implicitly. This method
+        is for initial conditions; calling it during dynamics changes the map.
+        """
+        self.integrator._check(state.q, state.p)
+        self._check_fixed(state.q, state.p)
+        q, p = state.q.copy(), state.p.copy()
+        self.constraints.project_positions(q)
+        self.constraints.project_momenta(q, p)
+        self.constraints.check(q, p)
+        state.q[:], state.p[:] = q, p
+        return state
 
     def _project_fixed(self, q, p):
         """Pin fixed atoms in working arrays; callers commit them transactionally."""
@@ -382,8 +438,9 @@ class Dynamics:
     def _record_python_steps(self, steps):
         """Record workflow steps, including the fixed-atom compatibility route."""
         self.propagation_stats["python_steps"] += int(steps)
-        if self.fixed_atoms and self.loop_backend != "python":
-            reason = "fixed atoms require the Python propagation loop"
+        if (self.bond_constraints or self.fixed_atoms) and self.loop_backend != "python":
+            reason = ("bond constraints require the Python RATTLE propagation loop" if self.bond_constraints
+                      else "fixed atoms require the Python propagation loop")
             reasons = self.propagation_stats["fallback_reasons"]
             reasons[reason] = reasons.get(reason, 0) + int(steps)
 
@@ -439,6 +496,8 @@ class Dynamics:
             raise FloatingPointError("nonfinite integration clock")
         self.integrator._check(state.q, state.p)
         self._check_fixed(state.q, state.p)
+        if self.bond_constraints:
+            return self._constrained_step(state, bias, fragment_data, step, next_time)
         # Commit the state only after both force calls succeed. Failed PES calls
         # cannot leave a half-stepped state masquerading as a completed step.
         q = state.q.copy()
@@ -460,10 +519,34 @@ class Dynamics:
         state.time = next_time
         return state
 
+    def _constrained_step(self, state, bias, fragment_data, step, next_time):
+        if fragment_data:
+            raise ValueError("bond constraints cannot be combined with fragment COM projections")
+        self.constraints.check(state.q, state.p)
+        q, p = state.q.copy(), state.p.copy()
+        # RATTLE for the complete H_P: physical + ring-spring half kicks,
+        # a constrained drift, and a final mass-metric tangent projection.
+        p += 0.5 * self.dt * (self._force(q, bias) + self.integrator.spring_force(q))
+        self._project_fixed(q, p)
+        q += self.dt * p / self.masses[None, :, None]
+        self.constraints.project_positions(q, previous=state.q, momenta=p, dt=self.dt)
+        self._project_fixed(q, p)
+        p += 0.5 * self.dt * (self._force(q, bias) + self.integrator.spring_force(q))
+        self.constraints.project_momenta(q, p)
+        self._project_fixed(q, p)
+        self.constraints.check(q, p)
+        if not np.isfinite(q).all() or not np.isfinite(p).all():
+            raise FloatingPointError("nonfinite constrained integration state")
+        state.q[:], state.p[:] = q, p
+        state.step, state.time = step + 1, next_time
+        return state
+
     def energy(self, state, bias=None):
         q, p = state.q, state.p
         self.integrator._check(q, p)
         self._check_fixed(q, p)
+        if self.bond_constraints:
+            self.constraints.check(q, p)
         e = float(np.sum(validate_result(self.potential.evaluate(q), q.shape).energy))
         e += float(np.sum(p * p / (2 * self.masses[None, :, None])))
         dq = q - np.roll(q, -1, axis=0)
@@ -551,15 +634,17 @@ class Dynamics:
         self.integrator._check(state.q, state.p)
         self._check_fixed(state.q, state.p)
         data = self._fragment_data(state, fragments)
+        if self.bond_constraints and data:
+            raise ValueError("bond constraints cannot be combined with fragment COM projections")
         fused_loop = self.can_fuse(bias=bias)
         if resample:
-            state.p[:] = self.sample_momenta()
+            state.p[:] = self.sample_momenta(state.q) if self.bond_constraints else self.sample_momenta()
         self._fix_fragments(state, data)
         if fused_loop:
             remaining = int(steps)
             while remaining:
                 if state.step % interval == 0:
-                    state.p[:] = self.sample_momenta()
+                    state.p[:] = self.sample_momenta(state.q) if self.bond_constraints else self.sample_momenta()
                     self._fix_fragments(state, data)
                 count = min(remaining, self.block_steps, interval - state.step % interval)
                 self.propagate(state, count, bias=bias, fragment_data=data,
@@ -568,7 +653,7 @@ class Dynamics:
         else:
             for _ in range(steps):
                 if state.step % interval == 0:
-                    state.p[:] = self.sample_momenta()
+                    state.p[:] = self.sample_momenta(state.q) if self.bond_constraints else self.sample_momenta()
                     self._fix_fragments(state, data)
                 self._propagate(state, bias, data)
                 self._record_python_steps(1)

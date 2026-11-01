@@ -869,6 +869,8 @@ def _analyze_streams(streams, config, system, output, return_data, _postprocess=
 
 
 def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None):
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "fes")
     fes_sampler(config)
     if config.get("replica_exchange"):
         from .replica_exchange import exchange_options, run_replica_exchange_fes

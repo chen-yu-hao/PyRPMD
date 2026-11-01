@@ -96,6 +96,8 @@ Trajectory batching <batched-dynamics>
 RPC/MTS <rpc-mts>
 TRPMD and spectra <trpmd-spectroscopy>
 Output and analysis <manual/results>
+Standard trajectory formats <trajectory-export>
+Bond constraints <bond-constraints>
 rate-postprocessing
 Automatic analysis and figures <manual/analysis-reports>
 Examples <manual/examples>
@@ -124,6 +126,9 @@ Transition-interface sampling <transition-interface-sampling>
 Python API <manual/api>
 Troubleshooting <manual/troubleshooting>
 Developer guide <manual/development>
+Distribution and releases <distribution>
+Literature validation <literature-validation>
+Publication readiness <publication-readiness>
 Dynamics validation <validation/tier1-2026-10-31/README>
 PMF diagnostic replay <validation/tier1-2026-10-31/pmf-replay>
 ```
@@ -134,7 +139,7 @@ The manual is available in English and [Chinese](https://github.com/chen-yu-hao/
 with matching core chapters. In the HTML build, the language button opens the
 corresponding translated page. Extension guides and validation reports currently
 available only in English link to the Chinese manual contents instead. Detailed reference specifications, such as the
-[input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)* and
+[input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) and
 [public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md),
 and the [validation records](https://github.com/chen-yu-hao/PyRPMD/tree/main/docs/validation)
 live alongside the manual in the repository.

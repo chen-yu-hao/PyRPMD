@@ -12,6 +12,12 @@ def __getattr__(name):
         from .system import System
 
         return System
+    if name in ("TrajectoryFrame", "write_trajectory", "frames_from_states", "export_materials_trajectory"):
+        from . import trajectory_export
+        return getattr(trajectory_export, name)
+    if name in ("BondConstraints", "ConstraintError"):
+        from . import bond_constraints
+        return getattr(bond_constraints, name)
     if name in ("State", "Dynamics"):
         from . import dynamics
 
@@ -100,6 +106,8 @@ def __getattr__(name):
 
 
 __all__ = [
+    "TrajectoryFrame", "write_trajectory", "frames_from_states", "export_materials_trajectory",
+    "BondConstraints", "ConstraintError",
     "ElectronicFrictionDynamics", "ConstantElectronicFriction", "FrictionResult",
     "RPSHDynamics", "RPSHState", "HopResult",
     "ThermalNRPMDSampler", "ThermalNRPMDDynamics", "ThermalEnsemble", "ThermalRateCorrelation",

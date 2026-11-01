@@ -14,6 +14,14 @@ OMP_NUM_THREADS=1 python examples/potentials/on_the_fly.py pyscf
 pyrpmd validate examples/potentials/periodic_torch.inp --check-pes
 pyrpmd run examples/potentials/periodic_torch.inp --output runs/periodic-torch
 
+# Optional classical force engines; these are short interface examples.
+pip install -e '.[openmm,lammps]'
+pyrpmd validate examples/potentials/openmm_harmonic.inp --check-pes
+pyrpmd run examples/potentials/openmm_harmonic.inp --output runs/openmm-harmonic
+# Install the MPI runtime matching the LAMMPS shared library when needed.
+pyrpmd validate examples/potentials/lammps_lj.inp --check-pes
+pyrpmd run examples/potentials/lammps_lj.inp --output runs/lammps-lj
+
 # Periodic compiled model with analytic force and strain virial:
 cc -O3 -std=c11 -shared -fPIC -I native/include \
   native/examples/periodic_cosine_pes.c -lm -o /tmp/libperiodic_pes.so
