@@ -8,50 +8,35 @@ ambiguities are returned explicitly rather than assigned an arbitrary rate.
 from __future__ import annotations
 import copy
 from collections import Counter
+from collections.abc import Mapping
 import numpy as np
+from ..covalent import COVALENT_RADII_ANGSTROM, covalent_radii
 from ..units import parse_quantity
 
-_COVALENT_ANG = {
-    "H": 0.31,
-    "D": 0.31,
-    "He": 0.28,
-    "Li": 1.28,
-    "Be": 0.96,
-    "B": 0.84,
-    "C": 0.76,
-    "N": 0.71,
-    "O": 0.66,
-    "F": 0.57,
-    "Ne": 0.58,
-    "Na": 1.66,
-    "Mg": 1.41,
-    "Al": 1.21,
-    "Si": 1.11,
-    "P": 1.07,
-    "S": 1.05,
-    "Cl": 1.02,
-    "Ar": 1.06,
-    "K": 2.03,
-    "Ca": 1.76,
-    "Br": 1.20,
-    "I": 1.39,
-}
+# Kept for the dRPMD pilot classifier, which shares this connectivity table.
+_COVALENT_ANG = {**COVALENT_RADII_ANGSTROM, "D": 0.31, "T": 0.31}
 
 
-def bonding_graph(geometry, symbols, scale=1.25):
+def bonding_graph(geometry, symbols, scale=1.25, radii=None):
+    """Heuristic connectivity using sourced or explicitly overridden radii."""
     from ..constants import BOHR_ANGSTROM
 
-    q = np.asarray(geometry, float) * BOHR_ANGSTROM
-    missing = set(symbols) - _COVALENT_ANG.keys()
-    if missing:
-        raise ValueError(
-            f"automatic connectivity has no radii for {sorted(missing)}; supply reaction explicitly"
-        )
+    q = np.asarray(geometry)
+    symbols = tuple(symbols)
+    if q.dtype.kind not in "fiu" or q.shape != (len(symbols), 3) or not np.isfinite(q).all():
+        raise ValueError("Connectivity requires finite real geometry[N,3] and N symbols")
+    if isinstance(scale, (bool, np.bool_)) or not np.isscalar(scale):
+        raise ValueError("bond_scale must be positive and finite")
+    scale = float(scale)
+    if not np.isfinite(scale) or scale <= 0:
+        raise ValueError("bond_scale must be positive and finite")
+    q = np.asarray(q, float) * BOHR_ANGSTROM
+    radii = covalent_radii(symbols, radii)
     bonds = set()
     for i in range(len(q)):
         for j in range(i + 1, len(q)):
             if np.linalg.norm(q[i] - q[j]) < scale * (
-                _COVALENT_ANG[symbols[i]] + _COVALENT_ANG[symbols[j]]
+                radii[i] + radii[j]
             ):
                 bonds.add((i, j))
     return bonds
@@ -80,13 +65,13 @@ def graph_fragments(natoms, bonds):
 
 
 def _potential_values(provider, q):
-    r = provider.evaluate(np.ascontiguousarray(q[None]))
-    if (
-        np.any(r.status)
-        or not np.isfinite(r.energy).all()
-        or not np.isfinite(r.forces).all()
-    ):
-        raise ValueError("PES failed during transition-state preparation")
+    from ..potentials.base import PotentialError, coordinates, validate_result
+
+    try:
+        batch = coordinates(np.asarray(q)[None])
+        r = validate_result(provider.evaluate(batch), batch.shape)
+    except PotentialError as error:
+        raise ValueError(f"PES failed during transition-state preparation: {error}") from error
     # Retain this evaluation across later PES calls. Compiled and Python
     # providers may overwrite their force buffers when evaluating the next
     # finite-difference displacement.
@@ -94,11 +79,13 @@ def _potential_values(provider, q):
 
 
 def numerical_hessian(provider, geometry, step=1e-4):
-    q = np.asarray(geometry, float)
+    from ..potentials.base import coordinates
+
+    q = coordinates(np.asarray(geometry)[None])[0]
     flat = q.ravel()
     h = np.empty((flat.size, flat.size))
-    if step <= 0:
-        raise ValueError("Hessian displacement must be positive")
+    if isinstance(step, (bool, np.bool_)) or not np.isscalar(step) or not np.isfinite(step) or step <= 0:
+        raise ValueError("Hessian displacement must be positive and finite")
     for i in range(flat.size):
         plus = flat.copy()
         minus = flat.copy()
@@ -221,8 +208,101 @@ def _same_channel(fragments_a, fragments_b, symbols, bonds_a, bonds_b, masses=No
     )
 
 
+def preparation_options(reaction):
+    """Validate numerical search controls without constructing a PES."""
+    raw = reaction.get("preparation", {})
+    if not isinstance(raw, Mapping):
+        raise ValueError("reaction.preparation must be a table")
+    allowed = {
+        "refine", "max_steps", "max_step", "gradient_tolerance", "hessian_step",
+        "negative_eigenvalue_tolerance", "displacement", "trace_step", "trace_steps",
+        "bond_scale", "covalent_radii", "neb",
+    }
+    unknown = set(raw) - allowed
+    if unknown:
+        raise ValueError(f"Unknown reaction.preparation fields: {sorted(unknown)}")
+    result = dict(raw)
+    if "refine" in raw and not isinstance(raw["refine"], (bool, np.bool_)):
+        raise ValueError("reaction.preparation.refine must be boolean")
+
+    def positive(value, name, dimension=None):
+        if isinstance(value, np.bool_):
+            raise ValueError(f"{name} must be positive and finite")
+        value = parse_quantity(value, dimension)
+        if value <= 0:
+            raise ValueError(f"{name} must be positive and finite")
+        return value
+
+    def count(value, name, minimum=1):
+        if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < minimum:
+            raise ValueError(f"{name} must be an integer >= {minimum}")
+        return int(value)
+
+    quantities = {
+        "max_step": (0.2, "length"),
+        "gradient_tolerance": (1e-5, "force"),
+        "hessian_step": (1e-4, "length"),
+        "negative_eigenvalue_tolerance": (1e-8, (-2, 1, 0, -1, 0, 0)),
+        "displacement": (0.1, "length"),
+        "trace_step": (0.06, "length"),
+        "bond_scale": (1.25, "dimensionless"),
+    }
+    for key, (default, dimension) in quantities.items():
+        result[key] = positive(raw.get(key, default), f"preparation.{key}", dimension)
+    for key, default in (("max_steps", 100), ("trace_steps", 400)):
+        result[key] = count(raw.get(key, default), f"preparation.{key}")
+    # Check overrides even if no connectivity calculation is needed yet.
+    covalent_radii((), raw.get("covalent_radii"))
+    neb = raw.get("neb", {})
+    if not isinstance(neb, Mapping):
+        raise ValueError("reaction.preparation.neb must be a table")
+    unknown = set(neb) - {
+        "images", "spring_constant", "max_steps", "gradient_tolerance",
+        "max_step", "climb_after", "initial_path",
+    }
+    if unknown:
+        raise ValueError(f"Unknown reaction.preparation.neb fields: {sorted(unknown)}")
+    resolved_neb = dict(neb)
+    for key, default, minimum in (("images", 7, 3), ("max_steps", 1000, 1), ("climb_after", 20, 0)):
+        resolved_neb[key] = count(neb.get(key, default), f"preparation.neb.{key}", minimum)
+    for key, default, dimension in (
+        ("spring_constant", 0.1, "spring"),
+        ("gradient_tolerance", 1e-4, "force"),
+        ("max_step", 0.1, "length"),
+    ):
+        resolved_neb[key] = positive(neb.get(key, default), f"preparation.neb.{key}", dimension)
+    if "initial_path" in neb:
+        path = np.asarray(neb["initial_path"])
+        if (path.dtype.kind not in "fiu" or path.ndim != 3 or path.shape[-1] != 3
+                or path.shape[0] != resolved_neb["images"] or path.shape[1] < 1
+                or not np.isfinite(path).all()):
+            raise ValueError("preparation.neb.initial_path must be finite real [images,N,3] coordinates in bohr")
+    result["neb"] = resolved_neb
+    return result
+
+
+def prepared_system(system, prepared):
+    """Return the optimized molecular identity without mutating the input."""
+    if "transition_state" not in prepared:
+        return system
+    from ..system import System
+
+    return System.from_dict({**system.to_dict(), "geometry": prepared["transition_state"]})
+
+
 def prepare_rate(config, system, potential=None, numerical=False):
+    """Prepare a bimolecular rate from a TS guess or atom-mapped endpoints.
+
+    Explicit reactions retain their inexpensive legacy path unless refinement
+    is requested. Numerical preparation always validates a searched saddle
+    before inferring connectivity; unsuccessful searches are inspectable but
+    never marked ready. All returned coordinates are in bohr.
+    """
+    from ..io import jsonable
+    from ..system import reaction_endpoints
+
     reaction = copy.deepcopy(config.get("reaction", {}))
+    options = preparation_options(reaction)
     reaction["rinf"] = reaction.get(
         "rinf_au", reaction.get("rinf", reaction.get("Rinf", "12 angstrom"))
     )
@@ -230,86 +310,126 @@ def prepare_rate(config, system, potential=None, numerical=False):
         reaction["fragments"] = [list(f) for f in system.fragments]
     required = ("fragments", "forming_bonds", "breaking_bonds")
     explicit = all(reaction.get(k) for k in required)
+    spec = config.get("system", {})
+    endpoints = None
+    if isinstance(spec, Mapping) and ("reactant" in spec or "product" in spec):
+        endpoints = reaction_endpoints(spec)
+        if endpoints[0].symbols != system.symbols or not np.array_equal(endpoints[0].masses, system.masses):
+            raise ValueError("Reactant/product atom identities and masses must match the supplied System")
+    if "neb" in reaction.get("preparation", {}) and endpoints is None:
+        raise ValueError("reaction.preparation.neb requires system.reactant and system.product")
     if explicit:
         _validate_reaction(reaction, system.natoms)
-        reaction["rinf"] = parse_quantity(reaction.get("rinf", "12 angstrom"), "length")
-        _validate_equivalent_paths(reaction, system)
-        return {
-            "ready": True,
-            "reaction": reaction,
-            "diagnostics": ["explicit reaction definition"],
-            "candidates": [],
-        }
+        reaction["rinf"] = parse_quantity(reaction["rinf"], "length")
+        if endpoints is None and not options.get("refine", False):
+            _validate_equivalent_paths(reaction, system)
+            return {
+                "ready": True,
+                "reaction": reaction,
+                "diagnostics": ["explicit reaction definition"],
+                "candidates": [],
+            }
     if not numerical:
         return {
             "ready": False,
             "reaction": reaction,
             "requires_numerical_preparation": True,
             "diagnostics": [
-                "A Hessian and two downhill traces are needed; use prepare --pilot or run."
+                "Numerical TS preparation (CI-NEB for endpoints, P-RFO refinement, "
+                "Hessian and downhill traces) is needed; use prepare --pilot or run."
             ],
             "candidates": [],
         }
+    if any(system.pbc) or system.fixed_atoms:
+        raise ValueError("Automatic rate preparation requires a nonperiodic system without fixed atoms")
     owned = potential is None
     if owned:
         from ..potentials import make_potential
 
         potential = make_potential(config["potential"], system)
     try:
-        options = reaction.get("preparation", {})
-        e, f = _potential_values(potential, system.geometry)
+        q = system.geometry.copy()
+        diagnostics = []
+        result = {
+            "ready": False, "reaction": reaction, "diagnostics": diagnostics,
+            "candidates": [], "transition_state": q.tolist(),
+        }
+        initial_mode = None
+        if endpoints is not None:
+            from .neb import climbing_image_neb
+
+            band = climbing_image_neb(
+                potential, endpoints[0].geometry, endpoints[1].geometry, **options["neb"]
+            )
+            result["neb"] = jsonable(band)
+            q = band["geometry"].copy()
+            result["transition_state"] = q.tolist()
+            diagnostics.extend(band["diagnostics"])
+            if not band["converged"]:
+                return result
+            initial_mode = band["tangent"]
+        _, f = _potential_values(potential, q)
         maximum = float(np.max(np.abs(f)))
-        threshold = float(options.get("gradient_tolerance", 1e-3))
+        threshold = options["gradient_tolerance"]
+        if options.get("refine", True) and (
+            maximum > threshold or endpoints is not None or options.get("refine", False)
+        ):
+            from .saddle import refine_transition_state
+
+            refined = refine_transition_state(
+                potential, q, masses=system.masses, initial_mode=initial_mode,
+                max_steps=options["max_steps"], max_step=options["max_step"],
+                gradient_tolerance=threshold, hessian_step=options["hessian_step"],
+                negative_eigenvalue_tolerance=options["negative_eigenvalue_tolerance"],
+            )
+            result["refinement"] = jsonable(refined)
+            q = refined["geometry"].copy()
+            result["transition_state"] = q.tolist()
+            diagnostics.extend(refined["diagnostics"])
+            result["hessian_eigenvalues"] = list(refined["hessian_eigenvalues"])
+            if not refined["converged"]:
+                return result
+            maximum = refined["max_force"]
         if maximum > threshold:
             raise ValueError(
-                f"supplied TS is not stationary: max force {maximum:g} > {threshold:g} hartree/bohr"
+                f"supplied TS is not stationary: max force {maximum:g} > {threshold:g} hartree/bohr; "
+                "enable reaction.preparation.refine"
             )
-        h = numerical_hessian(
-            potential,
-            system.geometry,
-            parse_quantity(options.get("hessian_step", 1e-4), "length"),
-        )
+        h = numerical_hessian(potential, q, options["hessian_step"])
         repeated = np.repeat(system.masses, 3)
         weighted = h / np.sqrt(repeated[:, None] * repeated[None, :])
         vals, vecs = np.linalg.eigh(weighted)
-        negative = np.flatnonzero(
-            vals < -float(options.get("negative_eigenvalue_tolerance", 1e-8))
-        )
-        diagnostics = [
+        negative = np.flatnonzero(vals < -options["negative_eigenvalue_tolerance"])
+        diagnostics.extend([
             f"max TS force = {maximum:.6g} hartree/bohr",
             f"negative mass-weighted Hessian eigenvalues = {len(negative)}",
-        ]
+        ])
+        result["hessian_eigenvalues"] = vals.tolist()
         if len(negative) != 1:
-            return {
-                "ready": False,
-                "reaction": reaction,
-                "diagnostics": diagnostics
-                + [
-                    "Automatic preparation requires exactly one resolved unstable mode; provide reaction explicitly or refine TS."
-                ],
-                "hessian_eigenvalues": vals.tolist(),
-                "candidates": [],
-            }
-        direction = (vecs[:, negative[0]] / np.sqrt(repeated)).reshape(
-            system.geometry.shape
-        )
+            diagnostics.append(
+                "Automatic preparation requires exactly one resolved unstable mode; "
+                "provide a better TS guess or a reactant/product path."
+            )
+            return result
+        optimized_system = prepared_system(system, result)
+        if explicit and endpoints is None:
+            _validate_equivalent_paths(reaction, optimized_system)
+            result["ready"] = True
+            diagnostics.append("explicit reaction definition with validated refined TS")
+            return result
+        direction = (vecs[:, negative[0]] / np.sqrt(repeated)).reshape(q.shape)
         direction /= np.max(np.linalg.norm(direction, axis=1))
         traces = [
             downhill_trace(
-                potential,
-                system.geometry,
-                system.masses,
-                sign * direction,
-                displacement=parse_quantity(options.get("displacement", 0.1), "length"),
-                step=parse_quantity(options.get("trace_step", 0.06), "length"),
-                max_steps=int(options.get("trace_steps", 400)),
+                potential, q, system.masses, sign * direction,
+                displacement=options["displacement"], step=options["trace_step"],
+                max_steps=options["trace_steps"],
             )
             for sign in (-1, 1)
         ]
         bonds = [
-            bonding_graph(
-                t["geometry"], system.symbols, float(options.get("bond_scale", 1.25))
-            )
+            bonding_graph(t["geometry"], system.symbols, options["bond_scale"],
+                          radii=options.get("covalent_radii"))
             for t in traces
         ]
         fragments = [graph_fragments(system.natoms, b) for b in bonds]
@@ -321,32 +441,40 @@ def prepare_rate(config, system, potential=None, numerical=False):
             breaking = sorted(bonds[side] - bonds[1 - side])
             if not forming or len(forming) != len(breaking):
                 continue
-            candidate = {
+            candidates.append({
                 "fragments": fragments[side],
                 "forming_bonds": [list(b) for b in forming],
                 "breaking_bonds": [list(b) for b in breaking],
                 "entry_side": side,
-                "rinf": parse_quantity(reaction.get("rinf", "12 angstrom"), "length"),
-            }
-            candidates.append(candidate)
-        if "entry_side" in reaction:
-            candidates = [
-                c for c in candidates if c["entry_side"] == reaction["entry_side"]
+                "rinf": parse_quantity(reaction["rinf"], "length"),
+            })
+        if endpoints is not None:
+            endpoint_bonds = [
+                bonding_graph(endpoint.geometry, system.symbols, options["bond_scale"],
+                              radii=options.get("covalent_radii"))
+                for endpoint in endpoints
             ]
+            candidates = [
+                c for c in candidates
+                if bonds[c["entry_side"]] == endpoint_bonds[0]
+                and bonds[1 - c["entry_side"]] == endpoint_bonds[1]
+            ]
+            diagnostics.append(
+                "Entrance direction checked against labeled reactant/product endpoint connectivity."
+            )
+            if not candidates:
+                diagnostics.append("TS downhill traces do not connect the supplied endpoint bond graphs.")
+        if "entry_side" in reaction:
+            candidates = [c for c in candidates if c["entry_side"] == reaction["entry_side"]]
         if reaction.get("fragments"):
             requested = {frozenset(f) for f in reaction["fragments"]}
-            candidates = [
-                c
-                for c in candidates
-                if {frozenset(f) for f in c["fragments"]} == requested
-            ]
+            candidates = [c for c in candidates if {frozenset(f) for f in c["fragments"]} == requested]
+        if explicit:
+            for key in ("forming_bonds", "breaking_bonds"):
+                requested = {tuple(sorted(b)) for b in reaction[key]}
+                candidates = [c for c in candidates if {tuple(sorted(b)) for b in c[key]} == requested]
         if len(candidates) == 2 and _same_channel(
-            fragments[0],
-            fragments[1],
-            system.symbols,
-            bonds[0],
-            bonds[1],
-            system.masses,
+            fragments[0], fragments[1], system.symbols, bonds[0], bonds[1], system.masses,
         ):
             candidates = candidates[:1]
             diagnostics.append(
@@ -355,19 +483,16 @@ def prepare_rate(config, system, potential=None, numerical=False):
         if len(candidates) == 1:
             reaction.update(candidates[0])
             _validate_reaction(reaction, system.natoms)
-            _validate_equivalent_paths(reaction, system)
+            _validate_equivalent_paths(reaction, optimized_system)
         else:
             diagnostics.append(
                 "Entrance/channel is ambiguous; select reaction.entry_side or provide fragments and bond changes."
             )
-        return {
-            "ready": len(candidates) == 1,
-            "reaction": reaction,
-            "diagnostics": diagnostics,
-            "candidates": candidates,
-            "hessian_eigenvalues": vals.tolist(),
-            "trace_endpoints": [t["geometry"].tolist() for t in traces],
-        }
+        result.update(
+            ready=len(candidates) == 1, candidates=candidates,
+            trace_endpoints=[t["geometry"].tolist() for t in traces],
+        )
+        return result
     finally:
         if owned and hasattr(potential, "close"):
             potential.close()

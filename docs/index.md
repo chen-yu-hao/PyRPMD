@@ -83,6 +83,7 @@ Science <manual/science>
 :hidden:
 
 Gas phase <manual/workflows>
+Transition-state search <transition-state-search>
 Materials and surfaces <manual/periodic>
 PCET <manual/pcet>
 Electrode models <manual/electrochemistry>

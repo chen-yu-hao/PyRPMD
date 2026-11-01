@@ -222,6 +222,8 @@ def read_xyz(path, *, unit="angstrom", masses=None):
 def system_from_config(spec):
     if isinstance(spec, System):
         return spec
+    if "reactant" in spec or "product" in spec:
+        return reaction_endpoints(spec)[0]
     masses = spec.get("masses")
     if "masses_amu" in spec:
         if masses is not None:
@@ -317,3 +319,32 @@ def system_from_config(spec):
             multiplicity,
             **boundaries,
         )
+
+
+def reaction_endpoints(spec):
+    """Read atom-mapped full-system reactant/product geometries for CI-NEB.
+
+    XYZ files use angstrom by default; inline arrays use bohr, as for
+    ``geometry``. Shared masses, isotopes and ``geometry_unit`` apply to both
+    endpoints. Atom correspondence is explicit: symbols must have identical
+    order, and no alignment or atom permutation is inferred.
+    """
+    if "reactant" not in spec or "product" not in spec:
+        raise ValueError("CI-NEB requires both system.reactant and system.product")
+    if any(key in spec for key in ("geometry", "transition_state", "reactants")):
+        raise ValueError(
+            "Use paired system.reactant/product or a geometry/transition_state, not both"
+        )
+    common = {key: value for key, value in spec.items() if key not in ("reactant", "product")}
+    endpoints = tuple(
+        system_from_config({**common, "geometry": spec[key]})
+        for key in ("reactant", "product")
+    )
+    reactant, product = endpoints
+    if reactant.symbols != product.symbols:
+        raise ValueError("Reactant/product geometries must have identical atom counts and symbol order")
+    if not np.array_equal(reactant.masses, product.masses):
+        raise ValueError("Reactant/product geometries must use identical atom masses")
+    if np.linalg.norm(product.geometry - reactant.geometry) <= 1e-12:
+        raise ValueError("Reactant/product geometries must be distinct")
+    return endpoints

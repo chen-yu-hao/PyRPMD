@@ -433,12 +433,14 @@ def prepare(job, *, numerical=False):
         "ready": True,
     }
     if config["task"] == "rate":
-        from .workflows.prepare import prepare_rate
+        from .workflows.prepare import prepare_rate, prepared_system
 
         result["reaction_preparation"] = prepare_rate(
             config, system, numerical=numerical
         )
         result["ready"] = result["reaction_preparation"].get("ready", False)
+        system = prepared_system(system, result["reaction_preparation"])
+        result["system"] = system.to_dict()
     elif config["task"] == "drpmd":
         result["ready"] = not (
             config["collision"].get("bmax_unvalidated", False)

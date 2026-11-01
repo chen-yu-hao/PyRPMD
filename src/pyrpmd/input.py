@@ -45,7 +45,7 @@ _SECTIONS = {
     "initial_ensemble": set("method beta fragments".split()),
     "nonadiabatic": set("method nstates initial_state state_labels initialization asymptotic_coupling_tolerance".split()),
     "system": set(
-        "geometry transition_state reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
+        "geometry transition_state reactant product reactants separation geometry_unit isotopes masses masses_amu symbols fragments charge multiplicity cell cell_unit pbc fixed_atoms".split()
     ),
     "dynamics": set("timestep integrator native loop_backend block_steps".split()),
     "sampling": set(
@@ -666,7 +666,9 @@ class JobSpec:
             system = sys_spec
             sys_spec = system.to_dict()
         else:
-            for k in ("geometry", "transition_state"):
+            if ("reactant" in sys_spec or "product" in sys_spec) and task != "rate":
+                raise InputError("Paired system.reactant/product geometries require task='rate'")
+            for k in ("geometry", "transition_state", "reactant", "product"):
                 if isinstance(sys_spec.get(k), str):
                     sys_spec[k] = _path(base, sys_spec[k])
             if "reactants" in sys_spec:
@@ -882,6 +884,13 @@ class JobSpec:
             validate_nonadiabatic(d, potential=potential, parallel=parallel, system=system)
             notes.append("Experimental NRPMD: state-selected scattering, not electronic thermal-equilibrium RPMD rate; real-chemistry validation is pending")
         reaction = deepcopy(d.get("reaction", {}))
+        if task == "rate":
+            from .workflows.prepare import preparation_options
+
+            try:
+                preparation_options(reaction)
+            except (ValueError, TypeError) as error:
+                raise InputError(str(error)) from error
         ew = float(reaction.get("electronic_weight", 1.0))
         if not math.isfinite(ew) or ew < 0:
             raise InputError("electronic_weight must be finite and nonnegative")

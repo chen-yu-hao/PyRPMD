@@ -26,15 +26,29 @@ The [input](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/rate/pilot.
 analytic potential `toy_exchange.py`, starts from `ts.xyz`, and uses 4 beads with short sampling so
 it finishes in about 15 s. `prepare --pilot` runs the numerical preparation.
 
-Starting from a TS alone, the preparation checks the forces, finds the unstable mode of a numerical
-Hessian and descends in both directions to identify the two entrance fragments. When the channel is
-ambiguous, give `reaction.fragments`, `forming_bonds` and `breaking_bonds` explicitly.
+Starting from a TS guess, numerical preparation refines nonstationary coordinates
+with P-RFO, checks the forces and unstable mode of a numerical Hessian, and
+descends in both directions to identify the two entrance fragments. A pair of
+`system.reactant` and `system.product` geometries instead starts a CI-NEB search
+followed by P-RFO and the same saddle checks. The optimized TS supplies the rate
+coordinate and sampling reference. When the channel is ambiguous, give
+`reaction.fragments`, `forming_bonds` and `breaking_bonds` explicitly.
+
+The [transition-state search guide](../transition-state-search.md) includes
+controls, atom-mapping requirements, limitations and a runnable endpoint example:
+
+```bash
+pyrpmd prepare examples/rate/from_endpoints.inp --pilot
+pyrpmd run examples/rate/from_endpoints.inp --output runs/manual-endpoint-rate
+```
 
 ### Setting up your own system
 
 | Input part | Determines | Check |
 | --- | --- | --- |
-| `system.transition_state` | TS reference geometry and atom order | Consistency with the PES, isotopes and bonds formed/broken |
+| `system.transition_state` | TS guess and atom order | Consistency with the PES, isotopes and bonds formed/broken |
+| `system.reactant`, `system.product` | Full endpoint geometries for CI-NEB | Matching atom order, common coordinate frame, intended basins |
+| `reaction.preparation` | Refinement, path-search and connectivity controls | Converged forces, one unstable mode, matching endpoint connectivity |
 | `reaction.fragments`, bonds | The entrance fragments and the reaction coordinate | 0-based indices, atom conservation, channel definition |
 | `reaction.rinf` | Asymptotic normalization distance | Fragment decoupling and long-range potential as it varies |
 | `umbrella` | Window centers, range, stiffness | Connected support from the reactant reference to the dividing surface |
@@ -54,7 +68,7 @@ Maxwell momenta and launches with `+p` and `-p`, without thermostat or umbrella.
 
 | File / summary field | Meaning |
 | --- | --- |
-| `preparation.json` | TS preparation: Hessian eigenvalues, descent endpoints, identified reaction and diagnostics |
+| `preparation.json` | Optimized TS, CI-NEB path/energies and P-RFO diagnostics when searched, Hessian eigenvalues, descent endpoints and identified reaction |
 | `rate_pmf.csv`, `rate_pmf.npz` | Rate PMF, support region and related arrays |
 | `rate_pmf.json` | PMF barrier and error, $k_{\mathrm{QTST}}$, dividing surface `xi_star` and diagnostics |
 | `recrossing.csv`, `recrossing.npz` | Full $\kappa(t)$ curve, errors and bootstrap information |

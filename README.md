@@ -94,7 +94,7 @@ pyrpmd resume my-first-run/run
 ```
 
 Every task uses this same `validate` → `run` → `analyze` → `resume` cycle. `--check-pes` also
-evaluates the potential and, for a TS-only rate input, runs the numerical preparation. Give each
+evaluates the potential and, for a TS-guess or endpoint rate input, runs the numerical preparation. Give each
 new calculation its own output directory; `resume` (or `run --resume` on the original input)
 continues an existing one. The starter produces 3 windows, 6 streams and 120 saved samples in
 `my-first-run/run/results/summary.json`; its small sample is a workflow check, not a converged
@@ -178,7 +178,7 @@ distinguishes the default materials workflow from the opt-in native PIMD engine 
 
 ## Minimal inputs
 
-A transition state and a potential are a complete rate input:
+A transition-state guess and a potential are a complete rate input:
 
 ```toml
 task = "rate"
@@ -190,6 +190,26 @@ transition_state = "ts.xyz"
 provider = "cabi"
 library = "libpes.so"
 ```
+
+You can also start from complete, atom-mapped reactant and product geometries:
+
+```toml
+task = "rate"
+
+[system]
+reactant = "reactant.xyz"
+product = "product.xyz"
+
+[potential]
+provider = "cabi"
+library = "libpes.so"
+```
+
+Numerical preparation refines imperfect TS guesses with P-RFO, or searches the
+endpoint path with CI-NEB before P-RFO refinement. The final force, saddle-index
+and connectivity checks must pass before sampling uses the optimized TS. See
+[transition-state search](docs/transition-state-search.md) for controls, limits
+and the runnable [endpoint example](examples/rate/from_endpoints.inp).
 
 The `[potential]` section can also come from the command line as `--pes ./libpes.so`. The `.so`
 implements the PyRPMD PES v1 ABI; f2py modules use `provider='rpmdrate'`, and a plain `.o` adds

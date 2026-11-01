@@ -28,7 +28,7 @@ from ..dynamics import Dynamics, State
 from ..input import rate_pmf_options
 from ..parallel import run_tasks, root_call, task_potential, execution_plan
 from ..units import parse_quantity, time_steps
-from .prepare import prepare_rate
+from .prepare import prepare_rate, prepared_system
 from .fes import (
     run_fes,
     write_json,
@@ -546,16 +546,17 @@ def _child_task(task):
         }
 
 
-def _prepare(config, system, output):
+def _prepare(config, system, output, return_system=False):
     pmf_options = rate_pmf_options(config)
     prepared = prepare_rate(config, system, numerical=True)
     write_json(Path(output) / "preparation.json", prepared)
     if not prepared["ready"]:
         raise ValueError(
-            "TS-only reaction preparation is ambiguous: "
+            "Reaction preparation did not produce a validated TS and entrance channel: "
             + "; ".join(prepared["diagnostics"])
-            + ". See preparation.json and specify reaction.fragments/forming_bonds/breaking_bonds."
+            + ". See preparation.json; inspect the path/TS search or specify reaction.fragments/forming_bonds/breaking_bonds."
         )
+    system = prepared_system(system, prepared)
     result = copy.deepcopy(config)
     result["reaction"] = prepared["reaction"]
     reaction = result["reaction"]
@@ -592,7 +593,7 @@ def _prepare(config, system, output):
     )
     _, _, centers, _ = resolve_umbrellas(result, system)
     _check_pmf_domain(centers[:, 0], pmf_options)
-    return result
+    return (result, system) if return_system else result
 
 
 def _check_pmf_domain(centers, options):
@@ -1312,7 +1313,7 @@ def _dispatch_children(tasks, config, dispatch):
 def run_rate(config, system, output, executor=None):
     if any(system.pbc) or system.fixed_atoms:
         raise ValueError("Gas-phase run_rate does not support periodic/fixed-atom systems; use surface_rate")
-    config = root_call(_prepare, config, system, str(output))
+    config, system = root_call(_prepare, config, system, str(output), True)
     options = _recrossing_options(config)
     sampling_config = config
     if rate_pmf_options(config)["method"] == "mbar":
