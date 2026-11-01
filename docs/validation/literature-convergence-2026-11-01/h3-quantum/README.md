@@ -206,7 +206,37 @@ now gives κ=0.77307729 and a full rate 1.97196035e-16, with nominal
 the paper and the entire interval lies inside its approximate ±5% band.
 The separate κ precision gate still fails: its relative 95% half-width
 is 3.272%, above the registered 3.000% target. The immutable all-parent
-extra-momentum decision is therefore active; this first failure is retained.
+extra-momentum decision was therefore activated; this first failure is retained.
+
+The [complete four-pair extension](recrossing-stage-200-pairs-4/README.md)
+now gives κ=0.77121022, 95% CI [0.75333936, 0.78908108], and a full
+rate 1.96785637e-16, nominal 95% CI [1.93293861e-16, 2.00340490e-16].
+The paper difference is +0.916% and the κ half-width is 2.317%.
+All eleven fixed-P primary criteria pass without changing thresholds,
+parents, seeds, model, normalization or analysis windows. The supplementary
+parent-time-half interval [−0.02310, +0.03626] still fails equivalence
+within ±0.03. The unchanged analyzer keeps that failure explicit.
+
+An [independent raw replay](recrossing-stage-200-pairs-4/independent-review/README.md)
+reconstructs all 800 chunks, keyed momenta, signed fluxes and joint-chain
+statistics. A [base-plus-increment archive extraction](recrossing-stage-200-pairs-4/raw-archive/README.md)
+reproduces every raw identity and numerical summary exactly. Dynamic bead
+convergence remains a separate [fixed eight-chain P256 design](p256-fixed-eight-chain-design/README.md).
+All eight parent chains are complete and their [archive](p256-parent-stage/README.md)
+passes independent verification and actual extraction replay. The
+[child/analysis tool](p256-child-tool/README.md) uses that full parent cohort;
+physical children require the separate coordinator and resource checks.
+The full dynamic bead comparison is not yet complete. Before launch,
+the [excluded native implementation calibration](p256-native-calibration/RESULTS.md)
+completed its fixed 360 steps: q, p, surface values and clocks agree exactly
+between native and Python propagation at both timesteps; energy differences
+are below 1e-12 hartree, and the native restart traces are bitwise identical.
+This short check is excluded from every primary rate estimate.
+
+The [actual child launch record](p256-child-launch/README.md) records adoption
+and the two admitted workers. All eight parent chains, four momentum pairs
+per parent, both timesteps and the fixed 200 fs horizon remain required before
+the frozen analyzer can report the independent P128/P256 comparison.
 
 The [registered native child protocol](recrossing-protocol.json) uses every
 one of the 1,600 saved equilibrium parents, two keyed Maxwell pairs per

@@ -1,0 +1,62 @@
+{
+  "checks": {
+    "energy": {
+      "maximum_python_native_absolute_difference": 9.663381206337363e-13,
+      "restart_bitwise_equal": true
+    },
+    "p": {
+      "maximum_python_native_absolute_difference": 0.0,
+      "restart_bitwise_equal": true
+    },
+    "q": {
+      "maximum_python_native_absolute_difference": 0.0,
+      "restart_bitwise_equal": true
+    },
+    "step": {
+      "maximum_python_native_absolute_difference": 0.0,
+      "restart_bitwise_equal": true
+    },
+    "surface": {
+      "maximum_python_native_absolute_difference": 0.0,
+      "restart_bitwise_equal": true
+    },
+    "time": {
+      "maximum_python_native_absolute_difference": 0.0,
+      "restart_bitwise_equal": true
+    }
+  },
+  "horizon_fs": 4,
+  "paths": {
+    "native": {
+      "dispatch": {
+        "manual_python_steps": 0,
+        "native_steps": 40,
+        "python_fallback_steps": 0
+      },
+      "energy_range_hartree": 0.006863372406030521,
+      "recreated_context": false,
+      "trace_sha256": "2d7341e08ea0f975e74232190a44ddea22055b58f69c8d08c06576aab82ae520"
+    },
+    "python": {
+      "dispatch": {
+        "manual_python_steps": 40,
+        "native_steps": 0,
+        "python_fallback_steps": 0
+      },
+      "energy_range_hartree": 0.006863372407792667,
+      "recreated_context": false,
+      "trace_sha256": "67c3ce4db64223360ae672a4be4a60cd1846ecf0379d929ec5ddb62fb650502b"
+    },
+    "restart": {
+      "dispatch": {
+        "manual_python_steps": 0,
+        "native_steps": 40,
+        "python_fallback_steps": 0
+      },
+      "energy_range_hartree": 0.006863372406030521,
+      "recreated_context": true,
+      "trace_sha256": "2d7341e08ea0f975e74232190a44ddea22055b58f69c8d08c06576aab82ae520"
+    }
+  },
+  "timestep_fs": 0.1
+}

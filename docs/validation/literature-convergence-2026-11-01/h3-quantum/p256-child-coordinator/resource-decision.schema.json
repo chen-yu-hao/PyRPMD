@@ -1,0 +1,57 @@
+{
+  "$comment": "Root records actual drained-queue and current allocation evidence, not a forecast. Program requires worker count consistency and binds every cited evidence file.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "child_workers": {
+      "maximum": 2,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "declared_project_active_workers": {
+      "maximum": 8,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "evidence": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "bytes": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "path": {
+            "pattern": "^/",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "prerequisite_queues_drained": {
+      "const": true
+    },
+    "safe_to_launch_child_workers": {
+      "const": true
+    }
+  },
+  "required": [
+    "safe_to_launch_child_workers",
+    "child_workers",
+    "declared_project_active_workers",
+    "prerequisite_queues_drained",
+    "evidence"
+  ],
+  "type": "object"
+}

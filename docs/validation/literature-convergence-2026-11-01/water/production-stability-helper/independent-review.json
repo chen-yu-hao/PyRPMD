@@ -1,0 +1,25 @@
+{
+  "execution_scope": {
+    "MD_steps": 0,
+    "PES_evaluations": 0,
+    "actual_water_diffusion_values_inspected": false,
+    "files_modified_by_reviewer": [],
+    "tests_rerun": 0
+  },
+  "findings": [
+    "Each late mean uses segments13\u201324 and each early mean uses0\u201311; uncertainty uses exactly eight paired chain differences with df7, allowing shared chain offsets to cancel.",
+    "Middle segment12 remains in all25 primary means and every displayed/exported segment row.",
+    "The reused complete-cohort loader checks fixed seeds/segments and curve hashes; the new helper verifies unchanged primary means and same observed exit/manifest identities.",
+    "Normal exit, drained pool and released leases are required; supplement/protocol/dependency hashes and all inputs/sources are rechecked.",
+    "The nominal small-n t interval is descriptive; no new hard gate, equivalence or stationarity proof."
+  ],
+  "recorded_by": "providers subagent from the delivered review message",
+  "recorded_utc": "2026-11-01T20:22:19.536887+00:00",
+  "remaining_blocking_findings": [],
+  "reviewer": "distribution subagent; delivered independent read-only review",
+  "schema": "pyrpmd.water-production-stability-independent-review.v1",
+  "source_sha256": {
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+    "tests/test_water_production_stability.py": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef"
+  }
+}

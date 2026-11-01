@@ -1,0 +1,130 @@
+{
+  "all_fixed_chains_complete": false,
+  "all_original_leases_acquired_together": true,
+  "captured_utc": "2026-11-01T19:45:25.817772+00:00",
+  "chains_at_normal_exit": [
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest_sha256": "5d32b200e8073dc9818696fe2c77611c0539379fd494418bfc8fc191bbb777bd",
+      "seed": 1101
+    },
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest_sha256": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5",
+      "seed": 1102
+    },
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest_sha256": "dcd638e3052964747fc6d22ebc40ab6eafd33519e2c6caf790d7a686435a45b3",
+      "seed": 1103
+    },
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest_sha256": "02d5eaa6bf6aff7cc4a56459279087efcf07b1ca36d589379c33b5aae0107ebf",
+      "seed": 1104
+    },
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest_sha256": "3dfdf5dff6f8d03c65e29f9b87d0d4b14ef8c40cb592a38577a363a8bfee64ac",
+      "seed": 1105
+    },
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest_sha256": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52",
+      "seed": 1106
+    },
+    {
+      "chunk_count": 65,
+      "committed_steps": 260000,
+      "complete": false,
+      "manifest_sha256": "fdbaaf972d09c510e0924f39805fdd54a49cb0a57131e5a854470b21bd1384f2",
+      "seed": 1107
+    },
+    {
+      "chunk_count": 65,
+      "committed_steps": 260000,
+      "complete": false,
+      "manifest_sha256": "d4739be37997cbed4f31f1066aa428eb2030c203f432230d25b8daaf3475625e",
+      "seed": 1108
+    }
+  ],
+  "coordinator_finished_event": {
+    "coordinator_pid": 4,
+    "elapsed_wall_seconds": 7214.167560729002,
+    "event": "coordinator_finished",
+    "failed": false,
+    "run_id": "9966d757466b472580aca7ad4da3ef51",
+    "utc": "2026-11-01T19:44:17.287113+00:00"
+  },
+  "coordinator_started_event": {
+    "active_worker_limit": 4,
+    "coordinator_pid": 4,
+    "event": "coordinator_started",
+    "inherited_legacy_and_seed_leases": true,
+    "invocation_wall_seconds": 1800.0,
+    "outer_wall_seconds": 7200.0,
+    "propagator_protocol_changes": false,
+    "queues": {
+      "a": [
+        1101,
+        1105
+      ],
+      "b": [
+        1102,
+        1106
+      ],
+      "c": [
+        1103,
+        1107
+      ],
+      "d": [
+        1104,
+        1108
+      ]
+    },
+    "registration_sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326",
+    "run_id": "9966d757466b472580aca7ad4da3ef51",
+    "utc": "2026-11-01T17:44:03.304429+00:00"
+  },
+  "journal_prefix": {
+    "bytes": 41885,
+    "path": "four-worker-control/events.jsonl",
+    "sha256": "b77eedd6e065b7128ae731eee26a6be78547c2d08543bf5f18cf28c0e7e78633"
+  },
+  "lease_count": 11,
+  "lease_handles_closed_before_next_dispatch": true,
+  "lease_paths": [
+    "four-worker-control/coordinator.lock",
+    "scheduler-odd.lock",
+    "scheduler-even.lock",
+    "four-worker-control/seed-1101.lock",
+    "four-worker-control/seed-1102.lock",
+    "four-worker-control/seed-1103.lock",
+    "four-worker-control/seed-1104.lock",
+    "four-worker-control/seed-1105.lock",
+    "four-worker-control/seed-1106.lock",
+    "four-worker-control/seed-1107.lock",
+    "four-worker-control/seed-1108.lock"
+  ],
+  "next_authorized_action": "Resume the same frozen original registration for unfinished1107/1108 only; no additional preparation, paired-dt, or quantum campaign.",
+  "observed_exec_session_id": 59615,
+  "observed_process_exit_code": 0,
+  "pool_drained": true,
+  "registration_sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326",
+  "schema": "pyrpmd.water-original-bounded-coordinator-exit.v1",
+  "source_sha256": {
+    "benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e"
+  }
+}

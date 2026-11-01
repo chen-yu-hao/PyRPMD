@@ -1,0 +1,82 @@
+{
+  "PES_calls": 0,
+  "checks": [
+    {
+      "name": "coarea and physical metric",
+      "result": "The monotone positive-radius root has Jacobian rho^2/abs(dS/drho). The full Cartesian inverse-mass G includes carbon and all contributing H coordinates despite fixing carbon translation in the integration chart; the analytic cross term is (u_R dot u)/mu."
+    },
+    {
+      "name": "rotation quotient",
+      "result": "For labeled active and spectator H, d12b=8*pi^2*r^2*s^2 dr ds dv d3a d3b. The common 8*pi^2 cancels against the single entry chart; r^2*s^2 remains in both weights. Reflection of the two residual y coordinates is an importance-proposal component, not an unaccounted physical symmetry factor."
+    },
+    {
+      "name": "four maximum channels",
+      "result": "Each channel integrates its full labeled methane chart and retains only its active-max region. Summing four branch means partitions the transition surface except measure-zero ties. The entry sphere is integrated once. No additional factor4 or molecular permutation factor is justified."
+    },
+    {
+      "name": "finite entry normalization",
+      "result": "N0 uses the same six-atom PES at incoming coordinate CH4_COM+30*u. Its coarea/flux factor L^2/sqrt(2*pi*beta*mu) is correct. Replacing this with an isolated methane partition would require a separate finite-Rinf check."
+    },
+    {
+      "maximum_CH4_COM_radius_bohr": 1.1315894800858133,
+      "minimum_incoming_H_distance_bohr": 24.368410519914185,
+      "name": "entry connected component",
+      "result": "On the fixed methane-radius bounds the entry denominator is automatically positive.",
+      "upper_bound_all_channel_s1_bohr": -20.846343756322806
+    },
+    {
+      "name": "full support and densities",
+      "result": "All finite target chart coordinates lie in B, so q_z>=0.2/volume(B)>0. Untruncated reflected Gaussians plus uniform box are normalized on R9; invalid chart/target draws remain zero observations. The vMF kappa8 density and supplied inverse CDF normalize on the full sphere. Divide by each full mixture density, never the selected component."
+    },
+    {
+      "name": "root and failures",
+      "result": "S_h(0)<=0, inactive branch or failed domain predicate contributes zero without replacement. PES exceptions/nonfinite energies are explicit failures, not zero weights. Boundary/guard adjustments after observed energies would define a different experiment."
+    },
+    {
+      "name": "ledger and uncertainty",
+      "result": "8 seeds*(4 channels*8 latent TS draws*2 alpha targets+32 entry draws)=768 maximum evaluated P1 geometries. The same TS latent draw supports paired alpha comparisons; each independent seed keeps its own denominator and all channel means. Finite-sample ratios of means are not unbiased merely because each integral estimator is unbiased."
+    },
+    {
+      "name": "cost scope",
+      "result": "The 55 process-CPU-second admission stop, 60 process-CPU-second hard ceiling and 120-second wall supervisor must be implemented before evaluation. A timeout is incomplete/failed; there are no replacement seeds or selective completion."
+    },
+    {
+      "name": "pooled diagnostic ratio",
+      "result": "If a complete pilot reports an aggregate finite-domain ratio, first pool the equal-size independent seed contributions for each channel and the entry integral, then divide their pooled means. Do not average arithmetic or geometric seed ratios. Keep whole seed vectors together for descriptive paired uncertainty; an individual zero-denominator seed is unresolved, not silently dropped. No finite-sample accuracy or equivalence claim follows."
+    }
+  ],
+  "created_utc": "2026-11-01T19:08:06.747697+00:00",
+  "dynamics_steps": 0,
+  "execution_authorized_by_this_review": false,
+  "implementation_tested": false,
+  "inputs": [
+    {
+      "bytes": 10459,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+      "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+    },
+    {
+      "bytes": 10590,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/README.md",
+      "sha256": "cb2ded20a210b10a169d0c44b9b287a156723dda608989ee8fab703a5b1062f5"
+    }
+  ],
+  "limits_retained": [
+    "This is a truncated finite-domain mathematical integral, not a demonstrated molecular partition or an asymptotic reaction rate.",
+    "Uniform support does not establish adequate sampling of all labeled wells, reflected geometries or rare high-weight tails in 256 points per target.",
+    "Empirical ESS and maximum observed weight are efficiency diagnostics, not bounds on unseen tails or a precision certificate.",
+    "At most eight independent diagnostic seeds; individual points, channel labels and the two paired alpha evaluations are not independent study replications.",
+    "All outputs remain excluded from primary rate inference; no converted physical-rate or paper-agreement gate is enabled.",
+    "Quantum correction, transmission coefficient, dynamic bead convergence and domain/Rinf convergence remain untested."
+  ],
+  "minimum_pre_execution_tests": [
+    "Analytic synthetic integral checks for the chart Jacobian and four transition charts versus one entry chart.",
+    "Mixture normalization/full-density evaluation and retention of all invalid zero draws in unconditional sample counts.",
+    "Root uniqueness, positive-root absence, active-channel exclusion and deterministic handling of measure-zero ties.",
+    "Ledger count/fingerprint, all-eight-seed inclusion, resource interruption and explicit PES-failure records."
+  ],
+  "reviewer": "independent benchmarks agent; proposal author is distribution agent",
+  "schema": "pyrpmd.hch4-finite-domain-pilot-independent-design-review.v1",
+  "scope": "read-only algebra, proposal support, channel counting, normalization and execution-budget review; no PES call, sampling or dynamics",
+  "verdict": "No mathematical blocker found in the stated finite-domain cost/weight pilot. Implementation, synthetic validation, source freeze and parent adoption remain outstanding."
+}

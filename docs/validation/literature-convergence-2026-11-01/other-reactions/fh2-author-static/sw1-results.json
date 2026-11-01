@@ -1,0 +1,474 @@
+{
+  "schema": "pyrpmd.fh2.author-static-worker.v1",
+  "variant": "sw1",
+  "protocol_sha256": "f83b624bd6259bb9194f42071268f286848e60f2f86fae3e1a440e69f7422ea8",
+  "runner_sha256": "ca6ea27253cca9ef5e04f6a4c79703a5ba080879ff089d550a64c137e347aa43",
+  "library_sha256": "c5d8b5dc0e7b71fc30d5878cf0a7af92db976538aeeea0a93dffde90f3485c21",
+  "working_directory": "/workspace/scratch/a5e4820daedd/fh2-author-assets/static-check-v1/sw1",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "numpy": "2.5.4",
+  "geometries": [
+    {
+      "id": "author-equilateral",
+      "distances_bohr": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "energy_hartree": 0.03352633992079376,
+      "H_exchange_energy_error_hartree": 0.0,
+      "analytic_gradient_hartree_per_bohr": [
+        -0.03618804801286707,
+        -0.02860066076068493,
+        -0.03618804801286543
+      ],
+      "independent_energy_code_difference_hartree": 0.0,
+      "H_exchange_gradient_error": 1.6375789613221059e-15,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            -0.036188048898599945,
+            -0.028600660922084575,
+            -0.036188048880836376
+          ],
+          "max_absolute_error": 8.857328759326322e-10
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            -0.03618804761962302,
+            -0.028600661029776205,
+            -0.03618804818583676
+          ],
+          "max_absolute_error": 3.9324404843554817e-10
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            -0.036188044394425134,
+            -0.028600658313893135,
+            -0.036188048946339535
+          ],
+          "max_absolute_error": 3.618441934971628e-09
+        }
+      ]
+    },
+    {
+      "id": "author-asymmetric",
+      "distances_bohr": [
+        4.0,
+        1.5,
+        4.5
+      ],
+      "energy_hartree": 0.001335716322357787,
+      "H_exchange_energy_error_hartree": 2.7755575615628914e-17,
+      "analytic_gradient_hartree_per_bohr": [
+        -0.0012842726550812283,
+        0.029354646815841278,
+        0.00023480762534440827
+      ],
+      "independent_energy_code_difference_hartree": 6.938893903907228e-18,
+      "H_exchange_gradient_error": 1.4224732503009818e-16,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            -0.0012842726610992616,
+            0.029354645357873577,
+            0.0002348076257041587
+          ],
+          "max_absolute_error": 1.4579677014292525e-09
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            -0.0012842726642564584,
+            0.029354646797694058,
+            0.00023480762802868813
+          ],
+          "max_absolute_error": 1.8147219837949535e-11
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            -0.0012842726916650893,
+            0.029354646814000462,
+            0.00023480753279236932
+          ],
+          "max_absolute_error": 9.255203894942277e-11
+        }
+      ]
+    },
+    {
+      "id": "entrance-bent",
+      "distances_bohr": [
+        3.0,
+        1.4,
+        3.6
+      ],
+      "energy_hartree": 0.0029072764038682447,
+      "H_exchange_energy_error_hartree": 6.38378239159465e-16,
+      "analytic_gradient_hartree_per_bohr": [
+        -0.0026785833966574135,
+        -0.016659758600971977,
+        -0.0013971285571181477
+      ],
+      "independent_energy_code_difference_hartree": 0.0,
+      "H_exchange_gradient_error": 1.4432899320127035e-15,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            -0.002678583339993379,
+            -0.016659760760373565,
+            -0.001397128571827
+          ],
+          "max_absolute_error": 2.159401588097687e-09
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            -0.0026785833835696322,
+            -0.016659758664272495,
+            -0.0013971286662306512
+          ],
+          "max_absolute_error": 1.0911250353760893e-10
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            -0.00267858318164782,
+            -0.016659759516368666,
+            -0.001397127399882514
+          ],
+          "max_absolute_error": 1.1572356337086198e-09
+        }
+      ]
+    },
+    {
+      "id": "transition-bent",
+      "distances_bohr": [
+        2.8,
+        1.7,
+        3.5
+      ],
+      "energy_hartree": 0.0072041667006768895,
+      "H_exchange_energy_error_hartree": 1.3600232051658168e-15,
+      "analytic_gradient_hartree_per_bohr": [
+        0.012718111289492545,
+        0.03641169712005593,
+        -0.0009094932598789976
+      ],
+      "independent_energy_code_difference_hartree": 0.0,
+      "H_exchange_gradient_error": 2.4494295480792516e-15,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            0.012718111433926427,
+            0.036411696215654654,
+            -0.0009094932651096399
+          ],
+          "max_absolute_error": 9.044012760917042e-10
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            0.012718111246784456,
+            0.036411697111604635,
+            -0.0009094932435643742
+          ],
+          "max_absolute_error": 4.2708088801579613e-11
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            0.012718111314091729,
+            0.03641169800394639,
+            -0.0009094931925635041
+          ],
+          "max_absolute_error": 8.838904608232667e-10
+        }
+      ]
+    },
+    {
+      "id": "product-bent",
+      "distances_bohr": [
+        1.8,
+        2.5,
+        3.2
+      ],
+      "energy_hartree": -0.02851198313128056,
+      "H_exchange_energy_error_hartree": 1.4432899320127035e-15,
+      "analytic_gradient_hartree_per_bohr": [
+        0.02630458834771998,
+        -0.007112891093624424,
+        -0.027386293276136967
+      ],
+      "independent_energy_code_difference_hartree": 2.7755575615628914e-17,
+      "H_exchange_gradient_error": 2.8033131371785203e-15,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            0.026304584713199297,
+            -0.007112891146285327,
+            -0.02738629336224152
+          ],
+          "max_absolute_error": 3.6345206844146105e-09
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            0.026304588125747316,
+            -0.007112890947763572,
+            -0.027386293628695043
+          ],
+          "max_absolute_error": 3.525580764829339e-10
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            0.026304586966952037,
+            -0.007112891241278785,
+            -0.02738629253234981
+          ],
+          "max_absolute_error": 1.3807679444255427e-09
+        }
+      ]
+    },
+    {
+      "id": "entrance-distant",
+      "distances_bohr": [
+        5.0,
+        1.4,
+        5.6
+      ],
+      "energy_hartree": -0.000425993336058732,
+      "H_exchange_energy_error_hartree": 4.2934406030425976e-17,
+      "analytic_gradient_hartree_per_bohr": [
+        -0.00028088471047828245,
+        -0.0027210390060761038,
+        0.0003939294600405342
+      ],
+      "independent_energy_code_difference_hartree": 0.0,
+      "H_exchange_gradient_error": 5.551115123125783e-17,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            -0.00028088471382570895,
+            -0.002721040864598831,
+            0.0003939294591361834
+          ],
+          "max_absolute_error": 1.8585227272091553e-09
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            -0.00028088471123663417,
+            -0.0027210390228342425,
+            0.0003939294617501948
+          ],
+          "max_absolute_error": 1.67581387135185e-11
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            -0.0002808847130580938,
+            -0.0027210389857111605,
+            0.0003939294860363235
+          ],
+          "max_absolute_error": 2.5995789288552063e-11
+        }
+      ]
+    },
+    {
+      "id": "stretched-triangle",
+      "distances_bohr": [
+        2.4,
+        1.7,
+        3.8
+      ],
+      "energy_hartree": -0.0033358452620703763,
+      "H_exchange_energy_error_hartree": 1.0477729794899915e-15,
+      "analytic_gradient_hartree_per_bohr": [
+        0.03860955086660289,
+        0.006900224519850673,
+        -0.0026311509174367226
+      ],
+      "independent_energy_code_difference_hartree": 0.0,
+      "H_exchange_gradient_error": 2.8033131371785203e-15,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            0.03860955069184824,
+            0.006900223785549775,
+            -0.0026311509144713585
+          ],
+          "max_absolute_error": 7.34300897864415e-10
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            0.03860955107154451,
+            0.006900224373829199,
+            -0.0026311509835480473
+          ],
+          "max_absolute_error": 2.0494161923068077e-10
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            0.03860955044565628,
+            0.006900225016370776,
+            -0.0026311501241660373
+          ],
+          "max_absolute_error": 7.932706852509241e-10
+        }
+      ]
+    },
+    {
+      "id": "general-triangle",
+      "distances_bohr": [
+        3.5,
+        2.2,
+        4.0
+      ],
+      "energy_hartree": 0.04728487831363936,
+      "H_exchange_energy_error_hartree": 7.632783294297951e-17,
+      "analytic_gradient_hartree_per_bohr": [
+        0.013632803766686942,
+        0.06933316380998764,
+        0.005223537598769992
+      ],
+      "independent_energy_code_difference_hartree": 2.0816681711721685e-17,
+      "H_exchange_gradient_error": 1.6653345369377348e-16,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            0.013632803826102435,
+            0.06933316365850817,
+            0.005223537603710193
+          ],
+          "max_absolute_error": 1.5147946785809552e-10
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            0.013632803760182942,
+            0.06933316381921295,
+            0.00522353759413452
+          ],
+          "max_absolute_error": 9.225314956395891e-12
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            0.013632803920471392,
+            0.06933316381435572,
+            0.0052235375920528515
+          ],
+          "max_absolute_error": 1.5378445045177713e-10
+        }
+      ]
+    },
+    {
+      "id": "entry-asymptotic-diagnostic",
+      "distances_bohr": [
+        20.0,
+        1.4,
+        20.5
+      ],
+      "energy_hartree": -5.119913450919406e-10,
+      "H_exchange_energy_error_hartree": 1.7525889228467274e-22,
+      "analytic_gradient_hartree_per_bohr": [
+        1.8387381188041647e-09,
+        -4.729101712185207e-05,
+        1.2052829020496031e-09
+      ],
+      "independent_energy_code_difference_hartree": 0.0,
+      "H_exchange_gradient_error": 2.804142276554764e-22,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            1.8387381257818582e-09,
+            -4.729314777262642e-05,
+            1.2052828990223783e-09
+          ],
+          "max_absolute_error": 2.130650774349429e-09
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            1.8387381297585288e-09,
+            -4.729103890668131e-05,
+            1.2052829017008925e-09
+          ],
+          "max_absolute_error": 2.1784829237032292e-11
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            1.8387381301100807e-09,
+            -4.7291030580225206e-05,
+            1.2052829737741733e-09
+          ],
+          "max_absolute_error": 1.3458373135280099e-11
+        }
+      ]
+    },
+    {
+      "id": "product-asymptotic-diagnostic",
+      "distances_bohr": [
+        1.7,
+        20.0,
+        20.5
+      ],
+      "energy_hartree": -0.049532859150468754,
+      "H_exchange_energy_error_hartree": 6.938893903907228e-18,
+      "analytic_gradient_hartree_per_bohr": [
+        -0.022920523206708884,
+        -1.6162424158453722e-11,
+        -1.4691694430348294e-08
+      ],
+      "independent_energy_code_difference_hartree": 0.0,
+      "H_exchange_gradient_error": 6.815968247436948e-22,
+      "finite_differences": [
+        {
+          "step_bohr": 0.0001,
+          "gradient_hartree_per_bohr": [
+            -0.022920527872893892,
+            -1.609823385706477e-11,
+            -1.4691581284864696e-08
+          ],
+          "max_absolute_error": 4.6661850078288936e-09
+        },
+        {
+          "step_bohr": 1e-05,
+          "gradient_hartree_per_bohr": [
+            -0.022920523252978327,
+            -1.6653345369377348e-11,
+            -1.4691026173352382e-08
+          ],
+          "max_absolute_error": 4.6269443138013955e-11
+        },
+        {
+          "step_bohr": 1e-06,
+          "gradient_hartree_per_bohr": [
+            -0.022920523215508304,
+            -1.3877787807814457e-11,
+            -1.469657728847551e-08
+          ],
+          "max_absolute_error": 8.799419526361874e-12
+        }
+      ]
+    }
+  ],
+  "HSW_analytic_gradient_implemented": false,
+  "dynamics_steps": 0
+}

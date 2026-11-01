@@ -1,0 +1,107 @@
+{
+  "builds": 0,
+  "created_before_execution_utc": "2026-11-01T19:04:09.973753+00:00",
+  "driver_changes": [
+    "Include actually loaded materials_reference modules in audit",
+    "Separate evidence/temp directory",
+    "New receipt schema"
+  ],
+  "driver_parent": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/new-stage-compatibility/run_checks.py",
+    "sha256": "b474ee6546d5eadbaed3b7d02255a5cc683b513dacd695fb96bf5acdc9a4bb44"
+  },
+  "earlier_270_cases_rerun": false,
+  "exact_EAM4_library": {
+    "path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/libeam4_static.so",
+    "sha256": "b1673de4eb3d0673a49d22a9a6521095d0f2848338857ae10ee7adc9a97ab2f1"
+  },
+  "frozen_inventories": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/publishable-files.json",
+      "sha256": "cf670ffafe6cb2dec4ab2199dd63aa2ea6cb3659252c8ef1428e96174d1debab"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/publication-inventory.json",
+      "sha256": "09871c5277f29e681cba26d2c385740fe0e686c8f8a811ee1952f294b9631d06"
+    }
+  ],
+  "installs": 0,
+  "native_products": {
+    "py312": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+      }
+    },
+    "py313": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a"
+      }
+    },
+    "py314": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+      }
+    }
+  },
+  "per_interpreter": {
+    "py312": {
+      "expected": 45,
+      "files": [
+        "tests/test_materials_reference_eam4.py",
+        "tests/test_water_preparation_coordinator.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+    },
+    "py313": {
+      "expected": 45,
+      "files": [
+        "tests/test_materials_reference_eam4.py",
+        "tests/test_water_preparation_coordinator.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python"
+    },
+    "py314": {
+      "expected": 45,
+      "files": [
+        "tests/test_materials_reference_eam4.py",
+        "tests/test_water_preparation_coordinator.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python"
+    }
+  },
+  "previous_270_case_coverage": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/new-stage-compatibility/case-coverage.json",
+    "sha256": "b602cea79c038d01d3140fbf87f45a61120954c4c99a0ba141cefe7ba1d20f9b"
+  },
+  "schema": "pyrpmd.materials-preparation-integration-selection.v1",
+  "source_head": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_state_note": "Two independently frozen new bundles copied byte-for-byte; a documentation-only Ni campaign inventory update is explicit in guard deltas.",
+  "test_scope": "10 real single-bead EAM4 static cases and 35 orchestration fixtures, including bounded Python stub subprocess signals. No liquid or reaction dynamics are launched."
+}

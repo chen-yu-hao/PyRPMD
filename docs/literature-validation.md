@@ -10,12 +10,12 @@ sampling into validated rate constants.
 
 | Requested family | Available evidence and software | What prevents a reproduction claim |
 | --- | --- | --- |
-| H + CH₄ | Pinned RPMDrate PES-2008 source/build; 15.0143 kcal/mol barrier versus paper 15.01; force, native-map and actual umbrella/checkpoint checks | Converged thermal-rate sampling; the short P128 0.1 fs NVE probe fails its fixed energy gate |
-| OH + H₂ | Source-verified NN1/YZCL2 entries with corrected/uncorrected conventions separated | Matched surface and a full converged rate campaign |
-| F + H₂ | Original paper and erratum identified; missing numeric reference stays null | Extract corrected source data and match PES/electronic conventions |
-| H + H₂ | Pinned BKMP2; classical reference agrees within paper precision; initial P128 quantum rate +1.126% with whole nominal 95% interval inside the paper's ±5% band; equilibrium P128→256 and domain checks | Complete predeclared extra momentum sampling: κ half-width 3.272% exceeds 3.000%; coarse P64 fails equilibrium equivalence; independent umbrella precision and dynamic bead convergence remain separate |
+| H + CH₄ | Pinned RPMDrate PES-2008; 15.0143 kcal/mol barrier versus paper 15.01; force/native/umbrella checks and complete 768-draw reference pilot | Converged thermal-rate sampling; the short P128 0.1 fs NVE gate fails and the reference pilot has severe weight concentration and unresolved tails |
+| OH + H₂ | Author tables checked, with corrected/uncorrected conventions separated; 300 K values agree across the two papers | Exact NN1 surface/weights, unresolved 1000 K table disagreement, and a full converged rate campaign |
+| F + H₂ | Original paper and erratum identified; separately pinned author SW1/HSW sources pass bounded static energy, SW1 gradient and author-point checks | Corrected numeric reference stays null; match PES/electronic conventions and validate dynamics before rate sampling |
+| H + H₂ | Pinned BKMP2; classical reference and complete four-pair P128 quantum rate agree within paper precision; quantum rate +0.916%, whole nominal 95% interval inside the paper's ±5% band, all eleven fixed-P primary criteria pass | Supplementary parent-half equivalence still fails; coarse P64 fails equilibrium equivalence; independent umbrella precision and dynamic P256 convergence remain separate |
 | D/Mu + H₂; D + HMu | Primary-source index distinguishes the H₂ isotope series from deep-tunnelling muonium exchange; unresolved table versions stay unpromoted | Exact source-specific masses, implementation bytes, supplementary protocols and light-mass convergence |
-| H on Ni | Real EAM/ASE integration pilot with H/D and bead cases | Existing EAM/slab pilot is not the exact model of the 2012 Ni(100) study |
+| H on Ni | Pinned author-cited EAM4 Ni(100)/H routines; active gradients, invariances, fixed/mobile partitions and cutoff checks pass through a static adapter | Original diffusion targets and full paper protocol remain unresolved; no matched diffusion or mixed-bead dynamics has run; earlier NiAlH pilot remains a separate model |
 | H in Pd | Published bulk/nanocluster study identified | Match potential, loading, geometry and transport estimator; run the campaign |
 | q-TIP4P/F diffusion | Flexible force field, full PME, independent force checks, eight-seed OpenMM reference campaign running, completed velocity-recording check and prepared P32 reference jobs | Complete reference equilibrium/production gates, then quantum production and long-time comparison with PyRPMD's own transport workflow |
 | q-TIP4P/F IR | Bead dipoles and replayable RPMD spectrum diagnostic | Original paper uses PA-CMD; source curves, long liquid records and method-aware comparison are still required |
@@ -75,7 +75,30 @@ essential method distinction: a TRPMD spectrum may be compared scientifically
 with PA-CMD, but agreement is not a test that the same algorithm was reproduced.
 Rigidifying q-TIP4P/F changes the potential model and removes its stretch IR.
 
-## Classical reference and initial complete quantum comparison
+The running classical water cohort retains its original 100 ps preparation
+and 25 production segments for every seed. A separate all-eight continuation
+coordinator has passed 35 orchestration fixtures, including real process-signal
+and lease tests. It can extend every exact pre-production checkpoint by the
+same 400 ps after a complete original assessment and a recorded adoption.
+It has not yet been adopted or run. Neither this software gate nor a later
+preparation extension can replace failed equilibrium checks with a diffusion
+agreement claim.
+
+## Author-cited nickel model
+
+The [materials source audit](https://github.com/chen-yu-hao/PyRPMD/blob/feat/literature-convergence-20261101/docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/README.md)
+identifies Cambridge OPTIM's `nimetpot.f90`, whose header credits Yury
+Suleimanov and explicitly cites the 2012 Ni(100) paper. An isolated interface
+builds the unchanged single-bead routines and checks their original eV/Å
+conventions. Ten collected tests cover active-coordinate gradients, geometric
+invariances, minimum-image boundaries, cutoff behavior and fixed-Ni semantics.
+The maximum finite-difference discrepancy over the three tested spacings is
+3.83 × 10⁻⁸ eV/Å. This is static implementation evidence; the original paper's
+diffusion values, complete simulation protocol and original executable identity
+remain unverified. The public OPTIM slab example is recorded as an example,
+not substituted for those missing paper settings.
+
+## Classical reference and complete quantum comparison
 
 The 2026-11-01 follow-up obtains a complete classical 300 K H + H₂ rate of
 **1.54540638 × 10⁻¹⁸ cm³ molecule⁻¹ s⁻¹**, with an independent-seed 95% interval
@@ -99,6 +122,21 @@ with a nominal 95% interval [1.91141982, 2.03441839] × 10⁻¹⁶. This is
 band. The separately registered κ precision test still fails, with a 3.272%
 half-width against a 3.000% target, so every parent receives the predeclared
 additional momentum pairs. Earlier failed estimates remain intact.
+
+The complete registered four-pair extension now gives **κ=0.77121022**,
+95% interval [0.75333936, 0.78908108], and
+**k=1.96785637 × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹**, nominal 95% interval
+[1.93293861, 2.00340490] × 10⁻¹⁶. The paper difference is +0.916%;
+the κ half-width is 2.317%, below the unchanged 3.000% limit. All eleven
+fixed-P primary criteria pass. Independent reconstruction of all 800 raw
+chunks, followed by a second replay from actual archive extraction, agrees
+exactly. The supplementary parent-time-half equivalence check still fails:
+its interval [−0.02310, +0.03626] extends beyond the fixed ±0.03 margin.
+The separate P256 experiment has all eight parent chains complete, with
+independent verification and exact archive-extraction replay. Its excluded
+360-step native/Python/restart implementation check passes, and the complete
+eight-chain child campaign has started. Its full dynamic bead comparison is
+not yet complete.
 
 The independent eight-ladder umbrella estimate at 30,000 production sweeps
 is 11.583% above the paper and fails its 3% standard-error target. It advances

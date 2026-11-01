@@ -1,0 +1,11 @@
+{
+  "schema": "pyrpmd.p256-child-intermediate-gate.v1",
+  "recorded_utc": "2026-11-01T19:54:31.448949+00:00",
+  "passed": 29,
+  "reported_seconds": 5.01,
+  "source_sha256_observed_by_independent_review": "5ac28d058ae0cefa0a3abcdcbd2287f67e7f64f93c321d390101b59b4c791d2e",
+  "source_byte_snapshot_taken_at_this_intermediate_gate": false,
+  "subsequent_source_change": "Add new and original analyzer files to registered source identities",
+  "PES_calls": 0,
+  "physical_steps": 0
+}

@@ -1,0 +1,50 @@
+{
+  "CPU_affinity": [
+    0
+  ],
+  "child_system_CPU_seconds": 0.566512,
+  "child_user_CPU_seconds": 3.18597,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_p256_parent_campaign.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-pytest.xml"
+  ],
+  "created_utc": "2026-11-01T19:43:06.505015+00:00",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-pytest.log",
+      "sha256": "47d20905760d78a027fe5d2b7efb3ffc001ee1cf06488d262f17f368924b7387"
+    },
+    {
+      "bytes": 9424,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/final/synthetic-pytest.xml",
+      "sha256": "89151f4fad1f1c5b19c57ac6ddb269d1397d2ba73dd1764d907bb6e250484f44"
+    }
+  ],
+  "external_PES_evaluations": 0,
+  "failures": 0,
+  "passed": 60,
+  "real_dynamics_steps": 0,
+  "sampler_fixture": "Small analytic P4 producer; no external PES.",
+  "schema": "pyrpmd.h3.p256-parent-tool-synthetic-gate.v1",
+  "skipped": 0,
+  "source_sha256": {
+    "benchmarks/h3/p256_parent_campaign.py": "af6ce9c9dbb21fa689cafc8142ed079825f10391788bed231c39035d6ee5cbf6",
+    "tests/test_h3_p256_parent_campaign.py": "f60368a386f95cc8fa3c4bf4969794d70e3cb70b2c5108bd839ca004014baa42"
+  },
+  "source_unchanged": true,
+  "status": "passed",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "wall_seconds": 4.874627286000759,
+  "worker_fixture": "Inert subprocesses only. Added stop during first admission, guard crossing deadline, stop/exception while forming command; no late admissions and all unstarted identities retained."
+}

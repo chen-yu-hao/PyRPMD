@@ -1,0 +1,115 @@
+{
+  "ABI_links_modified": false,
+  "builds": 0,
+  "case_ids": [
+    "tests.test_materials_reference_eam4::test_suffix_excludes_only_the_front_wrapper",
+    "tests.test_materials_reference_eam4::test_altered_original_source_rejected",
+    "tests.test_materials_reference_eam4::test_predeclared_static_checks",
+    "tests.test_materials_reference_eam4::test_invalid_partition_rejected[-1]",
+    "tests.test_materials_reference_eam4::test_invalid_partition_rejected[9]",
+    "tests.test_materials_reference_eam4::test_invalid_partition_rejected[1.5]",
+    "tests.test_materials_reference_eam4::test_invalid_partition_rejected[True]",
+    "tests.test_materials_reference_eam4::test_coincident_periodic_images_rejected",
+    "tests.test_materials_reference_eam4::test_undersized_periodic_cell_rejected",
+    "tests.test_materials_reference_eam4::test_energy_only_does_not_return_invented_derivatives",
+    "tests.test_water_preparation_coordinator::test_register_captures_all_eight_exact_checkpoints_without_creating_engine",
+    "tests.test_water_preparation_coordinator::test_incomplete_or_changed_cohort_cannot_publish_registration[missing_seed]",
+    "tests.test_water_preparation_coordinator::test_incomplete_or_changed_cohort_cannot_publish_registration[incomplete_seed]",
+    "tests.test_water_preparation_coordinator::test_incomplete_or_changed_cohort_cannot_publish_registration[wrong_phase]",
+    "tests.test_water_preparation_coordinator::test_incomplete_or_changed_cohort_cannot_publish_registration[changed_dt]",
+    "tests.test_water_preparation_coordinator::test_incomplete_or_changed_cohort_cannot_publish_registration[wrong_assessment]",
+    "tests.test_water_preparation_coordinator::test_incomplete_or_changed_cohort_cannot_publish_registration[production_adoption]",
+    "tests.test_water_preparation_coordinator::test_changed_registered_input_prevents_any_launch[source]",
+    "tests.test_water_preparation_coordinator::test_changed_registered_input_prevents_any_launch[selected_checkpoint]",
+    "tests.test_water_preparation_coordinator::test_changed_registered_input_prevents_any_launch[model]",
+    "tests.test_water_preparation_coordinator::test_changed_registered_input_prevents_any_launch[config]",
+    "tests.test_water_preparation_coordinator::test_changed_registered_input_prevents_any_launch[proposal]",
+    "tests.test_water_preparation_coordinator::test_one_writer_leases_prevent_every_launch[coordinator.lock]",
+    "tests.test_water_preparation_coordinator::test_one_writer_leases_prevent_every_launch[seed-1108.lock]",
+    "tests.test_water_preparation_coordinator::test_all_fixed_seeds_run_once_with_inherited_leases_and_no_nve_command",
+    "tests.test_water_preparation_coordinator::test_partial_branch_resumes_without_config_or_new_seed",
+    "tests.test_water_preparation_coordinator::test_old_prefix_or_preparation_phase_failure_is_retained_before_dispatch[replace_prefix]",
+    "tests.test_water_preparation_coordinator::test_old_prefix_or_preparation_phase_failure_is_retained_before_dispatch[remove_branch]",
+    "tests.test_water_preparation_coordinator::test_old_prefix_or_preparation_phase_failure_is_retained_before_dispatch[NVE_phase]",
+    "tests.test_water_preparation_coordinator::test_stop_marker_performs_no_propagation",
+    "tests.test_water_preparation_coordinator::test_post_spawn_journal_failure_latches_and_drains_before_return",
+    "tests.test_water_preparation_coordinator::test_one_failed_child_drains_other_inflight_children_and_blocks_queue_successors",
+    "tests.test_water_preparation_coordinator::test_original_pool_must_release_every_legacy_and_seed_lease_before_registration[four-worker-control/coordinator.lock]",
+    "tests.test_water_preparation_coordinator::test_original_pool_must_release_every_legacy_and_seed_lease_before_registration[scheduler-odd.lock]",
+    "tests.test_water_preparation_coordinator::test_original_pool_must_release_every_legacy_and_seed_lease_before_registration[scheduler-even.lock]",
+    "tests.test_water_preparation_coordinator::test_original_pool_must_release_every_legacy_and_seed_lease_before_registration[four-worker-control/seed-1108.lock]",
+    "tests.test_water_preparation_coordinator::test_original_exit_proof_must_be_normal_and_the_final_journal_event[nonzero_exit]",
+    "tests.test_water_preparation_coordinator::test_original_exit_proof_must_be_normal_and_the_final_journal_event[pool_not_drained]",
+    "tests.test_water_preparation_coordinator::test_original_exit_proof_must_be_normal_and_the_final_journal_event[later_coordinator_started]",
+    "tests.test_water_preparation_coordinator::test_diffusion_or_pass_flags_never_select_registration_budget_or_seeds",
+    "tests.test_water_preparation_coordinator::test_validation_failure_is_latched_while_launch_lock_is_held",
+    "tests.test_water_preparation_coordinator::test_native_prefix_replacement_stops_without_changing_any_other_seed",
+    "tests.test_water_preparation_coordinator::test_real_coordinator_signal_stops_admission_and_drains_real_stub_child[2-False]",
+    "tests.test_water_preparation_coordinator::test_real_coordinator_signal_stops_admission_and_drains_real_stub_child[15-False]",
+    "tests.test_water_preparation_coordinator::test_real_coordinator_signal_stops_admission_and_drains_real_stub_child[15-True]"
+  ],
+  "child_import_command": [
+    "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/run_checks.py",
+    "--label",
+    "py313",
+    "--probe"
+  ],
+  "completed_utc": "2026-11-01T19:04:31.947423+00:00",
+  "dependency_changes": 0,
+  "distinct_case_ids": 45,
+  "driver_sha256": "9a5dbaf587638f638a1b9b387bf6a44477c402e13fb5e1eca7e4e74a3386fd5c",
+  "elapsed_seconds": 5.08992168000259,
+  "environment_distributions_unchanged": true,
+  "expected_distinct_cases": 45,
+  "guard_after": {
+    "all_unchanged": true,
+    "external_files": {
+      "changed": [],
+      "files_checked": 15
+    },
+    "integrated": {
+      "changed": [],
+      "files_checked": 832
+    },
+    "original": {
+      "changed": [],
+      "files_checked": 596
+    },
+    "owned_ABI_links": {
+      "changed": [],
+      "files_checked": 6
+    }
+  },
+  "guard_sha256": "1594a5422983206c80c5c4530542a770e8581f33070a3ca802493d35fbeb1535",
+  "junit_counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 45
+  },
+  "junit_sha256": "1f73351388eb91481d17dbbf07b5d0895061fb172b7567f018854c56cdaf8437",
+  "label": "py313",
+  "passed": true,
+  "pytest_arguments": [
+    "-ra",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_materials_reference_eam4.py",
+    "tests/test_water_preparation_coordinator.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/distribution-check/materials-preparation-compatibility/py313/pytest-tmp",
+    "--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/py313/pytest.xml"
+  ],
+  "pytest_exit_code": 0,
+  "requested_files": [
+    "tests/test_materials_reference_eam4.py",
+    "tests/test_water_preparation_coordinator.py"
+  ],
+  "schema": "pyrpmd.materials-preparation-python-method-gate.v1",
+  "selection_count_matches": true,
+  "selection_sha256": "deab42e688b3bdab8405adbed631aec6597ab1719e720659083895d036f86f01",
+  "source_head": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_state_note": "Two independently frozen new bundles copied byte-for-byte; a documentation-only Ni campaign inventory update is explicit in guard deltas.",
+  "started_utc": "2026-11-01T19:04:26.857497+00:00"
+}

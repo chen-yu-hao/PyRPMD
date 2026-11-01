@@ -1,0 +1,207 @@
+{
+  "archive_helper_source": {
+    "bytes": 22261,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py",
+    "sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb"
+  },
+  "external_authorization": {
+    "bytes": 1387,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/authorization.json",
+    "sha256": "ad0c4140ddb6cce7bf0eb0a8d499ab1a4a8ecdfa4d25656c1170dbf2bf83ba3e"
+  },
+  "historical_archive": {
+    "bytes": 83259073,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+    "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+  },
+  "historical_source_files": {
+    "825601": {
+      "checkpoint.npz": {
+        "bytes": 2397672,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/checkpoint.npz",
+        "sha256": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803"
+      },
+      "progress.json": {
+        "bytes": 303,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/progress.json",
+        "sha256": "8cbb4582de84ecbce750b5582a3e2f296edd02b0124b52e81bb0f223de8bbd06"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference-domain.json",
+        "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8704,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/report.json",
+        "sha256": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca"
+      },
+      "settings.json": {
+        "bytes": 2891,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/settings.json",
+        "sha256": "8f244e633b79b7dd988a1bd209126a7b71dbdadfbe9926ac57e9bac7a513b21d"
+      }
+    },
+    "825603": {
+      "checkpoint.npz": {
+        "bytes": 2397890,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/checkpoint.npz",
+        "sha256": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290"
+      },
+      "progress.json": {
+        "bytes": 304,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/progress.json",
+        "sha256": "7deea19760806c1d09f1893a4ca458a0fd6fbadeb699db1a65b5a44add8769b3"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference-domain.json",
+        "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8707,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/report.json",
+        "sha256": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85"
+      },
+      "settings.json": {
+        "bytes": 2891,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/settings.json",
+        "sha256": "1c175cb52de13430ac05e9b1cdb2409f3a5b24f63f98c8af0805ab977aec9713"
+      }
+    },
+    "825607": {
+      "checkpoint.npz": {
+        "bytes": 2397287,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/checkpoint.npz",
+        "sha256": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664"
+      },
+      "progress.json": {
+        "bytes": 305,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/progress.json",
+        "sha256": "a3d2f856060709c90ba1d523d2cf79f309b1582aca69aa4a45cc0a548a208b18"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference-domain.json",
+        "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8689,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/report.json",
+        "sha256": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513"
+      },
+      "settings.json": {
+        "bytes": 2891,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/settings.json",
+        "sha256": "59cb3d80a4dddd18caf26d856d09233eb2197f1492c76ef3ef6397c85c9517a5"
+      }
+    },
+    "825609": {
+      "checkpoint.npz": {
+        "bytes": 2397311,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/checkpoint.npz",
+        "sha256": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0"
+      },
+      "progress.json": {
+        "bytes": 304,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/progress.json",
+        "sha256": "50ff9eb21abbfe358341364fc9290e9ee51b9dbe23f214096dd89f9e7fb6315c"
+      },
+      "reference-domain.json": {
+        "bytes": 494,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference-domain.json",
+        "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8712,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/report.json",
+        "sha256": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c"
+      },
+      "settings.json": {
+        "bytes": 2891,
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/settings.json",
+        "sha256": "64050597dcbf5a313de032b0e5f91cc71b00b8fc0a0fba698424bb094cbf1a3f"
+      }
+    }
+  },
+  "replay_requires": "Matching review checkout and registered external historical/source/model identities; source code is supplied by Git, not this raw archive.",
+  "schema": "pyrpmd.h3.p256-parent-archive-prerequisites.v1",
+  "scientific_sources_and_inputs": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-dynamics-readiness/publishable-files.json": "409b71ea3c6dae5934472485d911c80e75dc633d693e6ed8df80701f6c3ae24d",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/proposal.json": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-gate.json": "9a770e711313f9c1faad56316aa58cc68ad6ce19e4e45d0d46cee2629ce47e4b",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/independent-review.json": "b0512985ac3312d58d3048e9d56071205cb416af2be54341b3ab0669cfdd3d68",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-case-assessment.json": "0084e36d84bfd0301c148d61597d216c96c95cfb6414dae1028b4fe6076e055b",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/checkpoint.npz": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/progress.json": "8cbb4582de84ecbce750b5582a3e2f296edd02b0124b52e81bb0f223de8bbd06",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference-domain.json": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/reference.json": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/report.json": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825601/settings.json": "8f244e633b79b7dd988a1bd209126a7b71dbdadfbe9926ac57e9bac7a513b21d",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/checkpoint.npz": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/progress.json": "7deea19760806c1d09f1893a4ca458a0fd6fbadeb699db1a65b5a44add8769b3",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference-domain.json": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/reference.json": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/report.json": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825603/settings.json": "1c175cb52de13430ac05e9b1cdb2409f3a5b24f63f98c8af0805ab977aec9713",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/checkpoint.npz": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/progress.json": "a3d2f856060709c90ba1d523d2cf79f309b1582aca69aa4a45cc0a548a208b18",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference-domain.json": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/reference.json": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/report.json": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825607/settings.json": "59cb3d80a4dddd18caf26d856d09233eb2197f1492c76ef3ef6397c85c9517a5",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/checkpoint.npz": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/progress.json": "50ff9eb21abbfe358341364fc9290e9ee51b9dbe23f214096dd89f9e7fb6315c",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference-domain.json": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/reference.json": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/report.json": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/p256-cutoff05/seed-825609/settings.json": "64050597dcbf5a313de032b0e5f91cc71b00b8fc0a0fba698424bb094cbf1a3f",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/controls/protocol.json": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-boundary-20261101T1944Z.json": "3c8db033aa727341a39b02e7e788fc878ee60f18e64880c728be74629e29d963",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-continuation-20261101T1945Z.json": "412b2e66d687caf9d0bb055f5dbb6e4e35c14e03f2aadfa804b3f0374b73d0c2",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-queue-a-completion.json": "593fac495245a38d4ef51f82b1315911d9b40020e256cfb6fb184203c0e40e1f",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-queue-b-completion.json": "0de7503098f9952cf54b9d1b3d6ec1b2f02d3ce731170856bbb4444be5a8f239",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.build.json": "5c1c6d092f667caaddc814f5f671b61d12c254a6abe83dc2ee939a5e3872622e",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/extra-pairs-stage-completion-exec.json": "d9fbcab8a9c944052923f2e3d12fb6d419174c3ab3de0e104d22c11506d0d287",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/authorization.json": "ad0c4140ddb6cce7bf0eb0a8d499ab1a4a8ecdfa4d25656c1170dbf2bf83ba3e",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/resource-decision.json": "861921045c499776109ff99c650028dab7b89a3500f05a90e7926fc700db43ba",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-admission-2-to-4.json": "94d0a3d49450db0571e59391cc78a9d84dfb016da257f7732c859d97a888ddd0"
+  },
+  "scope": "Current8P256 checkpoints and metadata only; no child trajectory or dynamic-bead claim.",
+  "source_and_model_files_included": false,
+  "verifier_source": {
+    "bytes": 35515,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+    "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+  }
+}

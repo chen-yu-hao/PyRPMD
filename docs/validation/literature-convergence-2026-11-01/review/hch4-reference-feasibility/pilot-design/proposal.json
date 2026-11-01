@@ -1,0 +1,286 @@
+{
+  "created_utc": "2026-11-01T19:06:09.668085+00:00",
+  "direction_proposal": {
+    "TS_axis": [
+      0.0,
+      0.0,
+      1.0
+    ],
+    "TS_density": "0.2/(4*pi)+0.8*8*exp(8*u_z)/(4*pi*sinh(8))",
+    "TS_uniform_fraction": 0.2,
+    "TS_von_Mises_Fisher_concentration": 8.0,
+    "TS_von_Mises_Fisher_fraction": 0.8,
+    "azimuth": "uniform on[0,2pi)",
+    "density_denominator": "full mixture density, not selected component",
+    "entry": "uniform on S2, density1/(4*pi)",
+    "vMF_cosine_inverse_CDF": "u_z=1+log(U+(1-U)*exp(-16))/8"
+  },
+  "estimator": {
+    "TS_branch_weight": "r^2*s^2 *rho_h^2 *sqrt(G_alpha/(2*pi*beta)) / (abs(dS_h/drho)*q_shape*q_direction) *exp(-beta*(V-Eoffset))*I_domain*I_active",
+    "TS_integral_estimate": "sum of4 separately sampled channel means; no extra factor4",
+    "common_energy_offset_hartree": -0.7,
+    "converted_physical_rate_or_paper_agreement_gate_in_report": false,
+    "empty_or_zero_integral": "unresolved, no epsilon substitution",
+    "entry_integral_estimate": "one full-sphere sample mean",
+    "entry_weight": "r^2*s^2 *L^2 / (sqrt(2*pi*beta*mu)*q_shape_entry*q_direction_entry) *exp(-beta*(V-Eoffset))*I_domain",
+    "evaluate_in_log_space": true,
+    "finite_domain_ratio": "sum_h(mean(w_h_alpha))/mean(w_entry)",
+    "missing_root_or_invalid_chart": "zero weight retained in fixed sample count",
+    "paper_values_used_by_estimator_or_adaptation": false,
+    "surface_pairing": "same latent shape/direction for0.999and1.007 within each TS channel",
+    "uncertainty_unit": "independent whole diagnostic seeds; preserve within-seed denominator and paired-surface covariance"
+  },
+  "excluded_from_all_primary_rates": true,
+  "external_model_identity": {
+    "absolute_path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+    "read_action": "hash only, never loaded or evaluated",
+    "redistributed": false,
+    "sha256": "aa33e4f55246d5b99839cd3b08702f1d091a6b3dddac1d6c97d34bb542d95aaf"
+  },
+  "feasibility_inventory": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/publication-inventory.json",
+    "sha256": "19932ab92f282c632227fbb473797963e221d785531127836ee55d75c21d27d3"
+  },
+  "fixed_ledger": {
+    "TS_channels_per_seed": 4,
+    "TS_latent_draws_per_channel_per_seed": 8,
+    "TS_targets_per_latent_draw": 2,
+    "actual_calls_may_be_lower_due_to_geometric_zeros": true,
+    "all_latent_draws_and_geometry_zero_reasons_materialized_hashed_before_PES": true,
+    "count_unit": "evaluated P1 geometries, not Python/Fortran batch call count",
+    "diagnostic_seeds": [
+      2026111201,
+      2026111202,
+      2026111203,
+      2026111204,
+      2026111205,
+      2026111206,
+      2026111207,
+      2026111208
+    ],
+    "entry_draws_per_seed": 32,
+    "maximum_evaluated_P1_geometries_per_seed": 96,
+    "maximum_evaluated_P1_geometries_total": 768,
+    "maximum_target_proposals_each": {
+      "alpha_0.999": 256,
+      "alpha_1.007": 256,
+      "entry": 256
+    },
+    "no_hidden_initialization_Hessian_or_extra_validation_PES_calls": true
+  },
+  "forbidden_in_this_pilot": [
+    "MD or umbrella launch",
+    "nuclear quantum correction",
+    "modification of frozen scientific sources or model",
+    "favorable-result tuning",
+    "deletion/replacement of zero/failed draws",
+    "physical rate or literature agreement claim"
+  ],
+  "implementation_exists": false,
+  "physics": {
+    "PES_and_gradient_coefficients_unchanged": true,
+    "Rinf_bohr": 30.0,
+    "alpha_values": [
+      0.999,
+      1.007
+    ],
+    "beads": 1,
+    "coordinate_constants": {
+      "beta_hartree_inverse": 1052.5834160132904,
+      "masses_electron_mass": [
+        1837.1526471479565,
+        21874.661835393123,
+        1837.1526471479565,
+        1837.1526471479565,
+        1837.1526471479565,
+        1837.1526471479565
+      ],
+      "reactant_flux_prefactor_au": 3.3450362638130775,
+      "reactant_flux_prefactor_cm3_molecule_s": 2.0492225575240845e-08,
+      "reference_breaking_bohr": 2.6272862155199657,
+      "reference_difference_bohr": -0.9779332364086217,
+      "reference_forming_bohr": 1.649352979111344,
+      "relative_reduced_mass_electron_mass": 1728.4892968817187
+    },
+    "electronic_weight": 1.0,
+    "extra_symmetry_multiplier": 1.0,
+    "masses_amu": [
+      1.00782503207,
+      12.0,
+      1.00782503207,
+      1.00782503207,
+      1.00782503207,
+      1.00782503207
+    ],
+    "temperature_K": 300.0
+  },
+  "provisional_target_domain": {
+    "PES_exception_or_nonfinite_energy_policy": "failed pilot; save offending geometry and attempted-call record; never silently zero/drop/replace",
+    "TS_additional_requirements": [
+      "positive root exists: S_h(0)>0",
+      "selected branch is active max among all4",
+      "xi_denominator_s0_minus_s1>0"
+    ],
+    "all_four_methane_CH_radii_bohr": [
+      1.4,
+      4.5
+    ],
+    "entry_additional_requirements": [
+      "incoming atom at CH4_COM +30*u",
+      "entry sphere appears exactly once, no active-channel filter"
+    ],
+    "entry_positive_denominator_proof": "|CH4COM| <=(4mH/MB)*4.5<1.133; all incoming-H distances exceed24.367 atR30; every s_h<-20.84, soD=-max(s_h)>0 automatically.",
+    "invalid_geometry_policy": "record zero weight and reason, retain original draw count, no replacement",
+    "minimum_all_six_atom_pair_distance_bohr": 0.7,
+    "no_post_energy_domain_adjustment": true,
+    "status": "finite mathematical pilot domain; unvalidated molecular/PES reliability or truncation error"
+  },
+  "purpose": "Bounded measurement of forward-PES cost and importance-weight concentration for a deliberately truncated finite-Rinf classical surface reference.",
+  "required_outputs": [
+    "actual module/source/library hashes",
+    "full latent/geometry/zero-reason ledger",
+    "attempted PES call records and energies/logweights",
+    "per-call and total CPU timing",
+    "actual evaluated-geometry count",
+    "per-seed/per-target and per-channel max normalized weight and empirical ESS",
+    "mixture/mirror/active-channel coverage",
+    "all8 independent seed summaries and paired surface differences",
+    "all failure/timeout receipts"
+  ],
+  "required_pre_execution_reviews": [
+    "independent measure/channel/support/normalization review",
+    "new implementation synthetic tests without PES",
+    "all sources and exact proposal frozen before first PES call",
+    "explicit parent adoption of this bounded execution"
+  ],
+  "resource_ceiling": {
+    "BLAS_OpenMP_threads": 1,
+    "hard_ceiling_reached_status": "incomplete or failed, never a partial scientific pass",
+    "maximum_CPUs": 1,
+    "maximum_PES_geometries": 768,
+    "outer_wall_seconds": 120,
+    "process_CPU_seconds": 60,
+    "soft_stop_before_new_call_CPU_seconds": 55
+  },
+  "schema": "pyrpmd.hch4-classical-reference-pilot-proposal.v1",
+  "scientific_rate_validated": false,
+  "shape_chart": {
+    "Jacobian_without_common_global_rotation": "r^2*s^2",
+    "active_H_labels": [
+      0,
+      2,
+      3,
+      4
+    ],
+    "body_frame": "active H on+z; selected spectator in xz plane with positive x",
+    "common_global_rotation_factor_cancelled": "8*pi^2",
+    "coordinates": [
+      "r",
+      "s",
+      "v",
+      "a_x",
+      "a_y",
+      "a_z",
+      "b_x",
+      "b_y",
+      "b_z"
+    ],
+    "remaining_vector_label_order": "increasing",
+    "spectator_rule": "smallest other methane H label"
+  },
+  "shape_proposal": {
+    "TS_diagonal_standard_deviations": [
+      0.15,
+      0.12,
+      0.12,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2
+    ],
+    "TS_positive_mean": "exact official geometry after swapping abstracted label3 with h, removing C translation and applying the specified proper-rotation gauge",
+    "box_bounds": [
+      [
+        1.4,
+        4.5
+      ],
+      [
+        1.4,
+        4.5
+      ],
+      [
+        -1.0,
+        1.0
+      ],
+      [
+        -4.5,
+        4.5
+      ],
+      [
+        -4.5,
+        4.5
+      ],
+      [
+        -4.5,
+        4.5
+      ],
+      [
+        -4.5,
+        4.5
+      ],
+      [
+        -4.5,
+        4.5
+      ],
+      [
+        -4.5,
+        4.5
+      ]
+    ],
+    "box_volume_formula": "(4.5-1.4)^2 *2 *9^6",
+    "component_weights": {
+      "negative_mirror_gaussian": 0.4,
+      "positive_mirror_gaussian": 0.4,
+      "uniform_box": 0.2
+    },
+    "density_denominator": "full mixture density regardless of sampled component",
+    "entry_diagonal_standard_deviations": [
+      0.12,
+      0.12,
+      0.12,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2,
+      0.2
+    ],
+    "entry_positive_mean": "regular tetrahedron radius1.0890angstrom in fixed h3,j0 chart; v=-1/3, other H azimuths +/-2pi/3",
+    "mirror_operation": "negate a_y and b_y mean coordinates only",
+    "new_PES_calls_for_reference_proposal_construction": 0,
+    "normalized_on": "R^9 (Gaussians untruncated; invalid target draws have zero weight)",
+    "support_proof": "all target coordinates lie within B; q_z >=0.2/volume(B)>0 there"
+  },
+  "source_sha256": {
+    "benchmarks/hch4/geometries.json": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+    "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+    "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+    "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+    "benchmarks/hch4/source.json": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+  },
+  "status": "draft_for_independent_measure_support_review_not_adopted_not_executed",
+  "unresolved_after_a_successful_cost_pilot": [
+    "physical molecular-domain and PES reliability",
+    "finite-Rinf asymptotic convergence",
+    "unseen importance-weight tails and estimator precision",
+    "absolute/rate normalization validated by an independent numerical oracle",
+    "quantum reactant and surface convergence",
+    "transmission coefficient and real dynamics"
+  ]
+}

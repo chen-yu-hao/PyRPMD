@@ -1,0 +1,31 @@
+{
+  "schema": "pyrpmd.h3.p256-excluded-calibration-root-adoption.v1",
+  "created_utc": "2026-11-01 20:18:09 UTC",
+  "proposal_sha256": "d33f221b2ce8e869b9f7c3577021726bba0ac25b23f0deac3c08e30c5d47c196",
+  "adopted": true,
+  "scope": "Excluded native/Python-loop and exact native restart check only; no primary rate data or selection.",
+  "required_before_physical_execution": "Minimal additive driver and meaningful bounded contract fixtures must pass independent providers review; record exact final source identity before launch.",
+  "execution_owner": "benchmarks agent; original frozen runtime",
+  "resources": {
+    "CPU_affinity": [
+      6
+    ],
+    "workers": 1,
+    "threads": 1,
+    "whole_process_hard_CPU_seconds": 60,
+    "admission_CPU_seconds": 55,
+    "whole_process_wall_seconds": 120,
+    "other_long_workers": {
+      "umbrella": 4,
+      "original_water": 2,
+      "P256_parents": 0,
+      "P256_children": 0
+    },
+    "project_active_long_workers_including_calibration_max": 7
+  },
+  "parent_normal_exit_receipt_sha256": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4",
+  "same_parent_momentum_steps_and_tolerances_on_failure": true,
+  "no_frozen_source_edits": true,
+  "no_primary_child_launch_by_this_adoption": true,
+  "task_basis": "User requested continuation of detailed PyRPMD testing and literature comparisons."
+}

@@ -1,0 +1,41 @@
+{
+  "CPU_seconds": 3.3995100000000003,
+  "PES_evaluations": 0,
+  "actual_extraction_root": "/workspace/scratch/a5e4820daedd/h3-p256-parent-archive-roundtrip-2026-11-01",
+  "all_eight_extracted_parents_reverified": true,
+  "all_members_extracted_and_hashed": true,
+  "archive": {
+    "bytes": 47557304,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-p256-parents-2026-11-01.tar.gz",
+    "sha256": "719a52f69e778ce5e9c25c10f438e3f862e8006be49dba8b09954ccd32eb3d30"
+  },
+  "created_utc": "2026-11-01T20:10:44.579926+00:00",
+  "exact_original_and_extracted_results": true,
+  "frozen_verifier": {
+    "bytes": 35515,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+    "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+  },
+  "historical_array_comparisons_per_pass": 64,
+  "immutability_scope": "Exclusive creation, no overwrite, frozen bytes/SHA/member inventory; no durable filesystem write-protection claim.",
+  "independent_parent_chains": 8,
+  "member_count": 90,
+  "member_inventory": {
+    "bytes": 36739,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-p256-parents-2026-11-01.members.json",
+    "sha256": "6364e84fa93788f4dbca4c0df9cddcc9cef4d9cb7a9e478aa073afc4c186e889"
+  },
+  "new_dynamics_steps": 0,
+  "original_inputs_unchanged": true,
+  "parent_configurations": 1600,
+  "peak_RSS_KiB": 55920,
+  "raw_checkpoint_count": 8,
+  "schema": "pyrpmd.h3.p256-parent-archive-verification.v1",
+  "source": {
+    "bytes": 22261,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py",
+    "sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb"
+  },
+  "upload_attempted": false,
+  "wall_seconds": 3.5294622630026424
+}

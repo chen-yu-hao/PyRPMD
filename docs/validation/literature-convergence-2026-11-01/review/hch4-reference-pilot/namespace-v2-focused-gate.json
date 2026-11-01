@@ -1,0 +1,57 @@
+{
+  "all_scientific_geometry_density_rng_ledger_and_weight_function_bodies_unchanged": true,
+  "cases": [
+    "test_CPU_admission_stop_is_incomplete_with_no_partial_normalization",
+    "test_wall_supervisor_retains_ledger_and_refuses_second_attempt",
+    "test_CPU_hard_limit_is_installed_in_an_isolated_fixture_process",
+    "test_private_worker_requires_supervisor_identity_and_cannot_repeat",
+    "test_aggregate_CPU_allocation_charges_both_prior_process_caps",
+    "test_namespace_PID_reuse_allows_distinct_interpreters_and_enforces_CPU_caps",
+    "test_same_interpreter_cannot_claim_separate_preparation_CPU_budget",
+    "test_interpreter_identity_uses_no_numpy_scientific_random_draw"
+  ],
+  "changed_function_bodies": [
+    "prepare",
+    "load_registration",
+    "claim_worker",
+    "worker",
+    "supervise"
+  ],
+  "created_utc": "2026-11-01T19:34:28.060723+00:00",
+  "deselected_unchanged_cases": 22,
+  "dynamics_steps": 0,
+  "eligible_geometries": 641,
+  "evidence": {
+    "attempt-1-preflight-failure/failure.json": "8fc3682582988397d6090bf1d96a8548b20ab7c56a92c23a0184079003a4cd2e",
+    "implementation-review.json": "be2114d8b811d0f2c228b9bee9ec1db612578b7094236d68a29511e7b6f0c131",
+    "namespace-v2-focused-pytest.log": "d2acc6ff0044b60d07b93ec5678b6a5fca56d4bf4ef73d48f24fa56e13a3a363",
+    "namespace-v2-focused-pytest.xml": "bb1be783d94c71362ce6137206311b411bd3dda2d8e6e51b9dd0bb5f42be4683",
+    "synthetic-gate.json": "b9d3a591029e8d883019bdfaaa692976b5a06272a669a132c8dd6543bd46918d"
+  },
+  "external_PES_evaluations": 0,
+  "failed": 0,
+  "ledger_bytes_identical_to_failed_zero_PES_attempt": true,
+  "ledger_sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7",
+  "new_attempt_requires_new_directory": true,
+  "old_attempt_retained": true,
+  "passed": 8,
+  "process_identity": "uuid4 from OS entropy, independent of NumPy scientific random state; cross-namespace PID equality is allowed for distinct invocation tokens; same-token preparation/supervisor refused",
+  "protected_source_and_model_files_unchanged": 148,
+  "reported_wall_seconds": 2.57,
+  "resource_identity": "Same-namespace worker PID/ppid and token/environment binding remain required. Budget records requested limits; runtime/final receipt records installed limits. Caps and physics unchanged.",
+  "runtime": {
+    "numpy": "2.5.4",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "python_version": "3.12.14",
+    "scipy": "1.18.1"
+  },
+  "schema": "pyrpmd.hch4-reference-pilot-namespace-revision-gate.v1",
+  "skipped": 0,
+  "source_sha256": {
+    "benchmarks/hch4/reference_pilot.py": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a",
+    "tests/test_hch4_reference_pilot.py": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e"
+  },
+  "status": "passed",
+  "target_draws": 768
+}

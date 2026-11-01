@@ -1,0 +1,54 @@
+{
+  "created_utc": "2026-11-01T19:52:04.861560+00:00",
+  "external_raw_arrays_included": false,
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 2896,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/README.md",
+      "sha256": "111dc92f78916e62c4fd6c0e4b80c249a61b84fcd027f0064aeaa8b0207801de"
+    },
+    {
+      "bytes": 6131,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/independent-review.json",
+      "sha256": "f34eafd195113d0b191ce6b31c0ac9d73b6967a27f5d4aca431775ef6125e20f"
+    },
+    {
+      "bytes": 252883,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/input-file-identities.json",
+      "sha256": "b01806561038cce0f01210f4291ff991ab1a011b1c069da41eacc500dc15feb8"
+    },
+    {
+      "bytes": 13307,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/parent-identities.json",
+      "sha256": "f8045f8fb2737f3c1b8e80cf6ea2387ffb0dd4c95f60326280380ec519d85079"
+    },
+    {
+      "bytes": 815523,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/raw-chunk-identities.json",
+      "sha256": "a6b13e8ac332c8b9416fa71efa3e05e621adaf06b25d80e4e2a8ead199251081"
+    },
+    {
+      "bytes": 26905,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original/raw-replay.json",
+      "sha256": "1683e97165994719cd7ed48e61c23f57f7312ee3e0a6562d135d6c05ac0a3823"
+    },
+    {
+      "bytes": 893,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original-execution.json",
+      "sha256": "30f0bbc72032e8dd65e7552f9b0d731a4c8985bd57fec1816ecf862d7cabf528"
+    },
+    {
+      "bytes": 1726,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original-replay.log",
+      "sha256": "2493147149e3eead594a6d90e736663ab0da22ca1fd24058eebeec9f273dd892"
+    },
+    {
+      "bytes": 30386,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/replay_complete.py",
+      "sha256": "431be7bdd8e23bb95510539c8f3d70110749cd4fec284d6509a40a7a20649b84"
+    }
+  ],
+  "schema": "pyrpmd.h3.four-pair-independent-review-inventory.v1",
+  "total_bytes": 1150650
+}

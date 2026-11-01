@@ -1,0 +1,51 @@
+{
+  "created_utc": "2026-11-01T20:22:19.538171+00:00",
+  "file_count": 8,
+  "files": [
+    {
+      "bytes": 10269,
+      "path": "benchmarks/water/plot_production_stability.py",
+      "sha256": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56"
+    },
+    {
+      "bytes": 5242,
+      "path": "tests/test_water_production_stability.py",
+      "sha256": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef"
+    },
+    {
+      "bytes": 3440,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-preregistration.json",
+      "sha256": "ac930daf5280da0bb1fb79fc17d51a4d2d0a83fa5db5bd8c139758ab885d1065"
+    },
+    {
+      "bytes": 3247,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/README.md",
+      "sha256": "e666fef3d5355b65b42b860cc9e821447e99e0abf7219e8f915651e821af25bf"
+    },
+    {
+      "bytes": 2191,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/gate.json",
+      "sha256": "e638725159f9218cc2eba7923a8f39e511305589ad9341f79c03db1c1aaa8598"
+    },
+    {
+      "bytes": 98,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/pytest.log",
+      "sha256": "adf3d23b861cfeb41fbff80be9b5cbcdbdce607d21afad2deafc16742dda7c6f"
+    },
+    {
+      "bytes": 1118,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/pytest.xml",
+      "sha256": "e626ed3d23e2188c530f2ae7db388515cb3df92f1efcc5615a265d3397971b9e"
+    },
+    {
+      "bytes": 1499,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/independent-review.json",
+      "sha256": "3f6ff491daa0d1280f3c09b785ddee23d82316a31f95e34c9c9b28b6e5be9d9c"
+    }
+  ],
+  "physical_or_core_sources_changed": false,
+  "schema": "pyrpmd.water-production-stability-publication-inventory.v1",
+  "scope": "Stable additional diagnostic source, sealed definition and excluded synthetic validation only; no live data or raw trajectories.",
+  "source_frozen": true,
+  "total_bytes": 27104
+}

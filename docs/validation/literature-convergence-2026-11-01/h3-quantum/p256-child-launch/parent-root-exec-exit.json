@@ -1,0 +1,22 @@
+{
+  "schema": "pyrpmd.p256-parent.root-observed-exec-exit.v1",
+  "created_utc": "2026-11-01T20:07:50.016198+00:00",
+  "observed_utc": "2026-11-01 20:07:49 UTC",
+  "exec_session_id": 97158,
+  "exit_code": 0,
+  "all_workers_drained": true,
+  "complete_registered_parent_chains": 8,
+  "parents_complete_sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120",
+  "registration_sha256": "7775d890c3e75a063bf56b50d55c13da9e0b8d5f977276b5e28b4636ffe85c84",
+  "root_completion_sha256": "8bdb1ee1e4450a31ad179654809940012e286aa3edb56f8f16d827dc80f9b9b0",
+  "actual_tool_observation_sha256": "bc6e51b42c2426c914f40e306f767d16839e6f9b342414926a44df5e49ff4f0d",
+  "tool_result": {
+    "chunk_id": "61c1f7",
+    "wall_time_seconds": 2.3109e-05,
+    "exit_code": 0,
+    "original_token_count": 20,
+    "output": "{\"exit_code\": 0, \"wall_seconds\": 1080.7575109340032, \"sources_unchanged\": true}\n"
+  },
+  "driver_sha256": "227ee3cbe0a3b22ed1d6550985bbf57d36f77f07c6daf178e05ec35995214731",
+  "child_dynamics_launched_by_this_receipt": false
+}

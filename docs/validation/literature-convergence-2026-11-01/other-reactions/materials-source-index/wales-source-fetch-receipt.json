@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "purpose": "Bounded public source identity check only; no build, simulation, redistribution or paper-model equivalence claim",
+  "url": "https://www-wales.ch.cam.ac.uk/svn.tar.bz2",
+  "max_download_bytes": 134217728,
+  "max_elapsed_seconds": 55,
+  "retrieved_utc": "2026-11-01T18:46:17.248808+00:00",
+  "method": "GET",
+  "automatic_retry": false,
+  "http_status": 200,
+  "final_url": "https://www-wales.ch.cam.ac.uk/svn.tar.bz2",
+  "content_type": "application/x-bzip2",
+  "content_length_header": "122758544",
+  "status": "downloaded_complete",
+  "bytes": 122758544,
+  "sha256": "8463fbbbab3f613c1daa021df99cf89791be3ca61c7f3b9c2f5307e484bf8029",
+  "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-public-svn.tar.bz2",
+  "elapsed_seconds": 5.620760382997105
+}

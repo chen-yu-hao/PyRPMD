@@ -1,0 +1,120 @@
+{
+  "created_utc": "2026-11-01T19:41:40.104430+00:00",
+  "excluded": "No third-party model/source, binary or scientific raw data. Production output root does not exist.",
+  "file_count": 22,
+  "files": [
+    {
+      "bytes": 34562,
+      "path": "benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "a84b3a77ad86e7bec2285ce592ee096410fe202b9c4f04804733fb0cd1520923"
+    },
+    {
+      "bytes": 19942,
+      "path": "tests/test_h3_p256_parent_campaign.py",
+      "sha256": "aa8266bfb11fa7e836e3cf27c726be0cb6325b254c8116e042bd93944aa66183"
+    },
+    {
+      "bytes": 8548,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/README.md",
+      "sha256": "13490799970e5005bf32de8919f111588f3be6a80c011c5e500ec02489a6ca93"
+    },
+    {
+      "bytes": 34396,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/p256_parent_campaign.py",
+      "sha256": "ff41236e1dcfcb0ed2de36b885ae09b3ca70d3a06cd8bc54c267b710f9310714"
+    },
+    {
+      "bytes": 1412,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/preflight-receipt.json",
+      "sha256": "6b2e2f15e13b610e2df83c1d54736af06b9ea8c2d3b0a4d4aa786f889f489826"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 1910,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-gate.json",
+      "sha256": "6f1248f1846fcb772c60bd67c15d97a4318e45094271bb4b3708fedc272dced1"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-pytest.log",
+      "sha256": "aa33b1d22a81311a7d85e9aff8bc9b7bfe4c69ee31d8d28a5490f2ee22fd0a00"
+    },
+    {
+      "bytes": 8872,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/synthetic-pytest.xml",
+      "sha256": "e0384473b0123c075d6cee469f823a31f3b10407ad42768c87fdb48bce701c96"
+    },
+    {
+      "bytes": 19783,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/before-finalization-reserve/test_h3_p256_parent_campaign.py",
+      "sha256": "67a77b73cbc40e8dc2f8cafc47ef310766a9dad8cdc67a4b5766a2417ba0c6e9"
+    },
+    {
+      "bytes": 2867,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/execution-authorization.schema.json",
+      "sha256": "d940f99cfdfdf8ed17ffb4b669104401692e2deb3f21316a1e7a27777b49f7c1"
+    },
+    {
+      "bytes": 1418,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/preflight-receipt.json",
+      "sha256": "2bc39d33d456280c6825cb4a91e93be1523a21e9d3ffbc3abb60f7146eebd369"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 2072,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-gate.json",
+      "sha256": "7cdeff4154d60d4dfb5ff392ef027509253469a5d968ef1197d20a87c2aab500"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-pytest.log",
+      "sha256": "db4371c69a0dcb9c95913dd4982abea57146ef6bb31403a6a4b5bca1a03bc3a4"
+    },
+    {
+      "bytes": 8872,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/final/synthetic-pytest.xml",
+      "sha256": "1f5a80a3c1f1fc0c97e64d6683cdd2a06dd19e98f4ca3ab6087ac5c9f2e0809d"
+    },
+    {
+      "bytes": 5339,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/parent-output-contract.json",
+      "sha256": "9368115cbc2f97d4187d9149d5628c23b9121250c00eeb9afa9fad505cf6057c"
+    },
+    {
+      "bytes": 1412,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/preflight-receipt.json",
+      "sha256": "6b2e2f15e13b610e2df83c1d54736af06b9ea8c2d3b0a4d4aa786f889f489826"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 1910,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-gate.json",
+      "sha256": "6f1248f1846fcb772c60bd67c15d97a4318e45094271bb4b3708fedc272dced1"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.log",
+      "sha256": "aa33b1d22a81311a7d85e9aff8bc9b7bfe4c69ee31d8d28a5490f2ee22fd0a00"
+    },
+    {
+      "bytes": 8872,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.xml",
+      "sha256": "e0384473b0123c075d6cee469f823a31f3b10407ad42768c87fdb48bce701c96"
+    }
+  ],
+  "schema": "pyrpmd.h3.p256-parent-tool-publishable-inventory.v1",
+  "scope": "New scheduling/audit tool, standard tests, compact documentation and bounded zero-external-PES verification. No parent campaign launched.",
+  "total_bytes": 163465
+}

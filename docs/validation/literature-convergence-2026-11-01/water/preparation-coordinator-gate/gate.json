@@ -1,0 +1,90 @@
+{
+  "created_utc": "2026-11-01T18:57:14.749148+00:00",
+  "final_distinct_tests": 35,
+  "frozen_original_sources_and_binaries_verified_unchanged": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/checkpoint_validation.py": "1fe0d08d779671e27c4da0a7c2918e0d3397d3bbfe32d38587bba20a6bb04a06",
+    "benchmarks/water/compact_split.py": "7fbb62470381ea35706d41e077f22fef9751ae7db81092fb6a38e2099bc7abb4",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_optimizations.py": "59cc10baf566c79e3bb8769f9851d45b1b954e224fd5e3f9d103ca810c13e4df",
+    "benchmarks/water/native_quantum.py": "6ffe98313abfc0b74e4e63531a41e5dcbb830766537b45b934b1c0d614950715",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/native_validation.py": "3a85a0c5ed5cfbac76225db15c1a74436e30552c8acc10e144e04a9e65e6e759",
+    "benchmarks/water/plot_native_progress.py": "8cc0148b1d3dbc1c0f0546ed810be37675a249c62f038c4669aabda5c2024981",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/split_reference.py": "b60a908b479421ba07e5da9ced92e8cc25374007eca19428bbaba1799cf6c94f",
+    "benchmarks/water/validate_native_optimizations.py": "7532a0bf2449c9a861fc9817f75d8f21c766795eb36eb23163453c284512bdcb",
+    "benchmarks/water/validate_split.py": "b3026ff4725ccf88ae358ca333e3b3bdb3f0979c60682bbbfc5106353987ef83",
+    "benchmarks/water/velocity_cadence.py": "bac1e70a6e16e9bfb3164379b800086d82abdb6a509d4a5e9fee7c6c1556888d",
+    "src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220",
+    "src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so": "ff1e35344a9dd808ac94b7d1312a4a6718708a2af73cd4a527096979f3b1e61e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "tests/test_water_chain_statistics.py": "98fb3037d417e359ef13fb737b0c3ac5993a635ec42b81f92d9d7bec6ecfd0f9",
+    "tests/test_water_compact_split.py": "da981484ca1da34a89d154cb7483c033c2cd5d02dda350cf0d4b2e4f96004658",
+    "tests/test_water_native_optimizations.py": "ad72e3b91552df66dcda45b073217461a2767f3158a4996641bcc59417472390",
+    "tests/test_water_native_quantum.py": "3d7e7fe171c0cb2d3910d49e92ef95953da59fe9d744ca96b49284b07323ddb7",
+    "tests/test_water_native_reference.py": "6ed99f89b56953f02c02948091a971e9df52e907b27b8fbb053450e92ed7cd3b",
+    "tests/test_water_native_schedule.py": "60c58ca08da35a4c20539d8f831a7c5d15ad15966ecd9b503222c323ea7f55c2",
+    "tests/test_water_split_reference.py": "9df1e11aa408fc295f128501977431367ec8adde35354329d769f01f88caeacb",
+    "tests/test_water_velocity_cadence.py": "b99704290e44142bd7a07e8f54e8a7f09dc0a4cab2fb5ed9fc86dca1feac5fed"
+  },
+  "gates": [
+    {
+      "errors": 0,
+      "failures": 0,
+      "junit": "initial-22-pytest.xml",
+      "seconds": 2.204,
+      "sha256": "fd41830e5382bf243baff22e5bf5d3a8d599da8548e97cd42a8c6c981cc24347",
+      "skipped": 0,
+      "source_test_sha256": {
+        "benchmarks/water/native_preparation_coordinator.py": "d4a51a226690ace0ec198f70bfeea2e07d28c17a3d74a1aad9dbf82a3b556b47",
+        "tests/test_water_preparation_coordinator.py": "ed72fc40a8d72d18a6255f634afed6bf23bc0e067b80eddd17b4e6346c4ad677"
+      },
+      "tests": 22
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "junit": "original-exit-proof-32-pytest.xml",
+      "seconds": 3.245,
+      "sha256": "3f6d47e61f6aed94f03c4c04d0e57c05b0d6feac3a921139fd05a09003a0dd84",
+      "skipped": 0,
+      "source_test_sha256": {
+        "benchmarks/water/native_preparation_coordinator.py": "cd615c70a2bf93209460a297411fcde8326110ecdfe11d601ed2227cb2ea2179",
+        "tests/test_water_preparation_coordinator.py": "4b33698ae65c7d910763a68b357ba4c57d3de407c9815abb5b30b3d02f00c7ee"
+      },
+      "tests": 32
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "junit": "signal-drain-35-pytest.xml",
+      "seconds": 3.831,
+      "sha256": "be51bc762ce287c8506b7106684b5913b6fcc337d8ed3b17f2134c8a50fabd27",
+      "skipped": 0,
+      "source_test_sha256": {
+        "benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+        "tests/test_water_preparation_coordinator.py": "4443d33480628f5e1940929e93272b378fb1a280c922c14adb2ba113a4f88441"
+      },
+      "tests": 35
+    }
+  ],
+  "live_adoption_or_registration_created": false,
+  "long_extension_started": false,
+  "no_OpenMM_Context_or_MD_in_orchestration_fixtures": true,
+  "previous_preparation_runner_inventory_verified_unchanged": "7b186295269b666de793252b52f91e7d8a51db3017978663be157b1889c86863",
+  "schema": "pyrpmd.water-preparation-coordinator-review-gate.v1",
+  "source_and_test_sha256": {
+    "benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "tests/test_water_preparation_coordinator.py": "4443d33480628f5e1940929e93272b378fb1a280c922c14adb2ba113a4f88441"
+  },
+  "source_capture_qualification": "Initial22 had before/after source hash instrumentation; later gate hashes identify the preserved post-gate source snapshots. No before/after instrumentation is claimed for the latter two.",
+  "successive_gates_are_not_additive": true,
+  "test_command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENMM_CPU_THREADS=1 python -m pytest -q tests/test_water_preparation_coordinator.py",
+  "test_history": [
+    "22 passing fixture cases before the additional original-pool handoff requirement.",
+    "32 passing fixture cases after original normal-exit proof and all-original lease release checks.",
+    "35 passing fixture cases after independent signal/drain review; this is the final source."
+  ]
+}

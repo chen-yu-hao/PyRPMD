@@ -1,0 +1,135 @@
+{
+  "branches": [
+    {
+      "checkpoint_stride_steps": 4000,
+      "label": "dt025",
+      "record_stride_steps": 20,
+      "steps": 16000,
+      "timestep_fs": 0.25
+    },
+    {
+      "checkpoint_stride_steps": 8000,
+      "label": "dt0125",
+      "record_stride_steps": 40,
+      "steps": 32000,
+      "timestep_fs": 0.125
+    }
+  ],
+  "energy_limits": {
+    "energy_definition": "coincident canonical kinetic energy plus physical potential; exclude no terms from the fixed Hamiltonian",
+    "maximum_abs_linear_energy_drift_kcal_mol_water_ps": 0.001,
+    "maximum_abs_sampled_energy_change_kcal_mol_water_per4ps": 0.01
+  },
+  "failure_handling": {
+    "nonzero_or_nonfinite_branch": "Retain source, logs and all committed chunks; latch a control failure and start no subsequent branch/seed. No replacement stream or favorable subset.",
+    "resume": "Load the exact branch Context checkpoint and redundant raw state; verify source/model/config/initial-state hashes and saved step. No new Maxwell draw.",
+    "uncertain_equivalence": "If an interval overlaps a margin boundary, label numerical equivalence unresolved. Do not widen the margin or lengthen/select the stage based on its D."
+  },
+  "fixed_run": {
+    "branch_order_each_seed": [
+      "dt025",
+      "dt0125"
+    ],
+    "checkpoint_times_ps": "0,1,2,3,4;committed partial checkpoints retained if an invocation ends between those boundaries",
+    "duration_ps_each_branch": 4.0,
+    "no_original_data_replacement": true,
+    "record_times_ps": "0,0.005,0.010,...,4.000;801 equally spaced coincident position/velocity observations",
+    "same_initial_q_p_for_both_branches": true,
+    "seed_order": [
+      1101,
+      1102,
+      1103,
+      1104,
+      1105,
+      1106,
+      1107,
+      1108
+    ],
+    "total_NVE_ps": 64.0,
+    "total_branches": 16,
+    "total_integration_steps": 384000
+  },
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "interpretation": {
+    "GPU_tested": false,
+    "IR_validated": false,
+    "PyRPMD_production_validation": false,
+    "external_OpenMM_reference": true,
+    "literature_reproduced": false,
+    "new_quantum_or_long_preparation_run_authorized_by_this_protocol": false,
+    "physical_converged": false,
+    "preparation_gate_failure_repaired": false
+  },
+  "original_protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "physics": {
+    "beads": 1,
+    "constraints": false,
+    "cutoff_angstrom": 9.0,
+    "density_g_cm3": 0.997,
+    "dispersion_correction": false,
+    "electrostatics": "Full uncontracted PME",
+    "ewald_tolerance": 1e-05,
+    "isotope": "H2O",
+    "masses_dalton": {
+      "H": 1.00782503223,
+      "O": 15.99491461957
+    },
+    "molecules": 216,
+    "native_integrator": "OpenMM VerletIntegrator with synchronized canonical momenta",
+    "original_frozen_source_sha256": {
+      "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+      "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+      "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "platform": "CPU",
+    "production_thermostat": "none; only the one initial COM-projected Maxwell draw",
+    "temperature_K": 298.0,
+    "threads": 1
+  },
+  "preregistered_utc": "2026-11-01T19:02:41.218650+00:00",
+  "purpose": "Numerical time-step control on all original100ps configurations; cannot repair a failed preparation gate or establish liquid diffusion convergence.",
+  "schema": "pyrpmd.water-eight-chain-paired-timestep-protocol.v1",
+  "source_selection": {
+    "absolute_preparation_ps": 100.0,
+    "active_segment": -1,
+    "all_eight_original_runs_complete_before_selection": true,
+    "exact_original_state_step": 400000,
+    "no_production_endpoint_selection": true,
+    "original_coordinator_normally_exited_and_leases_released": true,
+    "pending_momentum_draw": "Restore saved external NumPy RNG and perform exactly one native.sample_momenta(remove_com=True) draw; save the canonical q and sampled p plus before/after RNG once, and use that same physical initial state for both branches.",
+    "source_checkpoint_contract": "Frozen v2 raw q/v identity, independently bounded CPU force-cache change and canonical-momentum conversion consistency."
+  },
+  "statistics": {
+    "CI95": "mean +/- t.ppf(0.975,7)*standard_error",
+    "incomplete_cohort": "Refuse aggregate transport comparison until all eight pairs are complete.",
+    "mean": "sum(delta_i)/8",
+    "no_molecules_origins_frames_or_segments_counted_as_replicas": true,
+    "no_paper_value_or_partial_D_used_to_stop_tune_or_select": true,
+    "overall_numerical_control_rule": "All16 branches complete with valid source/phase, finite observations and the fixed energy limits; both primary and secondary paired intervals lie entirely within the fixed margin.",
+    "paired_difference": "delta_i = D_i(dt0.125fs) - D_i(dt0.25fs)",
+    "primary_endpoint": "D_VACF = integral of molecular COM velocity-dot VACF from0 to2ps divided by3; equally weighted valid time origins and molecules",
+    "primary_equivalence_margin_angstrom2_ps": 0.01,
+    "primary_equivalence_rule": "The entire two-sided95% paired t confidence interval must lie within[-0.01,+0.01]. Merely including zero or failure to reject a difference is insufficient.",
+    "secondary_endpoint": "D_MSD = slope of unwrapped molecular COM mean-squared displacement over1 to2ps divided by6; report raw slope without clipping",
+    "secondary_equivalence_margin_angstrom2_ps": 0.01,
+    "secondary_role": "Apply the same declared interval test and report separately; a primary numerical pass does not imply an MSD pass.",
+    "standard_error": "sample_standard_deviation(delta_i,ddof=1)/sqrt(8)",
+    "unit_of_uncertainty": "one paired seed-chain difference; eight independent random streams, with shared initial preparation history explicitly retained"
+  },
+  "status": "preregistered_control_waiting_complete_original_cohort_and_resource_assignment",
+  "timing_estimate": {
+    "CPU_seconds_per_step_from_original_measured_call": 0.005103134328358209,
+    "projected_CPU_seconds_all16": 1959.6035820895522,
+    "qualification": "Conditional estimate before execution; no extra original integration worker launched. Controls await completion of the original cohort and resource reassignment."
+  }
+}

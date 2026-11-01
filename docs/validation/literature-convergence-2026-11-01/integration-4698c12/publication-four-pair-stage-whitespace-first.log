@@ -1,0 +1,11 @@
+benchmarks/water/paired_timestep.py:594: new blank line at EOF.
+tests/test_water_paired_timestep.py:267: new blank line at EOF.
+tests/test_water_preparation_coordinator.py:539: new blank line at EOF.
+Traceback (most recent call last):
+  File "/workspace/scratch/a5e4820daedd/prepare_fourth_convergence_publication.py", line 197, in <module>
+    prepare()
+  File "/workspace/scratch/a5e4820daedd/prepare_fourth_convergence_publication.py", line 168, in prepare
+    subprocess.run(['git', 'diff', '--cached', '--check', '--', '.',
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['git', 'diff', '--cached', '--check', '--', '.', ':!*.log', ':!*.svg', ':!*.patch', ':!*.xml', ':!docs/validation/literature-convergence-2026-11-01/integration-4698c12/water-method-tests.xml', ':!docs/validation/literature-convergence-2026-11-01/surface-partition/controls/comparison-plot-data.csv', ':!docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/*.csv', ':!docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/per-seed/*/*/*.csv', ':!docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/*.csv', ':!docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/extra-pair-batch-1/*/*/*.csv', ':!docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/*.csv', ':!docs/validation/literature-convergence-2026-11-01/water/rdf-noise-audit/bin-noise.csv', ':!docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/compiler.txt']' returned non-zero exit status 2.

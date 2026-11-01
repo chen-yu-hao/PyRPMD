@@ -1,12 +1,13 @@
 # Literature convergence follow-up: 2026-11-01
 
-**The complete classical and initial P128 quantum H + H₂ reference rates at
+**The complete classical and P128 quantum H + H₂ reference rates at
 300 K agree with the published RPMDrate results within the paper's stated
-precision.** The quantum rate's entire nominal 95% interval is inside that
-band, but its separate κ precision gate still fails (3.272% half-width
-versus a 3.000% limit); the predeclared all-parent momentum extension is
-running. Independent umbrella sampling and liquid-water transport remain
-separate, ongoing convergence studies.
+precision.** The registered all-parent momentum extension is complete.
+Its quantum rate is 0.916% above the paper, its entire nominal 95% interval
+lies inside the paper's approximate ±5% band, and all eleven predeclared
+fixed-P primary criteria pass. The supplementary parent-time-half
+equivalence check still fails. Dynamic P256 refinement, independent umbrella
+sampling and liquid-water transport remain separate convergence studies.
 This record preserves the earlier failed estimates and distinguishes an
 independent equilibrium reference from the production MD umbrella workflow.
 
@@ -28,6 +29,8 @@ software-test results remain historical observations, not overwritten runs.
 | Independent P=128 H + H₂ QTST | 2.55248792 × 10⁻¹⁶, 95% CI [2.51679142, 2.58869070] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | Eight independent surface-partition chains and matching exact finite-P reactant denominator; +1.69% from paper QTST |
 | P=128 quantum transmission κ, initial two-pair cohort | 0.77307729, 95% CI [0.74778066, 0.79837393] | Paper 0.776; 3.272% relative half-width misses the 3.000% registered precision limit |
 | Complete initial P=128 quantum rate | 1.97196035 × 10⁻¹⁶, 95% CI [1.91141982, 2.03441839] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | +1.126% from paper 1.95 × 10⁻¹⁶; whole interval inside its ±5% band; fixed-P aggregate gate still false because of κ precision |
+| P=128 quantum transmission κ, complete four-pair cohort | 0.77121022, 95% CI [0.75333936, 0.78908108] | 2.317% relative half-width passes the unchanged 3.000% criterion |
+| Complete four-pair P=128 quantum rate | 1.96785637 × 10⁻¹⁶, 95% CI [1.93293861, 2.00340490] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹ | +0.916% from paper; all eleven fixed-P primary criteria pass; supplementary parent-time-half equivalence remains unresolved |
 | Separate P=128 umbrella MC, 30,000 production sweeps per ladder | 2.80072503 × 10⁻¹⁶, 95% CI [2.33507586, 3.35923162] × 10⁻¹⁶ | All eight ladders complete; precision and paper-point criteria fail; registered 100,000-sweep continuation selected |
 
 The classical paper point is slightly outside the much narrower new rate
@@ -68,6 +71,12 @@ cm³ molecule⁻¹ s⁻¹.
 - [Verified raw child archive](h3-quantum/recrossing-stage-200-pairs-2/raw-archive/README.md).
   All 400 base child chunks and 38.4 million native steps are preserved;
   signed flux arrays replay exactly after actual archive extraction.
+- [Complete four-pair quantum cohort](h3-quantum/recrossing-stage-200-pairs-4/README.md).
+  All eight chains, every parent and both timesteps are retained. The
+  [independent replay](h3-quantum/recrossing-stage-200-pairs-4/independent-review/README.md)
+  reconstructs all 800 chunks and complete joint statistics; the
+  [increment archive](h3-quantum/recrossing-stage-200-pairs-4/raw-archive/README.md)
+  is verified by actual base-plus-increment extraction and full replay.
 - [Complete first quantum umbrella stage](h3-quantum/umbrella-stage-30000/README.md).
   All eight 30,000-sweep chains and exact restart states remain available;
   neither their broad interval nor small coordinate Rhat is called convergence.
@@ -82,6 +91,45 @@ cm³ molecule⁻¹ s⁻¹.
 - [H + CH₄ model and native workflow](other-reactions/hch4/README.md).
   The paper's PES-2008 is now pinned, built and checked. Its published barrier
   and native/Python force workflow are reproduced; the thermal rate is unrun.
+- [Author-cited Ni/H EAM4 source and static checks](other-reactions/materials-source-index/README.md).
+  The single-bead routines are pinned and pass derivative, symmetry and cutoff
+  checks. Original Ni/Pd diffusion targets and complete protocols remain
+  unresolved; no material diffusion result is claimed.
+- [Original SW1/HSW static regressions](other-reactions/fh2-author-static/README.md).
+  The separate F + H₂ source distributions, SW1 analytic derivatives and
+  unchanged HSW author verification pass their bounded checks. Corrected
+  rate data and the corresponding PES/electronic conventions remain pending.
+- [All-eight water preparation coordinator](water/preparation-coordinator-gate/README.md).
+  Thirty-five orchestration fixtures cover original-cohort completion, exact
+  checkpoint phase, exclusive leases and signal-safe draining. The separate
+  400 ps continuation remains unadopted and unrun.
+- [Fixed eight-chain P256 dynamic-control design](h3-quantum/p256-fixed-eight-chain-design/README.md).
+  The existing four equilibrium controls saved no parent sequence. This
+  separate design now has all eight parent chains complete. Four historical
+  histories were replayed with deterministic observations, and four fixed
+  independent chains were added before any primary dynamic bead comparison.
+  The [complete parent archive](h3-quantum/p256-parent-stage/README.md)
+  passes independent verification and actual extraction replay. The eight-chain target avoids a decision based
+  on an underpowered four-chain intermediate result.
+- [P256 parent tool](h3-quantum/p256-parent-tool/README.md) and
+  [separate child/analysis contracts](h3-quantum/p256-child-tool/README.md).
+  The frozen tools require all eight eligible parent chains, use the P256
+  reactant normalization and preserve same-chain covariance. The
+  [excluded P256 native calibration](h3-quantum/p256-native-calibration/RESULTS.md)
+  passes all 360 registered propagation steps and exact restart comparisons.
+  The [actual child launch](h3-quantum/p256-child-launch/README.md) binds the
+  completed parents, resource allocation and reviewed coordinator. The full
+  eight-chain 200 fs child campaign has started; its bead-convergence result
+  remains pending.
+- [Methane reference pilot](review/hch4-reference-pilot/README.md).
+  All 768 planned draws are retained, but their concentrated weights and
+  unresolved domain tails do not establish a useful rate estimate. The
+  [next efficiency design](review/hch4-reference-efficiency-design/README.md)
+  has a separate measure/support review and a fixed excluded-sample budget;
+  that design is not a new executed rate result.
+- [OH cross-source discrepancy](other-reactions/oh-source-consistency/README.md).
+  The two author tables agree at 300 K and differ at 1000 K; neither the
+  registry nor a surface identity is changed to resolve that difference.
 - [Isotope source review](review/isotopologues-source-index/README.md).
   Mu + H₂ and D + HMu are different reactions. Unresolved source versions,
   masses and supplementary protocols remain explicit.
@@ -140,6 +188,16 @@ The nominal 95% rate interval contains the paper and lies wholly inside
 its approximate ±5% band. The 3.272% κ interval half-width nevertheless
 fails its separate 3.000% precision target, so all parents receive the
 predeclared extra momentum pairs. The first-stage failure is preserved.
+
+That registered extension has now completed for all 1,600 parents. The
+four-pair result is **κ=0.77121022** with 95% interval
+[0.75333936, 0.78908108], and **k=1.96785637 × 10⁻¹⁶** with nominal
+95% interval [1.93293861, 2.00340490] × 10⁻¹⁶ cm³ molecule⁻¹ s⁻¹.
+The κ half-width is 2.317%, below the unchanged 3.000% limit. All eleven
+fixed-P primary criteria pass. The same eight parent chains remain the
+independent statistical units; the 25,600 children across two timesteps
+are not additional independent source chains.
+
 The registered independent equilibrium bead/domain controls have completed, with four
 new independent seeds for each variant:
 
@@ -191,12 +249,14 @@ replicas or add the two uncertainties under a false independence assumption.
 QTST, κ and their product are each compared with the paper, so compensating
 component errors cannot produce an unqualified pass.
 
-![Initial complete quantum reference](h3-quantum/recrossing-stage-200-pairs-2/figures/quantum-convergence.png)
+![Complete four-pair quantum reference](h3-quantum/recrossing-stage-200-pairs-4/figures/quantum-convergence.png)
 
 Both registered late-time windows have identical observed κ on every chain.
 That sampled equality is not a bound on arbitrarily rare later recrossing.
-The supplementary parent-time-half κ equivalence check fails and remains
-visible. The paired timestep comparison and primary-step energy screen
+The supplementary parent-time-half κ difference is 0.00658 with
+95% interval [−0.02310, +0.03626], which is not wholly inside ±0.03.
+It therefore still fails its equivalence criterion even though the interval
+contains zero. The paired timestep comparison and primary-step energy screen
 pass. This fixed-P result does not establish dynamic bead convergence or
 validate production MD umbrella sampling. The separate MC umbrella stage
 still fails precision after all eight 30,000-sweep ladders; its continuation
@@ -265,7 +325,13 @@ quadratically. This short diagnostic does not establish rate convergence or
 justify silently changing the paper's 0.1 fs production timestep. All
 outcomes, upstream unit conventions and the 111-versus-110 window discrepancy
 are retained in the [methane record](other-reactions/hch4/README.md). The
-300 K thermal rate has not been run.
+300 K thermal rate has not been run. The later bounded independent
+reference pilot retains all 768 planned draws: 641 successful PES calls
+and 127 geometric zeros. Its three 256-draw ensembles have importance ESS
+of only 4.33, 7.18 and 6.14; the most concentrated individual channel gives
+94.22% of its weight to one draw. The pilot is a proposal-efficiency
+diagnosis, not a thermal-rate estimate. See the
+[complete pilot and independent arithmetic replay](review/hch4-reference-pilot/README.md).
 
 The OH, F, isotope, Pd and Ni targets remain separately identified in the
 [benchmark inventory](../../../benchmarks/literature/README.md). The isotope

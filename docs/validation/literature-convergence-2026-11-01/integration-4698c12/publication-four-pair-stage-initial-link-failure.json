@@ -1,0 +1,38 @@
+{
+  "schema": "pyrpmd.initial-publication-link-check-failure.v1",
+  "observed_tool_chunk": "6bfd8e",
+  "observed_exit_code": 1,
+  "auditor_sha256": "f8c4e4bbdec32871214e3e2811ae00c935c098a829eab23afdc14f2519022924",
+  "sphinx_started": false,
+  "missing_relative_targets": [
+    {
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../hch4-reference-feasibility/README.md"
+    },
+    {
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../hch4-reference-feasibility/pilot-design/README.md"
+    },
+    {
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../hch4-reference-pilot/README.md"
+    },
+    {
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "saved-pilot-diagnosis.json"
+    },
+    {
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "diagnose_saved_pilot.py"
+    },
+    {
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "initial-diagnosis-schema-failure.json"
+    },
+    {
+      "source": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "target": "../../../../../benchmarks/hch4/pes.py"
+    }
+  ],
+  "resolution": "Preserve the frozen historical README and check the seven links against its author-confirmed original directory, with exact target hashes. Live documents retain direct path checking."
+}

@@ -1,0 +1,76 @@
+{
+  "archive": {
+    "bytes": 324840270,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.tar.gz",
+    "sha256": "a1a7cd77362925d77bf6e6947c5bfc4c98d9bd518c14b6fda6fb0db5003c7b7a"
+  },
+  "availability": "Local only. No upload attempted or external persistence asserted.",
+  "created_utc": "2026-11-01T19:55:33.767981+00:00",
+  "excluded": [
+    "PES source/library",
+    "native binaries",
+    "repository source code",
+    "base raw payload",
+    "parent raw payload",
+    "water",
+    "umbrella",
+    "live data"
+  ],
+  "exit_time_scope": "Observed dispatcher normal-exit time; not exact launch or last integration time.",
+  "external_prerequisites": {
+    "bytes": 22035,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/external-prerequisites.json",
+    "sha256": "19cf708f37026edeb6db073d075cb563c36a82f1539ca117a86571983edfac41"
+  },
+  "immutability": "Exclusive creation; sorted regular PAX members, mode0444, uid/gid/mtime0; gzip level1/mtime0; archive/sidecar chmod0444 after verification.",
+  "independent_review_inventory": {
+    "bytes": 2644,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/publication-inventory.json",
+    "sha256": "945c4f1385f55142fd78a6f9f32bc510ec8cf39de0705b4cb524c5a9d67cee54"
+  },
+  "member_inventory": {
+    "bytes": 205393,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.members.json",
+    "sha256": "501d1c13d2c81ec844d4c0b4e545a2a87a193bc1a95819ea69ce0c45df013e37"
+  },
+  "packager_source": {
+    "bytes": 19490,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package_increment.py",
+    "sha256": "a05e56589694fb06cc6cc084ab5dc9b48a7a0d3064857429b12d990628aeb07a"
+  },
+  "raw_index": {
+    "bytes": 436110,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/raw-data-index.json",
+    "sha256": "61a0f2fed36826a5e1610b5560e4fc08601784666faa128c0331188d71405f2b"
+  },
+  "replay_source": {
+    "bytes": 30386,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/replay_complete.py",
+    "sha256": "431be7bdd8e23bb95510539c8f3d70110749cd4fec284d6509a40a7a20649b84"
+  },
+  "root_publication_inventory": {
+    "bytes": 17497,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/publication-inventory.json",
+    "sha256": "40dc3e500115a0bbff95be18ab25d82cfb1b6459da9e692b184606d65804ab46"
+  },
+  "schema": "pyrpmd.h3.four-pair-increment-archive-provenance.v1",
+  "scope_counts": {
+    "archive_prerequisite_metadata": 1,
+    "complete_combined_analysis": 3,
+    "complete_combined_analysis_stdout": 1,
+    "complete_extra_batch_stdout": 1,
+    "increment_child_raw_NPZ": 400,
+    "increment_complete_settings_reports_curves": 48,
+    "increment_original_and_completed_schedule": 2,
+    "independent_full_raw_replay_metadata": 6,
+    "independent_review_identity": 1,
+    "observed_normal_pool_exit_receipt": 1,
+    "root_compact_publication_identity": 1,
+    "scope_and_extraction_instructions": 1
+  },
+  "verification": {
+    "bytes": 3542,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/verification.json",
+    "sha256": "3b4bb6d4c74f5687262582a1a339f915507cc7d1ccc885a104ae8db78629f6ec"
+  }
+}

@@ -1,0 +1,172 @@
+Running Sphinx v8.2.3
+loading translations [en]... done
+making output directory... done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'colon_fence', 'dollarmath'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output... 
+building [html]: targets for 60 source files that are out of date
+updating environment: [new config] 60 added, 0 changed, 0 removed
+reading sources... [  2%] andersen-sampling
+reading sources... [  3%] batched-dynamics
+reading sources... [  5%] bond-constraints
+reading sources... [  7%] distribution
+reading sources... [  8%] enhanced-sampling
+reading sources... [ 10%] general-coordinate-rates
+reading sources... [ 12%] index
+reading sources... [ 13%] instanton
+reading sources... [ 15%] literature-validation
+reading sources... [ 17%] low-temperature
+reading sources... [ 18%] manual/adaptive-nrpmd
+reading sources... [ 20%] manual/analysis-reports
+reading sources... [ 22%] manual/api
+reading sources... [ 23%] manual/development
+reading sources... [ 25%] manual/electrochemistry
+reading sources... [ 27%] manual/examples
+reading sources... [ 28%] manual/execution
+reading sources... [ 30%] manual/input
+reading sources... [ 32%] manual/installation
+reading sources... [ 33%] manual/jaxpip-generation
+reading sources... [ 35%] manual/nonadiabatic
+reading sources... [ 37%] manual/pcet
+reading sources... [ 38%] manual/periodic
+reading sources... [ 40%] manual/pes-generation
+reading sources... [ 42%] manual/potentials
+reading sources... [ 43%] manual/quickstart
+reading sources... [ 45%] manual/results
+reading sources... [ 47%] manual/science
+reading sources... [ 48%] manual/troubleshooting
+reading sources... [ 50%] manual/workflows
+reading sources... [ 52%] molecular-nonadiabatic
+reading sources... [ 53%] nonadiabatic-comparison
+reading sources... [ 55%] nonadiabatic-ensembles
+reading sources... [ 57%] nonadiabatic-hopping-extensions
+reading sources... [ 58%] nonadiabatic-models
+reading sources... [ 60%] nonadiabatic-performance
+reading sources... [ 62%] nonadiabatic-spin-methods
+reading sources... [ 63%] nonadiabatic-workflow
+reading sources... [ 65%] opes
+reading sources... [ 67%] performance-dynamics
+reading sources... [ 68%] plumed
+reading sources... [ 70%] propagation-stack
+reading sources... [ 72%] publication-readiness
+reading sources... [ 73%] quantum-statistics
+reading sources... [ 75%] rate-postprocessing
+reading sources... [ 77%] rate-studies
+reading sources... [ 78%] replica-exchange
+reading sources... [ 80%] rpc-mts
+reading sources... [ 82%] tier2-methods
+reading sources... [ 83%] tier2-ml-lifecycle
+reading sources... [ 85%] tier2-nonadiabatic
+reading sources... [ 87%] tier2-path-integral
+reading sources... [ 88%] tier2-sampling
+reading sources... [ 90%] tier2-spectroscopy
+reading sources... [ 92%] trajectory-export
+reading sources... [ 93%] transition-interface-sampling
+reading sources... [ 95%] transition-state-search
+reading sources... [ 97%] trpmd-spectroscopy
+reading sources... [ 98%] validation/tier1-2026-10-31/README
+reading sources... [100%] validation/tier1-2026-10-31/pmf-replay
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets... 
+copying downloadable files... [  5%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [ 10%] ../../examples/materials/rigid_water.inp
+copying downloadable files... [ 15%] ../../examples/rate/general_coordinate.inp
+copying downloadable files... [ 20%] ../../examples/rate/toy_exchange.py
+copying downloadable files... [ 25%] ../../benchmarks/transition_state_search/analytic.py
+copying downloadable files... [ 30%] ../../benchmarks/transition_state_search/h3.py
+copying downloadable files... [ 35%] ../../benchmarks/transition_state_search/rates.py
+copying downloadable files... [ 40%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 45%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 50%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 55%] validation/tier1-2026-10-31/ci-initial-feature.json
+copying downloadable files... [ 60%] validation/tier1-2026-10-31/merged-docs-verification.json
+copying downloadable files... [ 65%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 70%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 75%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 80%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 85%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 90%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 95%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files... 
+Writing evaluated template result to /workspace/scratch/a5e4820daedd/convergence-four-pair-docs-html-v2/_static/language_data.js
+Writing evaluated template result to /workspace/scratch/a5e4820daedd/convergence-four-pair-docs-html-v2/_static/documentation_options.js
+Writing evaluated template result to /workspace/scratch/a5e4820daedd/convergence-four-pair-docs-html-v2/_static/basic.css
+copying static files: done
+copying extra files... 
+copying extra files: done
+copying assets: done
+writing output... [  2%] andersen-sampling
+writing output... [  3%] batched-dynamics
+writing output... [  5%] bond-constraints
+writing output... [  7%] distribution
+writing output... [  8%] enhanced-sampling
+writing output... [ 10%] general-coordinate-rates
+writing output... [ 12%] index
+writing output... [ 13%] instanton
+writing output... [ 15%] literature-validation
+writing output... [ 17%] low-temperature
+writing output... [ 18%] manual/adaptive-nrpmd
+writing output... [ 20%] manual/analysis-reports
+writing output... [ 22%] manual/api
+writing output... [ 23%] manual/development
+writing output... [ 25%] manual/electrochemistry
+writing output... [ 27%] manual/examples
+writing output... [ 28%] manual/execution
+writing output... [ 30%] manual/input
+writing output... [ 32%] manual/installation
+writing output... [ 33%] manual/jaxpip-generation
+writing output... [ 35%] manual/nonadiabatic
+writing output... [ 37%] manual/pcet
+writing output... [ 38%] manual/periodic
+writing output... [ 40%] manual/pes-generation
+writing output... [ 42%] manual/potentials
+writing output... [ 43%] manual/quickstart
+writing output... [ 45%] manual/results
+writing output... [ 47%] manual/science
+writing output... [ 48%] manual/troubleshooting
+writing output... [ 50%] manual/workflows
+writing output... [ 52%] molecular-nonadiabatic
+writing output... [ 53%] nonadiabatic-comparison
+writing output... [ 55%] nonadiabatic-ensembles
+writing output... [ 57%] nonadiabatic-hopping-extensions
+writing output... [ 58%] nonadiabatic-models
+writing output... [ 60%] nonadiabatic-performance
+writing output... [ 62%] nonadiabatic-spin-methods
+writing output... [ 63%] nonadiabatic-workflow
+writing output... [ 65%] opes
+writing output... [ 67%] performance-dynamics
+writing output... [ 68%] plumed
+writing output... [ 70%] propagation-stack
+writing output... [ 72%] publication-readiness
+writing output... [ 73%] quantum-statistics
+writing output... [ 75%] rate-postprocessing
+writing output... [ 77%] rate-studies
+writing output... [ 78%] replica-exchange
+writing output... [ 80%] rpc-mts
+writing output... [ 82%] tier2-methods
+writing output... [ 83%] tier2-ml-lifecycle
+writing output... [ 85%] tier2-nonadiabatic
+writing output... [ 87%] tier2-path-integral
+writing output... [ 88%] tier2-sampling
+writing output... [ 90%] tier2-spectroscopy
+writing output... [ 92%] trajectory-export
+writing output... [ 93%] transition-interface-sampling
+writing output... [ 95%] transition-state-search
+writing output... [ 97%] trpmd-spectroscopy
+writing output... [ 98%] validation/tier1-2026-10-31/README
+writing output... [100%] validation/tier1-2026-10-31/pmf-replay
+
+generating indices... genindex done
+highlighting module code... 
+writing additional pages... search done
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build succeeded.
+
+The HTML pages are in ../convergence-four-pair-docs-html-v2.

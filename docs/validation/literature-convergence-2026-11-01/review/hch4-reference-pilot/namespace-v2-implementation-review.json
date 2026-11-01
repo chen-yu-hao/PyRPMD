@@ -1,0 +1,120 @@
+{
+  "author_gate": {
+    "bytes": 2941,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-focused-gate.json",
+    "sha256": "8e25945b6941748a8720f68ebd5c3767e6a6186adfbbfe54bd56e158cb274d34"
+  },
+  "changed_function_bodies": [
+    "claim_worker",
+    "load_registration",
+    "prepare",
+    "supervise",
+    "worker"
+  ],
+  "code_findings": [
+    "A module-local UUID4 token generated from OS entropy identifies an interpreter invocation; prepare/supervisor distinctness no longer incorrectly relies on PID uniqueness across managed namespaces.",
+    "Same-interpreter preparation/supervisor remains rejected before Popen. Distinct interpreter tokens allow reused namespace PIDs without changing sampling draws or CPU allocation.",
+    "The worker remains bound to the same-namespace supervisor PID/ppid, registration SHA, CPU-budget SHA and environment token. Its own invocation token must differ and persistent WORKER_ONCE cannot be reused.",
+    "All scientific geometry, density, random-ledger and weighting function ASTs are unchanged. REG_SCHEMA changes to v2; the added token uses no NumPy scientific RNG state.",
+    "The budget describes requested caps before launch; installed limits remain actual runtime/final observations. Three-process cap allocation and the 55/60 CPU-second and 120 wall-second ceilings are unchanged.",
+    "All old failed-attempt artifacts and hashes remain intact. A new attempt must use a new directory and the exact same 768-draw ledger; no failed marker is deleted or reset."
+  ],
+  "created_utc": "2026-11-01T19:37:31.475132+00:00",
+  "independent_checks": {
+    "CPU_affinity": [
+      0
+    ],
+    "command": [
+      "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+      "-m",
+      "pytest",
+      "-q",
+      "tests/test_hch4_reference_pilot.py",
+      "-k",
+      "namespace_PID_reuse or same_interpreter or interpreter_identity",
+      "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-independent-pytest.xml"
+    ],
+    "deselected": 27,
+    "dynamics_steps": 0,
+    "exit_code": 0,
+    "external_PES_evaluations": 0,
+    "junit": {
+      "bytes": 682,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-independent-pytest.xml",
+      "sha256": "26dd7e4f84f716a28093f1ec7642c5aac26eec5a78969791fa6b1617fd55f5f0"
+    },
+    "log": {
+      "bytes": 113,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-independent-pytest.log",
+      "sha256": "1911abc7809aa7106466b57b747eef8c8141c1f74e15609c8a4f3bf9b5134241"
+    },
+    "passed": 3,
+    "wall_seconds": 2.533991860997048
+  },
+  "ledger_sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7",
+  "prior_failure": {
+    "bytes": 3745,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/failure.json",
+    "sha256": "8fc3682582988397d6090bf1d96a8548b20ab7c56a92c23a0184079003a4cd2e"
+  },
+  "prior_review": {
+    "bytes": 5756,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/implementation-review.json",
+    "sha256": "be2114d8b811d0f2c228b9bee9ec1db612578b7094236d68a29511e7b6f0c131"
+  },
+  "reviewed_source": {
+    "bytes": 36870,
+    "path": "benchmarks/hch4/reference_pilot.py",
+    "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+  },
+  "reviewed_tests": {
+    "bytes": 23126,
+    "path": "tests/test_hch4_reference_pilot.py",
+    "sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e"
+  },
+  "schema": "pyrpmd.hch4-reference-pilot-namespace-independent-review.v1",
+  "scope": "Additive review of cross-invocation identity and retained resource accounting only; no new scientific proposal or permission to launch beyond root authorization.",
+  "status": "no_blocker_for_the_previously_reviewed_excluded_bounded_pilot",
+  "unchanged_function_or_class_bodies": [
+    "Model",
+    "allocate_CPU_budget",
+    "append_event",
+    "atomic_json",
+    "box_bounds",
+    "build_ledger",
+    "candidate",
+    "channel_values",
+    "chart_labels",
+    "check_hashes",
+    "combined_integrals",
+    "direction_logpdf",
+    "draw_direction",
+    "draw_shape",
+    "environment_identity",
+    "evaluate_ledger",
+    "fixed_model",
+    "from_chart",
+    "importance_statistics",
+    "install_CPU_limit",
+    "inverse_mass_metric",
+    "load_plan",
+    "main",
+    "normal_logpdf",
+    "now",
+    "proposal_means",
+    "read_json",
+    "require",
+    "root_radius",
+    "sha256",
+    "shape_jacobian",
+    "shape_logpdf",
+    "to_chart",
+    "vmf_inverse"
+  ],
+  "unchanged_limits": [
+    "Excluded finite-domain cost and weight diagnostic only.",
+    "No thermal-rate or paper-agreement claim.",
+    "No proposal, support, domain, seed, table target or budget adjustment.",
+    "The 8-seed pilot remains too small for an accuracy or equivalence claim."
+  ]
+}

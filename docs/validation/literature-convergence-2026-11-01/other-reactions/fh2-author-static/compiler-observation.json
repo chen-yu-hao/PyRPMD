@@ -1,0 +1,10 @@
+{
+  "schema": "pyrpmd.fh2.compiler-postexecution-observation.v1",
+  "observed_utc": "2026-11-01T19:17:53.228815+00:00",
+  "timing": "Observed after the static check; the execution report records the actual compiler command and flags. This is not claimed to be a pre-execution compiler hash.",
+  "compiler_path": "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+  "resolved_path": "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+  "sha256": "7bf0adf9238749ec3e186836121d725a2f4d695ca78b9c9a0e38ae19d1c58124",
+  "version_stdout": "GNU Fortran (conda-forge gcc 16.2.0-7) 16.2.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "source_or_model_changed": false
+}

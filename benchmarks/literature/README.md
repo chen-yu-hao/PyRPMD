@@ -2,13 +2,20 @@
 
 `campaign.json` gives an explicit status, source and acceptance protocol for
 H + CH₄, OH + H₂, F + H₂, H/D/Mu + H₂, H in Ni/Pd and q-TIP4P/F water.
-Every case currently has `status="not_reproduced"`. Available model/interface
-pilots and source-verified numbers are recorded without upgrading that status.
+Every case currently retains `status="not_reproduced"` for its full requested
+convergence scope. The complete H + H₂ P128 reference now passes all eleven
+fixed-P primary criteria and agrees with the paper; its supplementary parent
+half check, dynamic bead refinement and production-umbrella validation remain
+separate. The inventory records that successful fixed-P result explicitly
+without treating it as evidence for the unresolved tests or other cases.
 
 The campaign reuses the
 [published-rate registry and comparator](../published_rates/README.md), the
 [BKMP2 builder/driver](../h3/README.md) and the
-[Ni EAM pilot](../materials/README.md). The
+[Ni EAM pilot](../materials/README.md). A separate
+[author-cited Ni/H EAM4 static reference](../materials_reference/README.md)
+now pins and checks the original routines without claiming diffusion or
+promoting the unmatched NiAlH pilot. The
 [water model and pilot](../water/README.md) add a new physical force field with
 independent model checks. This is not another set of synthetic reaction rates.
 

@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "tests/test_water_production_stability.py",
+    "-q",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/pytest.xml"
+  ],
+  "elapsed_wall_seconds": 3.746233657002449,
+  "returncode": 0,
+  "schema": "pyrpmd.water-production-stability-synthetic-gate.v1",
+  "scope": "Excluded synthetic matrices and reports only; no actual water D, molecular dynamics or PES evaluation.",
+  "source_after_sha256": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+    "docs/validation/literature-convergence-2026-11-01/water/production-stability-preregistration.json": "ac930daf5280da0bb1fb79fc17d51a4d2d0a83fa5db5bd8c139758ab885d1065",
+    "tests/test_water_production_stability.py": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef"
+  },
+  "source_before_sha256": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+    "docs/validation/literature-convergence-2026-11-01/water/production-stability-preregistration.json": "ac930daf5280da0bb1fb79fc17d51a4d2d0a83fa5db5bd8c139758ab885d1065",
+    "tests/test_water_production_stability.py": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef"
+  },
+  "source_unchanged": true,
+  "started_utc": "2026-11-01T20:20:52.786824+00:00"
+}

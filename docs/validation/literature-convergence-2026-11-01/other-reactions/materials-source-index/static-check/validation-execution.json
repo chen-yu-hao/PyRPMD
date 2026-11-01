@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "executions": [
+    {
+      "name": "validation",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "-m",
+        "benchmarks.materials_reference.verify_eam4",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/libeam4_static.so",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/other-reactions/materials-source-index/static-check/report.json"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+      "started_utc": "2026-11-01T18:52:43.826175+00:00",
+      "thread_limits": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 0.2205286270036595,
+      "child_cpu_seconds": 0.15219,
+      "cumulative_maximum_rss_KiB": 28096
+    },
+    {
+      "name": "pytest",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/test_materials_reference_eam4.py"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+      "started_utc": "2026-11-01T18:52:44.047045+00:00",
+      "thread_limits": {
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "returncode": 0,
+      "elapsed_seconds": 0.5223523709937581,
+      "child_cpu_seconds": 0.4395569999999999,
+      "cumulative_maximum_rss_KiB": 46172
+    }
+  ],
+  "test_source_sha256": "95734181efc669bd84d75300f2af48bb6b176c361035d795b1c1e1d1aefe7884",
+  "total_child_cpu_seconds": 0.5917469999999999,
+  "third_party_library_sha256": "b1673de4eb3d0673a49d22a9a6521095d0f2848338857ae10ee7adc9a97ab2f1"
+}

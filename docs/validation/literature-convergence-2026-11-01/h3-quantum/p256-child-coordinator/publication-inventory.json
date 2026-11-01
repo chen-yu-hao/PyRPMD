@@ -1,0 +1,157 @@
+{
+  "created_utc": "2026-11-01T20:15:21.768106+00:00",
+  "external_model_or_native_binaries_included": false,
+  "file_count": 25,
+  "files": [
+    {
+      "bytes": 38810,
+      "path": "benchmarks/h3/p256_child_campaign.py",
+      "sha256": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb"
+    },
+    {
+      "bytes": 10753,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/README.md",
+      "sha256": "55903aa79f90aca031c3bc51231dac85a3dc0f7a00f45ca182bcb27a42b93936"
+    },
+    {
+      "bytes": 6525,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/actual-source-inventory.json",
+      "sha256": "df4c3527521eb2c7bab1d66591844d11d4804aea8f0f2f113e9169c48a66625d"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/pytest.log",
+      "sha256": "8af9581dd155a9a5a046b87ee9fad514eebab3d4a72b8ee15840bcff3edf1859"
+    },
+    {
+      "bytes": 10756,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/pytest.xml",
+      "sha256": "9d6c4a07d8dccd5987b7aeffa0fb70825b489b1769d9b86d3c8fe90f95a55a44"
+    },
+    {
+      "bytes": 9150,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/source/execution-authorization.schema.json",
+      "sha256": "399aec445981319b916635f965514efb2b29470e2a2bf3de535182ca0a8f458b"
+    },
+    {
+      "bytes": 2557,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/source/output-contract.json",
+      "sha256": "e82ef5101b62291d94c2509cf075352a18d7265acc731b2cf727ecf7254ad82c"
+    },
+    {
+      "bytes": 38164,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/source/p256_child_campaign.py",
+      "sha256": "5fc72acef298678e5449059bb57c40e22254cc5ca4aa5540081df480381e7e2b"
+    },
+    {
+      "bytes": 27186,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/source/test_h3_p256_child_campaign.py",
+      "sha256": "7085290880fc90710f3f21a4604638dfd862b686aaaacabe899980ecdf7a0ed0"
+    },
+    {
+      "bytes": 3174,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/candidate/synthetic-gate.json",
+      "sha256": "ec33dbbc570ebf7dca7caf1851f990059e077c9f627e00cdf60f186e96872264"
+    },
+    {
+      "bytes": 9150,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/execution-authorization.schema.json",
+      "sha256": "c05c4c7a0916a92bc436aa1bbee1cd0fa604ebe89bd3b7cc3394198d3ddc30e4"
+    },
+    {
+      "bytes": 6525,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/actual-source-inventory.json",
+      "sha256": "b82a103023b97b6e7fe30e79e409a758a85068c765e5f688e7a69d0dfa004d51"
+    },
+    {
+      "bytes": 3457,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/metadata-audit.json",
+      "sha256": "af645e80cdc63be46891790fb632e8c61bf84b7ec714127fbdaa7bb8df0b133d"
+    },
+    {
+      "bytes": 179,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/pytest.log",
+      "sha256": "0865f24275ba81c65c0eb7606bb737046ec4a3a07c4a214861d3c9d20b85d435"
+    },
+    {
+      "bytes": 11210,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/pytest.xml",
+      "sha256": "2d410f7a1e5cd72dd65b5012b3151121044001503cc78c4e953c3eb2afc2e5bd"
+    },
+    {
+      "bytes": 4560,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/synthetic-gate.json",
+      "sha256": "76a5d5e64b23ba67a246e50b329e0a4eb1e58828dd30386800206d82bd87e4df"
+    },
+    {
+      "bytes": 5980,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/independent-review.json",
+      "sha256": "06aaa12cd2302c078a6969cf95ef9d9b928a9ffceff7f92f3edf7de0a247f67d"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/initial/pytest.log",
+      "sha256": "8bd5788bbac4f87237555174e0fd946c54fe26e61845b2f5295eeb4c9bf92e4b"
+    },
+    {
+      "bytes": 10614,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/initial/pytest.xml",
+      "sha256": "7e384d0b85253b0ce6f84b87bb72021c81a00b71e9592e591c2341feef597954"
+    },
+    {
+      "bytes": 37734,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/initial/source/p256_child_campaign.py",
+      "sha256": "c809246076484cd3ae02cd3d3cf8199233f2dd8ee9bca8d9cad3984837499182"
+    },
+    {
+      "bytes": 26278,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/initial/source/test_h3_p256_child_campaign.py",
+      "sha256": "38cf7c02f69b939ae898a95e18626a070f041d8db11e4abbfe3a05f2163dce26"
+    },
+    {
+      "bytes": 1184,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/initial/source.json",
+      "sha256": "df482243f80866fe2bfc06b61cbda306c757bb4fb30e852f34f8fa444a077230"
+    },
+    {
+      "bytes": 2731,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/output-contract.json",
+      "sha256": "351a6078404a9feb470fe8896084f5cd3b6897b139e51ac8ef19d6c08b5bc851"
+    },
+    {
+      "bytes": 1354,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/resource-decision.schema.json",
+      "sha256": "e279c90261506f6e46571bca1792adb9b15bfe4538b2e3ba85a1461d5902160a"
+    },
+    {
+      "bytes": 28049,
+      "path": "tests/test_h3_p256_child_campaign.py",
+      "sha256": "74fa8be60a287ec4a8a604e07de8a7407c854daf47f63e853a990adead75682d"
+    }
+  ],
+  "final_unique_test_cases": 73,
+  "frozen_scientific_source_edits": false,
+  "independent_review_sha256": "06aaa12cd2302c078a6969cf95ef9d9b928a9ffceff7f92f3edf7de0a247f67d",
+  "live_child_campaign_launched_by_this_agent": false,
+  "remaining_launch_requirements": [
+    "Complete exact parent cohort and independent parent archive/audit",
+    "Root separate operational resource adoption with actual prerequisite drainage evidence",
+    "Root bounded compatibility/physical validation as separately selected",
+    "Exact adopted authorization and read-only actual-input preflight before one-attempt run"
+  ],
+  "schema": "pyrpmd.h3.p256-child-coordinator-publication-inventory.v1",
+  "scientific_raw_NPZ_included": false,
+  "scope": "New isolated fixed-cohort child coordinator, its tests, exact historical snapshots and final reviews/docs; no live execution adoption, registration, physical raw data, PES coefficients or compiled binaries.",
+  "source_inventory": {
+    "bytes": 6525,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/actual-source-inventory.json",
+    "sha256": "b82a103023b97b6e7fe30e79e409a758a85068c765e5f688e7a69d0dfa004d51"
+  },
+  "source_sha256": {
+    "benchmarks/h3/p256_child_campaign.py": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb",
+    "tests/test_h3_p256_child_campaign.py": "74fa8be60a287ec4a8a604e07de8a7407c854daf47f63e853a990adead75682d"
+  },
+  "status": "frozen_final_reviewed_source_and_synthetic_evidence",
+  "test_scope": "Synthetic metadata/integrity/arithmetic and inert processes; no PES or MD. Initial69 and candidate70 are preserved overlapping gates, not additional unique cases.",
+  "total_bytes": 296278
+}

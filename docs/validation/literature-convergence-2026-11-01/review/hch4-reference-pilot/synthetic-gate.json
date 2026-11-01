@@ -1,0 +1,42 @@
+{
+  "checks": [
+    "Analytic normalized9D uniform/reflectedGaussian mixture and spherical vMF density",
+    "Exact synthetic angular flux integrals for four disjoint active-max surfaces and one entry surface",
+    "Rotational chart Jacobian, Cartesian metric, radial coarea, absent root and inactive-channel zero",
+    "Unconditional means retain invalid zero draws; pooled integrals precede ratio",
+    "Full768-target/eight-seed paired ledger and complete pre-PES persistence",
+    "Explicit evaluator failure/nonfinite retention without replacement or partial integrals",
+    "Single supervisor/worker attempts, source/cohort/budget/output-field preflight",
+    "55s aggregate CPU admission stop; three whole-process caps sum60; actual isolated parent/worker kernel limits",
+    "120s-cap supervisor path tested with bounded short wall-time sleeping stub"
+  ],
+  "created_utc": "2026-11-01T19:26:59.364777+00:00",
+  "dynamics_steps": 0,
+  "evidence": {
+    "synthetic-pytest.log": "3da0915204cfa9d09dc26d58b028304301027ec4461d3da90a6ccde1ed13fb5a",
+    "synthetic-pytest.xml": "8fc7df6b51be480261da1d0a9cec974fed2287aa18855713736f48e309ec5ec5"
+  },
+  "exit_code": 0,
+  "external_PES_evaluations": 0,
+  "failed": 0,
+  "passed": 28,
+  "reported_wall_seconds": 13.45,
+  "runtime": {
+    "BLAS_OpenMP_threads": 1,
+    "CPU_affinity": [
+      8
+    ],
+    "numpy": "2.5.4",
+    "pytest": "9.2.0",
+    "python": "3.12.14",
+    "scipy": "1.18.1"
+  },
+  "schema": "pyrpmd.hch4-reference-pilot-synthetic-gate.v1",
+  "scope": "Synthetic fixtures only. No empirical physical-domain, molecular-partition, importance-tail, rate or literature validation.",
+  "skipped": 0,
+  "source_sha256": {
+    "benchmarks/hch4/reference_pilot.py": "6d93f69e185015a507c10d4159ed650c8bc6571f0c6215fdf282589deeee8ef3",
+    "tests/test_hch4_reference_pilot.py": "41af569b6f97d6c8d59be063fcd4b59872f4dc19060dd58e43172eb02ec3c540"
+  },
+  "status": "passed"
+}

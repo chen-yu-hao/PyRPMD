@@ -1,0 +1,49 @@
+{
+  "schema": "pyrpmd.h3.P256-child-combined-contract-gate.v1",
+  "recorded_after_execution_utc": "2026-11-01T19:54:31.449348+00:00",
+  "exec_session_id": 42112,
+  "exec_chunk_id": "fd9870",
+  "exit_code": 0,
+  "passed": 58,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "reported_pytest_seconds": 7.3,
+  "JUnit_seconds": 7.299,
+  "python": "3.12.14",
+  "executable": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+  "source_and_test_sha256": {
+    "benchmarks/h3/p256_surface_recrossing.py": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+    "benchmarks/h3/p256_recrossing_analyze.py": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+    "tests/test_h3_p256_surface_recrossing.py": "43a804ba96ac508bc0e93fad7121c6164b265c7bb993fc7de53eb2c3fec18445",
+    "tests/test_h3_p256_recrossing_analysis.py": "71a6e544d774e859286e484e09cb37ac79226ee5f96c7322eb0d9e8829c49903"
+  },
+  "final_producer_source_identity": {
+    "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+    "src/pyrpmd/propagation.py": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+    "loaded_native:_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220",
+    "benchmarks/h3/p256_surface_recrossing.py": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+    "benchmarks/h3/p256_parent_campaign.py": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+    "benchmarks/h3/p256_recrossing_analyze.py": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+    "benchmarks/h3/quantum_recrossing_analyze.py": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+  },
+  "PES_calls": 0,
+  "physical_dynamics_steps": 0,
+  "whole_cohort_analyzer_tests_use_synthetic_rows": true,
+  "source_review": {
+    "adapter": "1aa5466f982e23ed38158a249c78f05d7f8a06ac84f8873612eb84cc10a0eb22",
+    "analysis": "4bb9d6a68527f225d490ff5fedbd5ff7d7913da821dac39f6b5aa15efa43ce88"
+  },
+  "test_output_sha256": {
+    "final-pytest.xml": "650f09eba5efdb707f7be74160ce9ec0c424d9496eafbc066eae445bdc909571",
+    "final-pytest.log": "7c2cbf9eb4ccc009bed70fd59b7b850b991af541641f70d4148f26bfc0741037"
+  },
+  "counting": "30bindingcontracts+28analysis/statisticalcases; earlier/repeated runs not counted again."
+}

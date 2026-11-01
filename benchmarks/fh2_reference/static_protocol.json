@@ -1,0 +1,123 @@
+{
+  "schema": "pyrpmd.fh2.author-static-protocol.v1",
+  "registered_before_static_evaluation_utc": "2026-11-01T19:14:16.393687+00:00",
+  "scope": "Only the two exact publicly distributed source variants and their static original interfaces; no assignment to corrected RPMD literature-rate conventions.",
+  "atom_distance_order": [
+    "F-H1",
+    "H1-H2",
+    "F-H2"
+  ],
+  "distance_unit": "bohr",
+  "energy_unit": "hartree",
+  "compiler_flags": [
+    "-O2",
+    "-std=legacy",
+    "-ffixed-line-length-none",
+    "-fno-automatic"
+  ],
+  "compiler_semantics": "Preserve default literal precision. -fno-automatic retains PREPOT/POTE ENTRY parameter state across calls; no coefficient, source, energy shift or unit-factor edits.",
+  "one_CPU": true,
+  "whole_call_wall_admission_limit_seconds": 90,
+  "per_subprocess_wall_limit_seconds": 30,
+  "per_subprocess_CPU_limit_seconds": 30,
+  "finite_difference_steps_bohr": [
+    0.0001,
+    1e-05,
+    1e-06
+  ],
+  "acceptance": {
+    "energy_absolute_hartree": 5e-12,
+    "gradient_absolute_hartree_per_bohr": 2e-07,
+    "gradient_symmetry_absolute_hartree_per_bohr": 5e-11,
+    "author_reference_absolute_hartree": 5e-10
+  },
+  "author_reference_tolerance_note": "Static archive regression tolerance only; retains original default-real constants and records the verify.f literal rounding. It is not a thermal-rate tolerance.",
+  "geometries": [
+    {
+      "id": "author-equilateral",
+      "distances_bohr": [
+        2.0,
+        2.0,
+        2.0
+      ],
+      "HSW_author_decimal_hartree": 0.03412633992079376
+    },
+    {
+      "id": "author-asymmetric",
+      "distances_bohr": [
+        4.0,
+        1.5,
+        4.5
+      ],
+      "HSW_author_decimal_hartree": 0.00183916087206041
+    },
+    {
+      "id": "entrance-bent",
+      "distances_bohr": [
+        3.0,
+        1.4,
+        3.6
+      ]
+    },
+    {
+      "id": "transition-bent",
+      "distances_bohr": [
+        2.8,
+        1.7,
+        3.5
+      ]
+    },
+    {
+      "id": "product-bent",
+      "distances_bohr": [
+        1.8,
+        2.5,
+        3.2
+      ]
+    },
+    {
+      "id": "entrance-distant",
+      "distances_bohr": [
+        5.0,
+        1.4,
+        5.6
+      ]
+    },
+    {
+      "id": "stretched-triangle",
+      "distances_bohr": [
+        2.4,
+        1.7,
+        3.8
+      ]
+    },
+    {
+      "id": "general-triangle",
+      "distances_bohr": [
+        3.5,
+        2.2,
+        4.0
+      ]
+    },
+    {
+      "id": "entry-asymptotic-diagnostic",
+      "distances_bohr": [
+        20.0,
+        1.4,
+        20.5
+      ]
+    },
+    {
+      "id": "product-asymptotic-diagnostic",
+      "distances_bohr": [
+        1.7,
+        20.0,
+        20.5
+      ]
+    }
+  ],
+  "thermal_rate_gate": false,
+  "paper_reproduction_gate": false,
+  "HSW_analytic_gradient_provided": false,
+  "continuation_on_failure": "None; retain all source/build/worker/verification output, exit nonzero on a failed fixed gate."
+}

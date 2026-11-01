@@ -1,0 +1,16 @@
+{
+  "schema": "pyrpmd.h3.four-pair-independent-replay-execution.v1",
+  "created_utc": "2026-11-01T19:50:17.905638+00:00",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/replay_complete.py",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/original"
+  ],
+  "source_sha256": "431be7bdd8e23bb95510539c8f3d70110749cd4fec284d6509a40a7a20649b84",
+  "source_unchanged": true,
+  "returncode": 0,
+  "wall_seconds": 19.739473175999592,
+  "log_sha256": "2493147149e3eead594a6d90e736663ab0da22ca1fd24058eebeec9f273dd892",
+  "scope": "Complete frozen 800-chunk read-only replay; no PES or dynamics."
+}

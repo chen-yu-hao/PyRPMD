@@ -1,0 +1,77 @@
+{
+  "approved_for_once_execution": true,
+  "findings": [
+    {
+      "issue": "Initial observation finiteness was not explicitly checked, and equal_nan=True could admit identical NaN values at frame0 in every comparison path.",
+      "resolution": "Every trace array in all three paths is required finite, including frame0; assert_allclose uses equal_nan=False. A matching-NaN initial-observation regression rejects this case before numerical comparisons.",
+      "resolved": true
+    }
+  ],
+  "initial_candidate_source_sha256": "bb686afb30db75702ac90a62bfec6c667d2752f6d0f24643e16fa8635e3321ec",
+  "limitations": [
+    "Approval is limited to the already adopted single excluded calibration and fixed resource budget, not any long primary child campaign.",
+    "No actual P256 propagation was executed by this reviewer. The physical calibration must still pass before it is used as evidence.",
+    "A hard CPU kill can prevent the final failure receipt; the permanent attempt marker and any committed state remain, and missing/failed completion is ineligible.",
+    "The recorded short energy variation is descriptive only; this 4 fs calibration cannot demonstrate transmission, rate, plateau, timestep convergence or bead convergence."
+  ],
+  "proposal_sha256": "d33f221b2ce8e869b9f7c3577021726bba0ac25b23f0deac3c08e30c5d47c196",
+  "remaining_blocking_findings": [],
+  "review_execution_scope": {
+    "PES_evaluations": 0,
+    "physical_map_steps": 0,
+    "source_files_modified": [],
+    "test_cases_rerun": 0
+  },
+  "reviewed_at_utc": "2026-11-01T20:24:14.200367+00:00",
+  "reviewer": "providers subagent; independent read-only source/contract review",
+  "root_adoption_sha256": "1b144c16b2bebe019ef736693b3a2442a8c8310b8468e141a6676fb8054f64e5",
+  "schema": "pyrpmd.h3.p256-excluded-native-calibration-independent-review.v1",
+  "source_and_input_file_guards_verified": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/native_propagation.py": "d04341d925951ac5d40e234b59d1db8390630260693db0225ed2ab8e95f4e004",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/complete-audit.json": "71e811ed90e866c19f7b90668e65bc0c3332925090f4bed2f09447497576d4f1",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-native-replay/native-restart-validation.json": "2ff9ecd7f1c43889ecf0d5ca0b9227979650f6ac1c7c1f010ae9a64bb5dfba11",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.build.json": "5c1c6d092f667caaddc814f5f671b61d12c254a6abe83dc2ee939a5e3872622e",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/root-exec-exit.json": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/checkpoint.npz": "8ee6608c545e52cbf82eb5dbddcc0de0eb9ed01d981fc7c16e3650166bd0b185",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference-domain.json": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference.json": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/report.json": "3767c31ec46d4828127934bdc33e5f14cde3f6cbcceecb6ce6b735fbfd5a694a",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/settings.json": "e518706d08ad3bc9e6a97f9401e7f50e04c0bd7afd104d92349a129790afcac8",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/parents-complete.json": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/registration.json": "7775d890c3e75a063bf56b50d55c13da9e0b8d5f977276b5e28b4636ffe85c84"
+  },
+  "source_sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8",
+  "synthetic_evidence_inspected": {
+    "JUnit_suite_seconds": 0.154,
+    "console_sha256": "055ec9ad5ed6c669d4523fdd0dd3f40f50f12200e9becc9ec3d0ee5ccc7e6327",
+    "junit_sha256": "2c9ff0b0b21ac06b8547a679d3cbcfd2212090e900647a64b8207fcba5614eab",
+    "owner": "benchmarks subagent; not rerun by this reviewer",
+    "passed": 16,
+    "pytest_reported_seconds": 0.28,
+    "skipped": 0,
+    "structured_gate_sha256": "91d8e9e8a6736c36db53fa9e0ecd6fa14f13cc4faa2d7ac13c63f22a4801dcfc"
+  },
+  "test_source_sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4",
+  "verified_contracts": [
+    "The selected first saved parent of seed 825601 (history-replay route, endpoint index 0 / sweep 2100) is fixed by whole checkpoint SHA, integrity envelope, settings fingerprint and exact q-array bytes. No parent or channel is selected from results.",
+    "One separate fixed SeedSequence [20261101,256,902731] draws bead Maxwell momenta with variance MASS*256/BETA. All six paths use copied same initial canonical q,p; no COM projection or primary RNG namespace is used.",
+    "Both 0.1 fs and 0.05 fs paths run 4 fs with 1 fs observations. Fused native continuous, public Python step loop and native 2 fs/checkpoint/destroy/recreate/reload/2 fs paths total 360 physical steps: 240 fused native and 120 manual Python, no fallback.",
+    "The unchanged Dynamics default is cayley-bcb with required native free-ring map, real masses, no constraints/bias/thermostat. Python-loop comparison shares the native free map and the real BKMP2 PES; it is not an independent all-NumPy implementation or force-field validation.",
+    "Native restart compares every recorded q,p,surface,full-ring energy,step/time array bitwise, including signed-zero distinctions. Public Python/native comparisons use the fixed inherited tolerances, exact integer steps and finite full traces.",
+    "The midpoint checkpoint includes all earlier observations and state clock, with kind/integrity/fingerprint checks. The old Dynamics and PES wrapper weak references must be dead before a replacement segment is created.",
+    "A persistent output directory/RUN_ONCE marker forbids automatic retries and overwrites. Initial state and ledger precede the first PES evaluation; failed committed outputs remain.",
+    "Whole-process RLIMIT_CPU 60 s, CPU 6 affinity and one-thread variables are installed before scientific imports; admission stops at 55 CPU / 115 wall seconds and the whole-process wall alarm is 120 s. No numerical subprocess is spawned.",
+    "Registered source/native/PES/build/parent/prior-gate identities and actual imported paths are checked; the whole guard set is rechecked before eligibility publication."
+  ]
+}

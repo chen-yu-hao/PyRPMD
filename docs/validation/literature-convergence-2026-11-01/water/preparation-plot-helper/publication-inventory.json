@@ -1,0 +1,64 @@
+{
+  "active_sampler_or_protocol_changed": false,
+  "depends_on": [
+    "transport-plot-helper/publication-inventory.json"
+  ],
+  "excludes": [
+    "synthetic figures and data",
+    "mutable live campaign data",
+    "raw trajectory chunks",
+    "later actual complete-cohort figures"
+  ],
+  "file_count": 9,
+  "files": [
+    {
+      "bytes": 12456,
+      "path": "benchmarks/water/plot_preparation_diagnostics.py",
+      "sha256": "1505c570c41bf67b7f51a767ee2a5e1dfb610d9562872ee303c6dbb3bbc34b15"
+    },
+    {
+      "bytes": 4305,
+      "path": "tests/test_water_preparation_plot.py",
+      "sha256": "a4ce9329aa35219716b6721bc9856ef78677e9013463f8844aba450b8e2473e8"
+    },
+    {
+      "bytes": 3058,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/README.md",
+      "sha256": "ae729ede1c9125bdcc19fcd1d16e263efee33ecba84e58283cfd36e7e4bdcbb3"
+    },
+    {
+      "bytes": 911,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/final-pytest.xml",
+      "sha256": "9fba38b3eb8f7ab88bbe2892b13221c51001ae659efc4ad1a4dcc3f91108c384"
+    },
+    {
+      "bytes": 2586,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/gate.json",
+      "sha256": "a9b9e453b7fb2aeec4e5ccd562d3257400de3f3cd3e0ae791daf042c58bf4697"
+    },
+    {
+      "bytes": 2290,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/initial-fixture-alias-pytest.xml",
+      "sha256": "84c60802f79b085c721a46eb45e6c8c9cf0055a0ff50be6d95dae11f68829bdc"
+    },
+    {
+      "bytes": 803,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/initial-fixture-failure.json",
+      "sha256": "e92e44d52ad1ac91f42ab226f0bf12c130c7bb4ee70342a668aee07ab80801c8"
+    },
+    {
+      "bytes": 2290,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/pytest.xml",
+      "sha256": "84c60802f79b085c721a46eb45e6c8c9cf0055a0ff50be6d95dae11f68829bdc"
+    },
+    {
+      "bytes": 911,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-plot-helper/statistics-4-pytest.xml",
+      "sha256": "9c3714ab1a86ce6e7c5545ef997c61fea4a1b2eb9844a605400dc2c4e9b74d0d"
+    }
+  ],
+  "frozen_utc": "2026-11-01T19:37:45.967482+00:00",
+  "original_cohort_complete_at_sealing": false,
+  "schema": "pyrpmd.water-preparation-plot-publication.v1",
+  "total_bytes": 29610
+}

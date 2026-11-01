@@ -1,0 +1,130 @@
+{
+  "builds": 0,
+  "created_before_execution_utc": "2026-11-01T20:34:11.075549+00:00",
+  "driver_changes": [
+    "Use collected item.module/path for the actual archive-auditor import",
+    "Pin this short synthetic gate to CPU 6 so the fixed resource-cap fixture executes",
+    "Use separate v2 evidence/temp paths; retain the entire failed initial attempt"
+  ],
+  "driver_parent": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/four-pair-p256-compatibility/run_checks.py",
+    "sha256": "ddd4a9067b6dab5f78385fc9b04a8988a13d617761e3e0cc95241012803be7d0"
+  },
+  "frozen_inventories": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/publication-inventory.json",
+      "sha256": "24ba0b8efe7fe873923da7a0d06d055de2016930c1fc11ab22f8486b62afe61a"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/publication-inventory.json",
+      "sha256": "f7dd402d577e062eae14d00d50b1506dfd86cc08ceea2b31af2094699ab9e3a8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/publication-inventory.json",
+      "sha256": "ac2c4283de357a1c06845f333702aa4bc870a474b52f235c5b44f9248796bc10"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/publication-inventory.json",
+      "sha256": "cb62d954a7fe314ea29df0af2319d7ff1a2e7bed704a48ca0b151c8cbd9c8a44"
+    }
+  ],
+  "installs": 0,
+  "integration_only_supersession": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/supersession.json",
+    "sha256": "fcef77c2a0813451e53ba8b890b01e2e434c8a137519b427f2e360e67892b82e"
+  },
+  "native_products": {
+    "py312": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+      }
+    },
+    "py313": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a"
+      }
+    },
+    "py314": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+      }
+    }
+  },
+  "new_case_families": {
+    "native_calibration_contracts": 16,
+    "parent_archive": 20,
+    "water_production_stability": 6
+  },
+  "per_interpreter": {
+    "py312": {
+      "expected": 42,
+      "files": [
+        "tests/test_h3_p256_parent_archive.py",
+        "tests/test_h3_p256_native_calibration.py",
+        "tests/test_water_production_stability.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+    },
+    "py313": {
+      "expected": 42,
+      "files": [
+        "tests/test_h3_p256_parent_archive.py",
+        "tests/test_h3_p256_native_calibration.py",
+        "tests/test_water_production_stability.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python"
+    },
+    "py314": {
+      "expected": 42,
+      "files": [
+        "tests/test_h3_p256_parent_archive.py",
+        "tests/test_h3_p256_native_calibration.py",
+        "tests/test_water_production_stability.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python"
+    }
+  },
+  "previous_554_case_coverage": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/four-pair-p256-compatibility/case-coverage.json",
+    "sha256": "de5975086fedda3ad4f0ba14c75fa338a900f37119ececb2280c95a36d0ab9fa"
+  },
+  "previous_554_cases_rerun": false,
+  "prior_failed_attempt": {
+    "inventory_sha256": "7ae0b488f31f40369df75aa03637e350ca0127b2e44404073e896aca4d1010d3",
+    "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility"
+  },
+  "required_cpu_affinity": [
+    6
+  ],
+  "schema": "pyrpmd.auxiliary-proof-integration-selection.v2",
+  "source_head": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_state_note": "Original running sources remain unchanged. One integration-only rendering test now skips explicitly if its optional matplotlib dependency is absent; all three selected environments provide that dependency.",
+  "test_scope": "Synthetic lifecycle, finite-array/restart-compare and paired-statistic/whole-cohort plotting contracts. No external PES call, real parent numerical read or physical propagation occurs in this gate."
+}

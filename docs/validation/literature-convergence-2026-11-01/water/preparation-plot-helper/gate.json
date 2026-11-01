@@ -1,0 +1,54 @@
+{
+  "RDF_hard_gate_added": false,
+  "checked_inventory_sha256": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/stable-publication-manifest.json",
+      "sha256": "edf79cc6f90fe8cb9e90e53d37f0b0df8ea437ef13b288326f3a10d2ca6b286f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/publication-inventory.json",
+      "sha256": "13681353f6fdfd23857accd2eb269619e2e161ce7073a683250a04700284c3dc"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/transport-plot-helper/publication-inventory.json",
+      "sha256": "8857e8e7cb99a21a452f2070c5ef9100624acd4f83762009679206a62081cb67"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/publication-inventory.json",
+      "sha256": "7b186295269b666de793252b52f91e7d8a51db3017978663be157b1889c86863"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/publication-inventory.json",
+      "sha256": "09871c5277f29e681cba26d2c385740fe0e686c8f8a811ee1952f294b9631d06"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/publication-inventory.json",
+      "sha256": "fef19a7571f5ac5605c665d6a2e9d0964c208047df0d34497f4673596649072e"
+    }
+  ],
+  "counts_not_additive": true,
+  "existing_frozen_publication_files_all_unchanged": true,
+  "existing_frozen_publication_files_checked": 122,
+  "final_tests": {
+    "errors": "0",
+    "failures": "0",
+    "hostname": "13d968332fed",
+    "name": "pytest",
+    "skipped": "0",
+    "tests": "4",
+    "time": "3.269",
+    "timestamp": "2026-11-01T14:36:54.059221-05:00"
+  },
+  "frozen_utc": "2026-11-01T19:37:45.965912+00:00",
+  "initial_failure_retained": "initial-fixture-alias-pytest.xml and initial-fixture-failure.json",
+  "junit_sha256": "9fba38b3eb8f7ab88bbe2892b13221c51001ae659efc4ad1a4dcc3f91108c384",
+  "real_trajectories_or_D_inspected_for_development": false,
+  "sampler_or_protocol_changed": false,
+  "schema": "pyrpmd.water-preparation-plot-method-gate.v1",
+  "source_sha256": {
+    "benchmarks/water/plot_preparation_diagnostics.py": "1505c570c41bf67b7f51a767ee2a5e1dfb610d9562872ee303c6dbb3bbc34b15",
+    "tests/test_water_preparation_plot.py": "a4ce9329aa35219716b6721bc9856ef78677e9013463f8844aba450b8e2473e8"
+  },
+  "synthetic_only": true,
+  "visual_review": "Both final synthetic PNGs inspected. Captions and axes no longer overlap. All synthetic figures remain outside this publication bundle."
+}

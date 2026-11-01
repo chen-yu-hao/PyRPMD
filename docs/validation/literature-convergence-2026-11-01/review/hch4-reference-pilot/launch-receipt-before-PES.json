@@ -1,0 +1,17 @@
+{
+  "PES_evaluations_so_far": 0,
+  "exact_process_launch_time_not_claimed": true,
+  "fixed_target_draws": 768,
+  "geometrically_eligible_PES_geometries": 641,
+  "guarded_files_unchanged": 150,
+  "ledger_sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7",
+  "next_action": "single authorized supervised attempt; no automatic retry or budget extension",
+  "plan_sha256": "1e4d8d6074fc00cdaf0b330295bdaf5a26590ca57e20a710991fe5d797e9382d",
+  "prepare_enforced_CPU_cap_seconds": 2,
+  "prepare_measured_CPU_seconds_before_registration_write": 0.755732515,
+  "recorded_before_supervisor_launch_utc": "2026-11-01T19:29:10.860752+00:00",
+  "registration_path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768/registration.json",
+  "registration_sha256": "7e88f729e5e61fc0096bf0aaf6f546b85d52d61edb9f6a9678b152701a8765a4",
+  "schema": "pyrpmd.hch4-reference-pilot-pre-execution-receipt.v1",
+  "source_sha256": "6d93f69e185015a507c10d4159ed650c8bc6571f0c6215fdf282589deeee8ef3"
+}

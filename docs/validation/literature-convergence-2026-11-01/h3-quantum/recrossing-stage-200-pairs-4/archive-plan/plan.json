@@ -1,0 +1,143 @@
+{
+  "schema": "pyrpmd.h3.quantum-child-incremental-archive-plan.v1",
+  "created_utc": "2026-11-01T19:02:44.645374+00:00",
+  "status": "planned_not_executed_waiting_for_complete_cohort",
+  "active_raw_or_partial_rates_read_for_this_plan": false,
+  "archive_created": false,
+  "simulations_launched": false,
+  "scope": "Extra batch pair IDs2,3 only, plus complete combined analysis and provenance; immutable base batch0 and parent archive are external prerequisites.",
+  "expected": {
+    "seeds": [
+      721301,
+      721303,
+      721307,
+      721309,
+      721313,
+      721317,
+      721321,
+      721323
+    ],
+    "timesteps_fs": [
+      0.1,
+      0.05
+    ],
+    "horizon_fs": 200,
+    "parents_per_seed": 200,
+    "parent_chains_uncertainty_units": 8,
+    "parent_configurations_total": 1600,
+    "parent_completed_sweeps_start_stop_stride": [
+      2100,
+      22000,
+      100
+    ],
+    "initial_pair_indices": [
+      0,
+      1
+    ],
+    "increment_pair_indices": [
+      2,
+      3
+    ],
+    "combined_pair_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "signs_per_pair": 2,
+    "chunk_parents": 8,
+    "increment_runs": 16,
+    "increment_success_chunks": 400,
+    "combined_success_chunks": 800,
+    "increment_children_per_timestep": 6400,
+    "combined_children_per_timestep": 12800,
+    "increment_native_steps_both_timesteps": 38400000,
+    "combined_native_steps_both_timesteps": 76800000
+  },
+  "prerequisite_archives": [
+    {
+      "file": "pyrpmd-h3-quantum-recrossing-stage-200-pairs-2-2026-11-01.tar.gz",
+      "bytes": 324627489,
+      "sha256": "d3205ebc4a5210af59d03ebdbf0737708278d83f1e4cb540a18818213d78cea8",
+      "role": "unchanged base child data and references"
+    },
+    {
+      "file": "pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "bytes": 83259073,
+      "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d",
+      "role": "exact same parent checkpoint/settings/report/domain bytes"
+    }
+  ],
+  "immutable_inputs_read_now": [
+    {
+      "path": "benchmarks/h3/quantum_surface_recrossing.py",
+      "bytes": 30072,
+      "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+    },
+    {
+      "path": "benchmarks/h3/quantum_recrossing_analyze.py",
+      "bytes": 21326,
+      "sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+    },
+    {
+      "path": "benchmarks/h3/quantum_recrossing_campaign.py",
+      "bytes": 3470,
+      "sha256": "16bb6f9255bc284f955532955c11973bc4178f7403aea8cd3b96f6795fbe3de5"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/precision-extension-decision.json",
+      "bytes": 2583,
+      "sha256": "dcbeaaa2338e2eb9f1d45f6c7ff2275cabbe9c3cbe9302c5f6529d4a2c5939b2"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/precision-extension-launch-receipt.json",
+      "bytes": 2246,
+      "sha256": "50464b3404ce920584d93784a7888237ee17ce4d60a0c52f89ba7b6fb8755c48"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/protocol.json",
+      "bytes": 6691,
+      "sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/schedule-200-pairs-1.json",
+      "bytes": 542,
+      "sha256": "dfaa2b848a6bbf3b1b946de3d8489b828101ffb54997b94835b4848a36d5732d"
+    }
+  ],
+  "gates_before_execution": [
+    "Root confirms successful dispatcher exit and no writer remains.",
+    "Global extra completion manifest matches the frozen schedule and all8seeds/bothdt.",
+    "All16 extra settings/reports and400success chunks bind the exact same parent/source/protocol identities.",
+    "Complete combined analysis uses batches[0,1],horizon200 and all8chains; available_only is forbidden.",
+    "Any failure states and unexpected paths are reviewed and retained explicitly; no silent subset."
+  ],
+  "pending": {
+    "extra_completion_manifest": null,
+    "combined_analysis_directory": null,
+    "combined_analysis_sha256": null,
+    "increment_archive_sha256": null,
+    "extraction_replay_receipt": null
+  },
+  "proposed_archive_basename": "pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.tar.gz",
+  "new_archive_categories": [
+    "increment_success_NPZ400",
+    "increment_complete_settings_reports_curves48",
+    "extra_original_and_completed_schedules",
+    "complete_combined_analysis_and_actual_execution_receipts",
+    "exact_prerequisite_archive_and_member_identity_manifest",
+    "explicit_failure_artifacts_if_any",
+    "scope_and_extraction_replay_instructions"
+  ],
+  "excluded": [
+    "base and parent raw duplicated bytes",
+    "external PES source/library",
+    "native binaries",
+    "Git-backed source files",
+    "live umbrella/water outputs",
+    "partial rate selection"
+  ],
+  "required_replay": "Extract base+increment into one fresh campaign directory and required parent members into a fresh repository layout; verify all800child envelopes and8parent envelopes; reconstruct keyed momenta/channels/signedflux; combine chain numerator/denominator sums across batches; match complete original statistics and every registered gate.",
+  "raw_replay_evaluates_PES_or_integrates": false,
+  "upload_authorized": false
+}

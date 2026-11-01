@@ -1,0 +1,61 @@
+{
+  "ABI_links_modified": false,
+  "builds": 0,
+  "child_import_command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility/run_checks.py",
+    "--label",
+    "py312",
+    "--probe"
+  ],
+  "completed_utc": "2026-11-01T20:28:12.043190+00:00",
+  "dependency_changes": 0,
+  "driver_error": "AssertionError()",
+  "driver_sha256": "70b380a84d80f2b95210408691a5b4309c2e19d70d8221e50154bbe8e6d4dfb1",
+  "elapsed_seconds": 4.610671467999055,
+  "environment_distributions_unchanged": true,
+  "expected_distinct_cases": 42,
+  "guard_after": {
+    "all_unchanged": true,
+    "external_files": {
+      "changed": [],
+      "files_checked": 15
+    },
+    "integrated": {
+      "changed": [],
+      "files_checked": 1061
+    },
+    "original": {
+      "changed": [],
+      "files_checked": 825
+    },
+    "owned_ABI_links": {
+      "changed": [],
+      "files_checked": 6
+    }
+  },
+  "guard_sha256": "35b52a0860924679443930316265a90c1d3e7dadb76cc4adf5b2264fc1cc1144",
+  "label": "py312",
+  "passed": false,
+  "pytest_arguments": [
+    "-ra",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "tests/test_h3_p256_parent_archive.py",
+    "tests/test_h3_p256_native_calibration.py",
+    "tests/test_water_production_stability.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/distribution-check/auxiliary-proof-compatibility/py312/pytest-tmp",
+    "--junitxml=/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/auxiliary-proof-compatibility/py312/pytest.xml"
+  ],
+  "requested_files": [
+    "tests/test_h3_p256_parent_archive.py",
+    "tests/test_h3_p256_native_calibration.py",
+    "tests/test_water_production_stability.py"
+  ],
+  "schema": "pyrpmd.auxiliary-proof-python-method-gate.v1",
+  "selection_sha256": "7aec5ab3d7fc42c81a339c04a040afdc17501ae434662b37b9a3a767dde75e9a",
+  "source_head": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_state_note": "Three immutable auxiliary bundles copied byte-for-byte; previous guarded sources unchanged.",
+  "started_utc": "2026-11-01T20:28:07.432520+00:00"
+}

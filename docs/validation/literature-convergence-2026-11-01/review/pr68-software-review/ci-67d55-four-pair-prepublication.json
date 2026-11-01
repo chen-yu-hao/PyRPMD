@@ -1,0 +1,197 @@
+{
+  "schema": "pyrpmd.github.workflow-status-observation.v1",
+  "observed_utc": "2026-11-01 20:01:54 UTC",
+  "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+  "source_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs?head_sha=67d55e9ce745a2e18906d7aff9327c7b8646a2cb&per_page=100",
+  "scope": "Workflow metadata only; queued and cancelled jobs are not passes. These results belong to the previous published head, not uncommitted additions.",
+  "total_count": 17,
+  "runs": [
+    {
+      "id": 41338892973,
+      "name": "Installed source and platform wheel",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T18:53:15Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892973"
+    },
+    {
+      "id": 41338892939,
+      "name": "PyRPMD tests",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T18:53:15Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892939"
+    },
+    {
+      "id": 41338892958,
+      "name": "Analysis reports",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T18:53:14Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892958"
+    },
+    {
+      "id": 41338892945,
+      "name": "Sampling / real PLUMED",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T19:18:13Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892945"
+    },
+    {
+      "id": 41338892980,
+      "name": "PyRPMD real BKMP2 loop-language benchmark",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T19:45:23Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892980"
+    },
+    {
+      "id": 41338892943,
+      "name": "Ecosystem interoperability",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T19:44:25Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892943"
+    },
+    {
+      "id": 41338892952,
+      "name": "H3 PMF independent-seed study",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T19:51:04Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892952"
+    },
+    {
+      "id": 41338893031,
+      "name": "Real H3 BKMP2 validation",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T19:51:27Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338893031"
+    },
+    {
+      "id": 41338892953,
+      "name": "Documentation",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T19:53:12Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892953"
+    },
+    {
+      "id": 41338892940,
+      "name": "Fused native propagation",
+      "event": "pull_request",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-01T18:53:14Z",
+      "updated_at": "2026-11-01T20:00:47Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338892940"
+    },
+    {
+      "id": 41338888514,
+      "name": "Installed source and platform wheel",
+      "event": "push",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:10Z",
+      "updated_at": "2026-11-01T18:53:12Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338888514"
+    },
+    {
+      "id": 41338888502,
+      "name": "PyRPMD tests",
+      "event": "push",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-11-01T18:53:10Z",
+      "updated_at": "2026-11-01T18:53:15Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338888502"
+    },
+    {
+      "id": 41338888548,
+      "name": "Analysis reports",
+      "event": "push",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:10Z",
+      "updated_at": "2026-11-01T18:53:10Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338888548"
+    },
+    {
+      "id": 41338888481,
+      "name": "H3 PMF independent-seed study",
+      "event": "push",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:10Z",
+      "updated_at": "2026-11-01T18:53:10Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338888481"
+    },
+    {
+      "id": 41338888510,
+      "name": "Real H3 BKMP2 validation",
+      "event": "push",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-01T18:53:10Z",
+      "updated_at": "2026-11-01T19:42:29Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338888510"
+    },
+    {
+      "id": 41338888497,
+      "name": "Documentation",
+      "event": "push",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-01T18:53:10Z",
+      "updated_at": "2026-11-01T19:44:56Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338888497"
+    },
+    {
+      "id": 41338888472,
+      "name": "Ecosystem interoperability",
+      "event": "push",
+      "head_sha": "67d55e9ce745a2e18906d7aff9327c7b8646a2cb",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-01T18:53:10Z",
+      "updated_at": "2026-11-01T19:48:47Z",
+      "html_url": "https://github.com/chen-yu-hao/PyRPMD/actions/runs/41338888472"
+    }
+  ]
+}

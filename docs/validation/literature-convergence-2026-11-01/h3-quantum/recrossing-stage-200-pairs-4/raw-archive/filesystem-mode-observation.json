@@ -1,0 +1,23 @@
+{
+  "byte_identities_remain_unchanged": true,
+  "interpretation": "Durable filesystem write protection is not asserted. The immutable artifact contract is exclusive creation, no overwrite, exact frozen bytes/SHA manifests and re-verification. The mode transition mechanism is not established.",
+  "observed_utc": "2026-11-01T19:57:22.796383+00:00",
+  "prior_provenance_or_archive_modified": false,
+  "schema": "pyrpmd.archive-post-execution-mode-observation.v1",
+  "subsequent_tool_call_observations": [
+    {
+      "bytes": 324840270,
+      "observed_mode": "0o644",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.tar.gz",
+      "sha256": "a1a7cd77362925d77bf6e6947c5bfc4c98d9bd518c14b6fda6fb0db5003c7b7a"
+    },
+    {
+      "bytes": 205393,
+      "observed_mode": "0o644",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.members.json",
+      "sha256": "501d1c13d2c81ec844d4c0b4e545a2a87a193bc1a95819ea69ce0c45df013e37"
+    }
+  ],
+  "writer_completed_without_chmod_exception": true,
+  "writer_requested_mode": "0444"
+}

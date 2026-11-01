@@ -1,0 +1,107 @@
+{
+  "active_scientific_source_edits": false,
+  "created_utc": "2026-11-01T20:34:41.418464+00:00",
+  "current_computation_scope": {
+    "dynamics_steps": 0,
+    "new_PES_evaluations": 0,
+    "new_random_draws": 0,
+    "old_pilot_draws_read": 768,
+    "old_pilot_energies_read": 641,
+    "old_pilot_geometric_zeros_retained": 127,
+    "old_pilot_seeds_retained": 8
+  },
+  "execution_approval": false,
+  "external_PES_or_compiled_native_binaries_included": false,
+  "file_count": 11,
+  "files": [
+    {
+      "bytes": 18135,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/README.md",
+      "sha256": "b63021ff910f0731173446c25dc1faf454a4aca5e0c4dca3185ab46b28e0d782"
+    },
+    {
+      "bytes": 9522,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/diagnose_saved_pilot.py",
+      "sha256": "0d9b19fa6adbee41471933db1845ad51abdb14468ca538f30ae2d4dd2a8de87c"
+    },
+    {
+      "bytes": 3747,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/diagnostic-validation.json",
+      "sha256": "d713d0622a68091b3d1869bba1babc0b8091da2e3a3ddb0fec96a555fb683315"
+    },
+    {
+      "bytes": 10428,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/independent-method-review.json",
+      "sha256": "694590d63fb8d153bef43286e90bcd218271d0977e9372f6849d8d70f3247ff7"
+    },
+    {
+      "bytes": 17272,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/README.md",
+      "sha256": "46fcb9d88645dd7dc01f864ee1a68f561d22c515b60c7a2d58eb45b04321a4ae"
+    },
+    {
+      "bytes": 13485,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/proposal.json",
+      "sha256": "c00682a02126b18a408be53fafb4de007d2b67439c2396c2f163d6dd67e2dbe9"
+    },
+    {
+      "bytes": 9511,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-diagnosis-schema-assumption.py",
+      "sha256": "f2d7b95975e17078f30b9af3d320803186d83053a8aecdc10ffd7886d037fdf6"
+    },
+    {
+      "bytes": 618,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-diagnosis-schema-failure.json",
+      "sha256": "fc6c0e342ae79ed6f270e11d9ff578f6412b57fcbd6f7afcad53b7d71d2f879b"
+    },
+    {
+      "bytes": 15380,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+      "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+    },
+    {
+      "bytes": 2028,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/review-status.md",
+      "sha256": "c2dd43881db6553399f9c3e1958c935acb5939a11bdb835c46eed6d2e65706b5"
+    },
+    {
+      "bytes": 46583,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/saved-pilot-diagnosis.json",
+      "sha256": "5e05fa4c6c169d26acc7b9ff1ab4815e55b0d5f229635fe3e28adefea9e21df8"
+    }
+  ],
+  "final_proposal": {
+    "bytes": 15380,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+    "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+  },
+  "independent_method_review": {
+    "bytes": 10428,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/independent-method-review.json",
+    "sha256": "694590d63fb8d153bef43286e90bcd218271d0977e9372f6849d8d70f3247ff7"
+  },
+  "prior_inventory_dependencies": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/publication-inventory.json",
+      "sha256": "19932ab92f282c632227fbb473797963e221d785531127836ee55d75c21d27d3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/publication-inventory.json",
+      "sha256": "d8d403e91b8928f4b9cc09933cc3f9dd282c1630dff99a05faa37f086a41e533"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/publication-inventory.json",
+      "sha256": "10ce01b004b9870e283a79e746781543edcafa5d7598e6539a21c2bfd008528e"
+    }
+  ],
+  "proposed_future_geometry_cap_not_executed": 4000,
+  "raw_NPZ_or_live_campaign_files_included": false,
+  "read_only_diagnostic": {
+    "bytes": 46583,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/saved-pilot-diagnosis.json",
+    "sha256": "5e05fa4c6c169d26acc7b9ff1ab4815e55b0d5f229635fe3e28adefea9e21df8"
+  },
+  "schema": "pyrpmd.hch4-reference-efficiency-design-publication-inventory.v1",
+  "status": "frozen_design_with_independent_method_review_not_implemented_not_adopted_not_executed",
+  "total_bytes": 146709
+}

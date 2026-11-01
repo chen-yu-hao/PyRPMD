@@ -1,0 +1,71 @@
+{
+  "findings": [
+    {
+      "issue": "The initial validator checked final_step and the observation grid but accepted an arbitrary finite final_time_au. Its initial nominal fixture used 1 au despite the fixed 200 fs duration.",
+      "resolution": "The final raw clock must agree with 200*FS_TO_AU within gamma_(N+4)*abs(target_time), where gamma_m=m*eps/(1-m*eps), N=2000 or 4000, and eps is float64 machine epsilon. The positive-addition/constant-conversion bound was derived before any P256 child observations. A wrong-clock fixture and two pure arithmetic recurrence cases now cover this contract.",
+      "resolved": true
+    }
+  ],
+  "initial_candidate_source_sha256": "5fc72acef298678e5449059bb57c40e22254cc5ca4aa5540081df480381e7e2b",
+  "limitations": [
+    "This review is not a P256 transmission/rate result or a scientific convergence certificate.",
+    "Only the separately authorized completed cohort can proceed to the reviewed full-cohort analyzer; this coordinator performs no automatic analysis.",
+    "A forced process termination can leave an uncommitted chunk or unavailable worker receipt; committed raw artifacts remain, and the attempt is not automatically retried.",
+    "The independent bounded native/Python physical validation requested by root is a separate gate, outside this read-only review."
+  ],
+  "remaining_blocking_findings": [],
+  "review_execution_scope": {
+    "MD_steps": 0,
+    "PES_evaluations": 0,
+    "new_momentum_draws": 0,
+    "source_files_modified": [],
+    "test_cases_rerun": 0
+  },
+  "reviewed_at_utc": "2026-11-01T20:12:08.975014+00:00",
+  "reviewed_source_sha256": {
+    "benchmarks/h3/p256_child_campaign.py": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb",
+    "benchmarks/h3/p256_parent_campaign.py": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+    "benchmarks/h3/p256_recrossing_analyze.py": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+    "benchmarks/h3/p256_surface_recrossing.py": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+    "tests/test_h3_p256_child_campaign.py": "74fa8be60a287ec4a8a604e07de8a7407c854daf47f63e853a990adead75682d"
+  },
+  "reviewer": "providers subagent; independent read-only source and contract review",
+  "schema": "pyrpmd.h3.p256-child-coordinator-independent-review.v1",
+  "test_evidence_inspected": {
+    "console_log_sha256": "0865f24275ba81c65c0eb7606bb737046ec4a3a07c4a214861d3c9d20b85d435",
+    "execution_owner": "distribution subagent; not rerun by this reviewer",
+    "junit": {
+      "attributes": {
+        "errors": "0",
+        "failures": "0",
+        "hostname": "13d968332fed",
+        "name": "pytest",
+        "skipped": "0",
+        "tests": "73",
+        "time": "2.143",
+        "timestamp": "2026-11-01T15:08:06.841613-05:00"
+      },
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/pytest.xml",
+      "sha256": "2d410f7a1e5cd72dd65b5012b3151121044001503cc78c4e953c3eb2afc2e5bd"
+    },
+    "scope": "Synthetic metadata/checkpoint envelopes, arithmetic recurrence and bounded inert subprocesses; no physical propagation.",
+    "structured_gate": {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/synthetic-gate.json",
+      "sha256": "76a5d5e64b23ba67a246e50b329e0a4eb1e58828dd30386800206d82bd87e4df"
+    }
+  },
+  "verified_contracts": [
+    "The fixed complete eight-parent manifest, nested parent routes, P128 complete four-pair baseline, external PES library/build identity, current source snapshots and runtime are bound before dispatch.",
+    "Each of eight seeds runs exactly the four registered branches in order: batch 0 dt 0.1, batch 0 dt 0.05, batch 1 dt 0.1, batch 1 dt 0.05; each branch has 200 parents and two antithetic momentum pairs.",
+    "Each child NPZ requires its full-array integrity envelope plus the report-bound whole-file SHA. Fixed shapes, parent/sweep order, pair indices, observation grid, native/final steps and physical end clock are checked.",
+    "Initial-momentum and equivalent-channel hashes must match chunk by chunk between the two timesteps for each pair batch.",
+    "The global inventory requires 32 unique reports/settings, 800 unique ordered chunks and 76,800,000 native physical steps. These counts are not treated as independent statistical replicas.",
+    "Whole registration/parent/source hashes are rechecked at admission, between branches and before final eligibility publication. The wrapper does not invoke the rate analyzer or use rate values to select or stop jobs.",
+    "Only a worker with the registered current parent PID and inherited coordinator process token can enter. A per-seed exclusive new claim and rejection of any existing branch prevent repeated dispatch or implicit resume.",
+    "The reviewed dispatcher 7934c1d7 is reused unchanged. It stops admissions after observed error, signal or deadline, records children before later journal operations, and stops/reaps only its owned start_new_session process groups.",
+    "On an error or deadline, drain means SIGTERM followed by a bounded SIGKILL fallback when necessary, not natural completion of every branch. The new worker records an interrupted failure/resource receipt when possible; an unavailable receipt remains explicit and prevents eligibility.",
+    "The directory lease is not automatically broken after hard crash or unconfirmed drain. A nonempty one-attempt output is never automatically resumed.",
+    "The separately chosen 10 hour wall budget includes startup/preflight and final audits, with a 120 second finalization reserve. Budget, source, receipt or audit failure leaves the cohort ineligible and retains data.",
+    "Successful global completion additionally requires all eight measured worker receipts, matching branch membership/native counts, one allowed CPU per worker and one thread per declared thread variable."
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "PES_calls": 0,
+  "constants": {
+    "beta_hartree_inverse": 1052.5834160132904,
+    "masses_electron_mass": [
+      1837.1526471479565,
+      21874.661835393123,
+      1837.1526471479565,
+      1837.1526471479565,
+      1837.1526471479565,
+      1837.1526471479565
+    ],
+    "reactant_flux_prefactor_au": 3.3450362638130775,
+    "reactant_flux_prefactor_cm3_molecule_s": 2.0492225575240845e-08,
+    "reference_breaking_bohr": 2.6272862155199657,
+    "reference_difference_bohr": -0.9779332364086217,
+    "reference_forming_bohr": 1.649352979111344,
+    "relative_reduced_mass_electron_mass": 1728.4892968817187
+  },
+  "created_utc": "2026-11-01T18:54:40.640138+00:00",
+  "dynamics_steps": 0,
+  "geometries": {
+    "active_channel": 128,
+    "inactive_channel": 0,
+    "positive_xi_denominator": 128,
+    "total": 128
+  },
+  "maximum_errors": {
+    "cartesian_gradient_absolute_error": 7.71278596545244e-11,
+    "coarea_gradient_absolute_error": 6.661338147750939e-16,
+    "gauge_jacobian_relative_error": 1.1055156790007459e-10,
+    "metric_relative_error": 1.2404910432195493e-10,
+    "permutation_absolute_error": 0.0,
+    "root_residual_bohr": 4.822531263215524e-16,
+    "rotation_absolute_error": 2.220446049250313e-16,
+    "xi_surface_absolute_error": 6.453171330633722e-16
+  },
+  "minimum_radial_derivative_magnitude": 0.9983570425539219,
+  "minimum_xi_denominator_bohr": 25.712620345459566,
+  "rate_estimates": 0,
+  "schema": "pyrpmd.hch4-reference-feasibility.geometry-only.v1",
+  "scope": "128 synthetic perturbed-geometry roots and twelve rotation-gauge Jacobians; not equilibrium samples",
+  "separate_channel_exclusion_counterexample": {
+    "classification": "deliberately non-equilibrium, no potential or physical probability evaluated",
+    "coordinates_bohr": [
+      [
+        6.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        6.0,
+        2.0,
+        0.0
+      ],
+      [
+        0.8757773025100164,
+        1.2385038262064503,
+        -2.145170214025331
+      ],
+      [
+        -2.059990449852073,
+        2.5322330087229616e-05,
+        1.889726125581248e-08
+      ],
+      [
+        6.0,
+        5.044895194162876,
+        0.0
+      ]
+    ],
+    "max_channel_surface_bohr": 2.322230765016423,
+    "own_channel_surface_bohr": 7.28583859910259e-16
+  },
+  "source_hashes_after": {
+    "benchmarks/hch4/geometries.json": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+    "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+    "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+    "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+    "benchmarks/hch4/source.json": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+  },
+  "source_hashes_before": {
+    "benchmarks/hch4/geometries.json": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+    "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+    "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+    "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+    "benchmarks/hch4/source.json": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/workflows/rate.py": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+  },
+  "source_unchanged": true,
+  "status": "geometry_checks_passed_estimator_unimplemented_unvalidated"
+}

@@ -147,6 +147,46 @@ There are zero new failures, errors or skips. No rebuild, installation,
 source change or ABI-link mutation occurs during this later gate. These
 software checks do not supply liquid equilibration or diffusion evidence.
 
+The subsequent
+[materials and preparation-coordinator gate](materials-preparation-compatibility/README.md)
+executes 45 further distinct cases on each interpreter: ten real EAM4 static
+checks and 35 orchestration fixtures. Each run has zero failures, errors or
+skips. Their union with the unchanged earlier receipts contains exactly
+**315 distinct passing cases on each of Python 3.12, 3.13 and 3.14**.
+The earlier 270 cases were not rerun, and no model/native module or dependency
+was rebuilt. This bounded compatibility gate remains separate from the
+F + H₂ author's standalone static program and all long scientific campaigns.
+
+The [P256, methane-pilot and water-tool gate](four-pair-p256-compatibility/README.md)
+adds **239 distinct cases on each interpreter**, again with zero failures,
+errors or skips. The exact union is now **554 distinct passing cases per
+interpreter**. These comprise 17 water control/plot cases, 30 methane pilot
+cases, 61 P256 parent-coordinator cases, 58 parent-binding/statistical-analysis
+cases and 73 child-coordinator cases. The earlier 315 cases were not rerun.
+Before/after checks cover 1,005 integrated files, 769 original-runtime files,
+15 external/model files and the same six ABI links. The catalog-only source
+delta is explicit. This historical 554-case stage did not include the
+separate parent archive-auditor fixtures.
+
+The subsequent [auxiliary proof gate](auxiliary-proof-compatibility-v2/README.md)
+executes **42 further distinct cases on each interpreter**, with zero
+failures, errors or skips. These are 20 parent-archive lifecycle cases,
+16 excluded native-calibration comparator/resource cases and six descriptive
+water stability cases. Their exact union with the unchanged earlier receipts
+is **596 distinct passing cases on each of Python 3.12, 3.13 and 3.14**;
+the earlier 554 were not rerun. This is a bounded method-test union, not a
+full-project-suite result.
+
+The [first auxiliary attempt](auxiliary-proof-compatibility/README.md) is
+retained: its Python 3.12 tests passed 41 cases and skipped one because the
+runner's CPU affinity excluded the required CPU 6; its session-finish audit
+also failed on an assumed pytest module name. The v2 runner uses collected
+module objects and the required affinity. A separate, documented
+[one-line test portability fix](../water/production-stability-portability/README.md)
+skips only the rendering case if optional matplotlib is absent. All three
+selected environments provide matplotlib and execute all six water cases.
+The original physics, benchmark sources and running checkout remain unchanged.
+
 ## Documentation
 
 The changed English manual passes the strict Sphinx HTML build with
@@ -162,3 +202,18 @@ The later complete-200fs documentation update has a separate
 [build log](documentation-200fs-stage-build.log), preserving the earlier
 check's exact source scope. Its new local evidence links are included in
 the [publication audit](publication-200fs-stage-audit.json).
+
+The complete four-pair evidence update has its own final
+[strict Sphinx receipt](documentation-four-pair-stage-v2-check.json),
+[build log](documentation-four-pair-stage-v2-build.log) and
+[publication audit](publication-four-pair-stage-audit-v2.json).
+The initial [strict build](documentation-four-pair-stage-check.json) rejected
+one live manual link to a historical evidence page excluded from Sphinx.
+That link now uses the repository URL; the failed build and its exact source
+hashes remain preserved. The earlier receipts retain their original scopes.
+
+The relocated historical methane design snapshot retains its original relative
+links. Its [explicit original-directory mapping](publication-four-pair-stage-historical-link-context.json)
+records all seven destinations and their exact hashes. The audit reports these
+seven historical resolutions separately; current-document links are checked
+at their actual locations. The initial rejected link check is retained.

@@ -1,0 +1,56 @@
+{
+  "schema": "pyrpmd.materials-public-source-fetch.v1",
+  "network": "Inherited proxy and TLS verification; public URLs only; no authentication, messages, uploads, or simulation.",
+  "attempts": [
+    {
+      "id": "hal-pd",
+      "url": "https://api.archives-ouvertes.fr/search/?q=doiId_s%3A%2210.1021%2Fct900554r%22&fl=title_s%2Curi_s%2CfileMain_s%2CdocType_s%2CauthFullName_s%2CdoiId_s&wt=json",
+      "accessed_utc": "2026-11-01T18:42:04.987621+00:00",
+      "purpose": "Public metadata/model availability only; not a matched Calvo/Costa or Suleimanov model claim.",
+      "status": 200,
+      "final_url": "https://api.archives-ouvertes.fr/search/?q=doiId_s%3A%2210.1021%2Fct900554r%22&fl=title_s%2Curi_s%2CfileMain_s%2CdocType_s%2CauthFullName_s%2CdoiId_s&wt=json",
+      "content_type": "application/json; charset=utf-8",
+      "bytes": 116,
+      "sha256": "316b596864c92e18c8f6688107ad49ecfc3fe632ebdc85efe82c65ed28ba8064",
+      "metadata": {
+        "response": {
+          "numFound": 0,
+          "start": 0,
+          "maxScore": 0.0,
+          "numFoundExact": true,
+          "docs": []
+        }
+      }
+    },
+    {
+      "id": "hal-ni",
+      "url": "https://api.archives-ouvertes.fr/search/?q=doiId_s%3A%2210.1021%2Fjp302453z%22&fl=title_s%2Curi_s%2CfileMain_s%2CdocType_s%2CauthFullName_s%2CdoiId_s&wt=json",
+      "accessed_utc": "2026-11-01T18:42:04.989958+00:00",
+      "purpose": "Public metadata/model availability only; not a matched Calvo/Costa or Suleimanov model claim.",
+      "status": 200,
+      "final_url": "https://api.archives-ouvertes.fr/search/?q=doiId_s%3A%2210.1021%2Fjp302453z%22&fl=title_s%2Curi_s%2CfileMain_s%2CdocType_s%2CauthFullName_s%2CdoiId_s&wt=json",
+      "content_type": "application/json; charset=utf-8",
+      "bytes": 116,
+      "sha256": "316b596864c92e18c8f6688107ad49ecfc3fe632ebdc85efe82c65ed28ba8064",
+      "metadata": {
+        "response": {
+          "numFound": 0,
+          "start": 0,
+          "maxScore": 0.0,
+          "numFoundExact": true,
+          "docs": []
+        }
+      }
+    },
+    {
+      "id": "nist-pd-candidate",
+      "url": "https://www.ctcms.nist.gov/potentials/Download/2008--Zhou-X-W-Zimmerman-J-A-Wong-B-M-Hoyt-J-J--Pd-H/1/PdH_Zhou_June29_2007_2.set",
+      "accessed_utc": "2026-11-01T18:42:04.997960+00:00",
+      "purpose": "Public metadata/model availability only; not a matched Calvo/Costa or Suleimanov model claim.",
+      "error_type": "HTTPError",
+      "error": "HTTP Error 403: Forbidden",
+      "retry_attempted": false
+    }
+  ],
+  "downloaded_potential_not_for_git": true
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "pyrpmd.fourth-publication-aggregate-update.v1",
+  "created_utc": "2026-11-01T20:37:31.640606+00:00",
+  "completed_auxiliary_gate_sha256": "b885cb1ab1a015cc37e3557e7cb5d41e51b1537acc2a83dd456fc27fbb48869f",
+  "changes": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/README.md",
+      "before_sha256": "7d35c97d86dbabbc52180ec7911e494a5ac2901039906f16021ad6396c02f8a3",
+      "after_sha256": "84c10c791a6a987d0ce424e269233f5335eb16b836e2e15d52a8f1e0f919ab0c"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/README.md",
+      "before_sha256": "63ae1a21c471f870671844f13a0e34ee54fc33f6cc1637b6bacf560caa3087a3",
+      "after_sha256": "b428eab9a51a265a6d883d5f5f0fdd643172a2e81b50808baaf321ead57f4e12"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/README.md",
+      "before_sha256": "b428eab9a51a265a6d883d5f5f0fdd643172a2e81b50808baaf321ead57f4e12",
+      "after_sha256": "1b64a89fc5341b38e4e4e674321036c3229c8eb5f1800025d8ff8a07be19a267"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/README.md",
+      "before_sha256": "022627d585e3228889d60089beb219ba3524b1495fbf89cfdd40585218eb0293",
+      "after_sha256": "45db30b1af5f2f8aa092f831a8a94cf6f84854f9e0e6ce86e566221187862298"
+    },
+    {
+      "path": "docs/literature-validation.md",
+      "before_sha256": "147e88257e8b69a9eca95884bfdcb8a19a5977c1f9deaf72ace618fcfb2fd539",
+      "after_sha256": "4ae6cdbf0e8e27d1134774f0e1154fec1d693a873cd57c286e535fa206a29d86"
+    }
+  ],
+  "physical_source_changes": false,
+  "literature_targets_or_gates_changed": false
+}

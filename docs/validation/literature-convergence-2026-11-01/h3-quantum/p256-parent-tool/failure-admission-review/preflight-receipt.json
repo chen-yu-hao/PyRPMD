@@ -1,0 +1,42 @@
+{
+  "child_system_CPU_seconds": 0.03559000000000001,
+  "child_user_CPU_seconds": 0.15813299999999986,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+    "preflight"
+  ],
+  "created_utc": "2026-11-01T19:44:47.344841+00:00",
+  "exit_code": 0,
+  "log": {
+    "bytes": 327,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/preflight.log",
+    "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+  },
+  "output_root_created": false,
+  "result": {
+    "PES_calls": 0,
+    "output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents",
+    "preflight_passed": true,
+    "seeds": [
+      825601,
+      825603,
+      825607,
+      825609,
+      825613,
+      825617,
+      825621,
+      825623
+    ],
+    "source_guard_count": 39,
+    "workers_launched": 0
+  },
+  "schema": "pyrpmd.h3.p256-parent-tool-read-only-preflight.v1",
+  "scope": "Source/runtime/model/old-state reads only; zero PES/workers/sampling.",
+  "source": {
+    "bytes": 35515,
+    "path": "benchmarks/h3/p256_parent_campaign.py",
+    "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+  },
+  "wall_seconds": 0.21562799999810522
+}

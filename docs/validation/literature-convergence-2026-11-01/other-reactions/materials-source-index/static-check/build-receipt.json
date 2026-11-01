@@ -1,0 +1,59 @@
+{
+  "schema": "pyrpmd.materials-reference.eam4-static-build.v1",
+  "scope": "Unmodified EAM4 coefficient routines; nb=1 static checks only; no paper diffusion reproduction",
+  "archive": {
+    "url": "https://www-wales.ch.cam.ac.uk/svn.tar.bz2",
+    "sha256": "8463fbbbab3f613c1daa021df99cf89791be3ca61c7f3b9c2f5307e484bf8029",
+    "bytes": 122758544,
+    "member": "./wales/OPTIM/source/nimetpot.f90"
+  },
+  "original_source": {
+    "path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/nimetpot.original.f90",
+    "sha256": "b294b106cac20038eb941037b63f35dcce374ed40559d68217f5751b90d514a6",
+    "bytes": 43812
+  },
+  "suffix": {
+    "path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/eam4.original-suffix.f90",
+    "sha256": "07abd148d739f60a065791f1459bd20ac6434264ffd69af39334937011036384",
+    "bytes": 37662,
+    "start_byte_zero_based": 6150,
+    "transformation": "unchanged byte suffix only"
+  },
+  "source_files": {
+    "benchmarks/materials_reference/build_eam4.py": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853",
+    "benchmarks/materials_reference/eam4_bridge.f90": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c"
+  },
+  "compiler_version": "GNU Fortran (conda-forge gcc 16.2.0-7) 16.2.0\nCopyright (C) 2026 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran",
+    "-O2",
+    "-std=f2008",
+    "-fPIC",
+    "-shared",
+    "-ffree-line-length-none",
+    "-fcheck=bounds",
+    "-frecursive",
+    "-fno-fast-math",
+    "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/eam4.original-suffix.f90",
+    "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/eam4_bridge.f90",
+    "-o",
+    "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/libeam4_static.so"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 1.4457940509964828,
+  "compile_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "compile_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "energy_convention": "Original fixed--fixed Ni pair-energy constant omitted; no comparisons across fixed partitions",
+  "derivative_convention": "dV/dq for H and mobile Ni; original zero fixed-Ni outputs are not physical reaction forces",
+  "units": {
+    "q": "angstrom",
+    "energy": "eV",
+    "gradient": "eV/angstrom"
+  },
+  "license_source": "https://www-wales.ch.cam.ac.uk/OPTIM/ (public distribution described as GPL)",
+  "library": {
+    "path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/libeam4_static.so",
+    "bytes": 54048,
+    "sha256": "b1673de4eb3d0673a49d22a9a6521095d0f2848338857ae10ee7adc9a97ab2f1"
+  }
+}

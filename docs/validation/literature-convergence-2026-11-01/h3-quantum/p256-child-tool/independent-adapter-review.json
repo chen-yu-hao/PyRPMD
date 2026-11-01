@@ -1,0 +1,41 @@
+{
+  "findings": [
+    {
+      "issue": "run_seed originally selected parent_root/seed-N although the bound cohorts use history-replay/seed-N and new-independent/seed-N",
+      "resolution": "run_seed now takes the exact relative_directory from the hash-bound proposal",
+      "resolved": true
+    },
+    {
+      "issue": "Checkpoint summary and report hashes needed an explicit connection to the verified checkpoint.npz file-inventory hash",
+      "resolution": "verify_manifest and load_parents now both require row checkpoint_sha256 to equal files/checkpoint.npz.sha256 before the report comparison",
+      "resolved": true
+    }
+  ],
+  "initial_reviewed_source_sha256": "aad732a773dfbaab62876f41e632e39edf1a1459c45fb879fa242c1ff1ef3c6a",
+  "intermediate_route_fix_source_sha256": "6f57ae9d43dc2eabbe570c5e0e5cedf150c3148f243b1d560aefdd805dafb913",
+  "physical_kernel_source_sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+  "remaining_blocking_findings": [],
+  "review_limitations": [
+    "No PES evaluation, momentum draw, physical integration or regression rerun was performed by this reviewer.",
+    "Root owns the separate 29-case execution evidence; this receipt is not a second execution record.",
+    "A complete individual branch does not establish completion of 8 seeds × 2 timesteps × 2 pair batches. The separate campaign coordinator/analyzer must enforce that membership before scientific inference.",
+    "The additive P256 analyzer and child execution coordinator are outside this adapter signoff and require their own review."
+  ],
+  "reviewed_at_utc": "2026-11-01T19:49:03.800736+00:00",
+  "reviewed_final_source_sha256": "5ac28d058ae0cefa0a3abcdcbd2287f67e7f64f93c321d390101b59b4c791d2e",
+  "reviewer": "providers subagent; independent read-only review",
+  "schema": "pyrpmd.h3.p256-child-adapter-independent-review.v1",
+  "source_files_modified_by_reviewer": [],
+  "source_path": "benchmarks/h3/p256_surface_recrossing.py",
+  "verified_contracts": [
+    "Exact eight unique fixed parent identities, completed counts, design, role and sampling flags are required through registration before execution.",
+    "All five files per parent are hashed; settings, whole checkpoint integrity, expected settings fingerprint, saved normalization hash and exact endpoint sequence are checked.",
+    "Historical replay binds the exact sixteen original payload names, with reference/scientific-report identity; new chains cannot claim historical replay.",
+    "The four pair indices use unchanged independent keyed seed/parent/pair Maxwell streams and common channel keys across the two timesteps.",
+    "P256 Maxwell variance m*P/beta gives a P-independent centroid velocity variance; fs equals its standard deviation divided by sqrt(2*pi), so mean abs(v)/fs is 2.",
+    "The paired signed numerator and denominator retain the original antithetic estimator and normalization.",
+    "Full-ring Hamiltonian errors are correctly scaled by beta/P.",
+    "AST comparison: run_seed statements from before=source_identity() through return exactly match the frozen P128 function.",
+    "AST comparison: summarize physical/statistical statements after the added parent-source validation exactly match the frozen P128 function."
+  ]
+}

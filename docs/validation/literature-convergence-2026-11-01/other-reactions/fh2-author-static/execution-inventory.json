@@ -1,0 +1,135 @@
+{
+  "schema": "pyrpmd.fh2.author-static-execution-inventory.v1",
+  "frozen_utc": "2026-11-01T19:17:53.235469+00:00",
+  "scope": "Frozen runner, prespecified protocol, source identities and compact actual static outputs; pending independent read-only review. No third-party source, parameters or binaries.",
+  "files": [
+    {
+      "path": "benchmarks/fh2_reference/README.md",
+      "bytes": 4528,
+      "sha256": "4952c87b619bfc81413bfef1bed17fa397e9e345989ffeaf1acd280af152ebd5"
+    },
+    {
+      "path": "benchmarks/fh2_reference/__init__.py",
+      "bytes": 78,
+      "sha256": "f0cff5206b45aa4716da0a016b754f5d8fc057d6547ce6932158f4cfc820cbfb"
+    },
+    {
+      "path": "benchmarks/fh2_reference/run_static_check.py",
+      "bytes": 13670,
+      "sha256": "ca6ea27253cca9ef5e04f6a4c79703a5ba080879ff089d550a64c137e347aa43"
+    },
+    {
+      "path": "benchmarks/fh2_reference/sources.json",
+      "bytes": 3693,
+      "sha256": "7f18522757459d80527b1f290ee04e317d0888323eb33608f81e481fa7f5d39c"
+    },
+    {
+      "path": "benchmarks/fh2_reference/static_protocol.json",
+      "bytes": 2941,
+      "sha256": "f83b624bd6259bb9194f42071268f286848e60f2f86fae3e1a440e69f7422ea8"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/README.md",
+      "bytes": 4342,
+      "sha256": "cdbd633cec4dab2b2b58af294a9b414c318448702b2635ff5bbe2dd40f0815aa"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/compiler-observation.json",
+      "bytes": 891,
+      "sha256": "35fc13474a008a6b0968b49488bca0f68a6163f61555d2f1ef5ec14b0252dc9d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/fetch-receipt.json",
+      "bytes": 4194,
+      "sha256": "805d0ac3a21a1212e1aed6601e3eb84327e668a49aedbc3e4454fe471ff515d5"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/fetch_public_archives.py",
+      "bytes": 2726,
+      "sha256": "26bbd5b5de58e97524d239bd1ea8306cfd9fff2a01a57cfb7c259c32ca7e1f0d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-build.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-verify.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-verify.stdout.txt",
+      "bytes": 244,
+      "sha256": "7e28cfd4100e658cd119cbc1203f4c5382970a17d8af0f6aaba2aaa9887d47ab"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-build.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-checks.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-checks.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-results.json",
+      "bytes": 4630,
+      "sha256": "4cc956194d920677a7b7f0d56bf10a5725da9bce62be41b25d331dc02026fa6d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/legacy-literal-rounding.json",
+      "bytes": 898,
+      "sha256": "375b491bebbc67db1a95e21dc209078930b528fd184dab41940e70d374d17f3c"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/report.json",
+      "bytes": 8830,
+      "sha256": "5d2d235bb52e206d22b5a16a0daefb9284800d9f34d0f2e1d4efcf6f88e730f2"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-build.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-build.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-checks.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-checks.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-results.json",
+      "bytes": 13877,
+      "sha256": "714064690701f3df02700c1e07599dd4b42eb19df31f6517dee54f67bb65f927"
+    }
+  ],
+  "file_count": 25,
+  "total_bytes": 65542,
+  "thermal_rate_or_RPMD_validation": false
+}

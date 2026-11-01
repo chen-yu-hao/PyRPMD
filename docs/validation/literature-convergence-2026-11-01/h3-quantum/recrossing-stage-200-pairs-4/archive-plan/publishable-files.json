@@ -1,0 +1,19 @@
+{
+  "schema": "pyrpmd.h3.quantum-child-archive-plan-inventory.v1",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/archive-plan/README.md",
+      "bytes": 6845,
+      "sha256": "18f5c8fc5fb88354b3386d8b067367fe61018d3a06a0e1c3bcb92dfd307cf1ea"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/archive-plan/plan.json",
+      "bytes": 5431,
+      "sha256": "aa483eac9528cf8966a862233b2e772927a3de7e3536b14b14cdc8da366084b3"
+    }
+  ],
+  "total_files": 2,
+  "total_bytes": 12276,
+  "include_this_manifest_separately": true,
+  "status": "plan_only_not_an_archive_execution"
+}

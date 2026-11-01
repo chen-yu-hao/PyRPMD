@@ -1,0 +1,42 @@
+{
+  "child_system_CPU_seconds": 0.02815599999999996,
+  "child_user_CPU_seconds": 0.18286399999999992,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+    "preflight"
+  ],
+  "created_utc": "2026-11-01T19:38:53.137595+00:00",
+  "exit_code": 0,
+  "log": {
+    "bytes": 327,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/preflight.log",
+    "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+  },
+  "output_root_created": false,
+  "result": {
+    "PES_calls": 0,
+    "output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents",
+    "preflight_passed": true,
+    "seeds": [
+      825601,
+      825603,
+      825607,
+      825609,
+      825613,
+      825617,
+      825621,
+      825623
+    ],
+    "source_guard_count": 39,
+    "workers_launched": 0
+  },
+  "schema": "pyrpmd.h3.p256-parent-tool-read-only-preflight.v1",
+  "scope": "Only source/runtime/model receipt and frozen historical checkpoint envelope reads; no model construction, worker, sampler, or trajectory.",
+  "source": {
+    "bytes": 34396,
+    "path": "benchmarks/h3/p256_parent_campaign.py",
+    "sha256": "ff41236e1dcfcb0ed2de36b885ae09b3ca70d3a06cd8bc54c267b710f9310714"
+  },
+  "wall_seconds": 0.21566118900227593
+}

@@ -1,0 +1,19 @@
+{
+  "PES_evaluations": 0,
+  "bytes": 13530,
+  "file_count": 2,
+  "files": [
+    {
+      "bytes": 1473,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/README.md",
+      "sha256": "fde3376571470b304ab6c534706a9183cd7154c4b8e1c432121df8fabfbd5687"
+    },
+    {
+      "bytes": 12057,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-native-calibration/proposal.json",
+      "sha256": "d33f221b2ce8e869b9f7c3577021726bba0ac25b23f0deac3c08e30c5d47c196"
+    }
+  ],
+  "physical_steps": 0,
+  "schema": "pyrpmd.h3.p256-native-calibration-proposal-inventory.v1"
+}

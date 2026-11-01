@@ -1,0 +1,10 @@
+{
+  "schema": "pyrpmd.extra-child-exec-completion.v1",
+  "observed_utc": "2026-11-01T19:38:18.205193+00:00",
+  "exec_session_id": 74559,
+  "exec_chunk_id": "a66e0b",
+  "exit_code": 0,
+  "completion_sha256": "edc07bd7d18f6413711713e11a9d944f62dc53ab078397bd4ca99920ef68e119",
+  "complete_manifest_written_after_ProcessPoolExecutor_shutdown": true,
+  "no_exit_was_inferred_from_partial_progress": true
+}

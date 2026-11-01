@@ -1,0 +1,66 @@
+{
+  "counts": [
+    {
+      "completed_sweeps": 22000,
+      "production_sweeps": 20000,
+      "progress_present": true,
+      "relative_directory": "history-replay/seed-825601",
+      "seed": 825601
+    },
+    {
+      "completed_sweeps": 22000,
+      "production_sweeps": 20000,
+      "progress_present": true,
+      "relative_directory": "history-replay/seed-825603",
+      "seed": 825603
+    },
+    {
+      "completed_sweeps": 22000,
+      "production_sweeps": 20000,
+      "progress_present": true,
+      "relative_directory": "history-replay/seed-825607",
+      "seed": 825607
+    },
+    {
+      "completed_sweeps": 22000,
+      "production_sweeps": 20000,
+      "progress_present": true,
+      "relative_directory": "history-replay/seed-825609",
+      "seed": 825609
+    },
+    {
+      "completed_sweeps": 22000,
+      "production_sweeps": 20000,
+      "progress_present": true,
+      "relative_directory": "new-independent/seed-825613",
+      "seed": 825613
+    },
+    {
+      "completed_sweeps": 22000,
+      "production_sweeps": 20000,
+      "progress_present": true,
+      "relative_directory": "new-independent/seed-825617",
+      "seed": 825617
+    },
+    {
+      "completed_sweeps": 11000,
+      "production_sweeps": 9000,
+      "progress_present": true,
+      "relative_directory": "new-independent/seed-825621",
+      "seed": 825621
+    },
+    {
+      "completed_sweeps": 10000,
+      "production_sweeps": 8000,
+      "progress_present": true,
+      "relative_directory": "new-independent/seed-825623",
+      "seed": 825623
+    }
+  ],
+  "current_BAR_or_rate_results_read": false,
+  "global_manifest_present": false,
+  "observed_utc": "2026-11-01T20:04:55.418764+00:00",
+  "root_completion_observed_by_reviewer": false,
+  "schema": "pyrpmd.h3.p256-parent-counts-only-observation.v1",
+  "scope": "Only selected progress counters, not complete-result assessment or raw-state inspection."
+}

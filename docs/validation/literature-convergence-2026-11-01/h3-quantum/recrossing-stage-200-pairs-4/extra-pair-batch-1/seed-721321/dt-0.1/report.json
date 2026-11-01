@@ -1,0 +1,150 @@
+{
+  "schema": "pyrpmd.h3.quantum-surface-recrossing.v1",
+  "phase": "primary",
+  "seed": 721321,
+  "timestep_fs": 0.1,
+  "horizon_fs": 200,
+  "pair_batch": 1,
+  "momentum_pair_indices": [
+    2,
+    3
+  ],
+  "complete": true,
+  "parents_completed": 200,
+  "pairs_per_parent": 2,
+  "plateaus": {
+    "80-100": 0.7459385282670695,
+    "180-200": 0.7459385282670695
+  },
+  "mean_denominator": 1.9992764329147474,
+  "expected_mean_denominator": 2.0,
+  "native_steps_this_stage": 1600000,
+  "unique_native_steps_all_stages": 1600000,
+  "python_steps": 0,
+  "maximum_energy_error_kbt_per_bead": 0.2422536812282021,
+  "energy_error_quantiles_kbt_per_bead": [
+    0.03898199405086955,
+    0.09292964126072473,
+    0.1563501240409545,
+    0.1889847656221868,
+    0.2422536812282021
+  ],
+  "minimum_pair_at_1fs_bohr": 0.6386709851519171,
+  "children_with_sampled_pair_below_static_domain": 0,
+  "minimum_pair_scope": "Only initial and 1-fs boundaries; every-step PES guard and full-H extrema are separate checks.",
+  "source_unchanged": true,
+  "settings_sha256": "920bd581b687543629648c09f4c61390e0e44badba9b8fbe055ab94ccbc81440",
+  "chunks": [
+    {
+      "file": "chunk-0000.npz",
+      "sha256": "698a2ff5ad30f87bbb1fb131d91fe3572bace1900c1a61c5b5f06b40d13928f1"
+    },
+    {
+      "file": "chunk-0008.npz",
+      "sha256": "a29146a2d15cd78815a713fdf9146f3175ec9dd1b23c3dd5f792b133a2d554c1"
+    },
+    {
+      "file": "chunk-0016.npz",
+      "sha256": "fc232205b32ee6f71d319c7b368bc29ac39ff88383f7b16d8feea3eed2f6c47b"
+    },
+    {
+      "file": "chunk-0024.npz",
+      "sha256": "f003feb6a160b071fbec603a59bdf5040c3cea893badf3d181000c6fd1a63cfd"
+    },
+    {
+      "file": "chunk-0032.npz",
+      "sha256": "4b4dccd8899352d4c5a62dcafd6b9d9b6ca81df50826bde0664a52b3bcd543c4"
+    },
+    {
+      "file": "chunk-0040.npz",
+      "sha256": "56ac54fc87bedf3f91a656e89a8101c0739b9d43470ce749a8beb742b5b92462"
+    },
+    {
+      "file": "chunk-0048.npz",
+      "sha256": "1d82fe6ddc5704aeea5859c414d673d7c1989ea5063c711c772d9b9f9e69837a"
+    },
+    {
+      "file": "chunk-0056.npz",
+      "sha256": "61356793739e7dd42e3501c883d3393ad6b4db1dd746114a52004b9f04b158aa"
+    },
+    {
+      "file": "chunk-0064.npz",
+      "sha256": "9a356029495fc7ed1c2190d637d5db933e359d0ab5f8afac85d9a3a68166a00f"
+    },
+    {
+      "file": "chunk-0072.npz",
+      "sha256": "31fec3f5a00ed23afef3ecc60036d6f82042044c5e6af4445b65b3e0b6de7143"
+    },
+    {
+      "file": "chunk-0080.npz",
+      "sha256": "ea1d39c5598c4264cc5493962e69e25d4e8471652b74e1356e77dd62ef4f624e"
+    },
+    {
+      "file": "chunk-0088.npz",
+      "sha256": "81a80cdbba2af67a6ff6cda99e7de9cdcf5362848d5d6847034c8fb909a994af"
+    },
+    {
+      "file": "chunk-0096.npz",
+      "sha256": "fd53270124a94b03a61cd287fac178f8e05b4ba3fa0001cfc2648f7bd166bacd"
+    },
+    {
+      "file": "chunk-0104.npz",
+      "sha256": "57bbba4adffd8197504db9b10cc1efd26e396db66958b3364e3c95b0387154fe"
+    },
+    {
+      "file": "chunk-0112.npz",
+      "sha256": "2193bdf19d679fc3c685d5c9b6375777c797b623aeb3a93dc4cf59b347f7bfb9"
+    },
+    {
+      "file": "chunk-0120.npz",
+      "sha256": "ac1278b4dd64d8955298e8a2849afbac1b8d105eccd77fe867f5c4bcb431118d"
+    },
+    {
+      "file": "chunk-0128.npz",
+      "sha256": "c36ce5d670bc966b1e768d191c6396bd302ab4770e4ae2c851aca07a76f07f74"
+    },
+    {
+      "file": "chunk-0136.npz",
+      "sha256": "1b73ebbf7150c8a9a8cb10273e72102f064f58ccfaa80196a21b16780bd7278b"
+    },
+    {
+      "file": "chunk-0144.npz",
+      "sha256": "78099933d201586a3ab0d33125ba4e58d69d20c80a0dfd9d7719c51784c1b73b"
+    },
+    {
+      "file": "chunk-0152.npz",
+      "sha256": "21683c16aba435331b37a0cc4f093c896170800834bd403e0f4fd507a475fcc1"
+    },
+    {
+      "file": "chunk-0160.npz",
+      "sha256": "bec77fd92f757d2a3ad77cef0af126c8ce164e35e824506e5291e19b74781f9d"
+    },
+    {
+      "file": "chunk-0168.npz",
+      "sha256": "b11f54bbf6c69e0219e5e4f29b540ff8f5a5d345857b7025679b51967c262ddf"
+    },
+    {
+      "file": "chunk-0176.npz",
+      "sha256": "1c412a32aadf88139a7a63149e194338d18aaab4c20f5f5456ab1feb3f626167"
+    },
+    {
+      "file": "chunk-0184.npz",
+      "sha256": "491d3c952c2c34ecca3482a7284af9fa3407493b3eb0006627d56c9c8be90916"
+    },
+    {
+      "file": "chunk-0192.npz",
+      "sha256": "dfea9525edc5a1290e0ba1b1ea810c99b34022d4917c3f0376b9694ea79fa33b"
+    }
+  ],
+  "parent_identity": {
+    "checkpoint_sha256": "fe74abf796ebb757c887f30afdb864d388cd1ce8e3b520445dc9653d96dfea64",
+    "settings_sha256": "c2a92347474317ea0bc91ca38928caa2d1bba88299fc665742001f5ac5744dc4",
+    "report_sha256": "8ca26884df01d061a56ab379dca4af20c2702bd7eea856d73aac96638a4ecb78",
+    "seed": 721321,
+    "BAR_log_TS_quantum_classical_ratio": -2.146750611890244
+  },
+  "elapsed_this_call_seconds": 414.01214547199925,
+  "created_utc": "2026-11-01T19:24:33.155236+00:00",
+  "physical_converged": false,
+  "literature_reproduced": false
+}

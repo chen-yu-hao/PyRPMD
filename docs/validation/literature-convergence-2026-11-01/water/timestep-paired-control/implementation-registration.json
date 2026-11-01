@@ -1,0 +1,36 @@
+{
+  "environment": {
+    "dependencies": {
+      "numpy": "2.5.4",
+      "openmm": "8.6.1",
+      "scipy": "1.18.1"
+    },
+    "machine": "x86_64",
+    "python": "3.12.14"
+  },
+  "frozen_utc": "2026-11-01T19:19:17.791294+00:00",
+  "full64ps_control_started": false,
+  "initial_state_contract": "One pending segment0 COM-projected Maxwell draw from saved original RNG; stored once and shared between both fresh contexts; no subsequent RNG draw in NVE or restart",
+  "live_registration_created": false,
+  "observations_precision": "float64 in both branches; recorded before the live control to isolate dt from quantization",
+  "physical_convergence_claim": false,
+  "protocol_sha256": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747",
+  "runtime_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "schema": "pyrpmd.water-paired-timestep-implementation-registration.v1",
+  "source_test_sha256": {
+    "benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "tests/test_water_paired_timestep.py": "18d0e35879b114411607310d731d6fc36b9bd5732c38e4cd3a33dceec174a4c1"
+  },
+  "worker_allocation": "one sequential CPU worker, Threads1; live run waits for complete original cohort and separate resource reassignment"
+}

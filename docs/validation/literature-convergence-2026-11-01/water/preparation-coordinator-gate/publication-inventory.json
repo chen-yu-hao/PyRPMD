@@ -1,0 +1,70 @@
+{
+  "depends_on": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/publication-inventory.json",
+    "sha256": "7b186295269b666de793252b52f91e7d8a51db3017978663be157b1889c86863"
+  },
+  "excluded": [
+    "all live progress/journals/manifests",
+    "raw checkpoints",
+    "intermediate review source snapshots outside Git"
+  ],
+  "file_count": 10,
+  "files": [
+    {
+      "bytes": 36613,
+      "path": "benchmarks/water/native_preparation_coordinator.py",
+      "sha256": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02"
+    },
+    {
+      "bytes": 30015,
+      "path": "tests/test_water_preparation_coordinator.py",
+      "sha256": "4443d33480628f5e1940929e93272b378fb1a280c922c14adb2ba113a4f88441"
+    },
+    {
+      "bytes": 8599,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/README.md",
+      "sha256": "c27b57abc9a3dce227caf20fd764db68db1b5476617ced6c7a5b82557a249ee2"
+    },
+    {
+      "bytes": 883,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/adoption-record.template.json",
+      "sha256": "ec060779021abe7199e433f1f370d067bc482f978ce2e924e022f5b3f4bc3839"
+    },
+    {
+      "bytes": 6085,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/gate.json",
+      "sha256": "62e3626a749e54ba605fdd3f9d8b379a3ff21ab0a4369be63e7ad8ff6f8d04bd"
+    },
+    {
+      "bytes": 1705,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/independent-review.json",
+      "sha256": "d52673bbfc9bcbe5f113dfad5c57cb85e6e709c1b46b4facb0aaff88ae0e7545"
+    },
+    {
+      "bytes": 3661,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/initial-22-pytest.xml",
+      "sha256": "fd41830e5382bf243baff22e5bf5d3a8d599da8548e97cd42a8c6c981cc24347"
+    },
+    {
+      "bytes": 5410,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/original-exit-proof-32-pytest.xml",
+      "sha256": "3f6d47e61f6aed94f03c4c04d0e57c05b0d6feac3a921139fd05a09003a0dd84"
+    },
+    {
+      "bytes": 549,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/original-exit-proof.template.json",
+      "sha256": "5cb1fb9cc9179e475439e35f909ee9960b4ec3614f2874206573e97f57483007"
+    },
+    {
+      "bytes": 5909,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-coordinator-gate/signal-drain-35-pytest.xml",
+      "sha256": "be51bc762ce287c8506b7106684b5913b6fcc337d8ed3b17f2134c8a50fabd27"
+    }
+  ],
+  "frozen_utc": "2026-11-01T18:57:14.750687+00:00",
+  "live_adoption_or_long_continuation_started": false,
+  "original_live_campaign_unchanged": true,
+  "schema": "pyrpmd.water-preparation-coordinator-publication-inventory.v1",
+  "scope": "Separate unlaunched all-eight preparation-only coordinator, 35 fixture gates, independent review, deliberately invalid adoption/exit templates.",
+  "total_bytes": 99429
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "pyrpmd.frozen-inventory-integration-copy.v1",
+  "created_utc": "2026-11-01T20:16:16.459496+00:00",
+  "inventory": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/publication-inventory.json",
+  "inventory_sha256": "24ba0b8efe7fe873923da7a0d06d055de2016930c1fc11ab22f8486b62afe61a",
+  "files": 18,
+  "total_bytes": 213261,
+  "source": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "destination": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration",
+  "existing_different_bytes_overwritten": false,
+  "member_sha256": {
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/README.md": "275c9d1509c23289a06a2ea7bf5bb16d93b6987462e28074edfcae2827e98add",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-execution.json": "792376d0c5cae0f06dbb84b9b3bdc2b6a95dd07c1136f7d1eea87e36f9014f04",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-execution.log": "746f8d10ebc33aa4acc44081832839db64aa8aba8627367888627b7a02fcbd0d",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-plan.json": "df9a5583f3600cf19e01469dc4d768b5b19e244324ffbc5553e055d7049b5149",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-verification.json": "c8f8c89472f7a922769f47b4a0827fdffc6139ab0c4bc8cb5a11c273058f86bc",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/complete-audit.json": "71e811ed90e866c19f7b90668e65bc0c3332925090f4bed2f09447497576d4f1",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/counts-before-completion.json": "fedd62548c165bfd5a742aef15a78fde4d11e70b9266fd4bd657fde6b15c15e2",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/external-prerequisites.json": "015abba3ccf8815eb1812f24e51f7149d2dc357f55fe052762bfb663f6442db3",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/extracted-complete-audit.json": "dd9e5a56f047852cc73fa3c1875b45695a7d77856bce630ffc814a1043bc31f3",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/manifest-path-correction.json": "3e80f83731f68b10c160ba77f5f9f361c14cdfaec52c58b7e4f42f789462f55d",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/member-inventory.json": "6364e84fa93788f4dbca4c0df9cddcc9cef4d9cb7a9e478aa073afc4c186e889",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/publication-inventory.json": "24ba0b8efe7fe873923da7a0d06d055de2016930c1fc11ab22f8486b62afe61a",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/raw-data-index.json": "aaa751a8dc7ca6e1b320907e6c3f7fe90e92cda04489fd5c0ef8f79bf2cdb4a3",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/synthetic-gate.json": "147546c9123a4aacc513944dd0e65dcee53bd04bc856d1e80510247f2c8bacc8",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/synthetic-pytest.log": "5a84374e2bf56ac6fe7000d91cc2e0abfa514170dff2262561fe2a60f4c4e4cb",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/synthetic-pytest.xml": "71d6d89ddd8dfc2274ec7df6d748763af2469302c2d83dc84035242488f211e5",
+    "tests/test_h3_p256_parent_archive.py": "a5e19b2da14c72066ae8e6fc09614aa1cc87f5e0802f9cc259d5715c9f2a6c80"
+  }
+}

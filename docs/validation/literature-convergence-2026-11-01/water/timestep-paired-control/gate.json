@@ -1,0 +1,37 @@
+{
+  "created_utc": "2026-11-01T19:19:17.797622+00:00",
+  "distinct_final_tests": 13,
+  "excluded_metadata_fixtures": true,
+  "gates": [
+    {
+      "errors": 0,
+      "failures": 0,
+      "file": "initial-12-pytest.xml",
+      "seconds": 5.069,
+      "sha256": "02e4a05f33cd3653464fc44ec6eca1e06ebdf39d711430eefa13c5c6c22f11fe",
+      "skipped": 0,
+      "tests": 12
+    },
+    {
+      "errors": 0,
+      "failures": 0,
+      "file": "cohort-guard-13-pytest.xml",
+      "seconds": 4.957,
+      "sha256": "b0015a1963d50678e1b1a29a4e4a6a6c69c1588d5f87c575218587643b12ebd2",
+      "skipped": 0,
+      "tests": 13
+    }
+  ],
+  "initial12_source_sha256": "a2a9a941abe84c24d1530c02e8e3a17e0c43715d870d7c5df316dfe4b5f74aaa",
+  "initial12_test_sha256": "2cc8e3f4a4e69e2f535b6bc3067c6e249f065fde0db006a333c7275583166e2c",
+  "live_registration_or64ps_control_started": false,
+  "schema": "pyrpmd.water-paired-timestep-method-gate.v1",
+  "small_real_engine_fixture": "eight molecules;0.8fs control branches,0.1/0.05fs steps;Reference and CPU; no transport comparison from these traces",
+  "source_capture_qualification": "Recorded source identities identify each tested version after its gate; no before/after instrumentation is claimed.",
+  "source_test_sha256": {
+    "benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "tests/test_water_paired_timestep.py": "18d0e35879b114411607310d731d6fc36b9bd5732c38e4cd3a33dceec174a4c1"
+  },
+  "successive_gate_counts_are_not_additive": true,
+  "test_command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENMM_CPU_THREADS=1 python -m pytest -q tests/test_water_paired_timestep.py"
+}

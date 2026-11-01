@@ -1,0 +1,16 @@
+{
+  "PES_evaluations": 0,
+  "created_utc": "2026-11-01T20:00:19.207927+00:00",
+  "physical_dynamics_steps": 0,
+  "scope": "Initial coordinator implementation and test snapshot before any synthetic gate; no registration or worker campaign.",
+  "source_sha256": {
+    "benchmarks/h3/p256_child_campaign.py": "c809246076484cd3ae02cd3d3cf8199233f2dd8ee9bca8d9cad3984837499182",
+    "benchmarks/h3/p256_parent_campaign.py": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+    "benchmarks/h3/p256_recrossing_analyze.py": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6",
+    "benchmarks/h3/p256_surface_recrossing.py": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692",
+    "benchmarks/h3/quantum_recrossing_analyze.py": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+    "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+    "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+    "tests/test_h3_p256_child_campaign.py": "38cf7c02f69b939ae898a95e18626a070f041d8db11e4abbfe3a05f2163dce26"
+  }
+}

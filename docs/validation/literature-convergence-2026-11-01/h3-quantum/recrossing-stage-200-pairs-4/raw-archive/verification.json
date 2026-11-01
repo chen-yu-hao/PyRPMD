@@ -1,0 +1,69 @@
+{
+  "PES_calls": 0,
+  "actual_extraction_root": "/workspace/scratch/a5e4820daedd/h3-four-pair-archive-roundtrip-2026-11-01",
+  "all_8_parent_file_sets_hash_equal": true,
+  "all_numerical_summaries_bitwise_equal_as_JSON_numbers": true,
+  "all_original_and_extracted_800_raw_identity_records_equal": true,
+  "all_parent_archive_members_hash_verified": 279,
+  "archive": {
+    "bytes": 324840270,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.tar.gz",
+    "sha256": "a1a7cd77362925d77bf6e6947c5bfc4c98d9bd518c14b6fda6fb0db5003c7b7a"
+  },
+  "base_members_verified_and_extracted": 465,
+  "children_per_timestep": 12800,
+  "combined_raw_NPZ_count": 800,
+  "elapsed_seconds": 42.770727479000925,
+  "extracted_replay_command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/independent-review/replay_complete.py",
+    "--data-root",
+    "/workspace/scratch/a5e4820daedd/h3-four-pair-archive-roundtrip-2026-11-01/campaign",
+    "--parent-evidence",
+    "/workspace/scratch/a5e4820daedd/h3-four-pair-archive-roundtrip-2026-11-01/repository/docs/validation/literature-convergence-2026-11-01/surface-partition",
+    "--reference-root",
+    "/workspace/scratch/a5e4820daedd/h3-four-pair-archive-roundtrip-2026-11-01/campaign/reference",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay"
+  ],
+  "extracted_replay_report": {
+    "bytes": 26904,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/raw-replay.json",
+    "sha256": "e9e12ad7f79da5d1003ecbba227ffd2c3189712aa66311404086e7138e9a5fae"
+  },
+  "extracted_replay_returncode": 0,
+  "extracted_replay_wall_seconds": 21.279071960998408,
+  "first_stage_archives_whole_hash_unchanged": true,
+  "fixed_P_primary_criteria": {
+    "complete_registered_cohort": true,
+    "full_rate_95_log_halfwidth_at_most_5_percent": true,
+    "kappa_statistical_precision": true,
+    "no_sampled_static_domain_crossings": true,
+    "paper_full_rate_point_within_reported_5_percent": true,
+    "paper_kappa_point_within_reported_5_percent": true,
+    "paper_qtst_point_within_reported_5_percent": true,
+    "parent_sampling_flags": true,
+    "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+    "time_plateau_equivalence": true,
+    "timestep_equivalence": true
+  },
+  "increment_members_verified_and_extracted": 466,
+  "increment_raw_NPZ_count": 400,
+  "independent_parent_chains": 8,
+  "member_count": 466,
+  "member_inventory": {
+    "bytes": 205393,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.members.json",
+    "sha256": "501d1c13d2c81ec844d4c0b4e545a2a87a193bc1a95819ea69ce0c45df013e37"
+  },
+  "new_dynamics_steps": 0,
+  "original_two_pair_precision_failure_retained": true,
+  "packager_CPU_seconds": 13.260332000000002,
+  "packager_peak_RSS_KiB": 27644,
+  "parent_configurations": 1600,
+  "parent_members_verified_and_selected": 41,
+  "replay_child_CPU_seconds": 12.758753,
+  "schema": "pyrpmd.h3.quantum-child-increment-extraction-verification.v1",
+  "supplementary_parent_half_equivalence_passed": false,
+  "whole_original_files_rehashed_after_archiving": 466
+}
