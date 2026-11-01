@@ -1,0 +1,31 @@
+{
+  "wheel": {
+    "name": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+    "sha256": "a229e62a3f15a0ef63068c542ed1cebf84c8a17d4756d2a7d823d00dc6793236"
+  },
+  "sdist": {
+    "name": "pyrpmd-0.2.0.tar.gz",
+    "sha256": "700bec934a89003616de2c92242da4b57e5fad43643aea8a4545cdc2c9b0c85e"
+  },
+  "source_tree": "/workspace/scratch/276eb7a1796a/PyRPMD",
+  "verified_wheel_sources": [
+    "src/pyrpmd/potentials/contraction.py",
+    "src/pyrpmd/replica_exchange.py",
+    "src/pyrpmd/workflows/nonadiabatic_rate.py",
+    "src/pyrpmd/workflows/spectroscopy.py"
+  ],
+  "wheel_native_extensions": [
+    "pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+    "pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so"
+  ],
+  "raw_npz_files": 17,
+  "torchscript_models": 4,
+  "isolated_wheel_test_returncode": 0,
+  "isolation": "python -I; installed target first; import origins asserted; tests copied outside checkout",
+  "test_files": [
+    "test_spectroscopy_trace_identity.py",
+    "test_replica_exchange_composition_review.py",
+    "test_tier2_nonadiabatic_ml_review.py"
+  ],
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+}

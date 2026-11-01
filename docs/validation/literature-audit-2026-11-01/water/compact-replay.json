@@ -1,0 +1,30 @@
+{
+  "classical-pilot": {
+    "artifact_integrity_passed": true,
+    "correlation_estimator_replay_passed": true,
+    "literature_reproduced": false,
+    "physical_converged": false,
+    "raw_coordinate_replay_requires_archive": true
+  },
+  "p16-warmup": {
+    "artifact_integrity_passed": true,
+    "correlation_estimator_replay_passed": true,
+    "literature_reproduced": false,
+    "physical_converged": false,
+    "raw_coordinate_replay_requires_archive": true
+  },
+  "p32-warmup": {
+    "artifact_integrity_passed": true,
+    "correlation_estimator_replay_passed": true,
+    "literature_reproduced": false,
+    "physical_converged": false,
+    "raw_coordinate_replay_requires_archive": true
+  },
+  "p8-warmup": {
+    "artifact_integrity_passed": true,
+    "correlation_estimator_replay_passed": true,
+    "literature_reproduced": false,
+    "physical_converged": false,
+    "raw_coordinate_replay_requires_archive": true
+  }
+}

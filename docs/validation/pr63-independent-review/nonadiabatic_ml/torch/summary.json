@@ -1,0 +1,44 @@
+{
+  "torch": "2.15.0+cpu",
+  "seeds": [
+    64129,
+    64139,
+    64151,
+    64153
+  ],
+  "training_steps_per_model": 600,
+  "energy_training_mse": [
+    3.214284900260238e-05,
+    2.5515812129814938e-05,
+    3.1384002480130335e-05,
+    2.3871991074456544e-05
+  ],
+  "models_sha256": {
+    "member_0.pt": "11b3e7a8961f1f63b30084e60bd72564373ce76033e5e952c40d8ec6ddb1272f",
+    "member_1.pt": "b9268d068c0538d8a1b379794888a5fd0ebfa4176501edda9c1b3e80cf9c825e",
+    "member_2.pt": "dec94350119f9bf28e6513cd2d3e596eb88a0f7ea67a80b7295e1ca914d3c088",
+    "member_3.pt": "9139d0807f4b019d0ef425a93c10ac4cbdee1414a7b71035c60b4d0cf91e0177"
+  },
+  "force_rmse_inside": 0.04801481948484368,
+  "force_rmse_outside": 1.55353201825893,
+  "committee_force_std_error": 3.469446951953614e-18,
+  "monitored_steps": 50,
+  "trajectories_bitwise_equal": true,
+  "candidates_collected": 10,
+  "all_candidates_unlabelled": true,
+  "learned_rpc_force_fd_error": 5.34764454940273e-11,
+  "elapsed_seconds": 11.108194486994762,
+  "limitations": [
+    "Synthetic noiseless quartic correction, not molecular or ab initio training.",
+    "Small finite-training networks are imperfect, especially outside their training range.",
+    "No labeling/retraining loop is executed; candidate records remain unlabeled.",
+    "No assertion that committee disagreement bounds the true error."
+  ],
+  "source_sha256": {
+    "docs/validation/pr63-independent-review/nonadiabatic_ml_torch.py": "c2f4a3de8023430bead0dbdf6f9ab673b8f982b712461aeba1fe058d73406504",
+    "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+    "src/pyrpmd/potentials/optional.py": "e83a0544d32dd9d58ebecedff9fd1bc0d6ccd624ab9797e97e3e71e702107fd4",
+    "src/pyrpmd/potentials/lifecycle.py": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2",
+    "src/pyrpmd/potentials/contraction.py": "0bdce807c94c4e628bcb2053e1446097e154e560d887267b311ce71b45dd9a17"
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "open_mpi": "4.1.6",
+  "mpi4py": "4.1.2",
+  "jobs": [
+    {
+      "name": "dynamic_integration",
+      "ranks": 5,
+      "command": [
+        "mpiexec",
+        "--oversubscribe",
+        "-n",
+        "5",
+        "python",
+        "tests/mpi_dynamic_integration.py"
+      ],
+      "exit_code": 0,
+      "seconds": 10.498241673005396
+    },
+    {
+      "name": "workflow_smoke",
+      "ranks": 4,
+      "command": [
+        "mpiexec",
+        "--oversubscribe",
+        "-n",
+        "4",
+        "python",
+        "tests/mpi_workflow_smoke.py",
+        "/workspace/scratch/82b1e823c721/mpi-literature-validation/workflow_smoke"
+      ],
+      "exit_code": 0,
+      "seconds": 23.08895235900127
+    },
+    {
+      "name": "adaptive_smoke",
+      "ranks": 4,
+      "command": [
+        "mpiexec",
+        "--oversubscribe",
+        "-n",
+        "4",
+        "python",
+        "tests/mpi_adaptive_smoke.py",
+        "/workspace/scratch/82b1e823c721/mpi-literature-validation/adaptive_smoke"
+      ],
+      "exit_code": 0,
+      "seconds": 4.1042069800023455
+    },
+    {
+      "name": "opes_smoke",
+      "ranks": 4,
+      "command": [
+        "mpiexec",
+        "--oversubscribe",
+        "-n",
+        "4",
+        "python",
+        "tests/mpi_opes_smoke.py",
+        "/workspace/scratch/82b1e823c721/mpi-literature-validation/opes_smoke"
+      ],
+      "exit_code": 0,
+      "seconds": 5.403785630995117
+    },
+    {
+      "name": "materials_smoke",
+      "ranks": 4,
+      "command": [
+        "mpiexec",
+        "--oversubscribe",
+        "-n",
+        "4",
+        "python",
+        "tests/mpi_materials_smoke.py",
+        "/workspace/scratch/82b1e823c721/mpi-literature-validation/materials_smoke"
+      ],
+      "exit_code": 0,
+      "seconds": 16.448205882996263
+    },
+    {
+      "name": "surface_smoke",
+      "ranks": 4,
+      "command": [
+        "mpiexec",
+        "--oversubscribe",
+        "-n",
+        "4",
+        "python",
+        "tests/mpi_surface_smoke.py",
+        "/workspace/scratch/82b1e823c721/mpi-literature-validation/surface_smoke"
+      ],
+      "exit_code": 0,
+      "seconds": 30.035347229000763
+    },
+    {
+      "name": "surface_extensions_smoke",
+      "ranks": 4,
+      "command": [
+        "mpiexec",
+        "--oversubscribe",
+        "-n",
+        "4",
+        "python",
+        "tests/mpi_surface_extensions_smoke.py",
+        "/workspace/scratch/82b1e823c721/mpi-literature-validation/surface_extensions_smoke"
+      ],
+      "exit_code": 0,
+      "seconds": 9.611261732999992
+    }
+  ]
+}

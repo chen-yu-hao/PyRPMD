@@ -1,0 +1,63 @@
+{
+  "case": {
+    "steps": 12000,
+    "burn": 2400,
+    "stride": 10,
+    "thermostat": "PILE-L",
+    "integrator": "cayley-bcb",
+    "gamma_centroid": 1.0,
+    "method": "pigs",
+    "particles": 1,
+    "beta": 8.25,
+    "beads": 33,
+    "dt": 0.02,
+    "dimension": 1,
+    "projection": 8.0,
+    "alpha": 0.25,
+    "reference": 0.4963437198951773,
+    "continuum": 0.5002013180975603
+  },
+  "seed": 275011,
+  "mean": 0.4662071499993306,
+  "block_means": [
+    0.4380724846038743,
+    0.43309242184568253,
+    0.2820122028792579,
+    0.2440329850548032,
+    0.24857921602843577,
+    0.26283062462869644,
+    0.2573999540483692,
+    0.5172305864842623,
+    0.7602068762872665,
+    0.604871153503684,
+    0.51965880241803,
+    0.24989465424473026,
+    0.23627113235690694,
+    1.5323923450671773,
+    0.2268299558128622,
+    0.6459390047252511
+  ],
+  "samples": 960,
+  "seconds": 7.585840760999417,
+  "native_free": true,
+  "key": "pigs_n1_b8.25_p33_dt0.02_s275011",
+  "provenance": {
+    "schema": 1,
+    "source_sha256": {
+      "benchmarks/tier2_literature/path_integral.py": "5c07eb4d26a9ddd9a3161bde9610da454e210705801852ddf03ff08a54d347e2",
+      "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+      "src/pyrpmd/pimd_methods.py": "9b83444dc878ca918f9d0cda36f5f87db1fc20b3d4b28a60d6f4e627ec6448bc",
+      "src/pyrpmd/path_integral.py": "72d85927c1f2230d24938eb1ae0e210f61e7bd6654d484e46f6f5a726506fd5c",
+      "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+      "src/pyrpmd/potentials/builtin.py": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46",
+      "src/pyrpmd/potentials/contraction.py": "4ac12b5251361344ebea1eb5407f2951b4a06b3bcdc015b90fe8c267bf6a49db",
+      "native/cayley.cpp": "19f1d92be0a1fe44c4b63209401aeae584787f6fe1081e6c441cc5148ea64124",
+      "native/fused.hpp": "a948ee95140fe0027baf250410e72a8d145958a75578eab847a7874804f8c95e",
+      "native/propagation.h": "ba2ac0eb4789e9cffb947c50789807f7aba27ae8ad91a51785cbface2f2e68bd",
+      "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+      "native/thermal.cpp": "a28d75d4a460bf70003ca8f8bee03c83679df57c21df7ac22b4a7dce7c897caf",
+      "native/thermal.hpp": "54c704af9f277680c34c42cf4f1da24aaeebe0e5ed055a52b31bd8fbc4ac3702"
+    }
+  },
+  "provenance_annotation": "Driver hash was recorded during the run. Core hashes were added after completion, verified unchanged against the current committed core; this is an annotation of the original run, not a claim that the later hardened driver generated these samples."
+}

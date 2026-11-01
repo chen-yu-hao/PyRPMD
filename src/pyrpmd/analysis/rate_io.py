@@ -8,6 +8,7 @@ must distinguish coordinate density from a flux-weighted sampling measure.
 from __future__ import annotations
 
 import json
+from functools import partial
 from pathlib import Path
 
 import numpy as np
@@ -15,6 +16,7 @@ import numpy as np
 from ..constants import AU_RATE_TO_CM3_S
 from ..checkpoint import load_checkpoint
 from ..io import file_sha256, write_json
+from ..validation import finite_positive
 
 
 def _read_json(path):
@@ -36,13 +38,7 @@ def _scalar(value, name):
     return array.item()
 
 
-def _positive(value, name):
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(f"{name} must be positive and finite")
-    value = float(value)
-    if not np.isfinite(value) or value <= 0:
-        raise ValueError(f"{name} must be positive and finite")
-    return value
+_positive = partial(finite_positive, message='{name} must be positive and finite')
 
 
 def _json_safe(value):
@@ -101,10 +97,29 @@ def _legacy_rate(root, *, bootstrap, seed):
     from .rate_postprocess import channel_rates
 
     summary, config, manifest, files = _metadata(root)
+    artifacts = root
+    published_path = root / "results" / "summary.json"
+    if published_path.is_file():
+        published = _read_json(published_path)
+        if "rate_extension" in published:
+            from ..rate_artifacts import active_rate_directory
+
+            artifacts = active_rate_directory(root, published)
+            summary = published
+            # Input identity belongs to the original run; the root summary and
+            # PMF files remain its original, pre-extension scientific result.
+            files.remove(root / "summary.json")
+            receipt_path = artifacts / "receipt.json"
+            receipt = _read_json(receipt_path)
+            files.extend([published_path, receipt_path])
+            files.extend(artifacts / name for name in receipt["artifacts"])
+    system_path = root / "input" / "system.json"
+    if system_path.is_file():
+        files.append(system_path)
     if summary.get("task") != "rate" or config.get("task", "rate") != "rate":
         raise ValueError("The automatic adapter accepts a gas rate run, not surface/site rates or network entries")
     beta = _beta(config, {})
-    pmf_path, arrays_path = root / "rate_pmf.json", root / "rate_pmf.npz"
+    pmf_path, arrays_path = artifacts / "rate_pmf.json", artifacts / "rate_pmf.npz"
     pmf, arrays = _read_json(pmf_path), _load_npz(arrays_path)
     files.extend([pmf_path, arrays_path])
     if pmf.get("sampling_measure") != "rate_flux" or _scalar(arrays.get("sampling_measure"), "sampling_measure") != "rate_flux":
@@ -181,7 +196,7 @@ def _legacy_rate(root, *, bootstrap, seed):
         ),
         "measure": "rate_flux", "converged": False,
     }
-    recrossing_path = root / "recrossing.npz"
+    recrossing_path = artifacts / "recrossing.npz"
     if not recrossing_path.is_file():
         result.update(status="static_only", static=static, channels=None)
         return result, files
@@ -276,6 +291,7 @@ def _import_channels(root, spec, static, *, bootstrap, seed):
 
 def _fes_rate(root, spec, *, bootstrap, seed):
     from .rate_postprocess import surface_rate_2d, flux_slice_rate_2d
+    from .fes_result import FESResult
 
     unknown = set(spec) - _SPEC_FIELDS
     if unknown:
@@ -307,8 +323,12 @@ def _fes_rate(root, spec, *, bootstrap, seed):
     for measure_key in ("sampling_measure", "measure"):
         if measure_key in data and _scalar(data[measure_key], measure_key) != measure:
             raise ValueError("NPZ and summary sampling measures disagree")
-    args = (data["free_energy"], [data["edges_0"], data["edges_1"]])
-    common = {"beta": beta, "mask": data["mask"], "measure": measure}
+    if ("flux_axis" in data and summary.get("flux_axis") is not None
+            and _scalar(data["flux_axis"], "flux_axis") != summary["flux_axis"]):
+        raise ValueError("NPZ and summary flux_axis disagree")
+    surface = FESResult.from_arrays(data, metadata=summary)
+    args = (surface.free_energy, surface.edges)
+    common = {"beta": beta, "mask": surface.mask, "measure": surface.measure}
     method = spec.get("method")
     if method == "flux_slice_2d":
         if any(key in spec for key in (
@@ -321,8 +341,6 @@ def _fes_rate(root, spec, *, bootstrap, seed):
         saved_axis = summary.get("flux_axis")
         if saved_axis is None or saved_axis != axis:
             raise ValueError("An explicit matching flux_axis in the saved FES metadata is required")
-        if "flux_axis" in data and _scalar(data["flux_axis"], "flux_axis") != saved_axis:
-            raise ValueError("NPZ and summary flux_axis disagree")
         if not isinstance(spec.get("reference_definition"), str) or not spec["reference_definition"].strip():
             raise ValueError("Explain the physical reference normalization in reference_definition")
         static = flux_slice_rate_2d(

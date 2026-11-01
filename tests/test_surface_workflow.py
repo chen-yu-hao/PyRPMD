@@ -194,7 +194,10 @@ def test_linear_parent_constraints_keep_fixed_beads_and_do_not_constrain_child_f
     np.testing.assert_allclose(child["numerator"], child["denominator"], atol=1e-12)
     assert child["pmf_method"] == "mbar_surface_density"
     assert child["propagation"]["python_steps"] == 48
-    assert child["propagation"]["fallback_reasons"]["fixed atoms require the Python propagation loop"] == 48
+    assert child["propagation"]["native_steps"] == 0
+    # This fixture explicitly disables native execution. Fixed atoms no longer
+    # force a fallback, so an intentional Python run has no fallback reason.
+    assert child["propagation"]["fallback_reasons"] == {}
 
 
 def test_completed_parent_checkpoint_still_validates_fixed_state(tmp_path):
@@ -289,7 +292,9 @@ def test_metadynamics_input_accepts_fixed_atoms_and_periodic_cell(boundary):
         job["system"].pop("fixed_atoms")
         job["system"].update(cell=np.diag([4.0, 4.0, 10.0]).tolist(), pbc=[True, True, False])
     config, system = resolve_job(job)
-    assert config["task"] == "metadynamics"
+    assert config["task"] == "fes"
+    assert config["fes"]["method"] == "metadynamics"
+    assert any("deprecated" in warning for warning in config["_warnings"])
     assert bool(system.fixed_atoms) == (boundary == "fixed")
     assert any(system.pbc) == (boundary == "periodic")
 

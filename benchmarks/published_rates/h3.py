@@ -23,8 +23,8 @@ H3 = HERE.parent / "h3"
 
 
 def configuration(output, library, *, profile="pilot", seed=831072, workers=2):
-    if profile not in ("smoke", "pilot", "extended"):
-        raise ValueError("profile must be smoke, pilot or extended")
+    if profile not in ("smoke", "pilot", "audit", "extended"):
+        raise ValueError("profile must be smoke, pilot, audit or extended")
     source = JobSpec.from_file(H3 / "rate.inp")
     data = source.data
     data.update(temperature="300 K", beads=128, seed=seed)
@@ -39,6 +39,7 @@ def configuration(output, library, *, profile="pilot", seed=831072, workers=2):
     profiles = {
         "smoke": ("5 fs", "10 fs", 2, 1, "10 fs", "2 fs", "5 fs"),
         "pilot": ("50 fs", "100 fs", 16, 2, "200 fs", "10 fs", "80 fs"),
+        "audit": ("500 fs", "1 ps", 32, 4, "1 ps", "20 fs", "100 fs"),
         "extended": ("1 ps", "2 ps", 128, 4, "1 ps", "20 fs", "150 fs"),
     }
     equil, production, parents, pairs, parent_equil, parent_interval, child_time = profiles[profile]
@@ -111,7 +112,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True)
     parser.add_argument("--library", default=str(H3 / "build" / "libbkmp2.so"))
-    parser.add_argument("--profile", choices=("smoke", "pilot", "extended"), default="pilot")
+    parser.add_argument("--profile", choices=("smoke", "pilot", "audit", "extended"), default="pilot")
     parser.add_argument("--seed", type=int, default=831072)
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--resume", action="store_true")

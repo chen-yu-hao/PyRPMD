@@ -3,20 +3,21 @@ orphan: true
 ---
 # Native thermostat and barostat trajectories
 
-`pyrpmd-native` and `pyrpmd.native_ensemble.NativeEnsemble` are an explicit,
-opt-in C++17 trajectory driver. One `run(steps)` call executes all steps without
-Python callbacks or GIL acquisition. The engine owns positions, momenta, cell,
-cell momenta, GLE auxiliaries, force caches, the random generator and its cached
-Gaussian draw. Python prepares configuration, launches trajectories and writes
-checkpoints at block boundaries. It does not run the integrator or generate
-per-step noise.
+`pyrpmd.native_ensemble.NativeEnsemble` is the persistent C++17 executor used
+by the composable `Dynamics` interface. Its direct API and `pyrpmd-native` CLI
+remain available. With native PES bindings, one `run(steps)` call executes all
+steps without Python callbacks or GIL acquisition. The executor owns positions,
+momenta, cell, cell momenta, GLE/NHC auxiliaries, force caches, the random generator
+and its cached Gaussian draw. An explicitly selected Python PES bridge uses the
+same native operators and reports its force callbacks separately.
 
 The standard `pyrpmd run` PIMD workflow can explicitly select this driver with
 `sampling.engine="native"`; see [native PIMD](native-pimd-workflow.md). Historical
-inputs retain their integrators, checkpoints and dispatch. Diffusion, PMF,
-metadynamics, constrained-parent and reactive-child workflows are not migrated
-by this change. Thermostatted sampling must not be relabeled as ordinary RPMD
-real-time dynamics.
+inputs retain their integrators, checkpoints and random streams. The common
+`Dynamics` interface also exposes these thermostats and barostats to task
+adapters. Thermostatted sampling must not be relabeled as ordinary RPMD real-time
+dynamics; reaction production remains unthermostatted unless the chosen method
+explicitly calls for a thermostat.
 
 ## Build and run
 
@@ -77,10 +78,18 @@ potential and convergence studies.
 | `piglet` | Per-mode GLE with supplied calibrated matrices and provenance; NVT only |
 | `trpmd` | Internal-mode PILE with exactly zero centroid friction; `pile_scale`; NVT only |
 | `ffl` | Fast-forward Langevin **rescale variant**: preserve direction, update speed; `gamma` |
+| `nhc` | Global Nosé–Hoover chain with three-stage Suzuki–Yoshida composition; `tau` (alias `tdamp`), `chain_length`, `substeps` |
 
-No deterministic Nose-Hoover-chain thermostat is provided by this change.
 Defaults of the numeric API are in atomic units, not physical recommendations.
-NVT uses BCOCB for `integrator="cayley-bcb"` and BAOAB for
+NHC uses a symmetric bath/2–deterministic-map–bath/2 split, with the same chain
+masses and mobile-atom degree count as the existing Python `NoseHooverChain`.
+Its positions and momenta are stored as the two rows of checkpoint `aux`.
+The common `Dynamics` API retains the existing pure-Python NHC bath when
+`_thermal` is unavailable. That fallback has the separate
+`pyrpmd.python-nhc-bath.v1` checkpoint format and remains Python when restored,
+even if an extension has since been installed. Neither implementation consumes
+random numbers for deterministic chain propagation.
+Other NVT thermostats use BCOCB for `integrator="cayley-bcb"` and BAOAB for
 `integrator="normal-mode-bab"`. The Cayley half map is the square root of the
 full-step map, not a Cayley map evaluated at half the time step. Velocity Verlet
 is rejected by this driver. Fixed atoms are supported for NVT and excluded from
@@ -191,13 +200,46 @@ The wrapper pins the shared library, serializes access to its context, checks
 owner lifetime at block boundaries and hashes the library for restart identity.
 Callbacks must be trusted compiled, synchronous evaluators whose returned values
 do not depend on call history. A nonzero context requires an owner and immutable
-model identity. Rollback cannot undo hidden state in an external evaluator; such
-stateful evaluators are unsupported. Native callbacks must not call Python.
+model identity. The wrapper's bound cell is synchronized after accepted native
+blocks, imports and checkpoint restores, so Python reference evaluations see the
+same geometry. Binding publication and failures restore the prior cell alongside
+the native state. Rollback cannot undo hidden state in an external evaluator;
+such stateful evaluators are unsupported. Native callbacks must not call Python.
 
-Python-only ASE, Torch and custom Python potentials are rejected on this path;
-wrapping them in a C++ time-step loop would still return to Python for forces.
-There is no native socket, GPU model or MPI scheduler in this driver yet. It does
-not claim every PyRPMD potential can execute without Python.
+The direct API continues to reject ordinary Python providers unless
+`allow_python=True` is explicitly selected. This option uses a separate copied
+buffer bridge, never the trusted native callback ABI. Supply a stable
+`potential_identity`; for variable-cell dynamics the provider must implement
+`set_cell(cell_bohr)`, and every periodic evaluation must return the physical
+per-bead configurational virial. Cartesian `q dot F` is not substituted for a
+missing periodic virial. Provider cells are restored along with the complete
+native state if a block fails.
+
+The returned backend is `native-operators-python-pes` and
+`python_step_callbacks` counts actual Python force evaluations in that block.
+Native bindings retain `backend="native-cxx17"` and zero Python callbacks.
+There is no native socket, GPU model or MPI scheduler in this executor. A Python
+bridge does not imply that an ASE or Torch force evaluation has become native.
+
+### Operators and backend changes
+
+`apply_thermostat(q, p, dt, step=...)` applies only the selected bath to external
+momenta. It keeps auxiliary variables and the full RNG state, leaves coordinates
+unchanged, and makes no force call. The optional logical step preserves Andersen
+collision timing. GLE requires the exact duration used to prepare its transition
+matrices. A standalone bath rejects a barostat.
+
+`copy_thermostat_from(other)` transfers compatible bath variables and RNG state
+between executors while retaining the target's physical state, forces and cell.
+This supports common-engine backend changes without restarting the thermostat.
+Masses, temperature, bead count, frozen positions and thermostat parameters are
+validated; GLE transition matrices must also match. For NHC, full and half-step
+executors can share chain state because the duration is supplied to the operator.
+
+`set_state(q, p, step)` explicitly imports a new physical state and reevaluates
+all force/energy/virial caches. It retains the bath and piston state, and restores
+the original state on a rejected input or failed potential evaluation. Checkpoint
+`restore` remains the checksummed operation for resuming an identical model.
 
 ## Output, restart and units
 
@@ -223,6 +265,26 @@ Python signals are handled after a native block returns, so choose checkpoint
 block lengths with interruption latency in mind. There are no Python checkpoints
 inside one continuous C++ block.
 
+The common block API uses `run_prefix` when its contract is to retain completed
+steps after a failure. This shares the native loop with `run`, but checkpoints
+physical state, bath auxiliaries, RNG and force cache before each step and
+accepts its observations in the same transaction. The result contains only
+accepted records plus `completed` and `error`; the failed step is absent. A
+Python periodic provider's cell is restored to the accepted prefix as well.
+Prefix observations are in memory; file-streaming `run` remains block-atomic.
+
+`run_prefix(..., observe=mask, record_energy=True, check_energy=False,
+energy_parts=False, ring_radii=False)` selects the common observation contract.
+The binary mask has one entry per requested step; only selected rows are returned.
+Energy is checked on observed rows when requested, or initially and after every
+step when `check_energy=True`. Unrequested thermal estimators and ring radii are
+not computed or validated. This allows finite physical states to advance without
+unrelated squared-moment overflow. Results include `centroid_momenta` directly
+and optional `energy_parts` with physical potential/P, centroid kinetic,
+noncentroid kinetic/P and spring/P. Other thermal sample columns are undefined
+(NaN). Calling `run_prefix` without these options retains the full thermal
+observation schema and its absolute stride clock.
+
 The explicit input schema is `native-ensembles/1`, not the legacy task schema.
 JSON and TOML accept physical units for temperature, masses, positions/cell units,
 time steps, thermostat frequencies, pressure (`Pa`, `bar`, `atm`, `MPa`, `GPa`,
@@ -232,12 +294,20 @@ are errors rather than ignored settings.
 
 ## Validation and scope
 
-Run `pytest tests/test_native_ensembles.py`. Tests cover deterministic comparison
+Run the native ensemble, NHC, Python bridge, operator-switching and prefix
+suites: `pytest tests/test_native_ensembles.py tests/test_native_nhc.py
+tests/test_native_python_bridge.py tests/test_native_operator_switching.py
+tests/test_native_prefix.py tests/test_composed_native_observations.py`.
+Tests cover deterministic comparison
 with the original integrators, all thermostat restart streams, native-PES error
 rollback, compiled calls and GIL release, streaming output, pressure units,
 unit-aware CLI restart, fixed atoms, TRPMD centroid conservation, scalar and
 augmented GLE controls, finite-bead harmonic equilibrium, ideal-gas NPT volume
 mean/variance, independent matrix-exponential cell steps and NPT time reversal.
+NHC tests compare chain variables with the established Python implementation,
+check second-order extended-energy error, exact restart, frozen atoms and failure
+rollback. Bridge tests compare native/Python-PES cell trajectories and complete
+restart state; backend-switch tests verify preservation of one bath/RNG stream.
 These validate implementation properties, **not chemical rates, real-material
 accuracy, arbitrary flexible-cell thermodynamics or calibrated PIGLET speedups**.
 

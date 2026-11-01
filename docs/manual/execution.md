@@ -25,13 +25,19 @@ block_steps = 256
 | `loop_backend="native"` | Require fused whole-block propagation; error if unavailable |
 | `block_steps` | Execution block size, 1–65536 |
 
-With the default workflow engine, periodic and fixed-atom systems, PILE-L sampling and metadynamics
-run in the Python outer loop with compiled deterministic substeps. The `pimd`, `diffusion` and `metadynamics` summaries report
+Fixed atoms are supported by the native deterministic blocks when the PES and
+other requested operators have native descriptors. Legacy automatic PILE-L
+sampling retains its Python/NumPy noise sequence; an explicit composed plan
+also has a complete native PILE-L route for compatible callback-free inputs.
+Python PES/bias callbacks continue to use Python orchestration. The
+`pimd`, `diffusion` and `metadynamics` summaries report
 native and Python step counts with fallback reasons under `propagation`; in the API,
 `Dynamics.loop_stats` gives the same counters.
 
-For equilibrium `pimd`, `sampling.engine="native"` selects a separate C++ ensemble engine with its own
-thermostat, PES and checkpoint contracts. It supports fixed atoms in NVT and supported periodic
+For equilibrium `pimd`, `sampling.engine="native"` selects the persistent C++ ensemble workflow
+with its established PES and checkpoint contracts. The same thermostat/barostat
+kernels are available through the [common propagation stack](../propagation-stack.md).
+The workflow supports fixed atoms in NVT and supported periodic
 NVT/NPT models; no Python-PES fallback is available. Its checkpoint cadence controls transaction
 size, and `dynamics.block_steps` does not override that cadence. Changing the engine requires a
 new run. See the [native PIMD guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md).
@@ -56,6 +62,15 @@ threads_per_rank = 1
 `mode="serial"` keeps each PES call in one process and runs four trajectory processes. With
 `mode="bead"` and `bead_workers=2`, each concurrent trajectory gets a persistent pool of two bead PES
 processes. `collision.trajectories` is always the total for the task.
+
+Independent fixed-window umbrellas, dRPMD collisions and `site_rate` can also
+set `parallel.trajectory_batch_size=8` to group up to eight existing tasks into
+shared force calls. The supported size is 1–256 per cooperative group.
+Task-local clocks, RNGs, thermostat states and checkpoints
+remain independent. Set `bead_workers=1`; the task scheduler uses Python
+orchestration and requires `loop_backend="auto"` or `"python"`. See
+[Trajectory batching](../batched-dynamics.md) for capability checks, the dRPMD
+two-phase launch schedule and fixed-cell restrictions.
 
 For cheap analytic potentials, process communication dominates the cost. Choose trajectory
 processes × bead processes × potential/BLAS threads to match the allocated CPUs, typically with:
@@ -144,11 +159,21 @@ device is unavailable or the model runs on the CPU. GPU mode uses one bead worke
 ```bash
 pyrpmd resume runs/example
 pyrpmd resume runs/example --workers 4 --loop-backend auto --block-steps 128
+pyrpmd resume runs/adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192 --adaptive-max-pilot-steps 4000
+pyrpmd extend runs/selected --max-time '20 ps'
+pyrpmd extend runs/rate --production-steps 200000
 ```
+
+The adaptive options raise the budget of an exhausted adaptive-umbrella pilot. `extend` raises the
+total propagation time of a dRPMD ensemble and continues only unresolved trajectories from their
+saved q/p. For a fixed-window gas-phase `rate` run, `--production-steps` instead raises the total
+production budget; see [Input and command line](input.md#command-line-reference) for its restrictions.
 
 A restart reads the saved resolved input, the system or PCET model, q/p, RNG state, stage and
 history. A finished task stays finished, and a checkpoint that fails verification stops the restart
-with an error. Worker layout, backend and block size can change between restarts. In dRPMD, the
+with an error. Worker layout, backend and block size can change between restarts. Worker processes reuse their
+potential objects across tasks by default (`parallel.reuse_potentials=true`); see
+[expensive potentials](../performance-dynamics.md). In dRPMD, the
 number of parents follows the number of execution slots when `sampling.parents` is omitted, so set
 `parents` explicitly if you plan to change the worker count.
 
@@ -175,7 +200,7 @@ successful prefix. Workflows commit state at thermostat, observation, hill depos
 boundaries. After a PES failure, the exception and the saved stage information show where the run
 stopped; fix the cause and resume from the last checkpoint.
 
-Detailed contracts are in [parallelism](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/parallel.md) *(Chinese)*,
+Detailed contracts are in [parallelism](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/parallel.md),
 [native propagation](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-propagation.md),
 the [block API](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/block-propagation.md) *(Chinese)* and
 [checkpoints](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/checkpoints.md).

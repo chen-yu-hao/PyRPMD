@@ -1,0 +1,26 @@
+{
+  "dt": 4.0,
+  "max_energy_difference": 4.85722573273506e-17,
+  "max_fixed_basis_mapping_error": 5.937617635885203e-15,
+  "max_p_error": 3.552713678800501e-15,
+  "model": "Tully-I",
+  "qd_steps": 160,
+  "qd_vs_diabatic_max_q_error": 6.661338147750939e-16,
+  "scope": "numerical representation/gauge validation; not a QD-NRPMD scattering accuracy claim",
+  "sign_flip_scattering": [
+    {
+      "final_p_difference": 0.0,
+      "final_x_difference": 0.0,
+      "method": "rpsh",
+      "same_channel": true,
+      "same_step_count": true
+    },
+    {
+      "final_p_difference": 0.0,
+      "final_x_difference": 0.0,
+      "method": "mash",
+      "same_channel": true,
+      "same_step_count": true
+    }
+  ]
+}

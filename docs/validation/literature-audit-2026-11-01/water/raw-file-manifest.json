@@ -1,0 +1,967 @@
+{
+  "archive_root": "pyrpmd-water-216-audit-2026-11-01",
+  "checksum_list_excludes_itself": true,
+  "code_files_included": false,
+  "files": [
+    {
+      "bytes": 1233,
+      "path": "LICENSE",
+      "sha256": "72da6281b15e35d894b352551027ac8c68fd1c21e46052e63c4d68ce33bf1b74"
+    },
+    {
+      "bytes": 4501,
+      "path": "README.md",
+      "sha256": "54209563e5f62242abcffe714c904e2b1b0a2197707bee39edbfb4cba3520ef3"
+    },
+    {
+      "bytes": 19146,
+      "path": "SHA256SUMS",
+      "sha256": "9f8d051047d79813570903c3dffaf90ddec9241d88c3f3c650511fe9a518d701"
+    },
+    {
+      "bytes": 463,
+      "path": "configs/classical-config.json",
+      "sha256": "e7df97741dfc39d4f80bfaa8858ed7f9ac82469543902dc63635e2a92d925720"
+    },
+    {
+      "bytes": 532,
+      "path": "configs/p16-config.json",
+      "sha256": "372a0051456bff52facda6bd177d4b39ff126935de39471a46d1b665998c1f76"
+    },
+    {
+      "bytes": 532,
+      "path": "configs/p32-config.json",
+      "sha256": "20015705dd4d4dad5ff93d00af83a7fd44cde227fcec296f3aa1cf33587e9a16"
+    },
+    {
+      "bytes": 531,
+      "path": "configs/p8-config.json",
+      "sha256": "e3883f33c5c90a10bb2917cba7729d74eeca091be9d83fd9eb538ac2b7186742"
+    },
+    {
+      "bytes": 31159,
+      "path": "docs/validation/literature-audit-2026-11-01/water/initial-classical-5ps.npz",
+      "sha256": "19002ddba9a88c37533fc590a35eb997e425ac778aeda464d3ce0b96c750f596"
+    },
+    {
+      "bytes": 23789,
+      "path": "logs/classical-216.log",
+      "sha256": "73b227b41b189c944184cf7c72c188a2d39f63a01d72951c6b2f36e6b76db04e"
+    },
+    {
+      "bytes": 95,
+      "path": "logs/numerics.log",
+      "sha256": "6bfe2b46c3ecf05afd677848dacd5e11cf2a897f24b9f438cf87cab7f316dcf1"
+    },
+    {
+      "bytes": 2844,
+      "path": "logs/quantum-warmups.log",
+      "sha256": "8210f95f4182e16bb10eab3b849311831424b412a46ac965a49b8ecaa11921d9"
+    },
+    {
+      "bytes": 18171,
+      "path": "reports/water/README.md",
+      "sha256": "798b12d2f71086cd0eddea7349f97a22466cb22da0ca843e7e30797a21aa08d1"
+    },
+    {
+      "bytes": 463,
+      "path": "reports/water/classical-config.json",
+      "sha256": "e7df97741dfc39d4f80bfaa8858ed7f9ac82469543902dc63635e2a92d925720"
+    },
+    {
+      "bytes": 28069,
+      "path": "reports/water/classical-pilot/curves.npz",
+      "sha256": "8096a45533cd0bb24f9160bc4fea2531df76a9be3c452769a6f49cf1e8aec467"
+    },
+    {
+      "bytes": 64582,
+      "path": "reports/water/classical-pilot/diagnostics.pdf",
+      "sha256": "11dca9db5a7f390c84528c0307f3199f8828dc5a26ad7b5971eb97df39472989"
+    },
+    {
+      "bytes": 249913,
+      "path": "reports/water/classical-pilot/diagnostics.png",
+      "sha256": "78774751ba93fe71a9ce808272da217ccb62786d67f0598e46df2372b22c5ca8"
+    },
+    {
+      "bytes": 31220,
+      "path": "reports/water/classical-pilot/endpoint.npz",
+      "sha256": "663023b530463f892bdb7792cd71395805679b75c8ae7da32f41d2748df4bead"
+    },
+    {
+      "bytes": 196297,
+      "path": "reports/water/classical-pilot/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 252375,
+      "path": "reports/water/classical-pilot/observables.npz",
+      "sha256": "1f03817056ce71a5716bf05d9f57e2c551db83c52d56a53272a766bf6b2da53a"
+    },
+    {
+      "bytes": 30432,
+      "path": "reports/water/classical-pilot/raw-manifest.json",
+      "sha256": "51f53d59092badb810a082909832ba47d667aa38bb91182f45d408adeab73ab3"
+    },
+    {
+      "bytes": 11150,
+      "path": "reports/water/classical-pilot/report.json",
+      "sha256": "a0016c3dfec19f2c4f3c734792b99a6c0252e1f59198a07b781f3d9bfe7a061b"
+    },
+    {
+      "bytes": 931,
+      "path": "reports/water/compact-replay.json",
+      "sha256": "15dfe95e904abd3075fbb04040be01cc91c623bf20db99d937f3202982f6ccd8"
+    },
+    {
+      "bytes": 31159,
+      "path": "reports/water/initial-classical-5ps.npz",
+      "sha256": "19002ddba9a88c37533fc590a35eb997e425ac778aeda464d3ce0b96c750f596"
+    },
+    {
+      "bytes": 15311,
+      "path": "reports/water/numerics/direct-ewald-oracle.npz",
+      "sha256": "a682ef7ac14d49478d3dbdde5a60b6899fe0793b25480035d15f622d386c7ada"
+    },
+    {
+      "bytes": 15113,
+      "path": "reports/water/numerics/input.npz",
+      "sha256": "bd9d64d6aef4a3e038756eacf6bc1eed4b0cfa280fe8591c7b2147bc4b474b99"
+    },
+    {
+      "bytes": 12830,
+      "path": "reports/water/numerics/report.json",
+      "sha256": "07f55d7856185be036e37c87f6809bb305082e21e33696a066e661414619ebff"
+    },
+    {
+      "bytes": 532,
+      "path": "reports/water/p16-config.json",
+      "sha256": "372a0051456bff52facda6bd177d4b39ff126935de39471a46d1b665998c1f76"
+    },
+    {
+      "bytes": 6847,
+      "path": "reports/water/p16-warmup/curves.npz",
+      "sha256": "91550c1868c8450b2c921d01bd6d60de6642562ae4916c7774e5166936fd6d48"
+    },
+    {
+      "bytes": 477666,
+      "path": "reports/water/p16-warmup/endpoint.npz",
+      "sha256": "15a2193a18eda38d8030aed548a92418de697b45974483009e7ede7317cc9b63"
+    },
+    {
+      "bytes": 196297,
+      "path": "reports/water/p16-warmup/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 9037,
+      "path": "reports/water/p16-warmup/observables.npz",
+      "sha256": "ae100b2e725d9a487b05338fdb7032f4a1c42b1fedd1c9f58bb6465a5ca5161e"
+    },
+    {
+      "bytes": 11777,
+      "path": "reports/water/p16-warmup/raw-manifest.json",
+      "sha256": "c73f7adfa5ceeaa6c578c7e1ef64a24588d7a612dd2bb7f9a44970cdb75b0c46"
+    },
+    {
+      "bytes": 8199,
+      "path": "reports/water/p16-warmup/report.json",
+      "sha256": "13659597eb88d927f9be80656dba093d259cdca332ca01418df4f90fee752417"
+    },
+    {
+      "bytes": 532,
+      "path": "reports/water/p32-config.json",
+      "sha256": "20015705dd4d4dad5ff93d00af83a7fd44cde227fcec296f3aa1cf33587e9a16"
+    },
+    {
+      "bytes": 6842,
+      "path": "reports/water/p32-warmup/curves.npz",
+      "sha256": "a554e6173f0ccd29e6f2691bf9da4c09914f0a578c98c17742a90bc0a413a69b"
+    },
+    {
+      "bytes": 952543,
+      "path": "reports/water/p32-warmup/endpoint.npz",
+      "sha256": "1d6f42b27ff79c8f450e39cad41d35eea82e4e8d47c2d917ecaf6a4b83851dc1"
+    },
+    {
+      "bytes": 196297,
+      "path": "reports/water/p32-warmup/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 9016,
+      "path": "reports/water/p32-warmup/observables.npz",
+      "sha256": "226bba23765601d9fe335555becf016ba4be7ef1581c2a6ace43f5e09a981aa0"
+    },
+    {
+      "bytes": 11776,
+      "path": "reports/water/p32-warmup/raw-manifest.json",
+      "sha256": "107f8b9ae3abe3ad8e3e1d1b6062ed57582ec5c1bf7c03c95fe1f9503f054845"
+    },
+    {
+      "bytes": 8201,
+      "path": "reports/water/p32-warmup/report.json",
+      "sha256": "2abac9d5b77d8b59642a2339739bbbceb534442c2257e70a42ea04411b8d93ad"
+    },
+    {
+      "bytes": 531,
+      "path": "reports/water/p8-config.json",
+      "sha256": "e3883f33c5c90a10bb2917cba7729d74eeca091be9d83fd9eb538ac2b7186742"
+    },
+    {
+      "bytes": 6819,
+      "path": "reports/water/p8-warmup/curves.npz",
+      "sha256": "38999294c3e1ac1e4d468469d3a0b8d824a3d78dc6cfd87fd52e63c6a22564f5"
+    },
+    {
+      "bytes": 239872,
+      "path": "reports/water/p8-warmup/endpoint.npz",
+      "sha256": "dfd880173f25159ac54081acf9f5fe5971d6c4105639b231fb4cd5c77dbd0de5"
+    },
+    {
+      "bytes": 196297,
+      "path": "reports/water/p8-warmup/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 9020,
+      "path": "reports/water/p8-warmup/observables.npz",
+      "sha256": "73acca0a9af9353e4fbe3cd4e1b0a6164165c3abcf53918938349309faa0a1a3"
+    },
+    {
+      "bytes": 11776,
+      "path": "reports/water/p8-warmup/raw-manifest.json",
+      "sha256": "f220d722e0653fd7702df04c8fddb3980608075e10c5607a599751de12fe0429"
+    },
+    {
+      "bytes": 8185,
+      "path": "reports/water/p8-warmup/report.json",
+      "sha256": "bf012636a0b379d324e55fff7256f3454a9d240721185bb5cfd34d7bb6d76e65"
+    },
+    {
+      "bytes": 871,
+      "path": "reports/water/review-fix-after.json",
+      "sha256": "0ba269dcbb28ef1050a9e9f56ce5ffac1c25c422c3d38553daae46d3fe3cfa38"
+    },
+    {
+      "bytes": 366,
+      "path": "reports/water/review-fix-before.json",
+      "sha256": "598a962d2ea606ddfb1f35855bb39639ebacaf2209488d71741b15e5a36c142d"
+    },
+    {
+      "bytes": 99,
+      "path": "reports/water/review-fix-pytest.txt",
+      "sha256": "dff29d0cc6035fefb055df8f21443fc03dd469bec043a025284e5dca786f30a3"
+    },
+    {
+      "bytes": 3658,
+      "path": "reports/water/review-fix-pytest.xml",
+      "sha256": "d01c1c9cd1165bff8cfb4d362fb881e71affae5d1ad11300f921bc9c555d140e"
+    },
+    {
+      "bytes": 5814,
+      "path": "reports/water/source-audit.json",
+      "sha256": "a98c06b457f3d048d983f56004a0b38759c4c35ada0cc4323043ad7be1e4ad83"
+    },
+    {
+      "bytes": 3677,
+      "path": "reports/water/summary.csv",
+      "sha256": "43768c03ee8289157f71eeee4cfdcce48416fda9e16c84486cb532552f2e75a6"
+    },
+    {
+      "bytes": 770440,
+      "path": "runs/classical-216/chunk-000000.npz",
+      "sha256": "503245190fdc6dfc83fe7575d5cd527093665bb5fe3a05d250283c1e3a6869b2"
+    },
+    {
+      "bytes": 774396,
+      "path": "runs/classical-216/chunk-000001.npz",
+      "sha256": "3bd9fd256917f35af85b9507cf571f01c6485c133daa9a65fcaf11eaed60d721"
+    },
+    {
+      "bytes": 774782,
+      "path": "runs/classical-216/chunk-000002.npz",
+      "sha256": "0f9426470ee1dfda95b452451a19c3df6fb1c17f9c7a5ce873c64f1d8b3883a3"
+    },
+    {
+      "bytes": 775367,
+      "path": "runs/classical-216/chunk-000003.npz",
+      "sha256": "c974fb58417c56a6e59663604d25f42d89b0d77880ba31f52302462437779496"
+    },
+    {
+      "bytes": 775641,
+      "path": "runs/classical-216/chunk-000004.npz",
+      "sha256": "104de8e88df526a192df10c37c5b0f1f62997b0a9e89282232b29ee91245f6f5"
+    },
+    {
+      "bytes": 775693,
+      "path": "runs/classical-216/chunk-000005.npz",
+      "sha256": "ca85043c2cd7997f293f0859658817b03c8dfb2b3caeffd5d0b85fafc880dc09"
+    },
+    {
+      "bytes": 775875,
+      "path": "runs/classical-216/chunk-000006.npz",
+      "sha256": "0b64200b2f09d501d0da9d74da78dec194eca38d517aecbd5d70180ad60eaddc"
+    },
+    {
+      "bytes": 775688,
+      "path": "runs/classical-216/chunk-000007.npz",
+      "sha256": "45b9de0bee5daa46f3ce1000740b3f20c725d4728461550451bb2c0fc717e07a"
+    },
+    {
+      "bytes": 775829,
+      "path": "runs/classical-216/chunk-000008.npz",
+      "sha256": "6341511f45c39d8896423eeb9556d370574f059f957c05a86039af680da9ce75"
+    },
+    {
+      "bytes": 776177,
+      "path": "runs/classical-216/chunk-000009.npz",
+      "sha256": "b15bf7411008c8c65a558926f4e1d41ee84b7da6fda1ce1d3d6aaa77cb89ef26"
+    },
+    {
+      "bytes": 776241,
+      "path": "runs/classical-216/chunk-000010.npz",
+      "sha256": "c1565137f319947b418017d6dc8274db99576896d18cf6221d8bf6693a0c1ffb"
+    },
+    {
+      "bytes": 776197,
+      "path": "runs/classical-216/chunk-000011.npz",
+      "sha256": "29c1736c96829dfe552087f914cd7e6ab487c7790e6ff83f0c7bf87c2bde61f8"
+    },
+    {
+      "bytes": 776506,
+      "path": "runs/classical-216/chunk-000012.npz",
+      "sha256": "40a201eb4f840bca3b11216f80911f70600d02080175fabe626430d3ccfff97b"
+    },
+    {
+      "bytes": 776833,
+      "path": "runs/classical-216/chunk-000013.npz",
+      "sha256": "10e6dd17e664f00fc48ab0d5d3cbb3314778824d158c577c63dd645e6ab86695"
+    },
+    {
+      "bytes": 776628,
+      "path": "runs/classical-216/chunk-000014.npz",
+      "sha256": "3bd4c9aa47403dad3a8b211991f9b546ba1d037204aa2b7ff4e8766f8d65af08"
+    },
+    {
+      "bytes": 776540,
+      "path": "runs/classical-216/chunk-000015.npz",
+      "sha256": "59a0c04b2cdcadb2534285b29876851321d5227002e5392154cd83f2a26bbf5f"
+    },
+    {
+      "bytes": 776817,
+      "path": "runs/classical-216/chunk-000016.npz",
+      "sha256": "2d7870c9d37a622c96b97edef0bfc30edf3b176d117454370fc9a9a2484025a9"
+    },
+    {
+      "bytes": 776832,
+      "path": "runs/classical-216/chunk-000017.npz",
+      "sha256": "8ed4dc57cd4d33137e9a4d07acc0cf2a2e17b297999723a35f599fda3a746b02"
+    },
+    {
+      "bytes": 776924,
+      "path": "runs/classical-216/chunk-000018.npz",
+      "sha256": "e8fe8b8df640d5e5a2b3d6151cfafd8b1b32b1c3da7e1fc39303bee863e2af9e"
+    },
+    {
+      "bytes": 776801,
+      "path": "runs/classical-216/chunk-000019.npz",
+      "sha256": "34c426633127592cdb029907af5b9683191b95090f5122bcc259cc2d9ce43b48"
+    },
+    {
+      "bytes": 777123,
+      "path": "runs/classical-216/chunk-000020.npz",
+      "sha256": "8dddd62e93bfe8895825ac09a2a1c54a5f31787971547fe91a35db7aec70065c"
+    },
+    {
+      "bytes": 776891,
+      "path": "runs/classical-216/chunk-000021.npz",
+      "sha256": "e1ceceff5e40b9eaf3dd96e4b34c25ed52b6d2a34e6df71623e7462cbf6f0181"
+    },
+    {
+      "bytes": 776857,
+      "path": "runs/classical-216/chunk-000022.npz",
+      "sha256": "1cfb9530dd22611640401e0d5587a6af1e8c21374b2da8be79ef47100d219682"
+    },
+    {
+      "bytes": 776893,
+      "path": "runs/classical-216/chunk-000023.npz",
+      "sha256": "1d452d08292965c71c995fa6470734353674417df3f36b0f02b0455f07664d70"
+    },
+    {
+      "bytes": 777017,
+      "path": "runs/classical-216/chunk-000024.npz",
+      "sha256": "d20565146921faf4ab3ed1ad0d8440357207b67c504ee52b35b719230b937321"
+    },
+    {
+      "bytes": 776895,
+      "path": "runs/classical-216/chunk-000025.npz",
+      "sha256": "0a6aa5498b32160d80456af0f711f4383986a6c082d3e0bd1eaa529f611ee866"
+    },
+    {
+      "bytes": 777063,
+      "path": "runs/classical-216/chunk-000026.npz",
+      "sha256": "5ab79f8eb0d2efd9d8fc7af4efe4f1cc815c3d7e6347637a3452cc19edbea72f"
+    },
+    {
+      "bytes": 777083,
+      "path": "runs/classical-216/chunk-000027.npz",
+      "sha256": "b4b4ef7ea48540550e11f41da94d38e69c51115cd392813ad4c7a8c18576b2ac"
+    },
+    {
+      "bytes": 777069,
+      "path": "runs/classical-216/chunk-000028.npz",
+      "sha256": "08e05d6e254e8a79d7871aa15dcc6890da166ba93a5d7fe2397ede0f44d1d12b"
+    },
+    {
+      "bytes": 776859,
+      "path": "runs/classical-216/chunk-000029.npz",
+      "sha256": "bb65299cf37be52cb535c9975453dfd5c52840d0b3e23be718f96c25975ef9d3"
+    },
+    {
+      "bytes": 777065,
+      "path": "runs/classical-216/chunk-000030.npz",
+      "sha256": "0663908dd25d969fe3716e7c502e84a247e964cab2f234bb8ec5f9d1f737b650"
+    },
+    {
+      "bytes": 777233,
+      "path": "runs/classical-216/chunk-000031.npz",
+      "sha256": "c09a838d682d7763ee2830cfe68da2da720bd7a97568578bc32966e134a67b3d"
+    },
+    {
+      "bytes": 777068,
+      "path": "runs/classical-216/chunk-000032.npz",
+      "sha256": "3137c7d6ce0cc8e2403cf1163622dcfb162359b0362311b03ad4fed284935d88"
+    },
+    {
+      "bytes": 776926,
+      "path": "runs/classical-216/chunk-000033.npz",
+      "sha256": "a1b603add9ed3b161df097173217e0147ae6c30e5bcd5564627313ab3945b929"
+    },
+    {
+      "bytes": 777170,
+      "path": "runs/classical-216/chunk-000034.npz",
+      "sha256": "386088e6c2474b930b52038fcaa0ad1c0c1f20d39ea4520fc79d9324701e8b99"
+    },
+    {
+      "bytes": 777029,
+      "path": "runs/classical-216/chunk-000035.npz",
+      "sha256": "86dad1589e1cc57a0f69d1824ab72b6bd7e7bc0e603518d1d7625e5929f1382c"
+    },
+    {
+      "bytes": 777039,
+      "path": "runs/classical-216/chunk-000036.npz",
+      "sha256": "682c9514382af32480771be8d5b1ad26aa4aa2aed327a067fe4fb0d717b3af7b"
+    },
+    {
+      "bytes": 777152,
+      "path": "runs/classical-216/chunk-000037.npz",
+      "sha256": "0fc67f931ce8b24df6e5c51d8928aebbd8ec277884d00df40f6ea2835db0c768"
+    },
+    {
+      "bytes": 777388,
+      "path": "runs/classical-216/chunk-000038.npz",
+      "sha256": "edf9269b48ea9de6e520c0de0372bd9e31eac46279d595ec1dba29117d032be5"
+    },
+    {
+      "bytes": 777329,
+      "path": "runs/classical-216/chunk-000039.npz",
+      "sha256": "9099c3ab7b835b68c11bef98de104fa935b5b21a6bd83569a42ad69ebe67d10c"
+    },
+    {
+      "bytes": 777130,
+      "path": "runs/classical-216/chunk-000040.npz",
+      "sha256": "dadc7d9740552a4ed9b15ccd7cf895b537088afe511622f6ec6054a6fe58d608"
+    },
+    {
+      "bytes": 776988,
+      "path": "runs/classical-216/chunk-000041.npz",
+      "sha256": "6d33cc209166b830d5b618390b27e0ed43b5d8de324057aee66e7f1724a7de8c"
+    },
+    {
+      "bytes": 777179,
+      "path": "runs/classical-216/chunk-000042.npz",
+      "sha256": "a4980711db12e1b8863477cea492e585b37b7be97fb99766b259630e1c1ab29a"
+    },
+    {
+      "bytes": 777244,
+      "path": "runs/classical-216/chunk-000043.npz",
+      "sha256": "ec0d7656b531393280236609038d811d78d4972bbdf2b556f472cd7be6f47409"
+    },
+    {
+      "bytes": 777310,
+      "path": "runs/classical-216/chunk-000044.npz",
+      "sha256": "14b71d1eff02f0ebe2cca8351737bc077f5677f472fdbcbd0cf9fd49b15fe88b"
+    },
+    {
+      "bytes": 777410,
+      "path": "runs/classical-216/chunk-000045.npz",
+      "sha256": "2765afc0c4ff29a42a16d5a2ebe8cf2d6d5508ef8b76c3d75003cf54d01096bd"
+    },
+    {
+      "bytes": 777309,
+      "path": "runs/classical-216/chunk-000046.npz",
+      "sha256": "10328abbf46ec47a5846879b0e3816d7d6f72df8680dcd2a3716c2ea0cb7b214"
+    },
+    {
+      "bytes": 777388,
+      "path": "runs/classical-216/chunk-000047.npz",
+      "sha256": "b48a4e775361b5b81911b90821f14ba6f9a12c7bf9a5ef802c717aa1c08f0776"
+    },
+    {
+      "bytes": 777609,
+      "path": "runs/classical-216/chunk-000048.npz",
+      "sha256": "b5a0fec9b7c52cc12515e437a473aa6b7feedf43beb680b78dd42577ab63efe1"
+    },
+    {
+      "bytes": 777712,
+      "path": "runs/classical-216/chunk-000049.npz",
+      "sha256": "5c2f7af58fcd0622c373e540ef958e1398f4e48409f053b3906749c3a556d622"
+    },
+    {
+      "bytes": 777460,
+      "path": "runs/classical-216/chunk-000050.npz",
+      "sha256": "c92eb7800157fd2e78cbe44866e0d8a8c143824c988f825394c2c8332ca8667a"
+    },
+    {
+      "bytes": 777465,
+      "path": "runs/classical-216/chunk-000051.npz",
+      "sha256": "4c265b27d736f14a7959c90b4c931de47d6d4c3606905e6c33205e9285e9a869"
+    },
+    {
+      "bytes": 777518,
+      "path": "runs/classical-216/chunk-000052.npz",
+      "sha256": "e30b4a4c18cc3395670fba100ede284175146822299438a3a75008b211a46066"
+    },
+    {
+      "bytes": 777426,
+      "path": "runs/classical-216/chunk-000053.npz",
+      "sha256": "fd3ccfe91b0367768ee36fb60b9b50ddf6bfcc1799baf6608ac37d675fe9e518"
+    },
+    {
+      "bytes": 777541,
+      "path": "runs/classical-216/chunk-000054.npz",
+      "sha256": "053fc085125bc07f55c8c92cd6fc9a3740fa5b0f17d724cf63365b8b64668d16"
+    },
+    {
+      "bytes": 777811,
+      "path": "runs/classical-216/chunk-000055.npz",
+      "sha256": "29965d10569ceaba243ccdbae6ebf1ae8b474c6604bad2a1044788b8e24e0bd0"
+    },
+    {
+      "bytes": 777703,
+      "path": "runs/classical-216/chunk-000056.npz",
+      "sha256": "c70c15a14076fdf2775c27b613be6372b3c124c08451b12e3ca948f2eeb71605"
+    },
+    {
+      "bytes": 778050,
+      "path": "runs/classical-216/chunk-000057.npz",
+      "sha256": "3fee0983d9af5f751b89e4ce3732e1e8532a16bbbb51519d6fb1f8b1dca24eec"
+    },
+    {
+      "bytes": 777959,
+      "path": "runs/classical-216/chunk-000058.npz",
+      "sha256": "daf952f18daba891918305e4dd07acb0ec4fca5c8568af98a07ce7a8f5acaa22"
+    },
+    {
+      "bytes": 777919,
+      "path": "runs/classical-216/chunk-000059.npz",
+      "sha256": "6226f8590d7fafe87ca4f7dc55416265f499ee87f03925c81d265b03a199fb1b"
+    },
+    {
+      "bytes": 777925,
+      "path": "runs/classical-216/chunk-000060.npz",
+      "sha256": "f6c5e447fbb4d46f4beb7958950b598a5038760130fa8550c51217e1304ad783"
+    },
+    {
+      "bytes": 777818,
+      "path": "runs/classical-216/chunk-000061.npz",
+      "sha256": "c8bd5445c74063dac6166b4072952b40723716041758d704e9e926bd52202ef1"
+    },
+    {
+      "bytes": 777925,
+      "path": "runs/classical-216/chunk-000062.npz",
+      "sha256": "a5e2a8c046536b9ae14f3ff3f3152b33c0ca8e37378011a0273bee45723f4d53"
+    },
+    {
+      "bytes": 777928,
+      "path": "runs/classical-216/chunk-000063.npz",
+      "sha256": "3a7e574e813595a9293e46bbe748159701dd67dab413b53bf957f5a95c2c99cf"
+    },
+    {
+      "bytes": 777582,
+      "path": "runs/classical-216/chunk-000064.npz",
+      "sha256": "9d089f09f1f8ca30db9f8a37f2df58844b14cafac9182a2a8a35dfff94c55fce"
+    },
+    {
+      "bytes": 777714,
+      "path": "runs/classical-216/chunk-000065.npz",
+      "sha256": "3411f5ca21c6635aaba7890775bc8aa49c90a200b2cc4a6e745e2c8f58885009"
+    },
+    {
+      "bytes": 777721,
+      "path": "runs/classical-216/chunk-000066.npz",
+      "sha256": "d934178a21e17bf35f8947982ba95c34b65137b7e0d74f59aec091ddac2599d8"
+    },
+    {
+      "bytes": 778004,
+      "path": "runs/classical-216/chunk-000067.npz",
+      "sha256": "9836afbf464997488d136aa4ac346abc8a74656cde4bb20bfc13ec49f97df35c"
+    },
+    {
+      "bytes": 778223,
+      "path": "runs/classical-216/chunk-000068.npz",
+      "sha256": "bb4f5948812cf34f7647204e51280cfdec7debc27618f9eb78da319fd9945858"
+    },
+    {
+      "bytes": 778097,
+      "path": "runs/classical-216/chunk-000069.npz",
+      "sha256": "fc729a8aa68bdb2586ff38df8dacd15515181d63f9f5ebf25fef510eb08bc4d0"
+    },
+    {
+      "bytes": 778325,
+      "path": "runs/classical-216/chunk-000070.npz",
+      "sha256": "b037abb52a2f134d31e88f0a18864dbe664f314c71c8f9493b0e07b16f28e25b"
+    },
+    {
+      "bytes": 778324,
+      "path": "runs/classical-216/chunk-000071.npz",
+      "sha256": "f4386304542f15c7d65903ab8ff4b55db31b2fc37b4f1a5e03c07a8f7bafddd3"
+    },
+    {
+      "bytes": 778272,
+      "path": "runs/classical-216/chunk-000072.npz",
+      "sha256": "bf161e1b0212e086aff45936882d959df31ca46f44aead5f3e393fdc0f564bf5"
+    },
+    {
+      "bytes": 778245,
+      "path": "runs/classical-216/chunk-000073.npz",
+      "sha256": "81fbb727f90b9412625a75aeea9fc1dbb2a86c4f04eb761f48dc410f79ba4e40"
+    },
+    {
+      "bytes": 778267,
+      "path": "runs/classical-216/chunk-000074.npz",
+      "sha256": "3fab235708217e28ee7d26e2b6fc5c0cab517cdb81f677d9defb2e859ad152d0"
+    },
+    {
+      "bytes": 778262,
+      "path": "runs/classical-216/chunk-000075.npz",
+      "sha256": "7229434bcacfe36867811831d9ff8ba3e7cae29612d64289ddd193e3ab93b06a"
+    },
+    {
+      "bytes": 778472,
+      "path": "runs/classical-216/chunk-000076.npz",
+      "sha256": "a7d69161a1284628dc8837a0e6772d91e3742765cb37223efa04cd1ab7b956a1"
+    },
+    {
+      "bytes": 778617,
+      "path": "runs/classical-216/chunk-000077.npz",
+      "sha256": "effcefdbfe8114306da1b4002aec73b0050e59ade0c3aca7980863bc789d0eca"
+    },
+    {
+      "bytes": 778709,
+      "path": "runs/classical-216/chunk-000078.npz",
+      "sha256": "1341df9c92602e3c2bd549318b7008190d5e55de8621479fb6195230ff8bd191"
+    },
+    {
+      "bytes": 778519,
+      "path": "runs/classical-216/chunk-000079.npz",
+      "sha256": "15b25ea74d8e672d9923f9bc4ef070418c93f134ffc1e9cfa4aed8d0b9f235d7"
+    },
+    {
+      "bytes": 793340,
+      "path": "runs/classical-216/chunk-000080.npz",
+      "sha256": "ef0c83a8433036b84a0ce6d2a23fe8977bbee8923ebc5600be129d89c8861eb8"
+    },
+    {
+      "bytes": 778629,
+      "path": "runs/classical-216/chunk-000081.npz",
+      "sha256": "ea8c7e080ef9e16abd72e7647f5e761e9b0eb9848fa6e994e272874f7e020601"
+    },
+    {
+      "bytes": 778585,
+      "path": "runs/classical-216/chunk-000082.npz",
+      "sha256": "6caa1c05cf8fa8ced190c618c139e2c26502c19128f21bd16ba46fd894407749"
+    },
+    {
+      "bytes": 778532,
+      "path": "runs/classical-216/chunk-000083.npz",
+      "sha256": "9b270c67bc002e6446257fbc9e0f645e3c1cf901372ea848cd177361e06e09dc"
+    },
+    {
+      "bytes": 778564,
+      "path": "runs/classical-216/chunk-000084.npz",
+      "sha256": "ee39a6b135850643756efb9d8938df25394f60c90a1d009bf16d2273bfea7fae"
+    },
+    {
+      "bytes": 778698,
+      "path": "runs/classical-216/chunk-000085.npz",
+      "sha256": "d13e1b2057dccaaaafc3e2c8447a57a23109f7a4324d1095d74f4ee1c7cfdc9c"
+    },
+    {
+      "bytes": 778763,
+      "path": "runs/classical-216/chunk-000086.npz",
+      "sha256": "e7cee88c43152cf57fdbef49df8ab5076ab3ebc4db31c5a394236e4984e7d8b1"
+    },
+    {
+      "bytes": 778815,
+      "path": "runs/classical-216/chunk-000087.npz",
+      "sha256": "93d32fff0f219d87396639efac3dca3ae6ba81c8661be23c1db0bf4c9b145e65"
+    },
+    {
+      "bytes": 778921,
+      "path": "runs/classical-216/chunk-000088.npz",
+      "sha256": "efbbdc0bfe5c27d55b1db682926b6bde8ca81bb5c45e8c8e32a239b8004e4b13"
+    },
+    {
+      "bytes": 779000,
+      "path": "runs/classical-216/chunk-000089.npz",
+      "sha256": "798051f35d96418fb379bd1688c887d2bbf20779f2e62750e0112cd2efeb25f3"
+    },
+    {
+      "bytes": 778897,
+      "path": "runs/classical-216/chunk-000090.npz",
+      "sha256": "f0de24b18fad8d6771002df8659db3db71da97830372d1498cf9707a25379d44"
+    },
+    {
+      "bytes": 778998,
+      "path": "runs/classical-216/chunk-000091.npz",
+      "sha256": "0cd7793f9a7fbc3019c1adaacca7a305308a5fee268ca22776d299f27e600722"
+    },
+    {
+      "bytes": 779069,
+      "path": "runs/classical-216/chunk-000092.npz",
+      "sha256": "9ad7ea733e1eef7bf1be030c7be6617e4b81cfd4b824b594d0b331331a7b7ca7"
+    },
+    {
+      "bytes": 778892,
+      "path": "runs/classical-216/chunk-000093.npz",
+      "sha256": "a7cb3f6f7ad4c7696d9fcc850efca72b4e1cc3df63646a18dc0703c86c554f91"
+    },
+    {
+      "bytes": 779037,
+      "path": "runs/classical-216/chunk-000094.npz",
+      "sha256": "5b716ab4e8f614f1567f8a0db9af0102d2d240f17f474185cef7bf78243583eb"
+    },
+    {
+      "bytes": 779103,
+      "path": "runs/classical-216/chunk-000095.npz",
+      "sha256": "503efdb213312acbe00916946b9e607debbde3fb533ed378b00dee1def320d18"
+    },
+    {
+      "bytes": 794048,
+      "path": "runs/classical-216/chunk-000096.npz",
+      "sha256": "9a1b12f14721da242db582d13239535ca0aa1169fe8edcd3ae62ff1a99e26303"
+    },
+    {
+      "bytes": 779037,
+      "path": "runs/classical-216/chunk-000097.npz",
+      "sha256": "f90cad91c99b703fd8340541eb399d18e8d9d53d9e09ba73d6f276634689a4c2"
+    },
+    {
+      "bytes": 779092,
+      "path": "runs/classical-216/chunk-000098.npz",
+      "sha256": "d0f6251e86f87047b23f1c97e04dc52592a4040551fae3af7166a3b50ce419bc"
+    },
+    {
+      "bytes": 778964,
+      "path": "runs/classical-216/chunk-000099.npz",
+      "sha256": "e4f1f7bfe2ba1b3e08663762ed3e8dbdc2ee7c9250423df22f4e83ee5feaf96f"
+    },
+    {
+      "bytes": 779022,
+      "path": "runs/classical-216/chunk-000100.npz",
+      "sha256": "d4c24c3f8e8b168b99a465fb71665b5eff73d128d64baa53f09e47cc861a34f0"
+    },
+    {
+      "bytes": 779106,
+      "path": "runs/classical-216/chunk-000101.npz",
+      "sha256": "31d268ff4979aadd7220d5be97b29e9faca63ecd53289f0c35cd54b5580a7e93"
+    },
+    {
+      "bytes": 778993,
+      "path": "runs/classical-216/chunk-000102.npz",
+      "sha256": "17edb3b1f42001d4ba205b1ba0473d81aa4fa3958f3bcaac5f62b4dc82d6405a"
+    },
+    {
+      "bytes": 779048,
+      "path": "runs/classical-216/chunk-000103.npz",
+      "sha256": "f5b43568b41e69145878d0968198f5b4f15a52486a73b7da714c9fa722b7695d"
+    },
+    {
+      "bytes": 779214,
+      "path": "runs/classical-216/chunk-000104.npz",
+      "sha256": "5389df87cd3e01cc9c8d38cfebbaec86b2522b47d7c9af16f0934493feb788e5"
+    },
+    {
+      "bytes": 779122,
+      "path": "runs/classical-216/chunk-000105.npz",
+      "sha256": "bc640be7c737aab04e370bd5321067bca96999df2e610f4655ec07982145e5ea"
+    },
+    {
+      "bytes": 779036,
+      "path": "runs/classical-216/chunk-000106.npz",
+      "sha256": "95d0533770b57f031596abf6b4b47152ca87f584c88fe5a1e4ba9d9f647db3ff"
+    },
+    {
+      "bytes": 779321,
+      "path": "runs/classical-216/chunk-000107.npz",
+      "sha256": "5000a45d1340c72695e3300582ded468ab1a48a4860db315541f7af7716f2c4c"
+    },
+    {
+      "bytes": 779181,
+      "path": "runs/classical-216/chunk-000108.npz",
+      "sha256": "a7de5905d07ebaf868ec390fd162024e0d285616c3f12c7904539d00bb83d2b1"
+    },
+    {
+      "bytes": 779050,
+      "path": "runs/classical-216/chunk-000109.npz",
+      "sha256": "04a30eaf6cc4d38e7a55b0bff772060cdd2875d87e3192cf4a4297328b015c9c"
+    },
+    {
+      "bytes": 779451,
+      "path": "runs/classical-216/chunk-000110.npz",
+      "sha256": "bd82ffb31b209ff6942714409c7295d6d6119b742e34d18e58da7b0c5a45b8be"
+    },
+    {
+      "bytes": 779341,
+      "path": "runs/classical-216/chunk-000111.npz",
+      "sha256": "77d1c95d458065e0842fa438fefb2f9ec29f8fb3286b8e9b5de40d6be03482c8"
+    },
+    {
+      "bytes": 30432,
+      "path": "runs/classical-216/manifest.json",
+      "sha256": "51f53d59092badb810a082909832ba47d667aa38bb91182f45d408adeab73ab3"
+    },
+    {
+      "bytes": 196297,
+      "path": "runs/classical-216/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 777737,
+      "path": "runs/p16/chunk-000000.npz",
+      "sha256": "a8338a7553ac0904b137d9942c77859bf7f5668b0461e16fba8accf46cf54d6e"
+    },
+    {
+      "bytes": 777756,
+      "path": "runs/p16/chunk-000001.npz",
+      "sha256": "98c42030d8d489113500de15236006381697d0e6b678b17ed91185220590ec27"
+    },
+    {
+      "bytes": 777750,
+      "path": "runs/p16/chunk-000002.npz",
+      "sha256": "3ca346961a37290ef6bec3cf85204afb9e64271e604f182baa9e633b21235c9f"
+    },
+    {
+      "bytes": 777892,
+      "path": "runs/p16/chunk-000003.npz",
+      "sha256": "7e5ccf18b866739b3b486d751a070219271751b0cffb191518096dc86ee6039f"
+    },
+    {
+      "bytes": 777863,
+      "path": "runs/p16/chunk-000004.npz",
+      "sha256": "1277e2e3b2985c76bc13bc77ec52526837c86111a143e74ff0b77bb58db8f356"
+    },
+    {
+      "bytes": 792748,
+      "path": "runs/p16/chunk-000005.npz",
+      "sha256": "497369551955b48e412d31ebc99f1e89cdbe8671a4ec83cd64d929deabcc4794"
+    },
+    {
+      "bytes": 11777,
+      "path": "runs/p16/manifest.json",
+      "sha256": "c73f7adfa5ceeaa6c578c7e1ef64a24588d7a612dd2bb7f9a44970cdb75b0c46"
+    },
+    {
+      "bytes": 196297,
+      "path": "runs/p16/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 1252890,
+      "path": "runs/p32/chunk-000000.npz",
+      "sha256": "e4fbfacf63e6ec74773ee29ca0e915f5960470de4816b018e611da3a44c6d073"
+    },
+    {
+      "bytes": 1252823,
+      "path": "runs/p32/chunk-000001.npz",
+      "sha256": "33ff13ef09dcb646b2e2af33e8add671631ca4c94fcaa770c4c8ad253df66049"
+    },
+    {
+      "bytes": 1252982,
+      "path": "runs/p32/chunk-000002.npz",
+      "sha256": "0e03d25a77e3b5b277489f00dd426644715fde7b75192397945c91a170afb205"
+    },
+    {
+      "bytes": 1253004,
+      "path": "runs/p32/chunk-000003.npz",
+      "sha256": "ae0a132ce4deb39e2dd76c58e93c7338b871d96240e55d83b853f2257a5321d4"
+    },
+    {
+      "bytes": 1252880,
+      "path": "runs/p32/chunk-000004.npz",
+      "sha256": "e310b87f8bb7840895db292cccb4360f104bf42aef1be13c680991ea2ef73216"
+    },
+    {
+      "bytes": 1267583,
+      "path": "runs/p32/chunk-000005.npz",
+      "sha256": "7684b869951bb6eed63872c7ca7f15bed73e77c6541f453fd8c018299db82a64"
+    },
+    {
+      "bytes": 11776,
+      "path": "runs/p32/manifest.json",
+      "sha256": "107f8b9ae3abe3ad8e3e1d1b6062ed57582ec5c1bf7c03c95fe1f9503f054845"
+    },
+    {
+      "bytes": 196297,
+      "path": "runs/p32/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 540085,
+      "path": "runs/p8/chunk-000000.npz",
+      "sha256": "f1608e3bef6903237a11e3a171b62ecd08f777ad0bb8d2e2293fa62374794ca9"
+    },
+    {
+      "bytes": 540100,
+      "path": "runs/p8/chunk-000001.npz",
+      "sha256": "635838400bafd551759f4ea4cdeac0abe428161d135615f4957863865721ee84"
+    },
+    {
+      "bytes": 540197,
+      "path": "runs/p8/chunk-000002.npz",
+      "sha256": "cc5b1841aa5e841aba2f1a26bc8b3bc2bcae6e65fcd4cfe19440c9c0b353d205"
+    },
+    {
+      "bytes": 540170,
+      "path": "runs/p8/chunk-000003.npz",
+      "sha256": "3674095d8fce238dd3e85f2c6e07b610638404765de2277a1e0edfc76b9e537d"
+    },
+    {
+      "bytes": 540012,
+      "path": "runs/p8/chunk-000004.npz",
+      "sha256": "d32a577c45a0987bfd88bc8614670e207e8a4f7ae135a89288a69f084f5bc584"
+    },
+    {
+      "bytes": 555020,
+      "path": "runs/p8/chunk-000005.npz",
+      "sha256": "0f2787fed704bfddc101f3e26df5c0d16f933b547379977c563b22b271407d98"
+    },
+    {
+      "bytes": 11776,
+      "path": "runs/p8/manifest.json",
+      "sha256": "f220d722e0653fd7702df04c8fddb3980608075e10c5607a599751de12fe0429"
+    },
+    {
+      "bytes": 196297,
+      "path": "runs/p8/model.xml",
+      "sha256": "d22d72eac31f7e4013adfbe7b3317a3d9c28292b6b21345cbfbd6f58d62d3a55"
+    },
+    {
+      "bytes": 2952,
+      "path": "source-reference.json",
+      "sha256": "0002b661ec3f09c164026735128219434b3519394b4cea71307848e11128cdba"
+    }
+  ]
+}

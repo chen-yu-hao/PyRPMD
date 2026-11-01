@@ -1,0 +1,5 @@
+{"method": "fixed-andersen", "time_fs": 500.0, "mode37_variance_ratio": 0.10893795674479982, "mode13_variance_ratio": 0.38771191992533477, "elapsed_seconds": 1.5959499919990776}
+{"method": "fixed-andersen", "time_fs": 1500.0, "mode37_variance_ratio": 0.3015872102412576, "mode13_variance_ratio": 0.7458074055409347, "elapsed_seconds": 4.620586787998036}
+{"method": "random-interval-andersen", "time_fs": 500.0, "mode37_variance_ratio": 1.1732253466422138, "mode13_variance_ratio": 1.1461239998480435, "elapsed_seconds": 1.6411902720064973}
+{"method": "random-interval-andersen", "time_fs": 1500.0, "mode37_variance_ratio": 0.9366865793032688, "mode13_variance_ratio": 0.9735444485174982, "elapsed_seconds": 4.762617999003851}
+{"method": "pile-l", "time_fs": 500.0, "mode37_variance_ratio": 1.022106453726896, "mode13_variance_ratio": 0.9081095272882758, "elapsed_seconds": 6.102050949004479}

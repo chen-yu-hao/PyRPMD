@@ -1,0 +1,107 @@
+{
+  "model": "Cao-Voth-1993-Eq18",
+  "potential": "q^2/2 + (2.4/24)*q^4",
+  "beta": 5.0,
+  "mass": 1.0,
+  "hbar": 1.0,
+  "units": "atomic; frequencies angular",
+  "quick_smoke_only": false,
+  "master_seeds": [
+    1943,
+    106672,
+    211401,
+    316130,
+    420859,
+    525588,
+    630317,
+    735046
+  ],
+  "atoms_per_seed": 32,
+  "independent_scalar_copies_per_seed": 96,
+  "duration": 32.0,
+  "sample_dt": 0.02,
+  "training_frames_per_seed": 16384,
+  "cases": [
+    {
+      "label": "classical",
+      "beads": 1,
+      "omega": 8.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "baseline",
+      "beads": 32,
+      "omega": 8.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "omega_1",
+      "beads": 32,
+      "omega": 1.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "omega_2",
+      "beads": 32,
+      "omega": 2.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "omega_4",
+      "beads": 32,
+      "omega": 4.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "omega_16",
+      "beads": 32,
+      "omega": 16.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "dt_0.02",
+      "beads": 32,
+      "omega": 8.0,
+      "dt": 0.02,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "dt_0.005",
+      "beads": 32,
+      "omega": 8.0,
+      "dt": 0.005,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "beads_16",
+      "beads": 16,
+      "omega": 8.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    },
+    {
+      "label": "beads_64",
+      "beads": 64,
+      "omega": 8.0,
+      "dt": 0.01,
+      "friction_scale": 0.5
+    }
+  ],
+  "uncertainty": "standard error across master-seed groups; displayed 95% Student-t intervals",
+  "initial_ensemble": "independent exact finite-P rejection samples, harmonic-ring proposal",
+  "code_sha256": {
+    "benchmarks/tier2_literature/spectroscopy.py": "8f45e09fa4ce6897bcb3ba1c7518d0a612cc1413de8dc682cfc2216bd8a152de",
+    "src/pyrpmd/cmd.py": "7600dbb204b585bfe205ea4b8cd90b8083a621f248c289e5f675509d98f2db90",
+    "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+    "src/pyrpmd/analysis/spectroscopy.py": "9ab12ab6056cc99062afc8b73a678b03acb15b5dae06ed418144e05e3b64fd2e"
+  },
+  "python": "3.12.14",
+  "numpy": "2.5.4",
+  "git_head": "4da679023408bccfcd3173bfc81f961c48d1d0ff"
+}

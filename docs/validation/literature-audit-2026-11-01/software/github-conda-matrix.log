@@ -1,0 +1,29 @@
+2026-11-01T13:31:27.1169638Z  Finalized run dependencies (pyrpmd-0.2.0-py311hcd2a3cd_0):
+2026-11-01T13:31:45.9662833Z  │ │ ✔ python imports test passed!
+2026-11-01T13:31:46.5679550Z  │ │ ✔ pip check passed!
+2026-11-01T13:31:48.0819427Z  │     "python": "3.11.18",
+2026-11-01T13:31:50.6465866Z  │ {"version": "0.2.0", "python": "3.11.18 (main, Oct 26 2026, 11:35:17) [GCC 15.3.0]", "native": {"available": true, "openmp": true, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "$PREFIX/lib/python3.11/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:31:50.8350330Z  ✔ all tests passed!
+2026-11-01T13:31:51.1085183Z  Finalized run dependencies (pyrpmd-0.2.0-py312h2e77849_0):
+2026-11-01T13:32:08.4131979Z  │ │ ✔ python imports test passed!
+2026-11-01T13:32:09.1780422Z  │ │ ✔ pip check passed!
+2026-11-01T13:32:10.8336180Z  │     "python": "3.12.16",
+2026-11-01T13:32:13.5045330Z  │ {"version": "0.2.0", "python": "3.12.16 (main, Oct 26 2026, 11:37:43) [GCC 15.3.0]", "native": {"available": true, "openmp": true, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "$SRC_DIR_run_env/lib/python3.12/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:32:13.6900763Z  ✔ all tests passed!
+2026-11-01T13:32:13.9496684Z  Finalized run dependencies (pyrpmd-0.2.0-py313h60db7c6_0):
+2026-11-01T13:32:31.1340128Z  │ │ ✔ python imports test passed!
+2026-11-01T13:32:31.7394297Z  │ │ ✔ pip check passed!
+2026-11-01T13:32:33.0497129Z  │     "python": "3.13.18",
+2026-11-01T13:32:35.2193551Z  │ {"version": "0.2.0", "python": "3.13.18 | packaged by conda-forge | (main, Oct 26 2026, 11:38:18) [GCC 15.3.0]", "native": {"available": true, "openmp": true, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "$PREFIX/lib/python3.13/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:32:35.3772381Z  ✔ all tests passed!
+2026-11-01T13:32:35.6419933Z  Finalized run dependencies (pyrpmd-0.2.0-py314hb8d3e0d_0):
+2026-11-01T13:32:53.0520145Z  │ │ ✔ python imports test passed!
+2026-11-01T13:32:53.8053328Z  │ │ ✔ pip check passed!
+2026-11-01T13:32:55.3144117Z  │     "python": "3.14.10",
+2026-11-01T13:32:57.5348807Z  │ {"version": "0.2.0", "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]", "native": {"available": true, "openmp": true, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "$PREFIX/lib/python3.14/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:32:57.7016370Z  ✔ all tests passed!
+2026-11-01T13:32:57.8313962Z  │ │ Artifact: /home/runner/work/PyRPMD/PyRPMD/conda-output/linux-64/pyrpmd-0.2.0-py311hcd2a3cd_0.conda (1.63 MiB)
+2026-11-01T13:32:57.8383820Z  │ │ Artifact: /home/runner/work/PyRPMD/PyRPMD/conda-output/linux-64/pyrpmd-0.2.0-py312h2e77849_0.conda (1.57 MiB)
+2026-11-01T13:32:57.8435066Z  │ │ Artifact: /home/runner/work/PyRPMD/PyRPMD/conda-output/linux-64/pyrpmd-0.2.0-py313h60db7c6_0.conda (1.59 MiB)
+2026-11-01T13:32:57.8495925Z  │ │ Artifact: /home/runner/work/PyRPMD/PyRPMD/conda-output/linux-64/pyrpmd-0.2.0-py314hb8d3e0d_0.conda (1.62 MiB)
+

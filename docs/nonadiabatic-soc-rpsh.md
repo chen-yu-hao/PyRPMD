@@ -64,6 +64,7 @@ driver = RPSHDynamics(
     matrix_potential, masses, beta, nbeads, dt, nstates,
     seed=42, electronic_substeps=8,
     rescaling="centroid", frustrated_hops="keep",
+    decoherence="none",  # opt in with "edc"; decoherence_constant=0.1 hartree
 )
 state = driver.initialize(State(q, p), active_surface=0)
 driver.step(state)
@@ -109,6 +110,50 @@ An upward hop without enough kinetic energy is frustrated. With
 centroid component along the coupling direction reverses. Neither choice adds
 a universal detailed-balance or decoherence correction.
 
+### Optional energy-based decoherence
+
+Set `decoherence="edc"` to apply the energy-based decoherence correction of
+Granucci and Persico (2007), Eq. (17). The default `decoherence="none"` retains
+the original coherent propagation. `decoherence_constant` is the empirical
+constant `C` in hartree; it defaults to `0.1`, must be a positive finite real
+number for EDC, and is ignored when the correction is disabled.
+
+The correction is applied **after electronic propagation and the hop decision**,
+using the resulting active surface `a` and the momenta after any hop rescaling
+or frustrated-hop reversal. This centroid-approximation adaptation uses
+centroid adiabatic energies and the physical centroid kinetic energy,
+
+\[
+T_c=\sum_I\frac{\overline{p}_I^2}{2M_I},\qquad
+\tau_{ja}=\frac{1+C/T_c}{|E_j(\overline{q})-E_a(\overline{q})|},
+\]
+
+with atomic units (`hbar=1`). It damps each inactive **amplitude** as
+`c_j <- c_j * exp(-dt/tau_ja)` and restores normalization through the active
+amplitude while preserving its complex phase. The coefficients are then
+transformed back to the fixed diabatic basis. Damping amplitudes by this factor
+damps their populations by its square.
+
+At `T_c=0`, the decoherence times are infinite and the correction is the identity.
+The internal ring-mode kinetic energy and spring energy do not enter `T_c`.
+Consequently, adding internal motion at a fixed centroid velocity does not
+change the damping rates. A zero active amplitude has no phase to preserve; if
+damping would transfer population to it, the step fails and rolls back instead
+of choosing an arbitrary phase.
+
+The correction itself changes only electronic amplitudes. It leaves the
+nuclear coordinates, momenta, active surface, and active-surface ring energy
+unchanged. Corrected amplitudes can change hopping probabilities in subsequent
+steps. `last_probabilities` continues to describe the pre-correction hop decision.
+`attempt_hop()` remains a deterministic rescaling operation and does not apply
+decoherence; the complete `step()` applies it once per nuclear step.
+
+Using centroid kinetic energy and gaps is an explicit RPSH-CA modeling choice.
+This optional phenomenological correction is not RPSH-DM, does not implement
+DBOC, and does not establish detailed balance or chemical accuracy. Its
+parameter and timestep dependence require convergence and physical validation
+for the system of interest.
+
 ### Restarting and supported scope
 
 `RPSHState.to_dict()` and `RPSHState.from_dict()` provide detached JSON-compatible
@@ -120,7 +165,7 @@ rolled back by the dynamics driver.
 
 This API supports nonperiodic, all-mobile nuclei and nondegenerate real
 adiabatic states in a fixed diabatic basis. A gap below `gap_tolerance` fails
-explicitly. Complex SOC hopping, Berry-force corrections, DBOC, decoherence
+explicitly. Complex SOC hopping, Berry-force corrections, DBOC, other decoherence
 schemes, periodic/fixed-atom workflows, MPI/GPU propagation, and a thermal RPSH
 rate driver are outside this interface. Real `V` does not imply that electronic
 amplitudes remain real; the coefficients are complex throughout propagation.
@@ -141,8 +186,21 @@ conventions, frustrated-hop reversal, state/RNG restarts, and failed-step
 rollback. These are numerical implementation checks, not a validation of real
 chemical scattering probabilities.
 
+The optional EDC tests also compare against independent closed-form amplitude
+decay for an uncoupled Hamiltonian, including repeated steps. They check norm
+and active-phase preservation, the one-bead limit, invariance to internal ring
+motion at fixed centroid velocity, constant-basis and global-phase covariance,
+the stationary-centroid limit, unchanged nuclear energy, and rollback after a
+correction-stage failure.
+
 ## References
 
+- G. Granucci and M. Persico, *J. Chem. Phys.* **126**, 134114 (2007),
+  [doi:10.1063/1.2715585](https://doi.org/10.1063/1.2715585),
+  [author PDF](https://people.unipi.it/static/persico/art/surfhop.pdf).
+  Equation (17) specifies the amplitude damping, active-state normalization,
+  decoherence times, and placement after the hop decision. The centroid-energy
+  adaptation used here is stated separately above.
 - F. A. Shakib and P. Huo, *J. Phys. Chem. Lett.* **8**, 3073–3080 (2017),
   [doi:10.1021/acs.jpclett.7b01343](https://doi.org/10.1021/acs.jpclett.7b01343).
 - D. K. Limbu and F. A. Shakib, *J. Phys. Chem. Lett.* **14**, 8658–8666 (2023),

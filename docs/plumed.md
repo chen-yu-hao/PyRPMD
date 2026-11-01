@@ -5,8 +5,9 @@ PyRPMD's existing dynamics. It sends one set of centroid positions to PLUMED
 and applies the resulting coordinate-dependent bias to the complete ring
 polymer. Native PyRPMD sampling does not require PLUMED.
 
-This bridge is a Python API. Use it for PLUMED coordinate CVs, restraints,
-metadynamics, and compatible coordinate-based enhanced-sampling actions.
+The bridge is available through a Python API and `task="plumed"` input files.
+Use it for PLUMED coordinate CVs, restraints, metadynamics, and compatible
+coordinate-based enhanced-sampling actions.
 It does not add a second potential evaluator or a separate integrator.
 
 ## Installation
@@ -23,6 +24,81 @@ Alternatively pass `kernel_path="/path/to/libplumedKernel.so"` explicitly.
 PyRPMD leaves PLUMED installation and module selection to the user. Its test
 suite includes an optional real-kernel check and independent protocol checks
 that do not require PLUMED.
+
+## Input-file workflow
+
+A `task="plumed"` job uses the standard system, potential, dynamics and sampling
+sections. The following small example is a numerical smoke check on a harmonic
+model; it is not a molecular free-energy benchmark:
+
+```toml
+task = "plumed"
+temperature = "300 K"
+beads = 8
+
+[system]
+symbols = ["H", "H"]
+geometry = [[0.0, 0.0, 0.0], [1.4, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = { k = 0.01 }
+
+[dynamics]
+timestep = "0.05 fs"
+integrator = "cayley-bcb"
+loop_backend = "python"
+
+[sampling]
+thermostat = "pile-l"
+integrator = "bcocb"
+equilibration_steps = 100
+production_steps = 1000
+sample_interval = 10
+
+[plumed]
+file = "plumed.dat"
+```
+
+Place this restraint in `plumed.dat` beside the job input:
+
+```text
+UNITS LENGTH=Bohr ENERGY=Ha TIME=atomic
+d: DISTANCE ATOMS=1,2 NOPBC
+restraint: RESTRAINT ARG=d AT=1.4 KAPPA=0.05
+PRINT ARG=d,restraint.bias STRIDE=10 FILE=COLVAR
+```
+
+```bash
+pyrpmd validate job.inp --check-pes
+pyrpmd run job.inp --output runs/plumed-input
+```
+
+Use exactly one of `plumed.file` and `plumed.input`; the latter is a complete
+inline PLUMED string. Optional `plumed.kernel` selects a library path and
+`plumed.charges` supplies one static elementary-charge value per atom. Input
+and explicit kernel paths resolve against the job file's directory. Paths
+inside PLUMED directives, including relative `FILE` and included input paths,
+resolve from `RUN/plumed`. The log is `RUN/logs/plumed.log`.
+
+The workflow supports one serial, all-mobile trajectory, fixed cell, all or
+no periodic axes, and PILE-L or Andersen sampling. Sampling and dynamics must
+use the same timestep so every PLUMED update has a consistent clock. PLUMED
+updates begin at the first step and also occur during the declared
+equilibration period; PyRPMD's saved production snapshots begin afterward.
+Unsupported controls are rejected instead of silently combining another bias,
+barostat, native sampling engine or electronic dynamics with the bridge.
+
+`validate --check-pes` validates the PyRPMD PES without initializing a PLUMED
+kernel or writing its files. Kernel availability, action compatibility and
+PLUMED parsing are checked when the run starts. The saved
+`checkpoints/plumed-md-state.npz` contains the accepted MD state, RNG and sampled
+geometry/bias prefix, explicitly marked `kernel_state_saved=false`. On a kernel
+failure, `results/plumed-failure.json` records the last accepted MD step and
+error. These files do not capture opaque PLUMED action history; automatic
+`pyrpmd resume` is rejected. The deliberate Python restart contract below
+remains available when the user supplies mutually consistent action files.
 
 ## Run a centroid bias
 

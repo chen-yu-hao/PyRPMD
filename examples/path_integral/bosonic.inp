@@ -1,0 +1,34 @@
+# Identical particles in an exchange-symmetric harmonic trap, not a helium PES.
+task = "pimd"
+temperature = "300 K"
+beads = 8
+seed = 616
+
+[system]
+symbols = ["He", "He"]
+geometry = [[-0.2, 0.0, 0.0], [0.2, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.01}
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.01 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.1 fs^-1"
+equilibration_steps = 100
+production_steps = 200
+sample_interval = 10
+
+[path_integral]
+method = "bosonic"
+groups = [[0, 1]]
+
+[output]
+directory = "runs/bosonic"
+trajectory_storage = "memory"
+checkpoint_steps = 50

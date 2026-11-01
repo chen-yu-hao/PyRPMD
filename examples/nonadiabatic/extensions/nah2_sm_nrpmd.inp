@@ -1,0 +1,38 @@
+# Neutral NaH2, two lowest doublet A' surfaces of the published 5G fit.
+# Focused diabatic state 1 at an interaction-region phase point.
+# The collapsed ring is not a thermal or rovibrational scattering preparation.
+task = "nonadiabatic"
+method = "sm-nrpmd"
+beta = 1000.0
+beads = 4
+seed = 20261107
+
+[model]
+name = "nah2_leps_5g_1992"
+
+[system]
+symbols = ["Na", "H", "H"]
+masses = ["22.98976928 amu", "1.00782503223 amu", "1.00782503223 amu"]
+unit = "bohr"
+positions = [[3.2, 0.8, 0.0], [-0.85, 0.0, 0.0], [0.85, 0.0, 0.0]]
+
+[initial]
+kind = "point"
+initial_state = 1
+momenta = [[-7.974223120067328, -1.993555780016832, 0.0], [3.987111560033664, 0.996777890008416, 0.0], [3.987111560033664, 0.996777890008416, 0.0]]
+
+[ensemble]
+trajectories = 4
+steps = 6
+sample_stride = 2
+
+[dynamics]
+dt = "0.1 autime"
+integrator = "cayley-bcb"
+native = false
+electronic_backend = "numpy"
+electronic_device = "cpu"
+block_steps = 3
+
+[output]
+directory = "runs/nah2-sm-nrpmd"

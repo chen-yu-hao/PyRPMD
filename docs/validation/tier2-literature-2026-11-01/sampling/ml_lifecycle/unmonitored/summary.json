@@ -1,0 +1,133 @@
+{
+  "task": "pimd",
+  "status": "complete",
+  "physical_converged": false,
+  "converged": false,
+  "replicas": 1,
+  "samples_per_replica": [
+    31
+  ],
+  "phase": "equilibrium_sampling",
+  "sampling_thermostat": "pile-l",
+  "integrator": "normal-mode-bab",
+  "coordinate_convention": "continuous_unwrapped_ring_polymer_centroids",
+  "cell": null,
+  "pbc": [
+    false,
+    false,
+    false
+  ],
+  "ensemble": "fixed_cell",
+  "fixed_atoms": [],
+  "mobile_atoms": 1,
+  "trajectory_storage": [
+    "memory"
+  ],
+  "propagation": [
+    {
+      "sampling": {
+        "native_steps": 0,
+        "python_steps": 400,
+        "fallback_reasons": {
+          "PILE-L sampling uses Python/NumPy": 400
+        }
+      },
+      "production": null
+    }
+  ],
+  "warnings": [
+    "Bead count, timestep, equilibration, system size and statistical convergence have not been certified.",
+    "PIMD sampling times are not physical dynamical times; H_P is reported only as an integration diagnostic."
+  ],
+  "files": {
+    "checkpoints": [
+      "docs/validation/tier2-literature-2026-11-01/sampling/ml_lifecycle/unmonitored/checkpoints/materials_0000.npz"
+    ],
+    "trajectories": [
+      "docs/validation/tier2-literature-2026-11-01/sampling/ml_lifecycle/unmonitored/samples/materials_0000.npz"
+    ]
+  },
+  "energy_unit": "hartree",
+  "estimators": {
+    "potential_energy": {
+      "mean": 0.3743727486246426,
+      "standard_error_between_replicas": null
+    },
+    "kinetic_primitive": {
+      "mean": 0.5016488632102606,
+      "standard_error_between_replicas": null
+    },
+    "kinetic_centroid_virial": {
+      "mean": 0.3715665752181033,
+      "standard_error_between_replicas": null
+    },
+    "internal_energy_centroid_virial": {
+      "mean": 0.745939323842746,
+      "standard_error_between_replicas": null
+    },
+    "ring_polymer_hamiltonian": {
+      "mean": 4.09523803136938,
+      "standard_error_between_replicas": null
+    }
+  },
+  "radius_of_gyration_squared_bohr2": [
+    0.5065096780182603
+  ],
+  "sampling_diagnostics": [
+    {
+      "replica": 0,
+      "observables": {
+        "potential_energy": {
+          "samples": 31,
+          "statistical_inefficiency": 6.28850110109362,
+          "effective_samples": 4.929632594738491,
+          "block_length_frames": 7,
+          "complete_blocks": 4,
+          "conditional_standard_error": 0.059590766330972905,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": null
+        },
+        "kinetic_primitive": {
+          "samples": 31,
+          "statistical_inefficiency": 8.0309360718807,
+          "effective_samples": 3.860073062783124,
+          "block_length_frames": 9,
+          "complete_blocks": 3,
+          "conditional_standard_error": null,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": "fewer_than_four_complete_blocks"
+        },
+        "kinetic_centroid_virial": {
+          "samples": 31,
+          "statistical_inefficiency": 9.23985626721117,
+          "effective_samples": 3.3550305441446664,
+          "block_length_frames": 10,
+          "complete_blocks": 3,
+          "conditional_standard_error": null,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": "fewer_than_four_complete_blocks"
+        },
+        "internal_energy_centroid_virial": {
+          "samples": 31,
+          "statistical_inefficiency": 6.417427517728509,
+          "effective_samples": 4.8305960471482905,
+          "block_length_frames": 7,
+          "complete_blocks": 4,
+          "conditional_standard_error": 0.06897048708212487,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": null
+        },
+        "ring_polymer_hamiltonian": {
+          "samples": 31,
+          "statistical_inefficiency": 3.8201266890908174,
+          "effective_samples": 8.114914117515285,
+          "block_length_frames": 4,
+          "complete_blocks": 7,
+          "conditional_standard_error": 0.37916615817406074,
+          "uncertainty_scope": "conditional_on_block_length_exceeding_correlation_time",
+          "reason": null
+        }
+      }
+    }
+  ]
+}

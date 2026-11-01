@@ -1,0 +1,35 @@
+# Short harmonic-trap workflow check, not a converged physical calculation.
+task = "pimd"
+temperature = "300 K"
+beads = 8
+seed = 615
+
+[system]
+symbols = ["H"]
+geometry = [[0.1, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.01}
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.01 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.1 fs^-1"
+equilibration_steps = 100
+production_steps = 200
+sample_interval = 10
+
+[path_integral]
+method = "suzuki_chin"
+alpha = 0.0
+fd_step = "1e-4 bohr"
+
+[output]
+directory = "runs/suzuki-chin"
+trajectory_storage = "memory"
+checkpoint_steps = 50

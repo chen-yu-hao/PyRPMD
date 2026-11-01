@@ -7,6 +7,7 @@ import sys
 from unittest.mock import patch
 import numpy as np
 from pyrpmd.constants import KB_AU
+from pyrpmd.checkpoint import load_checkpoint
 from pyrpmd.dynamics import Dynamics
 from pyrpmd.input import JobSpec
 from pyrpmd.parallel import root_call
@@ -59,6 +60,16 @@ def serial_reference(directory):
                    env=env, check=True, timeout=120)
 
 
+def portable_fes_metadata(value, directory):
+    """Relativize output locations while retaining every physical field."""
+    metadata = json.loads(str(value))
+    metadata["files"] = {
+        key: str(Path(path).relative_to(directory))
+        for key, path in metadata["files"].items()
+    }
+    return metadata
+
+
 def compare(root):
     arrays = files = 0
     for thermostat in ("andersen", "pile-l"):
@@ -67,10 +78,19 @@ def compare(root):
             paths = sorted(left.glob(pattern))
             assert paths and len(paths) == len(list(right.glob(pattern)))
             for path in paths:
-                with np.load(path, allow_pickle=False) as a, np.load(right / path.relative_to(left), allow_pickle=False) as b:
+                # Validate each envelope against its own payload before
+                # comparing. Output-location text also changes its checksum;
+                # all numerical data and remaining metadata must still agree.
+                with load_checkpoint(path, require_integrity=True) as a, \
+                     load_checkpoint(right / path.relative_to(left), require_integrity=True) as b:
                     assert set(a.files) == set(b.files)
+                    for key in ("schema", "schema_version", "kind", "writer_version"):
+                        assert a.envelope[key] == b.envelope[key]
                     for key in a.files:
-                        np.testing.assert_array_equal(a[key], b[key], err_msg=f"{thermostat}:{path.name}:{key}")
+                        if key == "fes_metadata":
+                            assert portable_fes_metadata(a[key], left) == portable_fes_metadata(b[key], right)
+                        else:
+                            np.testing.assert_array_equal(a[key], b[key], err_msg=f"{thermostat}:{path.name}:{key}")
                         arrays += 1
                 files += 1
         assert json.loads((left / "exchange.json").read_text()) == json.loads((right / "exchange.json").read_text())

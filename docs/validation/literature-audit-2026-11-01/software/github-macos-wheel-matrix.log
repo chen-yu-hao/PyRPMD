@@ -1,0 +1,29 @@
+2026-11-01T13:32:45.7048010Z Artifact download completed successfully.
+2026-11-01T13:32:48.8739360Z [1m[34mBuilding cp311-macosx_arm64 wheel[0m
+2026-11-01T13:33:11.7024960Z   "version": "0.2.0",
+2026-11-01T13:33:13.7104120Z   "version": "0.2.0",
+2026-11-01T13:33:14.0492180Z   "version": "0.2.0",
+2026-11-01T13:33:14.8518350Z   "version": "0.2.0",
+2026-11-01T13:33:14.9261530Z {"version": "0.2.0", "python": "3.11.9 (v3.11.9:de54cf5be3, Apr  2 2024, 07:12:50) [Clang 13.0.0 (clang-1300.0.29.30)]", "native": {"available": true, "openmp": false, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/cibw-run-4m9k93hp/cp311-macosx_arm64/venv-test-arm64/lib/python3.11/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:33:15.3911860Z [1m[34mBuilding cp312-macosx_arm64 wheel[0m
+2026-11-01T13:33:44.7126750Z   "version": "0.2.0",
+2026-11-01T13:33:46.5406260Z   "version": "0.2.0",
+2026-11-01T13:33:46.7998350Z   "version": "0.2.0",
+2026-11-01T13:33:47.3231900Z   "version": "0.2.0",
+2026-11-01T13:33:47.3831340Z {"version": "0.2.0", "python": "3.12.10 (v3.12.10:0cc81280367, Apr  8 2025, 08:46:59) [Clang 13.0.0 (clang-1300.0.29.30)]", "native": {"available": true, "openmp": false, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/cibw-run-4m9k93hp/cp312-macosx_arm64/venv-test-arm64/lib/python3.12/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:33:47.7237670Z [1m[34mBuilding cp313-macosx_arm64 wheel[0m
+2026-11-01T13:34:09.4500460Z   "version": "0.2.0",
+2026-11-01T13:34:10.8520360Z   "version": "0.2.0",
+2026-11-01T13:34:11.1238670Z   "version": "0.2.0",
+2026-11-01T13:34:11.6785870Z   "version": "0.2.0",
+2026-11-01T13:34:11.7327580Z {"version": "0.2.0", "python": "3.13.17 (v3.13.17:64e080d3815, Oct 21 2026, 07:24:09) [Clang 21.0.0 (clang-2100.1.1.101)]", "native": {"available": true, "openmp": false, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/cibw-run-4m9k93hp/cp313-macosx_arm64/venv-test-arm64/lib/python3.13/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:34:12.0831930Z [1m[34mBuilding cp314-macosx_arm64 wheel[0m
+2026-11-01T13:34:33.0136330Z   "version": "0.2.0",
+2026-11-01T13:34:34.3333220Z   "version": "0.2.0",
+2026-11-01T13:34:34.5763500Z   "version": "0.2.0",
+2026-11-01T13:34:35.1178640Z   "version": "0.2.0",
+2026-11-01T13:34:35.1734200Z {"version": "0.2.0", "python": "3.14.10 (v3.14.10:b703b2c5e70, Oct 25 2026, 14:17:53) [Clang 21.0.0 (clang-2100.1.1.101)]", "native": {"available": true, "openmp": false, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "/private/var/folders/y3/p6x0rn5562l5qyxy7x6jqrsc0000gn/T/cibw-run-4m9k93hp/cp314-macosx_arm64/venv-test-arm64/lib/python3.14/site-packages/pyrpmd/__init__.py"}
+2026-11-01T13:34:35.5351710Z ##[group]4 wheels produced in 2 minutes
+2026-11-01T13:34:38.3552710Z Artifact release-wheels-macos-15.zip successfully finalized. Artifact ID 13086220465
+2026-11-01T13:34:38.3553510Z Artifact release-wheels-macos-15 has been successfully uploaded! Final size is 3166627 bytes. Artifact ID is 13086220465
+

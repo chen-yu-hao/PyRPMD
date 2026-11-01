@@ -1,0 +1,85 @@
+{
+  "recorded_utc": "2026-11-01T14:19:28.697118+00:00",
+  "scope": "Public primary-source access check for two additional literature targets; no numerical simulation or physics-registry change.",
+  "papers": [
+    {
+      "doi": "10.1063/1.3127145",
+      "title": "Bimolecular reaction rates from ring polymer molecular dynamics",
+      "primary_metadata_url": "https://www.chem.ox.ac.uk/publication/34713/pubmed",
+      "author_repository": {
+        "url": "https://ora.ox.ac.uk/objects/uuid:bc277089-db5a-40ec-ba1b-98d9f502cbad",
+        "http_status": 200,
+        "access_document_links": "Publisher DOI only; no manuscript or PDF download link found in the retrieved landing-page HTML."
+      },
+      "publisher_url": "https://pubs.aip.org/jcp/article/130/17/174713/188719/Bimolecular-reaction-rates-from-ring-polymer",
+      "publisher_access_result": "HTTP 403 in this environment.",
+      "verified_primary_facts": [
+        "The paper studies H + H2, Cl + HCl, and F + H2.",
+        "The author publication list also links a 2010 erratum: JCP 133, 049902, DOI 10.1063/1.3464477."
+      ],
+      "erratum": {
+        "doi": "10.1063/1.3464477",
+        "author_list_url": "https://manolopoulos.chem.ox.ac.uk/publications.html",
+        "publisher_url": "https://pubs.aip.org/jcp/article/133/4/049902/190454/Erratum-Bimolecular-reaction-rates-from-ring",
+        "access_result": "HTTP 403; correction contents not inspected."
+      },
+      "full_text_obtained": false,
+      "numeric_rpmd_table_obtained": false,
+      "paper_pes_identity_verified": false,
+      "matched_pes_source_obtained": false,
+      "matched_pes_sha256": null
+    },
+    {
+      "doi": "10.1021/jz201702q",
+      "title": "Chemical Reaction Rates from Ring Polymer Molecular Dynamics: Zero Point Energy Conservation in Mu + H2 → MuH + H",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/jz201702q",
+      "publisher_access_result": "Public indexed publisher metadata and abstract available; publisher page states Available to Purchase. Direct web retrieval returned HTTP 403.",
+      "author_repository": {
+        "url": "https://ora.ox.ac.uk/objects/uuid:5264d1ce-0252-4e6b-9982-41949ecbb987",
+        "http_status": 200,
+        "access_document_links": "Publisher DOI only; no manuscript or PDF download link found in the retrieved landing-page HTML. The hidden generic preview placeholder does not establish a downloadable manuscript."
+      },
+      "author_publication_lists": [
+        "https://manolopoulos.chem.ox.ac.uk/publications.html",
+        "https://dinalaser.com/publications.html"
+      ],
+      "verified_primary_facts": [
+        "The published abstract attributes the close RPMD/quantum agreement chiefly to zero-point energy and describes tunneling as a minor contribution."
+      ],
+      "full_text_obtained": false,
+      "numeric_rpmd_table_obtained": false,
+      "paper_pes_identity_verified": false,
+      "matched_pes_source_obtained": false,
+      "matched_pes_sha256": null,
+      "interpretation": "The abstract supports a zero-point-energy conservation benchmark. This paper alone does not justify describing Mu + H2 as a deep-tunneling stress test."
+    }
+  ],
+  "figshare_public_metadata_check": {
+    "endpoint": "https://api.figshare.com/v2/articles/search",
+    "method": "POST (public read-only search)",
+    "official_query_documentation": "https://docs.figshare.com/v2/",
+    "queries": [
+      {
+        "doi": "10.1021/jz201702q",
+        "search_for": ":resource_doi: \"10.1021/jz201702q\"",
+        "records_returned": 0
+      },
+      {
+        "doi": "10.1063/1.3127145",
+        "search_for": ":resource_doi: \"10.1063/1.3127145\"",
+        "records_returned": 0
+      }
+    ],
+    "positive_control": {
+      "search_for": ":resource_doi: \"10.1021/jacs.4c09306\"",
+      "records_returned": 4,
+      "matched_title": "Nuclear Quantum Effects on the Nature of Hydroboration Selectivity: Experimental Effects of First-Collision Tunneling"
+    },
+    "interpretation": "Exact resource_doi queries returned no indexed records for the two targets. A known ACS supporting-information DOI returned four matching records, checking the query syntax. Empty results do not prove that no supporting information exists elsewhere."
+  },
+  "limits": [
+    "No rate coefficients were transcribed or inferred from the abstracts.",
+    "No PES file was substituted solely because the reaction name matched an existing benchmark.",
+    "Access results describe this session; they are not claims that the publications are universally unavailable."
+  ]
+}

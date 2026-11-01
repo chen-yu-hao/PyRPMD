@@ -2,8 +2,9 @@
  * The BZP and upper-triangular flexible-cell equations follow the i-PI
  * implementation (MIT option), ipi/engine/barostats.py, blob
  * 98cf6e6c38366d9580cb48b69e36e29a48e1bb76. See thermal-NOTICE.md.
- * Every stochastic draw, force request, transform and time step is C++.
- * Scratch memory is allocated once. No Python API is used in this file.
+ * Native PES modes keep stochastic draws, forces, transforms and steps in C++.
+ * An explicitly selected interpreter bridge is installed by thermal.cpp;
+ * this header itself uses no Python API. Native scratch is allocated once.
  */
 #ifndef PYRPMD_THERMAL_HPP
 #define PYRPMD_THERMAL_HPP
@@ -13,6 +14,7 @@
 #include <cstdint>
 #include <limits>
 #include <fstream>
+#include <functional>
 #ifdef _WIN32
 #include <filesystem>
 #endif
@@ -53,7 +55,7 @@ inline void matrix_functions(Mat a,Mat& ep,Mat& em,Mat& sh){
     for(double x:ep)require(std::isfinite(x),"cell exponential overflow");
 }
 
-enum class Thermostat { None, Andersen, Langevin, PileL, PileG, SVR, GLE, NMGLE, NMGLEG, Piglet, TRPMD, FFL };
+enum class Thermostat { None, Andersen, Langevin, PileL, PileG, SVR, GLE, NMGLE, NMGLEG, Piglet, TRPMD, FFL, NHC };
 enum class Barostat { None, BZP, MTK, RGB, SCR };
 struct Config {
     size_t atoms=0,beads=0; double beta=1,dt=.01;
@@ -63,6 +65,7 @@ struct Config {
     double gamma=1,gamma0=1,pile_scale=1,tau=1;
     uint64_t interval=10,seed=0;
     size_t gle_size=0; Vec gle_T,gle_S,gle_Croot;
+    size_t nhc_length=3,nhc_substeps=1;
     double pressure=0,baro_tau=1,baro_gamma=1,compressibility=0;
     std::array<int32_t,3> pbc{0,0,0};
     std::array<uint8_t,9> cell_mask{1,1,1,0,1,1,0,0,1};
@@ -70,13 +73,19 @@ struct Config {
     // 0 free, 1 harmonic, 2 fractional cosine, 3 native thermal callback,
     // 4 existing C ABI v1, 5 existing ISO_C_BINDING Fortran batch v1.
     int potential=0; uintptr_t address=0,context=0; Vec parameters{1,1,1};
+    // Explicit interpreter bridge only; it is not the trusted thermal C ABI.
+    std::function<void(const Vec&,const Mat&,Vec&,Vec&,Vec&)> python_force;
 };
 struct State {
     Vec q,p,aux,energy,force,virial; Mat cell=identity(),cell_p{};
     uint64_t step=0,evaluations=0; bool force_valid=false;
     std::mt19937_64 rng; std::normal_distribution<double> gaussian;
 };
-struct Output { Vec samples,centroids; size_t frames=0; };
+struct CommonObservations {
+    std::vector<uint8_t> mask;
+    bool record_energy=true,check_energy=false,energy_parts=false,ring_radii=false;
+};
+struct Output { Vec samples,centroids,energy_parts; size_t frames=0; uint64_t completed=0; std::string error; };
 static constexpr size_t ncolumns=18; // step,t,U,Kprim,Kcv,H_P,V,P,cell[9],K_fict
 class Engine {
 public:
@@ -87,7 +96,7 @@ private:
     double theta,baro_mass;
     RingFFT fft;
     Vec xr,xi,tmp,qn,pn,centroid_q,centroid_p,centroid_f;
-    Vec omega,a,b,cc,ah,bh,ch,y,z,noise;
+    Vec omega,a,b,cc,ah,bh,ch,y,z,noise,nhc_mass;
     std::vector<int32_t> status;
     Mat reference_inverse;
     double reference_volume;
@@ -164,6 +173,8 @@ private:
                     for(int j=0;j<3;++j)for(int k0=0;k0<3;++k0)s.force[i+j]-=inv[3*j+k0]*grad[k0];
                 }
             }
+        }else if(c.potential==6){
+            c.python_force(s.q,s.cell,s.energy,s.force,s.virial);
         }else if(c.potential==3){
             char message[512]{};
             auto fn=reinterpret_cast<pyrpmd_thermal_evaluate_v1>(c.address);
@@ -214,12 +225,40 @@ private:
         if(rate==0)return;
         for(size_t i=begin;i<end;++i)if(active(i%d))p[i]=decay*p[i]+amplitude*std::sqrt(theta*c.masses[(i%d)/3])*g();
     }
+    // Global Nose--Hoover chain, in the same bead Hamiltonian convention as
+    // the public Python thermostat: kT_P=P/beta and 3*P*N_mobile freedoms.
+    // The chain occupies aux=[eta[chain_length], momentum[chain_length]],
+    // so it shares the complete transactional/checkpoint state with GLE.
+    void nhc_kick(Vec& p,size_t j,double h){
+        size_t n=c.nhc_length;
+        double damping=j+1<n?std::exp(-.5*h*s.aux[n+j+1]/nhc_mass[j+1]):1.;
+        double force=-theta;
+        if(j==0){
+            force=-3.*c.beads*mobile*theta;
+            for(size_t i=0;i<l;++i)if(active(i%d))force+=p[i]*p[i]/c.masses[(i%d)/3];
+        }else force+=s.aux[n+j-1]*s.aux[n+j-1]/nhc_mass[j-1];
+        s.aux[n+j]=damping*(damping*s.aux[n+j]+h*force);
+    }
+    void nhc_bath(Vec& p,double dt){
+        size_t n=c.nhc_length;
+        const double w=1./(2.-std::cbrt(2.));
+        const std::array<double,3> weights{w,1.-2.*w,w};
+        for(size_t sub=0;sub<c.nhc_substeps;++sub)for(double weight:weights){
+            double h=weight*dt/c.nhc_substeps;
+            for(size_t j=n;j-->0;)nhc_kick(p,j,.5*h);
+            for(size_t j=0;j<n;++j)s.aux[j]+=h*s.aux[n+j]/nhc_mass[j];
+            double scale=std::exp(-h*s.aux[n]/nhc_mass[0]);
+            for(size_t i=0;i<l;++i)if(active(i%d))p[i]*=scale;
+            for(size_t j=0;j<n;++j)nhc_kick(p,j,.5*h);
+        }
+    }
     void bath(double h,bool modes_ready=false){
         auto kind=c.thermostat;if(kind==Thermostat::None)return;
         bool nm=normal_thermostat();Vec& p=nm?pn:s.p;if(nm&&!modes_ready)to_modes(s.p,pn);
         if(kind==Thermostat::Andersen){
             if(s.step%c.interval==0)for(size_t i=0;i<l;++i)if(active(i%d))p[i]=std::sqrt(theta*c.masses[(i%d)/3])*g();
-        }else if(kind==Thermostat::SVR)svr(p,0,l,h);
+        }else if(kind==Thermostat::NHC)nhc_bath(p,h);
+        else if(kind==Thermostat::SVR)svr(p,0,l,h);
         else if(kind==Thermostat::Langevin)ou(p,0,l,c.gamma,h);
         else if(kind==Thermostat::FFL){
             double decay=std::exp(-c.gamma*h),amp=std::sqrt(-std::expm1(-2*c.gamma*h));
@@ -314,7 +353,11 @@ private:
     }
     void one_step(){
         if(!s.force_valid)refresh();
-        if(c.barostat==Barostat::None){
+        if(c.barostat==Barostat::None&&c.thermostat==Thermostat::NHC){
+            // Preserve the established symmetric O-B-C-B-O chain splitting.
+            bath(.5*c.dt);kick(.5*c.dt);free_ring(false);
+            refresh();kick(.5*c.dt);bath(.5*c.dt);
+        }else if(c.barostat==Barostat::None){
             kick(.5*c.dt);
             if(c.fuse_modes&&(normal_thermostat()||c.thermostat==Thermostat::None))free_bath_free();
             else {free_ring(true);bath(c.dt);free_ring(true);}
@@ -366,6 +409,56 @@ private:
             for(size_t i=0;i<width;++i)require(std::isfinite(cq[i]),"nonfinite centroid observation; check trajectory moments");
         }
     }
+    // The common propagation API observes only explicitly selected quantities.
+    // Thermal estimator columns are deliberately not evaluated here: finite
+    // physical state need not have finite squared moments or virial estimators.
+    double nuclear_energy(double* parts=nullptr){
+        double spring=0,kinetic=0,U=std::accumulate(s.energy.begin(),s.energy.end(),0.);
+        const double wn=c.beads/c.beta;
+        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
+            const size_t i=k*d+j;
+            const double delta=s.q[i]-s.q[((k+1)%c.beads)*d+j];
+            spring+=.5*c.masses[j/3]*wn*wn*delta*delta;
+            kinetic+=.5*s.p[i]*s.p[i]/c.masses[j/3];
+        }
+        const double total=U+kinetic+spring;
+        require(std::isfinite(total),"nonfinite total ring energy");
+        if(parts){
+            double centroid=0,internal=0;
+            for(size_t j=0;j<d;++j)if(active(j))centroid+=.5*centroid_p[j]*centroid_p[j]/c.masses[j/3];
+            for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(active(j)){
+                const double delta=s.p[k*d+j]-centroid_p[j];
+                internal+=.5*delta*delta/c.masses[j/3];
+            }
+            parts[0]=U/c.beads;parts[1]=centroid;parts[2]=internal/c.beads;parts[3]=spring/c.beads;
+            for(size_t i=0;i<4;++i)require(std::isfinite(parts[i]),"nonfinite nuclear energy diagnostics");
+        }
+        return total;
+    }
+    void observe_common(double* row,double* cq,double* parts,const CommonObservations& options){
+        const double nan=std::numeric_limits<double>::quiet_NaN();
+        std::fill(row,row+ncolumns,nan);
+        std::fill(cq,cq+2*d+c.atoms,nan);
+        row[0]=static_cast<double>(s.step);row[1]=s.step*c.dt;
+        means();
+        std::copy(centroid_q.begin(),centroid_q.end(),cq);
+        // Record momenta directly. Dividing by masses to form velocities would
+        // add an unrequested reduction and can overflow a finite momentum.
+        std::copy(centroid_p.begin(),centroid_p.end(),cq+d);
+        for(size_t j=0;j<2*d;++j)require(std::isfinite(cq[j]),"nonfinite centroid observation");
+        if(options.record_energy||options.energy_parts){
+            row[5]=nuclear_energy(parts);
+            if(parts)row[2]=parts[0];
+        }
+        if(options.ring_radii){
+            std::fill(cq+2*d,cq+2*d+c.atoms,0.);
+            for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j){
+                const double delta=s.q[k*d+j]-centroid_q[j];
+                cq[2*d+j/3]+=delta*delta/c.beads;
+            }
+            for(size_t atom=0;atom<c.atoms;++atom)require(std::isfinite(cq[2*d+atom]),"nonfinite ring radius diagnostics");
+        }
+    }
 public:
     Engine(Config config,Vec q,Vec p,Mat cell):c(std::move(config)),d(3*c.atoms),l(d*c.beads),mobile(c.atoms),theta(c.beads/c.beta),baro_mass((c.barostat==Barostat::BZP?3.:1.)*c.atoms*theta*c.baro_tau*c.baro_tau),fft(c.beads),xr(c.beads),xi(c.beads),tmp(2*c.beads),qn(l),pn(l),centroid_q(d),centroid_p(d),centroid_f(d),omega(c.beads),a(c.beads),b(c.beads),cc(c.beads),ah(c.beads),bh(c.beads),ch(c.beads),y(c.gle_size),z(c.gle_size),noise(c.gle_size),status(c.beads),reference_inverse(inverse(transpose(c.reference_cell))),reference_volume(det(c.reference_cell)),fixed_q(d){
         require(c.atoms>0&&c.beads>0&&c.masses.size()==c.atoms&&c.fixed.size()==c.atoms,"invalid dimensions");
@@ -374,10 +467,11 @@ public:
         require(std::isfinite(theta)&&std::isfinite(c.tau)&&std::isfinite(c.gamma)&&std::isfinite(c.gamma0)&&std::isfinite(c.pile_scale),"nonfinite thermostat parameters");
         for(double m:c.masses)require(m>0&&std::isfinite(m),"invalid mass");
         require(q.size()==l&&p.size()==l&&finite(q)&&finite(p),"invalid q/p arrays");
-        require(c.potential>=0&&c.potential<=5,"unsupported potential");
-        if(c.potential>=3)require(c.address!=0,"missing native PES address");
+        require(c.potential>=0&&c.potential<=6,"unsupported potential");
+        if(c.potential==6)require(static_cast<bool>(c.python_force),"missing Python force bridge");
+        if(c.potential>=3&&c.potential<=5)require(c.address!=0,"missing native PES address");
         if(c.potential==5)require(c.beads<=INT32_MAX,"Fortran bead count exceeds int32");
-        if(c.potential>=4)require(!c.has_cell,"molecular C ABI/Fortran v1 cannot accept a cell");
+        if(c.potential>=4&&c.potential<=5)require(!c.has_cell,"molecular C ABI/Fortran v1 cannot accept a cell");
         if(c.potential==1)require(c.parameters.size()>=1&&c.parameters[0]>=0&&finite(c.parameters)&&!c.has_cell,"harmonic model is nonperiodic");
         if(c.potential==2)require(c.parameters.size()==3&&finite(c.parameters)&&c.has_cell,"cosine model requires a cell and three heights");
         for(int32_t pbc:c.pbc)require(pbc==0||pbc==1,"invalid PBC flag");
@@ -405,6 +499,13 @@ public:
         s.q=std::move(q);s.p=std::move(p);s.cell=cell;s.rng.seed(c.seed);
         s.energy.resize(c.beads);s.force.resize(l);s.virial.resize(9*c.beads);
         if(gle())s.aux.assign(l*(c.gle_size-1),0.);
+        if(c.thermostat==Thermostat::NHC){
+            require(c.nhc_length>0&&c.nhc_length<=64&&c.nhc_substeps>0&&c.nhc_substeps<=100000,"invalid NHC chain length/substeps");
+            nhc_mass.assign(c.nhc_length,theta*c.tau*c.tau);
+            nhc_mass[0]*=3.*c.beads*mobile;
+            require(finite(nhc_mass)&&std::all_of(nhc_mass.begin(),nhc_mass.end(),[](double x){return x>0;}),"invalid NHC bath masses");
+            s.aux.assign(2*c.nhc_length,0.);
+        }
         std::copy(s.q.begin(),s.q.begin()+d,fixed_q.begin());
         for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(!active(j))require(s.q[k*d+j]==fixed_q[j]&&s.p[k*d+j]==0,"fixed rings must be coincident with zero momenta");
         double pi=std::acos(-1.);omega[0]=0;
@@ -427,15 +528,63 @@ public:
         }
         refresh();
     }
-    Output run(uint64_t steps,uint64_t stride,bool centroids,const std::string& path="",bool moments=false,uint64_t sample_start=0){
+    void set_state(Vec q,Vec p,uint64_t step){
+        require(q.size()==l&&p.size()==l&&finite(q)&&finite(p),"invalid external q/p arrays");
+        require(std::isfinite(static_cast<double>(step)*c.dt),"external state time overflow");
+        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(!active(j))
+            require(q[k*d+j]==fixed_q[j]&&p[k*d+j]==0,"external state changes fixed atoms");
+        State before=s;
+        try{s.q=std::move(q);s.p=std::move(p);s.step=step;refresh();}
+        catch(...){s=std::move(before);throw;}
+    }
+    void copy_thermostat_from(const Engine& other,bool has_step=false,uint64_t step=0){
+        const Config& o=other.c;
+        require(c.atoms==o.atoms&&c.beads==o.beads&&c.beta==o.beta&&c.masses==o.masses&&c.fixed==o.fixed
+                &&c.thermostat==o.thermostat&&c.gamma==o.gamma&&c.gamma0==o.gamma0&&c.pile_scale==o.pile_scale
+                &&c.tau==o.tau&&c.interval==o.interval&&c.gle_size==o.gle_size
+                &&c.gle_T==o.gle_T&&c.gle_S==o.gle_S&&c.gle_Croot==o.gle_Croot
+                &&c.nhc_length==o.nhc_length&&c.nhc_substeps==o.nhc_substeps,
+                "thermostat state transfer parameters differ");
+        for(size_t j=0;j<d;++j)if(!active(j))require(fixed_q[j]==other.fixed_q[j],"thermostat state transfer changes fixed positions");
+        require(s.aux.size()==other.s.aux.size(),"thermostat state transfer shape mismatch");
+        // Allocate before mutating; RNG and distribution assignment are values.
+        Vec aux=other.s.aux;
+        s.aux.swap(aux);s.rng=other.s.rng;s.gaussian=other.s.gaussian;
+        if(has_step)s.step=step;
+    }
+    Vec apply_thermostat(Vec q,Vec p,double dt,bool has_step=false,uint64_t step=0){
+        require(c.barostat==Barostat::None,"a standalone thermostat cannot apply a barostat");
+        require(std::isfinite(dt)&&dt>0,"thermostat duration must be positive and finite");
+        require(!gle()||dt==c.dt,"GLE operator duration differs from its prepared transition");
+        require(q.size()==l&&p.size()==l&&finite(q)&&finite(p),"invalid thermostat q/p arrays");
+        require((has_step?step:s.step)<UINT64_MAX,"thermostat application counter overflow");
+        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j)if(!active(j))
+            require(q[k*d+j]==fixed_q[j]&&p[k*d+j]==0,"thermostat input changes fixed atoms");
+        State before=s;
+        try{
+            // q only validates the frozen-atom contract. Keeping the engine's
+            // own coordinates unchanged also keeps its cached forces valid.
+            s.p=std::move(p);if(has_step)s.step=step;bath(dt);
+            require(finite(s.p)&&finite(s.aux),"nonfinite thermostat state; reduce duration or increase damping time");
+            ++s.step;
+            return s.p;
+        }catch(...){s=std::move(before);throw;}
+    }
+    Output run(uint64_t steps,uint64_t stride,bool centroids,const std::string& path="",bool moments=false,uint64_t sample_start=0,bool keep_prefix=false,const CommonObservations* common=nullptr){
         require(!moments||centroids,"record_moments requires centroid records");
+        require(!keep_prefix||path.empty(),"valid-prefix propagation requires in-memory observations");
+        if(common){
+            require(path.empty()&&centroids&&moments&&stride==1&&sample_start==0,"common observations require in-memory centroid/momentum records and a relative mask");
+            require(common->mask.size()==steps,"observation mask length must equal steps");
+            for(uint8_t observed:common->mask)require(observed<=1,"observation mask must be binary");
+        }
         const size_t width=moments?2*d+c.atoms:d;
         require(width<=static_cast<size_t>(std::numeric_limits<std::streamsize>::max())/sizeof(double),"record width overflow");
         require(stride>0,"stride must be positive");require(steps<=UINT64_MAX-s.step,"step counter overflow");
         require(std::isfinite(static_cast<double>(s.step+steps)*c.dt),"trajectory time overflow");
         // Absolute observation clock. Splitting a run never inserts extra frames.
         auto observations=[&](uint64_t step){return step>sample_start?(step-sample_start)/stride:uint64_t(0);};
-        uint64_t count=observations(s.step+steps)-observations(s.step);
+        uint64_t count=common?std::accumulate(common->mask.begin(),common->mask.end(),uint64_t(0)):observations(s.step+steps)-observations(s.step);
         require(count<=std::numeric_limits<size_t>::max()/ncolumns,"output size overflow");
         if(centroids)require(count<=std::numeric_limits<size_t>::max()/width,"centroid output size overflow");
         Output out;out.frames=static_cast<size_t>(count);
@@ -443,6 +592,7 @@ public:
         std::array<double,ncolumns> row{};Vec coordinate(centroids?width:0);
         if(path.empty()){
             out.samples.resize(out.frames*ncolumns);if(centroids)out.centroids.resize(out.frames*width);
+            if(common&&common->energy_parts)out.energy_parts.resize(out.frames*4);
         }else{
             stream.exceptions(std::ios::badbit|std::ios::failbit);
             #ifdef _WIN32
@@ -461,17 +611,29 @@ public:
             char length[2]={static_cast<char>(header.size()&255),static_cast<char>((header.size()>>8)&255)};
             stream.write(magic,8);stream.write(length,2);stream.write(header.data(),static_cast<std::streamsize>(header.size()));
         }
-        State before=s;
+        State before=s,accepted;
         try{
             size_t frame=0;
             for(uint64_t k=0;k<steps;++k){
-                one_step();
-                if(s.step>sample_start&&(s.step-sample_start)%stride==0){
-                    if(path.empty())observe(out.samples.data()+frame*ncolumns,centroids?out.centroids.data()+frame*width:nullptr,moments);
-                    else {observe(row.data(),centroids?coordinate.data():nullptr,moments);stream.write(reinterpret_cast<const char*>(row.data()),sizeof(double)*ncolumns);if(centroids)stream.write(reinterpret_cast<const char*>(coordinate.data()),static_cast<std::streamsize>(sizeof(double)*width));}
-                    ++frame;
+                if(keep_prefix)accepted=s;
+                try{
+                    if(common&&common->check_energy&&k==0)nuclear_energy();
+                    one_step();
+                    if(common&&common->check_energy)nuclear_energy();
+                    const bool observed=common?common->mask[k]!=0:s.step>sample_start&&(s.step-sample_start)%stride==0;
+                    if(observed){
+                        if(common)observe_common(out.samples.data()+frame*ncolumns,out.centroids.data()+frame*width,common->energy_parts?out.energy_parts.data()+frame*4:nullptr,*common);
+                        else if(path.empty())observe(out.samples.data()+frame*ncolumns,centroids?out.centroids.data()+frame*width:nullptr,moments);
+                        else {observe(row.data(),centroids?coordinate.data():nullptr,moments);stream.write(reinterpret_cast<const char*>(row.data()),sizeof(double)*ncolumns);if(centroids)stream.write(reinterpret_cast<const char*>(coordinate.data()),static_cast<std::streamsize>(sizeof(double)*width));}
+                        ++frame;
+                    }
+                    ++out.completed;
+                }catch(const std::exception& error){
+                    if(!keep_prefix)throw;
+                    s=std::move(accepted);out.error=error.what();break;
                 }
             }
+            if(keep_prefix){out.frames=frame;out.samples.resize(frame*ncolumns);if(centroids)out.centroids.resize(frame*width);if(common&&common->energy_parts)out.energy_parts.resize(frame*4);}
             if(!path.empty()){stream.flush();stream.close();}
         }catch(...){s=std::move(before);throw;}
         return out;

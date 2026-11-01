@@ -14,8 +14,9 @@ https://doi.org/10.1103/RevModPhys.67.279.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import math
+from dataclasses import dataclass
+from functools import partial
 
 import numpy as np
 from scipy.fft import dct, idct
@@ -23,21 +24,10 @@ from scipy.fft import dct, idct
 from .constants import KB_AU
 from .potentials.base import coordinates, validate_result
 from .units import parse_quantity
+from .validation import checked_integer as _integer
+from .validation import finite_positive
 
-
-def _positive(value, name):
-    if isinstance(value, (bool, np.bool_)):
-        raise ValueError(f"{name} must be a positive finite number")
-    value = float(value)
-    if not math.isfinite(value) or value <= 0:
-        raise ValueError(f"{name} must be a positive finite number")
-    return value
-
-
-def _integer(value, name, minimum=1):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < minimum:
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
+_positive = partial(finite_positive, message='{name} must be a positive finite number')
 
 
 def _masses(value):

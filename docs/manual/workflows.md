@@ -26,15 +26,29 @@ The [input](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/rate/pilot.
 analytic potential `toy_exchange.py`, starts from `ts.xyz`, and uses 4 beads with short sampling so
 it finishes in about 15 s. `prepare --pilot` runs the numerical preparation.
 
-Starting from a TS alone, the preparation checks the forces, finds the unstable mode of a numerical
-Hessian and descends in both directions to identify the two entrance fragments. When the channel is
-ambiguous, give `reaction.fragments`, `forming_bonds` and `breaking_bonds` explicitly.
+Starting from a TS guess, numerical preparation refines nonstationary coordinates
+with P-RFO, checks the forces and unstable mode of a numerical Hessian, and
+descends in both directions to identify the two entrance fragments. A pair of
+`system.reactant` and `system.product` geometries instead starts a CI-NEB search
+followed by P-RFO and the same saddle checks. The optimized TS supplies the rate
+coordinate and sampling reference. When the channel is ambiguous, give
+`reaction.fragments`, `forming_bonds` and `breaking_bonds` explicitly.
+
+The [transition-state search guide](../transition-state-search.md) includes
+controls, atom-mapping requirements, limitations and a runnable endpoint example:
+
+```bash
+pyrpmd prepare examples/rate/from_endpoints.inp --pilot
+pyrpmd run examples/rate/from_endpoints.inp --output runs/manual-endpoint-rate
+```
 
 ### Setting up your own system
 
 | Input part | Determines | Check |
 | --- | --- | --- |
-| `system.transition_state` | TS reference geometry and atom order | Consistency with the PES, isotopes and bonds formed/broken |
+| `system.transition_state` | TS guess and atom order | Consistency with the PES, isotopes and bonds formed/broken |
+| `system.reactant`, `system.product` | Full endpoint geometries for CI-NEB | Matching atom order, common coordinate frame, intended basins |
+| `reaction.preparation` | Refinement, path-search and connectivity controls | Converged forces, one unstable mode, matching endpoint connectivity |
 | `reaction.fragments`, bonds | The entrance fragments and the reaction coordinate | 0-based indices, atom conservation, channel definition |
 | `reaction.rinf` | Asymptotic normalization distance | Fragment decoupling and long-range potential as it varies |
 | `umbrella` | Window centers, range, stiffness | Connected support from the reactant reference to the dividing surface |
@@ -54,7 +68,7 @@ Maxwell momenta and launches with `+p` and `-p`, without thermostat or umbrella.
 
 | File / summary field | Meaning |
 | --- | --- |
-| `preparation.json` | TS preparation: Hessian eigenvalues, descent endpoints, identified reaction and diagnostics |
+| `preparation.json` | Optimized TS, CI-NEB path/energies and P-RFO diagnostics when searched, Hessian eigenvalues, descent endpoints and identified reaction |
 | `rate_pmf.csv`, `rate_pmf.npz` | Rate PMF, support region and related arrays |
 | `rate_pmf.json` | PMF barrier and error, $k_{\mathrm{QTST}}$, dividing surface `xi_star` and diagnostics |
 | `recrossing.csv`, `recrossing.npz` | Full $\kappa(t)$ curve, errors and bootstrap information |
@@ -80,6 +94,48 @@ The mathematics is in the
 the [UI / MBAR notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md) *(Chinese)*.
 The [H₃/BKMP2 benchmark](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md) *(partly Chinese)*
 runs the full workflow on a published reactive potential.
+
+### Extending fixed-window rate production
+
+Continue the existing umbrella streams to a larger production budget with:
+
+```bash
+pyrpmd extend runs/manual-rate --production-steps 200000
+pyrpmd resume runs/manual-rate
+```
+
+The target is **200000 total production steps per existing window and replica**, excluding
+equilibration. For example, a stream with 50000 completed production steps advances by another
+150000 steps. The saved positions, momenta, random-generator state and sampling cadence continue
+from their checkpoints. Existing umbrella samples are retained in append-only chunks; the original
+resolved input and run manifest remain unchanged, with the authorized budget recorded separately.
+
+This extension supports fixed-window, one-dimensional gas-phase `rate` runs with local umbrella
+sampling. Adaptive umbrellas, replica exchange and an externally supplied PMF are unsupported.
+The window centers, stiffnesses, replica count and scientific settings stay fixed. Repeating the
+latest authorized target resumes interrupted work or returns its completed result; a smaller target
+is rejected. Ordinary `resume` recognizes that target even after the extension has completed.
+
+Every strictly larger target creates a fresh result generation: it reconstructs the PMF and
+regenerates constrained parents and recrossing children, including when the dividing surface is
+unchanged. An automatically selected `xi_star` may move with the new PMF; a configured
+`recrossing.dividing_surface` stays fixed. Earlier result generations are preserved, and the new
+generation becomes active only when complete. This keeps each recrossing calculation associated
+with the PMF and umbrella endpoints that produced it.
+
+After an extension, `results/summary.json` identifies the current published result. Its
+`rate_extension.generation` gives the committed directory, for example
+`extensions/rate/production-000000200000/`; read that directory's `rate_pmf.*`, `recrossing.*`
+and `umbrella/` for the extended calculation. Root-level PMF and recrossing files retain the
+original result. `report` and `rate-postprocess` select the published generation automatically.
+During the first pending extension, if the original `umbrella/fes.h5` is unavailable, reports
+withhold raw traces from shared checkpoints that have advanced beyond the original budget;
+the original PMF and recrossing remain available.
+
+The command extends umbrella production only. It does not increase parent/child counts or their
+propagation time, and it does not automatically refresh a containing rate study's aggregate results.
+Inspect PMF support, the recrossing plateau and the uncertainty diagnostics again; a larger budget
+does not by itself establish convergence or make a withheld rate available.
 
 ## Direct collisions: `drpmd`
 
@@ -172,7 +228,7 @@ explain configuration and native PES use.
 
 ## One- and two-dimensional free energies: `fes`
 
-`fes` runs umbrella sampling on one or two CVs and unbiases the samples with MBAR, giving the
+`fes` with `method="umbrella"` runs umbrella sampling on one to three CV dimensions and unbiases the samples with MBAR, giving the
 probability-density free energy of those coordinates.
 
 ```bash
@@ -273,7 +329,11 @@ Fluxes through different dividing surfaces can overlap, so PyRPMD reports each T
 
 ## Metadynamics
 
-`task="metadynamics"` supports standard and well-tempered modes on one to three CVs, with
+The old `task="metadynamics"` is a deprecated alias. Shared-bias multiple walkers,
+common result files and checkpoint compatibility are described in the
+[unified enhanced-sampling guide](../enhanced-sampling.md).
+
+`task="fes"` with `[fes] method="metadynamics"` supports standard and well-tempered modes on one to three CVs, with
 several replicas that each build their own bias history. Periodic cells and fixed atoms
 are supported; CV periodicity and atomic PBC are declared separately. Sampling uses
 Andersen, Nosé–Hoover chains or PILE-L, with optional quadratic walls on length CVs.
@@ -310,5 +370,7 @@ The history-dependent bias runs in a Python time-step loop with compiled substep
 `loop_backend="native"` is rejected. Direct summation costs grow with the number of hills; the
 optional [grid backend](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)
 keeps lookup work independent of history length. Grid resolution introduces a numerical approximation
-that needs its own refinement check. Metadynamics outputs free-energy estimates only. Methods and restart timing are in the
+that needs its own refinement check. Metadynamics outputs free-energy estimates only. A 3D
+estimate can be reduced to one or two CVs with `pyrpmd project RUN --axes 0 1 --output NEW`; see
+[Output and analysis](results.md#projecting-a-saved-fes). Methods and restart timing are in the
 [enhanced-sampling specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md).

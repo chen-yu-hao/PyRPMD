@@ -1,0 +1,45 @@
+# Complex Hermitian two-coordinate LVC test, not a molecular ab initio PES.
+# h0/linear retain imaginary couplings and their complete Cartesian gradients.
+task = "nonadiabatic"
+method = "soc-rpsh"
+beta = 4.0
+beads = 4
+seed = 20261106
+
+[model]
+name = "lvc"
+
+[model.params]
+h0 = {real = [[0.2, 0.1], [0.1, -0.2]], imag = [[0.0, 0.07], [-0.07, 0.0]]}
+linear = {real = [[[0.1, 0.03], [0.03, -0.1]], [[0.0, 0.0], [0.0, 0.0]]], imag = [[[0.0, 0.02], [-0.02, 0.0]], [[0.0, 0.04], [-0.04, 0.0]]]}
+harmonic = [0.3, 0.4]
+coordinates = [0, 1]
+
+[system]
+masses = [10.0]
+positions = [[0.2, -0.15, 0.0]]
+
+[initial]
+kind = "point"
+active_surface = 0
+momenta = [[1.0, 0.4, 0.0]]
+
+[ensemble]
+trajectories = 4
+steps = 6
+sample_stride = 2
+
+[dynamics]
+dt = "0.02 autime"
+integrator = "cayley-bcb"
+native = false
+electronic_substeps = 8
+rescaling = "bead"
+frustrated_hops = "reverse"
+decoherence = "none"
+dboc = false
+geometric_force = true
+block_steps = 3
+
+[output]
+directory = "runs/soc-rpsh"

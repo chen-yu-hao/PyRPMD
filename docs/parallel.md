@@ -1,39 +1,48 @@
-# 并行执行与可复现性
+# Parallel execution and reproducibility
 
-PyRPMD 分开配置任务传输方式 `parallel.backend` 和单条轨迹的势能计算方式
-`parallel.mode`。`serial`、`bead`、`gpu` 三种势能模式都可以同时运行多条轨迹；
-`serial` 模式只表示一次 PES 调用不拆分珠子。常规 RPMD 的独立窗口、parent
-和 child 任务也使用同一执行器。
+**English** · [中文](zh/parallel.md)
 
-| 配置 | 实际执行方式 | 适用情况 |
+PyRPMD configures independent-task transport through `parallel.backend` and potential
+evaluation within one trajectory through `parallel.mode`. The `serial`, `bead` and
+`gpu` potential modes can all run several trajectories concurrently. `serial` means
+only that one PES call does not split beads. Standard RPMD's independent window,
+parent and child tasks use the same executor.
+
+| Configuration | Execution | Typical use |
 | --- | --- | --- |
-| `backend="serial"`, `trajectory_workers=1` | 当前进程运行独立任务 | 调试、轻量任务 |
-| `trajectory_workers=n > 1`，非 MPI | `spawn` 启动 n 个轨迹进程，静态分配任务 | 单机并行轨迹、窗口或 replica |
-| `mode="bead"`, `bead_workers=B > 1`，非 MPI | 每条并发轨迹持有 B 个持续 PES 子进程 | 较昂贵或不可重入的 PES |
-| `backend="mpi"` | G 个轨迹组，每组 B 个 rank | 单机多 rank 或跨节点 MPI |
-| `mode="gpu"` | 每个轨迹进程独立加载 GPU 模型，一次批处理全部珠子 | 单卡、多卡，每卡一条或多条并发轨迹 |
+| `backend="serial"`, `trajectory_workers=1` | Independent tasks run in the calling process | Debugging, lightweight tasks |
+| `trajectory_workers=n > 1`, without MPI | `spawn` starts n trajectory processes with static task assignment | Parallel trajectories, windows or replicas on one host |
+| `mode="bead"`, `bead_workers=B > 1`, without MPI | Each concurrent trajectory owns B persistent PES subprocesses | Expensive or non-reentrant PES implementations |
+| `backend="mpi"` | G trajectory groups, each with B ranks | Multiple ranks on one host or MPI across nodes |
+| `mode="gpu"` | Each trajectory process loads its own GPU model and batches all beads in one call | One or several GPUs, with one or more trajectories per GPU |
 
-`threads_per_rank` 控制已编译的 OpenMP 动力学内核；要求真正可用的 OpenMP
-构建。本地 task batch 使用 `threadpoolctl` 将已加载的 BLAS 线程池限制为 1，
-同时在任务作用域内设置 OpenBLAS、MKL、BLIS、Accelerate 的线程环境变量，
-使通常在任务中导入的库也采用单线程。任务完成或抛出异常后恢复原先已加载
-线程池的设置和环境变量；只有一个实际 task、直接在调用进程执行时也如此。
-持续 bead 子进程在初始化时限制线程池，并保持到子进程退出，无需每次 PES
-调用重新扫描库。该限制只针对 BLAS，不修改 `OMP_NUM_THREADS` 或动力学
-内核的 `threads_per_rank`。
+`threads_per_rank` controls compiled OpenMP dynamics kernels and requires an actual
+OpenMP-enabled build. Local task batches use `threadpoolctl` to limit loaded BLAS
+thread pools to one thread. They also set OpenBLAS, MKL, BLIS and Accelerate thread
+environment variables within the task scope so libraries imported during a task
+normally use one thread. Both loaded-pool settings and environment variables are
+restored when a task finishes or raises an exception. This applies even when there
+is only one task executing directly in the calling process. Persistent bead workers
+limit thread pools at initialization and retain those limits until exit, avoiding a
+library scan on every PES call. This changes BLAS settings only; it does not modify
+`OMP_NUM_THREADS` or the dynamics kernel's `threads_per_rank`.
 
-这些 BLAS 设置是进程级状态，不能隔离同一进程中其他 Python 线程的并发
-数值计算。MPI 路径和外部势能引擎的专有线程池仍需按部署与引擎配置，避免
-轨迹数 × 珠子进程数 × 引擎线程数超过分配的 CPU 资源；MPI 启动前可设置
-`OPENBLAS_NUM_THREADS=1` 和 `MKL_NUM_THREADS=1`。对于很快的解析势，
-进程通信通常比 PES 本身更贵，优先增加独立轨迹。
+BLAS settings are process-wide and cannot isolate unrelated numerical work in other
+Python threads of the same process. Configure MPI and external engines' own thread
+pools for the deployment. Avoid exceeding allocated CPUs with trajectory count ×
+bead workers × engine threads. Before launching MPI, settings such as
+`OPENBLAS_NUM_THREADS=1` and `MKL_NUM_THREADS=1` can help. For very fast analytical
+potentials, process communication can cost more than evaluation; increasing the
+number of independent trajectories is usually preferable.
 
-## MPI 拓扑
+## MPI topology
 
-静态调度要求 `MPI world size = G × B`，其中
-`G = trajectory_groups`，`B = bead_workers`。组首 rank 推进积分与轨迹状态；
-其余 rank 持续服务珠子 PES 请求。一次力调用使用本次提交坐标的结果，保持珠子
-顺序，不复用过期的异步力。时间步只在所属组内同步，不插入 world barrier。
+Static scheduling requires `MPI world size = G × B`, where
+`G = trajectory_groups` and `B = bead_workers`. Each group leader advances the
+integrator and trajectory state; the other ranks persistently service bead-PES
+requests. Each force call uses the coordinates submitted for that call, preserves
+bead order and never reuses stale asynchronous forces. Steps synchronize within
+their own group without a world barrier.
 
 ```toml
 [parallel]
@@ -47,14 +56,17 @@ coordinator_ranks = 0
 scheduling = "static"
 ```
 
-以上静态配置需要 8 个 MPI rank。`pes_ranks=1` 仍是唯一支持的值；单次 PES
-内部再嵌套 MPI 的 Q 层没有实现。静态调度仍是默认行为。
+This static setup requires eight MPI ranks. `pes_ranks=1` is still the only supported
+value; a nested Q level of MPI inside one PES evaluation is not implemented. Static
+scheduling remains the default.
 
-跨节点运行需要所有节点使用兼容的 MPI/mpi4py、Python、PyRPMD 和势能库。
-Python factory 必须能在每个执行进程中导入，数据文件须位于相同路径；输出目录
-须是各节点共同可见的共享存储。仅组首写该组轨迹文件，最终统计由 world rank 0
-完成，再广播阶段结果。Slurm 模板见 `examples/slurm/`；实际 `srun --mpi`
-插件、模块环境和节点分配需与集群匹配。
+Across nodes, use compatible MPI/mpi4py, Python, PyRPMD and potential libraries on
+every node. Python factories must be importable in every execution process, and data
+files must occupy the same paths. The output directory must be shared storage visible
+to all nodes. Only a group leader writes that group's trajectory files. World rank 0
+performs final statistics, then broadcasts stage results. See `examples/slurm/` for
+templates; the `srun --mpi` plugin, module environment and allocation must match the
+actual cluster.
 
 ### Dynamic MPI scheduling
 
@@ -126,7 +138,7 @@ For a single shared i-PI server, use one trajectory slot with provider-side
 client parallelism. A custom group-aware factory can configure separate servers
 when several trajectory groups are required.
 
-## GPU 设备与每卡多轨迹
+## GPU placement and multiple trajectories per card
 
 ```toml
 [parallel]
@@ -137,60 +149,76 @@ trajectories_per_gpu = 2
 bead_workers = 1
 ```
 
-这会建立 4 个轨迹执行进程：GPU 0 两个、GPU 1 两个。设为
-`trajectories_per_gpu=1` 即每卡一个。每个进程都有自己的模型、副本缓存和轨迹
-状态，显存预算必须乘上每卡进程数；这不是多个轨迹共享一个模型实例。
-当前 GPU 模式由 provider 批处理全部珠子，不同时启用 `bead_workers > 1`。
-GPU provider 必须声明并使用所请求的 CUDA 设备；设备缺失不会静默回退 CPU。
+This starts four trajectory processes: two on GPU 0 and two on GPU 1.
+`trajectories_per_gpu=1` assigns one process per card. Each process has its own model,
+cache and trajectory state; GPU memory requirements scale with the number of
+processes per card. Trajectories do not share a single model instance. In GPU mode,
+the provider batches all beads; `bead_workers > 1` cannot be enabled simultaneously.
+A GPU provider must declare and use the requested CUDA device. Missing devices do
+not silently fall back to CPU.
 
-`devices` 是经过 `CUDA_VISIBLE_DEVICES` 映射之后的本地设备编号。MPI GPU
-执行通过 `MPI.COMM_TYPE_SHARED` 得到节点本地 rank，按本地 rank 选卡，
-不使用全局 rank 直接推导 CUDA 编号。每个节点须运行
-`len(devices) × trajectories_per_gpu` 个 rank，并让这些 rank 都看到该节点
-配置的设备列表。例如两节点、每节点两卡、每卡两个轨迹进程，对应 world size
-8、G=8、B=1。各节点的编号 `[0,1]` 指各自的两张卡。
+`devices` contains local device indices after `CUDA_VISIBLE_DEVICES` remapping.
+MPI GPU placement obtains node-local ranks through `MPI.COMM_TYPE_SHARED` and chooses
+devices from those local ranks, not directly from global ranks. Each node must run
+`len(devices) × trajectories_per_gpu` worker ranks, all of which must see the node's
+configured device list. For two nodes with two GPUs each and two trajectory processes
+per GPU, world size is 8, G=8 and B=1 under static scheduling. `[0,1]` names each
+node's own two devices.
 
-## 持续 parent 链与续跑
+## Persistent parent chains and restart
 
-dRPMD 使用 n 个独立热 parent。每个 parent 只做一次 equilibration，随后
-每隔 `sampling.interval_steps` 从同一条持续链抽取完整 q/p，组装一条碰撞
-轨迹。请求的 N 是全作业总数：前 `N % n` 个 parent 各获得 `N // n + 1`
-条，其余各获得 `N // n` 条。生产轨迹与 parent 状态分离，生产阶段关闭热浴。
+dRPMD uses n independent thermal parents. Each parent equilibrates once, then draws
+full q/p every `sampling.interval_steps` from that same persistent chain to assemble
+a collision trajectory. Requested N is the total for the whole job: the first
+`N % n` parents receive `N // n + 1` trajectories each, and the others receive
+`N // n`. Production trajectory state is separate from parent state and the
+production thermostat is disabled.
 
-parent RNG 由全局 seed 和 parent ID 派生，碰撞抽样 RNG 由全局 trajectory
-ID 派生。检查点原子保存 parent q/p、RNG、热化进度、待运行 child、child q/p、
-分类保持时间及完成记录。中断后，已经完成的轨迹只计数一次；恢复终态检查点
-也不会多推进一个时间步。
+Parent RNG streams derive from the global seed and parent ID; collision sampling
+streams derive from the global trajectory ID. Checkpoints atomically save parent
+q/p, RNG, thermalization progress, pending child, child q/p, classification persistence
+and completion records. Completed trajectories are counted once after interruption;
+resuming a terminal checkpoint does not advance an extra step.
 
-显式固定 `sampling.parents`，就可以在保持 parent 归属与物理设置的前提下
-改变 CPU worker 数或 MPI G/B 布局。若省略 parents，它默认取轨迹执行槽数；
-改变槽数也改变 parent 数，此时检查点会拒绝不兼容的续跑。模型、PES 库、
-manifest、声明的 Python factory 源码等本地文件会参与 SHA256 校验。
-任意 Python 传递依赖、系统动态库和远程 i-PI 引擎的内部状态没有被完整指纹化，
-应通过固定运行环境保证一致。改变设备或并行归约方式可能改变浮点舍入，
-相同随机流不等于不同硬件逐位相同。
+With explicit `sampling.parents`, CPU workers or MPI G/B layouts can change while
+preserving parent ownership and physical settings. If omitted, `parents` defaults to
+the number of trajectory slots. Changing slots then changes the parent count and
+checkpoints reject the incompatible restart. Model files, PES libraries, manifests
+and declared Python factory source files enter SHA256 validation. Arbitrary transitive
+Python dependencies, system shared libraries and remote i-PI engine state are not
+fully fingerprinted; preserve them by pinning the runtime environment. Different
+devices or parallel reduction orders may change floating-point rounding. Identical
+random streams do not imply bitwise identity on different hardware.
 
-最小 dRPMD pilot 输入可省略分类器。此时以已有共价半径表推断 centroid
-键阈值，并将新分子组成记录为 candidate 通道；推断数值和假设写入 resolved
-input、summary 与物理检查点身份。`classification_unvalidated=true` 时仅提供
-几何事件计数，不输出正式化学速率、截面或化学反应界。同组成交换或内部键图
-变化保持 unresolved；未知元素或初始片段不符合推断图时明确要求显式分类配置。
-这些 pilot 规则不因使用更多进程或 MPI rank 而获得验证。
+A minimal dRPMD pilot may omit the classifier. The available covalent-radius table
+then determines centroid bond thresholds, and new compositions are recorded as
+candidate channels. Inferred values and assumptions enter resolved input, summaries
+and physical checkpoint identity. With `classification_unvalidated=true`, only
+geometric event counts are reported; formal chemical rates, cross sections and
+chemical reaction bounds are withheld. Same-composition exchange or changes in the
+internal bond graph remain unresolved. Unknown elements or initial fragments that
+disagree with the inferred graph require explicit classification settings. More
+processes or MPI ranks do not validate these pilot rules.
 
-## 已验证的范围
+## Validated scope
 
-单机测试覆盖真实 `spawn` 多轨迹、持续珠子进程、二者组合、5 条轨迹分配给
-2 个 parent、非整除珠子批次、模型文件变更拒绝续跑、运行中及终态断点恢复。
-初始碰撞构型的 PES 域错误会作为 failed 轨迹计入未知结果范围；其缺失能量
-记录为 JSON null 和空能量轨迹，不冒充数值结果。
+Single-host tests cover real `spawn` trajectory workers, persistent bead processes,
+their combination, five trajectories assigned to two parents, bead batches that do
+not divide evenly, model-file changes rejected on restart, and running/terminal
+checkpoint recovery. A PES-domain error in the initial collision geometry counts as
+a failed trajectory in the unknown-outcome bounds. Missing energy is recorded as
+JSON null and an empty energy trajectory, not a numerical result.
 
-`tests/mpi_integration.py` 使用本机真实 4-rank MPI 验证 G=2、B=2 的势能
-通信、有序结果、初始化异常传播、持续 parent 和续跑。命令行 MPI 示例也已
-实际运行与恢复。`tests/mpi_workflow_smoke.py` 还以真实 G=2、B=2 验证了
-FES，以及 rate 的 PMF、parent、child 多阶段广播与各自的续跑。
-GPU 设备分配测试使用 mock provider 检查每卡 1 个或多个
-进程和 MPI 节点本地路由；没有实际 CUDA 设备计算测试，也没有多物理节点的
-性能或扩展性测量。Slurm 文件是可检查的提交模板，不代表已在目标集群提交运行。
+`tests/mpi_integration.py` uses a real four-rank MPI run on one host to check G=2,
+B=2 potential communication, ordered results, initialization error propagation,
+persistent parents and restart. The CLI MPI example has also been run and resumed.
+`tests/mpi_workflow_smoke.py` uses real G=2, B=2 execution for FES and the rate
+workflow's PMF, parent and child stage broadcasts and restarts.
+
+GPU placement tests use a mock provider to check one or several processes per GPU
+and MPI node-local routing. They do not execute real CUDA calculations or measure
+performance/scaling on multiple physical nodes. Slurm files are inspectable submission
+templates, not evidence of jobs submitted to a particular cluster.
 
 `tests/mpi_dynamic_integration.py` runs with five ranks (`C=1, G=2, B=2`). A
 rendezvous verifies that a free group starts the third task before a slow first

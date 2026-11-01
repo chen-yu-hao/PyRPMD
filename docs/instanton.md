@@ -5,6 +5,12 @@ calculation using the existing batched potential interface. It contains a
 Cartesian path solver and a quantitative **one-dimensional** thermal rate
 cross-check. This is a separate calculation from real-time RPMD propagation.
 
+The companion [low-temperature cross-checks](low-temperature.md) provide the
+multidimensional Gaussian rate prefactor, gas translation/rotation factors,
+cached-Hessian TST/Wigner/Eckart reports, and open-path ground-doublet splittings
+for equivalent bound/constrained wells. Their scope and normalization are
+separate from the path-only result documented here.
+
 ## Supported calculations and boundaries
 
 | Calculation | Current support |
@@ -14,8 +20,9 @@ cross-check. This is a separate calculation from real-time RPMD propagation.
 | Thermal periodic orbit | Folded half-ring stationary-point solve; asymmetric barriers supported |
 | Crossover temperature | Stationary TS with exactly one negative active mass-weighted Hessian mode |
 | Full-ring mode diagnostics | Negative modes, near-zero modes, phase residual, stationary gradient |
-| Quantitative rate | Exactly one active Cartesian degree of freedom, explicit reactant partition function |
-| Multidimensional rate prefactor | Not implemented; multidimensional outputs describe the path and action |
+| Legacy one-dimensional rate | Exactly one active Cartesian degree of freedom, explicit reactant partition function |
+| Multidimensional rate prefactor | `pyrpmd.low_temperature.instanton_rate`; explicit harmonic reactants and gas/constrained convention |
+| Ground-doublet splitting | `pyrpmd.tunnelling.tunnelling_splitting`; equivalent bound/constrained wells, open path |
 | Bead convergence | Explicit repeated calculations; example below compares 32, 64 and 128 beads |
 
 No transverse vibrational, rotational, translational, molecular symmetry, or
@@ -93,6 +100,11 @@ accuracy must be sufficient for the Hessian difference step; test that step
 when using noisy electronic-structure or fitted potentials. Default failures
 raise `InstantonError`. `raise_on_failure=False` is available for path diagnosis;
 the rate function always requires successful paths.
+
+Set `retain_hessian=True` when the orbit will be passed to the multidimensional
+rate postprocessor. This caches the final action Hessian without additional PES
+calls and leaves the path diagnostic JSON unchanged; see
+[Hessian reuse](low-temperature.md#multidimensional-thermal-instanton-rate).
 
 ## One-dimensional thermal rate
 

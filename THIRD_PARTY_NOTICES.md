@@ -115,3 +115,25 @@ not relicense dependency code under PyRPMD's license. PySCF is an optional separ
 installed dependency. Cite the reference electronic-structure method and software
 as well as QMDFF (10.1021/ct500573f), dE-EVB (10.1039/C5CP02580J), TREQ
 (10.1063/1.5092589), and Caracal (10.1021/acs.jctc.3c00568), as applicable.
+
+## NaH2 LEPS 5G molecular diabatic potential
+
+`src/pyrpmd/potentials/nah2_leps.py` ports the fitted NaH2 LEPS 5G equations
+from [ChemPotPy](https://github.com/shuyinan/chempotpy), pinned to commit
+`4716d22e87ae01770cad9ec995c4a02a8e479296`. The source is
+`chempotpy/NaH2/NaH2_LEPS_5G_1992_DPEM.f`, SHA256
+`b98e2cb6a7355d868346b2a901441998705f9dead1dd233146285fd618d08f61`.
+The original Fortran file and its license are retained unchanged in
+`benchmarks/molecular_nonadiabatic/vendor/chempotpy/` for independent validation.
+The port and original equations retain the upstream Apache License 2.0 terms;
+the full license is included in `src/pyrpmd/potentials/_licenses/` and package
+distributions. Other PyRPMD orchestration and interfaces remain under the
+repository license. See the vendor `NOTICE.md` for exact provenance.
+
+Cite the original NaH2 potential publication
+[JCP 96, 2895–2909 (1992)](https://doi.org/10.1063/1.461986) and its
+[1994 erratum](https://doi.org/10.1063/1.467282), along with ChemPotPy when using
+its implementation. The fitted surface describes two doublet states of neutral
+NaH2. It is a specific molecular potential, not a general electronic-structure
+model or a fitted SOC Hamiltonian.
+

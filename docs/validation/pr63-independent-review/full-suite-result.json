@@ -1,0 +1,32 @@
+{
+  "baseline_commit": "3faac3aa42b5424b2711367608e0138c82f62e0a",
+  "command": [
+    "/workspace/scratch/276eb7a1796a/PyRPMD/../.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--basetemp=/tmp/p63-el0l3zu5",
+    "--junitxml=/workspace/scratch/276eb7a1796a/PyRPMD/docs/validation/pr63-independent-review/full-suite.xml"
+  ],
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "dependencies": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "pytest": "9.2.0",
+    "h5py": "3.16.0",
+    "torch": "2.15.0+cpu",
+    "ase": "3.29.0",
+    "mpi4py": "4.1.2"
+  },
+  "thread_limits": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "source_files": 365,
+  "source_unchanged": true,
+  "changed_sources": [],
+  "returncode": 0,
+  "elapsed_seconds": 809.880749568998
+}

@@ -1,0 +1,128 @@
+Running Sphinx v8.2.3
+loading translations [en]... done
+making output directory... done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'dollarmath', 'colon_fence'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output... 
+building [html]: targets for 41 source files that are out of date
+updating environment: [new config] 41 added, 0 changed, 0 removed
+reading sources... [  2%] batched-dynamics
+reading sources... [  5%] general-coordinate-rates
+reading sources... [  7%] index
+reading sources... [ 10%] instanton
+reading sources... [ 12%] manual/analysis-reports
+reading sources... [ 15%] manual/api
+reading sources... [ 17%] manual/development
+reading sources... [ 20%] manual/electrochemistry
+reading sources... [ 22%] manual/examples
+reading sources... [ 24%] manual/execution
+reading sources... [ 27%] manual/input
+reading sources... [ 29%] manual/installation
+reading sources... [ 32%] manual/jaxpip-generation
+reading sources... [ 34%] manual/nonadiabatic
+reading sources... [ 37%] manual/pcet
+reading sources... [ 39%] manual/periodic
+reading sources... [ 41%] manual/pes-generation
+reading sources... [ 44%] manual/potentials
+reading sources... [ 46%] manual/quickstart
+reading sources... [ 49%] manual/results
+reading sources... [ 51%] manual/science
+reading sources... [ 54%] manual/troubleshooting
+reading sources... [ 56%] manual/workflows
+reading sources... [ 59%] opes
+reading sources... [ 61%] performance-dynamics
+reading sources... [ 63%] plumed
+reading sources... [ 66%] quantum-statistics
+reading sources... [ 68%] rate-postprocessing
+reading sources... [ 71%] rate-studies
+reading sources... [ 73%] replica-exchange
+reading sources... [ 76%] rpc-mts
+reading sources... [ 78%] tier2-methods
+reading sources... [ 80%] tier2-ml-lifecycle
+reading sources... [ 83%] tier2-nonadiabatic
+reading sources... [ 85%] tier2-path-integral
+reading sources... [ 88%] tier2-sampling
+reading sources... [ 90%] tier2-spectroscopy
+reading sources... [ 93%] transition-interface-sampling
+reading sources... [ 95%] trpmd-spectroscopy
+reading sources... [ 98%] validation/tier1-2026-10-31/README
+reading sources... [100%] validation/tier1-2026-10-31/pmf-replay
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets... 
+copying downloadable files... [  7%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [ 13%] ../../examples/rate/general_coordinate.inp
+copying downloadable files... [ 20%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 27%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 33%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 40%] validation/tier1-2026-10-31/ci-initial-feature.json
+copying downloadable files... [ 47%] validation/tier1-2026-10-31/merged-docs-verification.json
+copying downloadable files... [ 53%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 60%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 67%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 73%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 80%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 87%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 93%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files... 
+Writing evaluated template result to /workspace/scratch/276eb7a1796a/docs-review-en/_static/language_data.js
+Writing evaluated template result to /workspace/scratch/276eb7a1796a/docs-review-en/_static/documentation_options.js
+Writing evaluated template result to /workspace/scratch/276eb7a1796a/docs-review-en/_static/basic.css
+copying static files: done
+copying extra files... 
+copying extra files: done
+copying assets: done
+writing output... [  2%] batched-dynamics
+writing output... [  5%] general-coordinate-rates
+writing output... [  7%] index
+writing output... [ 10%] instanton
+writing output... [ 12%] manual/analysis-reports
+writing output... [ 15%] manual/api
+writing output... [ 17%] manual/development
+writing output... [ 20%] manual/electrochemistry
+writing output... [ 22%] manual/examples
+writing output... [ 24%] manual/execution
+writing output... [ 27%] manual/input
+writing output... [ 29%] manual/installation
+writing output... [ 32%] manual/jaxpip-generation
+writing output... [ 34%] manual/nonadiabatic
+writing output... [ 37%] manual/pcet
+writing output... [ 39%] manual/periodic
+writing output... [ 41%] manual/pes-generation
+writing output... [ 44%] manual/potentials
+writing output... [ 46%] manual/quickstart
+writing output... [ 49%] manual/results
+writing output... [ 51%] manual/science
+writing output... [ 54%] manual/troubleshooting
+writing output... [ 56%] manual/workflows
+writing output... [ 59%] opes
+writing output... [ 61%] performance-dynamics
+writing output... [ 63%] plumed
+writing output... [ 66%] quantum-statistics
+writing output... [ 68%] rate-postprocessing
+writing output... [ 71%] rate-studies
+writing output... [ 73%] replica-exchange
+writing output... [ 76%] rpc-mts
+writing output... [ 78%] tier2-methods
+writing output... [ 80%] tier2-ml-lifecycle
+writing output... [ 83%] tier2-nonadiabatic
+writing output... [ 85%] tier2-path-integral
+writing output... [ 88%] tier2-sampling
+writing output... [ 90%] tier2-spectroscopy
+writing output... [ 93%] transition-interface-sampling
+writing output... [ 95%] trpmd-spectroscopy
+writing output... [ 98%] validation/tier1-2026-10-31/README
+writing output... [100%] validation/tier1-2026-10-31/pmf-replay
+
+/workspace/scratch/276eb7a1796a/PyRPMD/docs/tier2-nonadiabatic.md:181: WARNING: Unknown source document 'validation/pr63-independent-review/nonadiabatic_ml_report' [myst.xref_missing]
+generating indices... genindex done
+highlighting module code... 
+writing additional pages... search done
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build finished with problems, 1 warning (with warnings treated as errors).

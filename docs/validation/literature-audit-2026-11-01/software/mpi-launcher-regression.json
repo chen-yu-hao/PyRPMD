@@ -1,0 +1,64 @@
+{
+  "recorded_utc": "2026-11-01T13:42:32.941869+00:00",
+  "head": "b3e229309e6db4dba08f58a75e387b7b5628f169",
+  "python": "3.13.18 | packaged by conda-forge | (main, Oct 26 2026, 11:38:18) [GCC 15.3.0]",
+  "packages": {
+    "openmpi": "5.0.11",
+    "mpi4py": "4.1.2",
+    "PyRPMD": "0.2.0"
+  },
+  "mpi_version": "mpiexec (Open MPI) 5.0.11\n\nReport bugs to https://www.open-mpi.org/community/help/\n\n",
+  "scope": "Single-host Open MPI 5 launcher regression with two explicit slots; no scaling claim",
+  "before": {
+    "command": [
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/mpiexec",
+      "--host",
+      "localhost:2",
+      "-n",
+      "4",
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+      "-c",
+      "from mpi4py import MPI; print(MPI.COMM_WORLD.Get_rank(), flush=True)"
+    ],
+    "returncode": 1,
+    "log": "mpi-legacy-oversubscribe-failure.log",
+    "log_sha256": "c933fd07ced9752bc7250537a6bc007904d2c4697e0d057e7e5b58510fb602c6"
+  },
+  "after": {
+    "command": [
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/mpiexec",
+      "--host",
+      "localhost:2",
+      "--map-by",
+      ":OVERSUBSCRIBE",
+      "-n",
+      "4",
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+      "tests/mpi_integration.py"
+    ],
+    "returncode": 0,
+    "log": "mpi-explicit-oversubscribe-pass.log",
+    "log_sha256": "89a04acbf222fafa9555956480a3436569524e7dbd1a3eb224d73d4db7939e57"
+  },
+  "dynamic": {
+    "command": [
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/mpiexec",
+      "--host",
+      "localhost:2",
+      "--map-by",
+      ":OVERSUBSCRIBE",
+      "-n",
+      "5",
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+      "tests/mpi_dynamic_integration.py"
+    ],
+    "returncode": 0,
+    "log": "mpi-dynamic-oversubscribe-pass.log",
+    "log_sha256": "c1a0c9197f46b68f102fd6fe94a5ff09b89d1ab54ebecafeb5d5e0ab9c3a874a"
+  },
+  "primary_references": [
+    "https://docs.open-mpi.org/en/v5.0.x/mca.html",
+    "https://docs.open-mpi.org/en/v5.0.10/man-openmpi/man1/mpirun.1.html",
+    "https://mpi4py.readthedocs.io/en/stable/install.html"
+  ]
+}

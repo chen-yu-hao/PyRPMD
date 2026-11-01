@@ -1,0 +1,31 @@
+# Short provider/CLI smoke example; not a physical liquid benchmark.
+task = "pimd"
+temperature = "100 K"
+beads = 4
+seed = 714
+
+[system]
+symbols = ["Ar", "Ar"]
+geometry = [[8, 10, 10], [11.8, 10, 10]]
+geometry_unit = "angstrom"
+cell = [[20, 0, 0], [0, 20, 0], [0, 0, 20]]
+cell_unit = "angstrom"
+pbc = [true, true, true]
+
+[potential]
+provider = "lammps"
+model = "lammps_lj.in"
+params = {type_map = ["Ar"]}
+
+[dynamics]
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "pile-l"
+equilibration = "1 fs"
+production = "2 fs"
+interval = "0.2 fs"
+replicas = 1
+
+[output]
+directory = "runs/lammps-lj"

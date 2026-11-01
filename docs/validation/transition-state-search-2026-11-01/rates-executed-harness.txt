@@ -1,0 +1,352 @@
+"""Endpoint-to-rate BKMP2 experiments against CPC 2013 Tables 1 and 2.
+
+Runs new dynamics and records numerical results without asserting physical
+convergence. The paper's classical P=1 row is a useful inexpensive comparator;
+its quantum RPMD row uses P=128. Every case starts from separated reactant and
+product geometries, discovers the saddle, and uses it in the rate calculation.
+
+Example (from the repository root, after building the native and BKMP2 code)::
+
+    OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python \
+      benchmarks/transition_state_search/rates.py \
+      --cases classical-a classical-b classical-c classical-halfdt \
+      --output /path/to/scratch/endpoint-rates \
+      --evidence docs/validation/transition-state-search-2026-11-01/rates.json
+
+Raw configurations, checkpoints and samples remain in --output. Compact
+evidence includes source hashes, the input protocol, PMF/recrossing decomposition,
+bootstrap uncertainty, replica/time-half diagnostics and same-sample UI/MBAR.
+Existing completed cases are reused only with --reuse; failures are recorded.
+"""
+
+from __future__ import annotations
+
+import argparse
+import copy
+from datetime import datetime, timezone
+import json
+from pathlib import Path
+import time
+import traceback
+
+import h5py
+import numpy as np
+from threadpoolctl import threadpool_limits
+
+from pyrpmd.analysis.fes import mbar_rate_pmf, umbrella_integration
+from pyrpmd.constants import AU_RATE_TO_CM3_S, AU_TIME_FS
+from pyrpmd.input import JobSpec
+from pyrpmd.io import file_sha256, write_json
+from pyrpmd.potentials.python import import_object
+from pyrpmd.runner import run_resolved
+
+
+ROOT = Path(__file__).resolve().parents[2]
+H3 = ROOT / "benchmarks" / "h3"
+SCHEMA = "pyrpmd.endpoint-rate-literature-comparison.v1"
+SOURCE = {
+    "authors": "Y. V. Suleimanov, J. W. Allen, W. H. Green",
+    "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+    "journal": "Computer Physics Communications 184 (2013), 833-840",
+    "doi": "10.1016/j.cpc.2012.10.017",
+    "url": "https://doi.org/10.1016/j.cpc.2012.10.017",
+    "author_manuscript": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+    "locations": "Table 1 H+H2 column; Table 2 H+H2 classical and RPMD columns; Figure 1 equivalent channels",
+    "source_verified": True,
+    "uncertainty_note": "Paper describes approximately 5% statistical convergence; this is not a published standard error or confidence interval.",
+}
+REFERENCE = {
+    "classical": {"beads": 1, "qtst_cm3_molecule_s": 1.56e-18,
+                  "kappa": 0.994, "rate_cm3_molecule_s": 1.55e-18},
+    "rpmd": {"beads": 128, "qtst_cm3_molecule_s": 2.51e-16,
+             "kappa": 0.776, "rate_cm3_molecule_s": 1.95e-16},
+}
+# These budgets are numerical experiments, not renamed production calculations.
+CASES = {
+    "classical-a": dict(beads=1, seed=914301, dt_fs=0.1, equil_fs=1000., production_fs=5000.),
+    "classical-b": dict(beads=1, seed=914302, dt_fs=0.1, equil_fs=1000., production_fs=5000.),
+    "classical-c": dict(beads=1, seed=914303, dt_fs=0.1, equil_fs=1000., production_fs=5000.),
+    "classical-halfdt": dict(beads=1, seed=914301, dt_fs=0.05, equil_fs=1000., production_fs=5000.),
+    "quantum-128": dict(beads=128, seed=914401, dt_fs=0.1, equil_fs=100., production_fs=300.),
+}
+
+
+def configuration(case, output, library, workers):
+    options = CASES[case]
+    data = copy.deepcopy(JobSpec.from_file(H3 / "rate.inp").data)
+    data.update(temperature="300 K", beads=options["beads"], seed=options["seed"])
+    # Endpoint H2 bond is independently minimized by the BKMP2 verification
+    # driver. No saddle coordinate is supplied to the preparation pipeline.
+    reactant = np.array([[-6., 0., 0.], [0., 0., 0.], [1.40147198, 0., 0.]])
+    product = np.array([[-1.40147198, 0., 0.], [0., 0., 0.], [6., 0., 0.]])
+    reactant -= reactant.mean(axis=0)
+    product -= product.mean(axis=0)
+    data["system"] = {
+        "symbols": ["H", "H", "H"], "masses_amu": [1.00782503223] * 3,
+        "reactant": reactant.tolist(), "product": product.tolist(),
+        "geometry_unit": "bohr", "multiplicity": 2,
+    }
+    data["potential"] = {
+        "provider": "python", "factory": str(H3 / "pes.py") + ":build",
+        "params": {"library": str(library)},
+    }
+    data["reaction"] = {
+        "rinf": "30 bohr", "electronic_weight": 1.0, "symmetry_factor": 1.0,
+        "equivalent_paths": [[0, 2, 1]],
+        "preparation": {"gradient_tolerance": 1e-7,
+                        "neb": {"images": 7, "gradient_tolerance": 1e-5}},
+    }
+    data["dynamics"] = {"timestep": f"{options['dt_fs']} fs", "native": "required"}
+    data["sampling"].update(
+        equilibration=f"{options['equil_fs']} fs",
+        production=f"{options['production_fs']} fs",
+        # Classical trajectories are long enough that dense 0.5 fs output
+        # needlessly expands the generic FES MBAR matrices. This records every
+        # 10 fs without changing integration or thermostat collision frequency.
+        interval="10 fs" if options["beads"] == 1 else "0.5 fs",
+        # Hold the physical thermostat collision interval fixed in the dt test.
+        andersen_interval=int(round(5.0 / options["dt_fs"])), replicas=2,
+    )
+    data["umbrella"] = {"start": -.05, "stop": 1.05, "count": 111, "kappa": "30 hartree"}
+    data["analysis"] = {"bins": 500, "bootstrap": 12, "min_count": 5,
+                        "overlap_threshold": 1e-6}
+    data["rate"] = {"pmf_points": 1001, "pmf_method": "ui"}
+    data["recrossing"] = {
+        "dividing_surface": 1., "parent_replicas": 4, "parent_samples": 32,
+        "child_pairs": 2, "equilibration": "1000 fs", "parent_interval": "50 fs",
+        "child_time": "100 fs", "plateau_fraction": .5,
+        "plateau_tolerance": .05, "bootstrap": 200,
+    }
+    data["parallel"] = {"backend": "process" if workers > 1 else "serial",
+                        "trajectory_workers": workers, "threads_per_rank": 1}
+    data["output"] = {"directory": str(output / "run"), "checkpoint_interval": "500 fs"}
+    return JobSpec.from_mapping(data).resolve()
+
+
+def _curve_diagnostics(run, config, summary):
+    """Replay the same observations: these are diagnostics, not new samples."""
+    with h5py.File(run / "umbrella" / "fes.h5", "r") as saved:
+        groups = [saved["streams"][str(i)] for i in range(len(saved["streams"]))]
+        samples = [group["samples"][:, 0] for group in groups]
+        centers = np.array([group["center"][0] for group in groups])
+        stiffness = np.array([group["stiffness"][0, 0] for group in groups])
+        replicas = np.array([group.attrs["replica"] for group in groups])
+        effective = saved["effective_samples_per_stream"][:]
+        edges = saved["edges_0"][:]
+    xi = summary.get("pmf", {}).get("xi_star", 1.)
+    if xi is None:
+        xi = 1.
+    grid = np.linspace(0., 1.05, 1001)
+    result = {}
+    subsets = {"pooled": samples,
+               "first_half": [sample[:len(sample)//2] for sample in samples],
+               "second_half": [sample[len(sample)//2:] for sample in samples]}
+    for label, subset in subsets.items():
+        curve, _ = umbrella_integration(subset, centers, stiffness, config["beta"], grid)
+        curve -= curve[0]
+        result[label] = {
+            "barrier_at_fixed_xi_hartree": float(np.interp(xi, grid, curve)),
+            "maximum_barrier_hartree": float(curve.max()),
+            "maximum_xi": float(grid[np.argmax(curve)]),
+        }
+    for replica in np.unique(replicas):
+        selected = np.flatnonzero(replicas == replica)
+        curve, _ = umbrella_integration([samples[i] for i in selected], centers[selected],
+                                        stiffness[selected], config["beta"], grid)
+        curve -= curve[0]
+        result[f"replica_{replica}"] = {
+            "barrier_at_fixed_xi_hartree": float(np.interp(xi, grid, curve)),
+            "maximum_barrier_hartree": float(curve.max()),
+            "maximum_xi": float(grid[np.argmax(curve)]),
+        }
+    mbar = mbar_rate_pmf(
+        samples, centers, stiffness, config["beta"], reference=0., xi_star=xi,
+        bins=len(edges)-1, ranges=[float(edges[0]), float(edges[-1])],
+        bootstrap=0, min_count=5, overlap_threshold=1e-6,
+        measure="rate_flux", compare_ui=True, ui_points=1001,
+    )
+    pooled = result["pooled"]["barrier_at_fixed_xi_hartree"]
+    mbar_barrier = mbar["free_energy_barrier_hartree"]
+    return {
+        "scope": "same-sample replica/temporal diagnostics; no independent extra dynamics",
+        "xi_star": xi, "ui": result,
+        "mbar": {"ready": bool(mbar["ready"]), "status": mbar["status"],
+                 "barrier_hartree": mbar_barrier,
+                 "minus_ui_barrier_kbt": None if mbar_barrier is None else (mbar_barrier-pooled)*config["beta"],
+                 "support": mbar["support"], "overlap_connected": bool(mbar["overlap_connected"])},
+        "effective_samples_quantiles_0_25_50_75_100": np.quantile(effective, [0, .25, .5, .75, 1]).tolist(),
+        "streams_below_20_effective_samples": int(np.count_nonzero(effective < 20)),
+        "stream_count": len(samples),
+        "samples_per_stream": sorted(set(map(len, samples))),
+        "replica_barrier_difference_kbt": abs(result["replica_1"]["barrier_at_fixed_xi_hartree"] - result["replica_0"]["barrier_at_fixed_xi_hartree"])*config["beta"],
+        "time_half_barrier_difference_kbt": abs(result["second_half"]["barrier_at_fixed_xi_hartree"] - result["first_half"]["barrier_at_fixed_xi_hartree"])*config["beta"],
+    }
+
+
+def run_case(case, base, library, workers, reuse):
+    output = base / case
+    evidence_path = output / "case.json"
+    if evidence_path.exists():
+        if reuse:
+            return json.loads(evidence_path.read_text())
+        raise ValueError(f"Existing case {output}; use a new output directory or --reuse")
+    output.mkdir(parents=True, exist_ok=True)
+    config, system = configuration(case, output, library, workers)
+    provider = import_object(str(H3 / "pes.py") + ":build")(library=str(library))
+    metadata = dict(provider.metadata)
+    provider.close()
+    paths = ["src/pyrpmd/workflows/prepare.py", "src/pyrpmd/workflows/neb.py",
+             "src/pyrpmd/workflows/saddle.py", "src/pyrpmd/workflows/rate.py",
+             "src/pyrpmd/workflows/fes.py", "src/pyrpmd/analysis/fes.py",
+             "benchmarks/transition_state_search/rates.py"]
+    record = {
+        "case": case, "new_dynamics": True, "physical_validation": False,
+        "started_utc": datetime.now(timezone.utc).isoformat(),
+        "settings": {**CASES[case], "temperature_K": 300., "rinf_bohr": 30.,
+                     "windows": 111, "umbrella_coefficient_hartree": 30.,
+                     "umbrella_replicas": 2, "parent_chains": 4,
+                     "recording_interval_fs": 10. if CASES[case]["beads"] == 1 else .5,
+                     "pmf_bootstrap_draws": 12,
+                     "parent_samples_per_chain": 32, "child_pairs_per_parent": 2,
+                     "child_time_fs": 100., "timestep_fs": config["dt_au"]*AU_TIME_FS,
+                     "trajectory_workers": workers, "threads_per_worker": 1,
+                     "isotope_masses_au": system.masses.tolist()},
+        "conventions": {"reaction": "H + H2 -> H2 + H", "pes": "BKMP2",
+                        "nuclear_spin": "distinguishable nuclei",
+                        "electronic": "single adiabatic surface, electronic_weight=1",
+                        "channels": "two equivalent product arrangements in coordinate; no extra factor of two",
+                        "symmetry_factor": 1.0},
+        "protocol_differences_from_paper": [
+            "Andersen thermostat/Cayley propagator rather than the Table 1 GLE/Verlet protocol",
+            "Independent endpoint search supplies the TS; paper supplied a saddle geometry",
+            "Far shorter equilibration and sampling; paper uses 200 trajectories per window, 20 ps equilibration and 100 ps production each",
+            "Four independent constrained-parent chains and 512 children of 100 fs; paper reports 100000 children of 50 fs",
+            "Numerical PMF quadrature uses 1001 grid points instead of the Table 1 5000",
+            "Twelve PMF bootstrap draws give only rough within-run uncertainty; independent-seed and replica/time-half variation are also reported",
+        ],
+        "uncertainty_interpretation": {
+            "pmf_bootstrap_draws": 12,
+            "interval_scope": "Percentile intervals involving the PMF use only 12 bootstrap draws and are low-draw diagnostics, not established coverage guarantees.",
+            "recording_scope": "Changing the recording interval keeps the integrated trajectories and physical thermostat schedule unchanged but changes the finite-sample estimator; dense-versus-thinned diagnostics are retained separately when available.",
+            "primary_checks": "independent-seed dispersion, separate umbrella replicas, temporal halves and timestep sensitivity",
+        },
+        "pes_provenance": metadata,
+        "source_sha256": {path: file_sha256(ROOT/path) for path in paths},
+        "raw_output": str(output),
+    }
+    write_json(output / "settings.json", {"config": config, "initial_system": system.to_dict()})
+    started = time.perf_counter()
+    print(json.dumps({"event": "start", "case": case, "settings": record["settings"]}), flush=True)
+    try:
+        summary = run_resolved(config, system)
+        record["elapsed_dynamics_seconds"] = time.perf_counter()-started
+        reference = REFERENCE["classical" if config["beads"] == 1 else "rpmd"]
+        pmf = summary.get("pmf", {})
+        rate = summary.get("rate_estimate_cm3_s")
+        qtst = pmf.get("k_qtst_cm3_s")
+        kappa = summary.get("kappa")
+        record["results"] = {
+            key: summary.get(key) for key in (
+                "status", "rate_estimate_cm3_s", "rate_standard_error_cm3_s",
+                "rate_percentile_95_ci_cm3_s", "conditional_rate_standard_error_cm3_s",
+                "kappa", "kappa_standard_error", "plateau_detected", "plateau_diagnostics",
+                "child_trajectories", "maximum_endpoint_energy_error_kbt", "rate_uncertainty",
+                "warnings",
+            )
+        }
+        record["results"]["pmf"] = {key: pmf.get(key) for key in (
+            "ready", "status", "xi_star", "free_energy_barrier_hartree",
+            "barrier_standard_error_hartree", "k_qtst_cm3_s", "reactant_prefactor_au",
+            "overlap_connected", "support", "uncertainty",
+        )}
+        record["reference"] = {**reference, "source": SOURCE}
+        record["comparison"] = {
+            "status": "pilot_comparison" if rate is not None else "rate_unavailable",
+            "rate_ratio": None if rate is None else rate/reference["rate_cm3_molecule_s"],
+            "qtst_ratio": None if qtst is None else qtst/reference["qtst_cm3_molecule_s"],
+            "kappa_ratio": None if kappa is None else kappa/reference["kappa"],
+            "reference_qtst_implied_barrier_hartree": (
+                None if pmf.get("reactant_prefactor_au") is None else
+                -np.log(reference["qtst_cm3_molecule_s"] /
+                        (pmf["reactant_prefactor_au"]*AU_RATE_TO_CM3_S))/config["beta"]
+            ),
+            "physical_validation_passed": None,
+            "reason": "Numerical sensitivity and sampling diagnostics do not establish all convergence criteria.",
+        }
+        record["preparation"] = json.loads((output / "run" / "preparation.json").read_text())
+        record["pmf_diagnostics"] = _curve_diagnostics(output/"run", config, summary)
+        evidence_files = [output/"run"/name for name in (
+            "preparation.json", "summary.json", "rate_pmf.json", "umbrella/fes.h5",
+            "input/resolved.json", "input/system.json",
+        )]
+        record["artifact_sha256"] = {str(p.relative_to(output)): file_sha256(p)
+                                     for p in evidence_files if p.is_file()}
+    except Exception as error:
+        record["error"] = {"type": type(error).__name__, "message": str(error),
+                           "traceback": traceback.format_exc()}
+        print(json.dumps({"event": "failed", "case": case, "error": str(error)}), flush=True)
+    record["elapsed_total_seconds"] = time.perf_counter()-started
+    write_json(evidence_path, record)
+    print(json.dumps({"event": "finished", "case": case,
+                      "elapsed_seconds": record["elapsed_total_seconds"],
+                      "comparison": record.get("comparison")}), flush=True)
+    return record
+
+
+def report(records, base=None):
+    classical = [r for r in records if r["case"] in ("classical-a", "classical-b", "classical-c")
+                 and r.get("results", {}).get("rate_estimate_cm3_s") is not None]
+    statistics = None
+    if len(classical) >= 2:
+        rates = np.array([r["results"]["rate_estimate_cm3_s"] for r in classical])
+        statistics = {
+            "independent_seeds": [r["settings"]["seed"] for r in classical],
+            "mean_rate_cm3_molecule_s": float(rates.mean()),
+            "between_seed_standard_error_cm3_molecule_s": float(rates.std(ddof=1)/np.sqrt(len(rates))),
+            "mean_to_published_ratio": float(rates.mean()/REFERENCE["classical"]["rate_cm3_molecule_s"]),
+            "scope": "Between-seed dispersion only; does not include finite-bead, integration, coordinate or shared systematic bias.",
+        }
+    previous = None
+    if base is not None:
+        attempt = base / "interrupted-attempt.json"
+        if attempt.exists():
+            previous = json.loads(attempt.read_text())
+            dense = base / "classical-a-dense-output-aborted" / "dense-ui-diagnostics.json"
+            if dense.exists():
+                previous["completed_trajectory_ui_diagnostics"] = json.loads(dense.read_text())
+                previous["diagnostic_scope"] = "QTST only from the completed fresh dense trajectory checkpoints; no recrossing or total rate was computed for this aborted analysis."
+    return {"schema": SCHEMA, "created_utc": datetime.now(timezone.utc).isoformat(),
+            "physical_validation": False, "paper_source": SOURCE,
+            "published_references": REFERENCE,
+            "independent_classical_seed_statistics": statistics,
+            "prior_incomplete_attempt": previous,
+            "cases": records,
+            "interpretation": [
+                "These are fresh endpoint-to-rate runs. Historical archived pilots, if discussed elsewhere, are separate evidence.",
+                "Ratios compare identical temperature, PES and channel conventions. P=1 compares only to the classical row; P=128 compares only to the RPMD row.",
+                "A plateau or a favorable rate ratio alone is not a convergence result.",
+                "The target-implied barrier is derived with the calculated reactant prefactor, not a separately tabulated paper value.",
+            ]}
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--cases", nargs="+", choices=list(CASES), required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--evidence", type=Path, required=True)
+    parser.add_argument("--library", type=Path, default=H3/"build"/"libbkmp2.so")
+    parser.add_argument("--workers", type=int, default=2)
+    parser.add_argument("--reuse", action="store_true")
+    args = parser.parse_args()
+    if args.workers < 1:
+        parser.error("--workers must be positive")
+    records = []
+    with threadpool_limits(1):
+        for case in args.cases:
+            records.append(run_case(case, args.output.resolve(), args.library.resolve(),
+                                    args.workers, args.reuse))
+            write_json(args.evidence, report(records, args.output.resolve()))
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,146 @@
+{
+  "drivers": {
+    "exchange_launch": {
+      "archive": "drivers/exchange_launch.py.gz",
+      "function_source_sha256": {
+        "MullerPotential": "a55ab2dbb29b8ad45e0d39cfe74f111ae602054037d8392df9f2abb73f550327",
+        "SplineBias": "85969e9bfce6a60148f1674faa422df4a6e98ddafe2c64ae68a97220a4c4db77",
+        "aligned_rmse": "4b53e4f6a8adf6ebdcdca5f9999fb1b58d223c41186010f57f7f2d5703f5917a",
+        "js_divergence": "3f03c94840eeb3d780ae03607582900e1ad69bc1b4a86c86322b0fe1fc135aa4",
+        "kinetics": "cad5e4e7b6b1cb95c6bef7bb8ab79710b07307c8a41ae608f2f6a83a73ead7b1",
+        "main": "ecf7080d128d743e69c30e04ca4289c388b62067ca3932a4feb237b1c7ca4ffd",
+        "mean_interval": "3c297789c0a9285f80a0c7e842e0329dec00e568945049b5702d1691dd6b8ecc",
+        "ml_lifecycle": "5d0d7c0eed9768c30396e0604d3fc412a6ce0bf1dda733e67963330307ea6c61",
+        "muller_xy": "ddc99c5e81049ec7fe9686c3e767ddd92c2bb4df6c7234e6cb0c11e53367e6c2",
+        "opes_run": "2713ac41c7b281c97c3f258b359d049c7aa84b36bc5251dbf88cfdb5562af29f",
+        "plumed_comparator": "05508f6358ed6180b71431890a9384a98ab6a78aa228ebf99c3d8372e811b51e",
+        "reference": "1d2f14f09dcb3b04c4a65c3ebc26a3b9d667b2458007df1a735c4ec0dbd953c7",
+        "replica_exchange": "021980fadfc59bee66b90cc73d0745f24ae657b5356458ea9f44d9a97c4248d6",
+        "shared_metadynamics": "46b378c8e1d2365dfe1a4ee77402ef0e999ae24c3cccc688518a5e04abc72423",
+        "summarize_opes": "d0ef527942a3ab46b7000993f7c058eef6326044bef7c86a1109b0bc1224c87b",
+        "transitions": "b71068e23042937e05790cf46c57fdcb17ca595fd1a53f8119f379a1fa73b5f9",
+        "write_csv": "a279101579a38614d9799d168dfc48b4bfc5109e0e1732503847fb0a7c4d2ff2",
+        "write_json": "76c32cc8617cdfdbed246c42326164104ae44d3cbfe31e081fbab0e62d04f0b6"
+      },
+      "uncompressed_sha256": "adcc839035a26e4dde09ec0f88f32ff79dd66858305c5ff0884420bf8dc7ea95"
+    },
+    "ml_shared_launch": {
+      "archive": "drivers/ml_shared_launch.py.gz",
+      "function_source_sha256": {
+        "MullerPotential": "a55ab2dbb29b8ad45e0d39cfe74f111ae602054037d8392df9f2abb73f550327",
+        "SplineBias": "85969e9bfce6a60148f1674faa422df4a6e98ddafe2c64ae68a97220a4c4db77",
+        "aligned_rmse": "4b53e4f6a8adf6ebdcdca5f9999fb1b58d223c41186010f57f7f2d5703f5917a",
+        "js_divergence": "3f03c94840eeb3d780ae03607582900e1ad69bc1b4a86c86322b0fe1fc135aa4",
+        "kinetics": "cad5e4e7b6b1cb95c6bef7bb8ab79710b07307c8a41ae608f2f6a83a73ead7b1",
+        "main": "ecf7080d128d743e69c30e04ca4289c388b62067ca3932a4feb237b1c7ca4ffd",
+        "mean_interval": "3c297789c0a9285f80a0c7e842e0329dec00e568945049b5702d1691dd6b8ecc",
+        "ml_lifecycle": "5d0d7c0eed9768c30396e0604d3fc412a6ce0bf1dda733e67963330307ea6c61",
+        "muller_xy": "ddc99c5e81049ec7fe9686c3e767ddd92c2bb4df6c7234e6cb0c11e53367e6c2",
+        "opes_run": "2713ac41c7b281c97c3f258b359d049c7aa84b36bc5251dbf88cfdb5562af29f",
+        "plumed_comparator": "05508f6358ed6180b71431890a9384a98ab6a78aa228ebf99c3d8372e811b51e",
+        "reference": "f0a43fe210154b671b0306f49addaa4cfe19970fca9a1bd7721af2aa7b5a2f70",
+        "replica_exchange": "021980fadfc59bee66b90cc73d0745f24ae657b5356458ea9f44d9a97c4248d6",
+        "shared_metadynamics": "46b378c8e1d2365dfe1a4ee77402ef0e999ae24c3cccc688518a5e04abc72423",
+        "summarize_opes": "d0ef527942a3ab46b7000993f7c058eef6326044bef7c86a1109b0bc1224c87b",
+        "transitions": "b71068e23042937e05790cf46c57fdcb17ca595fd1a53f8119f379a1fa73b5f9",
+        "write_csv": "a279101579a38614d9799d168dfc48b4bfc5109e0e1732503847fb0a7c4d2ff2",
+        "write_json": "76c32cc8617cdfdbed246c42326164104ae44d3cbfe31e081fbab0e62d04f0b6"
+      },
+      "uncompressed_sha256": "adeb7ab18f9509fad4dbc87f1c8fdbcece1cfb473ce3361b9c8b8284cb425ba0"
+    },
+    "opes_v2_launch": {
+      "archive": "drivers/opes_v2_launch.py.gz",
+      "function_source_sha256": {
+        "MullerPotential": "a55ab2dbb29b8ad45e0d39cfe74f111ae602054037d8392df9f2abb73f550327",
+        "SplineBias": "85969e9bfce6a60148f1674faa422df4a6e98ddafe2c64ae68a97220a4c4db77",
+        "aligned_rmse": "4b53e4f6a8adf6ebdcdca5f9999fb1b58d223c41186010f57f7f2d5703f5917a",
+        "js_divergence": "3f03c94840eeb3d780ae03607582900e1ad69bc1b4a86c86322b0fe1fc135aa4",
+        "kinetics": "cad5e4e7b6b1cb95c6bef7bb8ab79710b07307c8a41ae608f2f6a83a73ead7b1",
+        "main": "ecf7080d128d743e69c30e04ca4289c388b62067ca3932a4feb237b1c7ca4ffd",
+        "mean_interval": "3c297789c0a9285f80a0c7e842e0329dec00e568945049b5702d1691dd6b8ecc",
+        "ml_lifecycle": "5d0d7c0eed9768c30396e0604d3fc412a6ce0bf1dda733e67963330307ea6c61",
+        "muller_xy": "ddc99c5e81049ec7fe9686c3e767ddd92c2bb4df6c7234e6cb0c11e53367e6c2",
+        "opes_run": "2713ac41c7b281c97c3f258b359d049c7aa84b36bc5251dbf88cfdb5562af29f",
+        "plumed_comparator": "05508f6358ed6180b71431890a9384a98ab6a78aa228ebf99c3d8372e811b51e",
+        "reference": "f0a43fe210154b671b0306f49addaa4cfe19970fca9a1bd7721af2aa7b5a2f70",
+        "replica_exchange": "021980fadfc59bee66b90cc73d0745f24ae657b5356458ea9f44d9a97c4248d6",
+        "shared_metadynamics": "46b378c8e1d2365dfe1a4ee77402ef0e999ae24c3cccc688518a5e04abc72423",
+        "summarize_opes": "d0ef527942a3ab46b7000993f7c058eef6326044bef7c86a1109b0bc1224c87b",
+        "transitions": "b71068e23042937e05790cf46c57fdcb17ca595fd1a53f8119f379a1fa73b5f9",
+        "write_csv": "a129cc6535654bda0ecf8a3bc92f5f8e9526915b112694401844ebb32ee64035",
+        "write_json": "76c32cc8617cdfdbed246c42326164104ae44d3cbfe31e081fbab0e62d04f0b6"
+      },
+      "uncompressed_sha256": "8f680cb0dfed7d67d4e3e8bf2795a7a2e73ac9111ec3bd08edb6ec80f1ba0893"
+    },
+    "plumed_comparator_launch": {
+      "archive": "drivers/plumed_comparator_launch.py.gz",
+      "reconstruction_note": "Relative to the OPES v2 launch archive, this earlier same-history comparator driver used the old opes/ output namespace in the unrelated trajectory/cache helpers. The comparator itself is byte-identical.",
+      "uncompressed_sha256": "9054cd0e257c499cb1833d94ef13507185a40093825b2929eaccdcdcc62b051e"
+    }
+  },
+  "jobs": {
+    "kinetics_coarse": {
+      "command": "sampling.py kinetics --replicas 128 --dt 0.001",
+      "driver": "exchange_launch"
+    },
+    "kinetics_fine": {
+      "command": "sampling.py kinetics --replicas 128 --dt 0.0005",
+      "driver": "exchange_launch"
+    },
+    "ml_lifecycle": {
+      "command": "sampling.py ml",
+      "driver": "ml_shared_launch"
+    },
+    "opes_v2_x": {
+      "command": "sampling.py opes --steps 80000 --freeze 40000 --grid-points 4097 --cvs x",
+      "driver": "opes_v2_launch"
+    },
+    "opes_v2_y": {
+      "command": "sampling.py opes --steps 80000 --freeze 40000 --grid-points 4097 --cvs y",
+      "driver": "opes_v2_launch"
+    },
+    "plumed_comparator": {
+      "command": "sampling.py plumed",
+      "driver": "plumed_comparator_launch",
+      "interpolation": false,
+      "runtime": "PLUMED2.9.4 commit52da2bb76d37dbad0d19f59c6fe0b2ab939e3ded"
+    },
+    "replica_exchange": {
+      "command": "sampling.py exchange --steps 24000",
+      "driver": "exchange_launch"
+    },
+    "sensitivity": {
+      "command": "sampling_sensitivity.py",
+      "driver": "exchange_launch",
+      "helper_sha256": "ec47b87794d248c38bd7b34819cb21b9820625e5fa89acdfa566f51449971516",
+      "scope": "Two predeclared seeds, half timestep at equal physical duration/update interval and half fixed sigma; separate harmonized postanalysis uses40 modeltime units of frozen relaxation."
+    },
+    "shared_metadynamics": {
+      "command": "sampling.py shared --steps 20000 --freeze 30000",
+      "driver": "ml_shared_launch"
+    }
+  },
+  "legacy_evidence": {
+    "bias_state_schema_version": 1,
+    "initial_empty_bias": 0.0,
+    "metad_trajectories": 8,
+    "note": "These original pre-fix launch files were not archived at execution; no later whole-driver hash is assigned to them. Their actual raw paths, deposition records, saved final bias states and parameters are retained. The corrected same-history comparator independently reproduces the old first-weight behavior using explicit schema1.",
+    "original_whole_driver_archive": null,
+    "reused_explore_trajectories": 2
+  },
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "postlaunch_validation_changes": {
+    "src/pyrpmd/opes.py": "A schema2 first-kernel-weight consistency guard was added to _load_state after long trajectories launched. Constructor defaults, update equations, energies, gradients, and all fresh-trajectory calculations are unchanged. Launch module archived as drivers/opes_at_trajectory_launch.py.gz.",
+    "src/pyrpmd/workflows/opes.py": "Partial legacy jobs now select schema1 for never-started replicas; mixed-schema missing-replica jobs reject before sampling. The literature trajectory driver calls Dynamics and OPESBias directly and does not use this workflow."
+  },
+  "product_source_sha256": {
+    "src/pyrpmd/biased_kinetics.py": "6fa5d89555a90816714696d1d5d614b019c87747441035a8312e9003d8bfe6a9",
+    "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+    "src/pyrpmd/opes.py": "ccc55777033e7c0739519c5fd9617522eec798abe8304666e28ad36f07bdc9b3",
+    "src/pyrpmd/potentials/lifecycle.py": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2",
+    "src/pyrpmd/replica_exchange.py": "be99c738683150760fc67ef4f6d165a10a90fba215855a304a8d5d0b54af327c",
+    "src/pyrpmd/shared_metadynamics.py": "9bccc0e5ff415cadda36f1742f102e7df90a8a958aaccc22dbf1cc5e75886fa6"
+  },
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "reconstruction_note": "Launch versions reconstructed from the two explicitly recorded later edits: CSV union-of-fields support, and reference printed-notation metadata. No propagation, bias, estimator, training, exchange, shared-history, or kinetics function changed between these launch versions. Archives retain the then-current metadata text for audit; reference.json uses corrected literal published notation."
+}

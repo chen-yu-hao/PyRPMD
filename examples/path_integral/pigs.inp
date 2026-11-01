@@ -1,0 +1,34 @@
+# Primitive positive-trial projection; converge projection time and bead count.
+task = "pimd"
+beads = 65
+seed = 617
+
+[system]
+symbols = ["H"]
+geometry = [[0.1, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.01}
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.01 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.1 fs^-1"
+equilibration_steps = 100
+production_steps = 200
+sample_interval = 10
+
+[path_integral]
+method = "pigs"
+projection_time = "100 fs"
+trial = {alpha = 3.0}
+
+[output]
+directory = "runs/pigs"
+trajectory_storage = "memory"
+checkpoint_steps = 50

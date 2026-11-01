@@ -1,12 +1,17 @@
 """Validated molecular identity and XYZ parsing; coordinates/masses in atomic units."""
 
 from __future__ import annotations
+
 from dataclasses import dataclass
+from functools import partial
 from pathlib import Path
+
 import numpy as np
+
 from .constants import AMU_TO_AU, ANGSTROM_TO_AU
-from .units import parse_quantity
 from .geometry import validate_cell_pbc
+from .units import parse_quantity
+from .validation import integer_value
 
 _SYMBOLS = (
     "X H He Li Be B C N O F Ne Na Mg Al Si P S Cl Ar K Ca Sc Ti V Cr Mn Fe Co Ni Cu Zn Ga Ge As Se Br Kr Rb Sr Y Zr Nb Mo Tc Ru Rh Pd Ag Cd In Sn Sb Te I Xe Cs Ba La Ce Pr Nd Pm Sm Eu Gd Tb Dy Ho Er Tm Yb Lu Hf Ta W Re Os Ir Pt Au Hg Tl Pb Bi Po At Rn Fr Ra Ac Th Pa U Np Pu Am Cm Bk Cf Es Fm Md No Lr Rf Db Sg Bh Hs Mt Ds Rg Cn Nh Fl Mc Lv Ts Og"
@@ -45,13 +50,11 @@ _MASSES = {
 }
 
 
-def _integer(value, name, minimum=None):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)):
-        raise ValueError(f"{name} must be an integer")
-    value = int(value)
-    if minimum is not None and value < minimum:
-        raise ValueError(f"{name} must be >= {minimum}")
-    return value
+_integer = partial(
+    integer_value,
+    type_message="{name} must be an integer",
+    bounds_message="{name} must be >= {minimum}",
+)
 
 
 @dataclass
@@ -65,6 +68,7 @@ class System:
     cell: np.ndarray | None = None
     pbc: tuple[bool, bool, bool] | None = None
     fixed_atoms: tuple[int, ...] = ()
+    bond_constraints: tuple[tuple[int, int, float], ...] = ()
 
     def __post_init__(self):
         self.symbols = tuple(self.symbols)
@@ -96,6 +100,10 @@ class System:
             i >= n for i in self.fixed_atoms
         ):
             raise ValueError("fixed_atoms must contain distinct in-range 0-based indices")
+        from .bond_constraints import normalize_bond_constraints
+        self.bond_constraints = normalize_bond_constraints(self.bond_constraints, n)
+        if any(i in self.fixed_atoms or j in self.fixed_atoms for i, j, _ in self.bond_constraints):
+            raise ValueError("bond constraints cannot include fixed atoms")
         if self.fragments:
             all_ids = [i for f in self.fragments for i in f]
             if any(not f for f in self.fragments) or sorted(all_ids) != list(range(n)):
@@ -139,6 +147,10 @@ class System:
                 result["pbc"] = list(self.pbc)
         if self.fixed_atoms:
             result["fixed_atoms"] = list(self.fixed_atoms)
+        if self.bond_constraints:
+            result["bond_constraints"] = [
+                {"atoms": [i, j], "length": length} for i, j, length in self.bond_constraints
+            ]
         return result
 
     @classmethod
@@ -153,6 +165,7 @@ class System:
             d.get("cell"),
             d.get("pbc", (False, False, False)),
             d.get("fixed_atoms", ()),
+            d.get("bond_constraints", ()),
         )
         # Both precursor branches used the same manifest version, but the
         # surface branch omitted explicit false flags. Keep that byte-level
@@ -222,6 +235,8 @@ def read_xyz(path, *, unit="angstrom", masses=None):
 def system_from_config(spec):
     if isinstance(spec, System):
         return spec
+    if "reactant" in spec or "product" in spec:
+        return reaction_endpoints(spec)[0]
     masses = spec.get("masses")
     if "masses_amu" in spec:
         if masses is not None:
@@ -244,7 +259,8 @@ def system_from_config(spec):
     elif "cell_unit" in spec:
         raise ValueError("cell_unit requires a cell")
     cell, pbc = validate_cell_pbc(cell, spec.get("pbc"))
-    boundaries = {"cell": cell, "pbc": pbc, "fixed_atoms": spec.get("fixed_atoms", ())}
+    boundaries = {"cell": cell, "pbc": pbc, "fixed_atoms": spec.get("fixed_atoms", ()),
+                  "bond_constraints": spec.get("bond_constraints", ())}
     if (
         "symbols" in spec
         and "geometry" in spec
@@ -317,3 +333,32 @@ def system_from_config(spec):
             multiplicity,
             **boundaries,
         )
+
+
+def reaction_endpoints(spec):
+    """Read atom-mapped full-system reactant/product geometries for CI-NEB.
+
+    XYZ files use angstrom by default; inline arrays use bohr, as for
+    ``geometry``. Shared masses, isotopes and ``geometry_unit`` apply to both
+    endpoints. Atom correspondence is explicit: symbols must have identical
+    order, and no alignment or atom permutation is inferred.
+    """
+    if "reactant" not in spec or "product" not in spec:
+        raise ValueError("CI-NEB requires both system.reactant and system.product")
+    if any(key in spec for key in ("geometry", "transition_state", "reactants")):
+        raise ValueError(
+            "Use paired system.reactant/product or a geometry/transition_state, not both"
+        )
+    common = {key: value for key, value in spec.items() if key not in ("reactant", "product")}
+    endpoints = tuple(
+        system_from_config({**common, "geometry": spec[key]})
+        for key in ("reactant", "product")
+    )
+    reactant, product = endpoints
+    if reactant.symbols != product.symbols:
+        raise ValueError("Reactant/product geometries must have identical atom counts and symbol order")
+    if not np.array_equal(reactant.masses, product.masses):
+        raise ValueError("Reactant/product geometries must use identical atom masses")
+    if np.linalg.norm(product.geometry - reactant.geometry) <= 1e-12:
+        raise ValueError("Reactant/product geometries must be distinct")
+    return endpoints

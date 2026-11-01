@@ -33,7 +33,8 @@ also selects the same Python environment used by `python -m pip`.
 | --- | --- |
 | `native.available`, `native.openmp` | The C++ extension and OpenMP are loaded |
 | `native.integrators` | Compiled integrators: `cayley-bcb`, `normal-mode-bab`, `velocity-verlet` |
-| `workflows` | The 11 available `task` values, including `opes` |
+| `workflows` | Available `task` values reported by this installation; see [Input and CLI](input.md) for workflow schemas |
+| `enhanced_sampling`, `initial_ensembles` | Sampling methods and selected-state preparations (`thermal_parent`, `ne_rpmd`, `qct`) |
 | `input_schema_version` | Current input schema version (1) |
 
 Optional features such as ASE, MPI, Torch and external potential libraries need their own
@@ -62,14 +63,15 @@ To keep the C++ kernels but build without OpenMP:
 PYRPMD_NO_OPENMP=1 python -m pip install -e .
 ```
 
-Both variables act at build time. Reinstall after updating the source, especially the native
+Both variables act at build time. `PYRPMD_NO_NATIVE=1` also disables the C++ PIMD driver
+(`sampling.engine="native"`, `pyrpmd-native`), which then fails explicitly instead of falling back. Reinstall after updating the source, especially the native
 interfaces, so Python never loads an extension built from older code; `pyrpmd info` shows what is
 loaded.
 
 Two input settings control the compiled code at run time. `dynamics.native="required"` demands
 compiled integrator kernels. `dynamics.loop_backend="native"` demands that the whole propagation
-loop runs in the fused native path. With the default workflow engine, a custom Python potential or
-a periodic/fixed-atom system uses compiled integrator substeps inside a Python outer loop.
+loop runs in the fused native path. Fixed atoms are supported when the PES and requested operators
+have native descriptors; Python PES or bias callbacks still require Python orchestration.
 The separately selected native PIMD engine has its own PES and execution requirements;
 see [Execution and parallelism](execution.md).
 
@@ -82,6 +84,9 @@ see [Execution and parallelism](execution.md).
 | `python -m pip install -e '.[gpu]'` | Torch potentials | A PyTorch/CUDA build matching the node driver, and a model |
 | `python -m pip install -e '.[plots]'` | Matplotlib figures and HTML/JSON analysis reports | Saved PyRPMD results; no external PES is needed |
 | `python -m pip install -e '.[analysis]'` | PyMBAR cross-checks and the plotting dependencies | Routine FES uses the built-in MBAR |
+| `python -m pip install -e '.[mace]'`, `'.[nequip]'`, `'.[fairchem]'`, `'.[deepmd]'` | Ready-made ML potential providers | The model checkpoint |
+| `python -m pip install -e '.[tblite]'` (alias `xtb`), `'.[pyscf]'` | On-the-fly xTB and HF/DFT providers | Nothing else |
+| `python -m pip install -e '.[pesgen]'` | PySCF reference generation for [PES generation](pes-generation.md) | Optional native Caracal tools; JaxPIP has its own pinned stack, see [JaxPIP](jaxpip-generation.md) |
 | `python -m pip install -e '.[test]'` | pytest suite | Tests for optional interfaces skip when those are missing |
 | `python -m pip install -e '.[docs]'` | Building this manual | Sphinx, MyST, PyData theme |
 

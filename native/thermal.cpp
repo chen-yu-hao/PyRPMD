@@ -9,7 +9,7 @@
 namespace {
 constexpr const char* capsule_name="pyrpmd.NativeEnsemble.v1";
 using thermal::Vec;using thermal::Mat;using thermal::require;
-struct Handle {std::unique_ptr<thermal::Engine> engine;PyObject* owner=nullptr;std::mutex mutex;~Handle(){engine.reset();Py_XDECREF(owner);}};
+struct Handle {std::unique_ptr<thermal::Engine> engine;PyObject* owner=nullptr;PyObject* callback=nullptr;std::mutex mutex;~Handle(){engine.reset();Py_XDECREF(callback);Py_XDECREF(owner);}};
 struct Lock {std::unique_lock<std::mutex> lock;explicit Lock(Handle& h):lock(h.mutex,std::try_to_lock){require(lock.owns_lock(),"native ensemble is busy in another thread");}};
 void destroy(PyObject* cap){auto*p=static_cast<Handle*>(PyCapsule_GetPointer(cap,capsule_name));if(p)delete p;else PyErr_Clear();}
 Handle& handle(PyObject* obj){auto*p=static_cast<Handle*>(PyCapsule_GetPointer(obj,capsule_name));require(p!=nullptr,"invalid native ensemble handle");return *p;}
@@ -43,6 +43,30 @@ template<class F> void unlocked(F&& f){
     try{f();}catch(...){failure=std::current_exception();}
     PyEval_RestoreThread(state);if(failure)std::rethrow_exception(failure);
 }
+std::string python_failure(){
+    PyObject *type=nullptr,*value=nullptr,*trace=nullptr;
+    PyErr_Fetch(&type,&value,&trace);PyErr_NormalizeException(&type,&value,&trace);
+    PyObject* rendered=value?PyObject_Str(value):nullptr;
+    const char* message=rendered?PyUnicode_AsUTF8(rendered):nullptr;
+    std::string result=message?message:"Python potential evaluation failed";
+    Py_XDECREF(rendered);Py_XDECREF(type);Py_XDECREF(value);Py_XDECREF(trace);PyErr_Clear();
+    return result;
+}
+void python_force(PyObject* callback,const Vec& q,const Mat& cell,Vec& energy,Vec& force,Vec& virial){
+    PyGILState_STATE gil=PyGILState_Ensure();
+    PyObject *qb=nullptr,*hb=nullptr,*result=nullptr;
+    try{
+        qb=bytes(q);hb=bytes(cell.data(),cell.size());
+        if(!qb||!hb)throw std::runtime_error(python_failure());
+        result=PyObject_CallFunctionObjArgs(callback,qb,hb,nullptr);
+        if(!result)throw std::runtime_error("Python potential: "+python_failure());
+        require(PyTuple_Check(result)&&PyTuple_Size(result)==3,"Python force bridge must return three byte arrays");
+        Vec e=raw(PyTuple_GET_ITEM(result,0)),f=raw(PyTuple_GET_ITEM(result,1)),v=raw(PyTuple_GET_ITEM(result,2));
+        require(e.size()==energy.size()&&f.size()==force.size()&&v.size()==virial.size(),"Python force bridge output size mismatch");
+        energy=std::move(e);force=std::move(f);virial=std::move(v);
+        Py_DECREF(result);Py_DECREF(qb);Py_DECREF(hb);PyGILState_Release(gil);
+    }catch(...){Py_XDECREF(result);Py_XDECREF(qb);Py_XDECREF(hb);PyErr_Clear();PyGILState_Release(gil);throw;}
+}
 thermal::Config config(PyObject* dict){
     thermal::Config c;
     c.atoms=integer(dict,"atoms");c.beads=integer(dict,"beads");
@@ -51,37 +75,83 @@ thermal::Config config(PyObject* dict){
     c.beta=num(dict,"beta");c.dt=num(dict,"dt");c.masses=vector(dict,"masses");
     Vec fixed=vector(dict,"fixed");require(fixed.size()==c.atoms,"fixed-atom mask size mismatch");
     for(double x:fixed){require(x==0||x==1,"invalid fixed-atom mask");c.fixed.push_back(static_cast<uint8_t>(x));}
-    auto thermostat=integer(dict,"thermostat"),barostat=integer(dict,"barostat");require(thermostat<=11&&barostat<=4,"unknown thermostat/barostat");
+    auto thermostat=integer(dict,"thermostat"),barostat=integer(dict,"barostat");require(thermostat<=12&&barostat<=4,"unknown thermostat/barostat");
     c.thermostat=static_cast<thermal::Thermostat>(thermostat);c.barostat=static_cast<thermal::Barostat>(barostat);
     c.fuse_modes=PyDict_GetItemString(dict,"fuse_modes")?boolean(dict,"fuse_modes"):true;
     c.cayley=boolean(dict,"cayley");c.initialize_momenta=boolean(dict,"initialize_momenta");c.has_cell=boolean(dict,"has_cell");
     c.gamma=num(dict,"gamma");c.gamma0=num(dict,"gamma0");c.pile_scale=num(dict,"pile_scale");c.tau=num(dict,"tau");
     c.interval=integer(dict,"interval");c.seed=integer(dict,"seed");c.gle_size=integer(dict,"gle_size");require(c.gle_size<=64,"GLE dimension exceeds 64");
+    if(c.thermostat==thermal::Thermostat::NHC){c.nhc_length=integer(dict,"nhc_length");c.nhc_substeps=integer(dict,"nhc_substeps");}
     c.gle_T=vector(dict,"gle_T");c.gle_S=vector(dict,"gle_S");c.gle_Croot=vector(dict,"gle_Croot");
     c.pressure=num(dict,"pressure");c.baro_tau=num(dict,"baro_tau");c.baro_gamma=num(dict,"baro_gamma");c.compressibility=num(dict,"compressibility");
     Vec pbc=vector(dict,"pbc");require(pbc.size()==3,"PBC needs three flags");for(int i=0;i<3;++i){require(pbc[i]==0||pbc[i]==1,"invalid PBC flag");c.pbc[i]=static_cast<int32_t>(pbc[i]);}
     Vec mask=vector(dict,"cell_mask");require(mask.size()==9,"cell mask needs nine flags");for(int i=0;i<9;++i){require(mask[i]==0||mask[i]==1,"invalid cell mask");c.cell_mask[i]=static_cast<uint8_t>(mask[i]);}
     c.reference_cell=matrix(vector(dict,"reference_cell"));c.external_stress=matrix(vector(dict,"external_stress"));
-    c.potential=static_cast<int>(integer(dict,"potential"));c.address=static_cast<uintptr_t>(integer(dict,"address"));c.context=static_cast<uintptr_t>(integer(dict,"context"));c.parameters=vector(dict,"parameters");return c;
+    c.potential=static_cast<int>(integer(dict,"potential"));c.address=static_cast<uintptr_t>(integer(dict,"address"));c.context=static_cast<uintptr_t>(integer(dict,"context"));c.parameters=vector(dict,"parameters");
+    if(c.potential==6){
+        PyObject* callback=field(dict,"python_callback");require(PyCallable_Check(callback),"Python force bridge is not callable");
+        c.python_force=[callback](const Vec& q,const Mat& cell,Vec& e,Vec& f,Vec& v){python_force(callback,q,cell,e,f,v);};
+    }
+    return c;
 }
 PyObject* create(PyObject*,PyObject*args){
     PyObject *cfg,*q,*p,*cell,*owner;if(!PyArg_ParseTuple(args,"OOOOO",&cfg,&q,&p,&cell,&owner))return nullptr;
     try{
         auto c=config(cfg);Vec qv=vector(q),pv=vector(p);Mat h=matrix(vector(cell));
         auto result=std::make_unique<Handle>();Py_INCREF(owner);result->owner=owner;
+        if(c.potential==6){result->callback=field(cfg,"python_callback");Py_INCREF(result->callback);}
         unlocked([&]{result->engine=std::make_unique<thermal::Engine>(std::move(c),std::move(qv),std::move(pv),h);});
         PyObject* cap=PyCapsule_New(result.get(),capsule_name,destroy);if(!cap)return nullptr;result.release();return cap;
     }catch(...){return error();}
 }
-PyObject* run(PyObject*,PyObject*args){
-    PyObject *cap,*steps,*stride;int centroids,moments=0;unsigned long long sample_start=0;const char* path="";if(!PyArg_ParseTuple(args,"OOOp|spK",&cap,&steps,&stride,&centroids,&path,&moments,&sample_start))return nullptr;
+PyObject* run_impl(PyObject*args,bool keep_prefix){
+    PyObject *cap,*steps,*stride,*options=Py_None;int centroids,moments=0;unsigned long long sample_start=0;const char* path="";if(!PyArg_ParseTuple(args,"OOOp|spKO",&cap,&steps,&stride,&centroids,&path,&moments,&sample_start,&options))return nullptr;
     PyObject* dict=nullptr;
     try{auto& h=handle(cap);Lock lock(h);uint64_t n=integer(steps),save=integer(stride);thermal::Output out;
-        unlocked([&]{out=h.engine->run(n,save,centroids!=0,path,moments!=0,sample_start);});
+        thermal::CommonObservations common;
+        if(options!=Py_None){
+            PyObject* mask=field(options,"mask");require(PyBytes_Check(mask),"observation mask must contain binary bytes");
+            const auto* data=reinterpret_cast<const uint8_t*>(PyBytes_AsString(mask));
+            common.mask.assign(data,data+PyBytes_Size(mask));
+            common.record_energy=boolean(options,"record_energy");common.check_energy=boolean(options,"check_energy");
+            common.energy_parts=boolean(options,"energy_parts");common.ring_radii=boolean(options,"ring_radii");
+        }
+        unlocked([&]{out=h.engine->run(n,save,centroids!=0,path,moments!=0,sample_start,keep_prefix,options==Py_None?nullptr:&common);});
         dict=PyDict_New();if(!dict)throw std::bad_alloc();
         set(dict,"samples",bytes(out.samples));set(dict,"centroids",bytes(out.centroids));set(dict,"frames",PyLong_FromSize_t(out.frames));
-        set(dict,"step",PyLong_FromUnsignedLongLong(h.engine->s.step));set(dict,"force_evaluations",PyLong_FromUnsignedLongLong(h.engine->s.evaluations));return dict;
+        if(options!=Py_None)set(dict,"energy_parts",bytes(out.energy_parts));
+        set(dict,"step",PyLong_FromUnsignedLongLong(h.engine->s.step));set(dict,"force_evaluations",PyLong_FromUnsignedLongLong(h.engine->s.evaluations));
+        if(keep_prefix){set(dict,"completed",PyLong_FromUnsignedLongLong(out.completed));set(dict,"error",PyUnicode_FromString(out.error.c_str()));}
+        return dict;
     }catch(...){Py_XDECREF(dict);return error();}
+}
+PyObject* run(PyObject*,PyObject*args){return run_impl(args,false);}
+PyObject* run_prefix(PyObject*,PyObject*args){return run_impl(args,true);}
+PyObject* set_state(PyObject*,PyObject*args){
+    PyObject *cap,*qo,*po,*step;if(!PyArg_ParseTuple(args,"OOOO",&cap,&qo,&po,&step))return nullptr;
+    try{auto& h=handle(cap);Lock lock(h);Vec q=vector(qo),p=vector(po);auto clock=integer(step);
+        unlocked([&]{h.engine->set_state(std::move(q),std::move(p),clock);});Py_RETURN_NONE;
+    }catch(...){return error();}
+}
+PyObject* copy_thermostat(PyObject*,PyObject*args){
+    PyObject *cap,*source,*step=Py_None;
+    if(!PyArg_ParseTuple(args,"OO|O",&cap,&source,&step))return nullptr;
+    try{auto& h=handle(cap);auto& other=handle(source);bool has_step=step!=Py_None;
+        uint64_t clock=has_step?integer(step):0;
+        Lock target_lock(h);
+        if(&h==&other){h.engine->copy_thermostat_from(*other.engine,has_step,clock);}
+        else{Lock source_lock(other);h.engine->copy_thermostat_from(*other.engine,has_step,clock);}
+        Py_RETURN_NONE;
+    }catch(...){return error();}
+}
+PyObject* apply_thermostat(PyObject*,PyObject*args){
+    PyObject *cap,*qo,*po,*step=Py_None;double dt;
+    if(!PyArg_ParseTuple(args,"OOOd|O",&cap,&qo,&po,&dt,&step))return nullptr;
+    try{auto& h=handle(cap);Lock lock(h);Vec q=vector(qo),p=vector(po),out;
+        bool has_step=step!=Py_None;uint64_t clock=has_step?integer(step):0;
+        unlocked([&]{out=h.engine->apply_thermostat(std::move(q),std::move(p),dt,has_step,clock);});
+        return bytes(out);
+    }catch(...){return error();}
 }
 PyObject* state(PyObject*,PyObject*args){
     PyObject* cap;if(!PyArg_ParseTuple(args,"O",&cap))return nullptr;PyObject* dict=nullptr;
@@ -103,7 +173,11 @@ PyObject* restore(PyObject*,PyObject*args){
 }
 PyMethodDef methods[]={
     {"create",create,METH_VARARGS,"Create a persistent native ensemble and evaluate the initial PES."},
-    {"run",run,METH_VARARGS,"Advance an entire trajectory block without Python callbacks or GIL acquisition."},
+    {"run",run,METH_VARARGS,"Advance an entire operator block; native PES modes need no Python callbacks."},
+    {"run_prefix",run_prefix,METH_VARARGS,"Advance an operator block retaining only fully accepted steps and their observations."},
+    {"copy_thermostat",copy_thermostat,METH_VARARGS,"Copy compatible bath/RNG state between executors without changing physical state."},
+    {"set_state",set_state,METH_VARARGS,"Import external q/p/step and transactionally refresh forces, retaining bath state."},
+    {"apply_thermostat",apply_thermostat,METH_VARARGS,"Apply only the bath to external q/p, retaining transactional RNG and auxiliary state."},
     {"state",state,METH_VARARGS,"Copy all state, including cached forces, auxiliary momenta and Gaussian RNG cache."},
     {"restore",restore,METH_VARARGS,"Validate and atomically restore a complete native state."},
     {nullptr,nullptr,0,nullptr}};
@@ -122,5 +196,6 @@ PyMODINIT_FUNC PyInit__thermal(){
 #else
     const char* abi="mt19937_64-normal-v1-unknown-standard-library";
 #endif
-    if(PyModule_AddStringConstant(m,"rng_abi",abi)<0){Py_DECREF(m);return nullptr;}return m;
+    if(PyModule_AddStringConstant(m,"rng_abi",abi)<0
+            ||PyModule_AddIntConstant(m,"COMPOSABLE_OPERATORS_API",1)<0){Py_DECREF(m);return nullptr;}return m;
 }

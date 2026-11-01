@@ -1,0 +1,7 @@
+{
+  "reason": "Correct unsupported classical D2O literature-reference label; full 4527-test regression predates this narrow fix.",
+  "sha256": {
+    "benchmarks/water/analyze_campaign.py": "a34a6363d4af0c3614b01fce3cafe71a233a09228ff6608d8972224f3ece9cac",
+    "tests/test_water_campaign.py": "bec0d6129075747731d87bdddf39fa059b97a4d47bc5f27f883095dfacdeee53"
+  }
+}

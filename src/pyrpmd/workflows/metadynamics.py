@@ -1,34 +1,41 @@
-"""Resumable standard and well-tempered metadynamics, with independent walkers.
+"""Resumable metadynamics with independent replicas or synchronized walkers.
 
-Each replica owns its history; this is not a shared-bias multiple-walker
-algorithm. Every deposition is after a completed integration step, the two
+Independent replicas own their histories; shared walkers synchronize hills at
+block boundaries and atomically checkpoint one global history. Every deposition is after a completed integration step, the two
 force evaluations within a step see the same history, and checkpoint state,
 RNG, sample clock and hills are committed in one atomic NPZ. HILLS.csv is a
 regenerable view, never the authority for resuming a trajectory.
 """
 
 from __future__ import annotations
+
 import copy
 import csv
 import json
-from pathlib import Path
 from collections.abc import Mapping
+from pathlib import Path
+
 import numpy as np
 
 from ..analysis.metadynamics import bias_fes
-from ..bias import MetadynamicsBias, GridMetadynamicsBias, CompositeBias, WallBias
-from ..cv import make_cvs, RPMDrateCoordinate
-from ..dynamics import Dynamics, State
+from ..bias import CompositeBias, GridMetadynamicsBias, MetadynamicsBias, WallBias
 from ..checkpoint import load_checkpoint
-from ..parallel import run_tasks, make_task_potential, root_call
+from ..cv import RPMDrateCoordinate, make_cvs
+from ..dynamics import Dynamics, State
+from ..parallel import make_task_potential, root_call
 from ..potentials import validate_periodic_spec
 from ..propagation import loop_options
-from ..units import parse_quantity, unit_factor
+from ..units import parse_quantity
 from ..thermostats import NoseHooverChain, nhc_options
-from .fes import _atomic_npz, _fingerprint, _dimension, checked_integer, write_json
+from .common import (_atomic_npz, _fingerprint, _dimension, checked_integer,
+                     fingerprint_matches, resolve_cvs)
+from .sampling import (fes_sampler, legacy_metadynamics_sampling,
+                       read_operator_checkpoint, validate_andersen_schedule)
+from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_replicas, dispatch_tasks
+from ..analysis.fes_result import FESResult, write_fes_result
 
 
-METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid"}
+METADYNAMICS_FIELDS = {"cvs", "mode", "sigma", "sigma_au", "height", "height_au", "pace", "bias_factor", "walls", "walls_during_equilibration", "grid", "shared_walkers", "multiple_walkers", "block_steps"}
 
 
 def resolve_walls(config, system):
@@ -81,6 +88,7 @@ def resolve_metadynamics(config, system):
     if not np.any(system.mobile_mask):
         raise ValueError("metadynamics requires at least one mobile atom")
     validate_periodic_spec(config.get("potential", {}), system)
+    validate_andersen_schedule(config, "metadynamics")
     table = config.get("metadynamics", {})
     if not isinstance(table, Mapping):
         raise ValueError("metadynamics must be a table")
@@ -89,26 +97,14 @@ def resolve_metadynamics(config, system):
         raise ValueError("Unknown metadynamics fields: " + ", ".join(sorted(extra)))
     if not isinstance(table.get("walls_during_equilibration", True), bool):
         raise ValueError("metadynamics.walls_during_equilibration must be boolean")
-    specs = config.get("cvs", [])
-    if isinstance(specs, dict):
-        specs = [dict(v, name=k) for k, v in specs.items()]
-    names = table.get("cvs")
-    if isinstance(names, str):
-        names = [names]
-    cv = make_cvs(specs, system, names)
-    selected = specs if names is None else [next(s for s in specs if s.get("name") == name) for name in names]
-    if cv.dimension not in (1, 2, 3):
-        raise ValueError("metadynamics supports one, two or three CV dimensions")
+    cv, selected, scales = resolve_cvs(config, system, "metadynamics")
     resolve_walls(config, system)
-    scales = []
-    for spec, component in zip(selected, cv.cvs):
-        units = spec.get("unit", spec.get("units", component.units)) if isinstance(spec, dict) else component.units
-        if isinstance(units, str):
-            units = [units] * component.dimension
-        if len(units) != component.dimension:
-            raise ValueError("CV input units dimension mismatch")
-        scales.extend([1.0 if u == "dimensionless" else unit_factor(u, _dimension(c))
-                       for u, c in zip(units, component.units)])
+    if not isinstance(table.get("multiple_walkers", False), bool):
+        raise ValueError("metadynamics.multiple_walkers must be boolean")
+    if table.get("multiple_walkers", False) and table.get("shared_walkers", False):
+        raise ValueError("metadynamics.shared_walkers and multiple_walkers are distinct modes; select only one")
+    if "block_steps" in table and not table.get("multiple_walkers", False):
+        raise ValueError("metadynamics.block_steps requires multiple_walkers=true")
     if "sigma" in table and "sigma_au" in table:
         raise ValueError("specify metadynamics.sigma or sigma_au, not both")
     widths = table.get("sigma_au", table.get("sigma"))
@@ -161,11 +157,11 @@ def resolve_metadynamics(config, system):
     checked_integer(sampling.get("replicas", 1), "sampling.replicas")
     checked_integer(config.get("output", {}).get("checkpoint_steps", 1000), "output.checkpoint_steps")
     thermostat = sampling.get("thermostat", "andersen")
-    if thermostat not in ("andersen", "nose-hoover-chain", "pile-l"):
-        raise ValueError("metadynamics thermostat must be andersen, nose-hoover-chain or pile-l")
+    if not legacy_metadynamics_sampling(sampling):
+        fes_sampler(config)
     if thermostat == "nose-hoover-chain":
         nhc_options(sampling)
-    if thermostat == "pile-l":
+    if thermostat == "pile-l" and legacy_metadynamics_sampling(sampling):
         if loop_options(config)["integrator"] == "velocity-verlet":
             raise ValueError("PILE-L requires Cayley or normal-mode dynamics")
         gamma = parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency")
@@ -210,8 +206,15 @@ def resolve_metadynamics(config, system):
     store_configurations = config.get("output", {}).get("store_configurations", False)
     if not isinstance(store_configurations, bool):
         raise ValueError("output.store_configurations must be boolean")
+    options["multiple_walkers"] = table.get("multiple_walkers", False)
+    options["block_steps"] = checked_integer(table.get("block_steps", options["pace"]), "metadynamics.block_steps")
     options.update(store_configurations=store_configurations, neq=neq, nprod=nprod, interval=interval,
                    min_count=checked_integer(analysis.get("min_count", 1), "analysis.min_count"))
+    if not isinstance(table.get("shared_walkers", False), bool):
+        raise ValueError("metadynamics.shared_walkers must be boolean")
+    if table.get("shared_walkers", False):
+        from .shared_metadynamics import validate_shared
+        validate_shared(config, options)
     return cv, selected, options
 
 
@@ -231,6 +234,34 @@ def _new_bias(cv, options, beta, hills=None, grid_state=None):
     return MetadynamicsBias(cv, options["sigma"], options["height"], beta, **common)
 
 
+class _MetadynamicsUpdate:
+    """The algorithm-specific hill transaction used by the common sampler."""
+
+    def __init__(self, bias, options, walker=None):
+        self.bias, self.options, self.walker = bias, options, walker
+
+    def due(self, production):
+        return production % self.options["pace"] == 0
+
+    def snapshot(self):
+        return self.bias.hill_count
+
+    def apply(self, value, state):
+        kwargs = {} if self.walker is None else {"walker": self.walker}
+        self.bias.deposit(value, step=state.step, time=state.time, **kwargs)
+
+    def restore(self, count):
+        self.bias.truncate_history(count)
+
+
+def _grid_payload(bias):
+    if not isinstance(bias, GridMetadynamicsBias):
+        return {}
+    grid = bias.grid_state()
+    return {"grid_values": grid["values"],
+            "grid_metadata": json.dumps(grid["metadata"], allow_nan=False)}
+
+
 def _hills_path(output, replica):
     return Path(output) / "replicas" / f"{replica:04d}" / "HILLS.csv"
 
@@ -241,12 +272,14 @@ def _write_hills(path, bias):
     temp = path.with_name(path.name + ".tmp")
     with temp.open("w", newline="", encoding="utf-8") as stream:
         writer = csv.writer(stream)
+        shared = any("walker" in hill for hill in bias.hills)
         writer.writerow(["step", "time_au"] + [f"cv{j}_{u}" for j, u in enumerate(bias.cv.units)] +
                         [f"sigma{j}_{u}" for j, u in enumerate(bias.cv.units)] +
-                        ["height_hartree", "bias_before_hartree"])
+                        ["height_hartree", "bias_before_hartree"] + (["walker"] if shared else []))
         for hill in bias.hills:
             writer.writerow([hill["step"], hill["time"]] + hill["center"] +
-                            bias.sigma.tolist() + [hill["height"], hill["bias_before"]])
+                            bias.sigma.tolist() + [hill["height"], hill["bias_before"]] +
+                            ([hill["walker"]] if shared else []))
     temp.replace(path)
 
 
@@ -254,11 +287,201 @@ def _checkpoint_path(output, replica):
     return Path(output) / "checkpoints" / f"metadynamics_{replica:04d}.npz"
 
 
+def _shared_checkpoint_path(output):
+    return Path(output) / "checkpoints" / "metadynamics_walkers.npz"
+
+
+def _write_shared_checkpoint(config, system, output, streams, bias):
+    """Commit the synchronized ensemble and exactly one global hill history."""
+    path = _shared_checkpoint_path(output)
+    elapsed = streams[0]["elapsed"]
+    observations = {}
+    if any("operator_state" in stream for stream in streams):
+        if not all(isinstance(stream.get("operator_state"), dict) for stream in streams):
+            raise ValueError("shared metadynamics requires operator state for every walker")
+        observations["operator_states"] = json.dumps(
+            [stream["operator_state"] for stream in streams], allow_nan=False)
+    if config.get("output", {}).get("store_configurations", False):
+        observations["sample_configurations"] = np.asarray(
+            [stream["sample_configurations"] for stream in streams])
+    _atomic_npz(path,
+        fingerprint=_fingerprint(config, system, {"metadynamics_walkers": len(streams)}),
+        elapsed=elapsed, step=elapsed,
+        q=np.asarray([stream["state"].q for stream in streams]),
+        p=np.asarray([stream["state"].p for stream in streams]),
+        time=np.asarray([stream["state"].time for stream in streams]),
+        rng=json.dumps([stream["rng"] for stream in streams]),
+        thermostat_state=json.dumps([stream["thermostat_state"] for stream in streams]),
+        propagation=json.dumps([stream["propagation"] for stream in streams]),
+        samples=np.asarray([stream["samples"] for stream in streams]),
+        sample_steps=streams[0]["sample_steps"],
+        sample_bias=np.asarray([stream["sample_bias"] for stream in streams]),
+        sample_energies=np.asarray([stream["sample_energies"] for stream in streams]),
+        hills=json.dumps(bias.hills, allow_nan=False), **_grid_payload(bias), **observations)
+    _write_hills(Path(output) / "HILLS.csv", bias)
+
+
+def _read_shared_checkpoint(config, system, output, cv, options):
+    path = _shared_checkpoint_path(output)
+    replicas = config.get("sampling", {}).get("replicas", 1)
+    with load_checkpoint(path) as data:
+        if not fingerprint_matches(data["fingerprint"], config, system,
+                                   {"metadynamics_walkers": replicas}):
+            raise ValueError(f"checkpoint physics differs: {path}")
+        for key in ("elapsed", "step"):
+            clock = np.asarray(data[key])
+            if clock.shape != () or clock.dtype.kind not in "iu" or clock < 0:
+                raise ValueError("shared metadynamics checkpoint requires integer scalar clocks")
+        elapsed = int(data["elapsed"])
+        total = options["neq"] + options["nprod"]
+        if elapsed > total or int(data["step"]) != elapsed:
+            raise ValueError("shared metadynamics checkpoint has an invalid sampling clock")
+        if elapsed != total and elapsed % options["block_steps"]:
+            raise ValueError("shared metadynamics checkpoint must end at a block boundary")
+        hills = json.loads(str(data["hills"]))
+        updates = max(0, elapsed - options["neq"]) // options["pace"]
+        expected = [(options["neq"] + (event + 1) * options["pace"], walker)
+                    for event in range(updates) for walker in range(replicas)]
+        if [(hill.get("step"), hill.get("walker")) for hill in hills] != expected:
+            raise ValueError("shared metadynamics hill history disagrees with walker deposition clocks")
+        dt = config["sampling"].get("dt_au", config["dt_au"])
+        if any(not np.isclose(hill["time"], hill["step"] * dt, rtol=1e-10, atol=1e-10)
+               for hill in hills):
+            raise ValueError("shared metadynamics hill times disagree with deposition clocks")
+        cached_grid = None
+        if "grid_values" in data or "grid_metadata" in data:
+            if ("grid_values" not in data or "grid_metadata" not in data
+                    or data.envelope["integrity"] != "verified"):
+                raise ValueError("metadynamics grid checkpoint requires a complete integrity-verified cache")
+            cached_grid = {"values": data["grid_values"], "metadata": json.loads(str(data["grid_metadata"]))}
+        bias = _new_bias(cv, options, config["beta"], hills, cached_grid)
+        count = max(0, elapsed - options["neq"]) // options["interval"]
+        clocks = data["sample_steps"].copy()
+        if not np.array_equal(clocks, options["neq"] + np.arange(1, count + 1) * options["interval"]):
+            raise ValueError("shared metadynamics samples disagree with the sampling clock")
+        shapes = {"q": (replicas, config["beads"], system.natoms, 3),
+                  "p": (replicas, config["beads"], system.natoms, 3), "time": (replicas,),
+                  "samples": (replicas, count, cv.dimension),
+                  "sample_bias": (replicas, count), "sample_energies": (replicas, count)}
+        stored = "sample_configurations" in data.files
+        if stored != options["store_configurations"]:
+            raise ValueError("checkpoint configuration history differs from output.store_configurations; "
+                             "restore the original option or start a new run")
+        if stored:
+            shapes["sample_configurations"] = (replicas, count, config["beads"], system.natoms, 3)
+        arrays = {key: data[key].copy() for key in shapes}
+        if any(array.shape != shapes[key] or not np.isfinite(array).all()
+               for key, array in arrays.items()):
+            raise ValueError("shared metadynamics checkpoint has invalid state or observable arrays")
+        if not np.allclose(arrays["time"], elapsed * dt, rtol=1e-10, atol=1e-10):
+            raise ValueError("shared metadynamics checkpoint time disagrees with its sampling clock")
+        rngs = json.loads(str(data["rng"]))
+        baths = json.loads(str(data["thermostat_state"]))
+        stats = json.loads(str(data["propagation"]))
+        if any(not isinstance(items, list) or len(items) != replicas for items in (rngs, baths, stats)):
+            raise ValueError("shared metadynamics checkpoint walker metadata count differs")
+        operators = json.loads(str(data["operator_states"])) if "operator_states" in data else None
+        if operators is not None and (not isinstance(operators, list) or len(operators) != replicas):
+            raise ValueError("shared metadynamics checkpoint operator state count differs")
+        sampler = None if legacy_metadynamics_sampling(config["sampling"]) else fes_sampler(config)
+        streams = []
+        for walker in range(replicas):
+            operator = read_operator_checkpoint(
+                {} if operators is None else {"operator_state": json.dumps(operators[walker])},
+                sampler, elapsed, "shared metadynamics",
+            )
+            np.random.default_rng().bit_generator.state = rngs[walker]
+            state = State(arrays["q"][walker], arrays["p"][walker], elapsed, arrays["time"][walker])
+            if system.fixed_atoms:
+                indices = np.asarray(system.fixed_atoms)
+                expected_positions = np.broadcast_to(system.geometry[indices], state.q[:, indices].shape)
+                if not np.array_equal(state.q[:, indices], expected_positions) or np.any(state.p[:, indices] != 0):
+                    raise ValueError("fixed atoms must have reference positions on every bead and zero momenta")
+            if isinstance(bias, GridMetadynamicsBias):
+                bias._coordinates(cv.value(state.q))
+                bias._coordinates(arrays["samples"][walker])
+            streams.append({"replica": walker, "state": state, "elapsed": elapsed,
+                "rng": rngs[walker], "thermostat_state": baths[walker],
+                "samples": arrays["samples"][walker], "sample_steps": clocks.copy(),
+                "sample_bias": arrays["sample_bias"][walker],
+                "sample_energies": arrays["sample_energies"][walker],
+                "propagation": stats[walker], "checkpoint": str(path), "complete": elapsed == total})
+            if operator is not None:
+                streams[-1]["operator_state"] = operator
+            if stored:
+                streams[-1]["sample_configurations"] = arrays["sample_configurations"][walker]
+    return {"streams": streams, "hills": bias.hills,
+            "grid_state": bias.grid_state() if isinstance(bias, GridMetadynamicsBias) else None,
+            "elapsed": elapsed}
+
+
+def _run_multiple_walkers(config, system, output, executor, return_data):
+    """Synchronize local deposits after each complete block, in stable order.
+
+    Each block starts from the last global history. Within the block each
+    walker sees its own new hills; well-tempered heights are never recomputed
+    retrospectively. Failed blocks leave the previous ensemble checkpoint
+    untouched, so rerunning restores every walker and its RNG together.
+    """
+    cv, _, options = resolve_metadynamics(config, system)
+    replicas = config.get("sampling", {}).get("replicas", 1)
+
+    def prepare():
+        if _shared_checkpoint_path(output).exists():
+            return _read_shared_checkpoint(config, system, output, cv, options)
+        if any((Path(output) / "checkpoints").glob("metadynamics_[0-9]*.npz")):
+            raise ValueError("independent metadynamics checkpoints cannot become shared walkers; choose a fresh output directory")
+        return {"streams": [None] * replicas, "hills": [], "grid_state": None, "elapsed": 0}
+
+    ensemble = root_call(prepare)
+    total = options["neq"] + options["nprod"]
+    while ensemble["elapsed"] < total:
+        stop = min(total, ensemble["elapsed"] + options["block_steps"])
+        tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output),
+                  "replica": walker, "shared": True, "stop": stop,
+                  "saved": ensemble["streams"][walker], "hills": ensemble["hills"],
+                  "grid_state": ensemble["grid_state"]} for walker in range(replicas)]
+        streams = dispatch_tasks(_sample_replica, tasks, config, executor)
+
+        def synchronize():
+            completed = sorted(list(streams), key=lambda stream: stream["replica"])
+            if [stream["replica"] for stream in completed] != list(range(replicas)):
+                raise ValueError("shared metadynamics scheduler returned inconsistent walker identities")
+            if any(stream["elapsed"] != stop for stream in completed):
+                raise ValueError("shared metadynamics walkers did not reach the synchronization boundary")
+            previous_count = len(ensemble["hills"])
+            deposits = [hill for stream in completed for hill in stream["hills"][previous_count:]]
+            deposits.sort(key=lambda hill: (hill["step"], hill["walker"]))
+            bias = _new_bias(cv, options, config["beta"], ensemble["hills"] + deposits)
+            for stream in completed:
+                del stream["hills"]
+            _write_shared_checkpoint(config, system, output, completed, bias)
+            return {"streams": completed, "hills": bias.hills,
+                    "grid_state": bias.grid_state() if isinstance(bias, GridMetadynamicsBias) else None,
+                    "elapsed": stop}
+
+        ensemble = root_call(synchronize)
+    return root_call(_analyze_shared, ensemble, config, system, output, return_data)
+
+
+def _analyze_shared(ensemble, config, system, output, return_data):
+    streams = ensemble["streams"]
+    # A global bias is one statistical history, regardless of walker count.
+    pooled = {**streams[0], "samples": np.concatenate([s["samples"] for s in streams]),
+              "hills": ensemble["hills"], "grid_state": ensemble["grid_state"],
+              "shared_walkers": streams}
+    result = _analyze([pooled], config, system, output, True)
+    if return_data:
+        result["streams"] = streams
+        result["hills"] = ensemble["hills"]
+        return result
+    return result["summary"]
+
+
 def _read_stream(config, system, output, replica, cv, options):
     checkpoint = _checkpoint_path(output, replica)
-    expected = _fingerprint(config, system, {"metadynamics_replica": replica})
     with load_checkpoint(checkpoint) as data:
-        if str(data["fingerprint"]) != expected:
+        if not fingerprint_matches(data["fingerprint"], config, system, {"metadynamics_replica": replica}):
             raise ValueError(f"checkpoint physics differs: {checkpoint}")
         elapsed = int(data["elapsed"])
         if elapsed < 0 or elapsed > options["neq"] + options["nprod"] or int(data["step"]) != elapsed:
@@ -304,6 +527,10 @@ def _read_stream(config, system, output, replica, cv, options):
                   "sample_bias": data["sample_bias"].copy(), "sample_energies": data["sample_energies"].copy(),
                   "hills": bias.hills, "propagation": json.loads(str(data["propagation"])),
                   "checkpoint": str(checkpoint), "complete": elapsed == options["neq"] + options["nprod"]}
+        sampler = None if legacy_metadynamics_sampling(config["sampling"]) else fes_sampler(config)
+        operators = read_operator_checkpoint(data, sampler, elapsed, "metadynamics")
+        if operators is not None:
+            result["operator_state"] = operators
         if isinstance(bias, GridMetadynamicsBias):
             result["grid_state"] = bias.grid_state()
     if result["sample_bias"].shape != (expected_samples,) or result["sample_energies"].shape != (expected_samples,):
@@ -333,7 +560,8 @@ def _sample_replica(task):
     config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
     cv, _, options = resolve_metadynamics(config, system)
     fingerprint = _fingerprint(config, system, {"metadynamics_replica": replica})
-    checkpoint = _checkpoint_path(output, replica)
+    shared = task.get("shared", False)
+    checkpoint = _shared_checkpoint_path(output) if shared else _checkpoint_path(output, replica)
     provider = make_task_potential(config["potential"], system)
     try:
         dynamics = Dynamics(provider, system.masses, config["beta"], config["beads"],
@@ -343,22 +571,28 @@ def _sample_replica(task):
                             threads=config.get("parallel", {}).get("threads_per_rank", 1),
                             fixed_atoms=system.fixed_atoms, fixed_positions=system.geometry, **loop_options(config))
         thermostat = config["sampling"].get("thermostat", "andersen")
+        sampler = None if legacy_metadynamics_sampling(config["sampling"]) else fes_sampler(config)
+        store_operators = sampler is not None and sampler.operator_checkpoint
         chain = NoseHooverChain(dynamics, **nhc_options(config["sampling"])) if thermostat == "nose-hoover-chain" else None
         walls = resolve_walls(config, system)
         bias = _new_bias(cv, options, config["beta"])
         samples, sample_steps, sample_bias, energies = [], [], [], []
         configurations = []
         elapsed = 0
-        if checkpoint.exists():
-            saved = _read_stream(config, system, output, replica, cv, options)
+        saved = task.get("saved") if shared else (_read_stream(config, system, output, replica, cv, options) if checkpoint.exists() else None)
+        if saved is not None:
             state = saved["state"]
             dynamics.integrator._check(state.q, state.p)
             dynamics._check_fixed(state.q, state.p)
             if chain is not None:
                 chain.load_state_dict(saved["thermostat_state"])
+            if "operator_state" in saved:
+                dynamics.load_operator_state_dict(saved["operator_state"])
+                store_operators = True
             dynamics.rng.bit_generator.state = saved["rng"]
             dynamics.propagation_stats = saved["propagation"]
-            bias = _new_bias(cv, options, config["beta"], saved["hills"], saved.get("grid_state"))
+            bias = _new_bias(cv, options, config["beta"], task["hills"] if shared else saved["hills"],
+                             task.get("grid_state") if shared else saved.get("grid_state"))
             samples, sample_steps = list(saved["samples"]), list(saved["sample_steps"])
             sample_bias, energies = list(saved["sample_bias"]), list(saved["sample_energies"])
             elapsed = saved["elapsed"]
@@ -368,83 +602,53 @@ def _sample_replica(task):
             state = State(np.repeat(system.geometry[None], config["beads"], axis=0), dynamics.sample_momenta())
         total_bias = CompositeBias(bias, walls) if walls is not None else bias
 
-        def save():
-            observations = {}
-            if options["store_configurations"]:
-                observations["sample_configurations"] = np.asarray(configurations).reshape(
-                    -1, config["beads"], len(system.masses), 3)
-            grid_payload = {}
-            if isinstance(bias, GridMetadynamicsBias):
-                grid = bias.grid_state()
-                grid_payload = {"grid_values": grid["values"],
-                                "grid_metadata": json.dumps(grid["metadata"], allow_nan=False)}
-            _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=elapsed,
-                        q=state.q, p=state.p, step=state.step, time=state.time,
-                        rng=json.dumps(dynamics.rng.bit_generator.state),
-                        thermostat_state=json.dumps(chain.state_dict() if chain else None),
-                        hills=json.dumps(bias.hills, allow_nan=False),
-                        samples=np.asarray(samples).reshape(-1, cv.dimension),
-                        sample_steps=np.asarray(sample_steps, dtype=int),
-                        sample_bias=np.asarray(sample_bias), sample_energies=np.asarray(energies),
-                        propagation=json.dumps(dynamics.propagation_stats), **grid_payload, **observations)
-            _write_hills(_hills_path(output, replica), bias)
+        runtime = SamplingRuntime(state, elapsed, samples, sample_steps, sample_bias, energies, chain,
+                                  configurations if options["store_configurations"] else None,
+                                  operator_checkpoint=store_operators)
+        update = _MetadynamicsUpdate(bias, options, replica if shared else None)
 
-        # Reconstruct a stale/missing HILLS view even when the saved run is done.
-        save()
-        interval = config["sampling"].get("andersen_interval", 10)
-        checkpoint_steps = config.get("output", {}).get("checkpoint_steps", 1000)
-        total = options["neq"] + options["nprod"]
-        while elapsed < total:
-            previous = state.copy()
-            old_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
-            old_bath = chain.state_dict() if chain else None
-            nhills = bias.hill_count
-            try:
-                if chain is not None and elapsed == options["neq"] and config["sampling"].get("thermostat_params", {}).get("reset_after_equilibration", False):
-                    chain = NoseHooverChain(dynamics, **nhc_options(config["sampling"]))
-                active_bias = total_bias if elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration", True) else bias
-                if thermostat == "andersen" and state.step % interval == 0:
-                    state.p[:] = dynamics.sample_momenta()
-                # No propagation block can straddle a deposition. Both kicks
-                # use this unchanged history; the new hill affects the next step.
-                if chain is not None:
-                    chain.step(state, active_bias)
-                elif thermostat == "pile-l":
-                    gamma = parse_quantity(config["sampling"].get("gamma_centroid", "0.01 fs^-1"), "frequency")
-                    dynamics.sample_step(state, active_bias, gamma_centroid=gamma)
-                else:
-                    dynamics.step(state, active_bias)
-                production = elapsed + 1 - options["neq"]
-                record = production > 0 and production % options["interval"] == 0
-                deposit = production > 0 and production % options["pace"] == 0
-                value = cv.value(state.q) if record or deposit else None
-                observed_bias = float(bias.physical_energy(value)) if record else None
-                energy = float(dynamics.energy(state, total_bias)) if record else None
-                if deposit:
-                    bias.deposit(value, step=state.step, time=state.time)
-            except BaseException:
-                state = previous
-                dynamics.rng.bit_generator.state = old_rng
-                if chain is not None:
-                    chain.load_state_dict(old_bath)
-                bias.truncate_history(nhills)
-                save()
-                raise
-            elapsed += 1
-            dynamics._record_python_steps(1)
-            reason = "history-dependent metadynamics bias"
-            reasons = dynamics.propagation_stats.setdefault("fallback_reasons", {})
-            reasons[reason] = reasons.get(reason, 0) + 1
-            if record:
-                samples.append(value.copy())
-                sample_steps.append(state.step)
-                sample_bias.append(observed_bias)
-                energies.append(energy)
-                if options["store_configurations"]:
-                    configurations.append(state.q.copy())
-            if elapsed % checkpoint_steps == 0:
-                save()
-        save()
+        def save(current):
+            grid_payload = _grid_payload(update.bias)
+            observations = {}
+            if store_operators:
+                observations["operator_state"] = json.dumps(dynamics.operator_state_dict(), allow_nan=False)
+            if current.configurations is not None:
+                observations["sample_configurations"] = np.asarray(current.configurations).reshape(
+                    -1, config["beads"], system.natoms, 3)
+            _atomic_npz(checkpoint, fingerprint=fingerprint, elapsed=current.elapsed,
+                        q=current.state.q, p=current.state.p, step=current.state.step, time=current.state.time,
+                        rng=json.dumps(dynamics.rng.bit_generator.state),
+                        thermostat_state=json.dumps(current.chain.state_dict() if current.chain else None),
+                        hills=json.dumps(update.bias.hills, allow_nan=False),
+                        samples=np.asarray(current.values).reshape(-1, cv.dimension),
+                        sample_steps=np.asarray(current.clocks, dtype=int),
+                        sample_bias=np.asarray(current.biases), sample_energies=np.asarray(current.energies),
+                        propagation=json.dumps(dynamics.propagation_stats), **grid_payload, **observations)
+            _write_hills(_hills_path(output, replica), update.bias)
+
+        run_biased_sampling(runtime, dynamics, cv, neq=options["neq"], nprod=options["nprod"],
+                            interval=options["interval"], sampling=config["sampling"],
+                            checkpoint_steps=config.get("output", {}).get("checkpoint_steps", 1000),
+                            update=update, sampler=sampler,
+                            save=None if shared else save, stop=task.get("stop"),
+                            active_bias=lambda elapsed, current: total_bias if elapsed >= options["neq"] or config["metadynamics"].get("walls_during_equilibration", True) else current,
+                            energy_bias=lambda current: total_bias,
+                            fallback_reason="history-dependent metadynamics bias")
+        if shared:
+            observations = {}
+            if store_operators:
+                observations["operator_state"] = dynamics.operator_state_dict()
+            if runtime.configurations is not None:
+                observations["sample_configurations"] = np.asarray(runtime.configurations).reshape(
+                    -1, config["beads"], system.natoms, 3)
+            return {**observations, "replica": replica, "state": runtime.state, "elapsed": runtime.elapsed,
+                    "rng": dynamics.rng.bit_generator.state,
+                    "thermostat_state": runtime.chain.state_dict() if runtime.chain else None,
+                    "samples": np.asarray(runtime.values).reshape(-1, cv.dimension),
+                    "sample_steps": np.asarray(runtime.clocks, dtype=int),
+                    "sample_bias": np.asarray(runtime.biases), "sample_energies": np.asarray(runtime.energies),
+                    "hills": update.bias.hills, "propagation": dynamics.propagation_stats,
+                    "checkpoint": str(checkpoint), "complete": runtime.elapsed == options["neq"] + options["nprod"]}
         return _read_stream(config, system, output, replica, cv, options)
     finally:
         if hasattr(provider, "close"):
@@ -462,15 +666,6 @@ def _analyze(streams, config, system, output, return_data):
     data = bias_fes(biases, [s["samples"] for s in streams], bins=options["bins"],
                     ranges=options["ranges"], min_count=options["min_count"], max_grid_points=options["max_grid_points"])
     output = Path(output)
-    arrays = {k: v for k, v in data.items() if isinstance(v, np.ndarray)}
-    arrays.update({f"edges_{j}": v for j, v in enumerate(data["edges"])})
-    _atomic_npz(output / "fes.npz", **arrays)
-    mesh = np.meshgrid(*[0.5 * (e[1:] + e[:-1]) for e in data["edges"]], indexing="ij")
-    table = np.column_stack([m.ravel() for m in mesh] + [data[k].ravel() for k in
-                             ("free_energy", "replica_spread", "mask", "raw_count")])
-    np.savetxt(output / "fes.csv", table, delimiter=",", comments="",
-               header=",".join([f"cv{j}_{u}" for j, u in enumerate(cv.units)] +
-                               ["bias_estimated_free_energy_hartree", "replica_spread_hartree", "masked", "raw_count"]))
     warnings = list(config.get("_warnings", [])) + [
         "Finite-time bias estimate only: CV sufficiency, deposition width/pace, sampling, bead and timestep convergence remain unverified.",
         "Biased trajectory times do not provide reaction rates; no infrequent-metadynamics rate estimator or time-dependent reweighting is implemented.",
@@ -493,7 +688,7 @@ def _analyze(streams, config, system, output, return_data):
     if any(isinstance(component, RPMDrateCoordinate) for component in cv.cvs):
         warnings.append("RPMDrate xi can have a pole outside the reaction corridor and is unsuitable for unconstrained global exploration. This cv_density estimate is not the rate_flux PMF used for RPMD rates.")
     summary = {
-        "task": "metadynamics", "status": "bias_estimate" if all(s["complete"] for s in streams) else "partial_bias_estimate",
+        "task": "metadynamics", "beta": config["beta"], "status": "bias_estimate" if all(s["complete"] for s in streams) else "partial_bias_estimate",
         "estimator": "bias_estimate", "mode": options["mode"], "bias_factor": options["bias_factor"],
         "bias_backend": "grid" if options["grid"] is not None else "direct",
         "bias_grid": options["grid"], "fixed_atoms": list(system.fixed_atoms),
@@ -523,27 +718,52 @@ def _analyze(streams, config, system, output, return_data):
                   "hills": [str(_hills_path(output, s["replica"])) for s in streams],
                   "checkpoints": [s["checkpoint"] for s in streams]},
     }
-    write_json(output / "summary.json", summary)
+    if options["multiple_walkers"]:
+        walkers = streams[0]["shared_walkers"]
+        summary.update(multiple_walkers=True, walkers=len(walkers), independent_histories=1,
+                       synchronization_steps=options["block_steps"], global_hills=len(streams[0]["hills"]),
+                       propagation=[walker["propagation"] for walker in walkers],
+                       uncertainty_note="Shared-bias walkers are correlated; replica spread requires independent ensembles and is unavailable for this one global history.")
+        summary["warnings"].append(summary["uncertainty_note"])
+        summary["files"]["hills"] = [str(output / "HILLS.csv")]
+    result = FESResult.from_data(data, method="metadynamics", cv_units=cv.units, metadata=summary)
+    summary = write_fes_result(output, result, summary)
     if return_data:
         return {"summary": summary, "data": data, "streams": streams}
     return summary
 
 
 def run_metadynamics(config, system, output, executor=None, return_data=False):
-    """Run independent histories and export their finite-time bias estimates."""
+    """Run independent histories or either supported shared-walker ensemble."""
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "metadynamics")
+    validate_andersen_schedule(config, "metadynamics")
     validate_metadynamics(config, system)
-    replicas = config.get("sampling", {}).get("replicas", 1)
-    tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": r}
-             for r in range(replicas)]
-    streams = (executor.map(_sample_replica, tasks) if executor is not None else
-               run_tasks(_sample_replica, tasks, config.get("parallel", {})))
+    if config.get("metadynamics", {}).get("shared_walkers", False):
+        if executor is not None:
+            raise ValueError("shared walkers use a synchronous coordinator, without an external executor")
+        from .shared_metadynamics import run_shared_metadynamics
+        return run_shared_metadynamics(config, system, output, return_data=return_data)
+    if config.get("metadynamics", {}).get("multiple_walkers", False):
+        return _run_multiple_walkers(config, system, output, executor, return_data)
+    if _shared_checkpoint_path(output).exists():
+        raise ValueError("shared metadynamics checkpoints cannot become independent replicas; choose a fresh output directory")
+    streams = dispatch_replicas(config, system, output, _sample_replica, executor)
     return root_call(_analyze, streams, config, system, str(output), return_data)
 
 
 def reanalyze_metadynamics(config, system, output, return_data=False):
     """Recompute the bias estimate from authoritative saved histories only."""
+    if config.get("metadynamics", {}).get("shared_walkers", False):
+        from .shared_metadynamics import reanalyze_shared_metadynamics
+        return reanalyze_shared_metadynamics(config, system, output, return_data=return_data)
     def analyze():
         cv, _, options = resolve_metadynamics(config, system)
+        if options["multiple_walkers"]:
+            ensemble = _read_shared_checkpoint(config, system, output, cv, options)
+            _write_hills(Path(output) / "HILLS.csv",
+                         _new_bias(cv, options, config["beta"], ensemble["hills"], ensemble["grid_state"]))
+            return _analyze_shared(ensemble, config, system, output, return_data)
         streams = [_read_stream(config, system, output, r, cv, options)
                    for r in range(config.get("sampling", {}).get("replicas", 1))]
         for stream in streams:

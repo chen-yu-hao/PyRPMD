@@ -12,7 +12,7 @@ from pathlib import Path
 import shutil
 import sys
 from . import __version__
-from .input import JobSpec, InputError
+from .input import JobSpec, InputError, fes_method, normalize_fes_task
 from .io import write_json, referenced_files, fingerprint, jsonable
 from .system import System
 
@@ -64,12 +64,20 @@ def _initialize_output(config, system, output, resume=False):
             if fingerprint(stored_config, stored_system) != old_digest:
                 raise InputError("Legacy saved input does not match its run manifest")
             old_digest = fingerprint(scientific_config(stored_config), stored_system)
+        migrated_fes = False
         if old_digest != digest:
-            raise InputError("Cannot resume with changed scientific settings or system")
+            stored_config = json.loads((path / "input" / "resolved.json").read_text())
+            stored_system = _read_identity(stored_config, path)
+            authenticated = fingerprint(scientific_config(stored_config), stored_system) == old_digest
+            if authenticated and stored_config.get("task") in ("fes", "metadynamics", "opes"):
+                normalized = normalize_fes_task(copy.deepcopy(stored_config), warn=False)
+                migrated_fes = fingerprint(scientific_config(normalized), stored_system) == digest
+            if not migrated_fes:
+                raise InputError("Cannot resume with changed scientific settings or system")
         for file, sha in old.get("files", {}).items():
             if hashes.get(file) != sha:
                 raise InputError(f"Input/model file changed or is missing: {file}")
-        if schema == 1:
+        if schema == 1 or migrated_fes:
             write_json(manifest_path, {
                 **old,
                 "schema": "pyrpmd.run",
@@ -80,6 +88,8 @@ def _initialize_output(config, system, output, resume=False):
                 "physics_identity": "execution-independent-v2",
                 "migrated_by_version": __version__,
             })
+            if migrated_fes:
+                write_json(path / "input" / "resolved.json", config)
         return
     if path.exists() and any(path.iterdir()):
         raise InputError(
@@ -89,7 +99,7 @@ def _initialize_output(config, system, output, resume=False):
     for child in ("input", "results", "checkpoints", "samples", "logs"):
         (path / child).mkdir(exist_ok=True)
     versions = {}
-    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch", "ase"):
+    for name in ("numpy", "scipy", "h5py", "mpi4py", "torch", "ase", "openmm", "lammps"):
         try:
             versions[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
@@ -150,7 +160,23 @@ def run(job, *, output=None, resume=False):
 
 
 def run_resolved(config, system, *, output=None, resume=False):
-    config = copy.deepcopy(config)
+    config = normalize_fes_task(copy.deepcopy(config))
+    from .workflows import validate_bond_constraint_workflow
+    from .workflows.sampling import validate_andersen_schedule
+
+    validate_bond_constraint_workflow(system, config.get("task"))
+    validate_andersen_schedule(config, config.get("task"))
+    if getattr(system, "bond_constraints", ()):
+        # Direct resolved callers must fail before output creation, provider
+        # construction or dispatch when the materials engine is incompatible.
+        from .workflows.materials import resolve_materials
+        resolve_materials(config, system)
+    if config.get("task") == "plumed" and resume:
+        raise InputError("PLUMED automatic resume is unsupported because its opaque kernel history is not in the MD checkpoint")
+    if config.get("task") == "rate" and config.get("rate", {}).get("pmf_source") not in (None, "umbrella"):
+        from .workflows.rate_source import source_paths
+
+        config["rate"]["pmf_source"] = source_paths(config["rate"]["pmf_source"], config.get("_base_directory"))
     if "electronic_friction" in config:
         from .electronic_friction import validate_electronic_friction
         validate_electronic_friction(config, system)
@@ -163,17 +189,37 @@ def run_resolved(config, system, *, output=None, resume=False):
     config["resume"] = bool(resume)
     from .parallel import root_call, is_root
 
+    # Reject before initialization can migrate a legacy manifest bound by the ledger.
+    if (resume and config["task"] == "rate"
+            and (Path(target) / "results" / "extensions.json").is_file()):
+        raise InputError("This rate run has an authorized extension budget; use resume_run or pyrpmd resume")
+    if config["task"] == "fes":
+        from .workflows.fes_dispatch import validate_fes
+
+        root_call(validate_fes, config, system)
     root_call(_initialize_output, config, system, target, resume)
-    if config["task"] == "pcet":
+    if config["task"] == "spectroscopy":
+        from .workflows.spectroscopy import run_spectroscopy
+
+        result = run_spectroscopy(config, system, Path(target))
+    elif config["task"] == "plumed":
+        from .workflows.plumed import run_plumed
+
+        result = run_plumed(config, system, Path(target))
+    elif config["task"] == "pcet":
         from .workflows.pcet import run_pcet
 
         result = run_pcet(config, system, Path(target))
+    elif config["task"] == "nonadiabatic":
+        from .workflows.nonadiabatic import run_nonadiabatic
+
+        result = run_nonadiabatic(config, system, Path(target))
     elif config["task"] == "drpmd":
         from .workflows.drpmd import run_drpmd
 
         result = run_drpmd(config, system, Path(target))
     elif config["task"] == "fes":
-        from .workflows.fes import run_fes
+        from .workflows.fes_dispatch import run_fes
 
         result = run_fes(config, system, Path(target))
     elif config["task"] == "rate":
@@ -184,18 +230,14 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.surface import run_surface_rate
 
         result = run_surface_rate(config, system, Path(target))
-    elif config["task"] == "metadynamics":
-        from .workflows.metadynamics import run_metadynamics
-
-        result = run_metadynamics(config, system, Path(target))
-    elif config["task"] == "opes":
-        from .workflows.opes import run_opes
-
-        result = run_opes(config, system, Path(target))
     elif config["task"] == "network":
         from .workflows.network import run_network
 
         result = run_network(config, system, Path(target))
+    elif config["task"] == "pimd" and "path_integral" in config:
+        from .workflows.path_integral import run_path_integral
+
+        result = run_path_integral(config, system, Path(target))
     elif config["task"] in ("pimd", "diffusion"):
         from .workflows.materials import run_materials
 
@@ -273,6 +315,18 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
     extension_path = path / "results" / "extensions.json"
+    if config["task"] == "rate" and extension_path.is_file():
+        ledger = json.loads(extension_path.read_text())
+        if not isinstance(ledger, dict) or ledger.get("format") != "PyRPMD.rate.extensions.v1":
+            raise InputError("Unknown rate production extension ledger")
+        if parallel is not None or execution is not None or adaptive_budget is not None:
+            raise InputError("Resume the rate extension without execution or adaptive-budget overrides")
+        requests = ledger.get("requests")
+        if not isinstance(requests, list) or not requests or not isinstance(requests[-1], dict):
+            raise InputError("Invalid rate production extension requests")
+        # Completed requests also retain their effective total budget. Falling
+        # through to the original short configuration would publish stale rates.
+        return extend_run(path, production_steps=requests[-1].get("production_steps"))
     if config["task"] == "drpmd" and extension_path.is_file():
         ledger = json.loads(extension_path.read_text())
         if ledger.get("format") != "PyRPMD.drpmd.extensions.v1":
@@ -290,8 +344,14 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
     if parallel is not None:
         config["parallel"] = _resume_parallel(config.get("parallel", {}), parallel)
     if execution is not None:
-        if not isinstance(execution, dict) or set(execution) - {"loop_backend", "block_steps"}:
-            raise InputError("Resume execution overrides accept only loop_backend and block_steps")
+        allowed = {"loop_backend", "block_steps"}
+        mapping = config["task"] == "nonadiabatic" and config["method"] in {"nrpmd", "sm-nrpmd"}
+        if mapping:
+            allowed |= {"electronic_backend", "electronic_device"}
+        if not isinstance(execution, dict) or set(execution) - allowed:
+            names = ("loop_backend, block_steps, electronic_backend and electronic_device"
+                     if mapping else "loop_backend and block_steps")
+            raise InputError("Resume execution overrides accept only " + names)
         if "loop_backend" in execution and execution["loop_backend"] not in ("auto", "native", "python"):
             raise InputError("loop_backend must be auto/native/python")
         if "block_steps" in execution:
@@ -299,6 +359,17 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
             if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 65536:
                 raise InputError("block_steps must be an integer in 1..65536")
         config.setdefault("dynamics", {}).update(execution)
+        if mapping:
+            from .nonadiabatic_input import _choice
+            import re
+            options = config["dynamics"]
+            backend = _choice(options.get("electronic_backend", "numpy"),
+                              "electronic_backend", {"numpy", "native", "torch"})
+            device = options.get("electronic_device", "cpu")
+            if not isinstance(device, str) or re.fullmatch(r"cpu|cuda(?::[0-9]+)?", device) is None:
+                raise InputError("electronic_device must be cpu or cuda[:index]")
+            if backend != "torch" and device != "cpu":
+                raise InputError("a CUDA electronic_device requires electronic_backend='torch'")
     if adaptive_budget is not None:
         from .parallel import root_call
         from .workflows.adaptive_umbrella import extend_adaptive_budget
@@ -312,12 +383,21 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
     return run_resolved(config, system, output=path, resume=True)
 
 
-def extend_run(directory, *, max_time):
-    """Continue unresolved dRPMD launches to a larger total time limit.
+def extend_run(directory, *, max_time=None, production_steps=None):
+    """Continue a saved run to one explicitly increased total budget.
 
-    The original input, manifest and thermal-parent checkpoints remain unchanged.
-    A separate extension ledger records the authorized budget and crash recovery.
+    ``max_time`` extends unresolved dRPMD launches. ``production_steps`` extends
+    every existing fixed-window gas-rate umbrella stream, excluding equilibration,
+    and generates fresh recrossing trajectories for the resulting PMF. Supply
+    exactly one budget. Repeating its total recovers or returns the same result.
+    Original input and manifest stay unchanged; a separate ledger authorizes work.
     """
+    if (max_time is None) == (production_steps is None):
+        raise InputError("Specify exactly one of max_time or production_steps")
+    if production_steps is not None:
+        from .workflows.rate_extend import extend_rate
+
+        return extend_rate(directory, production_steps=production_steps)
     from .workflows.extend import extend_drpmd
 
     return extend_drpmd(directory, max_time=max_time)
@@ -330,15 +410,45 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         summary = path / "results" / "summary.json"
         if not summary.is_file():
             summary = path / "summary.json"
-        return json.loads(summary.read_text())
+        result = json.loads(summary.read_text())
+        if "rate_extension" in result:
+            from .rate_artifacts import active_rate_directory
+
+            active_rate_directory(path, result)
+        if result.get("task") in ("fes", "metadynamics", "opes"):
+            from .analysis.fes_result import FESResult
+
+            if (path / "fes.npz").is_file():
+                return FESResult.read(path, summary=result).summary()
+        return result
     config = json.loads((path / "input" / "resolved.json").read_text())
-    if config["task"] not in ("fes", "metadynamics", "opes", "diffusion"):
+    if config["task"] == "nonadiabatic":
+        if bins is not None or bootstrap is not None or diffusion is not None:
+            raise InputError("Nonadiabatic time-series analysis does not accept FES/diffusion overrides")
+        from .workflows.nonadiabatic import analyze_nonadiabatic
+
+        system = _read_identity(config, path)
+        _initialize_output(config, system, path, resume=True)
+        result = analyze_nonadiabatic(config, system, path)
+        result.update(software="PyRPMD", version=__version__, output=str(path),
+                      preset=config.get("preset", "pilot"),
+                      input_warnings=config.get("_warnings", []))
+        write_json(path / "results" / "summary.json", result)
+        return result
+    if config["task"] not in ("fes", "metadynamics", "opes", "diffusion", "spectroscopy"):
         raise InputError(
-            "Recomputing analysis supports FES, metadynamics, OPES and diffusion; omit --recompute to read other results"
+            "Recomputing analysis supports FES, metadynamics, OPES, diffusion, spectroscopy and nonadiabatic populations; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
+    if config["task"] == "spectroscopy":
+        if bins is not None or bootstrap is not None or diffusion is not None:
+            raise InputError("spectroscopy reanalysis does not use FES/diffusion overrides")
+        from .workflows.spectroscopy import reanalyze_spectroscopy
+        result = reanalyze_spectroscopy(config, system, path)
+        write_json(path / "results" / "summary.json", result)
+        return result
     if config["task"] == "diffusion":
         from .input import _SECTIONS
         from .units import parse_quantity
@@ -387,18 +497,13 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
         ):
             raise InputError("Bootstrap replicate count must be an integer >= 0")
         analysis["bootstrap"] = bootstrap
-    if config["task"] == "metadynamics":
-        from .workflows.metadynamics import reanalyze_metadynamics
+    from .workflows.fes_dispatch import reanalyze_fes
+    from .analysis.fes_result import FESResult
 
-        result = reanalyze_metadynamics(config, system, path)
-    elif config["task"] == "opes":
-        from .workflows.opes import reanalyze_opes
-
-        result = reanalyze_opes(config, system, path)
-    else:
-        from .workflows.fes import reanalyze_fes
-
-        result = reanalyze_fes(config, system, path)
+    result = reanalyze_fes(config, system, path)
+    if result is None:
+        return None
+    result = FESResult.read(path, summary=result).summary()
     from .parallel import root_call
 
     result = {
@@ -417,6 +522,14 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
 def prepare(job, *, numerical=False):
     spec = _spec(job)
     config, system = spec.resolve()
+    if config["task"] == "nonadiabatic":
+        from .workflows.nonadiabatic import prepare_nonadiabatic
+
+        return {
+            "task": "nonadiabatic", "resolved": config, "system": system.to_dict(),
+            "diagnostics": config.get("_warnings", []), "ready": True,
+            "nonadiabatic_preparation": prepare_nonadiabatic(config, system, numerical=numerical),
+        }
     if config["task"] == "pcet":
         from .workflows.pcet import prepare_pcet
 
@@ -432,13 +545,17 @@ def prepare(job, *, numerical=False):
         "diagnostics": config.get("_warnings", []),
         "ready": True,
     }
+    if config["task"] == "fes":
+        result["method"] = fes_method(config)
     if config["task"] == "rate":
-        from .workflows.prepare import prepare_rate
+        from .workflows.prepare import prepare_rate, prepared_system
 
         result["reaction_preparation"] = prepare_rate(
             config, system, numerical=numerical
         )
         result["ready"] = result["reaction_preparation"].get("ready", False)
+        system = prepared_system(system, result["reaction_preparation"])
+        result["system"] = system.to_dict()
     elif config["task"] == "drpmd":
         result["ready"] = not (
             config["collision"].get("bmax_unvalidated", False)
@@ -448,7 +565,7 @@ def prepare(job, *, numerical=False):
             result["diagnostics"].append(
                 "Pilot simulations are available; production estimation requires a converged bmax and an explicit validated outcome classifier"
             )
-    elif config["task"] in ("fes", "surface_rate"):
+    elif config["task"] == "surface_rate" or (config["task"] == "fes" and fes_method(config) == "umbrella"):
         from .workflows.fes import resolve_umbrellas
 
         if config.get("surface", {}).get("free_energy"):
@@ -471,12 +588,12 @@ def prepare(job, *, numerical=False):
             result["surface_preparation"] = {
                 key: value for key, value in definition.items() if key != "coordinate"
             }
-    elif config["task"] == "metadynamics":
+    elif config["task"] == "fes" and fes_method(config) == "metadynamics":
         from .workflows.metadynamics import validate_metadynamics
 
         validate_metadynamics(config, system)
         result["metadynamics_preparation"] = config["metadynamics"]
-    elif config["task"] == "opes":
+    elif config["task"] == "fes" and fes_method(config) == "opes":
         from .workflows.opes import validate_opes
 
         validate_opes(config, system)
@@ -487,6 +604,23 @@ def prepare(job, *, numerical=False):
         result["network_preparation"] = prepare_network(config, system, numerical=numerical)
         result["ready"] = result["network_preparation"].get("ready", False)
         return result
+    elif config["task"] == "spectroscopy":
+        from .workflows.spectroscopy import prepare_spectroscopy
+
+        result["spectroscopy_preparation"] = prepare_spectroscopy(config, system)
+    elif config["task"] == "pimd" and "path_integral" in config:
+        from .workflows.path_integral import resolve_path_integral
+
+        method, options = resolve_path_integral(config, system)
+        result["path_integral_preparation"] = {
+            "method": method, "equilibrium_only": True,
+            "trajectory_storage": options["storage"],
+            "sampling_thermostat": options["thermostat"],
+            "replicas": options["replicas"],
+            "temperature_interpretation": "auxiliary_only_projection_sets_distribution" if method == "pigs" else "physical_temperature",
+            "observable": "projected_midpoint_potential" if method == "pigs" else
+                "even_bead_potential_alpha_zero_only" if method == "suzuki_chin" else "symmetric_bead_potential",
+        }
     elif config["task"] in ("pimd", "diffusion"):
         from .workflows.materials import resolve_materials
 
@@ -527,6 +661,9 @@ def prepare(job, *, numerical=False):
         native_engine = None
         try:
             x = system.geometry[None, :, :]
+            if (config["task"] == "spectroscopy"
+                    or (getattr(provider, "metadata", {}) or {}).get("ring_polymer_coupled")):
+                x = np.repeat(x, config["beads"], axis=0)
             from .potentials import validate_result
 
             if config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
@@ -552,6 +689,19 @@ def prepare(job, *, numerical=False):
                     "step": initial["step"],
                     "force_evaluations": initial["force_evaluations"],
                 }
+            elif config["task"] == "pimd" and "path_integral" in config:
+                from .workflows.path_integral import _action
+
+                action = _action(config, system, provider)
+                q = np.repeat(system.geometry[None], config["beads"], axis=0)
+                checked = validate_result(action.evaluate(q), q.shape)
+                result["pes_check"] = {
+                    "energy_hartree": checked.energy.tolist(),
+                    "status": checked.status.tolist(),
+                    "sampling_action_potential": True,
+                    "auxiliary_beta_au": action.beta,
+                    "force_max_au": float(np.max(np.abs(checked.forces))),
+                }
             elif "nonadiabatic" in config:
                 evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result
@@ -570,7 +720,11 @@ def prepare(job, *, numerical=False):
                     "energy_hartree": evaluated.energy.tolist(),
                     "status": evaluated.status.tolist(),
                 }
-                if config["task"] == "pimd" and materials_options["barostat"] is not None:
+                if config["task"] == "spectroscopy":
+                    result["spectroscopy_preparation"] = prepare_spectroscopy(
+                        config, system, potential=provider
+                    )
+                if config["task"] == "pimd" and "path_integral" not in config and materials_options["barostat"] is not None:
                     from .barostat import BZPBarostat
                     from .dynamics import State
                     piston = BZPBarostat(provider, system, config["beta"], config["beads"],

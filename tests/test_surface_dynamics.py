@@ -88,7 +88,8 @@ def test_thermal_momenta_and_supported_thermostats_leave_fixed_atoms_exact(schem
     np.testing.assert_array_equal(state.q, split.q)
     np.testing.assert_array_equal(state.p, split.p)
     assert_fixed(state)
-    assert a.propagation_stats["fallback_reasons"]["fixed atoms require the Python propagation loop"] == 29
+    assert a.propagation_stats["python_steps"] == 29
+    assert not any("fixed atoms" in reason for reason in a.propagation_stats["fallback_reasons"])
     previous_mobile = state.q[:, 1].copy()
     for _ in range(20):
         if scheme == "velocity-verlet":
@@ -163,13 +164,15 @@ def test_native_requirement_is_explicit_and_auto_blocks_report_fallback(scheme):
     a = dyn.propagate(state, 3)
     b = dyn.propagate_block(state, 2, record_states=True)
     assert a.backend == b.backend == "python"
-    assert "fixed atoms" in a.fallback_reason and "fixed atoms" in b.fallback_reason
+    assert "native=False" in a.fallback_reason
+    assert "compiled fused kernel is not available" in b.fallback_reason
     assert_fixed(state)
     assert dyn.propagation_stats["python_steps"] == 5
-    assert dyn.propagation_stats["fallback_reasons"][a.fallback_reason] == 5
+    assert dyn.propagation_stats["fallback_reasons"][a.fallback_reason] == 3
+    assert dyn.propagation_stats["fallback_reasons"][b.fallback_reason] == 2
     before = state.copy()
     for operation in (dyn.propagate, dyn.propagate_block):
-        with pytest.raises(RuntimeError, match="fixed atoms"):
+        with pytest.raises(RuntimeError, match="fused"):
             operation(state, 1, backend="native")
     np.testing.assert_array_equal(state.q, before.q)
     np.testing.assert_array_equal(state.p, before.p)
@@ -270,7 +273,8 @@ def test_periodic_fixed_substrate_fes_restarts_exactly(tmp_path):
             np.testing.assert_array_equal(a[key], b[key])
             np.testing.assert_array_equal(b[key], c[key])
         assert_fixed(State(b["last_q"], b["last_p"]))
-        assert b["propagation"]["fallback_reasons"]["fixed atoms require the Python propagation loop"] == 56
+        assert b["propagation"]["python_steps"] == 56
+        assert not any("fixed atoms" in reason for reason in b["propagation"]["fallback_reasons"])
     changed = System.from_dict(system.to_dict())
     changed.cell[0, 0] += 1.0
     assert _fingerprint(config, changed, {}) != _fingerprint(config, system, {})

@@ -175,8 +175,19 @@ def test_frozen_centers_are_usable_without_hdf5(tmp_path, schema):
     assert row["stiffness_atomic"] == [[2., 0.], [0., 2.]]
 
 
-def test_adaptive_plan_consumers_reuse_one_validated_snapshot(tmp_path, monkeypatch):
+@pytest.mark.parametrize("schema", [2, 3])
+@pytest.mark.parametrize("dimension", [2, 3])
+def test_adaptive_plan_consumers_reuse_one_validated_snapshot(tmp_path, monkeypatch, schema, dimension):
     plan = {**_plan(), "status": "frozen", "checksum": "verified"}
+    plan["schema_version"] = schema
+    metric = "normalized_mbar_cosine" if schema == 3 else "mbar_symmetric_transition"
+    if schema == 3:
+        plan["overlap_metric"] = metric
+    if dimension == 3:
+        plan["centers"] = [center + [center[0]] for center in plan["centers"]]
+        plan["stiffness"] = (2 * np.eye(3)).tolist()
+        for row in plan["rounds"]:
+            row["centers"] = [center + [center[0]] for center in row["centers"]]
     original = deepcopy(plan)
     path = tmp_path / "adaptive-plan.json"
     path.touch()
@@ -187,7 +198,7 @@ def test_adaptive_plan_consumers_reuse_one_validated_snapshot(tmp_path, monkeypa
     monkeypatch.setattr(hashlib, "sha256", checksum)
     run = _run(tmp_path, {"adaptive_umbrella": {"enabled": True}})
 
-    centers, stiffness = report_sampling._checkpoint_metadata(run, tmp_path, {}, 2)
+    centers, stiffness = report_sampling._checkpoint_metadata(run, tmp_path, {}, dimension)
     report_sampling.collect_adaptive_progress(run, tmp_path)
 
     read_json.assert_called_once_with(run, path)
@@ -195,6 +206,7 @@ def test_adaptive_plan_consumers_reuse_one_validated_snapshot(tmp_path, monkeypa
     np.testing.assert_array_equal(centers, original["centers"])
     np.testing.assert_array_equal(stiffness, original["stiffness"])
     assert run["sampling_diagnostics"]["sampling"]["adaptive"]["status"] == "frozen"
+    assert run["sampling_diagnostics"]["sampling"]["adaptive"]["overlap_metric"] == metric
     assert run["_sampling_plan_cache"][str(path.resolve())] is plan
     assert plan == original
 
@@ -223,8 +235,12 @@ def test_invalid_adaptive_plan_is_not_cached(tmp_path, monkeypatch, field, value
     assert run["_sampling_plan_cache"] == {}
 
 
-def test_cached_incomplete_plan_keeps_each_callers_frozen_requirement(tmp_path, monkeypatch):
+@pytest.mark.parametrize("schema", [2, 3])
+def test_cached_incomplete_plan_keeps_each_callers_frozen_requirement(tmp_path, monkeypatch, schema):
     plan = {**_plan(), "checksum": "verified"}
+    plan["schema_version"] = schema
+    if schema == 3:
+        plan["overlap_metric"] = "normalized_mbar_cosine"
     read_json = Mock(return_value=plan)
     checksum = Mock()
     checksum.return_value.hexdigest.return_value = "verified"
@@ -255,6 +271,25 @@ def test_schema_three_report_names_the_normalized_overlap_metric(tmp_path):
     assert run["sampling_diagnostics"]["sampling"]["adaptive"]["overlap_metric"] == "normalized_mbar_cosine"
 
 
+def test_three_dimensional_adaptive_report_keeps_schema_three_overlap_semantics(tmp_path):
+    plan = _plan()
+    plan.update(schema_version=3, overlap_metric="normalized_mbar_cosine",
+                centers=[[0., 0., 0.], [1., 1., 1.]], stiffness=(2 * np.eye(3)).tolist())
+    for row in plan["rounds"]:
+        row["centers"] = [center + [center[0]] for center in row["centers"]]
+        row["overlap_metric"] = "normalized_mbar_cosine"
+    _write_plan(tmp_path, plan)
+    run = _run(tmp_path)
+    report_sampling.collect_adaptive_progress(run, tmp_path)
+    assert not run["skipped"]
+    assert len(run["_plots"]) == 5
+    diagnostics = run["sampling_diagnostics"]["sampling"]["adaptive"]
+    assert diagnostics["overlap_metric"] == "normalized_mbar_cosine"
+    assert [row["windows"] for row in diagnostics["rounds"]] == [1, 2]
+    assert [row["spanning_overlap"] for row in diagnostics["rounds"]] == [1., .03]
+    assert all("not directly comparable" in plot["caption"] for plot in run["_plots"])
+
+
 @pytest.mark.parametrize("metric", [None, "mbar_symmetric_transition", "unknown"])
 def test_schema_three_report_rejects_an_ambiguous_overlap_metric(tmp_path, metric):
     plan = _plan()
@@ -265,6 +300,7 @@ def test_schema_three_report_rejects_an_ambiguous_overlap_metric(tmp_path, metri
     run = _run(tmp_path)
     report_sampling.collect_adaptive_progress(run, tmp_path)
     assert not run["_plots"]
+    assert run["_sampling_plan_cache"] == {}
     assert any("overlap metric" in item["reason"] for item in run["skipped"])
 
 

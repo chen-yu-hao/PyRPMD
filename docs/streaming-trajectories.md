@@ -24,6 +24,12 @@ energy estimators and radii of gyration. Constant-pressure runs add the sampled
 cell, pressure and volume. Atom and bead arrays in the restart state remain
 separate from these saved observables.
 
+Use `pyrpmd export RUN trajectory.extxyz`, `.h5md` or `.traj` to read these
+centroids in external tools. The [standard export guide](trajectory-export.md)
+documents units, cell/isotope preservation, reader compatibility and atomic
+publication. Constrained runs omit the unconstrained quantum-energy estimators;
+see [bond constraints](bond-constraints.md).
+
 ## Commit and recovery
 
 Each trajectory chunk is an immutable NPZ container with the usual PyRPMD

@@ -1,0 +1,29 @@
+{
+  "completed_utc": "2026-11-01T14:10:03.917065+00:00",
+  "result": {
+    "passed": 74,
+    "failed": 0,
+    "skipped": 0,
+    "wall_seconds": 3.6
+  },
+  "scope": "Independent review after OPES initialization/schema and partial legacy replica fixes; includes actual PLUMED comparison.",
+  "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PLUMED_KERNEL=/workspace/scratch/82b1e823c721/plumed-runtime/lib/libplumedKernel.so PYRPMD_REQUIRE_PLUMED=1 PYTHONPATH=/workspace/scratch/82b1e823c721/plumed-runtime/python:/workspace/scratch/82b1e823c721/test-deps:src python -m pytest -q -ra tests/test_opes.py tests/test_opes_variants.py tests/test_opes_initialization.py",
+  "source_sha256": {
+    "src/pyrpmd/opes.py": "1db8fc7207296b480a69ec925829c2e9fd6a6b7d4c8d4dd02478f6b1354a9b8d",
+    "src/pyrpmd/workflows/opes.py": "f9b2f24b5e6627a3008cff3728bd0d116e6c6e7af5e6289bc503bb9dea14fccb",
+    "tests/test_opes.py": "0309a9212973751f2de1210451307115e31dc1d7fa3146578d96bd68f72e0251",
+    "tests/test_opes_variants.py": "a48ba3e2b14d9f15a2c5d57b03e735ffa72f9139e9d608d5a01e9cd1969e1f77",
+    "tests/test_opes_initialization.py": "327624676c4a08efe1c853957cfbcf9b76b340d640db7c65f62e7054a00861bb"
+  },
+  "checks": [
+    "Equation-consistent empty bias and first METAD kernel weight",
+    "Schema-1 empty/nonempty/adaptive/explore continuation",
+    "Schema-2 first-weight identity rejects mislabeling",
+    "Serial versus two-process independent histories",
+    "Partial legacy job resumes missing replicas under original schema",
+    "Mixed schemas with missing histories reject before model construction",
+    "Live fixed-width uncompressed OPES METAD/explore parity with real PLUMED"
+  ],
+  "intermediate_full_suite_failure": "The archived mixed-revision run failed root analysis on invalid OPES state fields after source changed during execution. A fresh frozen-source scheduler test and this complete focused gate pass.",
+  "note": "This focused count overlaps the main test suite and must not be added to its total."
+}

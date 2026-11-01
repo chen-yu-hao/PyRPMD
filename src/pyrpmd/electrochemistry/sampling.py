@@ -8,23 +8,19 @@ Monte Carlo sweeps and integration proposal lengths are not physical time.
 
 from __future__ import annotations
 
+import math
 from copy import deepcopy
 from dataclasses import dataclass
-import math
 
 import numpy as np
 
 from ..dynamics import Dynamics, State
 from ..potentials.base import coordinates
 from ..potentials.cache import StepEvaluationCache
+from ..validation import nonnegative_integer as _integer
 from .potentials import FixedElectronNumberPotential, evaluate_electronic
-from .reservoir import ElectronReservoir, _finite_real as _real, _electron_bounds
-
-
-def _integer(value, name):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 0:
-        raise ValueError(f"{name} must be a nonnegative integer")
-    return int(value)
+from .reservoir import ElectronReservoir, _electron_bounds
+from .reservoir import _finite_real as _real
 
 
 def _static_bias(bias):

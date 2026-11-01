@@ -39,6 +39,76 @@ def config(dimension=1):
     }
 
 
+def test_legacy_workflow_resume_and_reanalysis_report_original_initialization(tmp_path, monkeypatch):
+    import pyrpmd.workflows.opes as workflow
+
+    create_bias = workflow._new_bias
+
+    def legacy_bias(cv, options, beta, state=None):
+        if state is None:
+            state = create_bias(cv, options, beta).state_dict()
+            state["schema_version"] = 1
+            del state["initial_bias"]
+        return create_bias(cv, options, beta, state)
+
+    cfg = config()
+    monkeypatch.setattr(workflow, "_new_bias", legacy_bias)
+    original = run_opes(cfg, system(), tmp_path, return_data=True)
+    saved = original["streams"][0]["bias_state"]
+    assert saved["log_weights"][0] == 0.
+    monkeypatch.setattr(workflow, "_new_bias", create_bias)
+    for result in (run_opes(cfg, system(), tmp_path, return_data=True),
+                   reanalyze_opes(cfg, system(), tmp_path, return_data=True)):
+        assert result["streams"][0]["bias_state"] == saved
+        assert result["summary"]["bias_state_versions"] == [1]
+        assert result["summary"]["initial_empty_bias_per_replica"] == [0.]
+        assert any("Legacy OPES schema-1" in item for item in result["summary"]["warnings"])
+
+
+def test_partial_legacy_job_keeps_initialization_for_never_started_replicas(tmp_path, monkeypatch):
+    import shutil
+    import pyrpmd.workflows.opes as workflow
+
+    cfg = config()
+    cfg["sampling"]["replicas"] = 2
+    create_bias = workflow._new_bias
+
+    def legacy_bias(cv, options, beta, state=None):
+        if state is None:
+            state = create_bias(cv, options, beta).state_dict()
+            state["schema_version"] = 1
+            del state["initial_bias"]
+        return create_bias(cv, options, beta, state)
+
+    monkeypatch.setattr(workflow, "_new_bias", legacy_bias)
+    old = run_opes(cfg, system(), tmp_path/"uninterrupted", return_data=True)
+    partial = tmp_path/"partial"/"checkpoints"
+    partial.mkdir(parents=True)
+    shutil.copyfile(tmp_path/"uninterrupted"/"checkpoints"/"opes_0000.npz", partial/"opes_0000.npz")
+    monkeypatch.setattr(workflow, "_new_bias", create_bias)
+    resumed = run_opes(cfg, system(), tmp_path/"partial", return_data=True)
+    assert resumed["summary"]["bias_state_versions"] == [1, 1]
+    for before, after in zip(old["streams"], resumed["streams"]):
+        assert before["bias_state"] == after["bias_state"]
+        np.testing.assert_array_equal(before["samples"], after["samples"])
+        np.testing.assert_array_equal(before["state"].q, after["state"].q)
+        np.testing.assert_array_equal(before["state"].p, after["state"].p)
+
+
+def test_mixed_initialization_with_missing_replicas_rejects_before_sampling(tmp_path, monkeypatch):
+    import pyrpmd.workflows.opes as workflow
+
+    cfg = config()
+    cfg["sampling"]["replicas"] = 3
+    for replica, version in ((0, 1), (1, 2)):
+        atomic_savez(workflow._checkpoint_path(tmp_path, replica),
+            fingerprint=workflow._stream_fingerprint(cfg, system(), replica),
+            bias_state=json.dumps({"schema_version": version}))
+    monkeypatch.setattr(workflow, "make_task_potential", lambda *args: pytest.fail("no potential should be constructed"))
+    with pytest.raises(RuntimeError, match="mixed schema-1/schema-2"):
+        run_opes(cfg, system(), tmp_path)
+
+
 def test_weighted_kde_and_center_normalization_match_independent_formula():
     bias = OPESBias(cv1(), [0.4], 2.0, barrier=1.3, bias_factor=4)
     centers, weights = [], []
@@ -100,7 +170,10 @@ def test_wrapped_probability_integrates_to_one_and_has_a_smooth_force(width):
     np.testing.assert_allclose(energy, other, atol=5e-14)
     np.testing.assert_allclose(gradient, other_gradient, atol=5e-14)
     seam = bias.physical_energy_gradient([[0.2 + np.pi - 1e-8], [0.2 + np.pi + 1e-8]])[1]
-    assert abs(seam[0, 0] - seam[1, 0]) < 1e-6
+    seam_half = bias.physical_energy_gradient([[0.2 + np.pi - 5e-9], [0.2 + np.pi + 5e-9]])[1]
+    # A smooth, high-curvature bias may have a non-negligible finite-distance
+    # difference. A discontinuity would remain when the separation is halved.
+    np.testing.assert_allclose(seam[1] - seam[0], 2 * (seam_half[1] - seam_half[0]), atol=2e-12)
 
 
 def test_nonperiodic_kde_is_normalized_and_bias_has_a_stable_floor():

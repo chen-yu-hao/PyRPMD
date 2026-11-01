@@ -77,19 +77,23 @@ def project_run(directory, *, axes, output, selection_file=None):
     """Project a saved FES without running dynamics; persist source provenance."""
     import json
     from pathlib import Path
-    from ..checkpoint import load_checkpoint, atomic_savez
+    from ..checkpoint import atomic_savez
     from ..io import file_sha256, write_json
+    from .fes_result import FESResult
 
     source = Path(directory)
-    config = json.loads((source / "input" / "resolved.json").read_text())
-    summary = json.loads((source / "summary.json").read_text())
-    if summary.get("measure", summary.get("sampling_measure", "cv_density")) != "cv_density":
+    surface = FESResult.read(source)
+    if surface.measure != "cv_density":
         raise ValueError("projection requires a CV-density FES")
+    beta = surface.metadata.get("beta")
+    if beta is None:
+        # Historical archives saved temperature only in resolved input.  New
+        # FESResult archives are self-contained and need no executable input.
+        config = json.loads((source / "input" / "resolved.json").read_text())
+        beta = config["beta"]
     selection = None if selection_file is None else np.load(selection_file, allow_pickle=False)
-    with load_checkpoint(source / "fes.npz") as data:
-        free = data["free_energy"]
-        edges = [data[f"edges_{i}"] for i in range(free.ndim)]
-        result = marginalize_fes(free, edges, config["beta"], axes=axes, mask=data["mask"], selection=selection)
+    result = marginalize_fes(surface.free_energy, surface.edges, beta, axes=axes,
+                            mask=surface.mask, selection=selection)
     axes = result["axes"]
     target = Path(output)
     if target.exists() and any(target.iterdir()):
@@ -104,7 +108,7 @@ def project_run(directory, *, axes, output, selection_file=None):
                header=",".join([f"cv{a}_au" for a in axes] + ["free_energy_hartree", "masked", "coverage"]))
     public = {"task": "fes_projection", "method": result["method"], "measure": "cv_density",
               "source": str(source.resolve()), "source_sha256": file_sha256(source / "fes.npz"),
-              "axes": list(axes), "beta": config["beta"], "conditioned": result["conditioned"],
+              "axes": list(axes), "beta": beta, "conditioned": result["conditioned"],
               "selection_sha256": None if selection_file is None else file_sha256(selection_file),
               "supported_bins": int((~result["mask"]).sum()), "total_bins": result["mask"].size,
               "converged": False,

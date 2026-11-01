@@ -1,0 +1,14 @@
+{
+  "source_sha256": "92fae1755f44a7a0b1ec78ef8e71ef4f6453261103fd5a5c3ec7b80a4e929f2a",
+  "driver_sha256": "ece6064e3ddfa43e1b827783290821f387ba12e55070c3598f51018e35af6cc7",
+  "observable": "unnormalized_relative_ir",
+  "changed_temperature": {
+    "rejected": false,
+    "intensity_ratio_min": 2.0,
+    "intensity_ratio_max": 2.0
+  },
+  "ir_only_reanalysis": {
+    "raw_bytes_preserved": false,
+    "polarizability_retained": false
+  }
+}

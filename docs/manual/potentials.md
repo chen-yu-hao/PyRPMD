@@ -100,6 +100,7 @@ finally:
 | `python` | `module:factory` or `file.py:factory`; wraps your own model |
 | `rpmdrate` / `f2py` | Legacy Fortran wrappers with `(3,N,B)` layout and positive gradients |
 | `cabi` / `native` | Versioned C ABI v1/v2 libraries; v2 adds cells/PBC and physical virials |
+| `native_periodic` | Compiled periodic evaluator called directly by the C++ PIMD driver (`sampling.engine="native"`); `library`, `function`; signature in `native/include/pyrpmd/thermal_pes.h` |
 | `ase` | The factory returns an ASE Calculator; handles eV/Å, cell/PBC and stress |
 | `torch` | Batched molecular or explicitly cell-aware periodic Torch models |
 | `ipi` | Persistent i-PI client pool, evaluating multiple beads concurrently |

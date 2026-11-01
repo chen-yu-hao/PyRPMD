@@ -23,11 +23,14 @@ block_steps = 256
 | `loop_backend="native"` | 要求融合的整段传播；不可用时报错 |
 | `block_steps` | 执行分块大小，1–65536 |
 
-默认工作流引擎下，周期与固定原子体系、PILE-L 采样和 metadynamics 在 Python 外层循环中运行，并使用编译的确定性子步骤。
+PES 与相关算符有原生描述时，固定原子也可使用原生确定性传播块。
+旧的自动 PILE-L 采样保留 Python/NumPy 随机序列；显式组合的传播方案也支持兼容输入上的完整原生 PILE-L 循环。
+需要 Python PES/偏置回调时，外层仍由 Python 调度。
 `pimd`、`diffusion` 和 `metadynamics` 的摘要在 `propagation` 下报告原生与 Python 步数及回退原因；API 中
 `Dynamics.loop_stats` 给出同样的计数。
 
-对 `pimd`，`sampling.engine="native"` 选择单独的 C++ 系综引擎，使用自己的恒温器、势能和检查点约定。
+对 `pimd`，`sampling.engine="native"` 选择常驻 C++ 系综工作流，保留已有的势能和检查点约定；
+同一套恒温/恒压内核也通过[统一传播栈](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/propagation-stack.md)使用。
 它支持 NVT 固定原子和使用兼容编译势能的周期 NVT/NPT，NPT 还要求受支持的恒压器；不提供 Python 势能回退。
 事务大小由检查点间隔控制，`dynamics.block_steps` 不覆盖这一间隔。只设置 `loop_backend="native"` 不会选择这个采样引擎。
 这条路径有独立的检查点身份与输入限制，切换引擎需要新建运行；见[原生 PIMD 指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-pimd-workflow.md)。
@@ -48,6 +51,12 @@ threads_per_rank = 1
 
 `mode="serial"` 让每次 PES 调用在一个进程内完成，同时运行四个轨迹进程。`mode="bead"`、`bead_workers=2` 时，每条并发
 轨迹拥有一个由两个珠子 PES 进程组成的常驻进程池。`collision.trajectories` 始终是整个任务的总数。
+
+独立固定 umbrella 窗口、dRPMD 碰撞和 `site_rate` 还可设置 `parallel.trajectory_batch_size=8`，
+把最多八个现有任务的势能请求合并求值。每个协作组支持 1–256 个任务，以限制同时等待的工作线程数。
+各任务的时钟、RNG、恒温器状态和检查点保持独立。
+此时要求 `bead_workers=1`，并使用 `loop_backend="auto"` 或 `"python"`。
+势能能力检查、dRPMD 的先采样后碰撞调度，以及固定晶胞限制见[批量轨迹指南](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/batched-dynamics.md)。
 
 对计算量很小的解析势，进程通信占主要开销。按分配的 CPU 选择轨迹进程数 × 珠子进程数 × 势能/BLAS 线程数，通常设置：
 
@@ -128,10 +137,17 @@ bead_workers = 1
 ```bash
 pyrpmd resume runs/example
 pyrpmd resume runs/example --workers 4 --loop-backend auto --block-steps 128
+pyrpmd resume runs/adaptive --adaptive-max-rounds 12 --adaptive-max-windows 192 --adaptive-max-pilot-steps 4000
+pyrpmd extend runs/selected --max-time '20 ps'
+pyrpmd extend runs/rate --production-steps 200000
 ```
 
+自适应选项放宽已耗尽的自适应伞抽样 pilot 预算。`extend` 提高 dRPMD 系综的总传播时间，只从保存的 q/p 继续未结束的轨迹。
+对固定窗口的气相 `rate` 运行，`--production-steps` 提高生产段的总步数；使用限制见[输入与命令行](input.md#命令行参考)。
+
 续跑读取保存的解析输入、体系或 PCET 模型、q/p、RNG 状态、阶段和历史。已完成的任务保持完成，校验失败的检查点会以
-错误终止续跑。worker 布局、后端和分块大小可以在续跑之间改变。dRPMD 省略 `sampling.parents` 时母链数随执行槽数而定，
+错误终止续跑。worker 布局、后端和分块大小可以在续跑之间改变。worker 进程默认在任务之间复用势能对象
+（`parallel.reuse_potentials=true`），见[昂贵势能（英文）](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/performance-dynamics.md)。dRPMD 省略 `sampling.parents` 时母链数随执行槽数而定，
 若计划改变 worker 数，请显式设置 `parents`。
 
 温度、珠子数、同位素、势能、时间步、积分器、CV 和采样设置构成运行身份，改变其中任何一项都需要新的输出目录。

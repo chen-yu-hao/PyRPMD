@@ -1,0 +1,33 @@
+name: Conda package
+on:
+  pull_request:
+    paths: ['packaging/conda/**', 'pyproject.toml', 'setup.py', 'MANIFEST.in', 'src/**', 'native/**', 'tests/wheel_smoke.py', '.github/workflows/conda.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-name: packaging
+          create-args: >-
+            rattler-build
+            python=3.12
+          cache-environment: true
+      - name: Build and test native packages for supported Python versions
+        shell: bash -el {0}
+        env:
+          OMP_NUM_THREADS: '1'
+          OPENBLAS_NUM_THREADS: '1'
+        run: rattler-build build --recipe packaging/conda/recipe.yaml --variant-config packaging/conda/variants.yaml --output-dir conda-output -c conda-forge
+      - uses: actions/upload-artifact@v4
+        with:
+          name: conda-linux-packages
+          path: conda-output/**/*.conda
+          if-no-files-found: error

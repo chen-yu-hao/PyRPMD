@@ -1,0 +1,75 @@
+{
+  "format": "PyRPMD.propagation-stack-validation.v1",
+  "base_revision": "2f907ba96d22cb134198715e398b1d9f8d83d929",
+  "full_suite": {
+    "passed": 4690,
+    "skipped": 116,
+    "subtests_passed": 357,
+    "warnings": 922,
+    "seconds": 285.46,
+    "exit_code": 0
+  },
+  "final_focused": {
+    "passed": 184,
+    "seconds": 3.04,
+    "errors": 0,
+    "failures": 0,
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src .venv/bin/python -m pytest -q tests/test_propagation_composition.py tests/test_trpmd_spectroscopy.py tests/test_trpmd_rates.py tests/test_composed_native_observations.py tests/test_native_operator_switching.py tests/test_native_block_compatibility.py",
+    "note": "Fresh process on the final source after four files changed during the full-suite run; six newly added regressions are included."
+  },
+  "source_hashes": "source-hashes.json",
+  "source_changed_during_full_suite": [
+    "src/pyrpmd/block_propagation.py",
+    "src/pyrpmd/dynamics.py",
+    "src/pyrpmd/propagation.py",
+    "tests/test_propagation_composition.py"
+  ],
+  "extension_binaries_unchanged": true,
+  "benchmark": "../../../benchmarks/efficiency/propagation_stack_batching.json",
+  "benchmark_sha256": "38bd7a24f30f8ac4350780bf1e1ca4f6abefbd727863c4e53d53badff7cce212",
+  "native_wrapper_compatibility": {
+    "cases": 32,
+    "scope": "Base and current Python NativeEnsemble wrappers against the same current _thermal extension; not independent old-native numerics."
+  },
+  "files": {
+    "README.md": {
+      "sha256": "035ef085869fa2f8edf38143947e1fc7088ff0e69125d5c73676d22c0af46b19",
+      "bytes": 9721
+    },
+    "final-focused.log": {
+      "sha256": "435630557dadb0521b4b4fd39516f60b95f3e763255fff790ae2ab79c68ad7b9",
+      "bytes": 260
+    },
+    "native_legacy_compat.py": {
+      "sha256": "2895bd3458484e9ec8820d9003d8377dbae4a9af47818007867c2d551b0d1db6",
+      "bytes": 4838
+    },
+    "native_legacy_compat_results.json": {
+      "sha256": "265c4819f749f4c3cdce338b7ef45107e316cdf58596a1c17e236c18bb6e4686",
+      "bytes": 13670
+    },
+    "package-inspection.json": {
+      "sha256": "99f08777727f1a7360a766bbbe2721ffbec5b2dc62d8d0c524556a0ef3c4904f",
+      "bytes": 406
+    },
+    "pytest.log": {
+      "sha256": "6dfb4c12412023a3639aadbb443aa4ea311ab1a00087781a5031d028b5d6c2cf",
+      "bytes": 13680
+    },
+    "source-hashes.json": {
+      "sha256": "66841b29582caeffafe89ef8e58344bbdd71ac4f42ae01324c9d3f0bb3f5dcd3",
+      "bytes": 80243
+    },
+    "wheel-smoke.json": {
+      "sha256": "408038905dfdbf5949cafbbe100b3e397bf68f6de4f93f8c747ca324095dc838",
+      "bytes": 208
+    }
+  },
+  "final_tested_source_hashes_rechecked": true,
+  "publication_formatting": {
+    "path": "tests/test_composed_native_observations.py",
+    "reason": "Remove a redundant blank line at EOF; no code or test behavior changed.",
+    "before_sha256": "73f68b54ba8f673b6de30426b90ad504f4b1ebb9278b31744cc3e8611f2002dc",
+    "after_sha256": "1fb97b9f1ad12d1367311f94f2d38a736646e8602c160427eca4c6b9a6bb3e39"
+  }
+}

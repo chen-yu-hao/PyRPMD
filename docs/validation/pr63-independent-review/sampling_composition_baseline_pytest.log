@@ -1,0 +1,1872 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.                          [100%]
+=================================== FAILURES ===================================
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-committee] _
+
+composition = 'committee', marker = 'stateful', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-delta] _
+
+composition = 'delta', marker = 'stateful', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-difference] _
+
+composition = 'difference', marker = 'stateful', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-rpc] _
+
+composition = 'rpc', marker = 'stateful', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-nested] _
+
+composition = 'nested', marker = 'stateful', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-committee] _
+
+composition = 'committee', marker = 'time_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-delta] _
+
+composition = 'delta', marker = 'time_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-difference] _
+
+composition = 'difference', marker = 'time_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-rpc] _
+
+composition = 'rpc', marker = 'time_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-nested] _
+
+composition = 'nested', marker = 'time_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-committee] _
+
+composition = 'committee', marker = 'history_dependent'
+declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-delta] _
+
+composition = 'delta', marker = 'history_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-difference] _
+
+composition = 'difference', marker = 'history_dependent'
+declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-rpc] _
+
+composition = 'rpc', marker = 'history_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-nested] _
+
+composition = 'nested', marker = 'history_dependent', declaration = 'attribute'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-committee] _
+
+composition = 'committee', marker = 'stateful', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-delta] _
+
+composition = 'delta', marker = 'stateful', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-difference] _
+
+composition = 'difference', marker = 'stateful', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-rpc] _
+
+composition = 'rpc', marker = 'stateful', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-nested] _
+
+composition = 'nested', marker = 'stateful', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-committee] _
+
+composition = 'committee', marker = 'time_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-delta] _
+
+composition = 'delta', marker = 'time_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-difference] _
+
+composition = 'difference', marker = 'time_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-rpc] _
+
+composition = 'rpc', marker = 'time_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-nested] _
+
+composition = 'nested', marker = 'time_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-committee] _
+
+composition = 'committee', marker = 'history_dependent'
+declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-delta] _
+
+composition = 'delta', marker = 'history_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-difference] _
+
+composition = 'difference', marker = 'history_dependent'
+declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-rpc] _
+
+composition = 'rpc', marker = 'history_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-nested] _
+
+composition = 'nested', marker = 'history_dependent', declaration = 'metadata'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-committee] _
+
+composition = 'committee', marker = 'stateful', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-delta] _
+
+composition = 'delta', marker = 'stateful', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-difference] _
+
+composition = 'difference', marker = 'stateful', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-rpc] _
+
+composition = 'rpc', marker = 'stateful', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-nested] _
+
+composition = 'nested', marker = 'stateful', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-committee] _
+
+composition = 'committee', marker = 'time_dependent'
+declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-delta] _
+
+composition = 'delta', marker = 'time_dependent', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-difference] _
+
+composition = 'difference', marker = 'time_dependent'
+declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-rpc] _
+
+composition = 'rpc', marker = 'time_dependent', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-nested] _
+
+composition = 'nested', marker = 'time_dependent', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-committee] _
+
+composition = 'committee', marker = 'history_dependent'
+declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-delta] _
+
+composition = 'delta', marker = 'history_dependent'
+declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-difference] _
+
+composition = 'difference', marker = 'history_dependent'
+declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-rpc] _
+
+composition = 'rpc', marker = 'history_dependent', declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_ test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-nested] _
+
+composition = 'nested', marker = 'history_dependent'
+declaration = 'capabilities'
+
+    @pytest.mark.parametrize("composition", ["committee", "delta", "difference", "rpc", "nested"])
+    @pytest.mark.parametrize("marker", ["stateful", "time_dependent", "history_dependent"])
+    @pytest.mark.parametrize("declaration", ["attribute", "metadata", "capabilities"])
+    def test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian(composition, marker, declaration):
+        class CountingFree(FreePotential):
+            calls = 0
+    
+            def evaluate(self, q):
+                self.calls += 1
+                return super().evaluate(q)
+    
+        member = CountingFree()
+        other = FreePotential()
+        wrappers = {
+            "committee": lambda: CommitteePotential([member, other]),
+            "delta": lambda: DeltaLearningPotential(other, member),
+            "difference": lambda: DifferencePotential(member, other),
+            "rpc": lambda: SplitPotential(other, member, 4, 2),
+            "nested": lambda: DeltaLearningPotential(other, CommitteePotential([member, FreePotential()])),
+        }
+        provider = wrappers[composition]()
+        dynamics = [Dynamics(provider, [1.0], beta, 4, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.full((4, 1, 3), x), np.zeros((4, 1, 3))) for x in (0.1, 0.3)]
+        exchange = ReplicaExchange(dynamics, states, seed=67)
+        saved_rng = copy.deepcopy(exchange.rng.bit_generator.state)
+        if declaration == "attribute":
+            setattr(member, marker, True)
+        else:
+            member.metadata = copy.deepcopy(member.metadata)
+            target = member.metadata if declaration == "metadata" else member.metadata.setdefault("capabilities", {})
+            target[marker] = True
+>       with pytest.raises(ValueError, match="time-independent"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:45: Failed
+_____ test_recursive_potential_composition_rejects_cycle_before_evaluation _____
+
+    def test_recursive_potential_composition_rejects_cycle_before_evaluation():
+        provider = CommitteePotential([FreePotential(), FreePotential()])
+        provider.members = (provider, FreePotential())
+        dynamics = [Dynamics(provider, [1.0], beta, 1, 0.01, native=False) for beta in (1.0, 2.0)]
+        states = [State(np.zeros((1, 1, 3)), np.zeros((1, 1, 3))) for _ in dynamics]
+>       with pytest.raises(ValueError, match="acyclic"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests/test_replica_exchange_composition_review.py:60: Failed
+=========================== short test summary info ============================
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-stateful-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-time_dependent-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[attribute-history_dependent-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-stateful-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-time_dependent-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[metadata-history_dependent-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-stateful-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-time_dependent-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-committee]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-delta]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-difference]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-rpc]
+FAILED tests/test_replica_exchange_composition_review.py::test_dynamic_borrowed_member_cannot_change_exchange_hamiltonian[capabilities-history_dependent-nested]
+FAILED tests/test_replica_exchange_composition_review.py::test_recursive_potential_composition_rejects_cycle_before_evaluation
+46 failed, 1 passed in 2.31s

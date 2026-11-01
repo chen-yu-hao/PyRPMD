@@ -21,20 +21,21 @@ uncertainty/finite-record diagnostics below use the same displacement data.
 
 from __future__ import annotations
 
+from functools import partial
+
 import numpy as np
 
-from ..constants import ATOMIC_TIME_S, BOHR_M, AU_TIME_FS
-
+from ..constants import ATOMIC_TIME_S, AU_TIME_FS, BOHR_M
+from ..validation import integer_count
 
 DIFFUSION_AU_TO_M2_S = BOHR_M**2 / ATOMIC_TIME_S
 
 
-def _integer(value, name, minimum=0):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)):
-        raise ValueError(f"{name} must be an integer")
-    if value < minimum:
-        raise ValueError(f"{name} must be >= {minimum}")
-    return int(value)
+_integer = partial(
+    integer_count,
+    type_message="{name} must be an integer",
+    bounds_message="{name} must be >= {minimum}",
+)
 
 
 def _trajectory_array(value, name, *, copy=True):

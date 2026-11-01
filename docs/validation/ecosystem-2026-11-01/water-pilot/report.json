@@ -1,0 +1,173 @@
+{
+  "schema": "pyrpmd.qtip4pf-pilot.v1",
+  "generated_utc": "2026-11-01T13:10:01.004995+00:00",
+  "scope": "model/PME/virtual-site/integrator/observable software validation",
+  "physical_converged": false,
+  "literature_reproduced": false,
+  "liquid_diffusion_angstrom2_ps": null,
+  "liquid_ir_validated": false,
+  "model_source": {
+    "doi": "10.1063/1.3167790",
+    "url": "https://arxiv.org/abs/1011.1047",
+    "equations": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "parameter_table": "I",
+    "model": "q-TIP4P/F"
+  },
+  "parameters": {
+    "epsilon_kcal_mol": 0.1852,
+    "sigma_angstrom": 3.1589,
+    "q_M_e": 1.1128,
+    "gamma": 0.73612,
+    "D_r_kcal_mol": 116.09,
+    "alpha_r_per_angstrom": 2.287,
+    "r_eq_angstrom": 0.9419,
+    "k_theta_kcal_mol_rad2": 87.85,
+    "theta_eq_degrees": 107.4
+  },
+  "conditions": {
+    "temperature_K": 298,
+    "molecules": 8,
+    "density_g_cm3": 0.997,
+    "box_angstrom": 6.2142742905915265,
+    "beads": 4,
+    "timestep_fs": 0.05,
+    "equilibration_steps": 64,
+    "production_steps": 256,
+    "production_duration_fs": 12.8,
+    "cutoff_angstrom": 2.5,
+    "electrostatics": "PME",
+    "ewald_tolerance": 1e-06,
+    "dispersion_correction": false,
+    "independent_replicas": 1,
+    "seed": 541,
+    "sampling": "PILE-L",
+    "production": "NVE RPMD",
+    "constraints": []
+  },
+  "provider": {
+    "provider": "openmm",
+    "version": "8.6.1",
+    "model_sha256": "c785d2701ecb97708ac3369d263a7678008b5be7c4c0b11c423ed1b23472ad2d",
+    "thread_safety": "context_serial",
+    "execution_device": "cpu",
+    "platform": "Reference",
+    "platform_properties": {},
+    "periodic": true,
+    "supports_pbc": true,
+    "native_batch": false,
+    "trajectory_batch_safe": true,
+    "virial": false,
+    "physical_particle_indices": [
+      0,
+      1,
+      2,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22,
+      24,
+      25,
+      26,
+      28,
+      29,
+      30
+    ],
+    "required_bond_constraints": []
+  },
+  "cluster_verification": {
+    "oracle": "independent NumPy Eqs. (1)-(4); finite-difference all 18 coordinates",
+    "max_energy_error_hartree": 2.3498642268138248e-12,
+    "max_force_error_hartree_per_bohr": 7.413132607769768e-11,
+    "energy_tolerance_hartree": 2e-10,
+    "force_tolerance_hartree_per_bohr": 2e-09,
+    "passed": true
+  },
+  "finite": true,
+  "max_energy_drift_per_bead_hartree": 4.19762727077444e-06,
+  "energy_drift_tolerance_per_bead_hartree": 1e-05,
+  "software_checks_passed": true,
+  "diffusion_diagnostic_status": "ballistic_or_drifting",
+  "limitations": [
+    "Unrelaxed eight-molecule starting grid; short thermostat segment does not establish equilibrium liquid.",
+    "Tiny cell and 2.5-A cutoff deliberately differ from the paper's 216 molecules and 9-A cutoff.",
+    "One replica and a few femtoseconds cannot establish a diffusive regime or resolved liquid IR spectrum.",
+    "Saved IR is an RPMD diagnostic; the original paper's liquid IR uses PA-CMD, a different method.",
+    "No literature agreement, timestep/bead/electrostatic convergence or GPU performance is claimed."
+  ],
+  "source_at_start": {
+    "base_revision": "2f907ba96d22cb134198715e398b1d9f8d83d929",
+    "working_tree_dirty": true,
+    "sha256": {
+      "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+      "benchmarks/water/pilot.py": "3f8be34b3f442b281f3bcc38c21693bfbb28194cb9141cf7ccb71f585bc2cc80",
+      "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+      "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+      "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+      "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+      "src/pyrpmd/analysis/spectroscopy.py": "7ddcc583588d08e588c938cddcc6d4d8e32067d0ef47e9163d526ff2f34d734f"
+    }
+  },
+  "source_at_end": {
+    "base_revision": "2f907ba96d22cb134198715e398b1d9f8d83d929",
+    "working_tree_dirty": true,
+    "sha256": {
+      "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+      "benchmarks/water/pilot.py": "3f8be34b3f442b281f3bcc38c21693bfbb28194cb9141cf7ccb71f585bc2cc80",
+      "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+      "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+      "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+      "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+      "src/pyrpmd/analysis/spectroscopy.py": "7ddcc583588d08e588c938cddcc6d4d8e32067d0ef47e9163d526ff2f34d734f"
+    }
+  },
+  "source_hashes_unchanged_during_run": true,
+  "reproduce": "python benchmarks/water/pilot.py --output NEW_DIRECTORY --beads 4 --equilibration-steps 64 --production-steps 256 --seed 541",
+  "runtime": {
+    "python": "3.12.14",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+  },
+  "dependencies": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "openmm": "8.6.1"
+  },
+  "artifacts": {
+    "spectrum-diagnostic.npz": {
+      "sha256": "19e6acfd087170df91047d4b1f636f0329c0a691c69c0f22b2ba9bd40736c2a2",
+      "bytes": 3888
+    },
+    "trajectory.npz": {
+      "sha256": "372c79d24820bef3d9f377601398f2f468f4fafcce61948120aee7e9b47a43a2",
+      "bytes": 122622
+    },
+    "model.xml": {
+      "sha256": "c785d2701ecb97708ac3369d263a7678008b5be7c4c0b11c423ed1b23472ad2d",
+      "bytes": 8429
+    },
+    "diffusion-diagnostic.json": {
+      "sha256": "eaa89248a1e5706b8aafcefd7f11b9f129bbf5240059fd4d6090ff2b167b033e",
+      "bytes": 82998
+    }
+  },
+  "elapsed_seconds": 71.82734271499794
+}

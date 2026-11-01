@@ -1,0 +1,68 @@
+{
+  "baseline_commit": "c328da2814a11ad9431e3b98cd8158ca6b2a1d41",
+  "examples": {
+    "umbrella_2d": {
+      "exact": true,
+      "arrays_compared": 180,
+      "checkpoints_compared": 18,
+      "differences": []
+    },
+    "umbrella_adaptive": {
+      "exact": true,
+      "arrays_compared": 88,
+      "checkpoints_compared": 8,
+      "differences": []
+    },
+    "umbrella_exchange": {
+      "exact": true,
+      "arrays_compared": 52,
+      "checkpoints_compared": 2,
+      "differences": []
+    },
+    "metadynamics_standard": {
+      "exact": true,
+      "arrays_compared": 23,
+      "checkpoints_compared": 1,
+      "differences": []
+    },
+    "metadynamics_well_tempered": {
+      "exact": true,
+      "arrays_compared": 37,
+      "checkpoints_compared": 2,
+      "differences": []
+    },
+    "metadynamics_grid": {
+      "exact": true,
+      "arrays_compared": 26,
+      "checkpoints_compared": 1,
+      "differences": []
+    },
+    "opes": {
+      "exact": true,
+      "arrays_compared": 34,
+      "checkpoints_compared": 2,
+      "differences": []
+    }
+  },
+  "legacy_continuation": {
+    "umbrella_2d": {
+      "exact": true,
+      "arrays_compared": 180,
+      "checkpoints_compared": 18,
+      "differences": []
+    },
+    "metadynamics_standard": {
+      "exact": true,
+      "arrays_compared": 23,
+      "checkpoints_compared": 1,
+      "differences": []
+    },
+    "opes": {
+      "exact": true,
+      "arrays_compared": 34,
+      "checkpoints_compared": 2,
+      "differences": []
+    }
+  },
+  "all_exact": true
+}

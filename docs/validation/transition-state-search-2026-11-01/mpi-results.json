@@ -1,0 +1,136 @@
+[
+  {
+    "name": "integration",
+    "ranks": 4,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "4",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_integration.py"
+    ],
+    "returncode": 0,
+    "seconds": 1.0165115049967426,
+    "log": "mpi-integration.log"
+  },
+  {
+    "name": "dynamic",
+    "ranks": 5,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "5",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_dynamic_integration.py"
+    ],
+    "returncode": 0,
+    "seconds": 3.0601353899983224,
+    "log": "mpi-dynamic.log"
+  },
+  {
+    "name": "workflow",
+    "ranks": 4,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "4",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_workflow_smoke.py",
+      "/workspace/scratch/620dee2c1ca3/validation-mpi/workflow"
+    ],
+    "returncode": 0,
+    "seconds": 7.75786801999493,
+    "log": "mpi-workflow.log"
+  },
+  {
+    "name": "adaptive",
+    "ranks": 4,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "4",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_adaptive_smoke.py",
+      "/workspace/scratch/620dee2c1ca3/validation-mpi/adaptive"
+    ],
+    "returncode": 0,
+    "seconds": 1.642514883998956,
+    "log": "mpi-adaptive.log"
+  },
+  {
+    "name": "opes",
+    "ranks": 4,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "4",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_opes_smoke.py",
+      "/workspace/scratch/620dee2c1ca3/validation-mpi/opes"
+    ],
+    "returncode": 0,
+    "seconds": 2.1817510270047933,
+    "log": "mpi-opes.log"
+  },
+  {
+    "name": "materials",
+    "ranks": 4,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "4",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_materials_smoke.py",
+      "/workspace/scratch/620dee2c1ca3/validation-mpi/materials"
+    ],
+    "returncode": 0,
+    "seconds": 7.0783236589995795,
+    "log": "mpi-materials.log"
+  },
+  {
+    "name": "surface",
+    "ranks": 4,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "4",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_surface_smoke.py",
+      "/workspace/scratch/620dee2c1ca3/validation-mpi/surface"
+    ],
+    "returncode": 0,
+    "seconds": 14.374561684002401,
+    "log": "mpi-surface.log"
+  },
+  {
+    "name": "surface_extensions",
+    "ranks": 4,
+    "command": [
+      "mpiexec",
+      "--allow-run-as-root",
+      "--oversubscribe",
+      "-n",
+      "4",
+      "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+      "tests/mpi_surface_extensions_smoke.py",
+      "/workspace/scratch/620dee2c1ca3/validation-mpi/surface_extensions"
+    ],
+    "returncode": 0,
+    "seconds": 3.1491375739933574,
+    "log": "mpi-surface_extensions.log"
+  }
+]
