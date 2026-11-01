@@ -154,6 +154,47 @@ Hessian. CI-NEB's `max_force` describes projected band forces, so it is distinct
 from the TS's physical-force diagnostic. More images can resolve a curved path
 better but increase PES cost; they do not correct an incorrect atom mapping.
 
+## Choose convergence settings from measured checks
+
+The reproducible [analytic benchmark](../benchmarks/transition_state_search/analytic.py)
+checks published Cerjan–Miller and Müller–Brown stationary points, independently
+solved analytical Hessians, and an optional independent ASE implementation.
+The lower Müller–Brown barrier did not converge within 1,000 updates with five
+images in either implementation. Seven, thirteen, and twenty-one images worked
+for the tested paths. Begin with at least the default seven images, then check
+path resolution for the particular reaction; seven is not a universal guarantee.
+
+The [BKMP2 benchmark](../benchmarks/transition_state_search/h3.py) tests the actual
+H + H2 surface with endpoint reversal, rotation and translation, a curved initial
+path, and perturbed TS guesses. For a tighter numerical reference on that surface,
+the following settings reproduced the published saddle geometry and electronic
+barrier while reducing the force below `1e-7` hartree/bohr:
+
+```toml
+[reaction.preparation]
+gradient_tolerance = 1e-7
+hessian_step = 1e-4
+
+[reaction.preparation.neb]
+images = 7
+gradient_tolerance = 1e-5
+```
+
+Force convergence is not a frequency accuracy guarantee. The default force
+tolerance produced a roughly `0.55 cm^-1` error in this surface's imaginary
+frequency relative to an independent energy-curvature calculation; tightening
+the force reduced that discrepancy below `0.03 cm^-1` for the cases tested.
+Compare Hessian displacements, for example `1e-4` and `3e-5` bohr, when frequencies
+matter. These frequency references were computed independently; they are not
+quoted paper values.
+
+Neither stationary-point agreement nor a passing software test establishes a
+converged rate. The [endpoint rate study](../benchmarks/transition_state_search/rates.py)
+separately compares the 300 K classical and 128-bead RPMD results with the
+RPMDrate paper and records independent-seed, time-step, sampling, PMF-estimator,
+and recrossing diagnostics. A matching central value from a short run is
+insufficient when those diagnostics remain unsettled.
+
 ## Inspect preparation before sampling
 
 The preparation report records the accepted or last attempted `transition_state`

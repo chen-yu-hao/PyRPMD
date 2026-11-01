@@ -1,0 +1,303 @@
+{
+  "created_utc": "2026-11-01T13:49:13.619330+00:00",
+  "endpoint_vs_explicit_handoff": {
+    "beads": 1,
+    "channel_paths": [
+      [
+        [
+          [
+            0,
+            1
+          ]
+        ],
+        [
+          [
+            1,
+            2
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            0,
+            2
+          ]
+        ],
+        [
+          [
+            2,
+            1
+          ]
+        ]
+      ]
+    ],
+    "coordinate_value_at_r30_reference": 0.0,
+    "coordinate_values_at_two_equivalent_saddles": [
+      1.0000000000013867,
+      1.0000000000013867
+    ],
+    "endpoint_geometry_bohr": [
+      [
+        -1.757001255107021,
+        -2.4866223495023215e-12,
+        3.2290179144505362e-12
+      ],
+      [
+        -1.2556413811425713e-06,
+        -2.4867008318578337e-12,
+        3.2290006608148167e-12
+      ],
+      [
+        1.7569987437863122,
+        -2.486778458814126e-12,
+        3.22898159684666e-12
+      ]
+    ],
+    "endpoint_geometry_max_abs_difference_from_independent_reference_after_centering_bohr": 4.565459121863569e-11,
+    "endpoint_preparation_ready": true,
+    "explicit_legacy_geometry_bohr": [
+      [
+        -1.7570000251,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        1.7570000251,
+        0.0,
+        0.0
+      ]
+    ],
+    "interpretation": "The endpoint run selects the same labeled entrance channel and both equivalent product arrangements as the historical explicit-TS input. For symmetric H3 the reference bond difference is zero, so a common change in the two saddle bond lengths does not change xi. These checks exclude a new endpoint handoff, coordinate, channel or entrance-prefactor difference at the tested geometries; they do not validate statistical sampling.",
+    "masses_exactly_equal": true,
+    "max_absolute_errors": {
+      "equivalent_channel_gradient": 5.551115123125783e-17,
+      "equivalent_channel_value": 2.220446049250313e-16,
+      "gradient": 3.702593787124897e-13,
+      "hessian": 1.7433970933566911e-13,
+      "mass_metric": 7.114060317399418e-17,
+      "value": 2.2963853041346738e-12
+    },
+    "passed": true,
+    "prefactor_endpoint_atomic_units": 3.9738107997425676,
+    "prefactor_explicit_atomic_units": 3.9738107997425676,
+    "prefactors_exactly_equal": true,
+    "random_geometry_seed": 274611,
+    "reaction": {
+      "breaking_bonds": [
+        [
+          1,
+          2
+        ]
+      ],
+      "electronic_weight": 1.0,
+      "equivalent_paths": [
+        [
+          0,
+          2,
+          1
+        ]
+      ],
+      "forming_bonds": [
+        [
+          0,
+          1
+        ]
+      ],
+      "fragments": [
+        [
+          0
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "rinf": 30.0,
+      "symmetry_factor": 1.0
+    },
+    "reaction_and_channel_settings_equal": true,
+    "reference_bond_differences_endpoint_bohr": [
+      3.7946756847873075e-11
+    ],
+    "reference_bond_differences_explicit_bohr": [
+      0.0
+    ],
+    "saved_transition_state_exactly_matches_sampling_system": true,
+    "scope": "Actual run preparation and deterministic rate-coordinate/prefactor checks; no dynamics",
+    "temperature_K": 300.0,
+    "test_geometry_count": 133
+  },
+  "environment": {
+    "numpy": "2.3.5",
+    "python": "3.12.14",
+    "scipy": "1.17.0"
+  },
+  "harmonic_tst": {
+    "all_mass_weighted_eigenvalues_au": [
+      -4.719323739096824e-05,
+      -2.625087199034205e-21,
+      -1.3645317028708317e-21,
+      2.1635086137538241e-16,
+      3.952119205230163e-15,
+      3.952120990795833e-15,
+      1.7091763094281218e-05,
+      1.7091763094281225e-05,
+      8.762870562207597e-05
+    ],
+    "electronic_barrier_hartree": 0.015319770776245328,
+    "entrance_reduced_mass_electron_masses": 1224.7684316264124,
+    "excluded_rigid_mode_count": 5,
+    "excluded_unstable_mode_count": 1,
+    "formula_atomic_units": "2/(2*pi*beta) * (2*pi*beta/mu)**1.5 * (I_TS/I_H2) * omega_H2/(beta**2*product(omega_TS_stable)) * exp(-beta*Delta_V)",
+    "hessian_step_bohr": 3e-05,
+    "isotope_mass_amu": 1.00782503223,
+    "isotope_mass_electron_masses": 1837.1526474396187,
+    "partition_function_conventions": {
+      "anharmonicity_included": false,
+      "classical_oscillator_partition_function": "1/(beta*omega), with angular frequency omega in atomic units",
+      "electronic_statistical_weight_ratio": 1.0,
+      "implementation_note": "equivalent_paths already includes both saddle neighborhoods; do not multiply the sampled rate by two again",
+      "implementation_symmetry_factor": 1.0,
+      "linear_rotor_partition_function": "2*I/beta in atomic units",
+      "linear_rotor_symmetry_number_per_labeled_saddle": 1,
+      "linear_rotor_symmetry_number_reactant": 1,
+      "nuclear_spin_weights_included": false,
+      "nuclei": "labeled, distinguishable, all with the hydrogen-1 atomic mass",
+      "recrossing_included": false,
+      "saddle_neighborhood_labels": [
+        "A-B-C",
+        "A-C-B"
+      ],
+      "saddle_neighborhoods": 2,
+      "tunneling_included": false,
+      "zero_point_energy_included": false
+    },
+    "published_classical_tst_comparison": {
+      "exact_reproduction_claimed": false,
+      "harmonic_to_published_classical_tst_ratio": 1.0527284427846169,
+      "interpretation": "A separate classical rigid-rotor/harmonic calculation checks the rate scale. Its differences from the sampled anharmonic TST are not a numerical error estimate. It cannot validate tunneling, bead convergence, recrossing or the quantum rate."
+    },
+    "rate_atomic_unit_to_cm3_molecule_s": 6.12615946706698e-09,
+    "rates": [
+      {
+        "beta_hartree_inverse": 1052.5834160132904,
+        "electronic_barrier_boltzmann_factor": 9.927851476733557e-08,
+        "entrance_prefactor_independent_si_cm3_molecule_s": 2.4344198651171193e-08,
+        "entrance_prefactor_r30_cm3_molecule_s": 2.4344198651175944e-08,
+        "flux_factor_inverse_atomic_time": 0.00015120411424939816,
+        "implied_flux_pmf_barrier_r30_hartree": 0.02224953188633673,
+        "one_labeled_saddle_rate_cm3_molecule_s": 8.211281853720011e-19,
+        "prefactor_atomic_vs_si_relative_error": 1.9517720772910252e-13,
+        "rotational_partition_ratio": 6.286872869944184,
+        "temperature_K": 300.0,
+        "translational_partition_ratio_bohr3": 12.547974038658108,
+        "two_labeled_saddles_rate_cm3_molecule_s": 1.6422563707440022e-18,
+        "vibrational_partition_ratio": 0.11318672459099056
+      },
+      {
+        "beta_hartree_inverse": 315.7750248039871,
+        "electronic_barrier_boltzmann_factor": 0.007926045870697592,
+        "entrance_prefactor_independent_si_cm3_molecule_s": 4.444622248544434e-08,
+        "entrance_prefactor_r30_cm3_molecule_s": 4.444622248545301e-08,
+        "flux_factor_inverse_atomic_time": 0.0005040137141646606,
+        "implied_flux_pmf_barrier_r30_hartree": 0.03460621947772358,
+        "one_labeled_saddle_rate_cm3_molecule_s": 3.9896094837305947e-13,
+        "prefactor_atomic_vs_si_relative_error": 1.949551631241775e-13,
+        "rotational_partition_ratio": 6.286872869944184,
+        "temperature_K": 1000.0,
+        "translational_partition_ratio_bohr3": 2.0618425295886738,
+        "two_labeled_saddles_rate_cm3_molecule_s": 7.979218967461189e-13,
+        "vibrational_partition_ratio": 1.2576302732332285
+      },
+      {
+        "beta_hartree_inverse": 210.51668320265807,
+        "electronic_barrier_boltzmann_factor": 0.0397531048602579,
+        "entrance_prefactor_independent_si_cm3_molecule_s": 5.443528304177749e-08,
+        "entrance_prefactor_r30_cm3_molecule_s": 5.4435283041788104e-08,
+        "flux_factor_inverse_atomic_time": 0.0007560205712469908,
+        "implied_flux_pmf_barrier_r30_hartree": 0.04232339643906014,
+        "one_labeled_saddle_rate_cm3_molecule_s": 3.676052871019782e-12,
+        "prefactor_atomic_vs_si_relative_error": 1.949551631241775e-13,
+        "rotational_partition_ratio": 6.286872869944184,
+        "temperature_K": 1500.0,
+        "translational_partition_ratio_bohr3": 1.1223249172136842,
+        "two_labeled_saddles_rate_cm3_molecule_s": 7.352105742039564e-12,
+        "vibrational_partition_ratio": 2.829668114774764
+      }
+    ],
+    "reactant_h2_moment_of_inertia_electron_mass_bohr2": 1804.197526220345,
+    "reactant_h2_stretch_wavenumber_cm_minus1": 4403.549980417533,
+    "resolved_eigenvalue_threshold_au": 1e-08,
+    "saddle_moment_of_inertia_electron_mass_bohr2": 11342.760479615097,
+    "stable_mode_count": 3,
+    "stable_mode_labels": [
+      "bend component 1",
+      "bend component 2",
+      "symmetric stretch"
+    ],
+    "stable_mode_wavenumbers_cm_minus1": [
+      907.3560942297934,
+      907.3560942297936,
+      2054.5065330406846
+    ]
+  },
+  "limitations": [
+    "The harmonic partition functions approximate the classical rate; they do not reproduce an exact anharmonic PMF.",
+    "The two-channel factor is used once in this independent formula; the production coordinate already includes those channels.",
+    "No quantum vibrational populations, zero-point energies, tunneling or nuclear-spin restrictions are included.",
+    "No recrossing trajectories, statistical uncertainty, bead convergence or time-step convergence are tested here.",
+    "Agreement in scale argues against a simple units/channel/prefactor explanation for the old quantum pilot discrepancy; it does not prove every discrepancy is sampling error."
+  ],
+  "pes_provenance": {
+    "atomic_numbers": [
+      1,
+      1,
+      1
+    ],
+    "charge": 0,
+    "dtype": "float64",
+    "energy_zero": "three separated H atoms",
+    "execution_device": "cpu",
+    "library_sha256": "d56d703d1ec126e0d1f1c320cdaed3887194232dbab85f75dc953a36a142be70",
+    "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+    "multiplicity": 2,
+    "native_batch": true,
+    "provider": "BKMP2",
+    "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+    "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+    "thread_safety": "process_serial",
+    "trajectory_batch_safe": true
+  },
+  "physical_rpmd_validation": false,
+  "published_comparator": {
+    "author_full_text_url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+    "citation": "Yu. V. Suleimanov, J. W. Allen, W. H. Green, RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics, Computer Physics Communications 184, 833-840 (2013)",
+    "classical_kappa": 0.994,
+    "classical_rate_cm3_molecule_s": 1.55e-18,
+    "classical_tst_cm3_molecule_s": 1.56e-18,
+    "comparison_target": "Classical TST entry, not the quantum RPMD entry or recrossing-corrected rate",
+    "doi": "10.1016/j.cpc.2012.10.017",
+    "locations": "Eq. (12) entrance prefactor; Table 2 classical H+H2 row; Figure 1 two channels",
+    "repository_url": "https://dspace.mit.edu/entities/publication/a4555c62-26a0-4500-8953-5dd1905583cc",
+    "temperature_K": 300.0
+  },
+  "reference_geometry_method": "Brent root of radial analytic gradients in the H2 and symmetric H3 subspaces",
+  "schema": "pyrpmd.h3-rate-sanity.v1",
+  "source_sha256": {
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/transition_state_search/h3.py": "013de8c458e2f34c63a82f2979bec335c8899c75602daa9d4997762b8df41d2c",
+    "benchmarks/transition_state_search/h3_rate_sanity.py": "d584e113bb0656b7a4a2a0c5377b3d43c85cb9d0fd8fa991b1a71b37fbc5685a",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+    "src/pyrpmd/workflows/prepare.py": "106511ca46f797f813298d3e65e6285be580d0af0510abc3809af21b515b7095",
+    "src/pyrpmd/workflows/rate.py": "cf72093145d810fdad4a1c2bac5f67135939e269e4e69deaa7c00df8a825f8a9",
+    "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37"
+  }
+}

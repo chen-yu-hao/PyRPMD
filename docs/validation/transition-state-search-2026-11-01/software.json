@@ -1,0 +1,194 @@
+{
+  "schema": "pyrpmd.transition_state_search.software.v1",
+  "implementation_commit": "99bfc5b01be359032156616133eaa7767848aee6",
+  "ci_fix_commit": "98cf85368fa618ee6f275c18c88c2d5d34b3924d",
+  "environment": {
+    "python": "3.12.14",
+    "executable": "/workspace/scratch/620dee2c1ca3/validation-venv/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "dependencies": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "h5py": "3.16.0",
+      "threadpoolctl": "3.6.0",
+      "mpi4py": "4.1.2",
+      "torch": null,
+      "ase": "3.29.0",
+      "pymbar": "4.0.3",
+      "matplotlib": "3.10.8"
+    }
+  },
+  "native": {
+    "available": true,
+    "openmp": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "pytest": [
+    {
+      "name": "native",
+      "junit_summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "95",
+        "tests": "5046",
+        "time": "529.198",
+        "timestamp": "2026-11-01T08:38:29.740172-05:00",
+        "hostname": "13d968332fed"
+      },
+      "skipped_reasons": {
+        "collection skipped": 1,
+        "optional pinned BrHCl_LEPS1 has not been built": 7,
+        "build optional pinned BrHCl PES for actual-source cache checks": 18,
+        "build optional pinned BrHCl PES first": 28,
+        "optional real JaxPIP environment": 8,
+        "optional real PySCF": 1,
+        "Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check": 1,
+        "could not import 'pyscf': No module named 'pyscf'": 11,
+        "explicit pinned native Caracal build/source required": 6,
+        "full MPI installation for original optimizer": 2,
+        "optional PLUMED Python wrapper unavailable": 1,
+        "could not import 'tblite.interface': No module named 'tblite'": 2,
+        "optional PyTorch runtime not installed": 2,
+        "could not import 'torch': No module named 'torch'": 7
+      },
+      "log": "pytest-native.log",
+      "exit_code": 0
+    },
+    {
+      "name": "literature",
+      "junit_summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "40",
+        "time": "2.559",
+        "timestamp": "2026-11-01T08:47:51.562156-05:00",
+        "hostname": "13d968332fed"
+      },
+      "skipped_reasons": {},
+      "log": "pytest-literature.log",
+      "exit_code": 0
+    },
+    {
+      "name": "final_literature_and_reporting",
+      "junit_summary": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "47",
+        "time": "0.925",
+        "timestamp": "2026-11-01T09:09:45.775695-05:00",
+        "hostname": "13d968332fed"
+      },
+      "skipped_reasons": {},
+      "log": "pytest-search-validation.log",
+      "exit_code": 0,
+      "overlap_note": "Includes the previously run 40 literature tests plus 7 new reporting tests; counted once in total_distinct_passed."
+    }
+  ],
+  "counts": {
+    "full_suite_passed": 4465,
+    "full_suite_skipped": 95,
+    "full_suite_subtests_passed": 486,
+    "additional_literature_tests_passed": 40,
+    "failures": 0,
+    "additional_reporting_tests_passed": 7,
+    "additional_final_targeted_tests_passed": 47,
+    "total_distinct_passed": 4512
+  },
+  "full_suite_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 MPLBACKEND=Agg python -m pytest -q --tb=short --junitxml=pytest-native.xml",
+  "literature_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m pytest -q tests/test_ts_search_literature.py --junitxml=pytest-literature.xml",
+  "mpi": {
+    "successful_scenarios": 8,
+    "ranks": [
+      4,
+      5
+    ],
+    "results": "mpi-results.json",
+    "openmpi": "4.1.6"
+  },
+  "documentation": [
+    {
+      "language": "English",
+      "builder": "html",
+      "command": "python -m sphinx -W --keep-going -b html docs <output-directory>",
+      "exit_code": 0,
+      "log": "docs-html.log"
+    },
+    {
+      "language": "English",
+      "builder": "singlehtml",
+      "command": "python -m sphinx -W --keep-going -b singlehtml docs <output-directory>",
+      "exit_code": 0,
+      "log": "docs-singlehtml.log"
+    },
+    {
+      "language": "Chinese",
+      "builder": "html",
+      "command": "python -m sphinx -W --keep-going -b html docs/zh <output-directory>",
+      "exit_code": 0,
+      "log": "docs-zh-html.log"
+    },
+    {
+      "language": "Chinese",
+      "builder": "singlehtml",
+      "command": "python -m sphinx -W --keep-going -b singlehtml docs/zh <output-directory>",
+      "exit_code": 0,
+      "log": "docs-zh-singlehtml.log"
+    }
+  ],
+  "note": "Full suite includes none of the 47 new literature/reporting tests (confirmed by JUnit). The final targeted 47 tests include the earlier 40-test run; these are not double-counted. JUnit totals also include subtests. Optional backends/source builds listed in skipped_reasons were not all installed locally. MPI and strict docs ran separately.",
+  "log_sha256": {
+    "docs-html.log": "6ee6d25d2d40c3cb38126f3bcade35c11740945056dbc903b3f393d2aeb665fd",
+    "mpi-dynamic.log": "ef3e0a033c309451aff6433a520b354c1d07b74a4c4c2f69147386e794d41b64",
+    "mpi-surface_extensions.log": "0378e207e037716e536aaf26bbb03c8286d7866c271ade16155a523b8bc827da",
+    "pytest-literature.log": "58db1f57815c4dec82a06968775af3dc1546005e868d969a7febb403cfcee925",
+    "pytest-native.log": "350c38aaeb1514a6549eb378101c87603b2a2d1d4b6647582db9689f6169f65b",
+    "mpi-surface.log": "583d7424c82e50b6752f7fd4d4ef1e773eef542f92f747b070ae4b86e3baf5e1",
+    "docs-zh-html.log": "01df28f5ef71a3f34e682db949992650162d1302e9c0fbea2ae2f138df62d354",
+    "pytest-search-validation.log": "9dc1c716af9b7e2188c33c771a39f7f9e8e62a655cf6bada533caf64e6985f19",
+    "mpi-adaptive.log": "a7283f3964e345f50588fceae921c26d29f5fe52f16c486b50a47baeb26732c4",
+    "mpi-materials.log": "a61a1a16205b8f49f62a8167eacb0608bd0fc83e4549c2e6ee1f7e6fc357cbc0",
+    "docs-singlehtml.log": "e5869fdfcc6fbb935cdee15f2ea0c016fbe27b7597118366467beaf0aa8ee959",
+    "mpi-workflow.log": "361463d1f0019346950991d4bfae0929a25191dd099bdffe7e39b69bb598c198",
+    "mpi-opes.log": "e04ef6e5c3f078fcf7111c3b9b666a21486db045ae11a6b95d94afbd7d1e55f0",
+    "docs-zh-singlehtml.log": "f86413992390f40b0edc3abdd783f9f5ca0020d57c8e3b2e3d60c3f897354532",
+    "mpi-integration.log": "89a04acbf222fafa9555956480a3436569524e7dbd1a3eb224d73d4db7939e57"
+  },
+  "final_targeted_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m pytest -q tests/test_ts_search_literature.py tests/test_ts_rate_benchmark.py --junitxml=pytest-search-validation.xml",
+  "source_distribution": {
+    "exit_code": 0,
+    "checked_paths": [
+      "benchmarks/transition_state_search/README.md",
+      "benchmarks/transition_state_search/analytic.py",
+      "benchmarks/transition_state_search/covalent_radii.py",
+      "benchmarks/transition_state_search/h3.py",
+      "benchmarks/transition_state_search/h3_rate_sanity.py",
+      "benchmarks/transition_state_search/rates.py",
+      "benchmarks/transition_state_search/recrossing_timestep.py",
+      "benchmarks/transition_state_search/render.py",
+      "docs/validation/transition-state-search-2026-11-01/README.md",
+      "docs/validation/transition-state-search-2026-11-01/analytic-neb-failure-trajectories.npz",
+      "docs/validation/transition-state-search-2026-11-01/analytic.json",
+      "docs/validation/transition-state-search-2026-11-01/h3-recrossing-halfdt.json",
+      "docs/validation/transition-state-search-2026-11-01/rates-executed-harness.txt",
+      "docs/validation/transition-state-search-2026-11-01/rates.json",
+      "docs/validation/transition-state-search-2026-11-01/rates.pdf",
+      "docs/validation/transition-state-search-2026-11-01/rates.png",
+      "docs/validation/transition-state-search-2026-11-01/saddles.pdf",
+      "docs/validation/transition-state-search-2026-11-01/saddles.png",
+      "tests/test_ts_rate_benchmark.py",
+      "tests/test_ts_search_literature.py"
+    ],
+    "missing": [],
+    "scope": "Source-distribution build and required-file inclusion check; no release package is published."
+  },
+  "log_normalization": "Trailing spaces/tabs from tool progress output were removed; substantive output and test summaries are preserved. Log hashes describe these normalized evidence files."
+}

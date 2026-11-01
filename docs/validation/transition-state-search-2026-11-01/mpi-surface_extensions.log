@@ -1,0 +1,19 @@
+[13d968332fed:108625] Read -1, expected 6618, errno = 38
+[13d968332fed:108626] Read -1, expected 6618, errno = 38
+[13d968332fed:108627] Read -1, expected 6618, errno = 38
+[13d968332fed:108626] Read -1, expected 4399, errno = 38
+[13d968332fed:108625] Read -1, expected 4399, errno = 38
+[13d968332fed:108627] Read -1, expected 4399, errno = 38
+[13d968332fed:108625] Read -1, expected 6699, errno = 38
+[13d968332fed:108626] Read -1, expected 6699, errno = 38
+[13d968332fed:108627] Read -1, expected 6699, errno = 38
+[13d968332fed:108625] Read -1, expected 6710, errno = 38
+[13d968332fed:108626] Read -1, expected 6710, errno = 38
+[13d968332fed:108627] Read -1, expected 6710, errno = 38
+[13d968332fed:108625] Read -1, expected 4473, errno = 38
+[13d968332fed:108626] Read -1, expected 4473, errno = 38
+[13d968332fed:108627] Read -1, expected 4473, errno = 38
+[13d968332fed:108626] Read -1, expected 6699, errno = 38
+[13d968332fed:108625] Read -1, expected 6699, errno = 38
+[13d968332fed:108627] Read -1, expected 6699, errno = 38
+PASS: periodic 3D NHC MetaD + conditional surface rate; 19 NPZ files match serial exactly; completed resumes pass.
