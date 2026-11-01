@@ -13,7 +13,7 @@ two-state isomorphic-Ehrenfest dynamics, centroid RPSH and electronic friction.
 Its state-selected collision workflow already had restart, failed/unresolved
 trajectory accounting and signed state-resolved statistics. The audit did not
 establish a reason to replace those propagators or claim their features were
-absent. See the prior [validation record](validation/nonadiabatic-2026-10-31/README.md).
+absent. See the prior [validation record](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/nonadiabatic-2026-10-31/README.md).
 
 In particular, NQCDynamics' current NRPMD documentation describes separable
 nonequilibrium initial-state generation and does not provide its equilibrium

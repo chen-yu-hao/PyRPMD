@@ -63,25 +63,25 @@ Eqs. (21), (23) and (24) [1]. State labels below use zero-based array indices.
 
 For Model I:
 
-\[
+$$
 V_{00}=a\,\operatorname{sgn}(x)(1-e^{-b|x|}),\quad
 V_{11}=-V_{00},\quad V_{01}=V_{10}=ce^{-dx^2}.
-\]
+$$
 
 For Model II:
 
-\[
+$$
 V_{00}=0,\quad V_{11}=-ae^{-bx^2}+e_0,\quad
 V_{01}=V_{10}=ce^{-dx^2}.
-\]
+$$
 
 For Model III:
 
-\[
+$$
 V_{00}=a,\quad V_{11}=-a,\quad
 V_{01}=V_{10}=
 \begin{cases}be^{cx},&x<0,\\b(2-e^{-cx}),&x\ge0.\end{cases}
-\]
+$$
 
 The first derivatives are evaluated continuously at zero. By default `x` is
 `q[:,0,0]`. Every parameter is a keyword; for example
@@ -118,10 +118,10 @@ For `D` active coordinates and `S` electronic states, define
 `Q[d] = q.flat[coordinates[d]] - reference[d]` separately for each batch frame.
 The implemented potential is
 
-\[
+$$
 V(Q)=H_0+\sum_{d=1}^{D}G_d Q_d
 +\frac12\sum_{d=1}^{D}k_dQ_d^2 I_S.
-\]
+$$
 
 | Parameter | Shape | Meaning |
 | --- | --- | --- |
@@ -168,14 +168,14 @@ assert bath.natoms == 2
 
 The convention is
 
-\[
+$$
 U(Q)=\frac12\sum_d m_d\omega_d^2Q_d^2,\qquad
 V(Q)=
 \begin{pmatrix}
 U(Q)+\epsilon+\sum_d c_dQ_d & \Delta\\
 \Delta^* & U(Q)-\epsilon-\sum_d c_dQ_d
 \end{pmatrix}.
-\]
+$$
 
 `bias=epsilon` is **half** the diabatic energy gap at `Q=0`.
 `tunnelling=Delta` is the off-diagonal matrix element, with no extra factor

@@ -28,20 +28,20 @@ All trajectory propagation in this script uses `native=False`.
 This is a synthetic one-mode, two-state linear-vibronic-coupling model in atomic
 units, with mass and oscillator frequency both equal to one:
 
-\[
+$$
 V(x)=\frac{x^2}{2}I+
 \begin{pmatrix}0&0.15\\0.15&0.3\end{pmatrix}
 +x\begin{pmatrix}0.35&0.05\\0.05&-0.35\end{pmatrix}.
-\]
+$$
 
 Only atom 0's x coordinate is active; the unused y/z coordinates and momenta
 are zero. The full serialized `LinearVibronicCoupling` identity is included in
 the output. The starting density is
 
-\[
+$$
 \rho(0)=Z_0^{-1}e^{-\beta[p^2/2+x^2/2]}\otimes|0\rangle\langle0|,
 \qquad\beta=2.
-\]
+$$
 
 This is a vertical switch from an uncoupled harmonic thermal nucleus to the
 coupled Hamiltonian, rather than thermal equilibrium of the coupled system.
@@ -57,12 +57,12 @@ explicit finite-bead approximation on the NRPMD side.
 The output gives the sampled bead-position second moment and its trajectory
 SEM, the exact finite-P harmonic value, and the continuum quantum value:
 
-\[
+$$
 \langle x^2\rangle_P=\frac{1}{\beta m}
 \sum_{k=0}^{P-1}\frac{1}{\omega^2+[2P\sin(\pi k/P)/\beta]^2},
 \qquad
 \langle x^2\rangle_Q=\frac{1}{2m\omega\tanh(\beta\omega/2)}.
-\]
+$$
 
 The difference between these two analytic moments diagnoses initial finite-P
 discretization; it does not bound the population error at later times.
@@ -71,10 +71,10 @@ discretization; it does not bound the population error at later times.
 
 `pyrpmd.analysis.quantum_reference.SplitOperator1D` implements
 
-\[
+$$
 e^{-iV\Delta t/2}\;\mathcal F^{-1}
 e^{-ik^2\Delta t/(2m)}\mathcal F\;e^{-iV\Delta t/2}.
-\]
+$$
 
 Each matrix potential exponential is evaluated by Hermitian diagonalization.
 The Fourier kinetic step and potential steps are unitary; the symmetric

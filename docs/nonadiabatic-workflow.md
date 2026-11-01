@@ -56,7 +56,7 @@ providers and electronic/nuclear states.
 For RPSH, `dynamics` additionally accepts `electronic_substeps`, `rescaling`,
 `frustrated_hops`, `gap_tolerance`, `decoherence` and `decoherence_constant`.
 `decoherence="none"` is the default. `"edc"` applies the documented
-[Granucci–Persico correction with centroid quantities](nonadiabatic-soc-rpsh.md).
+[Granucci–Persico correction with centroid quantities](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-soc-rpsh.md).
 Its default constant is 0.1 hartree. Converge both nuclear and electronic time
 steps. RPSH requires real matrices and nondegenerate adiabatic states; complex
 Hermitian SOC matrices are supported by NRPMD instead.
@@ -85,7 +85,7 @@ The Python API supports explicitly prepared states when a controlled comparison
 requires a different initialization.
 
 This task does not consume signed thermal SEO samples or correlated Monte Carlo
-parents. Continue to use [thermal NRPMD](thermal-nrpmd.md) for its signed weights
+parents. Continue to use [thermal NRPMD](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/thermal-nrpmd.md) for its signed weights
 and ratio/jackknife estimators. It does not silently reinterpret those data as
 independent unweighted trajectories.
 

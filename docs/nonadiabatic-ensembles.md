@@ -5,11 +5,11 @@ trajectories and retains the contribution of every trajectory at every requested
 time. It is useful for electronic population dynamics and coherences when a
 collision classifier or a thermal rate correlation is not the desired observable.
 The propagation methods are the existing
-[MMST NRPMD](nonadiabatic.md) and [centroid RPSH](nonadiabatic-soc-rpsh.md).
+[MMST NRPMD](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic.md) and [centroid RPSH](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-soc-rpsh.md).
 
 The API does not create a nuclear thermal distribution. Supply prepared nuclear
 parents or fully initialized electronic/nuclear states. In particular, samples
-from the signed SEO thermal sampler require its [thermal analysis](thermal-nrpmd.md),
+from the signed SEO thermal sampler require its [thermal analysis](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/thermal-nrpmd.md),
 not the unweighted means in this API. Correlated parent chains also require a
 separate statistical analysis.
 
@@ -82,13 +82,13 @@ an explicit coordinate transformation outside this sampler.
 For mode `j` with mass `m_j`, frequency `omega_j`, and center `c_j`, the sampled
 position covariance is
 
-\[
+$$
 \operatorname{Cov}(q_j)=
 \frac{P}{\beta m_j}
 \left[\omega_j^2 I+\left(\frac{P}{\beta}\right)^2L\right]^{-1},
 \qquad
 L=2I-\operatorname{roll}(I,1)-\operatorname{roll}(I,-1).
-\]
+$$
 
 All bead position means are `c_j`. The periodic Laplacian is zero for one bead;
 with two beads it contains both links between the same pair, giving an internal
@@ -157,11 +157,11 @@ These policies and electronic/nuclear timestep choices can affect the result.
 The reusable `density_matrix(state)` function returns a fixed-diabatic electronic
 estimator. For NRPMD, with `z = mapping_q + 1j*mapping_p`, it is
 
-\[
+$$
 \rho_{ij}^{\mathrm{MMST}}=
 \frac{1}{P}\sum_{b=1}^{P}
 \frac{z_{bi}z_{bj}^{*}-\delta_{ij}}{2}.
-\]
+$$
 
 Its diagonal is exactly the existing bead-averaged MMST population estimator.
 Off-diagonal elements retain complex coherences, with the convention
@@ -216,10 +216,10 @@ ensemble. Merely drawing different electronic random numbers does not make
 correlated nuclear parents independent. With at least two independent
 trajectories, the pointwise estimator is
 
-\[
+$$
 \mathrm{SEM}(t)=
 \frac{\mathrm{std}_{\rm trajectory}(A(t),\mathrm{ddof}=1)}{\sqrt{N}}.
-\]
+$$
 
 With only one trajectory, the SEM remains `None`; an unestimable error is not
 reported as zero. `sem_unavailable_reason` explains why an SEM is absent.
