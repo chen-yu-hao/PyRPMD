@@ -45,7 +45,8 @@ jobs:
           python-version: '3.12'
       - run: python -m pip install -e '.[test]'
       - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py tests/test_torch_backend.py tests/test_torch_paper_validation.py tests/test_torch_observable_validation.py tests/test_torch_bcocb.py
+      - run: sudo apt-get update && sudo apt-get install -y libfftw3-double3
+      - run: python -m pytest -q tests/test_potentials.py tests/test_torch_periodic.py tests/test_torch_backend.py tests/test_torch_paper_validation.py tests/test_torch_observable_validation.py tests/test_torch_bcocb.py tests/test_rpmdrate_normal_modes.py
       - name: Test Torch reference harnesses from the source archive
         run: |
           python -m pip install build
@@ -61,7 +62,8 @@ jobs:
           assert len(roots) == 1, roots
           root = roots[0]
           tests = ["tests/test_torch_backend.py", "tests/test_torch_paper_validation.py",
-                   "tests/test_torch_observable_validation.py", "tests/test_torch_bcocb.py"]
+                   "tests/test_torch_observable_validation.py", "tests/test_torch_bcocb.py",
+                   "tests/test_rpmdrate_normal_modes.py"]
           subprocess.run([sys.executable, "-m", "pytest", "-q", *tests], cwd=root,
                          env={**os.environ, "PYTHONPATH": str(root / "src")}, check=True)
           PY

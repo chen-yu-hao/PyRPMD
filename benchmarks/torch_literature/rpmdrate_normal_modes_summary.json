@@ -1,0 +1,305 @@
+{
+  "parent_commit": "bd95474877108ef37571f3b4f582d55dfdbe6e2c",
+  "reference": {
+    "repository": "GreenGroup/RPMDrate",
+    "commit": "8c1828d2302aacf09a15faf5c7fc50a18d4c113e",
+    "scope": "actual FFTW transforms and independent source-convention free maps; not the complete RPMDrate executable"
+  },
+  "environment": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5",
+    "device": "cpu",
+    "cuda_available": false,
+    "torch_threads": 1
+  },
+  "source_sha256": {
+    "torch_backend.py": "9394c0379bcb29674a4a3b4b77126245661a5e8852a2885f5d16c32fd8389337",
+    "torch_normal_modes.py": "5b31af409c6c021c76c3a04f5127cd2a263dc28f004a5611e35f2ccdd960faf6",
+    "rpmdrate_normal_modes.py": "ec6ffb48f0e8c03121bfdeb42eadfe5946a6fe01aa5b395fb6ab2dace104df01",
+    "rpmdrate_normal_modes_validation.py": "52aa42a14798d2e5451735032755a717577d9c40c890e1e912222981860c71cc"
+  },
+  "complete_results_sha256": "1ea03f64091faf87a8167d621db3bf838cb8066b7de3c490c371bb8b82291865",
+  "complete_results_file": "rpmdrate-normal-modes-results.json (review bundle)",
+  "algebra": {
+    "cases": 11,
+    "max_fftw_error": 6.661338147750939e-16,
+    "max_explicit_basis_error": 7.349676423018536e-14,
+    "max_roundtrip_error": 1.0547118733938987e-15,
+    "max_metric_error": 5.684341886080802e-14
+  },
+  "harmonic": {
+    "trajectories": 1024,
+    "beta": 8.0,
+    "dt": 0.5,
+    "steps": 1600,
+    "cold_start": true,
+    "rows": [
+      {
+        "beads": 8,
+        "seed": 5008,
+        "finite_P_exact": {
+          "q2": 0.4476190476190476,
+          "kinetic_primitive": 0.2238095238095238,
+          "kinetic_virial": 0.2238095238095238
+        },
+        "max_paired_q_error": 2.220446049250313e-15,
+        "max_paired_p_error": 2.55351295663786e-15,
+        "identical_rng_state": true,
+        "primitive": {
+          "mean": 0.22254645128069236,
+          "se": 0.004741574601138193,
+          "ci": [
+            0.21324212762639416,
+            0.23185077493499057
+          ],
+          "n": 1024
+        },
+        "centroid_virial": {
+          "mean": 0.2255686407105157,
+          "se": 0.003022946906004847,
+          "ci": [
+            0.21963675546790518,
+            0.2315005259531262
+          ],
+          "n": 1024
+        }
+      },
+      {
+        "beads": 32,
+        "seed": 5032,
+        "finite_P_exact": {
+          "q2": 0.4964788851774461,
+          "kinetic_primitive": 0.24823944258872288,
+          "kinetic_virial": 0.24823944258872305
+        },
+        "max_paired_q_error": 2.6645352591003757e-15,
+        "max_paired_p_error": 7.993605777301127e-15,
+        "identical_rng_state": true,
+        "primitive": {
+          "mean": 0.25117548050791316,
+          "se": 0.013830931107264579,
+          "ci": [
+            0.22403524328979582,
+            0.27831571772603053
+          ],
+          "n": 1024
+        },
+        "centroid_virial": {
+          "mean": 0.2484761659137224,
+          "se": 0.002828932027532468,
+          "ci": [
+            0.24292499327713585,
+            0.25402733855030896
+          ],
+          "n": 1024
+        }
+      },
+      {
+        "beads": 128,
+        "seed": 5128,
+        "finite_P_exact": {
+          "q2": 0.5000918864820665,
+          "kinetic_primitive": 0.2500459432410338,
+          "kinetic_virial": 0.25004594324103324
+        },
+        "max_paired_q_error": 2.6645352591003757e-15,
+        "max_paired_p_error": 7.460698725481052e-14,
+        "identical_rng_state": true,
+        "primitive": {
+          "mean": 0.2861881176101679,
+          "se": 0.030924911634747095,
+          "ci": [
+            0.22550460822044116,
+            0.3468716269998946
+          ],
+          "n": 1024
+        },
+        "centroid_virial": {
+          "mean": 0.2547825918343402,
+          "se": 0.002865115650987347,
+          "ci": [
+            0.2491604165937814,
+            0.260404767074899
+          ],
+          "n": 1024
+        }
+      },
+      {
+        "beads": 256,
+        "seed": 5256,
+        "finite_P_exact": {
+          "q2": 0.5002746195277487,
+          "kinetic_primitive": 0.25013730976387194,
+          "kinetic_virial": 0.2501373097638743
+        },
+        "max_paired_q_error": 2.1094237467877974e-15,
+        "max_paired_p_error": 3.4505731605349865e-13,
+        "identical_rng_state": true,
+        "primitive": {
+          "mean": 0.24997038930616264,
+          "se": 0.04306844268773273,
+          "ci": [
+            0.1654578035594222,
+            0.3344829750529031
+          ],
+          "n": 1024
+        },
+        "centroid_virial": {
+          "mean": 0.24682627313413605,
+          "se": 0.0027441366757721105,
+          "ci": [
+            0.2414414931969218,
+            0.25221105307135033
+          ],
+          "n": 1024
+        }
+      }
+    ]
+  },
+  "quartic": {
+    "beads": 16,
+    "beta": 1.0,
+    "trajectories": 256,
+    "seed": 717,
+    "equil_time": 20.0,
+    "production_time": 100.0,
+    "observation_interval": 0.2,
+    "reference": {
+      "beads": 16,
+      "beta": 1.0,
+      "points": 512,
+      "extent": 6.0,
+      "retained_eigenvalues": 117,
+      "q2": 0.6966650534558295,
+      "potential": 0.29053890878898575,
+      "kinetic_virial": 0.5810778175779653,
+      "kinetic_primitive": 0.5810778175780058
+    },
+    "uncertainty": "Student-t across independent trajectory means",
+    "rows": [
+      {
+        "dt": 0.02,
+        "max_paired_q_error": 1.3500311979441904e-13,
+        "max_paired_p_error": 4.664046926450283e-13,
+        "primitive": {
+          "mean": 0.5771781728950118,
+          "se": 0.008226735721879045,
+          "ci": [
+            0.5609771752825539,
+            0.5933791705074698
+          ],
+          "n": 256
+        },
+        "centroid_virial": {
+          "mean": 0.5807169576095581,
+          "se": 0.0005193515432663566,
+          "ci": [
+            0.5796941931259358,
+            0.5817397220931804
+          ],
+          "n": 256
+        }
+      },
+      {
+        "dt": 0.1,
+        "max_paired_q_error": 9.237055564881302e-14,
+        "max_paired_p_error": 3.7259084706420253e-13,
+        "primitive": {
+          "mean": 0.5901940115546283,
+          "se": 0.00814074607485672,
+          "ci": [
+            0.574162354262949,
+            0.6062256688463075
+          ],
+          "n": 256
+        },
+        "centroid_virial": {
+          "mean": 0.5802523391806849,
+          "se": 0.0004741696448334647,
+          "ci": [
+            0.5793185518872124,
+            0.5811861264741573
+          ],
+          "n": 256
+        }
+      }
+    ]
+  },
+  "correlation": {
+    "beads": 54,
+    "beta": 1.0,
+    "trajectories": 2048,
+    "seed": 20261101,
+    "C0": 0.599023006261178,
+    "thermostat": null,
+    "duration": 10.0,
+    "acceptance": 0.7802734375,
+    "scope": "layout parity only; no new exact-quantum or digitized-paper reference",
+    "rows": [
+      {
+        "dt": 0.01,
+        "max_paired_q_error": 0.0,
+        "max_paired_p_error": 0.0,
+        "max_mean_correlation_difference_over_C0": 0.0
+      },
+      {
+        "dt": 0.05,
+        "max_paired_q_error": 0.0,
+        "max_paired_p_error": 0.0,
+        "max_mean_correlation_difference_over_C0": 0.0
+      },
+      {
+        "dt": 0.1,
+        "max_paired_q_error": 0.0,
+        "max_paired_p_error": 0.0,
+        "max_mean_correlation_difference_over_C0": 0.0
+      }
+    ]
+  },
+  "default_compatibility": {
+    "cases": 36,
+    "parent_q_p_rng_bitwise_equal": true
+  },
+  "tests": {
+    "new_file": {
+      "passed": 124,
+      "skipped": 1
+    },
+    "focused": {
+      "passed": 345,
+      "skipped": 5
+    },
+    "integration": {
+      "passed": 887,
+      "skipped": 8,
+      "subtests_passed": 3
+    },
+    "full_source": {
+      "passed": 4911,
+      "failed": 1,
+      "skipped": 143,
+      "subtests_passed": 357
+    },
+    "extracted_sdist": {
+      "passed": 551,
+      "skipped": 11
+    },
+    "full_suite_failure": "test_render_never_initializes_a_requested_gui_backend; standalone Matplotlib selects Agg and imports pyplot despite TkAgg without importing PyRPMD"
+  },
+  "cpu_workflow_smoke": {
+    "samplers": [
+      "bcocb",
+      "baoab"
+    ],
+    "completed_resume_summary_equal": true,
+    "scope": "existing CPU PIMD; not new Torch routing"
+  },
+  "unsupported": [
+    "CUDA hardware validation",
+    "complete RPMDrate executable",
+    "BCOCB with inner_steps>1",
+    "new Torch .inp routing/checkpoints/constraints",
+    "trained chemistry/GPU performance"
+  ]
+}

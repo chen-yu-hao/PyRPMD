@@ -277,3 +277,19 @@ benchmarks, and scientific RPC/MTS convergence studies remain necessary.
   https://docs.pytorch.org/docs/2.9/generated/torch.autograd.grad.html
 - i-PI component-wise contraction overview:
   https://docs.ipi-code.org/introduction.html
+
+
+## RPMDrate normal-mode compatibility
+
+Normal modes are a coordinate representation; BCOCB is a time splitting.
+They are compatible, not alternative algorithms. The `cayley` in the
+integrator name identifies the free-ring map, **not** bead-space integration.
+Use `normal_mode_layout="rpmdrate"` independently of the integrator to select
+RPMDrate's real FFTW-halfcomplex layout. With BCOCB, the C/O/C substeps then
+remain in normal-mode space without intermediate bead-space round trips.
+The default `normal_mode_layout="rfft"` retains the previous arithmetic.
+
+See [the compatibility report](rpmdrate_normal_modes.md) for the pinned
+upstream source, normalization, mode/noise metric, CPU/native comparisons,
+limitations, and the runnable [sampling-to-production example](../examples/ensembles/torch_normal_modes.py).
+The new layout is a Torch Python API option, not a new `.inp` routing key.

@@ -366,13 +366,22 @@ class TorchDynamics:
     dynamics is unthermostatted unless explicitly requested. PILE-L thermalizes
     the centroid; TRPMD leaves it untouched. Real-mass variance is m*P/beta.
 
+    ``normal_mode_layout="rpmdrate"`` uses RPMDrate's FFTW halfcomplex
+    packing and 1/sqrt(P) normalization, independently of the integrator.
+    The BCOCB C/O/C sequence then stays in normal modes between half maps.
+    The default ``"rfft"`` preserves the original complex-rFFT arithmetic.
+    Neither layout changes real masses, Hamiltonian units or PES batching.
+
     A propagate block is atomic, including RNG rollback on failure. Finite
     status is accumulated on device and read once at the block boundary.
     There is no persistent force cache across blocks or external state edits.
     """
     def __init__(self, potential, masses, beta, nbeads, dt, *, inner_steps=1,
                  integrator="normal-mode-bab", thermostat=None, gamma_centroid=1.0,
-                 seed=0):
+                 seed=0, normal_mode_layout="rfft"):
+        if normal_mode_layout not in ("rfft", "rpmdrate"):
+            raise ValueError("normal_mode_layout must be rfft or rpmdrate")
+        self.normal_mode_layout = normal_mode_layout
         self.nbeads = _integer(nbeads, "nbeads")
         self.inner_steps = _integer(inner_steps, "inner_steps")
         self.beta, self.dt = _positive(beta, "beta"), _positive(dt, "dt")
@@ -402,6 +411,11 @@ class TorchDynamics:
         self._sigma = torch.sqrt(self._mass * (self.nbeads / self.beta))
         k = torch.arange(self.nbeads // 2 + 1, dtype=torch.float64, device=self.device)
         omega = 2 * self.nbeads / self.beta * torch.sin(math.pi * k / self.nbeads)
+        self._normal_modes = None
+        if normal_mode_layout == "rpmdrate":
+            from .torch_normal_modes import RPMDrateNormalModes
+            self._normal_modes = RPMDrateNormalModes(self.nbeads, device=self.device)
+            omega = omega[self._normal_modes.frequency_indices]
         h = self.dt / self.inner_steps
         if integrator == "normal-mode-bab":
             theta = h * omega
@@ -434,7 +448,7 @@ class TorchDynamics:
 
     def _signature(self):
         return (self.nbeads, self.inner_steps, self.beta, self.dt, self.integrator,
-                self.thermostat, self.gamma_centroid, id(self.potential))
+                self.thermostat, self.gamma_centroid, id(self.potential), self.normal_mode_layout)
 
     def _check(self, state):
         if not isinstance(state, TorchState):
@@ -460,6 +474,12 @@ class TorchDynamics:
         return torch.randn(shape, dtype=torch.float64, device=self.device, generator=self.generator) * self._sigma
 
     def _free(self, q, p, *, half=False):
+        if self._normal_modes is not None:
+            modes = self._normal_modes
+            qk, pk = modes.forward(q, bead_axis=1), modes.forward(p, bead_axis=1)
+            a, b, c = self._half_abc if half else self._abc
+            return (modes.inverse(a * qk + b * pk / self._mass, bead_axis=1),
+                    modes.inverse(a * pk - c * self._mass * qk, bead_axis=1))
         qk = torch.fft.rfft(q, dim=1, norm="ortho")
         pk = torch.fft.rfft(p, dim=1, norm="ortho")
         a, b, c = self._half_abc if half else self._abc
@@ -472,10 +492,32 @@ class TorchDynamics:
         # Transform REAL bead noise. Independently sampling complex Fourier
         # noise gives incorrect centroid/Nyquist variances and correlations.
         noise = torch.randn(p.shape, dtype=p.dtype, device=p.device, generator=self.generator)
+        if self._normal_modes is not None:
+            modes = self._normal_modes
+            pk, nk = modes.forward(p, bead_axis=1), modes.forward(noise, bead_axis=1)
+            return modes.inverse(self._decay * pk + self._noise * self._sigma * nk, bead_axis=1)
         pk = torch.fft.rfft(p, dim=1, norm="ortho")
         nk = torch.fft.rfft(noise, dim=1, norm="ortho")
         return torch.fft.irfft(self._decay * pk + self._noise * self._sigma * nk,
                                n=self.nbeads, dim=1, norm="ortho")
+
+    def _middle(self, q, p):
+        """C^(1/2) O C^(1/2); packed path stays in normal modes throughout."""
+        if self._normal_modes is None:
+            q, p = self._free(q, p, half=True)
+            p = self._thermostat(p)
+            return self._free(q, p, half=True)
+        modes = self._normal_modes
+        qk, pk = modes.forward(q, bead_axis=1), modes.forward(p, bead_axis=1)
+        a, b, c = self._half_abc
+        qk, pk = a * qk + b * pk / self._mass, a * pk - c * self._mass * qk
+        # Same real bead noise and RNG sequence as the default layout. Its
+        # transform has variance 1 at zero/Nyquist and 1/2 in each paired slot.
+        noise = torch.randn(p.shape, dtype=p.dtype, device=p.device, generator=self.generator)
+        nk = modes.forward(noise, bead_axis=1)
+        pk = self._decay * pk + self._noise * self._sigma * nk
+        qk, pk = a * qk + b * pk / self._mass, a * pk - c * self._mass * qk
+        return modes.inverse(qk, bead_axis=1), modes.inverse(pk, bead_axis=1)
 
     def step(self, state):
         return self.propagate(state, 1)
@@ -514,9 +556,7 @@ class TorchDynamics:
                 for _ in range(self.inner_steps):
                     p.add_(fast, alpha=h / 2)
                     if middle_ou and self.thermostat is not None:
-                        q, p = self._free(q, p, half=True)
-                        p = self._thermostat(p)
-                        q, p = self._free(q, p, half=True)
+                        q, p = self._middle(q, p)
                     else:
                         # With no thermostat the two square roots collapse
                         # to the existing full C map, without extra FFTs.

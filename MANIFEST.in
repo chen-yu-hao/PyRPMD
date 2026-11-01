@@ -39,3 +39,5 @@ include benchmarks/torch_device_backend.py benchmarks/torch_paper_validation.py 
 recursive-include benchmarks/torch_literature *.md *.json *.gz
 
 include benchmarks/torch_bcocb_validation.py
+
+include benchmarks/rpmdrate_normal_modes.py benchmarks/rpmdrate_normal_modes_validation.py
