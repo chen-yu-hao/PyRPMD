@@ -1,11 +1,9 @@
-"""Adaptive finite-temperature string geometry from a supplied mean-force oracle.
+"""Euclidean mean-force string geometry, not a free-energy sampler.
 
-The caller must provide a CONSISTENT gradient of free energy in collective
-variables (including any metric/Jacobian correction). Feeding an ordinary PES
-gradient only gives a minimum-energy string, not a free-energy path.
-
-This independent analysis layer does not change the NRPMD dynamics or claim
-that a grand-canonical electronic ensemble is equivalent to a mapping ensemble.
+The oracle must provide a consistent free-energy gradient in scaled Cartesian
+or constant-Euclidean-metric CVs. General nonlinear CVs need their metric and
+Jacobian treatment outside this API; a PES gradient yields only an MEP.
+No sampling error, kinetic rate or physical convergence is inferred here.
 """
 from dataclasses import dataclass
 import numpy as np
@@ -20,80 +18,109 @@ class StringResult:
     history: tuple
 
 
+def _real_array(value, name):
+    value = np.asarray(value)
+    if value.dtype.kind not in "fiu" or not np.isfinite(value).all():
+        raise ValueError(f"{name} must be finite real numerical values")
+    return np.array(value, dtype=np.float64, copy=True)
+
+
+def _positive_real(value, name):
+    array = _real_array(value, name)
+    if array.ndim != 0 or array <= 0:
+        raise ValueError(f"{name} must be a positive finite real scalar")
+    return float(array)
+
+
+def _positive_integer(value, name):
+    if (isinstance(value, (bool, np.bool_))
+            or not isinstance(value, (int, np.integer)) or value < 1):
+        raise ValueError(f"{name} must be a positive integer")
+    return int(value)
+
+
 def _validated(points):
-    points = np.asarray(points, dtype=np.float64)
-    if (points.ndim != 2 or points.shape[0] < 3 or points.shape[1] < 2
-            or not np.isfinite(points).all()):
+    points = _real_array(points, "images")
+    if points.ndim != 2 or points.shape[0] < 3 or points.shape[1] < 2:
         raise ValueError("images must be finite [n_images>=3, n_cv>=2]")
-    if np.any(np.linalg.norm(np.diff(points, axis=0), axis=1) <= 0):
-        raise ValueError("adjacent string images must be distinct")
-    return points.copy()
+    distances = np.linalg.norm(np.diff(points, axis=0), axis=1)
+    if not np.isfinite(distances).all() or np.any(distances <= 0):
+        raise ValueError("adjacent string images must be distinct with finite distances")
+    return points
 
 
 def _reparameterize(points, n):
-    distances = np.linalg.norm(np.diff(points, axis=0), axis=1)
-    arc = np.concatenate(([0.0], np.cumsum(distances)))
-    if arc[-1] <= 0:
-        raise ValueError("degenerate path")
+    points = _validated(points)
+    arc = np.concatenate(([0.0], np.cumsum(np.linalg.norm(np.diff(points, axis=0), axis=1))))
+    if not np.isfinite(arc).all() or np.any(np.diff(arc) <= 0):
+        raise ValueError("degenerate or numerically unresolved path arc length")
     positions = np.linspace(0.0, arc[-1], n)
     out = np.column_stack([np.interp(positions, arc, points[:, j])
                            for j in range(points.shape[1])])
     out[0], out[-1] = points[0], points[-1]
-    return out
+    return _validated(out)
+
+
+def _perpendicular(path, oracle):
+    tangent = path[2:] - path[:-2]
+    norm = np.linalg.norm(tangent, axis=1)
+    if not np.isfinite(norm).all() or np.any(norm <= 0):
+        raise ValueError("undefined string tangent")
+    tangent /= norm[:, None]
+    gradient = _real_array(oracle(path.copy()), "mean force gradient")
+    if gradient.shape != path.shape:
+        raise ValueError("mean force gradient must have shape [n_images,n_cv]")
+    interior = gradient[1:-1]
+    force = interior - np.sum(interior * tangent, axis=1)[:, None] * tangent
+    residual = float(np.max(np.linalg.norm(force, axis=1)))
+    if not np.isfinite(residual):
+        raise ValueError("nonfinite perpendicular force")
+    return force, residual
 
 
 def adaptive_mean_force_string(images, mean_force_gradient, *, step=0.01,
                                tolerance=1e-3, max_iterations=2000,
                                max_images=80, insertion_threshold=0.25,
                                adapt_every=25):
-    """Relax interior images normal to path and adapt by turning angle.
+    """Relax a fixed-endpoint string and insert images at sharp bends.
 
-    Parameters are in the caller's CV units. Gradient must be of the
-    dimensionless or appropriately scaled *free energy*, not a biased force;
-    sampling uncertainties should be converged before each update.
-    No statistical errors or kinetics are estimated by this routine.
+    ``iterations`` counts completed updates. ``history`` includes the initial
+    residual and one value per update; its last entry ALWAYS describes the
+    returned images, including when the update budget is exhausted. Convergence
+    is a deterministic perpendicular-gradient criterion only. A noisy mean-force
+    oracle needs separate uncertainty and sampling-convergence checks.
     """
     path = _validated(images)
     if not callable(mean_force_gradient):
         raise TypeError("mean_force_gradient must be callable")
-    if not (np.isfinite(step) and step > 0 and np.isfinite(tolerance)
-            and tolerance > 0 and np.isfinite(insertion_threshold)
-            and 0 < insertion_threshold < np.pi):
-        raise ValueError("invalid step, tolerance or insertion threshold")
-    if (not isinstance(max_iterations, int) or max_iterations < 1
-            or not isinstance(max_images, int) or max_images < len(path)
-            or not isinstance(adapt_every, int) or adapt_every < 1):
-        raise ValueError("invalid iteration/image limits")
-    records = []
-    for iteration in range(1, max_iterations + 1):
-        tangents = np.empty_like(path)
-        tangents[1:-1] = path[2:] - path[:-2]
-        tangents[0] = path[1] - path[0]
-        tangents[-1] = path[-1] - path[-2]
-        norm = np.linalg.norm(tangents, axis=1)
-        if np.any(norm <= 0):
-            raise ValueError("undefined string tangent")
-        tangents /= norm[:, None]
-        gradient = np.asarray(mean_force_gradient(path.copy()), dtype=float)
-        if gradient.shape != path.shape or not np.isfinite(gradient).all():
-            raise ValueError("mean force gradient must be finite [n_images,n_cv]")
-        perpendicular = gradient - np.sum(gradient * tangents, axis=1)[:, None] * tangents
-        residual = float(np.max(np.linalg.norm(perpendicular[1:-1], axis=1)))
-        records.append(residual)
-        if residual <= tolerance:
-            return StringResult(path, residual, True, iteration, tuple(records))
+    step = _positive_real(step, "step")
+    tolerance = _positive_real(tolerance, "tolerance")
+    threshold = _positive_real(insertion_threshold, "insertion_threshold")
+    if threshold >= np.pi:
+        raise ValueError("insertion_threshold must be less than pi")
+    max_iterations = _positive_integer(max_iterations, "max_iterations")
+    max_images = _positive_integer(max_images, "max_images")
+    adapt_every = _positive_integer(adapt_every, "adapt_every")
+    if max_images < len(path):
+        raise ValueError("max_images cannot be smaller than the initial string")
+    force, residual = _perpendicular(path, mean_force_gradient)
+    records = [residual]
+    iteration = 0
+    while residual > tolerance and iteration < max_iterations:
         moved = path.copy()
-        moved[1:-1] -= step * perpendicular[1:-1]
+        moved[1:-1] -= step * force
         path = _reparameterize(moved, len(moved))
+        iteration += 1
         if iteration % adapt_every == 0 and len(path) < max_images:
             segment = np.diff(path, axis=0)
             unit = segment / np.linalg.norm(segment, axis=1)[:, None]
             turns = np.arccos(np.clip(np.sum(unit[:-1] * unit[1:], axis=1), -1, 1))
-            candidates = np.where(turns > insertion_threshold)[0] + 1
+            candidates = np.where(turns > threshold)[0] + 1
             if len(candidates):
-                # Insert at most one image per adaptation, at the sharpest bend.
                 pivot = int(candidates[np.argmax(turns[candidates - 1])])
                 midpoint = (path[pivot] + path[pivot + 1]) * 0.5
-                path = np.insert(path, pivot + 1, midpoint, axis=0)
-                path = _reparameterize(path, len(path))
-    return StringResult(path, records[-1], False, max_iterations, tuple(records))
+                path = _reparameterize(np.insert(path, pivot + 1, midpoint, axis=0), len(path) + 1)
+        force, residual = _perpendicular(path, mean_force_gradient)
+        records.append(residual)
+    return StringResult(path.copy(), residual, residual <= tolerance,
+                        iteration, tuple(records))
