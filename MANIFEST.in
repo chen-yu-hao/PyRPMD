@@ -33,3 +33,7 @@ global-exclude __pycache__ *.py[cod] *.so *.o
 
 recursive-include src/pyrpmd/pesgen/_native *.cpp *.f90 *.h
 recursive-include src/pyrpmd/templates *.inp
+
+# Torch validation tests import these independent reference harnesses.
+include benchmarks/torch_device_backend.py benchmarks/torch_paper_validation.py benchmarks/torch_observable_validation.py
+recursive-include benchmarks/torch_literature *.md *.json *.gz
