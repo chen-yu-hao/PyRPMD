@@ -1,0 +1,367 @@
+{
+  "schema": "pyrpmd.nonadiabatic_population_benchmark",
+  "version": 1,
+  "physical_converged": false,
+  "software_versions": {
+    "pyrpmd": "0.2.0",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "units": {
+    "length": "bohr",
+    "mass": "electron_mass",
+    "energy": "hartree",
+    "time": "atomic_time"
+  },
+  "configuration": {
+    "trajectories": 16,
+    "beads": 8,
+    "steps": 40,
+    "dt": 0.05,
+    "sample_stride": 5,
+    "grid_points": 48,
+    "half_width": 8.0,
+    "mass": 1.0,
+    "omega": 1.0,
+    "beta": 2.0,
+    "seed": 1729,
+    "nuclear_seed": 2666410027,
+    "mapping_seed": 4238697849,
+    "model": {
+      "schema": "pyrpmd.nonadiabatic_model",
+      "version": 1,
+      "model": "lvc",
+      "parameters": {
+        "h0": {
+          "real": [
+            [
+              0.0,
+              0.15
+            ],
+            [
+              0.15,
+              0.3
+            ]
+          ],
+          "imag": [
+            [
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "linear": {
+          "real": [
+            [
+              [
+                0.35,
+                0.05
+              ],
+              [
+                0.05,
+                -0.35
+              ]
+            ]
+          ],
+          "imag": [
+            [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "harmonic": [
+          1.0
+        ],
+        "reference": [
+          0.0
+        ],
+        "coordinates": [
+          0
+        ],
+        "natoms": 1
+      }
+    }
+  },
+  "initial_state": {
+    "definition": "canonical uncoupled harmonic nucleus times pure diabatic electronic state 0",
+    "nrpmd_preparation": "independent finite-P primitive harmonic rings and focused MMST electronic variables",
+    "reference_preparation": "finite Fourier-grid harmonic canonical density matrix",
+    "analytic_quantum_position_second_moment": 0.6565176427496657,
+    "finite_bead_position_second_moment": 0.6523800866955112,
+    "finite_bead_minus_quantum_second_moment": -0.004137556054154556,
+    "sample_position_second_moment": 0.5344684017865269,
+    "sample_position_second_moment_sem": 0.10393834755937972,
+    "components": 14,
+    "finite_grid_omitted_thermal_weight": 6.914400112228378e-13,
+    "initial_position_second_moment": 0.6565176427399875
+  },
+  "time": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0
+  ],
+  "quantum_reference": {
+    "method": "periodic Fourier-grid symmetric split operator; no absorber",
+    "dt": 0.00625,
+    "populations": [
+      [
+        0.999999999999999,
+        0.0
+      ],
+      [
+        0.9984968252094676,
+        0.0015031747905405496
+      ],
+      [
+        0.994054057374998,
+        0.005945942625014131
+      ],
+      [
+        0.9868640835878257,
+        0.013135916412195655
+      ],
+      [
+        0.9772234130464958,
+        0.022776586953529195
+      ],
+      [
+        0.9655029583854626,
+        0.034497041614566536
+      ],
+      [
+        0.9521164420735245,
+        0.04788355792650713
+      ],
+      [
+        0.9374918898739878,
+        0.06250811012604506
+      ],
+      [
+        0.9220486895885606,
+        0.07795131041147411
+      ]
+    ],
+    "max_component_norm_error": 1.2145839889399213e-13,
+    "max_outer_five_percent_population": 6.324717665026761e-17,
+    "numerical_differences": {
+      "halved_dt_max_abs_population_change": 1.2479213348792761e-07,
+      "doubled_grid_max_abs_population_change": 4.0190073491430667e-14,
+      "doubled_box_same_dx_max_abs_population_change": 3.83026943495679e-14
+    },
+    "interpretation": "refinement differences estimate numerical sensitivity; they are not rigorous error bounds"
+  },
+  "nrpmd": {
+    "mean_populations": [
+      [
+        1.0,
+        0.0
+      ],
+      [
+        1.0041546407936406,
+        -0.004154640793641071
+      ],
+      [
+        1.0039856365306237,
+        -0.003985636530624174
+      ],
+      [
+        1.000228266150554,
+        -0.00022826615055443478
+      ],
+      [
+        0.9939053581969736,
+        0.006094641803026924
+      ],
+      [
+        0.9854306194944431,
+        0.014569380505556645
+      ],
+      [
+        0.974928930256144,
+        0.02507106974385593
+      ],
+      [
+        0.9624142708753809,
+        0.03758572912461931
+      ],
+      [
+        0.9477739866183933,
+        0.05222601338160703
+      ]
+    ],
+    "population_sem": [
+      [
+        3.204937810639273e-17,
+        0.0
+      ],
+      [
+        0.0035862227879967195,
+        0.0035862227879967074
+      ],
+      [
+        0.007255541932297161,
+        0.007255541932297186
+      ],
+      [
+        0.010764824657127426,
+        0.010764824657127468
+      ],
+      [
+        0.01385640727764102,
+        0.013856407277641014
+      ],
+      [
+        0.016784039121585177,
+        0.01678403912158513
+      ],
+      [
+        0.019697887077429276,
+        0.019697887077429282
+      ],
+      [
+        0.02247416101164285,
+        0.022474161011642863
+      ],
+      [
+        0.025081603497513476,
+        0.02508160349751345
+      ]
+    ],
+    "population_estimator": "signed bead-averaged MMST; no clipping",
+    "paired_halved_dt_mean_population_change": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        -2.2847708994189198e-07,
+        2.284770900702615e-07
+      ],
+      [
+        -4.237454223718351e-06,
+        4.237454223704473e-06
+      ],
+      [
+        -4.870866215825331e-06,
+        4.870866215086339e-06
+      ],
+      [
+        1.1350267873078135e-06,
+        -1.1350267885325283e-06
+      ],
+      [
+        2.348787302708377e-06,
+        -2.348787303613903e-06
+      ],
+      [
+        5.346190327118472e-06,
+        -5.346190328020528e-06
+      ],
+      [
+        1.0855440737075894e-05,
+        -1.0855440738061217e-05
+      ],
+      [
+        3.876698672980461e-06,
+        -3.876698673913742e-06
+      ]
+    ],
+    "paired_halved_dt_change_sem": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        2.3004546581011432e-06,
+        2.300454657945497e-06
+      ],
+      [
+        4.597754578955934e-06,
+        4.597754578866303e-06
+      ],
+      [
+        7.291968470080553e-06,
+        7.291968470224953e-06
+      ],
+      [
+        9.488676935916455e-06,
+        9.488676936231888e-06
+      ],
+      [
+        1.2272640489644103e-05,
+        1.2272640489192736e-05
+      ],
+      [
+        1.4546921427011566e-05,
+        1.4546921426961743e-05
+      ],
+      [
+        1.3443066334355926e-05,
+        1.344306633466182e-05
+      ],
+      [
+        1.3208580801778114e-05,
+        1.3208580801826383e-05
+      ]
+    ],
+    "max_energy_drift_per_bead": 0.002396492124382199,
+    "max_mapping_norm_drift": 4.1744385725905886e-14,
+    "sem_interpretation": "pointwise Monte Carlo standard error across independent trajectories; not method uncertainty"
+  },
+  "nrpmd_minus_quantum_population": [
+    [
+      9.992007221626409e-16,
+      0.0
+    ],
+    [
+      0.005657815584172998,
+      -0.00565781558418162
+    ],
+    [
+      0.009931579155625703,
+      -0.009931579155638304
+    ],
+    [
+      0.0133641825627282,
+      -0.01336418256275009
+    ],
+    [
+      0.016681945150477717,
+      -0.01668194515050227
+    ],
+    [
+      0.019927661108980477,
+      -0.01992766110900989
+    ],
+    [
+      0.022812488182619495,
+      -0.0228124881826512
+    ],
+    [
+      0.0249223810013931,
+      -0.024922381001425742
+    ],
+    [
+      0.025725297029832728,
+      -0.025725297029867082
+    ]
+  ],
+  "comparison_interpretation": "The observed method difference still contains finite-bead preparation, propagation and Monte Carlo errors. A trajectory method is not required to equal the quantum result. Increase trajectories and beads and refine time step, grid and box before drawing physical conclusions."
+}

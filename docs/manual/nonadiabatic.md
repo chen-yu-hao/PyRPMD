@@ -7,6 +7,7 @@ for the gas-phase `rate` workflow.
 | Method | Public entry point | Current scope |
 | --- | --- | --- |
 | Focused NRPMD with complex SOC | `task="drpmd"`, `NRPMDDynamics` | Fixed diabatic basis, complex Hermitian matrix and gradients |
+| Model population/coherence ensembles | `task="nonadiabatic"`, `run_nonadiabatic_ensemble` | Independent point/harmonic-reference parents, NRPMD or RPSH, complete time series and restart |
 | Thermal NRPMD | `ThermalNRPMDSampler`, `ThermalNRPMDDynamics` | Signed SEO thermal preparation, finite-time flux/population rate curves; real matrices |
 | Electronic friction | `[electronic_friction]` on `diffusion`, `ElectronicFrictionDynamics` | Markovian centroid bath, tensor friction, periodic/fixed slabs |
 | Ring-polymer surface hopping | `RPSHDynamics` | Centroid electronic propagation, real matrices, explicit hopping/rescaling policy |
@@ -19,6 +20,25 @@ Detailed contracts and executable examples are in the
 [friction guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md),
 [SOC/RPSH guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-soc-rpsh.md),
 and [method guide](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-methods.md).
+
+## Model population ensembles
+
+For general population dynamics, use the new [population workflow](../nonadiabatic-workflow.md):
+
+```bash
+pyrpmd validate examples/nonadiabatic/population.inp --check-pes
+pyrpmd run examples/nonadiabatic/population.inp --workers 2 --output runs/population
+pyrpmd analyze runs/population --recompute
+pyrpmd resume runs/population --block-steps 64
+```
+
+The [model library](../nonadiabatic-models.md) supplies Tully I–III, general LVC
+and finite discrete spin-boson Hamiltonians. The [ensemble API](../nonadiabatic-ensembles.md)
+accepts custom matrix providers and prepared states. Its complex coherence
+estimator uses a fixed diabatic basis; RPSH active-surface counts are reported
+separately from electronic amplitude populations. Optional EDC is documented
+in the SOC/RPSH guide. These nonequilibrium calculations do not prepare a signed
+electronic thermal ensemble or calculate a thermal rate.
 
 ## State-selected collisions
 
@@ -143,3 +163,4 @@ couplings between states, and converge the asymptotic states, the energy and map
 number, the time step, parent correlation, collision parameters and product commitment. Method and
 sources are in the [NRPMD topic](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic.md)
 and the [example notes](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/nonadiabatic/README.md).
+

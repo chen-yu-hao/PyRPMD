@@ -4,6 +4,17 @@ __version__ = "0.2.0"
 
 
 def __getattr__(name):
+    if name in ("NonadiabaticEnsembleResult", "EnsemblePropagationError",
+                "run_nonadiabatic_ensemble", "density_matrix"):
+        from . import nonadiabatic_ensemble
+        return getattr(nonadiabatic_ensemble, name)
+    if name == "sample_harmonic_ring":
+        from .nonadiabatic_sampling import sample_harmonic_ring
+        return sample_harmonic_ring
+    if name in ("TullyModelOne", "TullyModelTwo", "TullyModelThree",
+                "LinearVibronicCoupling", "DiscreteSpinBoson", "model_from_dict"):
+        from .potentials import nonadiabatic_models
+        return getattr(nonadiabatic_models, name)
     if name == "JobSpec":
         from .input import JobSpec
 
@@ -100,6 +111,9 @@ def __getattr__(name):
 
 
 __all__ = [
+    "NonadiabaticEnsembleResult", "EnsemblePropagationError", "run_nonadiabatic_ensemble",
+    "density_matrix", "sample_harmonic_ring", "TullyModelOne", "TullyModelTwo", "TullyModelThree",
+    "LinearVibronicCoupling", "DiscreteSpinBoson", "model_from_dict",
     "ElectronicFrictionDynamics", "ConstantElectronicFriction", "FrictionResult",
     "RPSHDynamics", "RPSHState", "HopResult",
     "ThermalNRPMDSampler", "ThermalNRPMDDynamics", "ThermalEnsemble", "ThermalRateCorrelation",
@@ -121,3 +135,4 @@ __all__ = [
     "energy_heat_capacity", "quantum_kinetic_energy", "isotope_substitution_free_energy", "isotope_fractionation", "fractionation_mass_integration", "momentum_distribution_from_open_paths",
     "normalize_initial_ensemble", "prepare_initial_ensemble", "check_state_selected",
 ]
+

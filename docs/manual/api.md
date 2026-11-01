@@ -322,6 +322,29 @@ mean-force PES; the other methods use a complete diabatic matrix and positive gr
 :members: step, energy
 ```
 
+## Nonadiabatic ensemble APIs
+
+The independent nonequilibrium model workflow is documented in
+[population dynamics](../nonadiabatic-workflow.md). Its reusable APIs are:
+
+```{autofunction} pyrpmd.nonadiabatic_ensemble.run_nonadiabatic_ensemble
+```
+
+```{autofunction} pyrpmd.nonadiabatic_ensemble.density_matrix
+```
+
+```{autoclass} pyrpmd.nonadiabatic_ensemble.NonadiabaticEnsembleResult
+:members: mean_populations, population_sem, mean_density, density_sem_real, density_sem_imag, active_surface_fractions
+```
+
+```{autofunction} pyrpmd.nonadiabatic_sampling.sample_harmonic_ring
+```
+
+The model classes `TullyModelOne`, `TullyModelTwo`, `TullyModelThree`,
+`LinearVibronicCoupling` and `DiscreteSpinBoson` are exported from `pyrpmd`.
+Their parameters and coordinate conventions are in the
+[model guide](../nonadiabatic-models.md).
+
 ## Versioning
 
 The package, input schema, run manifest, checkpoint container and PES ABI each carry their own
@@ -329,3 +352,4 @@ version. Package 0.2.0 supports the molecular PES C ABI v1 and the cell-aware C 
 Names that start with an underscore are internal. Interface
 and capability negotiation are described in the
 [public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md).
+

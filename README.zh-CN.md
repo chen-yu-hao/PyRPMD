@@ -7,7 +7,7 @@
 **一个输入文件完成环聚合物分子动力学——从过渡态到经回穿校正的速率，支持带科学指纹的检查点续跑。**
 
 给 PyRPMD 一个过渡态和一个势能，它会自动搭建完整的 Bennett–Chandler 计算：数值 Hessian 与双向下降识别反应通道，伞抽样
-给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动 11 类任务，从气相速率、直接碰撞到自由能面、
+给出 PMF，受约束母链发射成对回穿轨迹得到透射系数。同一套 Python 或 TOML 输入驱动 12 类任务，从气相速率、直接碰撞到自由能面、
 metadynamics、PIMD、扩散、表面跃迁和电化学 PCET；积分器内核为 C++17/OpenMP，并配有 NumPy 参考实现。
 
 ## 为什么选择 PyRPMD
@@ -96,6 +96,7 @@ pyrpmd resume my-first-run/run
 | 固定基底上的有向逃逸 | `surface_rate` | `examples/surface/diffusion.inp` | ~1.5 min |
 | 电化学 PCET，H/D、电势与温度扫描 | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | 态选择非绝热散射（NRPMD，实验性） | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
+| 模型体系的布居与相干性系综（NRPMD / RPSH） | `nonadiabatic` | `examples/nonadiabatic/population.inp` | — |
 
 用 `pyrpmd run INPUT --output runs/NAME` 运行其中任意一个。另外两种常用方式：
 
@@ -286,7 +287,7 @@ RATTLE，数值失败时保留成功的前缀。两者都支持三种积分器�
 
 ## 文档
 
-使用手册涵盖安装、快速入门、全部 11 类任务的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，
+使用手册涵盖安装、快速入门、全部 12 类任务的指南、API 与开发说明，有[英文](docs/index.md)和[中文](docs/zh/index.md)两个版本，
 章节一一对应。构建带搜索的 HTML 手册（中文版输出到 `zh/`）：
 
 ```bash
@@ -311,6 +312,7 @@ GitHub **Documentation** 工作流构建两个版本、运行入门示例，并�
 - [开发与验证](docs/development.md)、[验证记录](docs/validation.md)
 - [多入口与多 TS](docs/reaction-networks.md)
 - [实验性 NRPMD 与态分辨碰撞](docs/nonadiabatic.md)
+- [非绝热布居工作流](docs/nonadiabatic-workflow.md)、[模型库](docs/nonadiabatic-models.md)、[系综 API](docs/nonadiabatic-ensembles.md)、[实现对比与剩余缺口](docs/nonadiabatic-comparison.md)
 - [电子摩擦](docs/electronic-friction.md)、[热 NRPMD](docs/thermal-nrpmd.md)、[KC/MV/isomorphic 模型](docs/nonadiabatic-methods.md)、[SOC 与 RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP 恒压 PIMD](docs/materials-npt.md)、[网格 metadynamics](docs/grid-metadynamics.md)、[流式轨迹](docs/streaming-trajectories.md)
 - [恒电位电极模型与 HER 后处理](docs/electrochemistry.md)
@@ -346,3 +348,4 @@ Cayley 积分器、反应坐标与速率算法改编自 [RPMDrate](https://githu
 不包含 Caracal 的 QMDFF、xTB 和机器学习模型。
 
 许可证：[MIT](LICENSE)。
+

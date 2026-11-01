@@ -168,6 +168,10 @@ def run_resolved(config, system, *, output=None, resume=False):
         from .workflows.pcet import run_pcet
 
         result = run_pcet(config, system, Path(target))
+    elif config["task"] == "nonadiabatic":
+        from .workflows.nonadiabatic import run_nonadiabatic
+
+        result = run_nonadiabatic(config, system, Path(target))
     elif config["task"] == "drpmd":
         from .workflows.drpmd import run_drpmd
 
@@ -332,9 +336,22 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
             summary = path / "summary.json"
         return json.loads(summary.read_text())
     config = json.loads((path / "input" / "resolved.json").read_text())
+    if config["task"] == "nonadiabatic":
+        if bins is not None or bootstrap is not None or diffusion is not None:
+            raise InputError("Nonadiabatic time-series analysis does not accept FES/diffusion overrides")
+        from .workflows.nonadiabatic import analyze_nonadiabatic
+
+        system = _read_identity(config, path)
+        _initialize_output(config, system, path, resume=True)
+        result = analyze_nonadiabatic(config, system, path)
+        result.update(software="PyRPMD", version=__version__, output=str(path),
+                      preset=config.get("preset", "pilot"),
+                      input_warnings=config.get("_warnings", []))
+        write_json(path / "results" / "summary.json", result)
+        return result
     if config["task"] not in ("fes", "metadynamics", "opes", "diffusion"):
         raise InputError(
-            "Recomputing analysis supports FES, metadynamics, OPES and diffusion; omit --recompute to read other results"
+            "Recomputing analysis supports FES, metadynamics, OPES, diffusion and nonadiabatic populations; omit --recompute to read other results"
         )
     system = System.from_dict(json.loads((path / "input" / "system.json").read_text()))
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
@@ -417,6 +434,14 @@ def analyze_run(directory, *, recompute=False, bins=None, bootstrap=None, diffus
 def prepare(job, *, numerical=False):
     spec = _spec(job)
     config, system = spec.resolve()
+    if config["task"] == "nonadiabatic":
+        from .workflows.nonadiabatic import prepare_nonadiabatic
+
+        return {
+            "task": "nonadiabatic", "resolved": config, "system": system.to_dict(),
+            "diagnostics": config.get("_warnings", []), "ready": True,
+            "nonadiabatic_preparation": prepare_nonadiabatic(config, system, numerical=numerical),
+        }
     if config["task"] == "pcet":
         from .workflows.pcet import prepare_pcet
 
@@ -595,3 +620,4 @@ def prepare(job, *, numerical=False):
                 if callable(close):
                     close()
     return result
+

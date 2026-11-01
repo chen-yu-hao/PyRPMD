@@ -1,4 +1,40 @@
-# 实验性非绝热碰撞：NRPMD
+# 非绝热动力学：布居系综与 NRPMD 碰撞
+
+## 模型体系的布居与相干性
+
+新增 `task="nonadiabatic"`，将已有 NRPMD 和质心近似 RPSH 接入统一的
+`validate → run → analyze → resume` 流程：
+
+```bash
+pyrpmd validate examples/nonadiabatic/population.inp --check-pes
+pyrpmd run examples/nonadiabatic/population.inp --workers 2 --output runs/population
+pyrpmd analyze runs/population --recompute
+pyrpmd resume runs/population --workers 1 --block-steps 64
+```
+
+`examples/nonadiabatic/rpsh_population.inp` 演示带可选能量退相干修正的 RPSH。
+程序内置 Tully I–III、一般线性振电耦合（LVC）以及显式有限模式 spin-boson 模型。
+模型参数采用原子单位，并明确给出全部透热势能矩阵及正梯度。
+
+初态可选择指定核相点，或独立抽取有限珠数的谐振参考环聚合物分布。后者只对明确指定的
+坐标采样，其余坐标和动量为零；它不是传播势能下的完整核—电子热平衡分布。
+NRPMD 的 `initial_state` 表示透热初态，RPSH 的 `active_surface` 表示质心绝热初态，
+相同的整数通常并不代表相同的物理电子初态。
+
+`results/nonadiabatic.npz` 保存每条轨迹的复密度矩阵估计、能量、范数与核质心；
+`results/populations.csv` 给出布居均值和逐时刻标准误。RPSH 的电子振幅布居与活跃面占比
+分别保存。NRPMD 的有符号估计不裁剪。误差以独立轨迹为样本，珠数和时间帧数不增加独立
+样本量；只有一条轨迹时不提供标准误。
+
+每条轨迹的状态、随机数和观测历史在同一校验断点中保存。中断后可改变轨迹进程数或
+断点块大小继续；改变物理参数需要新计算。失败轨迹不会被静默丢弃后继续发布平均结果。
+这两个短算例是工作流演示，输出保留 `physical_converged=false`。
+
+完整字段见[模型布居工作流](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-workflow.md)，
+公式见[模型库](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-models.md)，
+可扩展接口见[系综 API](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic-ensembles.md)。
+
+## 实验性非绝热碰撞：NRPMD
 
 NRPMD 是 `task="drpmd"` 的实验性模式。它在每个核珠子上加入电子 mapping 变量，在完整的 diabatic 势能矩阵上同时
 推进电子与核，并把电子布居与化学产物分类器结合，给出电子态分辨的贡献。
@@ -118,3 +154,4 @@ NRPMD 在 CPU 上用 NumPy 运行，可串行或使用本机轨迹进程；核�
 用于真实体系时，提供含态间耦合的 diabatic 基、完整矩阵及其梯度，并收敛远区态、能量与 mapping 范数、珠子数、
 时间步、母链相关性、碰撞参数和产物判定。方法与来源见 [NRPMD 专题](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/nonadiabatic.md)
 和[示例说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/nonadiabatic/README.md)。
+

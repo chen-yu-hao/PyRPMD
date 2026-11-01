@@ -10,7 +10,7 @@ recrossing-corrected rate, with fingerprinted checkpoint restart.**
 Give PyRPMD a transition state and a potential, and it builds the whole Bennett–Chandler
 calculation for you: a numerical Hessian and two-sided descent identify the reaction channel,
 umbrella sampling gives the PMF, and constrained parent chains launch paired recrossing
-trajectories for the transmission coefficient. The same Python or TOML input drives eleven tasks,
+trajectories for the transmission coefficient. The same Python or TOML input drives twelve tasks,
 from gas-phase rates and direct collisions to free-energy surfaces, metadynamics, PIMD, diffusion,
 surface hops and electrochemical PCET, on C++17/OpenMP integrator kernels with a NumPy reference
 implementation alongside.
@@ -122,6 +122,7 @@ All examples use analytic model potentials and run on one core. Times are wall t
 | Directed escape on a fixed substrate | `surface_rate` | `examples/surface/diffusion.inp` | ~1.5 min |
 | Electrochemical PCET, H/D, potential and temperature scans | `pcet` | `examples/pcet/harmonic_scan.inp` | ~2 s |
 | State-selected nonadiabatic scattering (NRPMD, experimental) | `drpmd` | `examples/nonadiabatic/exchange.inp` | ~15 s |
+| Model population/coherence ensembles (NRPMD or RPSH) | `nonadiabatic` | `examples/nonadiabatic/population.inp` | — |
 
 Run any of them with `pyrpmd run INPUT --output runs/NAME`. Two more patterns worth knowing:
 
@@ -345,7 +346,7 @@ the auxiliary beta parameter and fixed-energy statistical eligibility rules.
 
 ## Documentation
 
-The user manual covers installation, a quickstart, guides for all eleven tasks, the API and developer
+The user manual covers installation, a quickstart, guides for all twelve tasks, the API and developer
 notes, in [English](docs/index.md) and [Chinese](docs/zh/index.md) with matching chapters. Build
 the searchable HTML manual (the Chinese edition goes to `zh/`):
 
@@ -374,6 +375,7 @@ Reference specifications (some in Chinese):
 - [Development and validation](docs/development.md), [validation record](docs/validation.md)
 - [Multiple entrances and TSs](docs/reaction-networks.md)
 - [Experimental NRPMD and state-resolved collisions](docs/nonadiabatic.md)
+- [Nonadiabatic population workflow](docs/nonadiabatic-workflow.md), [model library](docs/nonadiabatic-models.md), [ensemble API](docs/nonadiabatic-ensembles.md), [comparison and remaining gaps](docs/nonadiabatic-comparison.md)
 - [Electronic friction](docs/electronic-friction.md), [thermal NRPMD](docs/thermal-nrpmd.md), [KC/MV/isomorphic methods](docs/nonadiabatic-methods.md), [SOC and RPSH](docs/nonadiabatic-soc-rpsh.md)
 - [BZP constant-pressure PIMD](docs/materials-npt.md), [grid metadynamics](docs/grid-metadynamics.md), [streaming trajectories](docs/streaming-trajectories.md)
 - [Constant-potential electrode models and HER postprocessing](docs/electrochemistry.md)
@@ -412,3 +414,4 @@ notices and paper DOIs are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICE
 QMDFF, xTB and machine-learning models are not bundled.
 
 License: [MIT](LICENSE).
+

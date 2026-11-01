@@ -23,6 +23,8 @@ For a first run without locating repository files, use `pyrpmd init my-first-run
 | `examples/fes/adaptive_harmonic.inp` | Pilot window insertion, then frozen production | ~4 s | [Gas phase and free energy](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | Two parent chains sharing 5 collisions on V=0 | ~2 s | [Gas phase and free energy](workflows.md) |
 | `examples/nonadiabatic/exchange.inp` | NRPMD scattering from a selected state on a coupled two-state model | ~15 s | [Nonadiabatic NRPMD](nonadiabatic.md) |
+| `examples/nonadiabatic/population.inp` | NRPMD populations and coherences after a harmonic spin-boson preparation | — | [Nonadiabatic populations](nonadiabatic.md) |
+| `examples/nonadiabatic/rpsh_population.inp` | Centroid RPSH on Tully I with optional energy-based decoherence | — | [Nonadiabatic populations](nonadiabatic.md) |
 | `examples/rate/pilot.inp` | TS preparation, PMF and recrossing on an analytic reaction potential | ~15 s | [Gas phase and free energy](workflows.md) |
 | `examples/network/two_entrances.py` | Two entrances, four TS/PES paths | ~25 s | [Gas phase and free energy](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 2D well-tempered metadynamics | ~2 s | [Gas phase and free energy](workflows.md) |
@@ -100,3 +102,4 @@ matches a pinned pyPCET commit to within 0.062% on the harmonic model.
 `preset="production"` enforces required fields and task restrictions; omitted parameters can
 still use defaults. Inspect `pyrpmd validate INPUT --write-resolved resolved.json` before fixing the
 protocol. Steps 3 and 4 establish convergence; see [Scientific conventions](science.md).
+

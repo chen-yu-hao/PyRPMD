@@ -427,6 +427,12 @@ class JobSpec:
         return JobSpec(d, self.base_directory, self.input_path)
 
     def resolve(self):
+        if self.data.get("task") == "nonadiabatic":
+            from .nonadiabatic_input import resolve_nonadiabatic_job
+
+            return resolve_nonadiabatic_job(
+                self.data, base_directory=self.base_directory, input_path=self.input_path
+            )
         # Network and PCET have dedicated early-return resolvers; do not let
         # those routes silently ignore native PIMD-only ensemble controls.
         raw_sampling = self.data.get("sampling", {})
@@ -1093,3 +1099,4 @@ class JobSpec:
 
 def load_input(path):
     return JobSpec.from_file(path)
+

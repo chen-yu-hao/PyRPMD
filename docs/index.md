@@ -16,6 +16,7 @@ go straight to your task:
 | --- | --- | --- |
 | Gas-phase bimolecular RPMD rate | `rate` | [Gas phase and free energy](manual/workflows.md) |
 | Direct collisions and product channels | `drpmd` | [Gas phase](manual/workflows.md); [NRPMD](manual/nonadiabatic.md) |
+| Model electronic populations and coherences | `nonadiabatic` | [Population workflow](nonadiabatic-workflow.md) |
 | 1D/2D free-energy surface | `fes` | [Quickstart](manual/quickstart.md), [Gas phase and free energy](manual/workflows.md) |
 | Postprocess saved PMF/FES rates and branching | `rate-postprocess` command | [2D rate postprocessing](rate-postprocessing.md) |
 | Rate matrix for several entrances and transition states | `network` | [Gas phase and free energy](manual/workflows.md) |
@@ -87,6 +88,10 @@ Materials and surfaces <manual/periodic>
 PCET <manual/pcet>
 Electrode models <manual/electrochemistry>
 Nonadiabatic NRPMD <manual/nonadiabatic>
+Nonadiabatic population workflow <nonadiabatic-workflow>
+Nonadiabatic models <nonadiabatic-models>
+Nonadiabatic ensembles <nonadiabatic-ensembles>
+Nonadiabatic comparison and gaps <nonadiabatic-comparison>
 Potentials and plugins <manual/potentials>
 PES generation <manual/pes-generation>
 JaxPIP fitting and native execution <manual/jaxpip-generation>
@@ -138,3 +143,4 @@ available only in English link to the Chinese manual contents instead. Detailed 
 [public interface conventions](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/interfaces.md),
 and the [validation records](https://github.com/chen-yu-hao/PyRPMD/tree/main/docs/validation)
 live alongside the manual in the repository.
+

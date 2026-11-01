@@ -29,7 +29,9 @@ recursive-include benchmarks/trpmd *.py *.json
 recursive-include benchmarks/published_rates *.py *.json *.md
 include benchmarks/efficiency/native-ensembles-summary.json
 recursive-include benchmarks/analysis_reports *.py *.md
+recursive-include benchmarks/nonadiabatic *.py *.md *.json
 global-exclude __pycache__ *.py[cod] *.so *.o
 
 recursive-include src/pyrpmd/pesgen/_native *.cpp *.f90 *.h
 recursive-include src/pyrpmd/templates *.inp
+

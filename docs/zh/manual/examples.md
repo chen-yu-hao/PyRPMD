@@ -20,6 +20,8 @@
 | `examples/fes/adaptive_harmonic.inp` | pilot 插入窗口后冻结并运行生产段 | 约 4 s | [气相与自由能](workflows.md) |
 | `examples/drpmd/free_scattering.inp` | 两条母链在 V=0 上共享 5 次碰撞 | 约 2 s | [气相与自由能](workflows.md) |
 | `examples/nonadiabatic/exchange.inp` | 在耦合双态模型上从指定态出发的 NRPMD 散射 | 约 15 s | [非绝热 NRPMD](nonadiabatic.md) |
+| `examples/nonadiabatic/population.inp` | 从谐振 spin-boson 初态出发的 NRPMD 布居与相干性 | — | [非绝热动力学](nonadiabatic.md) |
+| `examples/nonadiabatic/rpsh_population.inp` | Tully I 上的质心 RPSH，含可选的能量退相干修正 | — | [非绝热动力学](nonadiabatic.md) |
 | `examples/rate/pilot.inp` | 解析反应势上的 TS 准备、PMF 与回穿 | 约 15 s | [气相与自由能](workflows.md) |
 | `examples/network/two_entrances.py` | 两个入口、四条 TS/PES 路径 | 约 25 s | [气相与自由能](workflows.md) |
 | `examples/metadynamics/well_tempered_2d.inp` | 二维 well-tempered metadynamics | 约 2 s | [气相与自由能](workflows.md) |
@@ -87,3 +89,4 @@ EAM 模型上运行镍中的 H 和 D（P=1 与 4），模型需单独下载。
 
 `preset="production"` 检查必填字段和任务限制，省略的参数仍可使用缺省值。固定方案前用
 `pyrpmd validate INPUT --write-resolved resolved.json` 检查完整配置；第 3、4 步确立收敛，见[科学约定](science.md)。
+
