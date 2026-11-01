@@ -354,7 +354,15 @@ class TorchDynamics:
 
     dt and State.step count OUTER steps. The deterministic map is
     Bslow(dt/2) [Bfast(h/2) A(h) Bfast(h/2)]**M Bslow(dt/2), h=dt/M.
-    Optional OU thermostat half-steps bracket that map (OBABO). Production
+    Optional OU thermostat half-steps bracket that map (OBABO/OBCBO).
+    ``integrator="cayley-bcocb"`` instead applies B(dt/2) C(dt)**(1/2)
+    O(dt) C(dt)**(1/2) B(dt/2), with a principal square-root Cayley map,
+    NOT a Cayley map at half dt (Korol et al., JCP 152, 104102, Eq. 17).
+    B includes all fast/slow/RPC terms; this option requires inner_steps=1.
+    Its harmonic configurational marginal is exact within the physical-force
+    stability limit, but stored momenta have finite-step bias. Use position-
+    based quantum estimators; energy() remains the mechanical Hamiltonian.
+    Production
     dynamics is unthermostatted unless explicitly requested. PILE-L thermalizes
     the centroid; TRPMD leaves it untouched. Real-mass variance is m*P/beta.
 
@@ -374,8 +382,10 @@ class TorchDynamics:
             raise ValueError("potential must be a TorchPES or matching TorchSplitPotential")
         if self.inner_steps > 1 and not potential.slow:
             raise ValueError("inner_steps>1 requires an explicit slow potential component")
-        if integrator not in ("normal-mode-bab", "cayley-bcb"):
-            raise ValueError("integrator must be normal-mode-bab or cayley-bcb")
+        if integrator not in ("normal-mode-bab", "cayley-bcb", "cayley-bcocb"):
+            raise ValueError("integrator must be normal-mode-bab, cayley-bcb, or cayley-bcocb")
+        if integrator == "cayley-bcocb" and self.inner_steps != 1:
+            raise ValueError("cayley-bcocb requires inner_steps=1; BCOCB/MTS is not implemented")
         if thermostat not in (None, "pile-l", "trpmd"):
             raise ValueError("thermostat must be None, pile-l, or trpmd")
         self.potential, self.device = potential, potential.device
@@ -401,11 +411,21 @@ class TorchDynamics:
             den = 1 + z.square()
             a, b, c = (1 - z.square()) / den, h / den, h * omega.square() / den
         self._abc = tuple(v.reshape(1, -1, 1, 1) for v in (a, b, c))
+        self._half_abc = None
+        if integrator == "cayley-bcocb":
+            # Principal square root of cay(dt*A). Squaring gives _abc, including
+            # the exact centroid drift. cay(dt*A/2) would be a DIFFERENT method.
+            root_den = torch.sqrt(1 + (h * omega / 2).square())
+            self._half_abc = tuple(v.reshape(1, -1, 1, 1) for v in
+                                   (1 / root_den, (h / 2) / root_den,
+                                    (h / 2) * omega.square() / root_den))
         gamma = 2 * omega
         gamma[0] = self.gamma_centroid if thermostat == "pile-l" else 0
-        self._decay = torch.exp(-gamma * (self.dt / 2)).reshape(1, -1, 1, 1)
-        self._noise = torch.sqrt(-torch.expm1(-gamma * self.dt)).reshape(1, -1, 1, 1)
-        if not all(torch.isfinite(v).all().item() for v in (*self._abc, self._sigma, self._decay, self._noise)):
+        ou_dt = self.dt if integrator == "cayley-bcocb" else self.dt / 2
+        self._decay = torch.exp(-gamma * ou_dt).reshape(1, -1, 1, 1)
+        self._noise = torch.sqrt(-torch.expm1(-gamma * (2 * ou_dt))).reshape(1, -1, 1, 1)
+        if not all(torch.isfinite(v).all().item() for v in
+                   (*self._abc, *(self._half_abc or ()), self._sigma, self._decay, self._noise)):
             raise ValueError("free-ring or thermostat coefficients overflow")
         self.generator = torch.Generator(device=self.device)
         self.generator.manual_seed(_integer(seed, "seed", 0))
@@ -439,10 +459,10 @@ class TorchDynamics:
         shape = (_integer(trajectories, "trajectories"), self.nbeads, self._masses.numel(), 3)
         return torch.randn(shape, dtype=torch.float64, device=self.device, generator=self.generator) * self._sigma
 
-    def _free(self, q, p):
+    def _free(self, q, p, *, half=False):
         qk = torch.fft.rfft(q, dim=1, norm="ortho")
         pk = torch.fft.rfft(p, dim=1, norm="ortho")
-        a, b, c = self._abc
+        a, b, c = self._half_abc if half else self._abc
         return (torch.fft.irfft(a * qk + b * pk / self._mass, n=self.nbeads, dim=1, norm="ortho"),
                 torch.fft.irfft(a * pk - c * self._mass * qk, n=self.nbeads, dim=1, norm="ortho"))
 
@@ -485,19 +505,29 @@ class TorchDynamics:
             fast = force("fast")
             slow = force("slow") if self.potential.slow else None
             h = self.dt / self.inner_steps
+            middle_ou = self.integrator == "cayley-bcocb"
             for _ in range(steps):
-                p = self._thermostat(p)
+                if not middle_ou:
+                    p = self._thermostat(p)
                 if slow is not None:
                     p.add_(slow, alpha=self.dt / 2)
                 for _ in range(self.inner_steps):
                     p.add_(fast, alpha=h / 2)
-                    q, p = self._free(q, p)
+                    if middle_ou and self.thermostat is not None:
+                        q, p = self._free(q, p, half=True)
+                        p = self._thermostat(p)
+                        q, p = self._free(q, p, half=True)
+                    else:
+                        # With no thermostat the two square roots collapse
+                        # to the existing full C map, without extra FFTs.
+                        q, p = self._free(q, p)
                     fast = force("fast")
                     p.add_(fast, alpha=h / 2)
                 if slow is not None:
                     slow = force("slow")
                     p.add_(slow, alpha=self.dt / 2)
-                p = self._thermostat(p)
+                if not middle_ou:
+                    p = self._thermostat(p)
                 valid = valid & torch.isfinite(q).all() & torch.isfinite(p).all()
             if not valid.item():
                 raise FloatingPointError("nonfinite model result or integration state; block rolled back")

@@ -49,7 +49,7 @@ pes = TorchPES(ExampleEnergy(), device="cuda")
 # All numbers below are in atomic units, including masses, beta, and time.
 dynamics = TorchDynamics(
     pes, masses=[1836.15, 3672.3], beta=1000.0, nbeads=32, dt=1.0,
-    thermostat="pile-l", gamma_centroid=0.001, seed=17,
+    integrator="cayley-bcocb", thermostat="pile-l", gamma_centroid=0.001, seed=17,
 )
 q = torch.zeros((16, 32, 2, 3), dtype=torch.float64, device=pes.device)
 state = TorchState(q, dynamics.sample_momenta(16))
@@ -73,6 +73,56 @@ changes cannot leave a stale endpoint force. Providers must be deterministic
 position-only models; arbitrary internal model state cannot be rolled back. State construction owns
 contiguous tensors; replacing live q/p with overlapping or noncontiguous views
 is rejected before model evaluation, RNG consumption, or state mutation.
+
+## Explicit BCOCB sampling
+
+Use `integrator="cayley-bcocb", thermostat="pile-l"` to select the BCOCB
+splitting. The existing defaults and `normal-mode-bab` / `cayley-bcb` retain
+their previous outer-thermostat behavior; no old input is silently reinterpreted.
+For the full step `dt`, the new map is
+
+```
+B(dt/2) sqrt(cay(dt*A)) O(dt) sqrt(cay(dt*A)) B(dt/2).
+```
+The principal square root is Eq. (17) of Korol et al., JCP **152**, 104102
+(2020), DOI: 10.1063/1.5134810. It is **not** `cay(dt*A/2)`.
+The middle O step uses one independent real bead-space Gaussian field and
+full-step OU coefficients before transforming back. State and transforms
+stay on the selected device. PILE-L damps the centroid; TRPMD does not.
+
+At a stable physical-force step, BCOCB has the exact harmonic **position**
+marginal for every bead count. For a harmonic stiffness `k` and mass `m`,
+`dt*sqrt(k/m) < 2` is still required. Arbitrary nonlinear potentials need
+explicit timestep-convergence and equilibration checks; no automatic Hessian
+bound or universal stability guarantee is provided.
+
+**Endpoint momenta are not an exact Maxwell distribution.** In the scalar
+harmonic case their stationary variance is
+`m*P/beta * (1-dt**2*k/(4*m))`. Use position-based primitive or centroid-virial
+quantum estimators, not `p**2/(2*m)`, for thermodynamic kinetic energy.
+`energy()` still returns the mechanical sum-beads Hamiltonian, not a quantum
+thermal-energy estimator. Before launching a physical RPMD trajectory from
+sampled positions, independently refresh real-mass Maxwell momenta with
+`sample_momenta`, and use an unthermostatted engine. For example:
+
+```python
+# sampling_state.q has been equilibrated with BCOCB/PILE-L and checked for
+# timestep and bead convergence. Use a separate RNG/engine for the launch.
+production = TorchDynamics(pes, masses, beta, P, dt, integrator="cayley-bcb",
+                           thermostat=None, seed=23)
+production_state = TorchState(sampling_state.q,
+                              production.sample_momenta(sampling_state.q.shape[0]))
+```
+
+RPC is supported at `inner_steps=1`: both force groups appear in the same B
+half-kicks and refer to the explicit **contracted** Hamiltonian. This does not
+undo contraction bias. `cayley-bcocb` rejects `inner_steps>1` rather than claiming
+a validated BCOCB/MTS composition. With `thermostat=None`, its two roots
+collapse to the existing full BCB step, without extra FFTs or RNG consumption.
+
+See [independent verification and repeated observables](torch_bcocb_validation.md).
+The new splitting is available in the Torch Python API only; workflow input,
+checkpoint, constraints, CUDA and trained-chemistry acceptance gates remain.
 
 ## Model contract and existing Torch providers
 
@@ -167,14 +217,16 @@ map is `Bslow(dt/2) [Bfast(h/2) A(h) Bfast(h/2)]^M Bslow(dt/2)`.
 An `S`-outer-step block uses `S*M+1` fast-group evaluations and `S+1` slow-group
 evaluations. Every term in a group receives its own single flattened batch.
 `inner_steps>1` requires an explicit slow group; no forces are silently
-classified. The two available free-ring maps are `normal-mode-bab` and
-`cayley-bcb`.
+classified. The two MTS-compatible free-ring maps are `normal-mode-bab` and
+`cayley-bcb`. The separate `cayley-bcocb` sampling option requires `inner_steps=1`.
 
 No thermostat is applied by default. `pile-l` thermalizes all normal modes,
 with the requested centroid friction; `trpmd` leaves the centroid undamped.
-Symmetric OU half-steps bracket the deterministic outer step. Noise is sampled
+For `normal-mode-bab` and `cayley-bcb`, symmetric OU half-steps bracket the
+deterministic outer step. BCOCB instead puts one full OU step in the middle. Noise is sampled
 in real bead space and transformed, retaining the correct centroid/Nyquist
-variance. All momenta use variance `m*P/beta`. Sampling steps are not a substitute
+variance. The OU bath and `sample_momenta()` use variance `m*P/beta`; this is
+not a claim that finite-step BCOCB endpoint momenta are Maxwellian. Sampling steps are not a substitute
 for unthermostatted rate children. Converge outer/inner timestep, contracted
 beads, and the decomposition against full-resolution observables: RPC is a
 Hamiltonian approximation and MTS can introduce resonance/accuracy problems.
@@ -184,7 +236,8 @@ Hamiltonian approximation and MTS can introduce resonance/accuracy problems.
 Run:
 
 ```sh
-PYTHONPATH=src pytest -q tests/test_torch_backend.py
+PYTHONPATH=src pytest -q tests/test_torch_backend.py tests/test_torch_bcocb.py
+PYTHONPATH=src python benchmarks/torch_bcocb_validation.py --section all --output bcocb.json
 PYTHONPATH=src python benchmarks/torch_device_backend.py --device cpu
 PYTHONPATH=src python benchmarks/torch_device_backend.py --device cuda
 ```
