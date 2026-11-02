@@ -1,0 +1,5857 @@
+{
+  "schema": "pyrpmd.materials-batch-acceptance.v1",
+  "generated_utc": "2026-11-02T11:32:14.099523+00:00",
+  "potential": {
+    "model": "Angelo-Moody-Baskes Ni-Al-H EAM; only Ni and H species used",
+    "filename": "NiAlH_jea.eam.alloy",
+    "repository": "https://github.com/lammps/lammps",
+    "commit": "5f0288a471841037872e673f93abe6af41490a6a",
+    "url": "https://raw.githubusercontent.com/lammps/lammps/5f0288a471841037872e673f93abe6af41490a6a/potentials/NiAlH_jea.eam.alloy",
+    "sha256": "545b0f79207ae519b7f355451812acd999bd6ed095f40a6bcfa9aa5258a38388",
+    "bytes": 291035,
+    "citation": "J. E. Angelo, N. R. Moody and M. I. Baskes, Trapping of hydrogen to lattice defects in nickel, Modelling Simul. Mater. Sci. Eng. 3, 289-307 (1995).",
+    "doi": "10.1088/0965-0393/3/3/001",
+    "registry": "https://www.ctcms.nist.gov/potentials/entry/1995--Angelo-J-E-Moody-N-R-Baskes-M-I--Ni-Al-H/",
+    "format_documentation": "https://docs.lammps.org/pair_eam.html",
+    "units": "DYNAMO setfl, LAMMPS metal units (angstrom, eV)",
+    "redistributed": false
+  },
+  "source_at_start": {
+    "benchmarks/materials/batch_acceptance.py": "64cef4760aa53e6a5801e7377f12b880143de5a92a70900d73f11efec419413e",
+    "benchmarks/materials/ni_h_eam.py": "4ba896f6b3669490fa2fd8dcedd3006bc26c0007ef333daf5c1810bbb7faf030",
+    "src/pyrpmd/electronic_friction.py": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005",
+    "src/pyrpmd/cmd.py": "7600dbb204b585bfe205ea4b8cd90b8083a621f248c289e5f675509d98f2db90",
+    "src/pyrpmd/multitime.py": "7ffaaeac84bf4f641974a279da3c1e4566af23096c24e01261f8634287c0e85b",
+    "src/pyrpmd/input_schema.py": "063523c4f775f5a755e501473c0bcd2b1580bf1a79930e5f852cd10775d2ee85",
+    "src/pyrpmd/thermostats.py": "c28be43ec2f16e0b427f891db8c0d8fc5be81a5a999fd2a386256d41a1f96bf7",
+    "src/pyrpmd/instanton.py": "b849eb38e03b6b2b144c59b8c9043bc415bf7b09ccda0ea1289389d28348b9da",
+    "src/pyrpmd/nonadiabatic_ensemble.py": "86f88128376fec1c6bcfef20fe9d176b90d3423f9e0dd1a508dad11a0918a14c",
+    "src/pyrpmd/transition_interface.py": "da1375ba7ed3a4257c8bac5e1c571d5f0738801806ff2f6923ddeb21ee081584",
+    "src/pyrpmd/propagation.py": "cc3cfc011b5d199b838dd65a63826a76d3de23acc5e4ae128de226a1dbc6f10c",
+    "src/pyrpmd/adaptive_nrpmd.py": "facf20d510b05b8e8f206a178e4433101cda490610005fd8b1bd83ce6f8db8fb",
+    "src/pyrpmd/nonadiabatic_sampling.py": "eaa7bde6f936232b4315b416c67d73141aedb88d2b898328102e8306080f7085",
+    "src/pyrpmd/tunnelling.py": "c6ce46c625ef1a7db06c2d4796127f04ee61949b096fa2fdf9d33ea8580a35e1",
+    "src/pyrpmd/batched_nonadiabatic.py": "8c652eb56462c43ec457cc19a8cf26a5b33991d246fb226e1a3bf78b03b0083f",
+    "src/pyrpmd/properties.py": "0a8088e858f3ef6f5aef03aab7bb9abf0a664189630f96991796229b4e793fd3",
+    "src/pyrpmd/system.py": "0a26f036da0215cc6f3f1bc5925f28fc3fb05b0fe677f01796f68dddddd5e2ce",
+    "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+    "src/pyrpmd/adaptive_string.py": "67c6bebb4c7a8df5ac95fb5e4ece090e63eb6d38d5b4c9f53840c6e31171e598",
+    "src/pyrpmd/cv.py": "640d9ee61d76f847e0260acb2456723ff76c1b9fd11dd61dcdf16de3fc58a114",
+    "src/pyrpmd/spectroscopy_input.py": "4a53388579596df6734c61656d2bbd79ec7b49c96e4b371395e69ed2c136af38",
+    "src/pyrpmd/path_integral.py": "a998d7d0c163e26663616db456789bc115538132a11308bc4909596df18829e5",
+    "src/pyrpmd/opes.py": "1db8fc7207296b480a69ec925829c2e9fd6a6b7d4c8d4dd02478f6b1354a9b8d",
+    "src/pyrpmd/scaffold.py": "60c937e0b1aa0e54b78fb4ef0a4ef5e481e410a08eece5908e9d15ee49dc9c27",
+    "src/pyrpmd/nonadiabatic.py": "d8cf4212bfc65ea306ee9f50f70a6d5fef1bdf70d8d107fdb70a7dabd5a90e1e",
+    "src/pyrpmd/trajectory_export.py": "aa9a2b58fdbe95bc7c3c8e2d4b05388685d537c478b520fadcaeae94ce9ffc3d",
+    "src/pyrpmd/validation.py": "6bd219b3761c2afb4309b1e7a1564062927287a734beb8dec6012e10c1c64d12",
+    "src/pyrpmd/checkpoint.py": "058a4be46de68b812a27ab37960b3dcf57fcf18b5bd89d55e3e9472268100aec",
+    "src/pyrpmd/nonadiabatic_input.py": "72fb5a53deb41a86c945d1a8c94f4ae7d77741f0839c0b6694272a544592cfdc",
+    "src/pyrpmd/rp_mash.py": "d80bf44021bae96b33ec3d696ca5977180f6daa21e0899c3c6412bccf4ca8017",
+    "src/pyrpmd/thermal_nrpmd.py": "36e64008f84ff296d43b28b599ae4248b4c3a609cf2521ffbbb15f910cb46dc2",
+    "src/pyrpmd/bias.py": "0a0ab4a074da0be7626c1519142ab5216999f54cc21f91a50b55e58145a38cb1",
+    "src/pyrpmd/input.py": "e6828805abc42818064d9808a85a741eea1f369cbb1db2de7cfd5c3b4bc57a8d",
+    "src/pyrpmd/reactions.py": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1",
+    "src/pyrpmd/native_ensemble.py": "b908298a18d1027e80e3679915c7197d77616bdc15a53fa9dbfe29b94c16946c",
+    "src/pyrpmd/bond_constraints.py": "3a09282f3e6b90f10664a1bb69aad1d2c504d7753f4d880775c39193215445cc",
+    "src/pyrpmd/torch_normal_modes.py": "5b31af409c6c021c76c3a04f5127cd2a263dc28f004a5611e35f2ccdd960faf6",
+    "src/pyrpmd/electronic_backends.py": "98d6d10d7d4de85f4747bdfc5077f007885fe05d5ec20479054c6e502e518c8f",
+    "src/pyrpmd/advanced_surface_hopping.py": "4905732d56d469241fc195f6ff4d430e3175ddc8fe45440d07066643dfa0df2f",
+    "src/pyrpmd/rate_artifacts.py": "6a900310cf7ff79217375c6c964329ab79aa04f58c1d4e317752bfebc48c914f",
+    "src/pyrpmd/low_temperature.py": "c82241b5bde9f87fe0ed5982962e1708115270ef48efeaf5948a73391389e4c1",
+    "src/pyrpmd/shared_metadynamics.py": "9bccc0e5ff415cadda36f1742f102e7df90a8a958aaccc22dbf1cc5e75886fa6",
+    "src/pyrpmd/mv_rpmd.py": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f",
+    "src/pyrpmd/adiabatic.py": "c0e8df840173416c3af3b71de100e718903df5905a27d45190850b02f09379d2",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/engine.py": "09fa42490c62d5e63c576f7769211e5f4283434b924903b633416e013a29b7bc",
+    "src/pyrpmd/input_tasks.py": "2beaf7ad350f1c0b79cc3bd53518e866b01a021e9c4d51f59460e0ee1b647f74",
+    "src/pyrpmd/covalent.py": "6c344bed774688b863bb77d46458b615704321dfdaed8eaf67b99acfcef391fe",
+    "src/pyrpmd/barostat.py": "ccb56efeb97cb0901aa2674df98c692a2592314b20796cbb990c8a5a8ad2ffb8",
+    "src/pyrpmd/input_options.py": "03d94c9b788e618c71abc376b6776ab511eaba61b355a861fad984cc3e301681",
+    "src/pyrpmd/units.py": "5623c2700b3efb4d1f3fbc656569cfd4ea847d0bfe805abbaeae48a419853eb2",
+    "src/pyrpmd/cv_periodic.py": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2",
+    "src/pyrpmd/input_paths.py": "0da1a22fa1ed040339c7c8f160ebf60731300b2bf73c932978878d50c4d8e1fc",
+    "src/pyrpmd/studies.py": "b646542a2fdecf133ea91783bde151e97e8495c6b138e0cb2083d6a1bbd4c0b9",
+    "src/pyrpmd/trajectory_batch.py": "b23c522d4c0731dff46fad3786a6ced48d233feb29c7e4a377eb6632cd6c29d1",
+    "src/pyrpmd/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/pyrpmd/retis.py": "c5c819633563720863e373024881949729e923ef51e3971b3a022615bb96aa4a",
+    "src/pyrpmd/mash.py": "40092556c6cbfe4c6929a780ddd601302b93fc112c43766bff3b922142bcd1d1",
+    "src/pyrpmd/cli.py": "199b0935beb7ffd110a1ebb1ac022562336ac9120eea78661fd5050bde70f9c0",
+    "src/pyrpmd/input_system.py": "d9b24d265f83f6878ade2cd0f9453cb5a622c60e7fa51af35be1ae25d9c803f5",
+    "src/pyrpmd/io.py": "e1e8f3e62f1c87bdf20dc28119b46f85a1c0fe6c8e3312cc2e5c82555c4ef07f",
+    "src/pyrpmd/replica_exchange.py": "5290c931d6264c3179a6b791aba44e6f5a7da155e5a2a471b3675b44d0de0153",
+    "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+    "src/pyrpmd/input_runtime.py": "7aa55f1605339b9392827d84a431fe6f1feda2cbc41cf0092487dbc8d1cfddac",
+    "src/pyrpmd/initial_states.py": "3b2ee6e1b119312e225895cc5b09893e3f3a509c6e5514906304f56b48bd230a",
+    "src/pyrpmd/trajectory.py": "73d1442bc1b5fb4857717751c279dfd08be30cf881c89f65fb93f3002fe72552",
+    "src/pyrpmd/biased_kinetics.py": "6fa5d89555a90816714696d1d5d614b019c87747441035a8312e9003d8bfe6a9",
+    "src/pyrpmd/kc_rpmd.py": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2",
+    "src/pyrpmd/runner.py": "719995b30ebd0d6ff92f398345b70c2907b3e074994de235411ba7a45256006c",
+    "src/pyrpmd/_matrix_path.py": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777",
+    "src/pyrpmd/batched.py": "d487c5f5ee3108624d80a19d8bc8f51922ca24fc8258eff160100f3643f41fba",
+    "src/pyrpmd/torch_backend.py": "9394c0379bcb29674a4a3b4b77126245661a5e8852a2885f5d16c32fd8389337",
+    "src/pyrpmd/block_propagation.py": "740daa76e6606605f8cd241b85c05d7300147201399d39080096c9bbbf313432",
+    "src/pyrpmd/nonadiabatic_registry.py": "529e69b8b74d6185446a4fc9d75990ad76ee52d241b99f4e24a10dc71e0816b6",
+    "src/pyrpmd/surface_hopping.py": "3018d533a897092e24ea4530b56aadacd004177be07bdebe6cb3c7de349d5eeb",
+    "src/pyrpmd/input_fes.py": "7776a5740b9077b6b3ae1fc9efcfed40c634842c909a46fc3157c5ed130bb77f",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/isomorphic.py": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5",
+    "src/pyrpmd/spin_mapping.py": "b502ed10411a80087c1593da917c2015d83c8a0dc4ec08bfd1bd1b60d8cc27dd",
+    "src/pyrpmd/__init__.py": "710c6ae512fe037d6be448a9db653678d65e2a291b0e8217bc8b4b3365da4577",
+    "src/pyrpmd/pcet_input.py": "4ad51710ec9370e360ab1841ed4488ca8b75d3a4e47bfc5994f7d523834a2755",
+    "src/pyrpmd/pimd_methods.py": "9b83444dc878ca918f9d0cda36f5f87db1fc20b3d4b28a60d6f4e627ec6448bc",
+    "src/pyrpmd/plumed.py": "4cbd2c6a52a7fc4f05b742730412b3b0ebd2a165d5632972e8beaec275ebb897",
+    "src/pyrpmd/advanced_cv.py": "e8f61b91916c832a40e4aee6d01e6471a6a913b5ae72ac5b1e94cc392f0a36a0",
+    "src/pyrpmd/pcet.py": "e9b42d25210c91042dc82858f85854833cefa27a8d7c7c82388ef68a7ac01379",
+    "src/pyrpmd/committor.py": "7ee73c934d466c0aa863a7468ad5c3365352664a42263f691a7d33775ba568e5",
+    "src/pyrpmd/workflows/rate_recrossing.py": "69c428ec7120ffa432235444825717ec26d09008ae1d47114b37dc244bca0a6c",
+    "src/pyrpmd/workflows/nonadiabatic_extensions.py": "1d352bd301a95f3263e482d07087cc050eb0a395ca1aa0c475835a6c9e6bca93",
+    "src/pyrpmd/workflows/rate_analysis.py": "3e914821fbcfa16db9891e393bb9801abcb95c524a6e0eae42f7ee9dfe1b3ef1",
+    "src/pyrpmd/workflows/common.py": "a2682076b262e97852e7392f54b7fd5d2103188908ebc39e0ff3603ca7a20e12",
+    "src/pyrpmd/workflows/surface.py": "2362bfab31ecec863b6cfa64cea91653560278d49fbcf962c29ce5c899abe248",
+    "src/pyrpmd/workflows/fes.py": "eabbbda8c7ddfa4060ef2e17b84fea60c90208deeb4eab1cb03af0d7bca9be6f",
+    "src/pyrpmd/workflows/rate_extend.py": "7bafa4ecc1fb2b3f901576f90da68e86a6d96ee5664f70859d65b3beb1c72279",
+    "src/pyrpmd/workflows/rate_options.py": "1558854cbdc90e51acaab6c0f571668767da199e2fe60961cd3bedfd5c7960f4",
+    "src/pyrpmd/workflows/native_pimd.py": "a167b3b515da9d78b4dc842ead3c1dad3bde8ae637d62756a6dae789cf442f37",
+    "src/pyrpmd/workflows/path_integral.py": "09002b07b3e009da9d3ac8a5a94f55f3d8e5bfda1cb53783bb43e6b37185d17b",
+    "src/pyrpmd/workflows/opes.py": "3a3e539bb91b6a4abafa31d3378da2b71e1a72e2e2f71e43c6d2efb5ad289bb6",
+    "src/pyrpmd/workflows/network.py": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7",
+    "src/pyrpmd/workflows/drpmd_persistence.py": "9401af68451b3a5f5096559ddc668d5d6f965072b662e3dbabdcb35fb221b7b0",
+    "src/pyrpmd/workflows/nonadiabatic.py": "659d29b1a04c53782598c36f6ac705d86d2e713e48ed6bd2c888b9e4e281f673",
+    "src/pyrpmd/workflows/drpmd.py": "0bdfbdfe7c8f20f04bd4fddf1f8b32764303f9fedef9ccf758a4971cdf1e1e69",
+    "src/pyrpmd/workflows/site_rate.py": "f1c107f25f3885f21a500673eda73734fb28a2ce0c5af4d10398a612732b4bdf",
+    "src/pyrpmd/workflows/drpmd_trajectory.py": "45a7e53576c56a56cd1cc0a63940b0c84d5007f157357e383460611cc4fa1ff2",
+    "src/pyrpmd/workflows/drpmd_classification.py": "a0eb4b59c8d6ab3473b61408fe5e79e130c17f55cc237f9e9f1fd881f4c71910",
+    "src/pyrpmd/workflows/rate_pmf.py": "bc73f5c5c6abed5ae67e3e43840684f803fd3573849bda03bc790d8bd21ae485",
+    "src/pyrpmd/workflows/materials.py": "ec4d383d1d001612f13dddf2e01a47f80dc5261812ae2410a866cd5ea904fae4",
+    "src/pyrpmd/workflows/shared_metadynamics.py": "1f3930c37d6332b08cf102a8b8396e5e93f4fbd5a567e8ae83b9c6f53602a9c0",
+    "src/pyrpmd/workflows/drpmd_sampling.py": "0c07aefca072e4f7821f7ad6b5e877c887e92d961b4cb46cb22ef73a64a38baa",
+    "src/pyrpmd/workflows/biased_sampling.py": "ee035e5c51578e5d300b394051dc6315e62d1631fa6b6b337f87319d64d2bdeb",
+    "src/pyrpmd/workflows/extend.py": "60c3fd645fc21e570249dcf60b9c162461e995ea4b5a22d1c3a6663863af1f6a",
+    "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+    "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+    "src/pyrpmd/workflows/spectroscopy.py": "0fc25b2307c862c9ce3e7cbbc820866f74c1d7172da75613c0687765e41b12d0",
+    "src/pyrpmd/workflows/prepare.py": "e2f342baa97bb62df735e1ec25433d28175d5e5e2077fda591d71c1031fd81b9",
+    "src/pyrpmd/workflows/replica_exchange.py": "cca45d4d9c93a8c17b09334b72c653faa74136e6cd7736f48a16e357a5d60a05",
+    "src/pyrpmd/workflows/batched_recrossing.py": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa",
+    "src/pyrpmd/workflows/state_selected.py": "f8adaad6375a2990e2216a94780c3885b1817f54d42aae6ad1fa9c05232aaaf9",
+    "src/pyrpmd/workflows/rate.py": "d057b814fcee94e141d517b2a384e1090511ddd0fdff432c553933309107edf8",
+    "src/pyrpmd/workflows/drpmd_analysis.py": "fce6c3e2a57986abd450a08e89abb70ee5297a1c3bd6949965014a53a35be236",
+    "src/pyrpmd/workflows/sampling.py": "86c999da0f9f4ab9747ee2b32588c37ba58eb34f970aa5bc8a1f2caf228ff988",
+    "src/pyrpmd/workflows/metadynamics.py": "0aff440ad6557262c0d3f6e50c92287dc1f6ae3b2f1650dc6efed565864d93ec",
+    "src/pyrpmd/workflows/fes_dispatch.py": "06f4b38ef2f4317cae08f0b12c203d126158ce5a54f3bf0c96fd0ca839d2d12b",
+    "src/pyrpmd/workflows/surface_source.py": "3dcf50df6ca510e4a97b3cebe52d9f3cf4bf63301e3f15e8dadf0bb7bbc19bc8",
+    "src/pyrpmd/workflows/nonadiabatic_rate.py": "a87ffae6af82c9105b7fc11e06d574190d0a87991c4e90227b8d2e9c0cfc7a53",
+    "src/pyrpmd/workflows/__init__.py": "0dfda51b1d63474796b42bd9be6bf4464ec77964d419840642bff86e5c7cdd49",
+    "src/pyrpmd/workflows/rate_source.py": "bef4ec53f077b0fd1ccdf9b1f86bbe91e477e18607944a8267b72509b7d37471",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "4e150e535c9caae7ce52a2e1f37386b641b643a370b1acafceeba827ff4351d2",
+    "src/pyrpmd/workflows/rate_constraints.py": "a31b8e5860d1f05f6a8ba5fb92b52528ad370a814f5d767952a2c6f29250b1fe",
+    "src/pyrpmd/workflows/plumed.py": "d312d211df8761bc5aff14d09513d2bbe660fc3d544c92ba80ae8ea43e410949",
+    "src/pyrpmd/workflows/pcet.py": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6",
+    "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+    "src/pyrpmd/potentials/contraction.py": "fc62923c0ac89ba649a1af46effd38c1809e0cc75b246b441fa7e90af2d07797",
+    "src/pyrpmd/potentials/optional.py": "7d0157da93afdd1993d675e8cd53131fcdd6e119bbde2c1ee3c56a8919e4ac6d",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/builtin.py": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46",
+    "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+    "src/pyrpmd/potentials/cache.py": "b1e328b62f722381ab19f6d9444b457552f23afca6fc520faa3dcbcbc7dad1f8",
+    "src/pyrpmd/potentials/multistate_external.py": "b57027795d2a5b0f37f6aec871586cde8b60d352d9768a7f589ff9d4994c9846",
+    "src/pyrpmd/potentials/adapters.py": "e3b065756038f04a0b90c70844ba7a942660128a68f7ed98209bdd546c00211d",
+    "src/pyrpmd/potentials/socket.py": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08",
+    "src/pyrpmd/potentials/lifecycle.py": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2",
+    "src/pyrpmd/potentials/python.py": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9",
+    "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+    "src/pyrpmd/potentials/lammps.py": "c7bd00faf6a2d5eaad31be0b4fb0b85ef99ed3f8dd2e29ceb29e98bf86c45fba",
+    "src/pyrpmd/potentials/nah2_leps.py": "402b2e8c431a1966b7afe76fe1fd250d75ce3ae5966e1c8576f3ec9db7653835",
+    "src/pyrpmd/potentials/diabatic.py": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec",
+    "src/pyrpmd/potentials/nonadiabatic_models.py": "fd7dbcc94d311a0571df2f65905b3215d2f6f70d371ea3d13693e14b17c29012",
+    "src/pyrpmd/potentials/__init__.py": "f870f1e0f59ec7ef79dc8eafd6b70a5f41815a35a4e8a5f0ba218eb95e5a9821",
+    "src/pyrpmd/parallel/execution.py": "a465a3df14cd3c9dfbdc596bc57703308ff7b7c61adbb762af6d4677180e33bc",
+    "src/pyrpmd/parallel/__init__.py": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5",
+    "src/pyrpmd/analysis/umbrella.py": "2c3f493b391399e422a7074f238a1eba95b2a09ec59bc6a58b3ecfa475f78901",
+    "src/pyrpmd/analysis/quantum_reference.py": "d7c86e586840158d64e4d319ae4a10949263f5e11b3d6075bdfdee766430a773",
+    "src/pyrpmd/analysis/surface.py": "03483e081055a6afa4d1481b03f08d8f4b8b06b4f06e6033f6c3c7824c532bd2",
+    "src/pyrpmd/analysis/fes.py": "6c2cb1f30d6a64dbcd0ea65a740dacaa1924e4a6ec8b95d20f04e9cc848a5d55",
+    "src/pyrpmd/analysis/diagnostics.py": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24",
+    "src/pyrpmd/analysis/rate_io.py": "9e7815d3abd088205ce82bf02fe6bdc88893335928364fc1bb46e13be119765c",
+    "src/pyrpmd/analysis/bond_rate.py": "cb9e7fed948fbd3554f16f54bb7e8dc43c53b83a25bbda02c06f3e8a546e9896",
+    "src/pyrpmd/analysis/recrossing.py": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45",
+    "src/pyrpmd/analysis/report_compare.py": "a94bc716696d05ad5f02b10cf7bfcd9920420f179bcf907ab61b633d37473b29",
+    "src/pyrpmd/analysis/report_sampling.py": "3f36babc468e7cbca1eeb5b95956427d8132b10907ab47d8fee6df6138767006",
+    "src/pyrpmd/analysis/report_render.py": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656",
+    "src/pyrpmd/analysis/mbar.py": "4cc85883422dd1003b1132477603d3c796a426c60b206f62882451b92a4a8683",
+    "src/pyrpmd/analysis/fes_result.py": "ea4b56439e3ea025b48f21e90a9502b842b8ae9652136fc4581181c52897617c",
+    "src/pyrpmd/analysis/reporting.py": "9254a5821e253cf34bafff12dc2395a528879a967d083e5b7ad2dec78a565833",
+    "src/pyrpmd/analysis/rate_pmf.py": "22253c7efec7f756e9477771a3681096633f23436ae10e3d237df4f90631d224",
+    "src/pyrpmd/analysis/scattering.py": "d39596c5e0281b05e1101464f50e9173d10a25a9d30682c2f6ea7afa02363953",
+    "src/pyrpmd/analysis/report_observables.py": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b",
+    "src/pyrpmd/analysis/entrance.py": "e54044a43b2af62e56b0978c5fb05daf0ec1f1bb720d2fb1cb6faa5be5b5269e",
+    "src/pyrpmd/analysis/bond_flux.py": "27dd1dff9e6e74cc4da93f998c3624cc4b5b4fada34c413de52f4c9c7b0f00c3",
+    "src/pyrpmd/analysis/rate_postprocess.py": "a6170350a155f14e2d7286c2a3f55684b2ad2ff6cd91cda220155baf405e58d2",
+    "src/pyrpmd/analysis/spectroscopy.py": "7763753bc680487b488fee90854a609985ba06c7ae610bb1e6dcab9e48d14b71",
+    "src/pyrpmd/analysis/projection.py": "c3921aa541ae95f7907fffa5c7fd62bce7b3cf7a84191af5aba6e65ace840dd0",
+    "src/pyrpmd/analysis/diffusion.py": "92ca98ff236bf0a3547ae3cfda795dc6a4a997a8f4254c3d028d8a4615b09e72",
+    "src/pyrpmd/analysis/fes_statistics.py": "5af387f6fb972a5528a3a56c82f793e8c8f6df5d27e4b3450773a00ed6466013",
+    "src/pyrpmd/analysis/metadynamics.py": "f2a8aeeb1ecf3d7135abe9f0b830f7bb3cbef21277ccadc137109b8d47e80330",
+    "src/pyrpmd/analysis/__init__.py": "a133fc41807e52b9bf708911434127c16f8c2439f4998eacbdce5b188baa7819",
+    "src/pyrpmd/electrochemistry/nonadiabatic.py": "5b4656c36b861cdec7fc94e39dcc315f0b0ec8d76b0cd6555cc5f83f00f5a7b8",
+    "src/pyrpmd/electrochemistry/reservoir.py": "56f435652a4ee1a7e01a1b15b001d635067f8ced13b31dd9ecdfd33dfd7cc2e9",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/kinetics.py": "825d4daccfab9d1b7effed67f8f0adebb431bf0fb300cf5ebcc8cd50f47c1af5",
+    "src/pyrpmd/electrochemistry/diabatic.py": "e3370a235a65794148ad80bbfe7603a862b0978e088384c46c641ec1110cbb72",
+    "src/pyrpmd/electrochemistry/sampling.py": "f332ace96f59e9b7d4eda80a52e4285b1db3d1310390ad2245cc4fe238049128",
+    "src/pyrpmd/electrochemistry/__init__.py": "67ee2eda1961f275f13054b6a946a7d22fe94f03f537eb065ef749204c19ac20",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "a2e791e566381239435181dfd61a6b2b5b7aec91fd9d198dc21ca05667ed1654",
+    "src/pyrpmd/pesgen/formats.py": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7",
+    "src/pyrpmd/pesgen/workflow.py": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "f6435ce61ddb52a654f9c7a93e75674bf1c4a943fdac20ad51c05171f05c1c75",
+    "src/pyrpmd/pesgen/build.py": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06",
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/__main__.py": "68215945ac4766cdb44195a9cbe5a96ae750e67be9d4ca71913d9e3e78843bb7",
+    "src/pyrpmd/pesgen/reference.py": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b",
+    "src/pyrpmd/pesgen/__init__.py": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907",
+    "native/fused.hpp": "50b35e0eb186cdfc523c793984cc038a53cf618897f7f05627484c6df7c3e6cd",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/fixed_atoms.hpp": "c04149e12917225e603bb137ecad09cdd0038bc8623e30dceef9f605376a48e3",
+    "native/cayley.cpp": "094cd0a33ca14339dbda7693f23d8428645a3d7a81c373fd6a412aa806f66070",
+    "native/thermal.hpp": "60890d93319d7098b1f841028a86df198151badf33e1a648958fa7df4fb2e5a7",
+    "native/thermal.cpp": "5584cb886eb3975280810896106bdc3795a9244c1b3ea6244e801ad8c8e91a58",
+    "native/propagation.h": "278e83ea3704c846ba8afc49940448d8afc2963b1973de1ceb656a1c755bd639",
+    "native/electronic.cpp": "f4dd6bdcd7a752d1df15466a6a94cd0c1604a897f49a45da734b4adb40c32be2",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "native/onnx/context_test.cpp": "ff69cbea4ec453441a543dd09adba1a62c9a42ccb87a30274fffc0a92a17e1fe",
+    "native/include/pyrpmd/thermal_pes.h": "40d1cbeec480eaf828499db46c20db4644c7d72c1e17d3132f13f5dea012a961",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "benchmarks/materials/batch_convergence.py": "225b805fdd6a43d223aa93df30cc085e3897ab8c3a3b68b38b06160f1076da15",
+    "loaded_native_extension": {
+      "path": "/workspace/scratch/2b8fa6c24a7c/PyRPMD-work/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "0dcdad6ea35955ec407fdb063c2d6a890825d9536deb33ca7b785c3903b00413"
+    }
+  },
+  "versions": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "ase": "3.29.0"
+  },
+  "physical_converged": false,
+  "implementation_checks_passed": true,
+  "scope": "fixed-cell real Ni-H force/virial contracts and finite-step serial/process/task-batch/MPI equivalence",
+  "performance_scope": "single measurement per mode, startup and count probe included; no speedup assertion",
+  "cases": [
+    {
+      "task": "pimd",
+      "mode": "serial",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "serial",
+          "trajectory_workers": 1,
+          "trajectory_batch_size": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 36.256827942997916,
+        "cpu_seconds_including_spawn_children": 35.982454,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 35.93072868300078,
+            "self_cpu_seconds": 35.979907,
+            "children_cpu_seconds": 0.002547,
+            "self_peak_rss_bytes": 88162304,
+            "largest_child_peak_rss_bytes": 51159040
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 22.06480945486296,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 2.75810118185787,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-serial"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "pimd",
+      "mode": "process",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 22.643868849998398,
+        "cpu_seconds_including_spawn_children": 36.016328,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 22.347316785999283,
+            "self_cpu_seconds": 0.465528,
+            "children_cpu_seconds": 35.5508,
+            "self_peak_rss_bytes": 88293376,
+            "largest_child_peak_rss_bytes": 75038720
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 35.32965171718244,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.416206464647805,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-process"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "pimd",
+      "mode": "batch",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "serial",
+          "trajectory_workers": 1,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 35.85830922899913,
+        "cpu_seconds_including_spawn_children": 35.66222,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 35.51124666100077,
+            "self_cpu_seconds": 35.659303,
+            "children_cpu_seconds": 0.002917,
+            "self_peak_rss_bytes": 88293376,
+            "largest_child_peak_rss_bytes": 51183616
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 22.31003126474877,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 2.788753908093596,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "pimd",
+      "mode": "process_batch",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 21.792330235002737,
+        "cpu_seconds_including_spawn_children": 37.223381,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 21.362970528003643,
+            "self_cpu_seconds": 0.5759099999999999,
+            "children_cpu_seconds": 36.647471,
+            "self_peak_rss_bytes": 88293376,
+            "largest_child_peak_rss_bytes": 74047488
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 36.710163225915316,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.5887704032394145,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-process_batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "pimd",
+      "mode": "mpi",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 20.940741739999794,
+        "cpu_seconds_including_spawn_children": 41.466515,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 20.562571174996265,
+            "self_cpu_seconds": 20.738950000000003,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 93818880,
+            "largest_child_peak_rss_bytes": 0
+          },
+          {
+            "success": true,
+            "wall_seconds": 20.564575589000015,
+            "self_cpu_seconds": 20.726307000000002,
+            "children_cpu_seconds": 0.001258,
+            "self_peak_rss_bytes": 95252480,
+            "largest_child_peak_rss_bytes": 68866048
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 38.20304027110397,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.775380033887997,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-mpi"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "pimd",
+      "mode": "mpi_batch",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 20.111304316000314,
+        "cpu_seconds_including_spawn_children": 39.812529,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 19.772325955003907,
+            "self_cpu_seconds": 19.882309,
+            "children_cpu_seconds": 0.0013909999999999999,
+            "self_peak_rss_bytes": 93683712,
+            "largest_child_peak_rss_bytes": 69197824
+          },
+          {
+            "success": true,
+            "wall_seconds": 19.7185881530022,
+            "self_cpu_seconds": 19.928829,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 93335552,
+            "largest_child_peak_rss_bytes": 0
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 39.77862337668122,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.972327922085152,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-mpi_batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "pimd",
+      "mode": "mpi_dynamic",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 1,
+          "scheduling": "dynamic",
+          "coordinator_ranks": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 23.384005553998577,
+        "cpu_seconds_including_spawn_children": 69.492994,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 22.99448050299543,
+            "self_cpu_seconds": 23.205195,
+            "children_cpu_seconds": 0.0013989999999999999,
+            "self_peak_rss_bytes": 87556096,
+            "largest_child_peak_rss_bytes": 68980736
+          },
+          {
+            "success": true,
+            "wall_seconds": 23.019569976997445,
+            "self_cpu_seconds": 23.133201999999997,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 93487104,
+            "largest_child_peak_rss_bytes": 0
+          },
+          {
+            "success": true,
+            "wall_seconds": 22.993778613003087,
+            "self_cpu_seconds": 23.153198,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 96223232,
+            "largest_child_peak_rss_bytes": 0
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 34.21141849084119,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.276427311355149,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-mpi_dynamic"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "pimd",
+      "mode": "mpi_dynamic_batch",
+      "configuration": {
+        "task": "pimd",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 2,
+          "scheduling": "dynamic",
+          "coordinator_ranks": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 21.562599951001175,
+        "cpu_seconds_including_spawn_children": 64.095081,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 21.132039027994324,
+            "self_cpu_seconds": 21.356416,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 94416896,
+            "largest_child_peak_rss_bytes": 0
+          },
+          {
+            "success": true,
+            "wall_seconds": 21.13744427000347,
+            "self_cpu_seconds": 21.376894999999998,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 93921280,
+            "largest_child_peak_rss_bytes": 0
+          },
+          {
+            "success": true,
+            "wall_seconds": 21.197373754999717,
+            "self_cpu_seconds": 21.360642,
+            "children_cpu_seconds": 0.0011279999999999999,
+            "self_peak_rss_bytes": 86626304,
+            "largest_child_peak_rss_bytes": 68001792
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 37.1012772957769,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.637659661972113,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-mpi_dynamic_batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "serial",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "serial",
+          "trajectory_workers": 1,
+          "trajectory_batch_size": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 31.960089650005102,
+        "cpu_seconds_including_spawn_children": 31.741218000000003,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 31.63418483100395,
+            "self_cpu_seconds": 31.738379000000002,
+            "children_cpu_seconds": 0.002839,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 51163136
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 25.031218897093183,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 3.128902362136648,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-serial"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "process",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 23.292662362997362,
+        "cpu_seconds_including_spawn_children": 37.653963,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 22.88906236299954,
+            "self_cpu_seconds": 0.5486219999999999,
+            "children_cpu_seconds": 37.105340999999996,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 75194368
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 34.34558006004831,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.293197507506039,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-process"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "batch",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "serial",
+          "trajectory_workers": 1,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 34.16930094399868,
+        "cpu_seconds_including_spawn_children": 33.99951,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 33.874046704993816,
+            "self_cpu_seconds": 33.996631,
+            "children_cpu_seconds": 0.0028789999999999996,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 51175424
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 23.412828998496323,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 2.9266036248120404,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "process_batch",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "process",
+          "trajectory_workers": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 21.20464230200014,
+        "cpu_seconds_including_spawn_children": 34.890432,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 20.842288562002068,
+            "self_cpu_seconds": 0.5295099999999999,
+            "children_cpu_seconds": 34.360921999999995,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 74186752
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 37.72758760116126,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.715948450145158,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-process_batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "mpi",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 20.712990063999314,
+        "cpu_seconds_including_spawn_children": 40.995174,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 20.32912281699828,
+            "self_cpu_seconds": 20.550175,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 93753344,
+            "largest_child_peak_rss_bytes": 0
+          },
+          {
+            "success": true,
+            "wall_seconds": 20.330584317998728,
+            "self_cpu_seconds": 20.443635,
+            "children_cpu_seconds": 0.001364,
+            "self_peak_rss_bytes": 95047680,
+            "largest_child_peak_rss_bytes": 68956160
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 38.6231054776808,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.8278881847101,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-mpi"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "mpi_batch",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 2
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 20.06836388300144,
+        "cpu_seconds_including_spawn_children": 39.703858000000004,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 19.714768894998997,
+            "self_cpu_seconds": 19.836146000000003,
+            "children_cpu_seconds": 0.001532,
+            "self_peak_rss_bytes": 92618752,
+            "largest_child_peak_rss_bytes": 67764224
+          },
+          {
+            "success": true,
+            "wall_seconds": 19.717122173999087,
+            "self_cpu_seconds": 19.86618,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 94568448,
+            "largest_child_peak_rss_bytes": 0
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 39.86373800395488,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.98296725049436,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-mpi_batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "mpi_dynamic",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 1,
+          "scheduling": "dynamic",
+          "coordinator_ranks": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 21.003634877997683,
+        "cpu_seconds_including_spawn_children": 62.263136,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 20.640708188002463,
+            "self_cpu_seconds": 20.796878,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 95117312,
+            "largest_child_peak_rss_bytes": 0
+          },
+          {
+            "success": true,
+            "wall_seconds": 20.63301949900051,
+            "self_cpu_seconds": 20.802725000000002,
+            "children_cpu_seconds": 0.001513,
+            "self_peak_rss_bytes": 87461888,
+            "largest_child_peak_rss_bytes": 69165056
+          },
+          {
+            "success": true,
+            "wall_seconds": 20.640703656994447,
+            "self_cpu_seconds": 20.662020000000002,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 94420992,
+            "largest_child_peak_rss_bytes": 0
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 200,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 38.08864535338302,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 200
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.761080669172878,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-mpi_dynamic"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    },
+    {
+      "task": "diffusion",
+      "mode": "mpi_dynamic_batch",
+      "configuration": {
+        "task": "diffusion",
+        "preset": "pilot",
+        "temperature": "600 K",
+        "beads": 4,
+        "seed": 7261,
+        "system": {
+          "symbols": [
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "Ni",
+            "H"
+          ],
+          "geometry": [
+            [
+              0.0,
+              0.0,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              8.0
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              8.0
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              8.0
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              1.2445079348883237,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              3.733523804664971,
+              9.76
+            ],
+            [
+              1.2445079348883237,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              3.733523804664971,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              6.222539674441618,
+              6.222539674441618,
+              9.76
+            ],
+            [
+              0.0,
+              0.0,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              0.0,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              0.0,
+              11.52
+            ],
+            [
+              0.0,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              2.4890158697766473,
+              11.52
+            ],
+            [
+              0.0,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              2.4890158697766473,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              4.978031739553295,
+              4.978031739553295,
+              11.52
+            ],
+            [
+              1.2445079348883237,
+              1.2445079348883237,
+              12.42
+            ]
+          ],
+          "geometry_unit": "angstrom",
+          "cell": [
+            [
+              7.467047609329942,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              7.467047609329942,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              19.52
+            ]
+          ],
+          "cell_unit": "angstrom",
+          "pbc": [
+            true,
+            true,
+            false
+          ]
+        },
+        "potential": {
+          "provider": "ase",
+          "factory": "ase.calculators.eam:EAM",
+          "params": {
+            "potential": "/workspace/scratch/2b8fa6c24a7c/models/NiAlH_jea.eam.alloy"
+          },
+          "trajectory_batch_safe": true
+        },
+        "dynamics": {
+          "timestep": "0.10000000000000001 fs",
+          "integrator": "cayley-bcb",
+          "loop_backend": "python",
+          "block_steps": 3
+        },
+        "sampling": {
+          "thermostat": "pile-l",
+          "gamma_centroid": "0.1 fs^-1",
+          "equilibration_steps": 4,
+          "production_steps": 16,
+          "sample_interval": 2,
+          "replicas": 5
+        },
+        "diffusion": {
+          "atom_indices": [
+            27
+          ],
+          "axes": [
+            0,
+            1
+          ],
+          "reference_atoms": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            23,
+            24,
+            25,
+            26
+          ],
+          "bootstrap": 0
+        },
+        "parallel": {
+          "mode": "serial",
+          "bead_workers": 1,
+          "threads_per_rank": 1,
+          "backend": "mpi",
+          "trajectory_groups": 2,
+          "trajectory_batch_size": 2,
+          "scheduling": "dynamic",
+          "coordinator_ranks": 1
+        },
+        "output": {
+          "checkpoint_steps": 3,
+          "trajectory_storage": "stream",
+          "chunk_frames": 3
+        }
+      },
+      "measurement": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 22.069660506997025,
+        "cpu_seconds_including_spawn_children": 65.599649,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 21.73147153299942,
+            "self_cpu_seconds": 21.816615,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 94154752,
+            "largest_child_peak_rss_bytes": 0
+          },
+          {
+            "success": true,
+            "wall_seconds": 21.684674754003936,
+            "self_cpu_seconds": 21.907623,
+            "children_cpu_seconds": 0.001635,
+            "self_peak_rss_bytes": 87146496,
+            "largest_child_peak_rss_bytes": 67825664
+          },
+          {
+            "success": true,
+            "wall_seconds": 21.701319380001223,
+            "self_cpu_seconds": 21.873776,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 95367168,
+            "largest_child_peak_rss_bytes": 0
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 120,
+        "pes_frames": 800,
+        "pes_frames_per_wall_second": 36.24885846097931,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 80
+          }
+        ],
+        "committed_replica_steps_advanced": 100,
+        "committed_replica_steps_per_wall_second": 4.531107307622413,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-mpi_dynamic_batch"
+      },
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      }
+    }
+  ],
+  "recovery": {
+    "pimd": {
+      "passed": true,
+      "injected_after_actual_step": 9,
+      "partial_elapsed_steps": [
+        8,
+        8
+      ],
+      "committed_chunks_preserved": 4,
+      "packing": "2 lanes -> 3 lanes, block 3 -> 7",
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      },
+      "interruption": {
+        "returncode": 1,
+        "wall_seconds_including_startup_and_probe": 5.818161675997544,
+        "cpu_seconds_including_spawn_children": 5.713598999999999,
+        "rank_resource_receipts": [
+          {
+            "success": false,
+            "wall_seconds": 5.490724333998514,
+            "self_cpu_seconds": 5.71048,
+            "children_cpu_seconds": 0.003119,
+            "self_peak_rss_bytes": 88293376,
+            "largest_child_peak_rss_bytes": 51159040
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 18,
+        "pes_frames": 144,
+        "pes_frames_per_wall_second": 24.750085683260203,
+        "shapes": [
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 18
+          }
+        ],
+        "committed_replica_steps_advanced": 16,
+        "committed_replica_steps_per_wall_second": 2.7500095203622448,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-recovery/interrupted"
+      },
+      "continuation": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 15.27853950500139,
+        "cpu_seconds_including_spawn_children": 28.376518,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 14.95423278799717,
+            "self_cpu_seconds": 0.49536199999999997,
+            "children_cpu_seconds": 27.881156,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 74686464
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 80,
+        "pes_frames": 672,
+        "pes_frames_per_wall_second": 43.98326160560193,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 16
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              12,
+              28,
+              3
+            ],
+            "calls": 24
+          }
+        ],
+        "committed_replica_steps_advanced": 84,
+        "committed_replica_steps_per_wall_second": 5.4979077007002415,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-recovery/continued"
+      },
+      "terminal_restart": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 0.6011467040007119,
+        "cpu_seconds_including_spawn_children": 0.500488,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 0.3093288699965342,
+            "self_cpu_seconds": 0.500488,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 0
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 0,
+        "pes_frames": 0,
+        "pes_frames_per_wall_second": 0.0,
+        "shapes": [],
+        "committed_replica_steps_advanced": 0,
+        "committed_replica_steps_per_wall_second": 0.0,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/pimd-recovery/terminal"
+      }
+    },
+    "diffusion": {
+      "passed": true,
+      "injected_after_actual_step": 9,
+      "partial_elapsed_steps": [
+        8,
+        8
+      ],
+      "committed_chunks_preserved": 4,
+      "packing": "2 lanes -> 3 lanes, block 3 -> 7",
+      "equivalence": {
+        "passed": true,
+        "replicas": 5,
+        "q_p_rng_streams_statistics": "exact_same_machine",
+        "frames_per_replica": [
+          9,
+          9,
+          9,
+          9,
+          9
+        ]
+      },
+      "interruption": {
+        "returncode": 1,
+        "wall_seconds_including_startup_and_probe": 6.866411935996439,
+        "cpu_seconds_including_spawn_children": 6.779481999999999,
+        "rank_resource_receipts": [
+          {
+            "success": false,
+            "wall_seconds": 6.52826269200159,
+            "self_cpu_seconds": 6.776573999999999,
+            "children_cpu_seconds": 0.002908,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 51175424
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 18,
+        "pes_frames": 144,
+        "pes_frames_per_wall_second": 20.97165176547233,
+        "shapes": [
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 18
+          }
+        ],
+        "committed_replica_steps_advanced": 16,
+        "committed_replica_steps_per_wall_second": 2.3301835294969258,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-recovery/interrupted"
+      },
+      "continuation": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 15.822344631000306,
+        "cpu_seconds_including_spawn_children": 28.947307000000002,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 15.520159551997494,
+            "self_cpu_seconds": 0.502467,
+            "children_cpu_seconds": 28.444840000000003,
+            "self_peak_rss_bytes": 88424448,
+            "largest_child_peak_rss_bytes": 74686464
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 80,
+        "pes_frames": 672,
+        "pes_frames_per_wall_second": 42.47158153055066,
+        "shapes": [
+          {
+            "shape": [
+              4,
+              28,
+              3
+            ],
+            "calls": 16
+          },
+          {
+            "shape": [
+              8,
+              28,
+              3
+            ],
+            "calls": 40
+          },
+          {
+            "shape": [
+              12,
+              28,
+              3
+            ],
+            "calls": 24
+          }
+        ],
+        "committed_replica_steps_advanced": 84,
+        "committed_replica_steps_per_wall_second": 5.308947691318832,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-recovery/continued"
+      },
+      "terminal_restart": {
+        "returncode": 0,
+        "wall_seconds_including_startup_and_probe": 0.6752128349980921,
+        "cpu_seconds_including_spawn_children": 0.6025849999999999,
+        "rank_resource_receipts": [
+          {
+            "success": true,
+            "wall_seconds": 0.3875740270013921,
+            "self_cpu_seconds": 0.6025849999999999,
+            "children_cpu_seconds": 0.0,
+            "self_peak_rss_bytes": 89997312,
+            "largest_child_peak_rss_bytes": 0
+          }
+        ],
+        "rss_scope": "per-rank self peak and largest terminated child peak; not simultaneous process-tree RSS",
+        "pes_calls": 0,
+        "pes_frames": 0,
+        "pes_frames_per_wall_second": 0.0,
+        "shapes": [],
+        "committed_replica_steps_advanced": 0,
+        "committed_replica_steps_per_wall_second": 0.0,
+        "evidence": "/workspace/scratch/2b8fa6c24a7c/materials-batch-final/evidence/diffusion-recovery/terminal"
+      }
+    }
+  },
+  "oracle": {
+    "energy_hartree_max_error": 4.440892098500626e-16,
+    "force_hartree_per_bohr_max_error": 1.431146867680866e-17,
+    "virial_hartree_max_error": 4.440892098500626e-16,
+    "reordered_frames_max_error_atomic_units": 0.0,
+    "all_nine_strain_components_max_error_eV": 8.684819761128892e-07,
+    "unwrapped_input_unchanged": true,
+    "direct_ase_and_cartesian_fd": {
+      "passed": true,
+      "natoms": 28,
+      "cell_angstrom": [
+        [
+          7.467047609329942,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          7.467047609329942,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          19.52
+        ]
+      ],
+      "pbc": [
+        true,
+        true,
+        false
+      ],
+      "direct_energy_eV": -108.3998579800787,
+      "energy_error_hartree": 4.440892098500626e-16,
+      "force_error_hartree_per_bohr": 6.938893903907228e-18,
+      "translation_energy_error_hartree": 0.0,
+      "translation_force_error_hartree_per_bohr": 1.3444106938820255e-17,
+      "force_finite_differences": [
+        {
+          "atom": 27,
+          "axis": 0,
+          "force_eV_per_angstrom": -0.07198019504822901,
+          "finite_difference_eV_per_angstrom": -0.07198019460474825,
+          "absolute_error_eV_per_angstrom": 4.434807659992046e-10
+        },
+        {
+          "atom": 27,
+          "axis": 2,
+          "force_eV_per_angstrom": -0.15942650187217872,
+          "finite_difference_eV_per_angstrom": -0.15942650222200427,
+          "absolute_error_eV_per_angstrom": 3.4982555741081e-10
+        },
+        {
+          "atom": 26,
+          "axis": 2,
+          "force_eV_per_angstrom": -0.3857010618330043,
+          "finite_difference_eV_per_angstrom": -0.3857010618446565,
+          "absolute_error_eV_per_angstrom": 1.1652234732650868e-11
+        }
+      ]
+    },
+    "passed": true
+  },
+  "source_at_end": {
+    "benchmarks/materials/batch_acceptance.py": "64cef4760aa53e6a5801e7377f12b880143de5a92a70900d73f11efec419413e",
+    "benchmarks/materials/ni_h_eam.py": "4ba896f6b3669490fa2fd8dcedd3006bc26c0007ef333daf5c1810bbb7faf030",
+    "src/pyrpmd/electronic_friction.py": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005",
+    "src/pyrpmd/cmd.py": "7600dbb204b585bfe205ea4b8cd90b8083a621f248c289e5f675509d98f2db90",
+    "src/pyrpmd/multitime.py": "7ffaaeac84bf4f641974a279da3c1e4566af23096c24e01261f8634287c0e85b",
+    "src/pyrpmd/input_schema.py": "063523c4f775f5a755e501473c0bcd2b1580bf1a79930e5f852cd10775d2ee85",
+    "src/pyrpmd/thermostats.py": "c28be43ec2f16e0b427f891db8c0d8fc5be81a5a999fd2a386256d41a1f96bf7",
+    "src/pyrpmd/instanton.py": "b849eb38e03b6b2b144c59b8c9043bc415bf7b09ccda0ea1289389d28348b9da",
+    "src/pyrpmd/nonadiabatic_ensemble.py": "86f88128376fec1c6bcfef20fe9d176b90d3423f9e0dd1a508dad11a0918a14c",
+    "src/pyrpmd/transition_interface.py": "da1375ba7ed3a4257c8bac5e1c571d5f0738801806ff2f6923ddeb21ee081584",
+    "src/pyrpmd/propagation.py": "cc3cfc011b5d199b838dd65a63826a76d3de23acc5e4ae128de226a1dbc6f10c",
+    "src/pyrpmd/adaptive_nrpmd.py": "facf20d510b05b8e8f206a178e4433101cda490610005fd8b1bd83ce6f8db8fb",
+    "src/pyrpmd/nonadiabatic_sampling.py": "eaa7bde6f936232b4315b416c67d73141aedb88d2b898328102e8306080f7085",
+    "src/pyrpmd/tunnelling.py": "c6ce46c625ef1a7db06c2d4796127f04ee61949b096fa2fdf9d33ea8580a35e1",
+    "src/pyrpmd/batched_nonadiabatic.py": "8c652eb56462c43ec457cc19a8cf26a5b33991d246fb226e1a3bf78b03b0083f",
+    "src/pyrpmd/properties.py": "0a8088e858f3ef6f5aef03aab7bb9abf0a664189630f96991796229b4e793fd3",
+    "src/pyrpmd/system.py": "0a26f036da0215cc6f3f1bc5925f28fc3fb05b0fe677f01796f68dddddd5e2ce",
+    "src/pyrpmd/geometry.py": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa",
+    "src/pyrpmd/adaptive_string.py": "67c6bebb4c7a8df5ac95fb5e4ece090e63eb6d38d5b4c9f53840c6e31171e598",
+    "src/pyrpmd/cv.py": "640d9ee61d76f847e0260acb2456723ff76c1b9fd11dd61dcdf16de3fc58a114",
+    "src/pyrpmd/spectroscopy_input.py": "4a53388579596df6734c61656d2bbd79ec7b49c96e4b371395e69ed2c136af38",
+    "src/pyrpmd/path_integral.py": "a998d7d0c163e26663616db456789bc115538132a11308bc4909596df18829e5",
+    "src/pyrpmd/opes.py": "1db8fc7207296b480a69ec925829c2e9fd6a6b7d4c8d4dd02478f6b1354a9b8d",
+    "src/pyrpmd/scaffold.py": "60c937e0b1aa0e54b78fb4ef0a4ef5e481e410a08eece5908e9d15ee49dc9c27",
+    "src/pyrpmd/nonadiabatic.py": "d8cf4212bfc65ea306ee9f50f70a6d5fef1bdf70d8d107fdb70a7dabd5a90e1e",
+    "src/pyrpmd/trajectory_export.py": "aa9a2b58fdbe95bc7c3c8e2d4b05388685d537c478b520fadcaeae94ce9ffc3d",
+    "src/pyrpmd/validation.py": "6bd219b3761c2afb4309b1e7a1564062927287a734beb8dec6012e10c1c64d12",
+    "src/pyrpmd/checkpoint.py": "058a4be46de68b812a27ab37960b3dcf57fcf18b5bd89d55e3e9472268100aec",
+    "src/pyrpmd/nonadiabatic_input.py": "72fb5a53deb41a86c945d1a8c94f4ae7d77741f0839c0b6694272a544592cfdc",
+    "src/pyrpmd/rp_mash.py": "d80bf44021bae96b33ec3d696ca5977180f6daa21e0899c3c6412bccf4ca8017",
+    "src/pyrpmd/thermal_nrpmd.py": "36e64008f84ff296d43b28b599ae4248b4c3a609cf2521ffbbb15f910cb46dc2",
+    "src/pyrpmd/bias.py": "0a0ab4a074da0be7626c1519142ab5216999f54cc21f91a50b55e58145a38cb1",
+    "src/pyrpmd/input.py": "e6828805abc42818064d9808a85a741eea1f369cbb1db2de7cfd5c3b4bc57a8d",
+    "src/pyrpmd/reactions.py": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1",
+    "src/pyrpmd/native_ensemble.py": "b908298a18d1027e80e3679915c7197d77616bdc15a53fa9dbfe29b94c16946c",
+    "src/pyrpmd/bond_constraints.py": "3a09282f3e6b90f10664a1bb69aad1d2c504d7753f4d880775c39193215445cc",
+    "src/pyrpmd/torch_normal_modes.py": "5b31af409c6c021c76c3a04f5127cd2a263dc28f004a5611e35f2ccdd960faf6",
+    "src/pyrpmd/electronic_backends.py": "98d6d10d7d4de85f4747bdfc5077f007885fe05d5ec20479054c6e502e518c8f",
+    "src/pyrpmd/advanced_surface_hopping.py": "4905732d56d469241fc195f6ff4d430e3175ddc8fe45440d07066643dfa0df2f",
+    "src/pyrpmd/rate_artifacts.py": "6a900310cf7ff79217375c6c964329ab79aa04f58c1d4e317752bfebc48c914f",
+    "src/pyrpmd/low_temperature.py": "c82241b5bde9f87fe0ed5982962e1708115270ef48efeaf5948a73391389e4c1",
+    "src/pyrpmd/shared_metadynamics.py": "9bccc0e5ff415cadda36f1742f102e7df90a8a958aaccc22dbf1cc5e75886fa6",
+    "src/pyrpmd/mv_rpmd.py": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f",
+    "src/pyrpmd/adiabatic.py": "c0e8df840173416c3af3b71de100e718903df5905a27d45190850b02f09379d2",
+    "src/pyrpmd/quantum_statistics.py": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515",
+    "src/pyrpmd/engine.py": "09fa42490c62d5e63c576f7769211e5f4283434b924903b633416e013a29b7bc",
+    "src/pyrpmd/input_tasks.py": "2beaf7ad350f1c0b79cc3bd53518e866b01a021e9c4d51f59460e0ee1b647f74",
+    "src/pyrpmd/covalent.py": "6c344bed774688b863bb77d46458b615704321dfdaed8eaf67b99acfcef391fe",
+    "src/pyrpmd/barostat.py": "ccb56efeb97cb0901aa2674df98c692a2592314b20796cbb990c8a5a8ad2ffb8",
+    "src/pyrpmd/input_options.py": "03d94c9b788e618c71abc376b6776ab511eaba61b355a861fad984cc3e301681",
+    "src/pyrpmd/units.py": "5623c2700b3efb4d1f3fbc656569cfd4ea847d0bfe805abbaeae48a419853eb2",
+    "src/pyrpmd/cv_periodic.py": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2",
+    "src/pyrpmd/input_paths.py": "0da1a22fa1ed040339c7c8f160ebf60731300b2bf73c932978878d50c4d8e1fc",
+    "src/pyrpmd/studies.py": "b646542a2fdecf133ea91783bde151e97e8495c6b138e0cb2083d6a1bbd4c0b9",
+    "src/pyrpmd/trajectory_batch.py": "b23c522d4c0731dff46fad3786a6ced48d233feb29c7e4a377eb6632cd6c29d1",
+    "src/pyrpmd/__main__.py": "307299fda7b77d22c64cb51430ec75e5f59d78e9c948786afb3b2544fe45e4b7",
+    "src/pyrpmd/retis.py": "c5c819633563720863e373024881949729e923ef51e3971b3a022615bb96aa4a",
+    "src/pyrpmd/mash.py": "40092556c6cbfe4c6929a780ddd601302b93fc112c43766bff3b922142bcd1d1",
+    "src/pyrpmd/cli.py": "199b0935beb7ffd110a1ebb1ac022562336ac9120eea78661fd5050bde70f9c0",
+    "src/pyrpmd/input_system.py": "d9b24d265f83f6878ade2cd0f9453cb5a622c60e7fa51af35be1ae25d9c803f5",
+    "src/pyrpmd/io.py": "e1e8f3e62f1c87bdf20dc28119b46f85a1c0fe6c8e3312cc2e5c82555c4ef07f",
+    "src/pyrpmd/replica_exchange.py": "5290c931d6264c3179a6b791aba44e6f5a7da155e5a2a471b3675b44d0de0153",
+    "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+    "src/pyrpmd/input_runtime.py": "7aa55f1605339b9392827d84a431fe6f1feda2cbc41cf0092487dbc8d1cfddac",
+    "src/pyrpmd/initial_states.py": "3b2ee6e1b119312e225895cc5b09893e3f3a509c6e5514906304f56b48bd230a",
+    "src/pyrpmd/trajectory.py": "73d1442bc1b5fb4857717751c279dfd08be30cf881c89f65fb93f3002fe72552",
+    "src/pyrpmd/biased_kinetics.py": "6fa5d89555a90816714696d1d5d614b019c87747441035a8312e9003d8bfe6a9",
+    "src/pyrpmd/kc_rpmd.py": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2",
+    "src/pyrpmd/runner.py": "719995b30ebd0d6ff92f398345b70c2907b3e074994de235411ba7a45256006c",
+    "src/pyrpmd/_matrix_path.py": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777",
+    "src/pyrpmd/batched.py": "d487c5f5ee3108624d80a19d8bc8f51922ca24fc8258eff160100f3643f41fba",
+    "src/pyrpmd/torch_backend.py": "9394c0379bcb29674a4a3b4b77126245661a5e8852a2885f5d16c32fd8389337",
+    "src/pyrpmd/block_propagation.py": "740daa76e6606605f8cd241b85c05d7300147201399d39080096c9bbbf313432",
+    "src/pyrpmd/nonadiabatic_registry.py": "529e69b8b74d6185446a4fc9d75990ad76ee52d241b99f4e24a10dc71e0816b6",
+    "src/pyrpmd/surface_hopping.py": "3018d533a897092e24ea4530b56aadacd004177be07bdebe6cb3c7de349d5eeb",
+    "src/pyrpmd/input_fes.py": "7776a5740b9077b6b3ae1fc9efcfed40c634842c909a46fc3157c5ed130bb77f",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/isomorphic.py": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5",
+    "src/pyrpmd/spin_mapping.py": "b502ed10411a80087c1593da917c2015d83c8a0dc4ec08bfd1bd1b60d8cc27dd",
+    "src/pyrpmd/__init__.py": "710c6ae512fe037d6be448a9db653678d65e2a291b0e8217bc8b4b3365da4577",
+    "src/pyrpmd/pcet_input.py": "4ad51710ec9370e360ab1841ed4488ca8b75d3a4e47bfc5994f7d523834a2755",
+    "src/pyrpmd/pimd_methods.py": "9b83444dc878ca918f9d0cda36f5f87db1fc20b3d4b28a60d6f4e627ec6448bc",
+    "src/pyrpmd/plumed.py": "4cbd2c6a52a7fc4f05b742730412b3b0ebd2a165d5632972e8beaec275ebb897",
+    "src/pyrpmd/advanced_cv.py": "e8f61b91916c832a40e4aee6d01e6471a6a913b5ae72ac5b1e94cc392f0a36a0",
+    "src/pyrpmd/pcet.py": "e9b42d25210c91042dc82858f85854833cefa27a8d7c7c82388ef68a7ac01379",
+    "src/pyrpmd/committor.py": "7ee73c934d466c0aa863a7468ad5c3365352664a42263f691a7d33775ba568e5",
+    "src/pyrpmd/workflows/rate_recrossing.py": "69c428ec7120ffa432235444825717ec26d09008ae1d47114b37dc244bca0a6c",
+    "src/pyrpmd/workflows/nonadiabatic_extensions.py": "1d352bd301a95f3263e482d07087cc050eb0a395ca1aa0c475835a6c9e6bca93",
+    "src/pyrpmd/workflows/rate_analysis.py": "3e914821fbcfa16db9891e393bb9801abcb95c524a6e0eae42f7ee9dfe1b3ef1",
+    "src/pyrpmd/workflows/common.py": "a2682076b262e97852e7392f54b7fd5d2103188908ebc39e0ff3603ca7a20e12",
+    "src/pyrpmd/workflows/surface.py": "2362bfab31ecec863b6cfa64cea91653560278d49fbcf962c29ce5c899abe248",
+    "src/pyrpmd/workflows/fes.py": "eabbbda8c7ddfa4060ef2e17b84fea60c90208deeb4eab1cb03af0d7bca9be6f",
+    "src/pyrpmd/workflows/rate_extend.py": "7bafa4ecc1fb2b3f901576f90da68e86a6d96ee5664f70859d65b3beb1c72279",
+    "src/pyrpmd/workflows/rate_options.py": "1558854cbdc90e51acaab6c0f571668767da199e2fe60961cd3bedfd5c7960f4",
+    "src/pyrpmd/workflows/native_pimd.py": "a167b3b515da9d78b4dc842ead3c1dad3bde8ae637d62756a6dae789cf442f37",
+    "src/pyrpmd/workflows/path_integral.py": "09002b07b3e009da9d3ac8a5a94f55f3d8e5bfda1cb53783bb43e6b37185d17b",
+    "src/pyrpmd/workflows/opes.py": "3a3e539bb91b6a4abafa31d3378da2b71e1a72e2e2f71e43c6d2efb5ad289bb6",
+    "src/pyrpmd/workflows/network.py": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7",
+    "src/pyrpmd/workflows/drpmd_persistence.py": "9401af68451b3a5f5096559ddc668d5d6f965072b662e3dbabdcb35fb221b7b0",
+    "src/pyrpmd/workflows/nonadiabatic.py": "659d29b1a04c53782598c36f6ac705d86d2e713e48ed6bd2c888b9e4e281f673",
+    "src/pyrpmd/workflows/drpmd.py": "0bdfbdfe7c8f20f04bd4fddf1f8b32764303f9fedef9ccf758a4971cdf1e1e69",
+    "src/pyrpmd/workflows/site_rate.py": "f1c107f25f3885f21a500673eda73734fb28a2ce0c5af4d10398a612732b4bdf",
+    "src/pyrpmd/workflows/drpmd_trajectory.py": "45a7e53576c56a56cd1cc0a63940b0c84d5007f157357e383460611cc4fa1ff2",
+    "src/pyrpmd/workflows/drpmd_classification.py": "a0eb4b59c8d6ab3473b61408fe5e79e130c17f55cc237f9e9f1fd881f4c71910",
+    "src/pyrpmd/workflows/rate_pmf.py": "bc73f5c5c6abed5ae67e3e43840684f803fd3573849bda03bc790d8bd21ae485",
+    "src/pyrpmd/workflows/materials.py": "ec4d383d1d001612f13dddf2e01a47f80dc5261812ae2410a866cd5ea904fae4",
+    "src/pyrpmd/workflows/shared_metadynamics.py": "1f3930c37d6332b08cf102a8b8396e5e93f4fbd5a567e8ae83b9c6f53602a9c0",
+    "src/pyrpmd/workflows/drpmd_sampling.py": "0c07aefca072e4f7821f7ad6b5e877c887e92d961b4cb46cb22ef73a64a38baa",
+    "src/pyrpmd/workflows/biased_sampling.py": "ee035e5c51578e5d300b394051dc6315e62d1631fa6b6b337f87319d64d2bdeb",
+    "src/pyrpmd/workflows/extend.py": "60c3fd645fc21e570249dcf60b9c162461e995ea4b5a22d1c3a6663863af1f6a",
+    "src/pyrpmd/workflows/neb.py": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823",
+    "src/pyrpmd/workflows/saddle.py": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37",
+    "src/pyrpmd/workflows/spectroscopy.py": "0fc25b2307c862c9ce3e7cbbc820866f74c1d7172da75613c0687765e41b12d0",
+    "src/pyrpmd/workflows/prepare.py": "e2f342baa97bb62df735e1ec25433d28175d5e5e2077fda591d71c1031fd81b9",
+    "src/pyrpmd/workflows/replica_exchange.py": "cca45d4d9c93a8c17b09334b72c653faa74136e6cd7736f48a16e357a5d60a05",
+    "src/pyrpmd/workflows/batched_recrossing.py": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa",
+    "src/pyrpmd/workflows/state_selected.py": "f8adaad6375a2990e2216a94780c3885b1817f54d42aae6ad1fa9c05232aaaf9",
+    "src/pyrpmd/workflows/rate.py": "d057b814fcee94e141d517b2a384e1090511ddd0fdff432c553933309107edf8",
+    "src/pyrpmd/workflows/drpmd_analysis.py": "fce6c3e2a57986abd450a08e89abb70ee5297a1c3bd6949965014a53a35be236",
+    "src/pyrpmd/workflows/sampling.py": "86c999da0f9f4ab9747ee2b32588c37ba58eb34f970aa5bc8a1f2caf228ff988",
+    "src/pyrpmd/workflows/metadynamics.py": "0aff440ad6557262c0d3f6e50c92287dc1f6ae3b2f1650dc6efed565864d93ec",
+    "src/pyrpmd/workflows/fes_dispatch.py": "06f4b38ef2f4317cae08f0b12c203d126158ce5a54f3bf0c96fd0ca839d2d12b",
+    "src/pyrpmd/workflows/surface_source.py": "3dcf50df6ca510e4a97b3cebe52d9f3cf4bf63301e3f15e8dadf0bb7bbc19bc8",
+    "src/pyrpmd/workflows/nonadiabatic_rate.py": "a87ffae6af82c9105b7fc11e06d574190d0a87991c4e90227b8d2e9c0cfc7a53",
+    "src/pyrpmd/workflows/__init__.py": "0dfda51b1d63474796b42bd9be6bf4464ec77964d419840642bff86e5c7cdd49",
+    "src/pyrpmd/workflows/rate_source.py": "bef4ec53f077b0fd1ccdf9b1f86bbe91e477e18607944a8267b72509b7d37471",
+    "src/pyrpmd/workflows/adaptive_umbrella.py": "4e150e535c9caae7ce52a2e1f37386b641b643a370b1acafceeba827ff4351d2",
+    "src/pyrpmd/workflows/rate_constraints.py": "a31b8e5860d1f05f6a8ba5fb92b52528ad370a814f5d767952a2c6f29250b1fe",
+    "src/pyrpmd/workflows/plumed.py": "d312d211df8761bc5aff14d09513d2bbe660fc3d544c92ba80ae8ea43e410949",
+    "src/pyrpmd/workflows/pcet.py": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6",
+    "src/pyrpmd/potentials/base.py": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3",
+    "src/pyrpmd/potentials/contraction.py": "fc62923c0ac89ba649a1af46effd38c1809e0cc75b246b441fa7e90af2d07797",
+    "src/pyrpmd/potentials/optional.py": "7d0157da93afdd1993d675e8cd53131fcdd6e119bbde2c1ee3c56a8919e4ac6d",
+    "src/pyrpmd/potentials/cabi.py": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a",
+    "src/pyrpmd/potentials/builtin.py": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46",
+    "src/pyrpmd/potentials/openmm.py": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82",
+    "src/pyrpmd/potentials/cache.py": "b1e328b62f722381ab19f6d9444b457552f23afca6fc520faa3dcbcbc7dad1f8",
+    "src/pyrpmd/potentials/multistate_external.py": "b57027795d2a5b0f37f6aec871586cde8b60d352d9768a7f589ff9d4994c9846",
+    "src/pyrpmd/potentials/adapters.py": "e3b065756038f04a0b90c70844ba7a942660128a68f7ed98209bdd546c00211d",
+    "src/pyrpmd/potentials/socket.py": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08",
+    "src/pyrpmd/potentials/lifecycle.py": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2",
+    "src/pyrpmd/potentials/python.py": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9",
+    "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+    "src/pyrpmd/potentials/lammps.py": "c7bd00faf6a2d5eaad31be0b4fb0b85ef99ed3f8dd2e29ceb29e98bf86c45fba",
+    "src/pyrpmd/potentials/nah2_leps.py": "402b2e8c431a1966b7afe76fe1fd250d75ce3ae5966e1c8576f3ec9db7653835",
+    "src/pyrpmd/potentials/diabatic.py": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec",
+    "src/pyrpmd/potentials/nonadiabatic_models.py": "fd7dbcc94d311a0571df2f65905b3215d2f6f70d371ea3d13693e14b17c29012",
+    "src/pyrpmd/potentials/__init__.py": "f870f1e0f59ec7ef79dc8eafd6b70a5f41815a35a4e8a5f0ba218eb95e5a9821",
+    "src/pyrpmd/parallel/execution.py": "a465a3df14cd3c9dfbdc596bc57703308ff7b7c61adbb762af6d4677180e33bc",
+    "src/pyrpmd/parallel/__init__.py": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5",
+    "src/pyrpmd/analysis/umbrella.py": "2c3f493b391399e422a7074f238a1eba95b2a09ec59bc6a58b3ecfa475f78901",
+    "src/pyrpmd/analysis/quantum_reference.py": "d7c86e586840158d64e4d319ae4a10949263f5e11b3d6075bdfdee766430a773",
+    "src/pyrpmd/analysis/surface.py": "03483e081055a6afa4d1481b03f08d8f4b8b06b4f06e6033f6c3c7824c532bd2",
+    "src/pyrpmd/analysis/fes.py": "6c2cb1f30d6a64dbcd0ea65a740dacaa1924e4a6ec8b95d20f04e9cc848a5d55",
+    "src/pyrpmd/analysis/diagnostics.py": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24",
+    "src/pyrpmd/analysis/rate_io.py": "9e7815d3abd088205ce82bf02fe6bdc88893335928364fc1bb46e13be119765c",
+    "src/pyrpmd/analysis/bond_rate.py": "cb9e7fed948fbd3554f16f54bb7e8dc43c53b83a25bbda02c06f3e8a546e9896",
+    "src/pyrpmd/analysis/recrossing.py": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45",
+    "src/pyrpmd/analysis/report_compare.py": "a94bc716696d05ad5f02b10cf7bfcd9920420f179bcf907ab61b633d37473b29",
+    "src/pyrpmd/analysis/report_sampling.py": "3f36babc468e7cbca1eeb5b95956427d8132b10907ab47d8fee6df6138767006",
+    "src/pyrpmd/analysis/report_render.py": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656",
+    "src/pyrpmd/analysis/mbar.py": "4cc85883422dd1003b1132477603d3c796a426c60b206f62882451b92a4a8683",
+    "src/pyrpmd/analysis/fes_result.py": "ea4b56439e3ea025b48f21e90a9502b842b8ae9652136fc4581181c52897617c",
+    "src/pyrpmd/analysis/reporting.py": "9254a5821e253cf34bafff12dc2395a528879a967d083e5b7ad2dec78a565833",
+    "src/pyrpmd/analysis/rate_pmf.py": "22253c7efec7f756e9477771a3681096633f23436ae10e3d237df4f90631d224",
+    "src/pyrpmd/analysis/scattering.py": "d39596c5e0281b05e1101464f50e9173d10a25a9d30682c2f6ea7afa02363953",
+    "src/pyrpmd/analysis/report_observables.py": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b",
+    "src/pyrpmd/analysis/entrance.py": "e54044a43b2af62e56b0978c5fb05daf0ec1f1bb720d2fb1cb6faa5be5b5269e",
+    "src/pyrpmd/analysis/bond_flux.py": "27dd1dff9e6e74cc4da93f998c3624cc4b5b4fada34c413de52f4c9c7b0f00c3",
+    "src/pyrpmd/analysis/rate_postprocess.py": "a6170350a155f14e2d7286c2a3f55684b2ad2ff6cd91cda220155baf405e58d2",
+    "src/pyrpmd/analysis/spectroscopy.py": "7763753bc680487b488fee90854a609985ba06c7ae610bb1e6dcab9e48d14b71",
+    "src/pyrpmd/analysis/projection.py": "c3921aa541ae95f7907fffa5c7fd62bce7b3cf7a84191af5aba6e65ace840dd0",
+    "src/pyrpmd/analysis/diffusion.py": "92ca98ff236bf0a3547ae3cfda795dc6a4a997a8f4254c3d028d8a4615b09e72",
+    "src/pyrpmd/analysis/fes_statistics.py": "5af387f6fb972a5528a3a56c82f793e8c8f6df5d27e4b3450773a00ed6466013",
+    "src/pyrpmd/analysis/metadynamics.py": "f2a8aeeb1ecf3d7135abe9f0b830f7bb3cbef21277ccadc137109b8d47e80330",
+    "src/pyrpmd/analysis/__init__.py": "a133fc41807e52b9bf708911434127c16f8c2439f4998eacbdce5b188baa7819",
+    "src/pyrpmd/electrochemistry/nonadiabatic.py": "5b4656c36b861cdec7fc94e39dcc315f0b0ec8d76b0cd6555cc5f83f00f5a7b8",
+    "src/pyrpmd/electrochemistry/reservoir.py": "56f435652a4ee1a7e01a1b15b001d635067f8ced13b31dd9ecdfd33dfd7cc2e9",
+    "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+    "src/pyrpmd/electrochemistry/kinetics.py": "825d4daccfab9d1b7effed67f8f0adebb431bf0fb300cf5ebcc8cd50f47c1af5",
+    "src/pyrpmd/electrochemistry/diabatic.py": "e3370a235a65794148ad80bbfe7603a862b0978e088384c46c641ec1110cbb72",
+    "src/pyrpmd/electrochemistry/sampling.py": "f332ace96f59e9b7d4eda80a52e4285b1db3d1310390ad2245cc4fe238049128",
+    "src/pyrpmd/electrochemistry/__init__.py": "67ee2eda1961f275f13054b6a946a7d22fe94f03f537eb065ef749204c19ac20",
+    "src/pyrpmd/pesgen/jaxpip_fit.py": "a2e791e566381239435181dfd61a6b2b5b7aec91fd9d198dc21ca05667ed1654",
+    "src/pyrpmd/pesgen/formats.py": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7",
+    "src/pyrpmd/pesgen/workflow.py": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a",
+    "src/pyrpmd/pesgen/jaxpip_export.py": "f6435ce61ddb52a654f9c7a93e75674bf1c4a943fdac20ad51c05171f05c1c75",
+    "src/pyrpmd/pesgen/build.py": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06",
+    "src/pyrpmd/pesgen/jaxpip_data.py": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f",
+    "src/pyrpmd/pesgen/__main__.py": "68215945ac4766cdb44195a9cbe5a96ae750e67be9d4ca71913d9e3e78843bb7",
+    "src/pyrpmd/pesgen/reference.py": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b",
+    "src/pyrpmd/pesgen/__init__.py": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907",
+    "native/fused.hpp": "50b35e0eb186cdfc523c793984cc038a53cf618897f7f05627484c6df7c3e6cd",
+    "native/ring_fft.h": "19211dadf85d0271b90df555c09a9d53cad4f67f1d0948dde3ee62eba8f159b0",
+    "native/fixed_atoms.hpp": "c04149e12917225e603bb137ecad09cdd0038bc8623e30dceef9f605376a48e3",
+    "native/cayley.cpp": "094cd0a33ca14339dbda7693f23d8428645a3d7a81c373fd6a412aa806f66070",
+    "native/thermal.hpp": "60890d93319d7098b1f841028a86df198151badf33e1a648958fa7df4fb2e5a7",
+    "native/thermal.cpp": "5584cb886eb3975280810896106bdc3795a9244c1b3ea6244e801ad8c8e91a58",
+    "native/propagation.h": "278e83ea3704c846ba8afc49940448d8afc2963b1973de1ceb656a1c755bd639",
+    "native/electronic.cpp": "f4dd6bdcd7a752d1df15466a6a94cd0c1604a897f49a45da734b4adb40c32be2",
+    "native/onnx/onnx_pes.cpp": "cbe0d688eba30cce046c91a52a27d582c0e018844c8853c871b4c3e138b009a1",
+    "native/onnx/context_test.cpp": "ff69cbea4ec453441a543dd09adba1a62c9a42ccb87a30274fffc0a92a17e1fe",
+    "native/include/pyrpmd/thermal_pes.h": "40d1cbeec480eaf828499db46c20db4644c7d72c1e17d3132f13f5dea012a961",
+    "native/include/pyrpmd/pes_api_v1.h": "c2669601c9ee7f851a14f25d83bc257ccca5414f9374dffa83d84134eeb08077",
+    "native/include/pyrpmd/pes_api_v2.h": "717e649954355e182eedb7b3974b8cb35eea3e6c4c5e584c334f845ea0189af7",
+    "benchmarks/materials/batch_convergence.py": "225b805fdd6a43d223aa93df30cc085e3897ab8c3a3b68b38b06160f1076da15",
+    "loaded_native_extension": {
+      "path": "/workspace/scratch/2b8fa6c24a7c/PyRPMD-work/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "0dcdad6ea35955ec407fdb063c2d6a890825d9536deb33ca7b785c3903b00413"
+    }
+  }
+}

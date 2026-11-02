@@ -1,0 +1,96 @@
+{
+  "schema": "pyrpmd.materials-batch-convergence-protocol.v1",
+  "arms": {
+    "base": {
+      "replicas": 4,
+      "beads": 2,
+      "dt_fs": 0.1,
+      "equilibration_steps": 16,
+      "production_steps": 64,
+      "lateral_repeat": 1,
+      "sample_interval": 2,
+      "seed": 8261
+    },
+    "beads": {
+      "replicas": 4,
+      "beads": 4,
+      "dt_fs": 0.1,
+      "equilibration_steps": 16,
+      "production_steps": 64,
+      "lateral_repeat": 1,
+      "sample_interval": 2,
+      "seed": 9270
+    },
+    "timestep": {
+      "replicas": 4,
+      "beads": 2,
+      "dt_fs": 0.05,
+      "equilibration_steps": 32,
+      "production_steps": 128,
+      "lateral_repeat": 1,
+      "sample_interval": 4,
+      "seed": 10279
+    },
+    "cell_size": {
+      "replicas": 4,
+      "beads": 2,
+      "dt_fs": 0.1,
+      "equilibration_steps": 16,
+      "production_steps": 64,
+      "lateral_repeat": 2,
+      "sample_interval": 2,
+      "seed": 11288
+    },
+    "preparation": {
+      "replicas": 4,
+      "beads": 2,
+      "dt_fs": 0.1,
+      "equilibration_steps": 32,
+      "production_steps": 64,
+      "lateral_repeat": 1,
+      "sample_interval": 2,
+      "seed": 12297
+    },
+    "production_length": {
+      "replicas": 4,
+      "beads": 2,
+      "dt_fs": 0.1,
+      "equilibration_steps": 16,
+      "production_steps": 128,
+      "lateral_repeat": 1,
+      "sample_interval": 2,
+      "seed": 13306
+    },
+    "replica_count": {
+      "replicas": 8,
+      "beads": 2,
+      "dt_fs": 0.1,
+      "equilibration_steps": 16,
+      "production_steps": 64,
+      "lateral_repeat": 1,
+      "sample_interval": 2,
+      "seed": 14315
+    }
+  },
+  "targets": {
+    "potential_eV_per_atom": 0.005,
+    "internal_energy_eV_per_atom": 0.005,
+    "hydrogen_ring_radius_squared_bohr2": 0.002
+  },
+  "confidence": 0.95,
+  "uncertainty_unit": "independent replica mean; distinct root seed in every arm",
+  "stopping": "complete all registered arms; never stop or select using observed values",
+  "comparison": "each control versus base, entire Welch CI inside the predeclared absolute margin",
+  "additional_gates": [
+    "all arms complete",
+    "all production-half CI within margins",
+    "all independent-replica CI halfwidths <= half-margin",
+    "all per-replica effective-sample estimates >=20 and >=4 complete blocks"
+  ],
+  "limitations": [
+    "Finite single-material study, no potential-model accuracy certification.",
+    "Correlation-time estimates and stationarity screens are diagnostics, not proof of equilibrium.",
+    "The PIMD arm assesses equilibrium observables; PIMD clocks are not transport time.",
+    "This fixed study does not establish a thermodynamic limit or a literature diffusion coefficient."
+  ]
+}

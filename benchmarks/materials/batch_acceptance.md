@@ -35,7 +35,8 @@ silently replaced with a local executor, and a missing dependency is a failure
 in the explicitly requested matrix.
 
 Each task has five independent replica RNG streams, four beads, 28 atoms,
-four preparation steps and sixteen production steps at 0.1 fs. A two-lane
+a temperature of 600 K, four preparation steps and sixteen production steps
+at 0.1 fs. A two-lane
 batch therefore has a short final group, and three groups exceed the two MPI
 worker groups. These small trajectories validate the numerical workflow;
 they are too short to determine an equilibrium material property or diffusivity.
@@ -87,6 +88,9 @@ representative longer runs and repeated order-balanced measurements before
 selecting production resources. The script does not set CPU affinity or
 allocate hardware. The thread environment is fixed at one numerical thread
 per worker; the MPI launcher and scheduler still own placement.
+Record other host workloads with any published timing. The initial local
+acceptance run shared its host with regression tests, so those observations
+must not be used to claim parallel speedup.
 
 All input requests, stdout/stderr and resource/call receipts remain under
 `evidence/`. A failed gate leaves `implementation_checks_passed=false` plus its
@@ -147,3 +151,10 @@ especially its larger cell and bead arms. Smaller explicit step budgets can
 exercise the complete analysis path, but retain their expected insufficient-
 sampling outcome. Neither shorter settings nor a failed gate are silently
 promoted to a production result.
+
+For a short end-to-end exercise of all seven analysis arms, explicitly use
+`--replicas 4 --beads 2 --dt-fs 0.1 --equilibration-steps 16
+--production-steps 64`. Its base production length is only 6.4 fs, and the
+unchanged effective-sampling, precision and stationarity gates must still run.
+This diagnostic protocol checks that a complete but insufficient study is
+reported as such; it is not a shorter route to a converged material property.

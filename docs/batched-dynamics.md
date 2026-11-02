@@ -115,7 +115,7 @@ same CPU engine; other hardware or model reduction orders can change rounding.
 | `bead_workers > 1` | Rejected; choose either cross-trajectory batching or bead processes |
 | Materials active-learning callbacks | Rejected because their uncertainty/candidate lifecycle is not batch-adapted |
 
-The [real Ni–H acceptance example](../benchmarks/materials/batch_acceptance.md)
+The [real Ni–H acceptance example](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/batch_acceptance.md)
 executes both materials workflows, counts actual PES input shapes, compares
 scalar/process/static-MPI/dynamic-MPI results, and interrupts and resumes a
 streamed run. Its separate convergence study checks scientific sampling
@@ -179,7 +179,7 @@ by the caller that frame order, frame count and previous calls cannot affect
 the physical result. It is disabled by default and cannot override a
 calculator's explicit stateful/coupled/unsafe veto, including one visible
 through a transparent Python adapter. See the
-[ASE declaration contract](potential-adapters.md#independent-trajectory-batching).
+[ASE declaration contract](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/potential-adapters.md#independent-trajectory-batching).
 ASE still evaluates each frame separately and reports `native_batch=false`;
 fewer PyRPMD calls alone do not imply fused model inference or a speedup.
 
