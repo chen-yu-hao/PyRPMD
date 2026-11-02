@@ -44,6 +44,9 @@ def sampling_splitting(integrator, thermostat, barostat="none"):
 
 def resolve_native_pimd(config, system):
     """Preflight the opt-in route; the native constructor checks all matrices."""
+    from ..trajectory_batch import trajectory_batch_size
+    if trajectory_batch_size(config) > 1:
+        raise ValueError("native PIMD does not support trajectory PES batching; use sampling.engine='legacy'")
     if system.bond_constraints:
         raise ValueError("native PIMD does not implement bond constraints; use legacy velocity-verlet")
     if config.get("task") != "pimd":

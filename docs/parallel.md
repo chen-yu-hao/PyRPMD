@@ -16,6 +16,15 @@ parent and child tasks use the same executor.
 | `backend="mpi"` | G trajectory groups, each with B ranks | Multiple ranks on one host or MPI across nodes |
 | `mode="gpu"` | Each trajectory process loads its own GPU model and batches all beads in one call | One or several GPUs, with one or more trajectories per GPU |
 
+`parallel.trajectory_batch_size` controls a separate dimension: how many
+independent workflow tasks share a PES request within each worker. Fixed-cell
+legacy materials `pimd` / `diffusion` support it alongside the rate workflows
+listed in [trajectory batching](batched-dynamics.md). For example, eight
+replicas, two trajectory workers and batch size four schedule two groups of
+four replicas. This keeps eight independent trajectories; adding workers or batch
+slots does not increase that count. Cross-trajectory batching requires
+`bead_workers=1` and a provider with an independent-frame contract.
+
 `threads_per_rank` controls compiled OpenMP dynamics kernels and requires an actual
 OpenMP-enabled build. Local task batches use `threadpoolctl` to limit loaded BLAS
 thread pools to one thread. They also set OpenBLAS, MKL, BLIS and Accelerate thread
@@ -94,6 +103,15 @@ scheduling requires 0. The coordinator does not integrate trajectories or
 evaluate forces. Each worker group retains its own bead communicator, and an
 integration step never waits at a world barrier.
 
+Eligible potentials acquired through `task_potential` remain cached for the
+worker group's complete dynamic queue, rather than being reconstructed for
+each dispatched task. Opt-out and explicitly stateful providers are still
+created and closed per task. Unclosed directly owned MPI bead providers
+(`B>1`) are cleaned up at task boundaries; other directly constructed
+`make_task_potential` providers remain caller-owned. Cache cleanup also runs on task,
+serialization and final-close errors; a dynamic worker cannot keep a failed
+lease alive while waiting for coordinator shutdown.
+
 For dRPMD, dynamic mode first samples the persistent parent chains and writes
 the usual `states/initial-*.npz` launch files. It then queues **individual
 collisions**, rather than whole parent chains. A group whose collision stops
@@ -156,6 +174,12 @@ processes per card. Trajectories do not share a single model instance. In GPU mo
 the provider batches all beads; `bead_workers > 1` cannot be enabled simultaneously.
 A GPU provider must declare and use the requested CUDA device. Missing devices do
 not silently fall back to CPU.
+
+For an underfilled local process queue, workers are spread across configured
+devices before assigning a second process to a device. With `devices=[0,1]`,
+`trajectories_per_gpu=2` and only two tasks (or two task batches), each card gets
+one process. A full four-process queue retains two processes per card. This
+does not alter MPI's required node-local worker layout.
 
 `devices` contains local device indices after `CUDA_VISIBLE_DEVICES` remapping.
 MPI GPU placement obtains node-local ranks through `MPI.COMM_TYPE_SHARED` and chooses
@@ -229,3 +253,10 @@ and exact free-PES dRPMD agreement with static scheduling and resumed jobs.
 `tests/test_dynamic_scheduling.py` also tests interruption between the sampling
 and collision phases and changing scheduling mode on resume. These checks do
 not establish multi-node scaling or a speedup for a particular physical PES.
+
+The [Ni–H materials acceptance](../benchmarks/materials/batch_acceptance.md)
+uses a real ASE EAM calculator for fixed-cell PIMD and diffusion. It compares
+serial/process execution, two-rank static MPI and three-rank dynamic MPI,
+with and without cross-trajectory batching. Independent call-shape records
+verify that batches reach the actual provider, while complete stream/state
+comparisons and interruption/restart checks verify replica ownership.

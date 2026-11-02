@@ -19,11 +19,14 @@ import numpy as np
 from ..checkpoint import atomic_savez, load_checkpoint
 from ..constants import FS_TO_AU
 from ..dynamics import Dynamics, State
-from ..parallel import make_task_potential, root_call, run_tasks
+from ..parallel import make_task_potential, root_call
 from ..potentials.base import validate_result
 from ..potentials.cache import StepEvaluationCache
 from ..propagation import loop_options
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
+from ..trajectory_batch import (
+    make_trajectory_potential, map_trajectory_tasks, trajectory_batch_size,
+)
 from ..units import parse_quantity
 from .common import _fingerprint, checked_integer, write_json
 
@@ -63,6 +66,9 @@ def _indices(value, size, name, *, default=None):
 
 def resolve_materials(config, system):
     """Validate the scientific choices also for direct resolved-workflow calls."""
+    batch_size = trajectory_batch_size(config)
+    if batch_size > 1 and "active_learning" in config:
+        raise ValueError("materials trajectory batching does not support active-learning uncertainty callbacks")
     from ..potentials.lifecycle import active_learning_options
     active_learning_options(config)
     if _rpc_details(config) is not None and "barostat" in config:
@@ -540,7 +546,7 @@ def _sample_replica(task):
             kind = CHECKPOINT_KIND
         atomic_savez(checkpoint, kind=kind, **payload)
         return _read_stream(config, system, output, replica, options, materialize=materialize)
-    provider = StepEvaluationCache(make_task_potential(config["potential"], system))
+    provider = StepEvaluationCache(make_trajectory_potential(task, factory=make_task_potential))
     friction_provider = None
     try:
         monitor = None
@@ -922,6 +928,25 @@ def _analyze(streams, config, system, output, return_data=False, *, stream_data_
     return {"summary": result, "streams": streams} if return_data else result
 
 
+def _completed_batch_replicas(tasks, options):
+    """Replay committed replicas before opening a shared PES context.
+
+    Run on the root rank only: a completed storage migration writes its own
+    checkpoint, whereas other ranks must only receive the resulting descriptor.
+    Active replicas retain their ordinary worker-side checkpoint validation.
+    """
+    completed = {}
+    for task in tasks:
+        config, system, output, replica = task["config"], task["system"], task["output"], task["replica"]
+        if not _checkpoint_path(output, replica).exists():
+            continue
+        saved = _read_stream(config, system, output, replica, options, materialize=False)
+        if saved["complete"]:
+            completed[replica] = (_sample_replica(task)
+                                  if saved["storage"] != options["storage"] else saved)
+    return completed
+
+
 def run_materials(config, system, output, executor=None, return_data=False):
     """Execute independent replica streams via serial/process/MPI task groups."""
     from .sampling import validate_andersen_schedule
@@ -933,8 +958,13 @@ def run_materials(config, system, output, executor=None, return_data=False):
     tasks = [{"config": copy.deepcopy(config), "system": system, "output": str(output), "replica": replica,
               "materialize": False}
              for replica in range(options["replicas"])]
-    streams = executor.map(_sample_replica, tasks) if executor is not None else run_tasks(
-        _sample_replica, tasks, config.get("parallel", {}))
+    completed = {}
+    if trajectory_batch_size(config) > 1:
+        completed = root_call(_completed_batch_replicas, tasks, options)
+        tasks = [task for task in tasks if task["replica"] not in completed]
+    streams = map_trajectory_tasks(_sample_replica, tasks, config, executor)
+    if streams is not None:
+        streams = sorted([*completed.values(), *streams], key=lambda stream: stream["replica"])
     return root_call(_analyze, streams, config, system, str(output), return_data)
 
 

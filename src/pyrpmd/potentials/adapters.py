@@ -109,7 +109,7 @@ class ModelASEPotential(ASEPotential):
         symbols, self.charge, self.multiplicity = _identity(symbols, charge, multiplicity)
         super().__init__(symbols, calculator, cell=cell, pbc=pbc)
         self.atoms.info.update(charge=self.charge, spin=self.multiplicity)
-        self.metadata = dict(ASEPotential.metadata, provider=provider,
+        self.metadata = dict(self.metadata, provider=provider,
                              execution_device=str(device), native_batch=False)
         self.closed = False
 

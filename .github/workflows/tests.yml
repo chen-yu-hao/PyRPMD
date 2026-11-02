@@ -35,6 +35,12 @@ jobs:
       - run: mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_adaptive_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-adaptive"
       - run: mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_opes_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-opes"
       - run: mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_materials_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-materials"
+      - name: Materials batch MPI static checkpoint regression
+        timeout-minutes: 3
+        run: mpiexec --map-by :OVERSUBSCRIBE -n 2 python tests/mpi_materials_batch_integration.py "$RUNNER_TEMP/pyrpmd-mpi-materials-batch-static"
+      - name: Materials batch MPI dynamic checkpoint regression
+        timeout-minutes: 3
+        run: mpiexec --map-by :OVERSUBSCRIBE -n 3 python tests/mpi_materials_batch_integration.py "$RUNNER_TEMP/pyrpmd-mpi-materials-batch-dynamic" --scheduling dynamic
       - run: mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_surface_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface"
       - run: mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_surface_extensions_smoke.py "$RUNNER_TEMP/pyrpmd-mpi-surface-extensions"
       - run: python -m pip install build && python -m build

@@ -26,9 +26,11 @@ class ASEPotential(Potential):
         "execution_device": "cpu",
         "periodic": True,
         "supports_pbc": True,
+        "native_batch": False,
     }
 
-    def __init__(self, symbols, calculator, *, cell=None, pbc=None):
+    def __init__(self, symbols, calculator, *, cell=None, pbc=None,
+                 trajectory_batch_safe=None):
         try:
             from ase import Atoms
         except ImportError as exc:
@@ -45,6 +47,47 @@ class ASEPotential(Potential):
             pbc=self.pbc,
         )
         self.atoms.calc = calculator
+        # ASE loops over frames in one calculator context. This is not a
+        # native accelerator batch, and an arbitrary calculator may retain
+        # electronic/history state, so frame independence is never inferred.
+        self.metadata = dict(ASEPotential.metadata)
+        declared = getattr(calculator, "metadata", {}) or {}
+        if isinstance(declared, dict):
+            for key in ("trajectory_batch_safe", "batch_independent", "ring_polymer_coupled",
+                        "coupled_frames", "stateful", "capabilities", "reuse_across_tasks"):
+                if key in declared:
+                    self.metadata[key] = declared[key]
+        if trajectory_batch_safe is not None:
+            self._declare_trajectory_batch_safe(trajectory_batch_safe)
+
+    def _declare_trajectory_batch_safe(self, value):
+        """Record a caller-audited independent-frame contract, never override a veto.
+
+        This declaration concerns physical results under frame permutation and
+        different call histories, not calculator thread safety or GPU speed.
+        The rendezvous serializes all calls to this calculator.
+        """
+        if not isinstance(value, (bool, np.bool_)):
+            raise ValueError("trajectory_batch_safe must be a boolean")
+        if value:
+            self._check_trajectory_batch_contract()
+        self.metadata["trajectory_batch_safe"] = bool(value)
+
+    def _check_trajectory_batch_contract(self):
+        """Check live calculator vetoes without changing any declarations."""
+        for metadata in (self.metadata, getattr(self.atoms.calc, "metadata", {}) or {}):
+            if not isinstance(metadata, dict):
+                raise ValueError("ASE calculator batch metadata must be a mapping")
+            capabilities = metadata.get("capabilities", {}) or {}
+            if not isinstance(capabilities, dict):
+                raise ValueError("ASE calculator capabilities must be a mapping")
+            if (metadata.get("trajectory_batch_safe") is False
+                    or metadata.get("batch_independent") is False
+                    or metadata.get("stateful") is True
+                    or capabilities.get("stateful") is True
+                    or metadata.get("ring_polymer_coupled") is True
+                    or metadata.get("coupled_frames") is True):
+                raise ValueError("ASE calculator explicitly rejects independent, stateless trajectory batching")
 
     def bind_system(self, system):
         """Bind canonical-AU cell and boundary flags without wrapping positions."""

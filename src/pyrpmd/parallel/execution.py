@@ -646,26 +646,59 @@ def _dynamic_dispatch(control, leaders, count, mpi):
     return [results[i] for i in sorted(results)], errors
 
 
+def _close_uncached_mpi_potentials(context):
+    """End a task's owned MPI providers without closing worker-cache leases."""
+    cached = {id(provider) for provider in context.potentials.values()}
+    errors = []
+    for provider in tuple(context.providers):
+        if not provider.closed and id(provider) not in cached:
+            try:
+                provider.close()
+            except Exception as exc:
+                errors.append(_result_error(exc))
+    if errors:
+        raise RuntimeError("MPI PES cleanup failed: " + "; ".join(errors))
+
+
 def _dynamic_worker(function, tasks, plan, slot, group, control):
-    while True:
-        index = control.recv(source=0, tag=_TASK_TAG)
-        if index is None:
-            return
-        try:
-            with _context(plan, slot, group):
+    # A worker owns its cache for the whole queue, just as a static slot does.
+    # The bead service stays alive until _mpi_run sends its final finish command.
+    with _context(plan, slot, group) as context:
+        while True:
+            index = control.recv(source=0, tag=_TASK_TAG)
+            if index is None:
+                return
+            try:
                 value = function(tasks[index])
-        except Exception as exc:
-            value, error = None, _result_error(exc)
-        else:
-            error = None
-        try:
-            packet = pickle.dumps((index, value, error), protocol=pickle.HIGHEST_PROTOCOL)
-        except Exception as exc:
-            # Serialize before send: an unpicklable task result must become a
-            # collective error, rather than strand the coordinator in recv.
-            packet = pickle.dumps((index, None, "Task result serialization failed: " + _result_error(exc)),
-                                  protocol=pickle.HIGHEST_PROTOCOL)
-        control.send(packet, dest=0, tag=_RESULT_TAG)
+            except Exception as exc:
+                value, error = None, _result_error(exc)
+            else:
+                error = None
+            try:
+                # make_task_potential still gives the task ownership. Omitted
+                # close() calls must not accumulate across the longer context.
+                _close_uncached_mpi_potentials(context)
+            except Exception as exc:
+                error = "; ".join(e for e in (error, _result_error(exc)) if e)
+                value = None
+            try:
+                packet = pickle.dumps((index, value, error), protocol=pickle.HIGHEST_PROTOCOL)
+            except Exception as exc:
+                # Serialize before send: an unpicklable task result must become
+                # a collective error, rather than strand the coordinator in recv.
+                error = "Task result serialization failed: " + _result_error(exc)
+            if error is not None:
+                # Release cached engines before reporting failure and waiting
+                # for STOP. No failed task may leave a reusable damaged model.
+                try:
+                    context.cleanup.close()
+                except Exception as exc:
+                    error += "; Cached PES cleanup failed: " + _result_error(exc)
+                finally:
+                    context.potentials.clear()
+                    context.releases.clear()
+                packet = pickle.dumps((index, None, error), protocol=pickle.HIGHEST_PROTOCOL)
+            control.send(packet, dest=0, tag=_RESULT_TAG)
 
 
 def _mpi_run(function, tasks, plan):
@@ -775,7 +808,13 @@ def run_tasks(function, tasks, parallel_config=None):
     if count == 1:
         values = _execute_batch((function, batches[0], plan, 0))
     else:
-        payloads = [(function, batch, plan, slot) for slot, batch in enumerate(batches)]
+        slots = list(range(count))
+        if plan.mode == "gpu" and count < plan.trajectory_workers:
+            # Fill distinct devices before using a second process on any card.
+            # Preserve the existing full-occupancy and MPI node-local slot layouts.
+            slots = [(slot % len(plan.devices)) * plan.trajectories_per_gpu
+                     + slot // len(plan.devices) for slot in slots]
+        payloads = [(function, batch, plan, slots[slot]) for slot, batch in enumerate(batches)]
         with ProcessPoolExecutor(
             max_workers=count, mp_context=mp.get_context("spawn")
         ) as pool:
