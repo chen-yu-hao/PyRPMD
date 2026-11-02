@@ -114,6 +114,7 @@ Replica exchange <replica-exchange>
 OPES <opes>
 PLUMED bridge <plumed>
 Transition-interface sampling <transition-interface-sampling>
+Fixed-ring committor analysis <committor>
 ```
 
 ```{toctree}
