@@ -35,6 +35,8 @@ def parser():
     p.add_argument("--version", action="version", version=f"PyRPMD {__version__}")
     p.add_argument("--debug", action="store_true", help="Show a traceback when a command fails")
     commands = p.add_subparsers(dest="command", required=True)
+    from .workflows.instanton import register_parser
+    register_parser(commands)
     starter = commands.add_parser("init", help="Create a self-contained harmonic tutorial in a new or empty directory")
     starter.add_argument("directory", help="Directory for quickstart.inp; existing files are never overwritten")
     r = commands.add_parser("run", help="Execute a checked scientific task")
@@ -330,6 +332,8 @@ def _pes(args):
 def main(argv=None):
     args = parser().parse_args(argv)
     try:
+        if hasattr(args, "_instanton_handler"):
+            return args._instanton_handler(args)
         if args.command in ("run", "analyze") and not args.report and (args.report_output or args.report_overwrite or args.report_style):
             raise InputError("--report-output, --report-overwrite and --report-style require --report")
         if args.command == "init":
