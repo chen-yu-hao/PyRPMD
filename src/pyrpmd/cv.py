@@ -63,11 +63,87 @@ def _distance(q, a, b, hessian=False, *, geometry=None):
     return r, g, h
 
 
-def _com_distance(q, weights, derivatives):
+def _hvp_centroid(q):
+    q = np.asarray(q)
+    if (q.dtype.kind not in "iuf" or q.ndim != 2 or q.shape[-1] != 3
+            or not np.isfinite(q).all()):
+        raise ValueError("CV HVP coordinates must be finite real [N,3] arrays")
+    return np.asarray(q, dtype=np.float64)
+
+
+def _hvp_arguments(q, v):
+    """Validate a centroid and a Cartesian direction without bead scaling."""
+    q, v = _hvp_centroid(q), np.asarray(v)
+    if (v.dtype.kind not in "iuf" or v.shape != q.shape
+            or not np.isfinite(v).all()):
+        raise ValueError("CV HVP direction must be a finite real [N,3] array matching coordinates")
+    return np.asarray(q, dtype=np.float64), np.asarray(v, dtype=np.float64)
+
+
+def _hessian_hvp(cv, q, v):
+    """Explicit compatibility path for a user-supplied dense Hessian."""
+    value, gradient, hessian = cv.centroid_value_gradient_hessian(q)
+    return value, gradient, np.einsum("acbd,bd->ac", hessian, v)
+
+
+def _hessian_overridden(cv, cls):
+    name = "centroid_value_gradient_hessian"
+    return (name in cv.__dict__
+            or getattr(type(cv), name, None) is not _BUILTIN_CV_METHODS[cls][name])
+
+
+def _check_hvp_gradient_override(cv, gradient_method, hvp_method):
+    """New derivative support must not silently replace custom mathematics."""
+    gradient_overridden = (
+        "centroid_value_gradient" in cv.__dict__
+        or getattr(type(cv), "centroid_value_gradient", None) is not gradient_method
+    )
+    hvp_overridden = (
+        "centroid_value_gradient_hvp" in cv.__dict__
+        or getattr(type(cv), "centroid_value_gradient_hvp", None) is not hvp_method
+    )
+    if gradient_overridden and not hvp_overridden:
+        raise ValueError(
+            "an overridden CV centroid gradient requires an explicit "
+            "Hessian-vector product or Hessian"
+        )
+
+
+def _norm_hvp(unit, radius, direction):
+    return (direction - unit * np.dot(unit, direction)) / radius
+
+
+def _prepare_distance_hvp(q, a, b, *, geometry=None):
+    """Prepare one norm once; the returned operator owns no persistent state."""
+    r, delta = _distance_vector(q, a, b, geometry=geometry)
+    u = delta / r
+    gradient = np.zeros_like(q)
+    gradient[a], gradient[b] = u, -u
+
+    def apply(v):
+        product = _norm_hvp(u, r, v[a] - v[b])
+        hvp = np.zeros_like(v)
+        hvp[a], hvp[b] = product, -product
+        return hvp
+
+    return r, gradient, apply
+
+
+def _distance_hvp(q, v, a, b, *, geometry=None):
+    r, gradient, apply = _prepare_distance_hvp(q, a, b, geometry=geometry)
+    return r, gradient, apply(v)
+
+
+def _com_distance_vector(q, weights):
     v = np.einsum("a,ac->c", weights, q)
     r = float(np.linalg.norm(v))
     if r < 1e-12:
         raise ValueError("COM distance derivative undefined at zero separation")
+    return r, v
+
+
+def _com_distance(q, weights, derivatives):
+    r, v = _com_distance_vector(q, weights)
     if derivatives == 0:
         return (r,)
     u = v / r
@@ -78,6 +154,61 @@ def _com_distance(q, weights, derivatives):
         "a,b,cd->acbd", weights, weights, (np.eye(3) - np.outer(u, u)) / r
     )
     return r, g, h
+
+
+def _prepare_com_distance_hvp(q, weights):
+    r, delta = _com_distance_vector(q, weights)
+    u = delta / r
+    gradient = weights[:, None] * u
+
+    def apply(v):
+        direction = np.einsum("a,ac->c", weights, v)
+        return weights[:, None] * _norm_hvp(u, r, direction)
+
+    return r, gradient, apply
+
+
+def _com_distance_hvp(q, v, weights):
+    r, gradient, apply = _prepare_com_distance_hvp(q, weights)
+    return r, gradient, apply(v)
+
+
+def _quotient_hvp(a, ga, ha, b, gb, hb, v):
+    da, db = np.sum(ga * v), np.sum(gb * v)
+    hvp = ha / b - (ga * db + gb * da + a * hb) / b**2
+    hvp += 2 * a * gb * db / b**3
+    return hvp
+
+
+def _angle_hvp(q, v, atoms):
+    a, b, c = atoms
+    if min(a, b, c) < 0 or max(a, b, c) >= len(q):
+        raise ValueError("angle atom index out of range")
+    x, y = q[a] - q[b], q[c] - q[b]
+    rx, ry = np.linalg.norm(x), np.linalg.norm(y)
+    if min(rx, ry) < 1e-12:
+        raise ValueError("angle derivative is undefined for coincident atoms")
+    u, w = x / rx, y / ry
+    cosine = np.clip(np.dot(u, w), -1.0, 1.0)
+    sine = np.sqrt(max(0.0, 1 - cosine * cosine))
+    if sine < 1e-10:
+        raise ValueError("angle derivative is undefined at a linear geometry")
+    gradient = np.zeros_like(q)
+    gradient[a] = (cosine * u - w) / (rx * sine)
+    gradient[c] = (cosine * w - u) / (ry * sine)
+    gradient[b] = -gradient[a] - gradient[c]
+    dx, dy = v[a] - v[b], v[c] - v[b]
+    drx, dry = np.dot(u, dx), np.dot(w, dy)
+    du, dw = (dx - u * drx) / rx, (dy - w * dry) / ry
+    dcosine = np.dot(du, w) + np.dot(u, dw)
+    dsine = -cosine * dcosine / sine
+    hvp = np.zeros_like(q)
+    hvp[a] = ((dcosine * u + cosine * du - dw) / (rx * sine)
+              - gradient[a] * (drx / rx + dsine / sine))
+    hvp[c] = ((dcosine * w + cosine * dw - du) / (ry * sine)
+              - gradient[c] * (dry / ry + dsine / sine))
+    hvp[b] = -hvp[a] - hvp[c]
+    return float(np.arccos(cosine)), gradient, hvp
 
 
 class CollectiveVariable:
@@ -128,6 +259,14 @@ class _AffineCoordinate(CollectiveVariable):
         value, gradient = self.centroid_value_gradient(q)
         return value, gradient, np.zeros((len(q), 3, len(q), 3))
 
+    def centroid_value_gradient_hvp(self, q, v):
+        """Return value, centroid gradient and Hessian times ``v[N,3]``."""
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, _AffineCoordinate):
+            return _hessian_hvp(self, q, v)
+        value, gradient = self.centroid_value_gradient(q)
+        return value, gradient, np.zeros_like(q)
+
 
 class _PeriodicCellCV:
     """Share immutable fixed-cell data without silently caching stale arrays."""
@@ -172,6 +311,17 @@ class Distance(CollectiveVariable):
     def centroid_value_gradient_hessian(self, q):
         return _distance(q, *self.atoms, hessian=True)
 
+    def centroid_value_gradient_hvp(self, q, v):
+        """Return value, centroid gradient and H@v in O(N) storage/work.
+
+        ``q`` and ``v`` have shape ``[N,3]``; no ring-bead factor is applied.
+        A custom Hessian override keeps its explicit dense compatibility path.
+        """
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, Distance):
+            return _hessian_hvp(self, q, v)
+        return _distance_hvp(q, v, *self.atoms)
+
 
 class PeriodicDistance(_PeriodicCellCV, Distance):
     """Minimum-image distance in a fixed cell, away from image-switch seams.
@@ -188,6 +338,13 @@ class PeriodicDistance(_PeriodicCellCV, Distance):
 
     def centroid_value_gradient_hessian(self, q):
         return _distance(q, *self.atoms, hessian=True, geometry=self._geometry)
+
+    def centroid_value_gradient_hvp(self, q, v):
+        """Analytic H@v on the selected, fixed minimum-image branch."""
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, PeriodicDistance):
+            return _hessian_hvp(self, q, v)
+        return _distance_hvp(q, v, *self.atoms, geometry=self._geometry)
 
     def centroid_value_gradient(self, q):
         # Preserve the historical extension point for subclasses/instances
@@ -291,6 +448,24 @@ class BondDifference(CollectiveVariable):
         b, gb = _distance(q, *self.bonds[1])
         return a - b, ga - gb
 
+    def centroid_value_gradient_hessian(self, q):
+        a, ga, ha = _distance(q, *self.bonds[0], hessian=True)
+        b, gb, hb = _distance(q, *self.bonds[1], hessian=True)
+        return a - b, ga - gb, ha - hb
+
+    def centroid_value_gradient_hvp(self, q, v):
+        """Contract the two distance Hessians without allocating either."""
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, BondDifference):
+            return _hessian_hvp(self, q, v)
+        _check_hvp_gradient_override(
+            self, _BUILTIN_CV_METHODS[BondDifference]["centroid_value_gradient"],
+            _BUILTIN_CV_METHODS[BondDifference]["centroid_value_gradient_hvp"],
+        )
+        a, ga, ha = _distance_hvp(q, v, *self.bonds[0])
+        b, gb, hb = _distance_hvp(q, v, *self.bonds[1])
+        return a - b, ga - gb, ha - hb
+
 
 class Cartesian(CollectiveVariable):
     """A Cartesian component, useful for model systems and restrained sampling."""
@@ -319,6 +494,14 @@ class Cartesian(CollectiveVariable):
     def centroid_value_gradient_hessian(self, q):
         value, gradient = self.centroid_value_gradient(q)
         return value, gradient, np.zeros((len(q), 3, len(q), 3))
+
+    def centroid_value_gradient_hvp(self, q, v):
+        """The Cartesian coordinate has an identically zero Hessian."""
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, Cartesian):
+            return _hessian_hvp(self, q, v)
+        value, gradient = self.centroid_value_gradient(q)
+        return value, gradient, np.zeros_like(q)
 
 
 class Angle(CollectiveVariable):
@@ -349,6 +532,17 @@ class Angle(CollectiveVariable):
         g[b] = -g[a] - g[c]
         return float(np.arccos(cosine)), g
 
+    def centroid_value_gradient_hvp(self, q, v):
+        """Differentiate the analytic angle gradient along ``v[N,3]``."""
+        q, v = _hvp_arguments(q, v)
+        if hasattr(self, "centroid_value_gradient_hessian"):
+            return _hessian_hvp(self, q, v)
+        _check_hvp_gradient_override(
+            self, _BUILTIN_CV_METHODS[Angle]["centroid_value_gradient"],
+            _BUILTIN_CV_METHODS[Angle]["centroid_value_gradient_hvp"],
+        )
+        return _angle_hvp(q, v, self.atoms)
+
 
 class COMDistance(CollectiveVariable):
     units = ("bohr",)
@@ -375,6 +569,13 @@ class COMDistance(CollectiveVariable):
 
     def centroid_value_gradient_hessian(self, q):
         return _com_distance(q, self.weights, 2)
+
+    def centroid_value_gradient_hvp(self, q, v):
+        """Apply the COM norm Hessian using one weighted direction sum."""
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, COMDistance):
+            return _hessian_hvp(self, q, v)
+        return _com_distance_hvp(q, v, self.weights)
 
     def centroid_value_gradient(self, q):
         if (not _builtin_methods(self, COMDistance, "centroid_value_gradient_hessian")
@@ -488,6 +689,23 @@ class RPMDrateCoordinate(CollectiveVariable):
         h += 2 * a * np.einsum("ac,bd->acbd", gb, gb) / b**3
         return a / b, ga / b - a * gb / b**2, h
 
+    def centroid_value_gradient_hvp(self, q, v):
+        """Apply the selected rate-branch Hessian without a dense matrix.
+
+        The min/max tie rule and singularity checks match ``surfaces`` and
+        the diagnostic Hessian. Derivatives are one-sided branch derivatives
+        at a branch tie, exactly as for the retained Hessian interface.
+        """
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, RPMDrateCoordinate):
+            return _hessian_hvp(self, q, v)
+        a, ga, ha, s1, g1, h1 = _rate_surfaces_hvp(self, q, v)
+        b, gb, hb = a - s1, ga - g1, ha - h1
+        if abs(b) < 1e-10:
+            raise ValueError("RPMDrate xi is singular where s0=s1")
+        hvp = _quotient_hvp(a, ga, ha, b, gb, hb, v)
+        return a / b, ga / b - a * gb / b**2, hvp
+
     def centroid_value_gradient(self, q):
         if (not _builtin_methods(self, RPMDrateCoordinate, "centroid_value_gradient_hessian")
                 or not _builtin_rate_surfaces(self)
@@ -514,6 +732,15 @@ class RateSurface(CollectiveVariable):
 
     def centroid_value_gradient_hessian(self, q):
         s0, g0, h0, s1, g1, h1 = self.coordinate.surfaces(q)
+        a = self.xi
+        return (1 - a) * s0 + a * s1, (1 - a) * g0 + a * g1, (1 - a) * h0 + a * h1
+
+    def centroid_value_gradient_hvp(self, q, v):
+        """Apply the linear combination of the two rate-surface Hessians."""
+        q, v = _hvp_arguments(q, v)
+        if _hessian_overridden(self, RateSurface):
+            return _hessian_hvp(self, q, v)
+        s0, g0, h0, s1, g1, h1 = _rate_surfaces_hvp(self.coordinate, q, v)
         a = self.xi
         return (1 - a) * s0 + a * s1, (1 - a) * g0 + a * g1, (1 - a) * h0 + a * h1
 
@@ -565,11 +792,11 @@ _BUILTIN_CV_METHODS = {
         name: getattr(cls, name)
         for name in (
             "value", "value_and_jacobian", "centroid_value_gradient",
-            "centroid_value_gradient_hessian", "surfaces",
+            "centroid_value_gradient_hessian", "centroid_value_gradient_hvp", "surfaces",
         )
         if hasattr(cls, name)
     }
-    for cls in (*_VALUE_ONLY_TYPES, Angle, CVStack)
+    for cls in (*_VALUE_ONLY_TYPES, Angle, CVStack, _AffineCoordinate)
 }
 
 
@@ -599,13 +826,8 @@ def _can_skip_jacobian(cv):
     return True
 
 
-def _rate_surfaces(coordinate, q, derivatives):
-    if derivatives == 2:
-        # surfaces() has always called this nested extension point.
-        com = coordinate.com.centroid_value_gradient_hessian(q)
-    else:
-        com = _com_distance(q, coordinate.com.weights, derivatives)
-    entry = (coordinate.rinf - com[0],) + tuple(-x for x in com[1:])
+def _rate_transition(coordinate, q):
+    """Select the historical min(max(path)) branch, validating every bond."""
     values = []
     for forming, breaking in coordinate.paths:
         row = []
@@ -620,12 +842,86 @@ def _rate_surfaces(coordinate, q, derivatives):
     bond = int(np.argmin(np.max(values, axis=0)))
     transition_state = int(np.argmax(values[:, bond]))
     s1 = float(values[transition_state, bond])
+    forming, breaking = coordinate.paths[transition_state]
+    return s1, forming[bond], breaking[bond]
+
+
+def _rate_surfaces(coordinate, q, derivatives):
+    if derivatives == 2:
+        # surfaces() has always called this nested extension point.
+        com = coordinate.com.centroid_value_gradient_hessian(q)
+    else:
+        com = _com_distance(q, coordinate.com.weights, derivatives)
+    entry = (coordinate.rinf - com[0],) + tuple(-x for x in com[1:])
+    s1, forming, breaking = _rate_transition(coordinate, q)
     if derivatives == 0:
         return entry + (s1,)
-    forming, breaking = coordinate.paths[transition_state]
-    f = _distance(q, *forming[bond], hessian=derivatives == 2)
-    b = _distance(q, *breaking[bond], hessian=derivatives == 2)
+    f = _distance(q, *forming, hessian=derivatives == 2)
+    b = _distance(q, *breaking, hessian=derivatives == 2)
     return entry + (s1,) + tuple(-gf + gb for gf, gb in zip(f[1:], b[1:]))
+
+
+def _rate_surfaces_hvp(coordinate, q, v):
+    if not _builtin_methods(coordinate, RPMDrateCoordinate, "surfaces"):
+        s0, g0, h0, s1, g1, h1 = coordinate.surfaces(q)
+        return (s0, g0, np.einsum("acbd,bd->ac", h0, v),
+                s1, g1, np.einsum("acbd,bd->ac", h1, v))
+    evaluate = getattr(coordinate.com, "centroid_value_gradient_hvp", None)
+    com = (evaluate(q, v) if callable(evaluate)
+           else _hessian_hvp(coordinate.com, q, v))
+    entry = (coordinate.rinf - com[0],) + tuple(-x for x in com[1:])
+    s1, forming, breaking = _rate_transition(coordinate, q)
+    f = _distance_hvp(q, v, *forming)
+    b = _distance_hvp(q, v, *breaking)
+    return entry + (s1,) + tuple(-gf + gb for gf, gb in zip(f[1:], b[1:]))
+
+
+def _prepare_builtin_rate_hvp(cv, q):
+    """Prepare a builtin rate metric before its gradient-dependent direction.
+
+    Capture only this call's three norm geometries and selected rate branch.
+    Nothing is stored on a CV or reused at another centroid. Exact types and
+    original method identities are required at every nested extension point;
+    custom CVs continue through the public HVP/Hessian compatibility protocol.
+    """
+    cls = type(cv)
+    if cls not in (RPMDrateCoordinate, RateSurface):
+        return None
+    if not _builtin_methods(cv, cls, *_BUILTIN_CV_METHODS[cls]):
+        return None
+    coordinate = cv.coordinate if cls is RateSurface else cv
+    if (not _builtin_methods(coordinate, RPMDrateCoordinate,
+                             *_BUILTIN_CV_METHODS[RPMDrateCoordinate])
+            or not _builtin_methods(coordinate.com, COMDistance,
+                                    *_BUILTIN_CV_METHODS[COMDistance])):
+        return None
+    q = _hvp_centroid(q)
+    radius, com_gradient, com_hvp = _prepare_com_distance_hvp(q, coordinate.com.weights)
+    a, ga = coordinate.rinf - radius, -com_gradient
+    s1, forming, breaking = _rate_transition(coordinate, q)
+    _, gf, forming_hvp = _prepare_distance_hvp(q, *forming)
+    _, gbr, breaking_hvp = _prepare_distance_hvp(q, *breaking)
+    g1 = -gf + gbr
+    if cls is RateSurface:
+        xi = cv.xi
+        gradient = (1 - xi) * ga + xi * g1
+
+        def apply(v):
+            h0 = -com_hvp(v)
+            h1 = -forming_hvp(v) + breaking_hvp(v)
+            return (1 - xi) * h0 + xi * h1
+    else:
+        b, gb = a - s1, ga - g1
+        if abs(b) < 1e-10:
+            raise ValueError("RPMDrate xi is singular where s0=s1")
+        gradient = ga / b - a * gb / b**2
+
+        def apply(v):
+            ha = -com_hvp(v)
+            h1 = -forming_hvp(v) + breaking_hvp(v)
+            return _quotient_hvp(a, ga, ha, b, gb, ha - h1, v)
+
+    return gradient, apply
 
 
 def _centroid_builtin_value(cv, q):

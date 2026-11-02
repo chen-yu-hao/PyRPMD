@@ -54,29 +54,82 @@ class UmbrellaBias:
         return energy, forces
 
 
+def _flux_metric_derivative(derivative, centroid, name):
+    """Reject malformed plugin derivatives before NumPy can broadcast them."""
+    derivative = np.asarray(derivative)
+    if (derivative.dtype.kind not in "iuf" or derivative.shape != centroid.shape
+            or not np.isfinite(derivative).all()):
+        raise ValueError(f"CV {name} must be a finite real [N,3] array matching the centroid")
+    return np.asarray(derivative, dtype=np.float64)
+
+
+def _flux_metric_hvp(cv, centroid, masses):
+    """Use the HVP protocol, retaining Hessian-only CVs explicitly.
+
+    An HVP's returned gradient is authoritative. The extra contraction only
+    applies to custom CVs whose legacy gradient method differs from it; this
+    preserves the historical Hessian override semantics of those CVs.
+    """
+    from .cv import _prepare_builtin_rate_hvp
+
+    prepared = _prepare_builtin_rate_hvp(cv, centroid)
+    if prepared is not None:
+        gradient, apply = prepared
+        gradient = _flux_metric_derivative(gradient, centroid, "gradient")
+        hvp = apply(gradient / masses[:, None])
+        return gradient, _flux_metric_derivative(hvp, centroid, "Hessian-vector product")
+    evaluate_hvp = getattr(cv, "centroid_value_gradient_hvp", None)
+    if not callable(evaluate_hvp):
+        _, gradient, hessian = cv.centroid_value_gradient_hessian(centroid)
+        gradient = _flux_metric_derivative(gradient, centroid, "gradient")
+        hvp = np.einsum("acbd,bd->ac", hessian, gradient / masses[:, None])
+        return gradient, _flux_metric_derivative(hvp, centroid, "Hessian-vector product")
+    evaluate_gradient = getattr(cv, "centroid_value_gradient", None)
+    if callable(evaluate_gradient):
+        _, direction_gradient = evaluate_gradient(centroid)
+    else:
+        _, direction_gradient, zero_hvp = evaluate_hvp(centroid, np.zeros_like(centroid))
+        _flux_metric_derivative(zero_hvp, centroid, "Hessian-vector product")
+    direction_gradient = _flux_metric_derivative(direction_gradient, centroid, "gradient")
+    _, gradient, hvp = evaluate_hvp(centroid, direction_gradient / masses[:, None])
+    gradient = _flux_metric_derivative(gradient, centroid, "gradient")
+    hvp = _flux_metric_derivative(hvp, centroid, "Hessian-vector product")
+    if not np.array_equal(gradient, direction_gradient):
+        _, checked_gradient, hvp = evaluate_hvp(centroid, gradient / masses[:, None])
+        checked_gradient = _flux_metric_derivative(checked_gradient, centroid, "gradient")
+        hvp = _flux_metric_derivative(hvp, centroid, "Hessian-vector product")
+        if not np.array_equal(checked_gradient, gradient):
+            raise ValueError("CV HVP gradient changed between evaluations at the same centroid")
+    return gradient, hvp
+
+
 class FluxMetricBias:
     """-P*log(fs)/beta with fs=sqrt(g M^-1 g/(2*pi*beta)).
 
-    Only centroid CVs with an analytic centroid Hessian are accepted. This
-    belongs to the RPMDrate rate-PMF measure, not generic FES.
+    Centroid CVs supply an analytic ``centroid_value_gradient_hvp(q, v)``
+    returning value, gradient and H@v for centroid arrays ``q, v[N,3]``.
+    Legacy custom CVs supplying only ``centroid_value_gradient_hessian``
+    retain that explicit dense path. This belongs to the RPMDrate rate-PMF
+    measure, not generic FES.
     """
 
     def __init__(self, cv, masses, beta):
         if getattr(cv, "estimator", None) != "centroid":
             raise ValueError("rate flux metric requires a centroid coordinate")
-        if not hasattr(cv, "centroid_value_gradient_hessian"):
-            raise ValueError("rate flux metric requires the CV Hessian")
+        if not (callable(getattr(cv, "centroid_value_gradient_hvp", None))
+                or callable(getattr(cv, "centroid_value_gradient_hessian", None))):
+            raise ValueError("rate flux metric requires the CV Hessian-vector product or Hessian")
         self.cv = cv
         self.masses = np.asarray(masses, float)
         self.beta = float(beta)
 
     def energy_force(self, q):
-        _, g, h = self.cv.centroid_value_gradient_hessian(np.mean(q, axis=0))
+        g, hvp = _flux_metric_hvp(self.cv, np.mean(q, axis=0), self.masses)
         z = float(np.sum(g * g / self.masses[:, None]))
         if not np.isfinite(z) or z <= 1e-30:
             raise ValueError("rate coordinate has a zero/invalid mass metric")
         fs = np.sqrt(z / (2 * np.pi * self.beta))
-        f = np.einsum("acbd,bd->ac", h, g / self.masses[:, None]) / (self.beta * z)
+        f = hvp / (self.beta * z)
         return -len(q) * np.log(fs) / self.beta, np.broadcast_to(f, q.shape).copy()
 
 
