@@ -9,8 +9,9 @@ Cayley, exact normal-mode, or velocity-Verlet map is unchanged.
 
 ## Batch existing workflow tasks
 
-Independent umbrella windows, dRPMD collisions and `site_rate` tasks can share
-PES calls without replacing their sampling or trajectory algorithms:
+Fixed-cell `pimd` / `diffusion` replicas, independent umbrella windows, dRPMD
+collisions and `site_rate` tasks can share PES calls without replacing their
+sampling or trajectory algorithms:
 
 ```toml
 [parallel]
@@ -63,6 +64,63 @@ trajectories or their statistical weights. For `site_rate`,
 `recrossing.child_batch_pairs` is an additional child-group size control; the
 larger of it and `parallel.trajectory_batch_size` determines the child group.
 
+### Materials replicas
+
+For the default materials engine (`sampling.engine="legacy"`), set the number
+of independent replicas and the execution packing separately:
+
+```toml
+[sampling]
+replicas = 8
+
+[parallel]
+backend = "process"
+trajectory_workers = 2
+trajectory_batch_size = 4
+bead_workers = 1
+```
+
+This schedules eight replicas in two groups of at most four, with two worker
+processes. Each process combines the live replicas' requests into
+`[live_replicas * beads, atoms, 3]` PES inputs (using the contracted bead count
+for an RPC component). An incomplete final group is valid. `replicas`
+controls the number of independent trajectories; neither worker count
+nor batch size creates extra replicas. Saved frames remain correlated and
+need a separate effective-sampling analysis. The same grouping works with static
+MPI (`world size = G`, `B=1`) and dynamic MPI (`world size = 1+G`, `B=1`),
+where the unit dispatched to a trajectory group is a batch of replicas.
+
+The existing scalar step still owns each replica's thermostat, RNG, fixed
+atoms, RATTLE constraints, electronic friction and transaction boundaries.
+Known split/difference RPC potentials retain their per-ring contraction and
+batch only the independent physical components. A finished lane borrows the
+shared provider and cannot close it while other lanes are active. Per-frame
+PES failures are attributed to the affected replicas; healthy lanes finish
+their work before the aggregate failure is raised.
+
+Completed checkpoints are validated and replayed before opening a batch PES.
+Mixed complete, partially complete and new replicas can be resumed together.
+A fully completed restart constructs no PES and consumes no random numbers.
+Changing batch size, trajectory worker count or stream chunk size preserves
+the scientific identity; changing the model, cell, temperature or physical
+schedule still invalidates the restart. Bitwise equivalence is tested for the
+same CPU engine; other hardware or model reduction orders can change rounding.
+
+| Materials configuration | `trajectory_batch_size > 1` |
+| --- | --- |
+| Fixed-cell legacy `pimd` and `diffusion` | Supported, including process and MPI trajectory execution |
+| Fixed atoms, bond constraints, electronic friction, known RPC wrappers | Preserve the established per-replica implementation |
+| Mutable-cell/NPT | Rejected before sampling |
+| `sampling.engine="native"` or forced `loop_backend="native"` | Rejected; compiled free-ring substeps remain available in the legacy engine |
+| `bead_workers > 1` | Rejected; choose either cross-trajectory batching or bead processes |
+| Materials active-learning callbacks | Rejected because their uncertainty/candidate lifecycle is not batch-adapted |
+
+The [real Ni–H acceptance example](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/materials/batch_acceptance.md)
+executes both materials workflows, counts actual PES input shapes, compares
+scalar/process/static-MPI/dynamic-MPI results, and interrupts and resumes a
+streamed run. Its separate convergence study checks scientific sampling
+choices; passing a short execution test does not certify a diffusion constant.
+
 ## Recrossing input
 
 Gas-phase `rate` and conditional `surface_rate` child propagation can opt in:
@@ -114,6 +172,16 @@ Ring-polymer contraction wrappers use the separate per-ring path in the
 composed API below; flattening complete rings through a coupled evaluator is
 never allowed. Process/MPI bead proxies
 without an independent-frame declaration are also rejected.
+
+For an audited ASE calculator, `ase`, `mace`, `nequip` and `fairchem` inputs may
+declare `potential.trajectory_batch_safe=true`. This is an explicit guarantee
+by the caller that frame order, frame count and previous calls cannot affect
+the physical result. It is disabled by default and cannot override a
+calculator's explicit stateful/coupled/unsafe veto, including one visible
+through a transparent Python adapter. See the
+[ASE declaration contract](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/potential-adapters.md#independent-trajectory-batching).
+ASE still evaluates each frame separately and reports `native_batch=false`;
+fewer PyRPMD calls alone do not imply fused model inference or a speedup.
 
 ## Python API and stop masks
 

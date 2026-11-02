@@ -253,8 +253,12 @@ the contracted dynamics.
 
 The distributed output energy rows only reconstruct the sum of `U_RPC`;
 they are not physical bead energies. The kinetic centroid-virial expression
-does not supply a pressure virial. Contracted providers do not export pressure
-or support the materials barostat. A complete set of trained weights or a
+does not by itself supply a pressure virial. Contracted providers now export the
+affine strain derivative of `U_RPC` when both physical components provide their
+virials, and the legacy materials BZP workflow supports this contracted NPT
+ensemble when both providers implement `set_cell`. See [RPC virial and
+pressure](rpc-mts.md#virial-and-pressure-of-the-contracted-hamiltonian) for the
+normalization and limitations. A complete set of trained weights or a
 numerically stable pilot alone does not certify thermodynamic or dynamical
 accuracy.
 

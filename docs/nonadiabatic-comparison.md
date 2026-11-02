@@ -6,6 +6,9 @@ subsequent workflow, spin-method, hopping, molecular-PES and electronic-backend
 extensions. This comparison distinguishes implemented numerical methods,
 usable workflows and physical validation.
 
+Method-to-paper attribution was reviewed on 2026-11-02; this does not change the
+dates or scope of the execution records cited below.
+
 ## What was already present
 
 PyRPMD already implemented focused MMST NRPMD with integrated MInt nuclear
@@ -75,6 +78,38 @@ diabatic populations/coherences require the full-sphere operator-correlation API
 and its weights; the CLI's population-importance ensemble records only the
 corresponding adiabatic active populations. A pure propagation-spin outer product
 is not substituted for a MASH density estimator.
+
+## Paper attribution and reproduction boundaries
+
+The [method-to-paper catalog](manual/references.md) and
+[reproduction plan](manual/reproduction.md) connect these interfaces to their
+original papers, systems and observables. The following distinctions are needed
+when reading a method name as a reproducibility claim:
+
+- The implemented SM-NRPMD preparation is focused. Reproducing the equilibrium
+  correlations in [Bossion et al. (2021)](https://doi.org/10.1063/5.0051456)
+  also requires their electronic thermal trace and phase-weighted estimators,
+  which the current focused workflow does not supply.
+- `RPMASHDynamics` and the `rp-mash` selector follow the CA-RP-MASH construction
+  in [Cao et al., ChemRxiv v1 (2025)](https://doi.org/10.26434/chemrxiv-2025-xps2g).
+  The separate Python `MASHDynamics` follows
+  [Mannouch and Richardson (2023)](https://doi.org/10.1063/5.0139734) at `P=1`;
+  its experimental `P>1` centroid extension is a different implementation.
+  The cited v1 records the source followed by the code; a journal successor was
+  not verified in this review.
+- `IsomorphicPotential` follows the trace construction of
+  [Tao et al. (2018)](https://doi.org/10.1063/1.5005544). Its current two-state
+  Ehrenfest consumer does not reproduce the paper's QCLE or iso-surface-hopping
+  calculations merely by using the same potential.
+- The adiabatic/QD Python interface uses the local-basis strategy of
+  [Mandal et al. (2018)](https://doi.org/10.1021/acs.jctc.7b01178) and
+  [Zhou et al. (2019)](https://doi.org/10.1021/acs.jpclett.9b02747) with NRPMD.
+  The original papers' PLDM/SQC propagators and on-the-fly ethylene calculation
+  require additional implementations and electronic-structure data.
+- The DBOC paper's donor-population estimator combines active-state diagonal
+  terms with amplitude coherences. The saved amplitude density and active
+  fractions are separate observables; the required estimator is described in
+  the [hopping-extension guide](nonadiabatic-hopping-extensions.md).
 
 ## Molecular and acceleration scope
 
@@ -162,8 +197,8 @@ These are explicit scope boundaries, not features emulated by placeholders.
 - J. C. Tully, *J. Chem. Phys.* **93**, 1061 (1990), [doi:10.1063/1.459170](https://doi.org/10.1063/1.459170), Eqs. 21, 23 and 24 for the three model potentials.
 - G. Granucci and M. Persico, *J. Chem. Phys.* **126**, 134114 (2007), [doi:10.1063/1.2715585](https://doi.org/10.1063/1.2715585), Eq. 17 for EDC; the centroid RPSH adaptation is specified separately in the guide.
 - D. Bossion, S. N. Chowdhury and P. Huo, *J. Chem. Phys.* **154**, 184106 (2021), [doi:10.1063/5.0051456](https://doi.org/10.1063/5.0051456), W-spin SM-NRPMD.
-- Z. Cao, V. A. Suarez and J. S. Kretchmer, [doi:10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g), 2025 RP-MASH preprint; the implemented variant is CA-RP-MASH.
-- P. Shakya, R. Welsch, L. Inhester and R. Santra, *Phys. Rev. A* **107**, 062810 (2023), [doi:10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810), BA definitions and RPSH-DM.
+- Z. Cao, V. A. Suarez and J. S. Kretchmer, [doi:10.26434/chemrxiv-2025-xps2g](https://doi.org/10.26434/chemrxiv-2025-xps2g), ChemRxiv v1 (7 December 2025); the implemented variant is CA-RP-MASH.
+- Y. Shakya, R. Welsch, L. Inhester and R. Santra, *Phys. Rev. A* **107**, 062810 (2023), [doi:10.1103/PhysRevA.107.062810](https://doi.org/10.1103/PhysRevA.107.062810), BA definitions and RPSH-DM.
 - D. K. Limbu et al., *J. Chem. Phys.* **163**, 234102 (2025), [doi:10.1063/5.0301249](https://doi.org/10.1063/5.0301249), DBOC in RPSH.
 - G. Miao, N. Bellonzi and J. E. Subotnik, *J. Chem. Phys.* **150**, 124101 (2019), [doi:10.1063/1.5088770](https://doi.org/10.1063/1.5088770), the stated complex-NAC and Berry-force prescription.
 - P. Halvick and D. G. Truhlar, *J. Chem. Phys.* **96**, 2895–2909 (1992), [doi:10.1063/1.461986](https://doi.org/10.1063/1.461986), with [1994 erratum](https://doi.org/10.1063/1.467282), the NaH₂ fit.

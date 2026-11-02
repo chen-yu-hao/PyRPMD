@@ -56,6 +56,9 @@ class _LanePotential:
         self._batch, self._index, self._channel = batch, index, channel
         self.metadata = dict(getattr(batch.providers[channel], "metadata", {}) or {})
         self.metadata.update(trajectory_batch_safe=True, trajectory_batch_lane=index)
+        required = getattr(batch.providers[channel], "required_bond_constraints", None)
+        if required is not None:
+            self.required_bond_constraints = copy.deepcopy(required)
 
     def evaluate(self, q):
         return self._batch.evaluate(self._index, q, self._channel)
@@ -172,6 +175,10 @@ def _lane_provider(tree, batch, index):
         # components become lane providers; no ring is ever flattened with a
         # different trajectory before contraction or force lifting.
         provider = copy.copy(original)
+        # Some factory-owned RPC wrappers carry an instance-level close bound
+        # to their real leaves. A lane only borrows those leaves: completing
+        # one trajectory must never close the provider of its live siblings.
+        provider.close = lambda: None
         for name, child in children.items():
             setattr(provider, name, _lane_provider(child, batch, index))
         return provider

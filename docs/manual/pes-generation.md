@@ -189,3 +189,17 @@ DOI **10.1039/C5CP02580J**; Steffen, TREQ, DOI **10.1063/1.5092589**; Steffen,
 Caracal, DOI **10.1021/acs.jctc.3c00568**. PySCF analytic derivative APIs are
 documented in its [SCF](https://pyscf.org/pyscf_api_docs/pyscf.scf.html) and
 [Hessian](https://pyscf.org/pyscf_api_docs/pyscf.hessian.html) references.
+
+## Primary sources and reproduction tasks
+
+Separate the reference electronic structure, charge/bond-order definitions, PES functional form and Caracal implementation. The original dE-EVB targets include charged SN2 and neutral Diels–Alder reactions; the current neutral-only fitting path cannot reproduce the charged case unchanged. A water or NH3 pilot is not the six-reaction TREQ paper campaign.
+
+- [Q. Sun et al. (2018), PySCF: the Python-based simulations of chemistry framework](references.md#pyscf2018). [DOI](https://doi.org/10.1002/wcms.1340).
+- [F. L. Hirshfeld (1977), Bonded-atom fragments for describing molecular charge densities](references.md#hirshfeld1977). [DOI](https://doi.org/10.1007/BF00549096).
+- [I. Mayer (1983), Charge, bond order and valence in the AB initio SCF theory](references.md#mayer1983). [DOI](https://doi.org/10.1016/0009-2614(83)80005-0).
+- [S. Grimme (2014), A General Quantum Mechanically Derived Force Field (QMDFF) for Molecules and Condensed Phase Simulations](references.md#qmdff2014). [DOI](https://doi.org/10.1021/ct500573f).
+- [B. Hartke; S. Grimme (2015), Reactive force fields made simple](references.md#deevb2015). [DOI](https://doi.org/10.1039/C5CP02580J).
+- [J. Steffen (2019), A new class of reaction path based potential energy surfaces enabling accurate black box chemical rate constant calculations](references.md#treq2019). [DOI](https://doi.org/10.1063/1.5092589).
+- [J. Steffen (2023), Caracal: A Versatile Ring Polymer Molecular Dynamics Simulation Package](references.md#caracal2023). [DOI](https://doi.org/10.1021/acs.jctc.3c00568).
+
+Calculation tasks: [pyscf](reproduction.md#task-pyscf) · [populations](reproduction.md#task-populations) · [qmdff](reproduction.md#task-qmdff) · [deevb](reproduction.md#task-deevb) · [treq](reproduction.md#task-treq).

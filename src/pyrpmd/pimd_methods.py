@@ -18,7 +18,7 @@ import numpy as np
 from scipy.special import logsumexp
 
 from .path_integral import _integer, _masses, _positive
-from .potentials.base import Potential, PESResult, coordinates, validate_result
+from .potentials.base import Potential, PotentialError, PESResult, coordinates, validate_result
 from .potentials.contraction import _component
 
 
@@ -61,7 +61,10 @@ class SuzukiChinPotential(_SamplingPotential):
     Requires an even bead count.  ``fd_step`` is the RMS Cartesian displacement
     in bohr, normalized independently on each force-bearing bead.  Physical
     observables use even beads for alpha=0; averaging the modified potential
-    is not an energy estimator.  Fixed cell only: no pressure/virial is supplied.
+    is not an energy estimator.  :meth:`estimators` supplies thermodynamic
+    energy, pressure and scaled-coordinate heat-capacity ingredients for all
+    alpha.  When the physical provider supplies strain virials, the effective
+    action virial is differentiated with the same displaced force calls.
     """
 
     def __init__(self, potential, masses, beta, nbeads, *, alpha=0.0, fd_step=1e-4):
@@ -78,28 +81,96 @@ class SuzukiChinPotential(_SamplingPotential):
         d = np.where(np.arange(nbeads) % 2 == 0, self.alpha / 6, (1 - self.alpha) / 12)
         self.coefficients = self.weights * d * (self.beta / self.nbeads) ** 2
         self.weights.flags.writeable = self.coefficients.flags.writeable = False
+        self.metadata.pop("virial", None)
+        self.metadata.update({
+            "action": "suzuki_chin",
+            "virial_requires": "physical_provider_configurational_virials",
+            "virial_convention": "negative_affine_strain_derivative_of_sampling_potential",
+            "pressure_estimator": "thermodynamic_centroid_virial",
+        })
+
+    def set_cell(self, cell):
+        """Forward a validated periodic cell; physical-provider ownership stays external."""
+        from .geometry import validate_cell_pbc
+        cell, _ = validate_cell_pbc(cell, [True, True, True])
+        if cell is None:
+            raise ValueError("Suzuki--Chin cell must be a finite nonsingular 3D cell")
+        setter = getattr(self.potential, "set_cell", None)
+        if not callable(setter):
+            raise PotentialError("Suzuki--Chin NPT requires physical set_cell(cell_bohr) support")
+        setter(cell.copy())
+        self.cell = cell.copy()
 
     def evaluate(self, positions):
         q = self._q(positions)
+        return self._evaluate_sc(q)[0]
+
+    def _evaluate_sc(self, q):
+        """Evaluate one or more whole rings as independent physical frames."""
+        count = len(q) // self.nbeads
+        if count < 1 or len(q) != count * self.nbeads:
+            raise ValueError("Suzuki--Chin evaluation requires complete rings")
+        weights = np.tile(self.weights, count)
+        coefficients = np.tile(self.coefficients, count)
         result = validate_result(self.potential.evaluate(q), q.shape)
         physical_energy, physical_force = result.energy.copy(), result.forces.copy()
+        physical_virial = None if result.virial is None else result.virial.copy()
         acceleration = physical_force / self.masses[None, :, None]
-        energy = self.weights * physical_energy + self.coefficients * np.sum(
-            physical_force * acceleration, axis=(1, 2))
-        forces = self.weights[:, None, None] * physical_force
+        correction = coefficients * np.sum(physical_force * acceleration, axis=(1, 2))
+        energy = weights * physical_energy + correction
+        forces = weights[:, None, None] * physical_force
+        virial = None if physical_virial is None else weights[:, None, None] * physical_virial
         rms = np.sqrt(np.mean(acceleration * acceleration, axis=(1, 2)))
-        active = (self.coefficients != 0) & (rms > 0)
+        active = (coefficients != 0) & (rms > 0)
         if np.any(active):
             direction = acceleration[active]
             h = self.fd_step / rms[active]
             plus = q[active] + h[:, None, None] * direction
             minus = q[active] - h[:, None, None] * direction
-            fp = validate_result(self.potential.evaluate(plus), plus.shape).forces.copy()
-            fm = validate_result(self.potential.evaluate(minus), minus.shape).forces
+            rp = validate_result(self.potential.evaluate(plus), plus.shape)
+            fp = rp.forces.copy()
+            wp = None if rp.virial is None else rp.virial.copy()
+            rm = validate_result(self.potential.evaluate(minus), minus.shape)
+            fm = rm.forces
             # dF/dq @ (F/m) = - Hess(V) @ (F/m).
             projected = (fp - fm) / (2 * h[:, None, None])
-            forces[active] -= 2 * self.coefficients[active, None, None] * projected
-        return validate_result(PESResult(energy, forces), q.shape)
+            forces[active] -= 2 * coefficients[active, None, None] * projected
+            if virial is not None:
+                if wp is None or rm.virial is None:
+                    raise PotentialError("Suzuki--Chin displaced physical evaluations must preserve virial support")
+                # W_G = -d(sum F^2/m)/d(strain) = 2*(F tensor F/m - D_(F/m) W).
+                # The tensor term differentiates Cartesian vector components;
+                # omitting it gives a wrong pressure even for a harmonic PES.
+                projected_virial = (wp - rm.virial) / (2 * h[:, None, None])
+                force_tensor = np.einsum("bna,bnc->bac", physical_force[active], direction)
+                virial[active] += 2 * coefficients[active, None, None] * (force_tensor - projected_virial)
+        effective = validate_result(PESResult(energy, forces, virial=virial), q.shape)
+        physical = PESResult(physical_energy, physical_force, virial=physical_virial)
+        return effective, physical, correction
+
+    def estimators(self, positions, *, volume=None, finite_difference_step=1e-3,
+                   require_pressure=True):
+        """Physical SC observables and heat-capacity curvature for one ring.
+
+        ``volume`` is in bohr^3; pressure requires a physical provider virial.
+        Set ``require_pressure=False`` for NVT energy/heat-capacity analysis
+        when a periodic physical provider does not supply virials.
+        The beta derivative holds the cell fixed.  Heat capacities require
+        an ensemble of these ingredients, not the fluctuation of the sampling
+        Hamiltonian; use ``suzuki_chin_thermodynamics`` to combine samples.
+        """
+        from .suzuki_chin import suzuki_chin_estimators
+        return suzuki_chin_estimators(self, positions, volume=volume,
+                                      finite_difference_step=finite_difference_step,
+                                      require_pressure=require_pressure)
+
+    def estimators_batch(self, positions, *, volumes=None, finite_difference_step=1e-3,
+                         require_pressure=True):
+        """Vectorized fixed-cell estimator columns for paths shaped [sample,P,N,3]."""
+        from .suzuki_chin import suzuki_chin_estimators_batch
+        return suzuki_chin_estimators_batch(self, positions, volumes=volumes,
+                                            finite_difference_step=finite_difference_step,
+                                            require_pressure=require_pressure)
 
 
 @dataclass(frozen=True)

@@ -1,0 +1,126 @@
+{
+  "schema": "pyrpmd.materials-batching-validation.v1",
+  "date_utc": "2026-11-02",
+  "base_commit": "cb60679cad8ea9ce926e5e04bd95ea148f7e5a3d",
+  "implementation_commit": "de910aa0a4445b40b0669aa1e97a89cd0428e6f7",
+  "environment": {
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "logical_cpus": 9,
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "ase": "3.29.0",
+      "mpi4py": "4.1.2",
+      "pytest": "9.2.0"
+    },
+    "mpi_distribution": "MPICH 5.0.2",
+    "local_mpi_environment": {
+      "MPIR_CVAR_CH4_CMA_ENABLE": "0"
+    },
+    "numerical_threads_per_worker": 1,
+    "native_extensions_built": true,
+    "performance_context": "Shared container host; full pytest and diagnostic work overlapped some acceptance cases. Timings are one observation per mode including startup and probe; no speedup inference."
+  },
+  "local_full_suite": {
+    "command": "python -m pytest -q",
+    "exit_code": 0,
+    "passed": 7624,
+    "skipped": 224,
+    "warnings": 52,
+    "subtests_passed": 478,
+    "wall_seconds": 567.78,
+    "skip_scope": "Optional engines, external models and opt-in scientific studies absent from this test invocation; the pinned EAM acceptance was separately executed."
+  },
+  "provider_targeted_suite": {
+    "passed": 187,
+    "seconds": 9.12
+  },
+  "materials_targeted_suite": {
+    "passed": 280,
+    "seconds": 27.35
+  },
+  "parallel_targeted_suite": {
+    "passed": 48,
+    "seconds": 14.21
+  },
+  "real_eam_harness_suite": {
+    "passed": 4,
+    "seconds": 95.63
+  },
+  "real_eam_acceptance": {
+    "report": "acceptance-report.json",
+    "cases_passed": 16,
+    "controlled_recovery_cases_passed": 2,
+    "implementation_checks_passed": true,
+    "physical_converged": false
+  },
+  "mpi_regressions": [
+    {
+      "command": "mpiexec -n 4 python tests/mpi_integration.py",
+      "exit_code": 0
+    },
+    {
+      "command": "mpiexec -n 5 python tests/mpi_dynamic_integration.py",
+      "exit_code": 0
+    },
+    {
+      "command": "mpiexec -n 2 python tests/mpi_materials_batch_integration.py /new/output/static",
+      "exit_code": 0
+    },
+    {
+      "command": "mpiexec -n 3 python tests/mpi_materials_batch_integration.py /new/output/dynamic --scheduling dynamic",
+      "exit_code": 0
+    }
+  ],
+  "limits": [
+    "No physical GPU inference or multi-node scaling measurement.",
+    "ASE EAM loops over frames; a reduced PyRPMD call count is not a reduced physical PES frame count.",
+    "The implementation matrix does not establish equilibrium or a converged material diffusion coefficient."
+  ],
+  "strict_documentation_builds": {
+    "languages": [
+      "en",
+      "zh"
+    ],
+    "builders": [
+      "html",
+      "singlehtml"
+    ],
+    "passed": 4,
+    "warnings_as_errors": true,
+    "receipt": "sphinx-builds.json"
+  },
+  "convergence_diagnostic": {
+    "registered_arms": 7,
+    "completed_arms": 7,
+    "exit_code": 2,
+    "all_arms_complete": true,
+    "convergence_checks_passed": false,
+    "physical_converged": false,
+    "report": "convergence-report.json",
+    "protocol": "convergence-protocol.json",
+    "gates": {
+      "precision_passed": {
+        "passed": 10,
+        "total": 21
+      },
+      "stationarity_passed": {
+        "passed": 10,
+        "total": 21
+      },
+      "effective_sampling_passed": {
+        "passed": 0,
+        "total": 21
+      }
+    },
+    "equivalence": {
+      "passed": 10,
+      "total": 18
+    },
+    "total_replica_trajectories": 32,
+    "physical_frames": 14080,
+    "summed_worker_wall_seconds": 385.8218636970196,
+    "source_unchanged_and_matches_implementation_matrix": true
+  }
+}

@@ -69,3 +69,16 @@ $$
 
 完整公式、Python 调用、参考源码提交及适用范围见仓库的
 [电化学接口说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electrochemistry.md)。
+
+## 原始方法出处与复现任务
+
+电子数采样和有效势包装属于有明确边界的组合；引用 Sun 等并不意味着实现完整 Pt(111)/水恒电位 DFT/ML 方法。Volmer–Heyrovsky–Tafel 代数后处理仍需物理标定的基元速率和电化学归一化。
+
+- [M. Sun; B. Jin; X. Yang; S. Xu (2025), Probing nuclear quantum effects in electrocatalysis via a machine-learning enhanced grand canonical constant potential approach](references.md#gc2025). [DOI](https://doi.org/10.1038/s41467-025-58871-7).
+- [S. Duane; A. D. Kennedy; B. J. Pendleton; D. Roweth (1987), Hybrid Monte Carlo](references.md#hmc1987). [DOI](https://doi.org/10.1016/0370-2693(87)91197-X).
+- [W. K. Hastings (1970), Monte Carlo sampling methods using Markov chains and their applications](references.md#hastings1970). [DOI](https://doi.org/10.1093/biomet/57.1.97).
+- [C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer (2008), Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces](references.md#pcet2008). [DOI](https://doi.org/10.1021/jp802171y).
+- [Z. K. Goldsmith; Y. C. Lam; A. V. Soudackov; S. Hammes-Schiffer (2019), Proton Discharge on a Gold Electrode from Triethylammonium in Acetonitrile: Theoretical Modeling of Potential-Dependent Kinetic Isotope Effects](references.md#gold2019). [DOI](https://doi.org/10.1021/jacs.8b11826).
+- [R.-H. Bi; W. Dou (2024), Electronic friction near metal surface: Incorporating nuclear quantum effect with ring polymer molecular dynamics](references.md#efrpmd2024). [DOI](https://doi.org/10.1063/5.0187646).
+
+逐项计算：[gc](reproduction.md#task-gc) · [adiabatic-electrode](reproduction.md#task-adiabatic-electrode) · [her](reproduction.md#task-her) · [efrpmd](reproduction.md#task-efrpmd).

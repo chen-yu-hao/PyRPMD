@@ -210,3 +210,24 @@ bead_workers = 1
 `outcomes.factory` 为 dRPMD 提供产物分类器。同组成交换和异构化通道需显式编码。完整示例与返回值见
 [插件规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/potentials.md)和
 [二维自定义 CV](https://github.com/chen-yu-hao/PyRPMD/blob/main/examples/fes/custom_cv.py)。
+
+## 原始方法出处与复现任务
+
+接口引用标识软件，不能替代具体 checkpoint、力场或势能面的出处。另引模型/数据来源并保存校验和、单位、能量零点与版本；通用自由粒子、谐振、四次双阱和余弦控制模型没有唯一分子论文。
+
+- [A. I. Boothroyd; W. J. Keogh; P. G. Martin; M. R. Peterson (1996), A refined H3 potential energy surface](references.md#bkmp21996). [DOI](https://doi.org/10.1063/1.471430).
+- [P. M. Morse (1929), Diatomic Molecules According to the Wave Mechanics. II. Vibrational Levels](references.md#morse1929). [DOI](https://doi.org/10.1103/PhysRev.34.57).
+- [A. H. Larsen et al. (2017), The atomic simulation environment—a Python library for working with atoms](references.md#ase2017). [DOI](https://doi.org/10.1088/1361-648X/aa680e).
+- [P. Eastman et al. (2017), OpenMM 7: Rapid development of high performance algorithms for molecular dynamics](references.md#openmm2017). [DOI](https://doi.org/10.1371/journal.pcbi.1005659).
+- [S. Plimpton (1995), Fast Parallel Algorithms for Short-Range Molecular Dynamics](references.md#lammps1995). [DOI](https://doi.org/10.1006/jcph.1995.1039).
+- [M. Ceriotti; J. More; D. E. Manolopoulos (2014), i-PI: A Python interface for ab initio path integral molecular dynamics simulations](references.md#ipi2014). [DOI](https://doi.org/10.1016/j.cpc.2013.10.027).
+- [A. Paszke et al. (2019), PyTorch: An Imperative Style, High-Performance Deep Learning Library](references.md#torch2019). [DOI](https://doi.org/10.48550/arXiv.1912.01703).
+- [I. Batatia; D. P. Kovács; G. N. C. Simm; C. Ortner; G. Csányi (2022), MACE: Higher Order Equivariant Message Passing Neural Networks for Fast and Accurate Force Fields](references.md#mace2022). [DOI](https://doi.org/10.48550/arXiv.2206.07697).
+- [S. Batzner et al. (2022), E(3)-equivariant graph neural networks for data-efficient and accurate interatomic potentials](references.md#nequip2022). [DOI](https://doi.org/10.1038/s41467-022-29939-5).
+- [L. Zhang; J. Han; H. Wang; R. Car; W. E (2018), Deep Potential Molecular Dynamics: A Scalable Model with the Accuracy of Quantum Mechanics](references.md#deepmd2018). [DOI](https://doi.org/10.1103/PhysRevLett.120.143001).
+- [B. M. Wood et al. (2025), UMA: A Family of Universal Models for Atoms](references.md#uma2025).
+- [S. Grimme; C. Bannwarth; P. Shushkov (2017), A Robust and Accurate Tight-Binding Quantum Chemical Method for Structures, Vibrational Frequencies, and Noncovalent Interactions of Large Molecular Systems Parametrized for All spd-Block Elements (Z = 1–86)](references.md#gfn12017). [DOI](https://doi.org/10.1021/acs.jctc.7b00118).
+- [C. Bannwarth; S. Ehlert; S. Grimme (2019), GFN2-xTB—An Accurate and Broadly Parametrized Self-Consistent Tight-Binding Quantum Chemical Method with Multipole Electrostatics and Density-Dependent Dispersion Contributions](references.md#gfn22019). [DOI](https://doi.org/10.1021/acs.jctc.8b01176).
+- [V. Ásgeirsson; C. A. Bauer; S. Grimme (2017), Quantum chemical calculation of electron ionization mass spectra for general organic and inorganic molecules](references.md#ipea2017). [DOI](https://doi.org/10.1039/C7SC00601B).
+
+逐项计算：[bkmp2-model](reproduction.md#task-bkmp2-model) · [analytic-models](reproduction.md#task-analytic-models) · [ml-adapters](reproduction.md#task-ml-adapters) · [tblite](reproduction.md#task-tblite).

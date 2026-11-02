@@ -7,7 +7,7 @@ replica 调度共用基础设施；偏置更新算法与自由能重构仍分别
 | 方法 | CV 维度 | 自由能重构 | `uncertainty_kind` |
 | --- | --- | --- | --- |
 | `umbrella` | 1–3 | 含 bin 体积修正的 MBAR | `block_bootstrap` |
-| `metadynamics` | 1–3 | standard / well-tempered 偏置估计 | `replica_spread` |
+| `metadynamics` | 1–3 | standard / well-tempered 偏置估计，或冻结偏置后的重加权直方图 | `replica_spread` |
 | `opes` | 1–2 | KDE 或冻结偏置后的重加权直方图 | `replica_spread` |
 
 ## 输入：公共部分与方法参数
@@ -185,13 +185,24 @@ manifest 必须先通过校验，才会迁移保存的入口写法。更改方�
 
 ## `rate` 选择 PMF 来源
 
-不指定 `rate.pmf_source`，或者设置为 `"umbrella"`，仍按现有流程采样伞形 PMF。
+新输入通过 `[rate.pmf] method` 选择 `umbrella`、`metadynamics`、`opes` 或
+`external`。[速率 PMF 选择指南](rate-pmf-selection.md) 提供完整示例、参数继承
+规则及训练／冻结／生产阶段的时钟。内置 MetaD/OPES 速率 PMF 使用
+`estimator="reweighted_histogram"`，必须显式指定 `freeze_after_steps` 与
+`freeze_equilibration_steps`，并设置 `analysis.bootstrap=0`。传播中实际加入
+rate-flux 度量，仅对冻结且重新平衡后的生产样本按 `exp(beta*V_frozen)` 重加权。
+当前仍不提供相关势垒误差和总速率误差。
+
 复用已有结果时可写：
 
 ```toml
-[rate.pmf_source]
+[rate.pmf]
+method = "external"
 directory = "runs/umbrella-rate-flux"
 ```
+
+不含 `[rate.pmf]` 的旧输入继续使用原有伞形流程，并保留 `[rate.pmf_source]`
+写法。新选择器不能与 `rate.pmf_method` 或 `rate.pmf_source` 同时使用。
 
 默认只接受伞形 `FESResult`，并要求 `measure="rate_flux"`、一维无量纲的质心
 RPMDrate 坐标及 hartree 单位。来源必须带有 manifest、resolved input 和 system。
@@ -200,9 +211,10 @@ RPMDrate 坐标及 hartree 单位。来源必须带有 manifest、resolved input
 
 MetaD/OPES 来源须同时满足 `allow_non_umbrella=true`、结果元数据
 `reweighted=true` 及相同的 `rate_flux`/物理身份检查。原始 `-V` 或 WT 缩放偏置会被
-拒绝，并明确提示 PMF 必须重加权。此选项没有新增时变 MetaD 重加权器；当前 MetaD
-输出的是 `cv_density` 偏置估计，不能直接给出气相速率 PMF。OPES 冻结偏置后的
-密度重构也不会自动获得 rate-flux 测度。
+拒绝，并明确提示 PMF 必须重加权。此选项没有新增时变 MetaD 重加权器；普通
+`cv_density` 重构保留其原有测度。复用时要求来源实际以 `measure="rate_flux"`
+采样，并由冻结偏置后的生产样本重构。内置 MetaD/OPES 速率方法会在速率计算中
+执行这一流程；偏置轨迹的时间本身不能直接给出反应速率。
 
 逐格误差不足以确定参考点与势垒点的协方差。因此外部来源不伪造 PMF 势垒误差或总
 速率误差；这些误差会被标为不可用。

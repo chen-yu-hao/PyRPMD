@@ -57,7 +57,7 @@ the run directory. Move referenced files together with the input and keep the at
 
 | Field | Meaning |
 | --- | --- |
-| `schema_version` | Input schema version, currently the integer 1 |
+| `schema_version` | 1 (legacy, default); 2 selects explicit rate-reaction defaults and independent parent sampling. Dedicated model schemas remain separate. |
 | `task` | One of the tasks in the [task table](../index.md); each task accepts its own sections |
 | `preset` | `pilot` (default) or `production`; `production` requires explicit settings |
 | `temperature` | Positive temperature, e.g. `"300 K"`; a bare number is in K |
@@ -78,6 +78,17 @@ Times must be integer multiples of the time step. For exact counts use the step 
 `equilibration_steps`, `production_steps` and `interval_steps`; a step count takes precedence over
 the matching time. Interval fields belong to their task: in dRPMD the interval is the time between
 two launches from a parent chain, in FES it is the time between saved samples.
+
+For new rate inputs, use [the explicit rate layout](../rate-input-v2.md) and
+[`research.inp`](../../examples/rate/research.inp). It places `sample_every` and
+`chains_per_window` in `[umbrella.sampling]`, and separates `[recrossing.parent]`
+from `[recrossing.children]`. Stage durations accept unit strings or `{steps=N}`
+and reject conflicting declarations instead of relying on legacy precedence.
+The regional table sets window spacing and force constants together. New
+`force_constant` and `force_matrix` numbers mean `k/T` in atomic stiffness units
+per kelvin; legacy `stiffness`/`kappa` numbers keep their physical atomic units.
+Explicit reaction fragments/bond changes and `[preparation].ts_action` are
+independent: a complete reaction definition does not certify the supplied saddle.
 
 ### Defaults
 
@@ -130,7 +141,7 @@ The gas-phase `rate` workflow supplies these additional starting values when omi
 | Initial umbrella centers | 23 evenly spaced points from -0.05 to 1.05 | Step 0.05 in the dimensionless reaction coordinate |
 | Umbrella stiffness | `50 / beta` | Physical harmonic stiffness, i.e. 50 kBT for the dimensionless coordinate |
 | `rate.pmf_points` | 401 | UI integration grid, not a number of sampled windows |
-| `recrossing.parent_replicas` / `parent_samples` | 2 / 4 | `sampling.parents`, if supplied, replaces the default parent-sample count |
+| `recrossing.parent_replicas` / `parent_samples` | 2 / 4 | Legacy schema 1 can inherit `sampling.parents`; new stage inputs use independent parent defaults |
 | `recrossing.equilibration` / `parent_interval` / `child_time` | `20 fs` / `5 fs` / `50 fs` | Must be converged for the reaction |
 | `recrossing.child_pairs` / `bootstrap` | 2 / 100 | Per parent / number of resampling draws |
 
@@ -241,7 +252,8 @@ differs for nonlinear CVs. Custom CVs return the complete Jacobian; see
 [Potentials and plugins](potentials.md).
 
 Numerical umbrella centers use the CV's declared input unit; strings with units carry their own.
-Numerical stiffness is in atomic units. `distance`, `angle` and `bond_difference` act on unwrapped
+Legacy numerical `stiffness`/`kappa` is in atomic units; new `force_constant`/`force_matrix`
+coefficients default to atomic stiffness per kelvin (`k/T`). `distance`, `angle` and `bond_difference` act on unwrapped
 geometry; for minimum-image geometry use `periodic_distance`, `periodic_angle` or
 `periodic_bond_difference`. Continuous `fractional` and `surface_lateral` coordinates are unwrapped
 and distinguish neighboring cells.

@@ -55,7 +55,7 @@ def build():
 
 | 字段 | 含义 |
 | --- | --- |
-| `schema_version` | 输入版本，当前为整数 1 |
+| `schema_version` | 1（旧版、缺省）；2 启用显式反应默认值和独立母链采样。独立模型的专用 schema 不变。 |
 | `task` | [任务表](../index.md)中的一项；每个任务接受各自的 section |
 | `preset` | `pilot`（缺省）或 `production`；`production` 要求显式设置 |
 | `temperature` | 正温度，如 `"300 K"`；纯数值按 K |
@@ -75,6 +75,14 @@ def build():
 时间必须是步长的整数倍。需要精确计数时使用 `equilibration_steps`、`production_steps`、`interval_steps`
 等步数字段；同时给出时，步数优先。间隔字段的含义随任务而定：dRPMD 中是同一母链两次发射之间的时间，
 FES 中是两次保存样本之间的时间。
+
+新速率输入建议使用[显式速率布局](../rate-input-v2.md)和
+[`research.inp`](../../../examples/rate/research.inp)：`[umbrella.sampling]`
+直接使用 `sample_every` 和 `chains_per_window`，回穿分为 `[recrossing.parent]`
+和 `[recrossing.children]`。阶段时长接受带单位字符串或 `{steps=N}`，冲突声明会报错。
+分区表同时声明窗口间距与力常数；新字段 `force_constant`、`force_matrix` 的裸数值表示
+原子单位力常数每 Kelvin，即 `k/T`，旧 `stiffness`/`kappa` 裸数值仍为物理原子单位。
+显式片段与成断键定义、`[preparation].ts_action` 分别控制反应身份和 TS 检查，完整反应定义不能替代鞍点验证。
 
 ### 缺省值
 
@@ -219,7 +227,8 @@ isotopes = [{atom = 0, mass = "2.01410177812 amu"}]
 `centroid` 在环质心上求坐标；`bead_average`
 逐珠子求值后平均，对非线性 CV 两者不同。自定义 CV 返回完整 Jacobian，见[势能与插件](potentials.md)。
 
-数值伞中心使用 CV 声明的输入单位；带单位字符串携带自身单位。数值 stiffness 以原子单位计。`distance`、
+数值伞中心使用 CV 声明的输入单位；带单位字符串携带自身单位。旧 `stiffness`/`kappa` 数值以物理原子单位计，
+新 `force_constant`/`force_matrix` 数值默认以原子单位力常数每 Kelvin（`k/T`）计。`distance`、
 `angle` 和 `bond_difference` 作用于展开几何；最小镜像几何使用 `periodic_distance`、`periodic_angle` 或
 `periodic_bond_difference`。连续的 `fractional` 和 `surface_lateral` 坐标不取模，可区分相邻晶胞。
 

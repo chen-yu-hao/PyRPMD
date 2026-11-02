@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import numpy as np
+from collections.abc import Mapping
 
 from ..input import rate_pmf_options
 from ..parallel import execution_plan
@@ -22,6 +23,31 @@ def _recrossing_spec(config):
     return config.get("recrossing", config.get("rate", {}).get("recrossing", {}))
 
 
+def _parent_thermostat(config):
+    """Resolve the constrained-parent clock without coupling new PMF stages.
+
+    The absence of a dedicated table retains the exact legacy inheritance.
+    Stage-input normalization installs an independent table for new jobs.
+    """
+    from .sampling import validate_andersen_schedule
+
+    raw = _recrossing_spec(config)
+    if "parent_thermostat" not in raw:
+        sampling = config.get("sampling", {})
+        schedule = validate_andersen_schedule(config)
+    else:
+        sampling = raw["parent_thermostat"]
+        if not isinstance(sampling, Mapping):
+            raise ValueError("recrossing.parent_thermostat must be a table")
+        if set(sampling) - {"thermostat", "andersen_interval", "andersen_schedule"}:
+            raise ValueError("Unknown recrossing.parent_thermostat setting")
+        if sampling.get("thermostat", "andersen") != "andersen":
+            raise ValueError("Constrained parent sampling requires an Andersen thermostat")
+        schedule = validate_andersen_schedule({**config, "sampling": sampling}, "rate")
+    interval = checked_integer(sampling.get("andersen_interval", 10), "recrossing parent Andersen interval")
+    return interval, schedule
+
+
 def _recrossing_dynamics(config):
     """Keep friction changes in scientific fingerprints, batching out of them."""
     raw = _recrossing_spec(config)
@@ -36,6 +62,11 @@ def _recrossing_dynamics(config):
         raise ValueError("recrossing.friction_scale must be finite and nonnegative")
     if method == "rpmd" and "friction_scale" in raw:
         raise ValueError("recrossing.friction_scale requires dynamics='trpmd'")
+    if "integrator" in raw:
+        if method != "trpmd":
+            raise ValueError("recrossing.integrator requires dynamics='trpmd'")
+        from .sampling import middle_sampling_method
+        middle_sampling_method(loop_options(config)["integrator"], raw["integrator"])
     batch = checked_integer(raw.get("child_batch_pairs", 1), "recrossing.child_batch_pairs")
     if batch > 1 and execution_plan(config.get("parallel", {})).bead_workers > 1:
         raise ValueError(
@@ -57,6 +88,7 @@ def _recrossing_dynamics(config):
 def _recrossing_options(config):
     raw = _recrossing_spec(config)
     _recrossing_dynamics(config)
+    _parent_thermostat(config)
     dt = config["dt_au"]
     sampling = config["sampling"]
 

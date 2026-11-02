@@ -132,3 +132,14 @@ Metadynamics 保存 HILLS、偏置和有限时间偏置 FES。`analyze --recompu
 记录代码 commit、已安装依赖、势能来源与哈希、输入与单位、运行身份、珠子数与时间步、平衡与生产长度、独立副本、
 窗口或拟合方案、每项诊断和每个缺失量。比较两个结果时，说明哪些科学参数变了、哪些只是重分析设置。报告物理预测之前，
 先完成[科学约定](science.md)中的收敛系列。
+
+## 原始方法出处与复现任务
+
+统计分析分别引用 MBAR、自相关和块重采样出处；共享历史的同步处理是包内实现选择。H5MD 引用属于文件格式出处；报告或导出功能不能把未收敛结果提升为物理结论。
+
+- [M. R. Shirts; J. D. Chodera (2008), Statistically optimal analysis of samples from multiple equilibrium states](references.md#samp-mbar2008). [DOI](https://doi.org/10.1063/1.2978177).
+- [C. J. Geyer (1992), Practical Markov Chain Monte Carlo](references.md#samp-geyer1992). [DOI](https://doi.org/10.1214/ss/1177011137).
+- [D. N. Politis; J. P. Romano (1992), A Circular Block-Resampling Procedure for Stationary Data](references.md#samp-cblock1992).
+- [P. de Buyl; P. H. Colberg; F. Höfling (2014), H5MD: A structured, efficient, and portable file format for molecular data](references.md#h5md2014). [DOI](https://doi.org/10.1016/j.cpc.2014.01.018).
+
+逐项计算：[samp-statistics](reproduction.md#task-samp-statistics) · [samp-mbar](reproduction.md#task-samp-mbar) · [h5md-export](reproduction.md#task-h5md-export) · [engineering](reproduction.md#task-engineering).

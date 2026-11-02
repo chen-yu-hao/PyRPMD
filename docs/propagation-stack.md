@@ -96,8 +96,9 @@ The legacy `MTSDynamics` adapter retains its deterministic default, its
 `State` return value and its two transaction boundaries.
 
 RPC remains an explicitly approximate Hamiltonian when fewer than `P` beads
-are retained. It does not export a contracted pressure estimator, so the
-shared plan rejects RPC pressure control without an appropriate virial. A
+are retained. `SplitPotential` returns its contracted strain virial when both
+components supply one, enabling ordinary BZP sampling of that Hamiltonian.
+The combined force-splitting/MTS pressure plan remains unsupported. A
 force split also remains a complete-ring provider. Composed trajectory batching
 keeps its RPC projection/lift local to each trajectory and combines only the
 physical component force calls; it never flattens rings through the coupled
@@ -212,8 +213,11 @@ capabilities, process/MPI grouping, and stop/failure handling.
 ## Physical compatibility remains explicit
 
 Pressure control requires a fully periodic, all-mobile system and a provider
-with the required physical virials/cell support. Fixed atoms with cell scaling
-and unvalidated PIGLET NPT combinations remain errors. GLE/PIGLET matrices must
+with the required virials/cell support. Fixed atoms with cell scaling remain
+unsupported. PIGLET NPT supports isotropic BZP with explicitly calibrated
+per-mode matrices, a canonical centroid and zero centroid physical/auxiliary
+covariance; flexible-cell PIGLET combinations remain errors. SC-NPT uses an
+explicit `SuzukiChinPotential` and its action virial with BZP. GLE/PIGLET matrices must
 match their declared convention and calibration. Bath-free TRPMD limits do
 not consume thermostat noise. These are constraints on the requested
 mathematics, not reasons to substitute a different thermostat or integrator.

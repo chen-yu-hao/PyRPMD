@@ -182,3 +182,14 @@ MC sweep、路径迭代和电子数求解均不是物理时间。
 后续仍须检查珠子数、时间步、独立链、符号问题、路径尺度／刚度、初态覆盖
 和真实动力学平台。当前不添加 `.inp` task，也没有整个自适应外循环的
 断点续跑接口；单个热采样器继续支持包含偏置身份的 snapshot/restore。
+
+## 原始方法出处与复现任务
+
+分别引用热映射、受限路径/string、MBAR 以及选用的电极模型。这个自适应带符号流程是包内组合，不能称为完整 Γ_W SM-NRPMD 或完整巨正则 DFT 方法的实现。
+
+- [J. O. Richardson and M. Thoss (2013), Communication: Nonadiabatic ring-polymer molecular dynamics](references.md#na-nrpmd2013). [DOI](https://doi.org/10.1063/1.4816124).
+- [L. Maragliano; A. Fischer; E. Vanden-Eijnden; G. Ciccotti (2006), String method in collective variables: Minimum free energy paths and isocommittor surfaces](references.md#samp-stringcv2006). [DOI](https://doi.org/10.1063/1.2212942).
+- [M. R. Shirts; J. D. Chodera (2008), Statistically optimal analysis of samples from multiple equilibrium states](references.md#samp-mbar2008). [DOI](https://doi.org/10.1063/1.2978177).
+- [M. Sun; B. Jin; X. Yang; S. Xu (2025), Probing nuclear quantum effects in electrocatalysis via a machine-learning enhanced grand canonical constant potential approach](references.md#gc2025). [DOI](https://doi.org/10.1038/s41467-025-58871-7).
+
+逐项计算：[na-adaptive-thermal](reproduction.md#task-na-adaptive-thermal) · [na-thermal-nrpmd](reproduction.md#task-na-thermal-nrpmd) · [samp-string](reproduction.md#task-samp-string) · [gc](reproduction.md#task-gc).

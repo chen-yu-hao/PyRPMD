@@ -1,0 +1,144 @@
+{
+  "schema": "PyRPMD.condensed-phase.software-validation.v1",
+  "date_utc": "2026-11-02",
+  "implementation_commit": "a594c35b8a0c072d37d0532f4bb71b39f3d5bb0c",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "h5py": "3.16.0",
+    "pytest": "9.2.0",
+    "omp_threads": 1,
+    "openblas_threads": 1
+  },
+  "full_regression": {
+    "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q",
+    "passed": 7618,
+    "skipped": 223,
+    "warnings": 51,
+    "subtests_passed": 478,
+    "elapsed_seconds": 577.15,
+    "failures": 0,
+    "scope": "Whole repository suite with optional dependency skips retained; allowed local-loopback sockets.",
+    "initial_environment_issue": "The first sandboxed full run had 14 socket-creation permission failures before protocol execution. The identical tests and the final complete suite passed with local loopback permitted; no assertions or protocol implementations were changed for this issue."
+  },
+  "fresh_source_archive": {
+    "archive_filename": "pyrpmd-0.2.0.tar.gz",
+    "archive_sha256_at_test_time": "f8e7d553fe04d81d22584278e1c69544d32149afefcd7758bf4415a1b2732b08",
+    "required_files_verified": 27,
+    "missing_files": [],
+    "prebuilt_binaries": [],
+    "native_extensions_rebuilt": [
+      "pyrpmd._native",
+      "pyrpmd._thermal",
+      "pyrpmd._electronic"
+    ],
+    "parallel_build_jobs": 1,
+    "test_modules": {
+      "tests.test_condensed_phase_ensembles": 26,
+      "tests.test_condensed_phase_validation": 6,
+      "tests.test_condensed_piglet_reference": 6,
+      "tests.test_rpc_virial": 17,
+      "tests.test_suzuki_chin_estimators": 12
+    },
+    "passed": 67,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "commands": [
+      "python setup.py sdist",
+      "python setup.py build_ext --inplace --parallel 1",
+      "PYTHONPATH=src python -m pytest -q tests/test_suzuki_chin_estimators.py tests/test_rpc_virial.py tests/test_condensed_phase_ensembles.py tests/test_condensed_phase_validation.py tests/test_condensed_piglet_reference.py"
+    ],
+    "scope": "All tests imported the freshly extracted Python package and all three rebuilt native extensions, outside the working checkout. Numeric implementation sources were frozen. Final documentation/result packaging is checked separately."
+  },
+  "pressure_metadata_followup": {
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_condensed_phase_ensembles.py::test_native_pressure_metadata_matches_saved_momenta_not_configured_temperature tests/test_native_pimd_followup.py::test_standard_npt_workflow",
+    "passed": 6,
+    "note": "Also included in the 67-test fresh-archive run. Counts overlap and must not be added."
+  },
+  "implementation_source_sha256": {
+    "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+    "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+    "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+    "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+    "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+    "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+    "src/pyrpmd/workflows/path_integral.py": "edcc0fbd8090e39eacf67703d64ca140b10adaa95f41589aabedd79139ec1495",
+    "src/pyrpmd/workflows/native_pimd.py": "38ebb8d81f81d162384cedf3076ef80f98b355a3b888405ff2db68ea166b4948",
+    "src/pyrpmd/workflows/materials.py": "09c411300063b45b5129772204bba74dd628cc1f06d86d2f72e00c94a8175a52",
+    "native/thermal.hpp": "5e9f15dedc4e743258093eedc9dd3794968710565bc58e3e5c9783a9205778f6"
+  },
+  "companion_archive_logs": {
+    "full-suite-final.log": "eecf35231cecb8f238ad30b11d55adbff3bc63a4a5d1a96cc4b9aec50aefb035",
+    "source-archive-pytest.log": "821f0a4189a2ac08b00f6034c940a0eec823b76f3c7b65dde2ebaf201efe621c",
+    "source-archive-build.log": "00e5333483e998968a3f05e9be9ccf9791cf43eb45c8ccb6f707d48dbe981201",
+    "native-pressure-metadata-tests.log": "097d915e2749921119645b7dde7b57ab94f9912235eaf02538527800108ae84c",
+    "source-archive-final-pytest.log": "66b42a9134279700176c2619fb209315223b5a163d748d36b1e22dbc8ee19ea9",
+    "docs-html-en-final.log": "d288423bcc0a5bc80c267d63693f0222a6ddd0c6449d4fc9eb6186e1ce2642cd",
+    "docs-singlehtml-en-final.log": "fa6c0d5bbe3d0da0b0e03e006d3d6f86958e55e5ad59f3cf8cf81c78f9400752",
+    "docs-html-zh-final.log": "1aeddd132bf04f360ebbf709bd47feef0d169056fc84ee2fea043f7c54434a81",
+    "docs-singlehtml-zh-final.log": "c59ee29532ceacbecd3b7f5867f0bc49ec6b24e2594575fa5121e936f975c196"
+  },
+  "scientific_scope": "Software regression and estimator correctness are separate from bead, timestep, finite-size and statistical convergence. See harmonic/LJ/PIGLET summaries and the interpretation report.",
+  "final_source_archive": {
+    "archive_sha256_at_test_time": "47f45a158642ab7ff816b6d7c77e7c84e87d8c2da15ac13531d6bfdb7b4763d6",
+    "passed": 68,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "test_modules": {
+      "tests.test_condensed_phase_ensembles": 26,
+      "tests.test_condensed_phase_validation": 7,
+      "tests.test_condensed_piglet_reference": 6,
+      "tests.test_rpc_virial": 17,
+      "tests.test_suzuki_chin_estimators": 12
+    },
+    "required_files_verified": 37,
+    "packaged_result_and_figure_files": 72,
+    "missing_files": [],
+    "prebuilt_binaries_in_archive": [],
+    "raw_csv_or_npz_in_source_archive": [],
+    "python_import_origin_verified_in_extracted_src": true,
+    "native_validation": "Native and Python implementation/model/build sources (210 files) were byte-identical to the independently rebuilt archive; its three native extensions were reused in the fresh final extraction. No numerical core changed. The additional test covers stable AST provenance lookup.",
+    "scope": "The 68-module-tests run includes and supersedes the prior 67-test scope; counts overlap. Only this validation record and its integrity metadata are updated after the test-time archive."
+  },
+  "documentation": {
+    "html-en": {
+      "strict": true,
+      "success": true,
+      "warnings": 0
+    },
+    "singlehtml-en": {
+      "strict": true,
+      "success": true,
+      "warnings": 0
+    },
+    "html-zh": {
+      "strict": true,
+      "success": true,
+      "warnings": 0
+    },
+    "singlehtml-zh": {
+      "strict": true,
+      "success": true,
+      "warnings": 0
+    },
+    "chapter_parity": "PASS: 20 identical chapter filenames",
+    "source_sha256": {
+      "docs/conf.py": "c786538b7812b77013d7e19c47db8cc16ae6942e23ba51b64bf6a88ec497f1ac",
+      "docs/condensed-phase-nqe.md": "2bf8ef654bb460ded11ce26dfebb65bc67a91a062057b4ac55f3ee7988e0dc02",
+      "docs/native-ensembles.md": "31b7c74fbe6f4160d4893e96767336e791fa3aff64709b31ad7b98c75386283e",
+      "docs/native-pimd-workflow.md": "63d6d493aa722d295a8be9b9c4ffcc42fef087c0fbf183055eea4ba8a0fa5850"
+    },
+    "fixes": [
+      "Add new guide to Sphinx include_patterns",
+      "Use MyST display-math delimiters",
+      "Link repository-only result documents with explicit GitHub URLs"
+    ]
+  },
+  "benchmark_provenance_regression": {
+    "passed": 13,
+    "scope": "Two benchmark modules, including one new regression checking harmless source-line shifts versus actual numerical function edits; included in the 68-test final archive result."
+  }
+}

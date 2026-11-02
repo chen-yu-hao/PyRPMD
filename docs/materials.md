@@ -350,6 +350,46 @@ serial/process/MPI 使用相同稳定副本 ID。允许改变执行分块/进程
 温度、质量、晶胞、势模型和科学时间参数不能静默改变。分析参数可离线
 调整，生产轨迹不因此重新计算。单步传播或观测失败时恢复至上一次已提交状态。
 
+### 真正合并多副本的势能请求
+
+固定晶胞的默认 `legacy` 引擎现支持 `pimd` 和 `diffusion` 的跨轨迹合批：
+
+```toml
+[sampling]
+replicas = 8
+
+[parallel]
+backend = "process"
+trajectory_workers = 2
+trajectory_batch_size = 4
+bead_workers = 1
+```
+
+这里是 8 个独立副本、2 个执行进程、每组最多 4 个副本。`replicas` 决定独立轨迹数量，
+`trajectory_workers` 决定同时运行的进程数，`trajectory_batch_size` 决定同一次 PES
+请求中合并多少条轨迹。每条轨迹仍保留自己的珠子、恒温器、随机流、时钟和检查点；
+仅把同一势能分量的输入合成 `[活跃副本数 × 珠子数, 原子数, 3]`，RPC 分量使用对应的
+收缩珠子数。不整除的末组正常运行。每条轨迹的保存帧仍有时间自相关，有效样本数需另行估计。
+静态 MPI 取 `B=1, world=G`，动态 MPI 取 `B=1, world=1+G`，每个 worker group
+领取一组副本；并行拓扑参数见[并行说明](parallel.md)。
+
+固定原子、RATTLE、电子摩擦和已知 split/difference RPC 路径继续使用逐副本的
+原有算法。RPC 收缩/提升不跨轨迹混合。已完成、部分完成和尚未开始的副本可以一起
+恢复；已完成副本在建势之前重放，全完成时不建势、不调用 PES、不消耗随机数。
+改变 batch size、进程数或流式分块大小可以续跑。单个 frame 的 PES 状态错误只归属
+对应副本，健康副本完成后汇总报告错误。
+
+batch size 大于 1 时，NPT/可变晶胞、`sampling.engine="native"`、强制原生整段循环、
+多个 bead worker 和材料 active-learning 回调均明确报错。默认引擎仍能使用已编译的
+自由环子步。任意未知的耦合/有历史状态的 PES 不会被自动视为安全。
+
+经独立验证的 ASE / MACE / NequIP / FAIRChem calculator 可显式设置
+`potential.trajectory_batch_safe=true`，保证每个 frame 的结果与其他 frame、顺序和
+调用历史无关；不能覆盖 calculator 已声明的不安全状态。ASE 路径仍逐 frame 调用
+calculator，`native_batch=false`，不保证提速。真正融合的 GPU 推理仍需模型原生接口
+及目标硬件实测。详见[批处理契约](batched-dynamics.md)与
+[真实 Ni–H 完整验收](../benchmarks/materials/batch_acceptance.md)。
+
 材料传播在每个单步事务内复用相同坐标的 PES 结果，供力、能量和保存帧观测量
 共同使用。缓存拥有坐标及返回数组的副本，失败或事务结束即清空，不跨步或续跑
 复用。Python 确定性传播且该步保存观测量时，原来的五次 provider 调用减少为

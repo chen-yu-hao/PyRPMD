@@ -76,3 +76,16 @@ must obey the coordinate and mass-metric requirements in the
 
 The [electrochemistry reference](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electrochemistry.md)
 contains the full equations, Python API, source attribution and scope.
+
+## Primary sources and reproduction tasks
+
+The electron-number sampling/effective-potential wrappers are explicitly limited compositions. Citing Sun et al. does not implement the entire Pt(111)/water constant-potential DFT/ML method. Volmer–Heyrovsky–Tafel algebra still needs physically calibrated elementary rates and electrochemical normalization.
+
+- [M. Sun; B. Jin; X. Yang; S. Xu (2025), Probing nuclear quantum effects in electrocatalysis via a machine-learning enhanced grand canonical constant potential approach](references.md#gc2025). [DOI](https://doi.org/10.1038/s41467-025-58871-7).
+- [S. Duane; A. D. Kennedy; B. J. Pendleton; D. Roweth (1987), Hybrid Monte Carlo](references.md#hmc1987). [DOI](https://doi.org/10.1016/0370-2693(87)91197-X).
+- [W. K. Hastings (1970), Monte Carlo sampling methods using Markov chains and their applications](references.md#hastings1970). [DOI](https://doi.org/10.1093/biomet/57.1.97).
+- [C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer (2008), Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces](references.md#pcet2008). [DOI](https://doi.org/10.1021/jp802171y).
+- [Z. K. Goldsmith; Y. C. Lam; A. V. Soudackov; S. Hammes-Schiffer (2019), Proton Discharge on a Gold Electrode from Triethylammonium in Acetonitrile: Theoretical Modeling of Potential-Dependent Kinetic Isotope Effects](references.md#gold2019). [DOI](https://doi.org/10.1021/jacs.8b11826).
+- [R.-H. Bi; W. Dou (2024), Electronic friction near metal surface: Incorporating nuclear quantum effect with ring polymer molecular dynamics](references.md#efrpmd2024). [DOI](https://doi.org/10.1063/5.0187646).
+
+Calculation tasks: [gc](reproduction.md#task-gc) · [adiabatic-electrode](reproduction.md#task-adiabatic-electrode) · [her](reproduction.md#task-her) · [efrpmd](reproduction.md#task-efrpmd).

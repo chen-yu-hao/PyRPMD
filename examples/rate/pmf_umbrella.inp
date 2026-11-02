@@ -1,0 +1,68 @@
+# Input/workflow pilot on the analytic teaching PES; not converged H + H2 data.
+# PMF: normal-mode + PILE-L at 0.2 fs. Recrossing: Cayley at 0.1 fs.
+task = "rate"
+preset = "pilot"
+temperature = "1000 K"
+beads = 4
+seed = 612
+
+[system]
+transition_state = "ts.xyz"
+
+[potential]
+provider = "python"
+factory = "toy_exchange.py:build"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 20
+
+[reaction]
+rinf = "5 angstrom"
+
+[rate]
+dividing_surface = 1.0
+compare_ui = true
+
+[rate.pmf]
+method = "umbrella"
+estimator = "mbar"
+
+[rate.pmf.dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.2 fs"
+
+[rate.pmf.sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.02 fs^-1"
+equilibration = "10 fs"
+production = "100 fs"
+interval = "0.4 fs"
+replicas = 2
+
+[rate.pmf.umbrella]
+start = -0.05
+stop = 1.10
+count = 24
+kappa = "0.16 hartree"
+
+[rate.pmf.analysis]
+bins = 40
+bootstrap = 10
+
+[recrossing]
+parent_replicas = 2
+parent_samples = 4
+equilibration = "5 fs"
+parent_interval = "1 fs"
+child_pairs = 1
+child_time = "10 fs"
+bootstrap = 30
+
+[output]
+directory = "runs/pmf-umbrella"
+checkpoint_interval = "2 fs"

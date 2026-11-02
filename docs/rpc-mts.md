@@ -128,10 +128,13 @@ explicit `energy()` queries are separate.
   These rows are not physical bead energies. Use finite differences of the
   **total** energy to check the force; `check_potential` assumes independent
   frames and is not the appropriate checker for this coupled wrapper.
-- The wrapper exports no contracted virial or pressure estimator. Periodic
-  applications require consistent unwrapped ring coordinates and appropriately
-  bound component providers; wrapping beads individually before contraction
-  changes the projected geometry.
+- When both components supply configurational virials, the wrapper exports the
+  affine strain derivative of the **contracted Hamiltonian**. Missing component
+  virials remain missing and pressure control rejects them. Both providers must
+  implement `set_cell(cell_bohr)` for NPT. Periodic applications require
+  consistent unwrapped ring coordinates and appropriately bound component
+  providers; wrapping beads individually before contraction changes the
+  projected geometry.
 - `MTSDynamics` retains its Python outer loop and the native free-ring kernel
   when available. It now delegates to `Dynamics` with a `ForceSplitting`
   component, so thermostats, fixed atoms, static biases and operator snapshots
@@ -150,6 +153,50 @@ normalization, output-buffer ownership, scalar single-step equivalence,
 reversibility, second-order convergence, call counts, and both failure rollback
 boundaries. The reproducible model benchmark is
 `python benchmarks/rpc_mts.py --output /tmp/rpc-mts.json`.
+
+## Virial and pressure of the contracted Hamiltonian
+
+The contraction matrix acts on the bead index and is independent of the cell.
+It therefore commutes with an affine Cartesian strain. With the physical
+provider convention `W = -V * stress`, the total configurational virial is
+
+```{math}
+W_{\mathrm{RPC}} = \sum_j W_{\mathrm{fast},j}
+ + \frac{P}{P_c}\sum_a W_{\mathrm{slow},a}.
+```
+
+`evaluate_slow(q).virial` distributes the contracted contribution uniformly
+over its `P` rows. At `Pc=P`, it preserves each original row exactly. The sum,
+not the individual rows, is the physical derivative of `U_RPC`. Force lifting
+is not applied to a cell derivative. The underlying providers must include
+explicit cell dependence: replacing their virial by `q dot F` is incorrect for
+many periodic potentials.
+
+For isotropic BZP pressure control, pair this virial with the **same** contracted
+forces. Its instantaneous pressure numerator is
+
+```{math}
+3PVp = 2K_0 + \operatorname{Tr} W_{\mathrm{RPC}}
+       - \sum_j (q_j-\bar q)\cdot F_{\mathrm{RPC},j}.
+```
+
+Here `K_0` is the kinetic energy of the orthonormal centroid mode in the
+sum-beads Hamiltonian. The `set_cell` methods forward a common cell to both
+components and retain the preceding accepted cell for failed-update recovery.
+`DifferencePotential(target, reference)` forwards cell updates too, so the
+full-bead limit recovers the target energy, force **and** virial.
+
+Ordinary `Dynamics(split, ...)` with a `BZPBarostat`, and the legacy `pimd`
+workflow with a nested delta/RPC provider and `[barostat]`, can now sample this
+pressure ensemble when the component contracts are satisfied. Combining pressure
+control with `ForceSplitting`/MTS remains unsupported. This feature does not
+remove the need to converge `Pc` against the full target Hamiltonian.
+
+`tests/test_rpc_virial.py` checks all nine affine strain components against
+independent energy differences, BZP's centroid-only cell derivative, the exact
+full-bead target-minus-reference limit, missing virials, borrowed result buffers
+and failed cell-update recovery. Condensed-phase validation is described in
+[Condensed-phase nuclear quantum effects](condensed-phase-nqe.md).
 
 ## References
 

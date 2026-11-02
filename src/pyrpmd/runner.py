@@ -287,8 +287,11 @@ def _resume_parallel(current, overrides):
     if counts:
         merged.pop("workers", None)
         merged["trajectory_workers"] = merged["trajectory_groups"] = counts[0]
-    if "scheduling" in overrides and "coordinator_ranks" not in overrides:
-        merged["coordinator_ranks"] = int(overrides["scheduling"] == "dynamic")
+    if ("scheduling" in overrides or "backend" in overrides) and "coordinator_ranks" not in overrides:
+        merged["coordinator_ranks"] = int(
+            merged.get("scheduling", "static") == "dynamic"
+            and merged.get("backend", "serial") == "mpi"
+        )
     try:
         execution_plan(merged)
     except (ValueError, TypeError) as error:
@@ -374,7 +377,10 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
         from .parallel import root_call
         from .workflows.adaptive_umbrella import extend_adaptive_budget
 
-        if config["task"] not in ("fes", "rate") or not config.get("adaptive_umbrella"):
+        adaptive = config.get("adaptive_umbrella")
+        if config["task"] == "rate" and "pmf" in config.get("rate", {}):
+            adaptive = config.get("rate", {}).get("pmf_stage", {}).get("config", {}).get("adaptive_umbrella")
+        if config["task"] not in ("fes", "rate") or not adaptive:
             raise InputError("adaptive budget overrides require an adaptive FES or rate run")
         # Authenticate saved inputs/model files before modifying the plan.
         root_call(_initialize_output, config, system, path, True)
@@ -549,6 +555,9 @@ def prepare(job, *, numerical=False):
         result["method"] = fes_method(config)
     if config["task"] == "rate":
         from .workflows.prepare import prepare_rate, prepared_system
+        from .workflows.rate_plan import rate_pmf_plan
+
+        result["pmf_plan"] = rate_pmf_plan(config)
 
         result["reaction_preparation"] = prepare_rate(
             config, system, numerical=numerical
@@ -556,6 +565,46 @@ def prepare(job, *, numerical=False):
         result["ready"] = result["reaction_preparation"].get("ready", False)
         system = prepared_system(system, result["reaction_preparation"])
         result["system"] = system.to_dict()
+        if numerical and result["ready"] and "pmf" in config.get("rate", {}):
+            from .workflows.rate import _prepare
+
+            _prepare(config, system, ".", _preparation=result["reaction_preparation"], _write=False)
+        reaction = result["reaction_preparation"]["reaction"]
+        if config.get("reaction", {}).get("definition"):
+            from .workflows.rate_options import _recrossing_options, _parent_thermostat
+
+            options = _recrossing_options(config)
+            interval, schedule = _parent_thermostat(config)
+            configurations = options["parent_replicas"] * options["parent_samples"]
+            pairs = configurations * options["child_pairs"]
+            result["recrossing_preparation"] = {
+                **options,
+                "parent_refresh_interval_steps": interval,
+                "parent_refresh_schedule": schedule,
+                "planned_configurations": configurations,
+                "planned_pairs": pairs,
+                "planned_trajectories": 2 * pairs,
+            }
+            if all(reaction.get(key) for key in ("fragments", "forming_bonds", "breaking_bonds")):
+                from .input_options import rate_pmf_options
+                from .input_rate_pmf import rate_pmf_stage
+                from .workflows.fes import validate_fes_request
+                from .workflows.rate_pmf import configure_rate_umbrella
+                from .workflows.umbrella_plan import plan_preview
+
+                planned = configure_rate_umbrella(config, system, reaction)
+                pmf_options = rate_pmf_options(planned)
+                if pmf_options["source"] is None and pmf_options.get("sampler", "umbrella") == "umbrella":
+                    stage = rate_pmf_stage(planned, system)
+                    sampling_config = planned if stage is None else stage
+                    validate_fes_request(sampling_config, system)
+                    preview = plan_preview(sampling_config, system)
+                    result["umbrella_preparation"] = {
+                        "dimension": preview["dimension"],
+                        "cv_units": preview["cv_units"],
+                        "windows": len(preview["windows"]),
+                        "window_plan": preview["windows"],
+                    }
     elif config["task"] == "drpmd":
         result["ready"] = not (
             config["collision"].get("bmax_unvalidated", False)
@@ -581,6 +630,9 @@ def prepare(job, *, numerical=False):
                 "centers_au": centers,
                 "stiffness_au": stiffness,
             }
+            from .workflows.umbrella_plan import plan_preview
+
+            result["umbrella_preparation"]["window_plan"] = plan_preview(config, system)["windows"]
         if config["task"] == "surface_rate":
             from .workflows.surface import surface_definition
 
@@ -614,6 +666,7 @@ def prepare(job, *, numerical=False):
         method, options = resolve_path_integral(config, system)
         result["path_integral_preparation"] = {
             "method": method, "equilibrium_only": True,
+            "ensemble": "npt" if options["barostat"] is not None else "fixed_cell",
             "trajectory_storage": options["storage"],
             "sampling_thermostat": options["thermostat"],
             "replicas": options["replicas"],
@@ -702,6 +755,18 @@ def prepare(job, *, numerical=False):
                     "auxiliary_beta_au": action.beta,
                     "force_max_au": float(np.max(np.abs(checked.forces))),
                 }
+                if config["path_integral"].get("method", "suzuki_chin") == "suzuki_chin":
+                    volume = None if system.cell is None else float(abs(np.linalg.det(system.cell)))
+                    result["pes_check"]["initial_sc_estimators"] = action.estimators(
+                        q, volume=volume,
+                        finite_difference_step=config["path_integral"].get("beta_fd_step", 1e-3),
+                        require_pressure=options["barostat"] is not None)
+                    if options["barostat"] is not None:
+                        from .barostat import BZPBarostat
+                        from .dynamics import State
+                        piston = BZPBarostat(action, system, action.beta, config["beads"], **options["barostat"])
+                        result["pes_check"]["initial_action_virial_hartree"] = checked.virial.tolist()
+                        result["pes_check"]["initial_configurational_pressure_au"] = piston.pressure(State(q, np.zeros_like(q)))
             elif "nonadiabatic" in config:
                 evaluated = provider.evaluate(x)
                 from .nonadiabatic import validate_diabatic_result

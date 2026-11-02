@@ -33,17 +33,31 @@ _NAMES = ("potential_energy", "kinetic_primitive", "kinetic_centroid_virial",
           "internal_energy_centroid_virial", "ring_polymer_hamiltonian")
 
 
-def sampling_splitting(integrator, thermostat, barostat="none"):
+def sampling_splitting(integrator, thermostat, barostat="none", *, middle=None):
     """Name the full map reported by the shared native executor."""
     if barostat != "none":
-        return "obabo"
+        return "bzp-" + middle if middle is not None else "obabo"
     if thermostat == "nhc":
         return "obcbo" if integrator == "cayley-bcb" else "obabo"
     return "bcocb" if integrator == "cayley-bcb" else "baoab"
 
 
+def mixed_sampling_method(config):
+    """New independent middle choice; None retains the historical native map."""
+    s = config.get("sampling", {})
+    scheme = loop_options(config)["integrator"]
+    if s.get("thermostat", "pile-l") != "pile-l":
+        return None
+    from .sampling import middle_sampling_method
+    selected = middle_sampling_method(scheme, s.get("integrator"))
+    return selected if selected != middle_sampling_method(scheme) else None
+
+
 def resolve_native_pimd(config, system):
     """Preflight the opt-in route; the native constructor checks all matrices."""
+    from ..trajectory_batch import trajectory_batch_size
+    if trajectory_batch_size(config) > 1:
+        raise ValueError("native PIMD does not support trajectory PES batching; use sampling.engine='legacy'")
     if system.bond_constraints:
         raise ValueError("native PIMD does not implement bond constraints; use legacy velocity-verlet")
     if config.get("task") != "pimd":
@@ -59,7 +73,10 @@ def resolve_native_pimd(config, system):
         raise ValueError("equilibrium native PIMD requires a sampling thermostat, not none/TRPMD")
     expected = (sampling_splitting(loop["integrator"], mode, config.get("barostat", {}).get("mode", "none"))
                 if mode == "nhc" else "bcocb" if loop["integrator"] == "cayley-bcb" else "baoab")
-    if s.get("integrator", expected) != expected:
+    if mode == "pile-l":
+        from .sampling import middle_sampling_method
+        middle_sampling_method(loop["integrator"], s.get("integrator"))
+    elif s.get("integrator", expected) != expected:
         raise ValueError(f"native PIMD sampling.integrator must be {expected}")
     if any(config.get(key) for key in ("umbrella", "metadynamics", "reaction", "electronic_friction")):
         raise ValueError("native PIMD is unbiased; reaction/bias settings are unsupported")
@@ -86,12 +103,21 @@ def resolve_native_pimd(config, system):
     if "barostat" in config and ("mode" not in b or set(b) - native_barostat_fields):
         raise ValueError("native PIMD barostat requires explicit mode and native pressure/tau/gamma controls; legacy method/time_constant/friction controls use sampling.engine='legacy'")
     if b.get("mode", "none") not in ("none", "bzp", "mttk", "mtk", "rgb", "scr", "isotropic", "flexible", "anisotropic", "stochastic-rescaling"):
-        raise ValueError("unsupported native PIMD barostat; Suzuki-Chin action is not implemented")
+        raise ValueError("unsupported native PIMD barostat; select Suzuki-Chin through the legacy path_integral workflow")
     if b.get("mode", "none") != "none":
         if not all(system.pbc) or system.fixed_atoms:
             raise ValueError("native NPT requires 3D PBC and all atoms mobile")
         if mode == "piglet":
-            raise ValueError("PIGLET NPT is not validated")
+            if b.get("mode") not in ("bzp", "isotropic"):
+                raise ValueError("PIGLET NPT supports only the isotropic BZP barostat")
+            from ..native_ensemble import _validate_piglet_npt
+            _validate_piglet_npt(s.get("thermostat_params", {}).get("gle", {}), config["beads"])
+    if mixed_sampling_method(config) is not None:
+        # Workflow units have already been resolved by _engine; only the mode
+        # is needed to reject unvalidated flexible-cell middle compositions.
+        bmode = {"isotropic": "bzp"}.get(b.get("mode", "none"), b.get("mode", "none"))
+        if bmode not in ("none", "bzp"):
+            raise ValueError("mixed middle NPT requires isotropic BZP; flexible/SCR maps retain their legacy splitting")
     spec = config.get("potential", {})
     kind = spec.get("provider", spec.get("type", "builtin"))
     if kind not in ("builtin", "free", "harmonic", "periodic_cosine", "cabi", "native", "rpmdrate", "f2py", "native_periodic"):
@@ -144,12 +170,15 @@ def _engine(config, system, replica, provider):
     # Independent replica RNG streams, stable against process count and chunks.
     seed = int(np.random.SeedSequence([int(config.get("seed", 0)), 1303, replica]).generate_state(1, dtype=np.uint64)[0])
     potential = _native_potential(provider)
+    ring_integrator = loop_options(config)["integrator"]
     spec = dict(positions=system.geometry.tolist(), masses=system.masses.tolist(),
                 beta=config["beta"], beads=config["beads"], timestep=config["dt_au"],
-                integrator=loop_options(config)["integrator"], thermostat=t,
+                integrator=ring_integrator, thermostat=t,
                 barostat=copy.deepcopy(config.get("barostat", {"mode": "none"})),
                 seed=seed, fixed_atoms=list(system.fixed_atoms), pbc=list(map(bool, system.pbc)),
                 potential=potential if isinstance(potential, dict) else {"kind": "free"})
+    if mixed_sampling_method(config) is not None:
+        spec["sampling_integrator"] = mixed_sampling_method(config)
     if system.cell is not None:
         spec["cell"] = system.cell.tolist()
     identity = _fingerprint(config, system, {"potential_files": referenced_files(config)})
@@ -289,8 +318,11 @@ def _summary(streams, config, system, output, return_data=False):
     summary = {"task": "pimd", "status": "complete", "physical_converged": False, "converged": False,
         "phase": "equilibrium_sampling", "backend": "native-cxx17", "python_step_callbacks": 0,
         "sampling_thermostat": config["sampling"].get("thermostat", "pile-l"), "barostat": bmode,
-        "sampling_splitting": sampling_splitting(loop_options(config)["integrator"],
-            config["sampling"].get("thermostat", "pile-l"), bmode).upper(),
+        "sampling_splitting": sampling_splitting(
+            ({"bcocb": "cayley-bcb", "baoab": "normal-mode-bab"}.get(config["sampling"].get("integrator"),
+              loop_options(config)["integrator"]) if config["sampling"].get("thermostat", "pile-l") == "pile-l"
+             else loop_options(config)["integrator"]),
+            config["sampling"].get("thermostat", "pile-l"), bmode, middle=mixed_sampling_method(config)).upper(),
         "integrator": loop_options(config)["integrator"], "replicas": len(streams),
         "samples_per_replica": [s["frames"] for s in streams], "energy_unit": "hartree",
         "estimators": {name: {"mean": float(means[:, i].mean()), "standard_error_between_replicas":
@@ -309,7 +341,15 @@ def _summary(streams, config, system, output, return_data=False):
     if system.cell is not None:
         summary.update(initial_cell_bohr=system.cell.tolist(), pbc=list(map(bool,system.pbc)),
                        volume_mean_bohr3=float(np.mean([s["volume_mean_bohr3"] for s in streams])),
-                       pressure_mean_au=float(np.mean([s["pressure_mean_au"] for s in streams])))
+                       pressure_mean_au=float(np.mean([s["pressure_mean_au"] for s in streams])),
+                       pressure_estimator={
+                           "name": "instantaneous_centroid_momentum_virial",
+                           "sample_column": "pressure", "summary_field": "pressure_mean_au",
+                           "role": "piston_feedback" if bmode != "none" else "fixed_cell_diagnostic",
+                           "uses_configured_temperature_kinetic_term": False,
+                           "configured_temperature_cv_mean_equivalence":
+                               "justified by canonical centroid kinetic moments conditional on coordinates and volume; not assumed for PIGLET",
+                       })
     write_json(Path(output)/"summary.json", summary)
     return {"summary": summary, "streams": streams} if return_data else summary
 

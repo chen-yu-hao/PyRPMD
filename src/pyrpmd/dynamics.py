@@ -273,10 +273,10 @@ class Dynamics:
         fixed_atoms=(), fixed_positions=None, bond_constraints=(),
         constraint_cell=None, constraint_pbc=None, constraint_tolerance=1e-12,
         constraint_max_iterations=1000, *, thermostat=None, barostat=None,
-        force_splitting=None, cell=None, pbc=None, potential_identity=None,
+        force_splitting=None, cell=None, pbc=None, potential_identity=None, sampling_integrator=None,
     ):
         from .engine import PropagationPlan, _Composition
-        self.plan = PropagationPlan(integrator, thermostat, barostat, force_splitting)
+        self.plan = PropagationPlan(integrator, thermostat, barostat, force_splitting, sampling_integrator)
         self.force_splitting = self.plan.force_splitting
         self.inner_steps = 1 if force_splitting is None else force_splitting.inner_steps
         if isinstance(dt, (bool, np.bool_)) or not isinstance(dt, numbers.Real):
@@ -330,6 +330,8 @@ class Dynamics:
         self.native = self.integrator.native
         self._cached_normal_modes = None
         self._cached_pile_coefficients = None
+        self._sampling_kernels = {}
+        self._native_requested = native
         if loop_backend not in ("auto", "native", "python"):
             raise ValueError("loop_backend must be auto/native/python")
         if isinstance(block_steps, bool) or not isinstance(block_steps, (int, np.integer)) or not 1 <= block_steps <= 65536:
@@ -433,7 +435,13 @@ class Dynamics:
             sampling = {}
             for key, saved in data["sampling"].items():
                 spec = json.loads(key)
-                plan = PropagationPlan(self.integrator_name, spec, self.plan.barostat_spec, self.force_splitting)
+                method = spec.get("sampling_integrator") if "thermostat" in spec else None
+                if "thermostat" in spec:
+                    if set(spec) != {"thermostat", "sampling_integrator"}:
+                        raise ValueError("invalid sampling operator key")
+                    spec = spec["thermostat"]
+                plan = PropagationPlan(self.integrator_name, spec, self.plan.barostat_spec,
+                                       self.force_splitting, method)
                 helper = _Composition(self, plan)
                 existing = self._sampling_compositions.get(key)
                 if existing is not None:
@@ -449,15 +457,39 @@ class Dynamics:
             raise
         self._composition, self._sampling_compositions = component, sampling
 
-    def _sample_composition(self, spec):
+    def _sampling_kernel(self, method):
+        """Select/cache the actual BCOCB/BAOAB ring map, without replacing NVE."""
+        self._check_parameters()
+        expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
+        if expected is None:
+            raise ValueError("BCOCB/BAOAB require a normal-mode or Cayley integrator")
+        if method is None or method == expected:
+            return self.integrator
+        if method not in ("bcocb", "baoab"):
+            raise ValueError("sampling method must be bcocb or baoab")
+        # Choosing another kernel must not silently bypass extension hooks.
+        if type(self.integrator) is not CayleyIntegrator or any(
+            name in self.integrator.__dict__ or getattr(CayleyIntegrator, name) is not original
+            for name, original in {**_PILE_INTEGRATOR_METHODS, **_BLOCK_INTEGRATOR_METHODS}.items()
+        ):
+            raise ValueError("mixed sampling cannot replace custom integrator hooks")
+        if method not in self._sampling_kernels:
+            self._sampling_kernels[method] = CayleyIntegrator(
+                self.masses, self.beta, self.nbeads, self.dt / self.inner_steps,
+                native=self._native_requested, threads=self.integrator.threads,
+                scheme="cayley-bcb" if method == "bcocb" else "normal-mode-bab")
+        return self._sampling_kernels[method]
+
+    def _sample_composition(self, spec, method=None):
         from .engine import PropagationPlan, _Composition, normalize_thermostat
         import json
         normalized = normalize_thermostat(spec)
-        key = json.dumps(normalized, sort_keys=True)
+        key = json.dumps(normalized if method is None else {
+            "thermostat": normalized, "sampling_integrator": method}, sort_keys=True)
         if key not in self._sampling_compositions:
             self._sampling_compositions[key] = _Composition(
                 self, PropagationPlan(self.integrator_name, normalized,
-                                      self.plan.barostat_spec, self.force_splitting))
+                                      self.plan.barostat_spec, self.force_splitting, method))
         return self._sampling_compositions[key]
 
     def propagate(self, state, steps, **options):
@@ -699,12 +731,16 @@ class Dynamics:
             p[:, ix, :] -= m[None, :, None] * velocity[None, None, :]
 
     def thermalize(
-        self, state, steps, interval=10, fragments=None, bias=None, *, resample=True
+        self, state, steps, interval=10, fragments=None, bias=None, *, resample=True,
+        thermostat="andersen", method=None, gamma_centroid=1.0, fragment_reference=None
     ):
-        """Andersen heat-bath propagation; fixed fragment centroid COM only.
+        """Andersen or PILE-L sampling with fixed fragment centroid COM.
 
-        For continuous parent sampling call resample=False after initial burn-in;
-        collision times follow state.step, so segmented calls share one clock.
+        Fragment constraints are linear centroid translations, not rigid bonds.
+        PILE projects forces and OU increments with the mass metric. Supplying
+        fragment_reference[N,3] keeps the same anchors across blocks/restarts.
+        With resample=False, completed steps and the bath stream are continuous.
+        Each PILE step is atomic; a failed block retains its completed prefix.
         """
         if (
             isinstance(steps, bool)
@@ -720,8 +756,22 @@ class Dynamics:
             raise ValueError("interval must be positive integer")
         if self.dt <= 0:
             raise ValueError("thermostatted sampling requires positive dt")
+        if thermostat not in ("andersen", "pile-l"):
+            raise ValueError("thermalize supports Andersen or fragment-constrained PILE-L")
         if self.plan.thermostat_spec["mode"] != "none":
-            raise ValueError("thermalize owns legacy Andersen collisions; use propagate for a configured thermostat")
+            raise ValueError("thermalize owns its bath; use propagate for a configured thermostat")
+        if thermostat == "pile-l":
+            self._sampling_kernel(method)
+            if self.bond_constraints:
+                raise ValueError("fragment PILE does not support nonlinear bond constraints")
+            if self.loop_backend == "native":
+                raise ValueError("fragment PILE requires loop_backend='auto' or 'python'")
+            if (isinstance(gamma_centroid, (bool, np.bool_))
+                    or not isinstance(gamma_centroid, numbers.Real)
+                    or not np.isfinite(gamma_centroid) or gamma_centroid <= 0):
+                raise ValueError("gamma_centroid must be positive and finite")
+        elif method is not None:
+            raise ValueError("thermalize method applies only to PILE-L")
         self._check_parameters()
         _, time = _state_clock(state.step, state.time)
         try:
@@ -733,11 +783,24 @@ class Dynamics:
         self.integrator._check(state.q, state.p)
         self._check_fixed(state.q, state.p)
         data = self._fragment_data(state, fragments)
+        if fragment_reference is not None:
+            reference = np.asarray(fragment_reference)
+            if (reference.shape != (len(self.masses), 3) or reference.dtype.kind not in "fiu"
+                    or not np.isfinite(reference).all() or not data):
+                raise ValueError("fragment_reference requires finite [N,3] coordinates and fragments")
+            data = [(ix, m, total, np.sum(reference[ix] * m[:, None], axis=0) / total)
+                    for ix, m, total, _ in data]
         if self.bond_constraints and data:
             raise ValueError("bond constraints cannot be combined with fragment COM projections")
         fused_loop = self.can_fuse(bias=bias)
         if resample:
             state.p[:] = self.sample_momenta(state.q) if self.bond_constraints else self.sample_momenta()
+        if thermostat == "pile-l":
+            for _ in range(int(steps)):
+                self.sample_step(state, bias, method=method, gamma_centroid=gamma_centroid,
+                                 fragment_data=data)
+                self._record_python_steps(1)
+            return state
         self._fix_fragments(state, data)
         if fused_loop:
             remaining = int(steps)
@@ -776,7 +839,7 @@ class Dynamics:
 
     def sample_step(
         self, state, bias=None, *, gamma_centroid=None, method=None,
-        thermostat="pile-l", friction_scale=1.0, thermostat_params=None,
+        thermostat="pile-l", friction_scale=1.0, thermostat_params=None, fragment_data=(),
     ):
         """BCOCB/BAOAB with explicit PILE-L sampling or TRPMD dynamics.
 
@@ -814,22 +877,25 @@ class Dynamics:
             normalized.setdefault("pile_scale", friction_scale)
         elif friction_scale != 1.0:
             raise ValueError("friction_scale is a TRPMD option")
-        key = json.dumps(normalized, sort_keys=True)
+        kernel = self._sampling_kernel(method) if method is not None else self.integrator
+        expected_method = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
+        # Historical paired sample_step calls used the bare thermostat key.
+        # Preserve it on restart. An explicit MTS middle choice is different
+        # from the historical outer-OU split, even when its free map matches.
+        composition_method = (method if self.force_splitting is not None or method != expected_method else None)
+        key = json.dumps(normalized if composition_method is None else {
+            "thermostat": normalized, "sampling_integrator": composition_method}, sort_keys=True)
         barostat = self.plan.barostat_spec
         if not isinstance(barostat, dict) or barostat.get("mode", "none") != "none":
-            if normalized != self.plan.thermostat_spec:
+            if normalized != self.plan.thermostat_spec or (method is not None and kernel.scheme != self.plan.ring_integrator):
                 raise ValueError("use the configured pressure-plan thermostat through step(); do not attach a second piston")
-            return self._composition.step(state, bias)
+            return self._composition.step(state, bias, fragment_data)
         if (isinstance(thermostat, dict) or thermostat_params is not None
                 or thermostat not in ("pile-l", "trpmd") or self.loop_backend == "native"
                 or self.force_splitting is not None or key in self._sampling_compositions):
-            if method is not None:
-                expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(self.integrator_name)
-                if method != expected:
-                    raise ValueError("sampling method must match the selected integrator")
             existed = key in self._sampling_compositions
             try:
-                return self._sample_composition(normalized).step(state, bias)
+                return self._sample_composition(normalized, composition_method).step(state, bias, fragment_data)
             except BaseException:
                 if not existed:
                     self._sampling_compositions.pop(key, None)
@@ -866,28 +932,35 @@ class Dynamics:
         selected = expected if method is None else str(method).lower()
         if selected not in ("bcocb", "baoab"):
             raise ValueError("sampling method must be bcocb or baoab")
-        if selected != expected:
-            raise ValueError(f"{selected} sampling requires {'cayley-bcb' if selected == 'bcocb' else 'normal-mode-bab'}; selected integrator is {self.integrator_name}")
         if thermostat == "trpmd" and (self.nbeads == 1 or friction_scale == 0):
             # No stochastic degrees of freedom: use the identical RPMD map and
             # do not consume random numbers for a thermostat with zero strength.
-            return self.step(state, bias)
+            if kernel is self.integrator and not fragment_data:
+                return self.step(state, bias)
+            return self._sample_composition(normalized, selected).step(state, bias, fragment_data)
         if self.loop_backend == "native":
             raise RuntimeError("BCOCB/BAOAB PILE-L/TRPMD retains Python/NumPy sampling orchestration; choose loop_backend='auto' or 'python'")
         rng_state = copy.deepcopy(self.rng.bit_generator.state)
         q = state.q.copy()
         p = state.p.copy()
-        self.integrator._check(q, p)
+        kernel._check(q, p)
         self._check_fixed(q, p)
+        def project():
+            self._project_fragments(q, p, fragment_data)
+            self._project_fixed(q, p)
+        if fragment_data:
+            project()
         self._kick(q, p, bias)
+        if fragment_data:
+            project()
         fused_sampler = (
-            self.loop_backend == "auto"
-            and type(self) is Dynamics and type(self.integrator) is CayleyIntegrator
-            and hasattr(self.integrator._native, "sample_free")
+            not fragment_data and self.loop_backend == "auto"
+            and type(self) is Dynamics and type(kernel) is CayleyIntegrator
+            and hasattr(kernel._native, "sample_free")
             # The dependency-free native DFT is useful only for small rings.
             # Keep the FFT/NumPy route for larger non-power-of-two sizes.
             and (self.nbeads <= 8 or self.nbeads & (self.nbeads - 1) == 0)
-            and all(name not in self.integrator.__dict__
+            and all(name not in kernel.__dict__
                     and getattr(CayleyIntegrator, name, None) is original
                     for name, original in _PILE_INTEGRATOR_METHODS.items())
             and all(name not in self.__dict__ and getattr(Dynamics, name, None) is original
@@ -903,9 +976,9 @@ class Dynamics:
                 frequencies = np.empty(P)
                 frequencies[0] = 0.
                 frequencies[1:1 + 2 * ((P - 1) // 2)] = np.repeat(
-                    self.integrator._omega[1:(P + 1) // 2], 2)
+                    kernel._omega[1:(P + 1) // 2], 2)
                 if P % 2 == 0:
-                    frequencies[-1] = self.integrator._omega[-1]
+                    frequencies[-1] = kernel._omega[-1]
                 gamma = (2 * friction_scale) * frequencies
                 gamma[0] = gamma_centroid
                 decay = np.exp(-gamma * self.dt)
@@ -918,12 +991,12 @@ class Dynamics:
             try:
                 noise = self.rng.normal(size=p.shape) * scale
                 noise[:, self._fixed_indices, :] = 0.0
-                with self.integrator._lock:
-                    self.integrator._native.sample_free(
-                        self.integrator._context, q, p, noise, decay, amplitude, fixed)
-                self._project_fixed(q, p)
+                with kernel._lock:
+                    kernel._native.sample_free(
+                        kernel._context, q, p, noise, decay, amplitude, fixed)
+                project()
                 self._kick(q, p, bias)
-                self._project_fixed(q, p)
+                project()
                 if not np.isfinite(q).all() or not np.isfinite(p).all():
                     raise FloatingPointError("nonfinite integration state")
             except BaseException:
@@ -934,8 +1007,8 @@ class Dynamics:
             state.step = step + 1
             state.time = next_time
             return state
-        self.integrator.half_step(q, p)
-        self._project_fixed(q, p)
+        kernel.half_step(q, p)
+        project()
         # Real orthogonal cyclic normal modes avoid complex-noise covariance
         # errors at the zero and Nyquist modes. Small systems/thermalization.
         P = self.nbeads
@@ -967,11 +1040,11 @@ class Dynamics:
             noise[:, self._fixed_indices, :] = 0.0
             pk = c[:, None, None] * pk + np.sqrt(1 - c * c)[:, None, None] * noise
             p[:] = np.einsum("kb,kac->bac", C, pk)
-            self._project_fixed(q, p)
-            self.integrator.half_step(q, p)
-            self._project_fixed(q, p)
+            project()
+            kernel.half_step(q, p)
+            project()
             self._kick(q, p, bias)
-            self._project_fixed(q, p)
+            project()
             if not np.isfinite(q).all() or not np.isfinite(p).all():
                 raise FloatingPointError("nonfinite integration state")
         except BaseException:

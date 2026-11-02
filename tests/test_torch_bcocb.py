@@ -193,11 +193,11 @@ def test_rpc_and_split_forces_are_all_in_the_bcocb_kicks(monkeypatch):
     assert d.force_evaluations=={"fast":2,"slow":2}
 
 
-def test_bcocb_rejects_unvalidated_mts_and_mutation():
+def test_bcocb_accepts_explicit_mts_but_rejects_mutation():
     terms=TorchSplitPotential([TorchRPCTerm(TorchPES(v.obs.Oscillator(.9,0.)),5)],
                              [TorchRPCTerm(TorchPES(v.obs.Oscillator(.1,0.)),5,1)])
-    with pytest.raises(ValueError,match="BCOCB/MTS"):
-        TorchDynamics(terms,[1.],3.,5,.1,inner_steps=2,integrator=v.BCOCB)
+    mts = TorchDynamics(terms,[1.],3.,5,.1,inner_steps=2,integrator=v.BCOCB)
+    assert mts.inner_steps == 2
     d=engine(5,3.,thermostat="pile-l");d.integrator="cayley-bcb"
     s=v.obs.state_1d(np.zeros((2,5)),np.zeros((2,5)))
     with pytest.raises(ValueError,match="immutable"):d.step(s)

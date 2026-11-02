@@ -1,0 +1,42 @@
+{
+  "en-html": {
+    "exit_code": 0,
+    "log_sha256": "f8ae8aa4929e3351436ecc433064e87f08050aaf253147b03f17a9c2e63b5222",
+    "last_lines": [
+      "dumping object inventory... done",
+      "build succeeded.",
+      "",
+      "The HTML pages are in ../materials-docs-validation/en-html."
+    ]
+  },
+  "en-singlehtml": {
+    "exit_code": 0,
+    "log_sha256": "cc22a930ca8d62fd53c3bd5f7b95db145541f7e57b1b30e086063d2050e5de50",
+    "last_lines": [
+      "dumping object inventory... done",
+      "build succeeded.",
+      "",
+      "The HTML page is in ../materials-docs-validation/en-singlehtml."
+    ]
+  },
+  "zh-html": {
+    "exit_code": 0,
+    "log_sha256": "ff1c39fb516ab8975b1f7a6508ed7dda46cea7102423951cd28d6bc9b5af1850",
+    "last_lines": [
+      "dumping object inventory... done",
+      "build succeeded.",
+      "",
+      "The HTML pages are in ../materials-docs-validation/zh-html."
+    ]
+  },
+  "zh-singlehtml": {
+    "exit_code": 0,
+    "log_sha256": "6f9978355e57adb318e76c59eab8bbb3cd5af47c7eb3e35d674fc8fd6cf792a4",
+    "last_lines": [
+      "dumping object inventory... done",
+      "build succeeded.",
+      "",
+      "The HTML page is in ../materials-docs-validation/zh-singlehtml."
+    ]
+  }
+}

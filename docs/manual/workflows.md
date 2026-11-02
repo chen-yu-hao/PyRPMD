@@ -374,3 +374,20 @@ that needs its own refinement check. Metadynamics outputs free-energy estimates 
 estimate can be reduced to one or two CVs with `pyrpmd project RUN --axes 0 1 --output NEW`; see
 [Output and analysis](results.md#projecting-a-saved-fes). Methods and restart timing are in the
 [enhanced-sampling specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md).
+
+## Primary sources and reproduction tasks
+
+The rate pipeline combines reactive-flux factorization, RPMD dynamics and bimolecular normalization. dRPMD originated with H2 + H3+; the H + H2 examples are a different system. Adaptive umbrella placement is a package-specific MBAR/overlap composition, not OGRe, and histogram MBAR is not a separate WHAM implementation.
+
+- [C. H. Bennett (1977), Molecular Dynamics and Transition State Theory: The Simulation of Infrequent Events](references.md#bennett1977). [DOI](https://doi.org/10.1021/bk-1977-0046.ch004).
+- [D. Chandler (1978), Statistical mechanics of isomerization dynamics in liquids and the transition state approximation](references.md#chandler1978). [DOI](https://doi.org/10.1063/1.436049).
+- [I. R. Craig; D. E. Manolopoulos (2005), Chemical reaction rates from ring polymer molecular dynamics](references.md#rate05). [DOI](https://doi.org/10.1063/1.1850093).
+- [R. Collepardo-Guevara; Y. V. Suleimanov; D. E. Manolopoulos (2009), Bimolecular reaction rates from ring polymer molecular dynamics](references.md#bimol09). [DOI](https://doi.org/10.1063/1.3127145).
+- [Y. V. Suleimanov; J. W. Allen; W. H. Green (2013), RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics](references.md#rpmrate13). [DOI](https://doi.org/10.1016/j.cpc.2012.10.017).
+- [Y. V. Suleimanov; A. Aguado; S. Gómez-Carrasco; O. Roncero (2018), A Ring Polymer Molecular Dynamics Approach to Study the Transition between Statistical and Direct Mechanisms in the H₂ + H₃⁺ → H₃⁺ + H₂ Reaction](references.md#drpmd18). [DOI](https://doi.org/10.1021/acs.jpclett.8b00783).
+- [A. Marjollet; R. Welsch (2020), Nuclear quantum effects in state-selective scattering from ring polymer molecular dynamics](references.md#state20). [DOI](https://doi.org/10.1063/5.0004179).
+- [G. M. Torrie; J. P. Valleau (1977), Nonphysical sampling distributions in Monte Carlo free-energy estimation: Umbrella sampling](references.md#samp-us1977). [DOI](https://doi.org/10.1016/0021-9991(77)90121-8).
+- [M. R. Shirts; J. D. Chodera (2008), Statistically optimal analysis of samples from multiple equilibrium states](references.md#samp-mbar2008). [DOI](https://doi.org/10.1063/1.2978177).
+- [J. Kästner; W. Thiel (2005), Bridging the gap between thermodynamic integration and umbrella sampling provides a novel analysis method: “Umbrella integration”](references.md#samp-ui2005). [DOI](https://doi.org/10.1063/1.2052648).
+
+Calculation tasks: [rpm-rate](reproduction.md#task-rpm-rate) · [direct-rpmd](reproduction.md#task-direct-rpmd) · [state-rpmd](reproduction.md#task-state-rpmd) · [samp-adaptive](reproduction.md#task-samp-adaptive).

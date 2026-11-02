@@ -8,6 +8,7 @@ change stream identities. Only the coordinator writes aggregate products.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -25,12 +26,12 @@ from ..checkpoint import load_checkpoint
 from ..parallel import task_potential, root_call
 from ..trajectory import TrajectoryStream, _descriptor, _walk_reverse, materialize_stream
 from ..trajectory_batch import task_provider, trajectory_batch_size
-from ..units import parse_quantity, DIMS
+from ..units import parse_quantity
 from .sampling import AndersenSchedule, fes_sampler, validate_andersen_schedule
 from .biased_sampling import SamplingRuntime, run_biased_sampling, dispatch_tasks
 from .common import (
     _atomic_npz, _fingerprint, _dimension, checked_integer, write_json, jsonable,
-    fingerprint_matches, resolve_cvs,
+    fingerprint_matches,
 )
 
 
@@ -50,6 +51,10 @@ def _production_budget(config, production_steps=None):
 
 
 def _window_checkpoint(task):
+    if "window_id" in task:
+        token = hashlib.sha256(task["window_id"].encode()).hexdigest()[:24]
+        name = f"window_{token}_replica_{task['replica']:04d}.npz"
+        return Path(task["output"]) / "checkpoints" / name
     return (Path(task["output"]) / "checkpoints"
             / f"window_{task['window']:05d}_replica_{task['replica']:04d}.npz")
 
@@ -59,11 +64,16 @@ def _sample_schema(dimension):
             "energies": {"dtype": np.dtype("float64").str, "shape": []}}
 
 
-def _window_fingerprint(task):
-    return _fingerprint(task["config"], task["system"], {
-        "window": task["window"], "replica": task["replica"],
+def _window_identity(task):
+    return {
+        **({"window_id": task["window_id"]} if "window_id" in task else {"window": task["window"]}),
+        "replica": task["replica"],
         "center": np.asarray(task["center"]), "stiffness": np.asarray(task["stiffness"]),
-    })
+    }
+
+
+def _window_fingerprint(task):
+    return _fingerprint(task["config"], task["system"], _window_identity(task))
 
 
 def read_fes_sample_history(saved, *, dimension, expected_samples=None, chunk_directory=None,
@@ -138,11 +148,15 @@ def _read_window_checkpoint(task, cv, *, production_steps=None, materialize=Fals
     interval = checked_integer(sampling.get("sample_interval", sampling.get("interval_steps", 1)),
                                "sampling.sample_interval")
     with load_checkpoint(checkpoint) as saved:
-        if not fingerprint_matches(saved["fingerprint"], config, system, {
-                "window": task["window"], "replica": task["replica"],
-                "center": np.asarray(task["center"]), "stiffness": np.asarray(task["stiffness"]),
-        }):
+        if not fingerprint_matches(saved["fingerprint"], config, system, _window_identity(task)):
             raise ValueError(f"checkpoint physics differs: {checkpoint}; choose a fresh output directory")
+        if "window_id" in task and (
+            not {"window_id", "center", "stiffness"}.issubset(saved.files)
+            or str(saved["window_id"]) != task["window_id"]
+            or not np.array_equal(saved["center"], task["center"])
+            or not np.array_equal(saved["stiffness"], task["stiffness"])
+        ):
+            raise ValueError(f"checkpoint window metadata differs: {checkpoint}")
         elapsed, step, time = saved["elapsed"], saved["step"], saved["time"]
         if (elapsed.shape != () or elapsed.dtype.kind not in "iu" or elapsed < 0
                 or step.shape != () or step.dtype.kind not in "iu" or step != elapsed):
@@ -231,105 +245,29 @@ def _flux_coordinate(config, cv):
     return cv.cvs[0]
 
 
-def resolve_umbrellas(config, system):
-    """Resolve user centers/stiffness to canonical CV units and hartree.
+def resolve_window_plan(config, system):
+    """Resolve one center, physical K and sampling override per window."""
+    from .umbrella_plan import resolve_plan
 
-    A CV's optional input ``unit``/``units`` applies to numerical centers;
-    explicit quantity strings carry their own units. Numerical stiffness is
-    always atomic; quantity strings are dimension-checked for mixed CVs.
-    """
-    umbrella = config.get("umbrella", {})
-    cv, selected, scales = resolve_cvs(config, system, "umbrella")
+    cv, specs, windows = resolve_plan(config, system)
     _flux_coordinate(config, cv)
-    dims = [_dimension(unit) for unit in cv.units]
+    return cv, specs, windows
 
-    def center(value, atomic=False):
-        if cv.dimension == 1 and (isinstance(value, (str, int, float, np.number))):
-            value = [value]
-        if len(value) != cv.dimension:
-            raise ValueError("umbrella center dimension mismatch")
-        return [
-            parse_quantity(x, dim)
-            * (scale if not atomic and isinstance(x, (int, float, np.number)) else 1)
-            for x, dim, scale in zip(value, dims, scales)
-        ]
 
-    if "centers_au" in umbrella:
-        centers = [center(x, True) for x in umbrella["centers_au"]]
-    elif "centers" in umbrella:
-        centers = [center(x) for x in umbrella["centers"]]
-    elif "grid" in umbrella:
-        grid = umbrella["grid"]
-        if isinstance(grid, dict):
-            grid = [grid]
-        if len(grid) != cv.dimension:
-            raise ValueError("umbrella.grid needs one axis per CV")
-        axes = []
-        for d, axis in enumerate(grid):
-            if isinstance(axis, dict):
-                lo = parse_quantity(axis["start"], dims[d]) * (
-                    1 if isinstance(axis["start"], str) else scales[d]
-                )
-                hi = parse_quantity(axis["stop"], dims[d]) * (
-                    1 if isinstance(axis["stop"], str) else scales[d]
-                )
-                count = checked_integer(axis["count"], "grid count")
-                axes.append(np.linspace(lo, hi, count))
-            else:
-                axes.append(
-                    [
-                        parse_quantity(x, dims[d])
-                        * (1 if isinstance(x, str) else scales[d])
-                        for x in axis
-                    ]
-                )
-        centers = (
-            np.stack(np.meshgrid(*axes, indexing="ij"), axis=-1)
-            .reshape(-1, cv.dimension)
-            .tolist()
-        )
-    elif all(k in umbrella for k in ("start", "stop", "count")) and cv.dimension == 1:
-        lo = center(umbrella["start"])[0]
-        hi = center(umbrella["stop"])[0]
-        centers = np.linspace(
-            lo, hi, checked_integer(umbrella["count"], "umbrella.count")
-        )[:, None]
-    else:
-        raise ValueError("specify umbrella.centers or umbrella.grid")
-    centers = np.asarray(centers, float)
-    if (
-        centers.ndim != 2
-        or centers.shape[1] != cv.dimension
-        or not len(centers)
-        or not np.isfinite(centers).all()
-    ):
-        raise ValueError("invalid umbrella centers")
-    raw = umbrella.get("stiffness_au", umbrella.get("stiffness", umbrella.get("kappa")))
-    if raw is None:
-        raise ValueError("umbrella.stiffness or kappa is required")
-    if isinstance(raw, (str, int, float, np.number)):
-        raw = [
-            [raw if i == j else 0.0 for j in range(cv.dimension)]
-            for i in range(cv.dimension)
-        ]
-    elif np.asarray(raw, dtype=object).ndim == 1:
-        if len(raw) != cv.dimension:
-            raise ValueError("diagonal stiffness dimension mismatch")
-        raw = [
-            [raw[i] if i == j else 0.0 for j in range(cv.dimension)]
-            for i in range(cv.dimension)
-        ]
-    if np.shape(raw) != (cv.dimension, cv.dimension):
-        raise ValueError("stiffness must be scalar, diagonal, or square matrix")
-    stiffness = np.empty((cv.dimension, cv.dimension))
-    for i in range(cv.dimension):
-        for j in range(cv.dimension):
-            dimension = tuple(
-                e - a - b for e, a, b in zip(DIMS["energy"], dims[i], dims[j])
-            )
-            stiffness[i, j] = parse_quantity(raw[i][j], dimension)
-    UmbrellaBias(cv, centers[0], stiffness)  # validates positive definiteness
-    return cv, selected, centers, stiffness
+def resolve_umbrellas(config, system):
+    """Legacy tuple view, with a per-window K stack for heterogeneous plans.
+
+    Homogeneous inputs retain the historical (D,D) stiffness shape. New fixed
+    independent plans may return (n_windows,D,D); ensemble backends that assume
+    one K are rejected during plan resolution.
+    """
+    cv, specs, windows = resolve_window_plan(config, system)
+    centers = np.asarray([window.center for window in windows])
+    matrices = np.asarray([window.stiffness for window in windows])
+    stiffness = matrices[0] if all(
+        np.array_equal(matrix, matrices[0]) for matrix in matrices[1:]
+    ) else matrices
+    return cv, specs, centers, stiffness
 
 
 def _analysis_ranges(options, cv):
@@ -354,18 +292,27 @@ def validate_fes_request(config, system):
     histogram settings. It neither initializes a PES nor evaluates a geometry.
     Sampling-dependent support, overlap and convergence remain analysis checks.
     """
-    cv, specs, centers, stiffness = resolve_umbrellas(config, system)
-    sampling = config["sampling"]
-    production = checked_integer(sampling["production_steps"], "sampling.production_steps")
-    interval = checked_integer(
-        sampling.get("sample_interval", sampling.get("interval_steps", 1)),
-        "sampling.sample_interval",
-    )
-    if production // interval < 2:
-        raise ValueError(
-            "sampling.production_steps must include at least two saved samples per umbrella; "
-            "increase production_steps or reduce sample_interval"
+    from .umbrella_plan import window_sampling
+
+    cv, specs, windows = resolve_window_plan(config, system)
+    centers = np.asarray([window.center for window in windows])
+    matrices = np.asarray([window.stiffness for window in windows])
+    stiffness = matrices[0] if all(np.array_equal(k, matrices[0]) for k in matrices[1:]) else matrices
+    for window in windows:
+        sampling = window_sampling(config, window)
+        production = checked_integer(sampling["production_steps"], "sampling.production_steps")
+        interval = checked_integer(
+            sampling.get("sample_interval", sampling.get("interval_steps", 1)),
+            "sampling.sample_interval",
         )
+        checked_integer(sampling["equilibration_steps"], "sampling.equilibration_steps", 0)
+        checked_integer(sampling.get("replicas", 1), "sampling.replicas")
+        fes_sampler({**config, "sampling": sampling})
+        if production // interval < 2:
+            raise ValueError(
+                "sampling.production_steps must include at least two saved samples per umbrella; "
+                "increase production_steps or reduce sample_interval"
+            )
     options = config.get("analysis", {})
     bootstrap = checked_integer(
         options.get("bootstrap", options.get("bootstrap_replicates", options.get("bootstrap_samples", 20))),
@@ -544,7 +491,12 @@ def _sample_window(task):
     fingerprint = _window_fingerprint(task)
     saved = (_read_window_checkpoint(task, cv, production_steps=nprod)
              if checkpoint.exists() else None)
-    seed = np.random.SeedSequence([int(config.get("seed", 0)), 101, window, replica])
+    if "window_id" in task:
+        digest = hashlib.sha256(task["window_id"].encode()).digest()
+        identity = [int.from_bytes(digest[i:i + 4], "little") for i in range(0, 16, 4)]
+    else:
+        identity = [window]
+    seed = np.random.SeedSequence([int(config.get("seed", 0)), 101, *identity, replica])
     with task_provider(task, factory=task_potential) as provider:
         dynamics = Dynamics(
             provider,
@@ -640,6 +592,8 @@ def _sample_window(task):
                    if store_operators else {}),
                 **collision_clock.checkpoint_fields(),
             )
+            if "window_id" in task:
+                payload.update(window_id=task["window_id"], center=center, stiffness=stiffness)
             arrays = {"values": np.asarray(values).reshape(-1, cv.dimension),
                       "energies": np.asarray(energies)}
             if writer is not None:
@@ -680,6 +634,7 @@ def _sample_window(task):
             raise ValueError("at least two samples per umbrella stream required")
         return {
             "window": window,
+            **({"window_id": task["window_id"]} if "window_id" in task else {}),
             "replica": replica,
             "samples": samples,
             "center": center,
@@ -721,6 +676,8 @@ def _write_fes(output, data, streams, cv, config, _postprocess=None):
                 for key in ("samples", "center", "stiffness", "energies"):
                     g.create_dataset(key, data=stream[key])
                 g.attrs["window"] = stream["window"]
+                if "window_id" in stream:
+                    g.attrs["window_id"] = stream["window_id"]
                 g.attrs["replica"] = stream["replica"]
                 g.attrs["propagation"] = json.dumps(stream.get("propagation", {}))
                 if "exchange_group" in stream:
@@ -861,19 +818,26 @@ def _make_tasks(config, system, output, *, production_steps=None):
         raise ValueError("analysis.measure must be cv_density or rate_flux")
     if production_steps is not None:
         production_steps = _production_budget(config, production_steps)
-    cv, specs, centers, stiffness = resolve_umbrellas(config, system)
-    replicas = checked_integer(
-        config.get("sampling", {}).get("replicas", 1), "sampling.replicas"
-    )
-    tasks = [
-        {"config": config, "system": system, "specs": specs, "window": i,
-         "replica": r, "center": center, "stiffness": stiffness, "output": str(output)}
-        for i, center in enumerate(centers)
-        for r in range(replicas)
-    ]
-    if production_steps is not None:
-        for task in tasks:
-            task["production_steps"] = production_steps
+    from .umbrella_plan import window_sampling
+
+    cv, specs, windows = resolve_window_plan(config, system)
+    tasks = []
+    for index, window in enumerate(windows):
+        sampling = window_sampling(config, window)
+        local = {**config, "sampling": sampling} if window.sampling else config
+        fes_sampler(local)
+        replicas = checked_integer(sampling.get("replicas", 1), "sampling.replicas")
+        if production_steps is not None:
+            _production_budget(local, production_steps)
+        for replica in range(replicas):
+            task = {"config": local, "system": system, "specs": specs, "window": index,
+                    "replica": replica, "center": window.center, "stiffness": window.stiffness,
+                    "output": str(output)}
+            if window.identifier is not None:
+                task["window_id"] = window.identifier
+            if production_steps is not None:
+                task["production_steps"] = production_steps
+            tasks.append(task)
     return cv, tasks
 
 
@@ -911,6 +875,16 @@ def validate_fes_checkpoints(config, system, checkpoint_output, *, production_st
     return streams
 
 
+def _write_window_plan(output, preview):
+    """Keep an existing run's inspectable plan intact on incompatible resume."""
+    path = Path(output) / "umbrella-plan.json"
+    if path.exists():
+        if json.loads(path.read_text()) != preview:
+            raise ValueError("umbrella plan differs from the saved plan; choose a fresh output directory")
+        return
+    write_json(path, preview)
+
+
 def run_fes(config, system, output, executor=None, return_data=False, *, _postprocess=None,
             production_steps=None, checkpoint_output=None):
     """Sample and reconstruct, optionally using an authorized extended budget.
@@ -944,6 +918,9 @@ def run_fes(config, system, output, executor=None, return_data=False, *, _postpr
     config = copy.deepcopy(config)
     _, tasks = _make_tasks(config, system, output if checkpoint_output is None else checkpoint_output,
                           production_steps=production_steps)
+    if any("window_id" in task for task in tasks):
+        from .umbrella_plan import plan_preview
+        root_call(_write_window_plan, output, plan_preview(config, system))
     streams = dispatch_tasks(_sample_window, tasks, config, executor, batch_trajectories=True)
     return root_call(
         _analyze_streams, streams, config, system, str(output), return_data, _postprocess
@@ -974,6 +951,7 @@ def reanalyze_fes(config, system, output, return_data=False, *, _postprocess=Non
             saved = _read_window_checkpoint(task, cv, materialize=True)
             streams.append({
                 "window": task["window"], "replica": task["replica"],
+                **({"window_id": task["window_id"]} if "window_id" in task else {}),
                 "center": task["center"], "stiffness": task["stiffness"],
                 "samples": saved["values"], "energies": saved["energies"],
                 "last_q": saved["state"].q, "last_p": saved["state"].p,

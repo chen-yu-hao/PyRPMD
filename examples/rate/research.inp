@@ -1,0 +1,97 @@
+# Research input layout on an analytic TEACHING PES, with short pilot budgets.
+# Replace the model and converge beads, timestep, windows and sampling for real work.
+schema_version = 2
+task = "rate"
+preset = "pilot"
+temperature = "1000 K"
+beads = 4
+seed = 612
+
+[system]
+transition_state = "ts.xyz"
+
+[potential]
+provider = "python"
+factory = "toy_exchange.py:build"
+
+[reaction]
+definition = "explicit"
+reactant_fragments = [[0], [1, 2]]
+product_fragments = [[0, 1], [2]]
+forming_bonds = [[0, 1]]
+breaking_bonds = [[1, 2]]
+rinf = "5 angstrom"
+
+[preparation]
+ts_action = "validate"  # Check the supplied saddle without moving its coordinates.
+check_channel = true    # Also compare both downhill sides with the declared channel.
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[rate]
+dividing_surface = 1.0
+
+[umbrella]
+coordinate = "xi"
+# Bare force_constant means k/T in atomic stiffness units per kelvin ("1/T").
+# Here k = 0.00016 * 1000 = 0.16 hartree, preserving the teaching pilot strength.
+force_constant = 0.00016
+
+[[umbrella.regions]]
+id = "entrance"
+start = 0.0
+stop = 0.8
+spacing = 0.05
+include_endpoints = "left"
+
+[[umbrella.regions]]
+id = "barrier"
+start = 0.8
+stop = 1.05
+spacing = 0.01
+include_endpoints = "both"
+force_constant = 0.00032
+
+[umbrella.sampling]
+equilibration = "5 fs"
+production = "20 fs"
+sample_every = "0.2 fs"
+chains_per_window = 1
+
+[umbrella.sampling.thermostat]
+type = "andersen"
+scheme = "global_refresh"
+schedule = "fixed"
+refresh_every = "2 fs"
+
+[umbrella.analysis]
+estimator = "ui"
+integration_points = 401
+bins = 50
+bootstrap_replicates = 10
+
+[recrossing.parent]
+chains = 2
+equilibration = "5 fs"
+draw_every = "1 fs"
+configurations_per_chain = 4
+
+[recrossing.parent.thermostat]
+type = "andersen"
+scheme = "global_refresh"
+schedule = "fixed"
+refresh_every = "2 fs"
+
+[recrossing.children]
+method = "rpmd"
+pairs_per_configuration = 2
+duration = "10 fs"
+
+[recrossing.analysis]
+bootstrap_replicates = 30
+
+[output]
+directory = "runs/research-layout"
+checkpoint_interval = "5 fs"

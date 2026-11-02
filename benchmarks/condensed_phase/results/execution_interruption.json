@@ -1,0 +1,28 @@
+{
+  "schema": "PyRPMD.campaign-run-interruption.v1",
+  "reason": "Source identity guard rejected ongoing trajectories after report/scheduling-only edits shifted source line numbers used by inspect.getsource(live_function). No rejected trajectory was saved or incorporated.",
+  "affected": [
+    {
+      "method": "sc",
+      "beads": 16,
+      "ensemble": "NPT",
+      "seed": 82722
+    },
+    {
+      "method": "rpc8",
+      "beads": 16,
+      "contracted_beads": 8,
+      "ensemble": "NPT",
+      "seed": 82721
+    }
+  ],
+  "not_yet_started_after_interruption": [
+    {
+      "method": "rpc8",
+      "seed": 82722
+    }
+  ],
+  "verification": "All completed-trajectory source identities equal the current numerical source identity. Name-based whole-file AST extraction produces identical run_trajectory and primitive_observables hashes to their prior successful snapshots.",
+  "recovery": "Same protocol and seed repeated only for missing CSVs; complete CSVs resumed under exact protocol/source/content identity guards. No change to physics, seeds, length, or acceptance criteria.",
+  "run_log": "lj-guard-recovery.log"
+}

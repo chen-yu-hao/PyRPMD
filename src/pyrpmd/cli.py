@@ -374,6 +374,10 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            if config["task"] == "rate":
+                from .workflows.rate_plan import rate_pmf_plan
+
+                result["pmf_plan"] = rate_pmf_plan(config)
             if config["task"] == "fes":
                 from .input import fes_method
 

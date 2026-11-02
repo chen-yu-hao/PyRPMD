@@ -220,3 +220,13 @@ The equations and method sources are in the
 harmonic example model, PyRPMD matches the Hammes-Schiffer group's pyPCET to within 0.062% for all 12
 forward/reverse rates; see the
 [model validation record](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/validation/pcet-model-2026-10-30/README.md).
+
+## Primary sources and reproduction tasks
+
+The 2008 formulation is the method foundation; the 2019 Au/triethylammonium application is a physical target; the 2025 tutorial/pyPCET is an independent implementation comparator. The local fixed-distance model does not include every distance-averaging or double-layer ingredient of the experimental application.
+
+- [C. Venkataraman; A. V. Soudackov; S. Hammes-Schiffer (2008), Theoretical Formulation of Nonadiabatic Electrochemical Proton-Coupled Electron Transfer at Metal–Solution Interfaces](references.md#pcet2008). [DOI](https://doi.org/10.1021/jp802171y).
+- [Z. K. Goldsmith; Y. C. Lam; A. V. Soudackov; S. Hammes-Schiffer (2019), Proton Discharge on a Gold Electrode from Triethylammonium in Acetonitrile: Theoretical Modeling of Potential-Dependent Kinetic Isotope Effects](references.md#gold2019). [DOI](https://doi.org/10.1021/jacs.8b11826).
+- [P. Hutchison; K. Cui; J. Zhong; S. Hammes-Schiffer (2025), Tutorial on computing nonadiabatic proton-coupled electron transfer rate constants](references.md#pypcet2025). [DOI](https://doi.org/10.1063/5.0284337).
+
+Calculation tasks: [pcet](reproduction.md#task-pcet).

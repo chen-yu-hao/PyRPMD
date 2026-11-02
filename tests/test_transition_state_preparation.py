@@ -229,7 +229,7 @@ def test_unconverged_search_stops_rate_before_sampling_and_saves_diagnostics(tmp
     controls = {"neb": {"max_steps": 1}} if endpoints else {"max_steps": 1, "max_step": 1e-5}
     config, system = JobSpec.from_mapping(_job(endpoints=endpoints, preparation=controls)).resolve()
     with patch("pyrpmd.workflows.rate.run_fes") as sample:
-        with pytest.raises(RuntimeError, match="did not produce a validated TS"):
+        with pytest.raises(RuntimeError, match="Reaction preparation is not ready"):
             run_rate(config, system, tmp_path)
     sample.assert_not_called()
     report = json.loads((tmp_path / "preparation.json").read_text())

@@ -438,3 +438,20 @@ sequence for a new material:
 
 The [periodic-materials audit and TODO list](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/periodic-materials-audit.md)
 records implementation findings, open-source comparisons and remaining validation work.
+
+## Primary sources and reproduction tasks
+
+Pressure samplers cite their own barostat and PIMD-measure sources. NPT equilibration time is not a physical transport trajectory. The H/Ni(100), H/Pd(111) and surface-rate papers require their actual PES and substrate conventions; the NiAlH pilot is not the 2012 Ni EAM4 model.
+
+- [D. Chandler; P. G. Wolynes (1981), Exploiting the isomorphism between quantum theory and classical statistical mechanics of polyatomic fluids](references.md#cw81). [DOI](https://doi.org/10.1063/1.441588).
+- [M. Ceriotti; M. Parrinello; T. E. Markland; D. E. Manolopoulos (2010), Efficient stochastic thermostatting of path integral molecular dynamics](references.md#pile10). [DOI](https://doi.org/10.1063/1.3489925).
+- [G. Bussi; T. Zykova-Timan; M. Parrinello (2009), Isothermal-isobaric molecular dynamics using stochastic velocity rescaling](references.md#bzp2009). [DOI](https://doi.org/10.1063/1.3073889).
+- [G. J. Martyna; D. J. Tobias; M. L. Klein (1994), Constant pressure molecular dynamics algorithms](references.md#mtk1994). [DOI](https://doi.org/10.1063/1.467468).
+- [G. J. Martyna; A. Hughes; M. E. Tuckerman (1999), Molecular dynamics algorithms for path integrals at constant pressure](references.md#nptpimd1999). [DOI](https://doi.org/10.1063/1.478193).
+- [P. Raiteri; J. D. Gale; G. Bussi (2011), Reactive force field simulation of proton diffusion in BaZrO3 using an empirical valence bond approach](references.md#rgb2011). [DOI](https://doi.org/10.1088/0953-8984/23/33/334213).
+- [M. Bernetti; G. Bussi (2020), Pressure control using stochastic cell rescaling](references.md#scr2020). [DOI](https://doi.org/10.1063/5.0020514).
+- [Y. V. Suleimanov (2012), Surface Diffusion of Hydrogen on Ni(100) from Ring Polymer Molecular Dynamics](references.md#ni2012). [DOI](https://doi.org/10.1021/jp302453z).
+- [Y. Kataoka; J. Haruyama; O. Sugino; M. Shiga (2024), Predictive evaluation of hydrogen diffusion coefficient on Pd(111) surface by path integral simulations using neural network potential](references.md#pd2024). [DOI](https://doi.org/10.1103/PhysRevResearch.6.043224).
+- [C. Li; L. Zhang; B. Jiang; H. Guo (2025), Unified ring polymer molecular dynamics rate calculations for reactions with separable and non-separable reactants](references.md#sds2025). [DOI](https://doi.org/10.1063/5.0273941).
+
+Calculation tasks: [bzp](reproduction.md#task-bzp) · [mtk](reproduction.md#task-mtk) · [rgb](reproduction.md#task-rgb) · [scr](reproduction.md#task-scr) · [diffusion](reproduction.md#task-diffusion) · [site-surface](reproduction.md#task-site-surface) · [nialh-model](reproduction.md#task-nialh-model).

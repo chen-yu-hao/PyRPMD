@@ -1,5 +1,6 @@
-# Minimal TS-only input: preparation infers the reaction from the PES Hessian
-# and two downhill traces. Defaults are pilot settings, not converged rates.
+# Explicitly select the TS-inference convenience mode. For the research layout,
+# use research.inp and declare the entrance fragments and forming/breaking bonds.
+schema_version = 2
 task = "rate"
 preset = "pilot"
 
@@ -9,6 +10,13 @@ transition_state = "ts.xyz"
 [potential]
 provider = "python"
 factory = "toy_exchange.py:build"
+
+[reaction]
+definition = "infer"
+
+[preparation]
+ts_action = "validate"
+check_channel = true
 
 [output]
 directory = "runs/minimal"

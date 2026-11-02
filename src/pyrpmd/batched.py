@@ -51,19 +51,30 @@ def validate_batch_potential(potential):
     # Recurse through adapters before accepting an outer declaration: a Python
     # wrapper must not hide a ring-coupled or explicitly stateful inner object.
     from .potentials.python import _PYTHON_EVALUATE, PythonPotential
-    if type(potential) is PythonPotential:
-        if "evaluate" not in potential.__dict__ and PythonPotential.evaluate is _PYTHON_EVALUATE:
-            inner = getattr(potential.obj, "metadata", {}) or {}
-            if isinstance(inner, dict) and any(
-                inner.get(key) is value for key, value in (
-                    ("trajectory_batch_safe", False), ("batch_independent", False),
-                    ("ring_polymer_coupled", True), ("coupled_frames", True), ("stateful", True),
-                )
-            ):
-                raise ValueError("Python PES wraps a coupled/stateful provider")
-            inner_capabilities = inner.get("capabilities", {}) if isinstance(inner, dict) else {}
-            if isinstance(inner_capabilities, dict) and inner_capabilities.get("stateful") is True:
-                raise ValueError("Python PES wraps a coupled/stateful provider")
+    transparent, seen = potential, set()
+    while (type(transparent) is PythonPotential
+           and "evaluate" not in transparent.__dict__
+           and PythonPotential.evaluate is _PYTHON_EVALUATE):
+        if id(transparent) in seen:
+            raise ValueError("cyclic Python PES adapter cannot declare independent frames")
+        seen.add(id(transparent))
+        transparent = transparent.obj
+        inner = getattr(transparent, "metadata", {}) or {}
+        if isinstance(inner, dict) and any(
+            inner.get(key) is value for key, value in (
+                ("trajectory_batch_safe", False), ("batch_independent", False),
+                ("ring_polymer_coupled", True), ("coupled_frames", True), ("stateful", True),
+            )
+        ):
+            raise ValueError("Python PES wraps a coupled/stateful provider")
+        inner_capabilities = inner.get("capabilities", {}) if isinstance(inner, dict) else {}
+        if isinstance(inner_capabilities, dict) and inner_capabilities.get("stateful") is True:
+            raise ValueError("Python PES wraps a coupled/stateful provider")
+    # An outer ASE adapter declaration must not hide a calculator's veto,
+    # including a capability changed after construction.
+    from .potentials.optional import ASEPotential
+    if isinstance(transparent, ASEPotential):
+        transparent._check_trajectory_batch_contract()
     if metadata.get("trajectory_batch_safe") is True:
         return
 

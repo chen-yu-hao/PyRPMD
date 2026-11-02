@@ -7,6 +7,14 @@ scalar collective variable or a callable on the full `q[P,N,3]` array; it does
 not need coordinate derivatives. An executable model example is
 `examples/sampling/transition_interface.py`.
 
+The original TIS method is due to
+[van Erp, Moroni and Bolhuis (2003)](https://doi.org/10.1063/1.1562614),
+with the path measures and algorithms elaborated by
+[van Erp and Bolhuis (2005)](https://doi.org/10.1016/j.jcp.2004.11.003).
+Their original 2003 application was a diatomic molecule isomerizing in a
+simple fluid. The supplied separable double well is an implementation check,
+and extending the path sampler to RPMD does not establish exact quantum rates.
+
 TIS samples a **Markov chain of complete dynamical paths**. It can help when a
 plausible order parameter distinguishes reactant and product basins but does
 not locate a useful transition-state dividing surface. Basin definitions and
@@ -90,7 +98,9 @@ and force function. Timestep convergence of the paths is still required.
 The current path is counted **after every attempt, including rejections**.
 Dropping repeated paths or accepting every valid variable-length proposal
 would bias the path ensemble. The implementation uses fresh shooting indices;
-it is not the history-based “aimless shooting” algorithm.
+it is not the history-based “aimless shooting” algorithm. The distinction
+and path-length selection factor are discussed by
+[Falkner et al. (2025)](https://doi.org/10.1063/5.0261744).
 
 `max_path_steps` bounds the entire path, including both halves. Hitting the
 bound rejects the trial instead of treating its unfinished endpoint as a
@@ -208,6 +218,11 @@ an automated flux run remain outside these implementations.
 
 ## References
 
+- T. S. van Erp, D. Moroni and P. G. Bolhuis, *A novel path sampling method for
+  the calculation of rate constants*, Journal of Chemical Physics **118**,
+  7762–7774 (2003),
+  [doi:10.1063/1.1562614](https://doi.org/10.1063/1.1562614);
+  [author preprint](https://arxiv.org/abs/cond-mat/0210614).
 - T. S. van Erp and P. G. Bolhuis, *Elaborating transition interface sampling
   methods*, Journal of Computational Physics 205, 157–181 (2005),
   [doi:10.1016/j.jcp.2004.11.003](https://doi.org/10.1016/j.jcp.2004.11.003);
@@ -216,8 +231,15 @@ an automated flux run remain outside these implementations.
 - D. W. H. Swenson et al., *OpenPathSampling: A Python Framework for Path
   Sampling Simulations. 1. Basics*, JCTC 15, 813–836 (2019),
   [doi:10.1021/acs.jctc.8b00626](https://doi.org/10.1021/acs.jctc.8b00626).
-- S. Falkner et al., *Revisiting Shooting Point Monte Carlo Methods for
-  Transition Path Sampling*,
+- T. S. van Erp, *Reaction rate calculation by parallel path swapping*,
+  Physical Review Letters **98**, 268301 (2007),
+  [doi:10.1103/PhysRevLett.98.268301](https://doi.org/10.1103/PhysRevLett.98.268301).
+  The [positive-ensemble API](tier2-sampling.md#replica-exchange-tis) implements
+  a subset of this RETIS construction and uses a separate flux estimate.
+- S. Falkner, A. Coretti, B. Peters, P. G. Bolhuis and C. Dellago,
+  *Revisiting shooting point Monte Carlo methods for transition path sampling*,
+  Journal of Chemical Physics **163**, 034105 (2025),
+  [doi:10.1063/5.0261744](https://doi.org/10.1063/5.0261744);
   [author preprint, version 3](https://arxiv.org/html/2408.03054v3), especially
   Section II.5 on fresh uniform shooting indices and the path-length ratio.
 

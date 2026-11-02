@@ -20,6 +20,8 @@ class PESResult:
     messages: tuple[str, ...] | None = None
     # Optional physical configurational virial, [B,3,3], in hartree. No
     # kinetic/ring-spring terms; not by itself a quantum pressure estimator.
+    # Coupled SC/RPC wrappers document their effective-Hamiltonian convention;
+    # their row sum is the affine derivative of the returned total energy.
     virial: np.ndarray | None = None
 
     def __post_init__(self):

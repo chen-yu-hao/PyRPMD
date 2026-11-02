@@ -216,7 +216,7 @@ def preparation_options(reaction):
     allowed = {
         "refine", "max_steps", "max_step", "gradient_tolerance", "hessian_step",
         "negative_eigenvalue_tolerance", "displacement", "trace_step", "trace_steps",
-        "bond_scale", "covalent_radii", "neb",
+        "bond_scale", "covalent_radii", "neb", "ts_action", "check_channel",
     }
     unknown = set(raw) - allowed
     if unknown:
@@ -224,6 +224,14 @@ def preparation_options(reaction):
     result = dict(raw)
     if "refine" in raw and not isinstance(raw["refine"], (bool, np.bool_)):
         raise ValueError("reaction.preparation.refine must be boolean")
+    if "ts_action" in raw:
+        if "refine" in raw:
+            raise ValueError("preparation.ts_action and preparation.refine are mutually exclusive")
+        if raw["ts_action"] not in ("validate", "refine", "none"):
+            raise ValueError("preparation.ts_action must be validate, refine or none")
+        result["refine"] = raw["ts_action"] == "refine"
+    if "check_channel" in raw and not isinstance(raw["check_channel"], (bool, np.bool_)):
+        raise ValueError("preparation.check_channel must be boolean")
 
     def positive(value, name, dimension=None):
         if isinstance(value, np.bool_):
@@ -293,17 +301,21 @@ def prepared_system(system, prepared):
 def prepare_rate(config, system, potential=None, numerical=False):
     """Prepare a bimolecular rate from a TS guess or atom-mapped endpoints.
 
-    Explicit reactions retain their inexpensive legacy path unless refinement
-    is requested. Numerical preparation always validates a searched saddle
-    before inferring connectivity; unsuccessful searches are inspectable but
-    never marked ready. All returned coordinates are in bohr.
+    Reaction identity, saddle validation/refinement and channel checking have
+    separate controls. Only legacy schema-1 inputs without those controls keep
+    the historical explicit-reaction shortcut. All coordinates are in bohr.
     """
     from ..io import jsonable
+    from ..input_reaction import normalize_reaction_input
     from ..system import reaction_endpoints
 
     from . import validate_bond_constraint_workflow
     validate_bond_constraint_workflow(system, "rate preparation")
-    reaction = copy.deepcopy(config.get("reaction", {}))
+    # Also accept new controls from callers of this low-level preparation API.
+    # Normalization is structural and never changes the caller's input mapping.
+    config = {**config, "reaction": copy.deepcopy(config.get("reaction", {}))}
+    normalize_reaction_input(config)
+    reaction = config["reaction"]
     options = preparation_options(reaction)
     reaction["rinf"] = reaction.get(
         "rinf_au", reaction.get("rinf", reaction.get("Rinf", "12 angstrom"))
@@ -311,7 +323,17 @@ def prepare_rate(config, system, potential=None, numerical=False):
     if "fragments" not in reaction and getattr(system, "fragments", None):
         reaction["fragments"] = [list(f) for f in system.fragments]
     required = ("fragments", "forming_bonds", "breaking_bonds")
-    explicit = all(reaction.get(k) for k in required)
+    definition = reaction.get("definition")
+    explicit = definition == "explicit" if definition is not None else all(reaction.get(k) for k in required)
+    action = options.get("ts_action")
+    status = {
+        "reaction_definition": definition or ("explicit" if explicit else "infer"),
+        "ts_action": action or "legacy",
+        "saddle_valid": None,
+        "channel_consistent": None,
+        "refinement_performed": False,
+    }
+    _validate_product_fragments(reaction, system.natoms)
     spec = config.get("system", {})
     endpoints = None
     if isinstance(spec, Mapping) and ("reactant" in spec or "product" in spec):
@@ -320,19 +342,27 @@ def prepare_rate(config, system, potential=None, numerical=False):
             raise ValueError("Reactant/product atom identities and masses must match the supplied System")
     if "neb" in reaction.get("preparation", {}) and endpoints is None:
         raise ValueError("reaction.preparation.neb requires system.reactant and system.product")
+    check_channel = options.get("check_channel", not explicit or endpoints is not None)
     if explicit:
         _validate_reaction(reaction, system.natoms)
         reaction["rinf"] = parse_quantity(reaction["rinf"], "length")
-        if endpoints is None and not options.get("refine", False):
+        if endpoints is None and (
+            action == "none" or (action is None and not options.get("refine", False))
+        ):
             _validate_equivalent_paths(reaction, system)
             return {
+                **status,
                 "ready": True,
                 "reaction": reaction,
-                "diagnostics": ["explicit reaction definition"],
+                "diagnostics": [
+                    "explicit reaction definition; saddle/channel were not checked"
+                    if action == "none" else "explicit reaction definition (legacy unchecked TS)"
+                ],
                 "candidates": [],
             }
     if not numerical:
         return {
+            **status,
             "ready": False,
             "reaction": reaction,
             "requires_numerical_preparation": True,
@@ -353,6 +383,7 @@ def prepare_rate(config, system, potential=None, numerical=False):
         q = system.geometry.copy()
         diagnostics = []
         result = {
+            **status,
             "ready": False, "reaction": reaction, "diagnostics": diagnostics,
             "candidates": [], "transition_state": q.tolist(),
         }
@@ -385,17 +416,19 @@ def prepare_rate(config, system, potential=None, numerical=False):
                 negative_eigenvalue_tolerance=options["negative_eigenvalue_tolerance"],
             )
             result["refinement"] = jsonable(refined)
+            result["refinement_performed"] = True
             q = refined["geometry"].copy()
             result["transition_state"] = q.tolist()
             diagnostics.extend(refined["diagnostics"])
             result["hessian_eigenvalues"] = list(refined["hessian_eigenvalues"])
             if not refined["converged"]:
+                result["saddle_valid"] = False
                 return result
             maximum = refined["max_force"]
         if maximum > threshold:
             raise ValueError(
                 f"supplied TS is not stationary: max force {maximum:g} > {threshold:g} hartree/bohr; "
-                "enable reaction.preparation.refine"
+                "set preparation.ts_action='refine' (or legacy reaction.preparation.refine)"
             )
         h = numerical_hessian(potential, q, options["hessian_step"])
         repeated = np.repeat(system.masses, 3)
@@ -407,6 +440,7 @@ def prepare_rate(config, system, potential=None, numerical=False):
             f"negative mass-weighted Hessian eigenvalues = {len(negative)}",
         ])
         result["hessian_eigenvalues"] = vals.tolist()
+        result["saddle_valid"] = len(negative) == 1
         if len(negative) != 1:
             diagnostics.append(
                 "Automatic preparation requires exactly one resolved unstable mode; "
@@ -414,10 +448,10 @@ def prepare_rate(config, system, potential=None, numerical=False):
             )
             return result
         optimized_system = prepared_system(system, result)
-        if explicit and endpoints is None:
+        if explicit and not check_channel:
             _validate_equivalent_paths(reaction, optimized_system)
             result["ready"] = True
-            diagnostics.append("explicit reaction definition with validated refined TS")
+            diagnostics.append("explicit reaction definition with validated TS; channel check not requested")
             return result
         direction = (vecs[:, negative[0]] / np.sqrt(repeated)).reshape(q.shape)
         direction /= np.max(np.linalg.norm(direction, axis=1))
@@ -471,10 +505,18 @@ def prepare_rate(config, system, potential=None, numerical=False):
         if reaction.get("fragments"):
             requested = {frozenset(f) for f in reaction["fragments"]}
             candidates = [c for c in candidates if {frozenset(f) for f in c["fragments"]} == requested]
-        if explicit:
+        if explicit or definition == "infer":
             for key in ("forming_bonds", "breaking_bonds"):
+                if not reaction.get(key):
+                    continue
                 requested = {tuple(sorted(b)) for b in reaction[key]}
                 candidates = [c for c in candidates if {tuple(sorted(b)) for b in c[key]} == requested]
+        if reaction.get("product_fragments"):
+            requested = {frozenset(f) for f in reaction["product_fragments"]}
+            candidates = [
+                c for c in candidates
+                if {frozenset(f) for f in fragments[1 - c["entry_side"]]} == requested
+            ]
         if len(candidates) == 2 and _same_channel(
             fragments[0], fragments[1], system.symbols, bonds[0], bonds[1], system.masses,
         ):
@@ -483,7 +525,21 @@ def prepare_rate(config, system, potential=None, numerical=False):
                 "Permutation-equivalent forward/reverse reactant identities: canonical direction selected."
             )
         if len(candidates) == 1:
+            # Connectivity checks compare unordered bond sets, but a supplied
+            # forming/breaking list defines *paired* branches of the RPMDrate
+            # coordinate. Independently sorting those lists would change xi.
+            # Keep declared chemistry when validating or filling in a new
+            # inference request; only legacy implicit inference adopts all
+            # candidate fields unconditionally.
+            declared = {
+                key: reaction[key]
+                for key in ("fragments", "forming_bonds", "breaking_bonds")
+                if reaction.get(key) and (explicit or definition == "infer")
+            }
             reaction.update(candidates[0])
+            reaction.update(declared)
+            if definition == "infer" and "product_fragments" not in reaction:
+                reaction["product_fragments"] = fragments[1 - candidates[0]["entry_side"]]
             _validate_reaction(reaction, system.natoms)
             _validate_equivalent_paths(reaction, optimized_system)
         else:
@@ -492,12 +548,25 @@ def prepare_rate(config, system, potential=None, numerical=False):
             )
         result.update(
             ready=len(candidates) == 1, candidates=candidates,
+            channel_consistent=len(candidates) == 1,
             trace_endpoints=[t["geometry"].tolist() for t in traces],
         )
         return result
     finally:
         if owned and hasattr(potential, "close"):
             potential.close()
+
+
+def _validate_product_fragments(reaction, natoms):
+    if "product_fragments" not in reaction:
+        return
+    groups = reaction["product_fragments"]
+    if not isinstance(groups, (list, tuple)) or not groups or any(not group for group in groups):
+        raise ValueError("reaction.product_fragments requires nonempty atom-index lists")
+    flat = [atom for group in groups for atom in group]
+    if (any(isinstance(atom, (bool, np.bool_)) or not isinstance(atom, (int, np.integer)) for atom in flat)
+            or sorted(flat) != list(range(natoms))):
+        raise ValueError("reaction.product_fragments must partition all atoms")
 
 
 def _validate_reaction(reaction, natoms):
@@ -507,6 +576,7 @@ def _validate_reaction(reaction, natoms):
     flat = [i for f in fs for i in f]
     if sorted(flat) != list(range(natoms)):
         raise ValueError("reaction fragments must partition all atoms")
+    _validate_product_fragments(reaction, natoms)
     forming = reaction["forming_bonds"]
     breaking = reaction["breaking_bonds"]
     if not forming or len(forming) != len(breaking):

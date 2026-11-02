@@ -94,7 +94,7 @@ def _aggregate(children, pmf, config, output, options):
         abs(pmf[qtst_key]) * stderr if stderr is not None else None
     )
     uncertainty_reasons = list(recrossing_uncertainty["reasons"])
-    if pmf.get("method") == "source":
+    if not pmf.get("uncertainty", {}).get("available", True):
         uncertainty_reasons.extend(pmf.get("uncertainty", {}).get("reasons", []))
     if len(pmf_draws) < 2:
         uncertainty_reasons.append("fewer_than_two_valid_pmf_bootstrap_draws")
@@ -277,7 +277,7 @@ def _aggregate(children, pmf, config, output, options):
         independence_assumption=(
             "The saved source PMF and constrained-parent samples must be statistically independent; this is not established automatically."
             if pmf.get("method") == "source" else
-            "Constrained-parent burn-in removes correlation with the umbrella endpoint used to initialize it; this is not established automatically."
+            "Constrained-parent burn-in must remove correlation with the PMF production endpoint used to initialize it; this is not established automatically."
         ),
     )
     if rejected_pmf_draws:

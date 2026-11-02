@@ -132,7 +132,13 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
             from .native_ensemble import _THERMOSTATS
             if sampling["thermostat"] not in _THERMOSTATS or sampling["thermostat"] in ("none", "trpmd"):
                 raise InputError("native PIMD requires an equilibrium sampling thermostat")
-            if sampler is None or sampling["integrator"] != sampler:
+            if sampling["thermostat"] == "pile-l":
+                from .workflows.sampling import middle_sampling_method
+                try:
+                    sampling["integrator"] = middle_sampling_method(integrator, sampling["integrator"])
+                except ValueError as error:
+                    raise InputError(str(error)) from error
+            elif sampler is None or sampling["integrator"] != sampler:
                 raise InputError("Native PIMD sampling.integrator must match its selected thermostat splitting")
             if "gamma_centroid" in sampling:
                 if sampling["thermostat"] != "pile-l":
@@ -161,9 +167,14 @@ def resolve_sampling(d, runtime, *, selected, materials, native_pimd):
                 raise InputError("NHC sampling.integrator must match dynamics.integrator + '-nose-hoover-chain'")
             if "gamma_centroid" in sampling:
                 raise InputError("sampling.gamma_centroid requires PILE-L sampling")
-        elif (materials or (task == "fes" and method in ("umbrella", "metadynamics"))) and sampling["thermostat"] == "pile-l":
-            if sampler is None or sampling["integrator"] != sampler:
-                raise InputError("PILE-L requires BCOCB with Cayley or BAOAB with normal-mode dynamics")
+        elif (materials or task == "drpmd" or (task == "fes" and method in ("umbrella", "metadynamics"))) and sampling["thermostat"] == "pile-l":
+            from .workflows.sampling import middle_sampling_method
+            try:
+                sampling["integrator"] = middle_sampling_method(integrator, sampling["integrator"])
+            except ValueError as error:
+                raise InputError(str(error)) from error
+            if task == "drpmd" and (sampling.get("thermostat_params") or dyn.get("loop_backend") == "native"):
+                raise InputError("dRPMD fragment PILE uses gamma_centroid and loop_backend='auto' or 'python'; thermostat_params are not supported")
             sampling["gamma_centroid"] = _positive(
                 parse_quantity(sampling.get("gamma_centroid", "0.01 fs^-1"), "frequency"),
                 "sampling.gamma_centroid",
@@ -261,7 +272,10 @@ def resolve_parallel(d, potential):
             parallel["trajectory_batch_size"], "parallel.trajectory_batch_size")
     parallel.setdefault("pes_ranks", 1)
     parallel.setdefault("scheduling", "static")
-    parallel.setdefault("coordinator_ranks", 1 if parallel["scheduling"] == "dynamic" else 0)
+    parallel.setdefault(
+        "coordinator_ranks",
+        int(parallel["scheduling"] == "dynamic" and parallel["backend"] == "mpi"),
+    )
     for k in (
         "trajectory_workers",
         "bead_workers",

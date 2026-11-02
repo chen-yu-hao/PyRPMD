@@ -1,0 +1,83 @@
+{
+  "schema": "PyRPMD.piglet-harmonic-reference.v1",
+  "beta": 5.0,
+  "beads": 4,
+  "source_blob_sha": "87d27b7d1f3c42c3ad5a241dced2e359d932b30f",
+  "source_url": "https://api.github.com/repos/i-pi/i-pi/git/blobs/87d27b7d1f3c42c3ad5a241dced2e359d932b30f",
+  "method": "continuous augmented harmonic GLE Lyapunov solve",
+  "scope": "matrix units and harmonic fit on listed frequencies; no anharmonic/NPT/timestep/sampling convergence claim",
+  "maximum_absolute_potential_relative_error": 0.0034859755670495485,
+  "maximum_absolute_kinetic_relative_error": 0.0034859755670505477,
+  "cases": [
+    {
+      "beta_omega": 0.5,
+      "exact_potential_and_kinetic_hartree": 0.10207470412683992,
+      "piglet_potential_hartree": 0.10208205584850409,
+      "piglet_centroid_virial_kinetic_hartree": 0.10208205584852664,
+      "potential_relative_error": 7.202295345409837e-05,
+      "kinetic_relative_error": 7.202295367503275e-05,
+      "canonical_primitive_same_beads_relative_error": -0.001324632510390722,
+      "maximum_normalized_lyapunov_residual": 9.920449357926034e-15
+    },
+    {
+      "beta_omega": 1.0,
+      "exact_potential_and_kinetic_hartree": 0.10819767068693266,
+      "piglet_potential_hartree": 0.10822000759827768,
+      "piglet_centroid_virial_kinetic_hartree": 0.10822000759827015,
+      "potential_relative_error": 0.00020644539945458007,
+      "kinetic_relative_error": 0.0002064453993850801,
+      "canonical_primitive_same_beads_relative_error": -0.005532495145825322,
+      "maximum_normalized_lyapunov_residual": 2.3492743918581138e-15
+    },
+    {
+      "beta_omega": 2.0,
+      "exact_potential_and_kinetic_hartree": 0.13130352854993316,
+      "piglet_potential_hartree": 0.13130755958126694,
+      "piglet_centroid_virial_kinetic_hartree": 0.13130755958125992,
+      "potential_relative_error": 3.070009906291915e-05,
+      "kinetic_relative_error": 3.07000990094064e-05,
+      "canonical_primitive_same_beads_relative_error": -0.02436304204359563,
+      "maximum_normalized_lyapunov_residual": 2.842642852928268e-15
+    },
+    {
+      "beta_omega": 4.0,
+      "exact_potential_and_kinetic_hartree": 0.20746294414550961,
+      "piglet_potential_hartree": 0.20702806651334896,
+      "piglet_centroid_virial_kinetic_hartree": 0.20702806651334876,
+      "potential_relative_error": -0.002096170156804744,
+      "kinetic_relative_error": -0.0020961701568056323,
+      "canonical_primitive_same_beads_relative_error": -0.10024092526257089,
+      "maximum_normalized_lyapunov_residual": 2.906579559286508e-15
+    },
+    {
+      "beta_omega": 8.0,
+      "exact_potential_and_kinetic_hartree": 0.400268460160673,
+      "piglet_potential_hartree": 0.399931742565893,
+      "piglet_centroid_virial_kinetic_hartree": 0.39993174256589303,
+      "potential_relative_error": -0.0008412293955034622,
+      "kinetic_relative_error": -0.0008412293955032402,
+      "canonical_primitive_same_beads_relative_error": -0.2921417460181609,
+      "maximum_normalized_lyapunov_residual": 2.176940095805854e-15
+    },
+    {
+      "beta_omega": 12.0,
+      "exact_potential_and_kinetic_hartree": 0.6000073731001259,
+      "piglet_potential_hartree": 0.6019694004248185,
+      "piglet_centroid_virial_kinetic_hartree": 0.6019694004248195,
+      "potential_relative_error": 0.00327000535769284,
+      "kinetic_relative_error": 0.0032700053576946164,
+      "canonical_primitive_same_beads_relative_error": -0.44522826253405745,
+      "maximum_normalized_lyapunov_residual": 2.04473452159934e-15
+    },
+    {
+      "beta_omega": 20.0,
+      "exact_potential_and_kinetic_hartree": 1.0000000041223074,
+      "piglet_potential_hartree": 0.9965140285408876,
+      "piglet_centroid_virial_kinetic_hartree": 0.9965140285408866,
+      "potential_relative_error": -0.0034859755670495485,
+      "kinetic_relative_error": -0.0034859755670505477,
+      "canonical_primitive_same_beads_relative_error": -0.628607919794083,
+      "maximum_normalized_lyapunov_residual": 2.5473252599404307e-15
+    }
+  ]
+}

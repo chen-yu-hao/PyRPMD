@@ -1,5 +1,34 @@
 # 非绝热动力学：布居系综、分子 PES 与 NRPMD 碰撞
 
+## 原始论文与复现范围
+
+[方法—论文目录](references.md) 给出完整书目信息和源码位置，
+[复现计划](reproduction.md) 列出原文体系、应计算的观测量、现有入口和待补工作。
+一次计算应分别引用动力学方法、初态预备和物理模型；通用 LVC 或离散 spin-boson
+容器仍需注明所用参数与浴离散化的来源。
+
+| 实现组成 | 原始来源 | 引用对应的范围 |
+| --- | --- | --- |
+| Focused NRPMD 与 MInt 子步 | [Richardson–Thoss 2013](https://doi.org/10.1063/1.4816124)；[Chowdhury–Huo 2019](https://doi.org/10.1063/1.5096276)；[Church 等 2018](https://doi.org/10.1063/1.5005557) | 2019 论文对应 focused 初态；Church 论文对应积分子步，包未因此实现完整 MQC-IVR。 |
+| 带符号热 NRPMD | [Richardson–Thoss 2013](https://doi.org/10.1063/1.4816124) | SEO 热采样与相关函数；专用论文 benchmark 使用原文的最低绝热面分裂，库默认采用 trace 分裂。 |
+| 两态 SM-NRPMD | [Bossion 等 2021](https://doi.org/10.1063/5.0051456) | 已实现 focused 自旋传播；原文平衡相关函数还需要其电子热迹和带相位权重的估计量。 |
+| MASH 与 CA-RP-MASH | [Mannouch–Richardson 2023](https://doi.org/10.1063/5.0139734)；[Cao 等，ChemRxiv v1，2025](https://doi.org/10.26434/chemrxiv-2025-xps2g) | `MASHDynamics(P=1)` 对应前者；`RPMASHDynamics`/`rp-mash` 对应后者的 CA 变体。 |
+| FSSH 与质心 RPSH | [Tully 1990](https://doi.org/10.1063/1.459170)；[Shushkov 等 2012](https://doi.org/10.1063/1.4766449)；[Shakib–Huo 2017](https://doi.org/10.1021/acs.jpclett.7b01343) | 复现时匹配目标论文的初态、动量重标规则及振幅/活动态观测量。 |
+| RPSH-BA 与 RPSH-DM | [Y. Shakya 等 2023](https://doi.org/10.1103/PhysRevA.107.062810) | BA 共用一个电子向量；DM 在共同质心基下平均逐珠电子波函数密度；两者均共用一个活动面。 |
+| EDC 与 DBOC | [Granucci–Persico 2007](https://doi.org/10.1063/1.2715585)；[Limbu 等 2025](https://doi.org/10.1063/5.0301249) | 是不同修正，各有显式的环聚合适配约定；DBOC 论文的 donor population 需活动态与振幅相干组合的混合估计量。 |
+| 复 hopping 与几何力 | [Miao 等 2019](https://doi.org/10.1063/1.5088770) | 局域非简并 NAC/动量方向和 Berry 力处方的环聚合适配。 |
+| MV-RPMD 与 KC-RPMD | [Ananth 2013](https://doi.org/10.1063/1.4821590)；[Menzeleev 等 2014](https://doi.org/10.1063/1.4863919) | 各有独立模型 API 和热权重；KC 还需交叉校准与辅助质量。 |
+| Isomorphic 势 | [Tao 等 2018](https://doi.org/10.1063/1.5005544) | 包将两态电子迹匹配与 Ehrenfest 组合；原文 QCLE/iso-surface-hopping 结果需要对应传播器。 |
+| 准 diabatic 传输 | [Mandal 等 2018](https://doi.org/10.1021/acs.jctc.7b01178)；[Zhou 等 2019](https://doi.org/10.1021/acs.jpclett.9b02747) | QD-NRPMD 复用局域基底策略；解析接口演示不包含原文的 PLDM/SQC 或乙烯即时电子结构计算。 |
+| Tully 模型与 NaH₂ PES | [Tully 1990](https://doi.org/10.1063/1.459170)；[Halvick–Truhlar 1992](https://doi.org/10.1063/1.461986) 及 [1994 勘误](https://doi.org/10.1063/1.467282) | 势能模型来源与传播方法分别引用。 |
+| 独立一维量子基准 | [Feit 等 1982](https://doi.org/10.1016/0021-9991(82)90091-2) | 有限周期网格上的 Fourier 谱传播，空间区域、网格和时间步需分别收敛。 |
+
+建议首先用 `examples/nonadiabatic/published_nrpmd_benchmark.py` 定量比较
+Richardson–Thoss 图 1(c)，明确选择 `--potential-split lowest_adiabatic`。
+其他短时布居和分子例子用于检查工作流；若采用合成参数或不同初始分布，需按复现计划
+替换后才能对照原文。CA-RP-MASH 引用保留代码实际依据的 v1；截至 2026-11-02
+的核对未核实期刊后继版本。
+
 ## 布居与相干性工作流
 
 `task="nonadiabatic"` 支持下表中的显式方法选择，使用统一的
@@ -208,6 +237,8 @@ $$
 | 方法 | 入口 | 当前范围 |
 | --- | --- | --- |
 | 热 NRPMD | `ThermalNRPMDSampler`、`ThermalNRPMDDynamics` | 实矩阵、SEO 投影的有符号热采样、有限时间通量/布居速率曲线 |
+| 经典核 MASH API | `MASHDynamics` | `P=1` 对应原始两态方法；`P>1` 是实验性质心扩展，与 `RPMASHDynamics` 不同 |
+| 准 diabatic / 绝热 API | `QDNRPMDDynamics`、`AdiabaticRPSHDynamics` | 由 provider 提供能量、梯度、导数耦合与电子态重叠 |
 | 电子摩擦 EF-RPMD | `diffusion` 的 `[electronic_friction]`；`ElectronicFrictionDynamics` | Markov 质心摩擦张量、涨落–耗散噪声、周期体系及固定原子 |
 | MV-RPMD | `MVRPMDDynamics` | SEO 映射迹 Hamiltonian 及其专用传播器 |
 | KC-RPMD | `KCRPMDDynamics` | 两个实态、动力学约束、用户提供的校准参数 |
