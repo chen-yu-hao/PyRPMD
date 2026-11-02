@@ -4,6 +4,7 @@ The compiled harmonic fixture counts PES calls independently of Python and is
 only an analytic implementation test, not a molecular scattering benchmark.
 """
 import ctypes
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -199,7 +200,8 @@ class NativeDiagnosticsTests(unittest.TestCase):
         compiler = shutil.which("cc") or shutil.which("gcc")
         if compiler is None:
             raise unittest.SkipTest("C compiler required for native PES call counter")
-        cls.directory = tempfile.TemporaryDirectory()
+        # Windows keeps loaded ctypes DLLs locked until the process exits.
+        cls.directory = tempfile.TemporaryDirectory(ignore_cleanup_errors=os.name == "nt")
         cls.addClassCleanup(cls.directory.cleanup)
         source = Path(cls.directory.name) / "diagnostics_pes.c"
         source.write_text(r'''

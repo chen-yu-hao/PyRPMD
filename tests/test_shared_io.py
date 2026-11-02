@@ -252,7 +252,7 @@ def test_numerical_reports_encode_missing_numpy_values_as_json_null(tmp_path, wr
     writer(path, report)
     assert json.loads(path.read_text(encoding="utf-8")) == {
         "nested": [[[1.0, None], [None, None]], {"scalar": None}],
-        "record": {"values": [2.0, None], "path": "runs/水"},
+        "record": {"values": [2.0, None], "path": str(Path("runs/水"))},
     }
     assert "NaN" not in path.read_text(encoding="utf-8")
 
@@ -306,7 +306,7 @@ def test_metadata_npz_keeps_legacy_payload_encoding_kind_and_integrity(tmp_path,
     metadata = {"step": np.int64(7), "options": _SemanticOptions(np.float64(1.25)),
                 "source": Path("initial/state.npz")}
     expected_json = ('{"step": 7, "options": {"stiffness": 1.25, "cache_generation": 99}, '
-                     '"source": "initial/state.npz"}')
+                     '"source": ' + json.dumps(str(metadata["source"])) + '}')
     kind = "drpmd-arrays"
     if explicit_format:
         kind = "PyRPMD.drpmd.parent.v1"
@@ -348,7 +348,7 @@ def test_plain_dataclass_report_requires_explicit_storage_policy(tmp_path):
     assert not path.exists()
     io.write_report_json(path, report, dataclasses="asdict")
     assert json.loads(path.read_text(encoding="utf-8")) == {
-        "values": [2.0, None], "path": "runs/水",
+        "values": [2.0, None], "path": str(Path("runs/水")),
     }
 
 

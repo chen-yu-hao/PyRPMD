@@ -124,7 +124,7 @@ class PCETInputTests(unittest.TestCase):
 
     def test_tabulated_units_origins_relative_paths_and_dependency_hash(self):
         with tempfile.TemporaryDirectory() as directory:
-            base = Path(directory)
+            base = Path(directory).resolve()
             x = np.linspace(-2, 2, 161)
             np.savetxt(base / "oxidized.csv", np.column_stack((x, 2 * (x + 0.2) ** 2 + 17)), delimiter=",")
             np.savetxt(base / "reduced.csv", np.column_stack((x, 2.5 * (x - 0.2) ** 2 - 4)), delimiter=",")

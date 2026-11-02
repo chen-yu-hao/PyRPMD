@@ -95,7 +95,7 @@ def read_json(path):
 def file_hashes(directory):
     directory = Path(directory)
     return {
-        str(path.relative_to(directory)): hashlib.sha256(path.read_bytes()).hexdigest()
+        path.relative_to(directory).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(directory.rglob("*"))
         if path.is_file() and path.suffix not in (".lock", ".tmp")
     }
@@ -171,7 +171,7 @@ def test_split_production_matches_continuous_rate_without_reinitializing_windows
     assert immutable_original(saved_run) == before
     assert result["original_production_steps"] == SHORT
     assert result["effective_production_steps"] == LONG
-    assert result["rate_extension"]["generation"] == str(generation(Path(), LONG))
+    assert result["rate_extension"]["generation"] == generation(Path(), LONG).as_posix()
     assert result["rate_extension"]["production_steps"] == LONG
     assert len(result["rate_extension"]["receipt_sha256"]) == 64
     ledger = read_json(saved_run / "results/extensions.json")

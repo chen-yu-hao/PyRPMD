@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import os
 import tracemalloc
 
 import numpy as np
@@ -99,6 +100,8 @@ def test_restart_uses_checkpoint_prefix_and_ignores_orphan_tail(tmp_path):
 
 @pytest.mark.parametrize("failure_stage", ["save", "publish", "directory_sync"])
 def test_failed_automatic_flush_does_not_accept_the_new_frame(tmp_path, monkeypatch, failure_stage):
+    if failure_stage == "directory_sync" and os.name != "posix":
+        pytest.skip("directory fsync is a POSIX-only durability step")
     import pyrpmd.trajectory as module
 
     writer = TrajectoryStream(tmp_path, schema=SCHEMA, chunk_frames=2)

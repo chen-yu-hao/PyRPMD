@@ -111,6 +111,6 @@ def test_collision_writer_preserves_dataclasses_sorted_keys_and_text_format(tmp_
 def test_generic_writer_preserves_unicode_and_newline(tmp_path):
     path = tmp_path / "manifest.json"
     io.write_json(path, {"message": "温度"})
-    raw = path.read_text()
+    raw = path.read_text(encoding="utf-8")
     assert "温度" in raw
     assert raw.endswith("\n")

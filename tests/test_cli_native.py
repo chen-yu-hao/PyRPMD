@@ -3,6 +3,7 @@
 import contextlib
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -17,8 +18,9 @@ ROOT = Path(__file__).resolve().parents[1]
 @unittest.skipUnless(shutil.which("cc"), "C compiler required")
 class NativeCLITests(unittest.TestCase):
     def test_object_build_output_and_force_check(self):
-        with tempfile.TemporaryDirectory() as directory:
-            base = Path(directory)
+        # Windows keeps the inspected native library locked while it is loaded.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=os.name == "nt") as directory:
+            base = Path(directory).resolve()
             obj = base / "test.o"
             library = base / "libtest.so"
             manifest = base / "pes.toml"

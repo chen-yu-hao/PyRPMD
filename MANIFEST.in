@@ -4,6 +4,7 @@ recursive-include packaging *.yaml *.md *.py
 include native/CMakeLists.txt native/README.md native/ABI.md native/thermal-NOTICE.md
 include native/onnx/CMakeLists.txt native/onnx/README.md
 include tools/export_jaxpip_onnx.py tools/requirements-jaxpip-export.txt
+include tools/data_manifest.py
 recursive-include native *.cpp *.h *.hpp *.c
 recursive-include docs *.md *.json *.csv *.png *.pdf *.py *.css *.txt *.html *.npz *.xml *.log
 exclude docs/validation/tier1-2026-10-31/*.npz

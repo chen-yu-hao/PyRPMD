@@ -1,4 +1,5 @@
 import json
+import os
 import shutil
 import socket
 import struct
@@ -98,7 +99,8 @@ class PotentialTests(unittest.TestCase):
 @unittest.skipUnless(shutil.which("cc"), "C compiler required for ABI integration")
 class CABITests(unittest.TestCase):
     def test_so_and_object_manifest(self):
-        with tempfile.TemporaryDirectory() as td:
+        # Windows keeps loaded ctypes DLLs locked until the process exits.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=os.name == "nt") as td:
             base = Path(td)
             obj = base / "harmonic.o"
             lib = base / "harmonic.so"

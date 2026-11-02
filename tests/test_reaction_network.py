@@ -215,7 +215,7 @@ class NetworkIdentityTests(unittest.TestCase):
 
         raw = network_spec()
         with tempfile.TemporaryDirectory() as directory:
-            base = Path(directory)
+            base = Path(directory).resolve()
             source = base / "toy.py"
             shutil.copy2(ROOT / "examples" / "rate" / "toy_exchange.py", source)
             transition = raw["network"]["transition_states"][0]

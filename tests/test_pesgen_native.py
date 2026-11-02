@@ -7,6 +7,8 @@ import sys
 import numpy as np
 import pytest
 
+pytest.importorskip("fcntl", reason="the optional native Caracal workflow requires POSIX advisory locks")
+
 from pyrpmd.pesgen.build import bundle_native, load_build, run_command, source_digest, SOURCE_DIGEST
 from pyrpmd.pesgen.formats import read_xyz, write_xyz
 from pyrpmd.pesgen.reference import PySCFReference, PySCFSettings, file_hash
@@ -156,6 +158,7 @@ def test_original_evb_optimizer(tmp_path,build):
 
 
 def test_real_pyscf_treq_generation(tmp_path,build):
+    pytest.importorskip("pyscf")
     import importlib.util
     file=Path(__file__).resolve().parents[1]/'examples/pesgen/nh3_inversion.py'
     spec=importlib.util.spec_from_file_location('nh3_pesgen_example',file)
@@ -173,6 +176,7 @@ def test_real_pyscf_treq_generation(tmp_path,build):
 
 @pytest.mark.skipif(os.environ.get('PYRPMD_PESGEN_FULL')!='1',reason='full MPI installation for original optimizer')
 def test_real_pyscf_evb_generation(tmp_path,build):
+    pytest.importorskip("pyscf")
     import importlib.util
     file=Path(__file__).resolve().parents[1]/'examples/pesgen/nh3_inversion.py'
     spec=importlib.util.spec_from_file_location('nh3_evb_example',file)

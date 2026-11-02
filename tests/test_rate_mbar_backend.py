@@ -109,6 +109,12 @@ class RateMBARIntegrationTests(unittest.TestCase):
         source = Path(__file__).resolve().parents[1] / "examples/rate/pilot.inp"
         spec = JobSpec.from_file(source)
         spec.data["native"] = False
+        # Pin the entrance for this short, seeded propagation fixture. The toy
+        # saddle has equivalent 0 + (1, 2) and (0, 1) + 2 channels; choosing one
+        # by an eigensolver's arbitrary eigenvector sign changes the finite
+        # sample stream. Supplying fragments still requires numerical TS and
+        # bond-change inference, rather than taking the explicit-reaction path.
+        spec.data["reaction"]["fragments"] = [[0], [1, 2]]
         spec.data["rate"] = {"pmf_method": "mbar", "dividing_surface": 1.0}
         spec.data["analysis"] = {
             "bins": 24,
