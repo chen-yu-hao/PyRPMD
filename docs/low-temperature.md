@@ -11,6 +11,7 @@ coefficient or mark an RPMD production calculation as converged.
 | Multidimensional thermal instanton rate | `instanton_rate` | Full Gaussian fluctuation determinant, including transverse modes; harmonic reactants |
 | Translation/rotation in the rate | `rigid_body=True` | Isolated gas, classical linear/nonlinear rigid rotors, explicit symmetry/electronic factors |
 | Ground-state tunnelling doublet | `tunnelling_splitting` | One open kink between symmetry-equivalent, bound/constrained Cartesian wells |
+| Nonadiabatic golden-rule instanton | `pyrpmd.golden_rule` | Normal regime; weak constant real coupling; bound/constrained reactants |
 | Reproducible convergence studies | `pyrpmd.workflows.instanton.run_instanton` | Molecular thermal rates or independent duration/grid studies for splittings |
 
 **Not covered:** uniform crossover theory, hindered or quantum rotors, gas
@@ -248,6 +249,50 @@ separately, relative residuals of the geometric rigid vectors, the retained
 negative curvature, the positive fluctuation-mode count, the molecularity,
 symmetry number, electronic degeneracy and reaction degeneracy. These expose
 the normalization rather than relying on deletion of the smallest eigenvalues.
+
+## Golden-rule reactant normalization
+
+The [golden-rule workflow](instanton.md#golden-rule-nonadiabatic-rates) uses two
+diabatic paths with durations `tau0` and `tau1`, whose sum is `beta`. Their
+optimized time steps generally differ. A uniform-P harmonic partition cannot
+be substituted without introducing a finite-P normalization error. The default
+`partition_discretization="matched"` evaluates each reactant normal mode using
+the same two primitive propagator grids as the rate numerator.
+
+For an angular frequency `omega`, define
+
+$$
+u_i=\omega\Delta\tau_i,\quad
+a_i=2P_i\operatorname{asinh}(u_i/2),\quad
+A_i=1+u_i^2/4,\quad
+c=\frac{A_0+A_1}{2\sqrt{A_0A_1}}.
+$$
+
+The two oscillator transfer matrices then give
+
+$$
+Q_{P_0,P_1}^{-2}
+=4\sinh^2\!\left(\frac{a_0+a_1}{2}\right)
+ +2(c-1)\sinh a_0\sinh a_1.
+$$
+
+`harmonic_segment_log_partition` evaluates this expression with logarithmic
+sums and `c-1=2*sinh((log(A0)-log(A1))/4)**2`, avoiding cancellation or large
+hyperbolic overflows. Its cost depends on the number of normal modes, not on
+the number of beads. Equal time steps reduce exactly to the existing uniform
+primitive harmonic formula. Independent cyclic Gaussian determinants test
+the nonuniform formula, including the half potential weights at both hopping
+nodes. A separable spectator oscillator identical on both electronic surfaces
+cancels exactly at finite P when the matched reactant normalization is used.
+
+The workflow computes the matched partition after each optimized time split.
+It includes the reactant electronic degeneracy and the single energy factor
+`-beta*(E_reactant-energy_reference)`. `continuous` and explicit `external`
+normalizations are separate recorded options. Every golden-rule reactant is
+bound or Cartesian-constrained and dimensionless; free gas translation and
+rotation factors, including bimolecular standard states, are not supplied by
+this implementation. Unlike the adiabatic thermal rate, no phase zero mode is
+removed from a golden-rule path whose hopping points are already labelled.
 
 ## Ground-state tunnelling splittings
 

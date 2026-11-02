@@ -1,0 +1,29 @@
+{
+  "output": "../t09-golden-rule-validation.json",
+  "cases": [
+    {
+      "modes": 4,
+      "final_intervals": [
+        64,
+        64
+      ],
+      "discretization_converged": true,
+      "rate_s^-1": 2264726.480317819,
+      "bead_error": -0.00017425519385690387,
+      "bath_error": 0.002659196232878667,
+      "semiclassical_error": -0.014436701110553354
+    },
+    {
+      "modes": 8,
+      "final_intervals": [
+        64,
+        64
+      ],
+      "discretization_converged": true,
+      "rate_s^-1": 2258639.5243789353,
+      "bead_error": -0.00017415046126213025,
+      "bath_error": -3.577802814634768e-05,
+      "semiclassical_error": -0.014436701110553354
+    }
+  ]
+}
