@@ -1,4 +1,4 @@
-# Low-temperature rate and splitting cross-checks
+# Low-temperature rates, splittings and diagnostics
 
 These APIs extend the [stationary instanton path solver](instanton.md). They are
 separate from real-time RPMD propagation and do not modify an RPMD transmission
@@ -11,6 +11,7 @@ coefficient or mark an RPMD production calculation as converged.
 | Multidimensional thermal instanton rate | `instanton_rate` | Full Gaussian fluctuation determinant, including transverse modes; harmonic reactants |
 | Translation/rotation in the rate | `rigid_body=True` | Isolated gas, classical linear/nonlinear rigid rotors, explicit symmetry/electronic factors |
 | Ground-state tunnelling doublet | `tunnelling_splitting` | One open kink between symmetry-equivalent, bound/constrained Cartesian wells |
+| Reproducible convergence studies | `pyrpmd.workflows.instanton.run_instanton` | Molecular thermal rates or independent duration/grid studies for splittings |
 
 **Not covered:** uniform crossover theory, hindered or quantum rotors, gas
 rovibrational splitting patterns, asymmetric-well or multiwell splitting
@@ -34,7 +35,7 @@ from pyrpmd.low_temperature import HarmonicState, harmonic_cross_checks, print_c
 
 # Reuse a Hessian already obtained during stationary-point preparation.
 # from_potential makes one energy/force call to check stationarity. It only
-# finite-differences the PES when hessian is omitted.
+# uses potential.hessian when available, otherwise central force differences.
 ts_state = HarmonicState.from_potential(
     potential, ts, masses, hessian=ts_cartesian_hessian,
     rigid_body=True, symmetry_number=1, electronic_degeneracy=1,
@@ -66,6 +67,14 @@ The estimates themselves make **no PES calls**. However, a TS Hessian alone
 cannot provide reactant partition functions, barrier heights or symmetry
 numbers. Missing reactant/product data must be calculated or supplied; they are
 not inferred from the local TS curvature.
+
+`state.partition_diagnostics(beta, nbeads=P)` exposes the vibrational,
+translation, rotation and electronic degeneracy contributions, positive
+frequencies, zero-point energy, removed rigid-mode count and normalization.
+The electronic energy Boltzmann factor is kept separate so that one shared
+energy reference can be applied to the sum of reactant energies. The molecular
+rate report includes this breakdown for every reactant and the combined
+`log_reactant_electronic_boltzmann` term.
 
 ### Printed and JSON reports
 
@@ -211,6 +220,20 @@ harmonic partitions use the **same P and dtau**, with squared frequencies
 nonzero ring modes and use the corresponding supermolecule external factors.
 For a separable transverse oscillator, this construction cancels the spectator
 partition exactly at finite P rather than introducing a discretization bias.
+For a stationary harmonic reactant, the finite product is evaluated through
+the exact identity
+
+$$
+Q_{\rm vib,P}(\omega)=
+\left[2\sinh\left(P\operatorname{asinh}\frac{\beta\omega}{2P}\right)\right]^{-1}.
+$$
+
+This removes work proportional to P from reactant partition evaluation. The
+noncentroid rigid-mode product is $P^{-f_0}$ and cancels the supermolecule
+external factor $P^{f_0}$ exactly. Reactant diagnostics therefore report the
+physical-molecule translation and rotation factors with that cancellation
+already applied. The instanton's external factors still describe the entire
+noncollapsed supermolecule.
 
 Only one total energy reference is subtracted from the **sum** of reactant
 energies. It must match `action.energy_reference`. Reported rates are in s⁻¹
@@ -219,6 +242,12 @@ For `r` gas reactants, the length power is `3*(r-1)`. There is no hidden
 Avogadro factor, standard pressure, standard concentration or cm³ conversion.
 Translation and classical rotation are approximations appropriate to the
 specified model; quantum rotor populations at very low T need another treatment.
+
+Rate diagnostics report removed translation, rotation and phase modes
+separately, relative residuals of the geometric rigid vectors, the retained
+negative curvature, the positive fluctuation-mode count, the molecularity,
+symmetry number, electronic degeneracy and reaction degeneracy. These expose
+the normalization rather than relying on deletion of the smallest eigenvalues.
 
 ## Ground-state tunnelling splittings
 
@@ -257,6 +286,49 @@ cannot be substituted for this open kink. Free-molecule rovibrational levels,
 inequivalent wells and multiple-path symmetry patterns are **not** supplied by
 this API. Do not remove free modes with a Cartesian mask and then label the
 result as a fully rotationally invariant molecular splitting.
+
+### Duration and grid scans in the same workflow
+
+```python
+from pyrpmd.workflows.instanton import run_instanton
+
+report = run_instanton(
+    potential, masses, open_path,
+    mode="splitting",
+    potential_identity={"model": "symmetric-bound-well", "parameters": parameters},
+    active_mask=mask,
+    bead_counts=[64, 128, 256],
+    imaginary_times_au=[tau, 1.25*tau, 1.5*tau],
+    splitting_options={"equivalent_wells": True, "gradient_tolerance": 1e-8},
+    convergence_relative_tolerance=0.01,
+    output="instanton-splitting.json",
+)
+```
+
+For this mode, `bead_counts` denotes **interval counts at the shortest
+duration**, and each open path has one additional endpoint node. The example
+uses interval grids `[64,128,256]`, `[80,160,320]` and `[96,192,384]`: each
+column increases duration at fixed time step, while each row refines the grid
+at fixed duration. Noncommensurate durations/counts are rejected rather than
+rounded silently. Seeds extend the fixed well tails and interpolate the kink
+on its original physical imaginary-time axis.
+
+The report separates `grid_convergence` and `duration_convergence`, requiring
+two successful successive refinements. Grid checks must pass at the last
+three durations; duration checks must pass at both of the finest time steps.
+The last two refinements must each span at least a factor of 1.5 in interval
+count and 1.1 in duration; tiny increments cannot produce a convergence flag.
+`physical_converged` remains false. These are deterministic studies with an
+independent scientific identity and atomic JSON output, using the same command
+entry as thermal rates: [workflow input](instanton.md#unified-molecular-workflow-and-command-line).
+
+Each splitting also reports actual force/Hessian work, whether the existing
+L-BFGS solution needed Newton refinement, the endpoint harmonic frequencies,
+the time step, `duration * smallest_frequency` and the splitting-to-frequency
+ratio. The last ratio helps assess the dilute-instanton assumption; a finite
+answer alone does not establish a well-isolated ground doublet. Analytic PES
+Hessians are reused through the common provider interface for endpoint and
+fluctuation calculations.
 
 ## Reproducibility and convergence
 

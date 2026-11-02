@@ -1,9 +1,11 @@
-# Ring-polymer instanton cross-check
+# Ring-polymer instanton rates and convergence workflows
 
-`pyrpmd.instanton` adds a low-temperature **stationary imaginary-time path**
-calculation using the existing batched potential interface. It contains a
-Cartesian path solver and a quantitative **one-dimensional** thermal rate
-cross-check. This is a separate calculation from real-time RPMD propagation.
+`pyrpmd.instanton` computes low-temperature **stationary imaginary-time paths**
+using the existing batched potential interface. The molecular workflow in
+`pyrpmd.workflows.instanton` combines these paths with harmonic reactants, the
+full fluctuation prefactor, geometric zero modes and bead convergence scans.
+The legacy one-dimensional rate API remains available. These calculations are
+separate from real-time RPMD propagation.
 
 The companion [low-temperature cross-checks](low-temperature.md) provide the
 multidimensional Gaussian rate prefactor, gas translation/rotation factors,
@@ -16,14 +18,16 @@ separate from the path-only result documented here.
 | Calculation | Current support |
 | --- | --- |
 | Physical PES energy/force calls | Existing `Potential.evaluate([P,N,3])`, in atomic units |
-| Cartesian instanton action, gradient, Hessian | Arbitrary active Cartesian subset; finite differences of PES forces |
-| Thermal periodic orbit | Folded half-ring stationary-point solve; asymmetric barriers supported |
+| Cartesian instanton action, gradient, Hessian | Arbitrary active Cartesian subset; optional analytic Hessians, otherwise central force differences |
+| Thermal periodic orbit | Folded half-ring root or Bofill trust solve; asymmetric barriers supported |
 | Crossover temperature | Stationary TS with exactly one negative active mass-weighted Hessian mode |
 | Full-ring mode diagnostics | Negative modes, near-zero modes, phase residual, stationary gradient |
 | Legacy one-dimensional rate | Exactly one active Cartesian degree of freedom, explicit reactant partition function |
 | Multidimensional rate prefactor | `pyrpmd.low_temperature.instanton_rate`; explicit harmonic reactants and gas/constrained convention |
 | Ground-doublet splitting | `pyrpmd.tunnelling.tunnelling_splitting`; equivalent bound/constrained wells, open path |
-| Bead convergence | Explicit repeated calculations; example below compares 32, 64 and 128 beads |
+| Bead convergence | `run_instanton(..., mode="rate")`; interpolation, optimization and rate diagnostics at every P |
+| Splitting convergence | `run_instanton(..., mode="splitting")`; independent duration and time-step scans |
+| Command line | `pyrpmd instanton INPUT.py --output report.json` |
 
 No transverse vibrational, rotational, translational, molecular symmetry, or
 three-dimensional bimolecular standard-state factor is guessed. An optimized
@@ -54,15 +58,27 @@ Folded half-rings and full-ring mode checks are standard thermal-instanton
 procedures; see the [Molpro instanton implementation](https://www.molpro.net/manual/doku.php?id=instantons)
 and [Richardson and Althorpe (2009)](https://doi.org/10.1063/1.3267318).
 
-The physical Hessian is obtained from central differences of forces, evaluating
-all beads together. Spring derivatives are analytic. The full-ring Hessian is
-computed after optimization. Valid numerical results require a noncollapsed
+Spring derivatives are analytic. The physical Hessian comes from an optional
+provider or central force differences. Optimization evaluates the unique
+folded beads in one batch, rather than evaluating both copies of the ring.
+The full-ring Hessian is reconstructed and freshly evaluated after optimization.
+Valid numerical results require a noncollapsed
 orbit, a stationary active gradient, and exactly one negative mode. The phase
 mode is only approximately zero at finite $P$; its spectral-derivative residual
-is reported for convergence inspection. The local nonlinear solver needs a
+is reported for convergence inspection. A finite-P phase curvature can be
+slightly negative, as in the BKMP2 H + H2 benchmark. If the raw Hessian has
+more than one negative eigenvalue and the phase residual is resolved within
+`phase_tolerance`, the solver counts physical negative modes in the exact
+subspace orthogonal to the Fourier phase tangent. The unmodified full spectrum,
+raw count and whether phase projection was applied remain in diagnostics.
+Another physical negative direction still causes failure. The rate prefactor
+independently checks its geometric rigid and phase projections.
+The local nonlinear solver needs a
 reasonable path seed and does not prove uniqueness or locate every tunneling
-path. Dense Hessians are limited to 4096 active bead coordinates; this initial
-implementation is intended for small-system cross-checks.
+path. Dense Hessians are limited to 4096 active bead coordinates; storage is
+quadratic and diagonalization cubic in that dimension. The workflow supports
+small real molecules within this explicit limit; it is not a large-system
+sparse-determinant implementation.
 
 If a stationary transition-state geometry is supplied, the code checks
 
@@ -87,7 +103,7 @@ seed = instanton_seed(ts, direction, nbeads=64, amplitude_bohr=1.0)
 orbit = optimize_instanton(
     potential, masses, temperature_kelvin=100.0, initial_path=seed,
     transition_state=ts,
-    gradient_tolerance=1e-8,
+    method="bofill", gradient_tolerance=1e-8,
     hessian_step_bohr=1e-4,
 )
 report = orbit.to_dict()  # includes the path, action, modes and scope
@@ -105,6 +121,132 @@ Set `retain_hessian=True` when the orbit will be passed to the multidimensional
 rate postprocessor. This caches the final action Hessian without additional PES
 calls and leaves the path diagnostic JSON unchanged; see
 [Hessian reuse](low-temperature.md#multidimensional-thermal-instanton-rate).
+
+### Hessian providers and optimizer choice
+
+A potential may additionally implement:
+
+```python
+def hessian(self, x):
+    # x: float64 [batch, atoms, 3], bohr
+    # Return unweighted physical d²V/dq², hartree/bohr².
+    return h  # float64 [batch, 3*atoms, 3*atoms]
+```
+
+The equivalent shape `[batch, atoms, 3, atoms, 3]` is accepted. The full tensor
+must be finite, symmetric and **float64**, even when an active mask selects a
+smaller subspace. It has no bead scaling or mass weighting. The code falls back
+to central force differences only when `hessian` is absent. A noncallable
+attribute, wrong shape/precision, asymmetry, nonfinite result or provider error
+fails explicitly. `HarmonicState.from_potential` and the open-path splitting
+solver use this same contract. A supplied cached stationary-point Hessian still
+takes precedence during reactant preparation.
+
+`optimize_instanton` keeps `method="root"` as its existing default. The new
+workflow selects `method="bofill"`. Bofill uses a mass-scaled symmetric Hessian,
+Newton steps with a bead displacement trust radius, and a squared-gradient
+merit function appropriate to an action saddle. Accepted steps update the
+Hessian with the Bofill mixture of symmetric rank-one and Powell symmetric
+Broyden updates. This method follows the approach of reusing Hessian information
+between electronic-structure evaluations; see
+[Bofill (1994)](https://doi.org/10.1002/jcc.540150102) and
+[Beyer et al. (2016)](https://doi.org/10.1021/acs.jpclett.6b02115).
+
+| Option | Meaning |
+| --- | --- |
+| `gradient_tolerance=1e-8` | Maximum absolute active **full-ring action gradient**, in atomic units |
+| `max_iterations=200` | Residual evaluation budget; final diagnostics require additional PES work |
+| `trust_radius_bohr=0.3` | Maximum Euclidean displacement of each unique bead in a Bofill step |
+| `hessian_update_interval=0` | No scheduled physical-Hessian refresh; a positive integer refreshes after that many accepted steps |
+| `hessian_step_bohr=1e-4` | Central-force displacement when no analytic provider exists |
+| `phase_tolerance=0.05` | Maximum relative phase residual permitting its removal from a raw extra-negative-mode count |
+
+Bofill computes a true Hessian initially, on trust-model stagnation, at an
+explicit refresh interval when requested, and at the final path. It does not
+silently switch to another optimizer. Invalid final mode counts and collapsed
+paths are rejected even if a solver reports success. Hessian-update/trust
+settings differing from their defaults are rejected with `method="root"`.
+
+`orbit.optimizer_diagnostics` reports actual batch `force_calls`,
+`force_configurations`, physical-Hessian builds, analytic-Hessian calls,
+accepted/rejected Bofill steps, refreshes and residual history. Counted work
+includes validation and final mode diagnostics. A batch call can contain many
+configurations: both counts matter for electronic-structure cost. Dense linear
+algebra can dominate for an inexpensive analytic PES, so fewer force calls
+do not imply the same factor of elapsed-time speedup.
+
+## Unified molecular workflow and command line
+
+```python
+from pyrpmd.workflows.instanton import run_instanton
+
+report = run_instanton(
+    potential, masses, seed,
+    potential_identity={"model": "my-pes", "model_sha256": model_sha256},
+    temperature_kelvin=temperature_kelvin,
+    transition_state=ts,
+    reactants=[prepared_reactant_1, prepared_reactant_2],
+    bead_counts=[32, 64, 128, 256],
+    optimizer_options={"method": "bofill", "gradient_tolerance": 1e-8},
+    rate_options={"rigid_body": True, "symmetry_number": 1,
+                  "electronic_degeneracy": 2, "reaction_degeneracy": 2},
+    convergence_relative_tolerance=0.01,
+    output="instanton-rate.json",
+)
+```
+
+The symmetry and degeneracy values above are examples, not defaults appropriate
+to every reaction. Prepare the isolated `HarmonicState` reactants with the same
+PES energy convention, isotope masses and electronic/rotational factors; see
+[reactant normalization](low-temperature.md#translation-rotation-and-reactant-normalization).
+Use all Cartesian coordinates for an isolated gas molecule. An active mask
+instead defines a constrained model and must agree with its reactant state.
+
+At least three strictly increasing even bead counts are required. The workflow
+interpolates each optimized path to seed the next P, caches the final Hessian,
+and evaluates the full multidimensional rate. It checks a supplied TS and
+rejects temperatures at or above its crossover before the scan. Missing TS data
+produce an explicit `null` crossover diagnostic; the final negative and phase
+modes remain mandatory. An invalid level aborts with its P and reason rather
+than silently skipping a failed calculation.
+
+| Result field | Interpretation |
+| --- | --- |
+| `numerical_converged` | Every requested orbit and prefactor passed their stationarity/mode checks |
+| `bead_convergence` | Successive rate changes, the chosen tolerance and the requirement of two passing refinements |
+| `discretization_converged`, `converged` | Both of the last two rate refinements passed the requested tolerance |
+| `physical_converged` | Always false; semiclassical, PES, Hessian and reactant-model errors require independent validation |
+| `rows` | Every optimized path, Hessian spectrum, cost counters, partition components and rate |
+| `physics_fingerprint`, `scientific_identity` | Versioned identity and all resolved scientific settings |
+
+The relative change is `max(k_old,k_new)/min(k_old,k_new)-1`, computed from
+logarithmic rates so underflow does not hide a failed convergence test.
+The last two P refinements must each increase P by at least a factor of 1.5;
+doubling is recommended. A sequence such as `[32,34,36]` is still evaluated,
+but its small changes cannot certify convergence. The report records the
+refinement ratios and `sufficient_refinement_span`. These checks describe the
+requested numerical study and are not a rigorous bound on continuum error.
+`potential_identity` is required: identify all PES parameters, external model
+files/checksums and remote model versions. Provider source hashes and metadata
+are also recorded. The identity includes the initial path, masses, reactants,
+energy reference, numerical options, degeneracies and convergence thresholds.
+It is separate from existing RPMD identities, which are unchanged.
+
+The command accepts a **trusted Python file** defining `build()` that returns
+the keyword arguments of `run_instanton`. This allows real molecular adapters
+and analytic Hessians without another input schema or hidden unit conversions:
+
+```bash
+pyrpmd instanton examples/instanton/production.py --output instanton-rate.json
+```
+
+Inputs use atomic units, except the explicitly named kelvin temperatures. The
+Python input source hash also enters the identity. Unknown options are rejected.
+Results are written atomically after a successful scan; an unconverged bead
+study is saved with its false convergence fields. The output is a deterministic
+result, not an optimizer checkpoint. This workflow adds no RNG state and does
+not alter existing checkpoint/resume behavior. A previous path can be supplied
+explicitly as a new seed, with a new identity.
 
 ## One-dimensional thermal rate
 
@@ -175,3 +317,106 @@ instanton approximation is about **6.30% lower** in this example. This explicitl
 separates discretization error from the remaining semiclassical approximation;
 agreement of an instanton action with its analytic limit does not make the
 result exact quantum dynamics.
+
+## Molecular and cost validation
+
+The production validation script evaluates the exact Eckart transmission
+integral independently, compares its continuum semiclassical action and rate,
+counts actual PES calls for both optimizers, and optionally builds the same
+full Cartesian molecular rate used in the workflow:
+
+```bash
+python benchmarks/h3/build_pes.py
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/instanton/validate_production.py \
+  --h3 --temperatures 250 300 --h3-beads 32 64 128 256 384 \
+  --baseline-ref 8cc402f --output validation-250-300.json
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/instanton/validate_production.py \
+  --h3 --temperatures 200 --h3-beads 128 192 288 432 \
+  --baseline-ref 8cc402f --output validation-200.json
+```
+
+The optional baseline argument actually executes the selected repository
+revision's instanton module; it is not an estimated baseline. It should only
+name a trusted source revision. With an installed package but no repository
+history, omit that argument to compare the two current solvers. Without
+`--h3`, only the analytic validation and cost comparison run. Missing BKMP2
+data fail explicitly when the molecular test is requested.
+
+### H + H2 on BKMP2
+
+The stored runs use all nine Cartesian coordinates, the checksum-pinned BKMP2
+library, hydrogen masses of 1.00782503223 amu, separately prepared H and H2
+reactants, and classical rigid rotation. Both reactant H2 and the instanton
+use rotational symmetry number 1, while the two equivalent reaction paths
+give `reaction_degeneracy=2`. The H-atom doublet degeneracy and the electronic
+degeneracy of the reacting system are both 2 and cancel. This follows the
+equivalent-transition-state convention described in
+[Richardson's review](https://doi.org/10.1080/0144235X.2018.1472353).
+
+The calculated crossover is 345.2593 K. The action uses the isolated H2
+minimum as its energy reference. The stationary action-gradient threshold is
+`1e-8`, the physical Hessian step is `1e-4 bohr`, and the phase tolerance is
+0.05. Rates below are in **cm³/s per reacting pair**; the API returns m³/s and
+the validation report applies the explicit factor of one million.
+
+| T / K | Finest P | Calculated instanton rate / cm³ s⁻¹ | Published SCI / cm³ s⁻¹ | Last two rate changes |
+| ---: | ---: | ---: | ---: | ---: |
+| 300 | 384 | 5.21397e-16 | 5.2e-16 | 0.703%, 0.130% |
+| 250 | 384 | 4.34636e-17 | 4.3e-17 | 0.964%, 0.179% |
+| 200 | 432 | 2.24618e-18 | 2.2e-18 | 0.452%, 0.201% |
+
+The reference is Table III of
+[Karandashev et al., Structural Dynamics 4, 061501 (2017)](https://doi.org/10.1063/1.4996339),
+which reports SCI rates on BKMP2 to two significant figures. All three results
+are within those rounding intervals. The largest relative difference from
+the printed number is 2.10% at 200 K; this does not justify a claim of matching
+more digits than the reference supplies. All three scans pass the requested
+two-successive-refinement 1% criterion and retain `physical_converged=false`.
+
+The same table's exact quantum rates are 3.24e-16, 3.67e-17 and 2.01e-18 cm³/s
+at 300, 250 and 200 K, respectively. The substantial difference near crossover
+is a limitation of the leading semiclassical rate, not a bead convergence
+failure. Coarse P=32 and 64 paths at 200 K fail the unchanged phase-resolution
+guard; the 200 K scan explicitly starts at P=128 instead of weakening it.
+
+Full numeric outputs, counters, spectra diagnostics, potential hashes and
+source provenance are available in
+[the 250/300 K report](validation/instanton-production-2026-11-02/validation-250-300.json),
+[the 200 K report](validation/instanton-production-2026-11-02/validation-200.json),
+and [the BKMP2 build record](validation/instanton-production-2026-11-02/bkmp2-build.json).
+
+### Equal-tolerance optimizer cost
+
+For a P=32 Eckart barrier with a separable harmonic bath (six atoms, 18 active
+Cartesian components), all methods use the same seed and `1e-8` gradient
+tolerance. Both the initial/final Hessian work and final diagnostics are counted.
+The comparison against the original `8cc402f` implementation is:
+
+| Method | Force batch calls | Force configurations | Analytic Hessian calls | Median elapsed time / s |
+| --- | ---: | ---: | ---: | ---: |
+| Original root, force-difference Hessians | 118 | 3776 | 0 | 0.12829 |
+| Bofill, force-difference Hessians | 79 | 1264 | 0 | 0.13152 |
+| Bofill, analytic provider | 7 | 112 | 2 | 0.12041 |
+
+Bofill reduces force calls by **1.49x** and evaluated configurations by
+**2.99x** versus the original implementation. The analytic-provider case
+reduces force calls by 16.86x but also makes two Hessian calls; their cost must
+be counted for a real electronic-structure provider. The original hybrid
+solver already reuses its Jacobian and does not necessarily rebuild it every
+iteration.
+
+These runs used an AMD EPYC 9V74 guest, Python 3.12.14, NumPy 2.3.5 and
+SciPy 1.17.0, with `OMP_NUM_THREADS=1` and `OPENBLAS_NUM_THREADS=1`.
+The guest exposed nine logical CPUs with an eight-core CPU quota and an 8 GiB
+memory limit. Other jobs shared the runner. The table preserves medians of
+three actual measurements: the finite-difference Bofill run was slightly
+slower on this inexpensive model. Force-call savings are the demonstrated
+benefit; a universal wall-clock speedup is not claimed. For cheap potentials,
+the existing root solver can remain the faster choice.
+
+The source-distribution manifest already includes the new Python workflow,
+tests, examples and these small JSON/log validation records. The production
+path keeps the 4096-coordinate dense-Hessian limit; P=512 for full Cartesian
+H3 would exceed it. Sparse fluctuation determinants, uniform crossover theory,
+free-molecule rovibrational splitting networks, and golden-rule instantons
+remain outside this implementation.
