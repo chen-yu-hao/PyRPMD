@@ -462,7 +462,9 @@ class NativeEnsemble:
                 cfg["python_callback"] = self._python_binding.evaluate
             else:
                 from .potentials.native import descriptor_binding
-                binding = potential.native_binding() if callable(getattr(potential, "native_binding", None)) else potential
+                from .potentials._builtin_native import resolve_native_binding
+                binding = (resolve_native_binding(potential, self.natoms, cell=cell)
+                           if callable(getattr(potential, "native_binding", None)) else potential)
                 self._binding = descriptor_binding(binding)
                 if not isinstance(potential_identity, str) or not potential_identity.strip():
                     raise ValueError("native provider requires potential_identity for safe restart")

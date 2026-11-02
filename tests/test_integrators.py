@@ -289,7 +289,10 @@ def test_baoab_p1_matches_independent_scalar_langevin_step():
 def test_sampling_selection_is_explicit_and_strict_native_never_falls_back():
     from pyrpmd.propagation import NativeUnavailableError
 
-    dynamics = Dynamics(FreePotential(), [1.0], 2.0, 2, 0.01)
+    class PythonFree(FreePotential):
+        """A custom provider has no implicit compiled mathematical contract."""
+
+    dynamics = Dynamics(PythonFree(), [1.0], 2.0, 2, 0.01)
     dynamics.sample_step(initial(2), method="baoab")
     assert dynamics.integrator_name == "cayley-bcb"  # NVE selection is unchanged.
     dynamics.loop_backend = "native"

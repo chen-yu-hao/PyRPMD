@@ -127,7 +127,7 @@ extern "C" inline pyrpmd_rc_v1 pyrpmd_builtin_evaluate_v1(
                 break;
             }
             const double e = std::exp(-context.alpha * (r - context.equilibrium));
-            energy = context.depth * (1. - e) * (1. - e);
+            energy = context.depth * ((1. - e) * (1. - e));
             const double dv = 2. * context.depth * context.alpha * e * (1. - e);
             for (int j = 0; j < 3; ++j) {
                 f[3*a+j] = -dv * d[j] / r;
@@ -143,7 +143,7 @@ extern "C" inline pyrpmd_rc_v1 pyrpmd_builtin_evaluate_v1(
                 norm2 += q[j] * q[j];
                 f[j] = -context.confinement * q[j];
             }
-            energy = context.height * y2m1 * y2m1 +
+            energy = context.height * (y2m1 * y2m1) +
                 (.5 * context.confinement * norm2 -
                  .5 * context.confinement * q[selected] * q[selected]);
             f[selected] = -4. * context.height * y * y2m1 / context.width;

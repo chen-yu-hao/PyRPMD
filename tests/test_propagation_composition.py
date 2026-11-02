@@ -120,6 +120,9 @@ def test_composed_trpmd_bath_free_limit_retains_exact_map_and_rng(nbeads, scale)
 
 def test_strict_native_rejects_missing_binding_without_rng_change():
     dynamics = make(native=True)
+    class PythonHarmonic(HarmonicPotential):
+        """Keep exercising an explicitly Python-only provider."""
+    dynamics.potential = PythonHarmonic(k=.01)
     dynamics.loop_backend = "native"
     state, before = initial(), initial()
     operators = dynamics.operator_state_dict()

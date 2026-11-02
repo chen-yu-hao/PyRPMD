@@ -435,8 +435,16 @@ class _Composition:
         self._native_seed = data["native_seed"]
         self._native_provider_key = None
         if native is not None:
-            self._has_native_binding()
-            self._native_provider_key = self._candidate_provider_key
+            from .potentials.native import NativePESBinding
+            if isinstance(native._binding, NativePESBinding):
+                # A rollback may follow a rejected parameter mutation. Keep
+                # the executor's actual lease, not a fresh provider snapshot.
+                with native._binding.acquire() as descriptor:
+                    self._native_provider_key = (
+                        id(native._potential), *descriptor, id(native._binding.owner))
+            else:
+                self._has_native_binding()
+                self._native_provider_key = self._candidate_provider_key
         self.dynamics.cell = saved_cell
         if native is None and self.dynamics.cell is not None:
             setter = getattr(self.dynamics.potential, "set_cell", None)
@@ -485,10 +493,14 @@ class _Composition:
 
     def _new_native(self, state, *, seed, allow_python=False):
         from .native_ensemble import NativeEnsemble
+        from .potentials._builtin_native import builtin_identity
         d = self.dynamics
+        identity = d._runtime_potential_identity
+        if d.potential_identity is None and not allow_python:
+            identity = builtin_identity(d.potential, len(d.masses)) or identity
         return NativeEnsemble(state.q, d.masses, d.beta, d.dt, p=state.p,
                               potential=d.potential,
-                              potential_identity=d._runtime_potential_identity,
+                              potential_identity=identity,
                               thermostat=self.plan.thermostat_spec, barostat=self.plan.barostat_spec,
                               integrator=self.plan.integrator, fixed_atoms=d.fixed_atoms,
                               sampling_integrator=self.plan.sampling_integrator,
@@ -521,6 +533,7 @@ class _Composition:
         from .native_ensemble import NativePeriodicPES
         from .propagation import NativeUnavailableError
         from .potentials.native import descriptor_binding
+        from .potentials._builtin_native import resolve_native_binding
         potential = self.dynamics.potential
         self._candidate_provider_key = None
         if isinstance(potential, NativePeriodicPES):
@@ -530,7 +543,8 @@ class _Composition:
         if not callable(factory):
             return False
         try:
-            binding = descriptor_binding(factory())
+            binding = descriptor_binding(resolve_native_binding(
+                potential, len(self.dynamics.masses), cell=self.dynamics.cell))
             with binding.acquire() as descriptor:
                 self._candidate_provider_key = (id(potential), *descriptor, id(binding.owner))
         except NativeUnavailableError:
@@ -543,8 +557,13 @@ class _Composition:
         backend = d.loop_backend if backend is None else backend
         b = self.plan.barostat_spec
         pressure = isinstance(b, dict) and b.get("mode", "none") != "none"
-        if self.native_engine is not None and self.native_engine._potential is not d.potential:
-            raise ValueError("a bound native provider is immutable; create a new Dynamics to change the PES")
+        has_binding = None
+        if self.native_engine is not None:
+            if self.native_engine._potential is not d.potential:
+                raise ValueError("a bound native provider is immutable; create a new Dynamics to change the PES")
+            has_binding = self._has_native_binding()
+            if self._native_provider_key != self._candidate_provider_key:
+                raise ValueError("a bound native provider is immutable; create a new Dynamics to change the PES")
         if backend == "python" and not pressure:
             return None
         if not d.native and not pressure:
@@ -553,11 +572,9 @@ class _Composition:
                 raise NativeUnavailableError("native loop requested with native=False")
             return None
         eligible = self._can_native(bias, fragments)
-        has_binding = self._has_native_binding()
+        if has_binding is None:
+            has_binding = self._has_native_binding()
         key = self._candidate_provider_key
-        if self.native_engine is not None and (
-                self.native_engine._potential is not d.potential or self._native_provider_key != key):
-            raise ValueError("a bound native provider is immutable; create a new Dynamics to change the PES")
         if not eligible or (not has_binding and not pressure):
             if backend == "native" or pressure:
                 from .propagation import NativeUnavailableError
