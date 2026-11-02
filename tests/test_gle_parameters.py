@@ -19,7 +19,9 @@ from pyrpmd.gle_parameters import (
 
 def write(tmp_path, text, name="parameters.dat"):
     path = tmp_path / name
-    path.write_text(text)
+    # Exact bytes: text-mode newline translation on Windows would change the
+    # file contents that the source-metadata SHA256 is compared against.
+    path.write_bytes(text.encode())
     return path
 
 

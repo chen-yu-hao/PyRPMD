@@ -15,6 +15,7 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from copy import deepcopy
+import errno
 import hashlib
 import json
 import math
@@ -28,6 +29,45 @@ FORMAT = "PyRPMD.rate.precision-ledger.v1"
 
 class PrecisionLedgerError(ValueError):
     """Conflicting, corrupt, or invalid precision accounting data."""
+
+
+@contextmanager
+def _exclusive_file_lock(fd):
+    """Hold an exclusive inter-process lock on an open lock-file descriptor.
+
+    POSIX uses advisory ``flock``. Windows has no ``fcntl``; it locks the
+    first byte with ``msvcrt.locking`` and keeps retrying, matching the
+    indefinite wait of ``flock(LOCK_EX)``.
+    """
+    try:
+        import fcntl
+    except ImportError:
+        fcntl = None
+    if fcntl is not None:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+        return
+    try:
+        import msvcrt
+    except ImportError as exc:  # pragma: no cover - neither POSIX nor Windows
+        raise RuntimeError("PrecisionLedger requires fcntl or msvcrt file locks") from exc
+    while True:
+        os.lseek(fd, 0, os.SEEK_SET)
+        try:
+            # LK_LOCK itself retries for about ten seconds before failing.
+            msvcrt.locking(fd, msvcrt.LK_LOCK, 1)
+            break
+        except OSError as exc:
+            if exc.errno not in (errno.EDEADLK, errno.EACCES):
+                raise
+    try:
+        yield
+    finally:
+        os.lseek(fd, 0, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
 
 
 class PrecisionBudgetError(PrecisionLedgerError):
@@ -104,8 +144,9 @@ class PrecisionLedger:
     ``directory`` is a run/controller directory; files live under ``precision``.
     ``specification`` must include the caller's frozen scientific/check design.
     Cost units are caller-defined, but must be identical in every plan/receipt.
-    The implementation requires POSIX advisory file locks and atomic rename on
-    the local filesystem.  Independent writers must all use this API.
+    The implementation requires an exclusive file lock (POSIX ``flock`` or
+    Windows ``msvcrt.locking``) and atomic rename on the local filesystem.
+    Independent writers must all use this API.
     """
 
     def __init__(self, directory, *, specification: dict, max_cost: float):
@@ -139,17 +180,12 @@ class PrecisionLedger:
 
     @contextmanager
     def _locked(self):
-        try:
-            import fcntl
-        except ImportError as exc:  # pragma: no cover - supported POSIX executor
-            raise RuntimeError("PrecisionLedger requires POSIX advisory file locks") from exc
-        flags = os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)
+        flags = os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_BINARY", 0)
         fd = os.open(self.lock_path, flags, 0o600)
         try:
-            fcntl.flock(fd, fcntl.LOCK_EX)
-            yield
+            with _exclusive_file_lock(fd):
+                yield
         finally:
-            fcntl.flock(fd, fcntl.LOCK_UN)
             os.close(fd)
 
     def _read(self):
@@ -189,7 +225,7 @@ class PrecisionLedger:
         data = json.dumps(saved, indent=2, sort_keys=True, allow_nan=False) + "\n"
         temporary = None
         try:
-            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=self.path.parent,
+            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", newline="\n", dir=self.path.parent,
                                              prefix=".ledger-", suffix=".tmp", delete=False) as stream:
                 temporary = stream.name
                 stream.write(data)
@@ -197,11 +233,14 @@ class PrecisionLedger:
                 os.fsync(stream.fileno())
             os.replace(temporary, self.path)
             temporary = None
-            fd = os.open(self.path.parent, os.O_RDONLY)
-            try:
-                os.fsync(fd)
-            finally:
-                os.close(fd)
+            # Windows cannot open a directory as a file to fsync it; os.replace
+            # there is still an atomic rename of the fsynced temporary file.
+            if os.name != "nt":
+                fd = os.open(self.path.parent, os.O_RDONLY)
+                try:
+                    os.fsync(fd)
+                finally:
+                    os.close(fd)
         finally:
             if temporary is not None:
                 Path(temporary).unlink(missing_ok=True)

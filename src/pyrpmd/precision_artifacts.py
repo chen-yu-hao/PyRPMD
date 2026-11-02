@@ -86,7 +86,7 @@ def read_rate_diagnostics(directory):
     def read_json(relative, *, required=False):
         path = _safe_path(root, relative)
         if not path.is_file():
-            absent.add(str(relative))
+            absent.add(Path(relative).as_posix())
             if required:
                 raise ValueError(f"Missing rate artifact: {relative}")
             return {}
@@ -96,20 +96,20 @@ def read_rate_diagnostics(directory):
             raise ValueError(f"Expected a JSON object: {relative}")
         if file_sha256(path) != before:
             raise ValueError("Rate artifacts changed during diagnostic snapshot; retry")
-        hashes[str(relative)] = before
+        hashes[Path(relative).as_posix()] = before
         return _json_safe(value)
 
     def read_arrays(relative):
         path = _safe_path(root, relative)
         if not path.is_file():
-            absent.add(str(relative))
+            absent.add(Path(relative).as_posix())
             return {}
         before = file_sha256(path)
         with np.load(path, allow_pickle=False) as saved:
             arrays = {name: saved[name] for name in saved.files}
         if file_sha256(path) != before:
             raise ValueError("Rate artifacts changed during diagnostic snapshot; retry")
-        hashes[str(relative)] = before
+        hashes[Path(relative).as_posix()] = before
         return arrays
 
     publication = read_json("results/summary.json")
@@ -302,7 +302,7 @@ def read_rate_diagnostics(directory):
         "source_ids": [snapshot],
         "source_family_id": family,
         "artifact_sha256": hashes,
-        "published_generation": str(relative) if artifacts != root else "original",
+        "published_generation": relative.as_posix() if artifacts != root else "original",
         "physics_fingerprint": fingerprint,
         "task": "rate",
         "source_status": summary.get("status"),

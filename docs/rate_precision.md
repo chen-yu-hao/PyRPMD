@@ -248,8 +248,10 @@ interval fails. This uses a conservative two-sided interval for equivalence.
 
 ## Recovery, budgets and failures
 
-The POSIX ledger lives under `precision/ledger.json`. Checksums, advisory locks,
-atomic replacement and file/directory fsync protect publication. Reopening must
+The ledger lives under `precision/ledger.json`. Checksums, an exclusive file
+lock (`flock` on POSIX, `msvcrt.locking` on Windows), atomic replacement and
+file fsync protect publication; POSIX also fsyncs the directory, which Windows
+does not support. Reopening must
 use the same complete specification and maximum budget. Use
 `controller.restore_frozen(epoch_index)` to recover the exact persisted design.
 

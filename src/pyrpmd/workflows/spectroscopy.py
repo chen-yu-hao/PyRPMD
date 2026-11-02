@@ -26,7 +26,7 @@ from ..potentials import make_potential
 from ..potentials.python import import_object
 from ..properties import CallablePropertyModel, TorchScriptPropertyModel, validate_property_result
 from ..units import parse_quantity
-from ..io import file_sha256, fingerprint, jsonable, referenced_files
+from ..io import file_sha256, fingerprint, jsonable, plugin_module, referenced_files
 from .fes import _fingerprint, write_json
 
 
@@ -213,8 +213,8 @@ def _make_properties(spec, system):
 
 def _model_identity(spec):
     path = spec.get("model")
-    if path is None and spec.get("factory", "").split(":")[0].endswith(".py"):
-        path = spec["factory"].rsplit(":", 1)[0]
+    if path is None and plugin_module(spec.get("factory", "")).endswith(".py"):
+        path = plugin_module(spec["factory"])
     return None if path is None else hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 

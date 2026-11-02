@@ -16,7 +16,7 @@ import shlex
 import threading
 from dataclasses import dataclass
 from functools import partial
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import numpy as np
 
@@ -153,7 +153,9 @@ def file_restart_plan(input_lines):
             continue
         if action in {"METAD", "PRINT"}:
             name = options.get("FILE", "HILLS" if action == "METAD" else "COLVAR")
-            path = Path(name) if isinstance(name, str) else None
+            # PLUMED file names use "/"; validate them as POSIX paths on every
+            # platform rather than with the host's path separator.
+            path = PurePosixPath(name) if isinstance(name, str) else None
             if (path is None or not name or path.is_absolute() or ".." in path.parts
                     or ":" in name or not path.parts or str(path) != name
                     or any(ord(char) < 32 for char in name)):
