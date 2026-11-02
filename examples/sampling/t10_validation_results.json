@@ -1,0 +1,555 @@
+{
+  "schema": "PyRPMD.t10.validation.v1",
+  "baseline_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+  "branch": "t10/path-sampling-20261102",
+  "scope": "Implementation/reference checks, not molecular or quantum convergence",
+  "environment": {
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "machine": "x86_64",
+    "cpu_quota_cores": 8,
+    "runtime_visible_logical_cpus": 9,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "load": "Shared concurrent validation workloads; timings are not isolated benchmarks",
+    "scipy": "1.17.0"
+  },
+  "related_baseline": {
+    "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_transition_interface.py tests/test_advanced_sampling.py tests/test_committor.py tests/test_checkpoint.py",
+    "stdout_summary": "157 passed in 25.76s"
+  },
+  "retis": {
+    "test": "tests/test_retis_reference.py::test_quartic_retis_rate_matches_flux_integral_and_tis_with_external_flux",
+    "outcome": "PASS",
+    "nbeads": 1,
+    "beta_au": 1.0,
+    "mass_au": 1.0,
+    "dt_au": 0.04,
+    "native": false,
+    "basins": [
+      -1.0,
+      1.0
+    ],
+    "interfaces": [
+      -1.0,
+      -0.5
+    ],
+    "production_sweeps": 2400,
+    "burn_in": 300,
+    "block_size": 120,
+    "flux_au": 0.40299018718894025,
+    "flux_block_se_au": 0.002815041905861699,
+    "rate_au": 0.13897200561499604,
+    "rate_block_se_au": 0.008176994590308321,
+    "exact_flux_au": 0.40425169178429504,
+    "exact_rate_au": 0.1487158864662166,
+    "conditional_probabilities": [
+      0.5525,
+      0.6241666666666666
+    ],
+    "minus_acceptance": 0.9108333333333334,
+    "minus_mean_frames": 24.855,
+    "minus_statistical_inefficiency": 2.107015095709818,
+    "length_rejections": 0,
+    "wall_seconds_including_independent_tis": 298.8413868399948,
+    "independent_tis_samples_per_interface": 1200,
+    "independent_tis_rate_block_se_au": 0.014571788038554061,
+    "seed": 981,
+    "max_path_steps": 600,
+    "overall_crossing_probability": 0.34485208333333334,
+    "independent_tis_seed": 314,
+    "independent_tis_burn_in": 200,
+    "independent_tis_point_estimate_recorded": false,
+    "acceptance_tolerance": "5 block standard errors plus separately stated 1% integration allowance; measured rate discrepancy 1.19 standard errors"
+  },
+  "repptis": {
+    "test": "tests/test_pptis.py::test_repptis_double_well_rate_matches_exact_flux_and_full_tis",
+    "outcome": "PASS",
+    "nbeads": 1,
+    "beta_au": 1.0,
+    "mass_au": 1.0,
+    "dt_au": 0.04,
+    "native": false,
+    "basins": [
+      -1.0,
+      1.0
+    ],
+    "centers": [
+      -0.8,
+      -0.4
+    ],
+    "production_sweeps": 1800,
+    "burn_in": 200,
+    "block_size": 100,
+    "supplied_exact_flux_au": 0.35511358052460734,
+    "rate_au": 0.1533325153790223,
+    "rate_block_se_conditional_on_exact_flux_au": 0.005721764960339643,
+    "exact_rate_au": 0.14871588646621656,
+    "independent_tis_rate_au": 0.17726086227853316,
+    "independent_tis_rate_diagnostic_se_au": 0.013493015978186617,
+    "independent_tis_samples": 1200,
+    "swap_attempts": 2000,
+    "swap_accepts": 444,
+    "swap_length_rejections": 0,
+    "wall_seconds_including_independent_tis": 190.46211936500185,
+    "memory_loss_approximation": true,
+    "seed": 325,
+    "max_path_steps": 500,
+    "independent_tis_seed": 109,
+    "independent_tis_burn_in": 150,
+    "acceptance_tolerance": "4 block standard errors for exact rate; 4 combined standard errors for independent TIS comparison"
+  },
+  "ffs_discrete_double_wells": [
+    {
+      "dimensions": 1,
+      "replicates": 8,
+      "flux_steps_per_run": 6000,
+      "trials_per_stage": 500,
+      "exact_rate_au": 0.01662613547112125,
+      "rate_au": 0.0168460085002679,
+      "rate_se_au": 0.0005927652946386819,
+      "exact_flux_au": 0.11302032217388808,
+      "flux_au": 0.11258163017911621,
+      "flux_se_au": 0.0016335312339447541,
+      "steps": 71203,
+      "wall_seconds": 6.4915
+    },
+    {
+      "dimensions": 2,
+      "replicates": 8,
+      "flux_steps_per_run": 6000,
+      "trials_per_stage": 500,
+      "exact_rate_au": 0.007960905760234045,
+      "rate_au": 0.008363248837449915,
+      "rate_se_au": 0.0004349400862169914,
+      "exact_flux_au": 0.054823137511792186,
+      "flux_au": 0.05635780843682449,
+      "flux_se_au": 0.001510519163270598,
+      "steps": 94363,
+      "wall_seconds": 6.7205
+    }
+  ],
+  "ffs_continuous_quartic": {
+    "model": {
+      "model": "quartic_x_plus_harmonic_y_z.v1",
+      "mass_au": 1.0,
+      "nbeads": 1,
+      "beta_au": 1.0,
+      "dt_au": 0.04,
+      "integrator": "cayley-bcb",
+      "native": false,
+      "momentum_refresh": "after_NVE_step_if_x<=-1_or_x>=1",
+      "collision_rate_au_inv": 1.0,
+      "collision_probability": 0.03921056084767679
+    },
+    "basin_a": -1.0,
+    "basin_b": 1.0,
+    "interfaces": [
+      -1.0,
+      -0.5
+    ],
+    "seed": 20261102,
+    "equilibration_steps_per_run": 2000,
+    "flux_steps_per_run": 6000,
+    "trials_per_interface_per_run": 160,
+    "exact_continuous_time_reference": {
+      "x_partition_integral": 1.9737321500898242,
+      "quadrature_absolute_error": 1.4146450859173884e-12,
+      "flux_au": 0.40425169178429504,
+      "overall_crossing_probability": 0.36787944117144233,
+      "rate_au": 0.1487158864662166
+    },
+    "ffs": {
+      "method": "independent_direct_ffs_replicates",
+      "replicates": 8,
+      "block_size": 1,
+      "blocks": 8,
+      "configuration_fingerprint": "cd154455c5f5afd69417cc6e41f5243b31151012fa81c37d70385eab1f6c5b87",
+      "rate_estimate_au": 0.1734527650325918,
+      "rate_standard_error_au": 0.023372504633646048,
+      "rate_estimate_s_inv": 7170775515229924.0,
+      "rate_standard_error_s_inv": 966251439837555.5,
+      "flux_au": 0.4236532250829482,
+      "flux_standard_error_au": 0.006809453455513385,
+      "overall_crossing_probability": 0.40939453125,
+      "crossing_probability_standard_error": 0.054654823225399475,
+      "rate_estimates_au": [
+        0.13068333849707076,
+        0.14898181352459014,
+        0.10641239805581322,
+        0.1435904847550531,
+        0.19175884410721322,
+        0.1704829979015643,
+        0.3232267843059937,
+        0.1724854591134361
+      ],
+      "rate_statistical_inefficiency_diagnostic": 1.7150412682266074,
+      "uncertainty_method": "block_mean_of_independent_complete_ffs_runs",
+      "rate_s_inv": null,
+      "converged": false,
+      "physical_converged": false
+    },
+    "comparison": {
+      "rate_difference_au": 0.024736878566375187,
+      "rate_difference_in_standard_errors": 1.0583751700605097,
+      "finite_dt_allowance_fraction": 0.01,
+      "agrees_within_three_standard_errors_plus_dt_allowance": true
+    },
+    "runs": [
+      {
+        "replicate": 0,
+        "status": "complete",
+        "run_identity": "fcf3707dfb9971880626d1551f201edff03ac167257c586e55a4b8ac681aad20",
+        "flux_crossings": 39,
+        "a_history_time_au": 88.76,
+        "discarded_unknown_history_time_au": 0.0,
+        "flux_au": 0.4393871113114015,
+        "conditional_probabilities": [
+          0.3375,
+          0.88125
+        ],
+        "overall_crossing_probability": 0.297421875,
+        "rate_estimate_au": 0.13068333849707076,
+        "distinct_flux_ancestors": [
+          39,
+          16
+        ],
+        "trial_md_steps": 8401,
+        "total_md_steps": 16401
+      },
+      {
+        "replicate": 1,
+        "status": "complete",
+        "run_identity": "df71c9b167b3ae4855efc9a2f92427a6417cefe4b445293d1ad13ff720011c2b",
+        "flux_crossings": 57,
+        "a_history_time_au": 139.08,
+        "discarded_unknown_history_time_au": 0.68,
+        "flux_au": 0.40983606557377045,
+        "conditional_probabilities": [
+          0.61875,
+          0.5875
+        ],
+        "overall_crossing_probability": 0.363515625,
+        "rate_estimate_au": 0.14898181352459014,
+        "distinct_flux_ancestors": [
+          52,
+          29
+        ],
+        "trial_md_steps": 7975,
+        "total_md_steps": 15975
+      },
+      {
+        "replicate": 2,
+        "status": "complete",
+        "run_identity": "850af9367eef038720330b16728db3315e9da6454530eac5e9d824f1b69f735e",
+        "flux_crossings": 53,
+        "a_history_time_au": 129.36,
+        "discarded_unknown_history_time_au": 0.0,
+        "flux_au": 0.40970933828076683,
+        "conditional_probabilities": [
+          0.38125,
+          0.68125
+        ],
+        "overall_crossing_probability": 0.2597265625,
+        "rate_estimate_au": 0.10641239805581322,
+        "distinct_flux_ancestors": [
+          50,
+          19
+        ],
+        "trial_md_steps": 9647,
+        "total_md_steps": 17647
+      },
+      {
+        "replicate": 3,
+        "status": "complete",
+        "run_identity": "b6deea93d725054cf8e1aee97c53902cc93a1139641d5713cb8dc06a65baf177",
+        "flux_crossings": 50,
+        "a_history_time_au": 116.76,
+        "discarded_unknown_history_time_au": 0.0,
+        "flux_au": 0.42822884549503254,
+        "conditional_probabilities": [
+          0.4625,
+          0.725
+        ],
+        "overall_crossing_probability": 0.3353125,
+        "rate_estimate_au": 0.1435904847550531,
+        "distinct_flux_ancestors": [
+          47,
+          22
+        ],
+        "trial_md_steps": 8371,
+        "total_md_steps": 16371
+      },
+      {
+        "replicate": 4,
+        "status": "complete",
+        "run_identity": "e1f9b16114f55280a4ad8eda7afa31c8d059f8dc90866c51aedab9b21075fde0",
+        "flux_crossings": 44,
+        "a_history_time_au": 101.48,
+        "discarded_unknown_history_time_au": 0.12,
+        "flux_au": 0.43358297201419,
+        "conditional_probabilities": [
+          0.69375,
+          0.6375
+        ],
+        "overall_crossing_probability": 0.44226562499999994,
+        "rate_estimate_au": 0.19175884410721322,
+        "distinct_flux_ancestors": [
+          43,
+          28
+        ],
+        "trial_md_steps": 7586,
+        "total_md_steps": 15586
+      },
+      {
+        "replicate": 5,
+        "status": "complete",
+        "run_identity": "fce933c25433f9b5ea288a157761447cc76ba8837dd253fb05972288beac1b1a",
+        "flux_crossings": 41,
+        "a_history_time_au": 104.84,
+        "discarded_unknown_history_time_au": 1.76,
+        "flux_au": 0.39107210988172453,
+        "conditional_probabilities": [
+          0.775,
+          0.5625
+        ],
+        "overall_crossing_probability": 0.43593750000000003,
+        "rate_estimate_au": 0.1704829979015643,
+        "distinct_flux_ancestors": [
+          40,
+          29
+        ],
+        "trial_md_steps": 7967,
+        "total_md_steps": 15967
+      },
+      {
+        "replicate": 6,
+        "status": "complete",
+        "run_identity": "f0df54e5dea515122c707b286afe12c8af7488dee62fd65a5ce425a55cbacb05",
+        "flux_crossings": 27,
+        "a_history_time_au": 63.4,
+        "discarded_unknown_history_time_au": 0.0,
+        "flux_au": 0.42586750788643535,
+        "conditional_probabilities": [
+          0.8375,
+          0.90625
+        ],
+        "overall_crossing_probability": 0.758984375,
+        "rate_estimate_au": 0.3232267843059937,
+        "distinct_flux_ancestors": [
+          27,
+          21
+        ],
+        "trial_md_steps": 7141,
+        "total_md_steps": 15141
+      },
+      {
+        "replicate": 7,
+        "status": "complete",
+        "run_identity": "e9ad8ed74626ef46d6408bef1ecfc95f4962c292a59386ecf8dbc8e9d5523f5e",
+        "flux_crossings": 41,
+        "a_history_time_au": 90.8,
+        "discarded_unknown_history_time_au": 0.0,
+        "flux_au": 0.45154185022026433,
+        "conditional_probabilities": [
+          0.48125,
+          0.79375
+        ],
+        "overall_crossing_probability": 0.38199218749999997,
+        "rate_estimate_au": 0.1724854591134361,
+        "distinct_flux_ancestors": [
+          41,
+          20
+        ],
+        "trial_md_steps": 7289,
+        "total_md_steps": 15289
+      }
+    ],
+    "resources": {
+      "wall_seconds": 111.75532189800288,
+      "total_md_steps": 128377,
+      "md_steps_per_wall_second": 1148.7327656500104,
+      "python_version": "3.12.14",
+      "numpy_version": "2.3.5",
+      "platform": "Linux",
+      "machine": "x86_64",
+      "processor": "x86_64",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "native": false
+    },
+    "converged": false,
+    "physical_converged": false,
+    "qualification": "In-basin dynamics differs from Hamiltonian RETIS: a region-conditioned Maxwell refresh makes the flux run ergodic in energy. Canonical density and outside-basin excursion dynamics supply the common continuous-time reference. Starts are independently canonical-sampled and equilibrated; finite-dt stationary bias and stationarity still require a convergence study. Independent whole-run error includes finite banks and shared ancestry. The fixed1% dt allowance is a validation allowance, not a measured integration error bound."
+  },
+  "converged": false,
+  "physical_converged": false,
+  "validation_commands": [
+    {
+      "name": "related_baseline",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_transition_interface.py tests/test_advanced_sampling.py tests/test_committor.py tests/test_checkpoint.py",
+      "stdout_summary": "157 passed in 25.76s",
+      "exit_code": 0
+    },
+    {
+      "name": "related_final_nonphysical",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=/workspace/scratch/393ad8c6351d/PyRPMD/src python -m pytest -q tests/test_transition_interface.py tests/test_advanced_sampling.py tests/test_committor.py tests/test_checkpoint.py tests/test_retis.py tests/test_ffs.py tests/test_pptis.py tests/test_retis_reference.py -k 'not quartic_retis_rate and not repptis_double_well_rate'",
+      "stdout_summary": "280 passed, 2 deselected in 217.09s (0:03:37)",
+      "exit_code": 0,
+      "qualification": "Run before two final RETIS defensive-validation tests were added; final full-suite run includes them."
+    },
+    {
+      "name": "pptis_full_module",
+      "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q -s tests/test_pptis.py",
+      "stdout_summary": "32 passed in 229.90s (0:03:49)",
+      "exit_code": 0
+    },
+    {
+      "name": "continuous_ffs_reference",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src python examples/sampling/ffs_quartic_reference.py",
+      "exit_code": 0,
+      "result_key": "ffs_continuous_quartic"
+    },
+    {
+      "name": "sphinx_warnings_as_errors",
+      "command": "python -m sphinx -W --keep-going -b html docs docs/_build/html",
+      "stdout_summary": "build succeeded.\n\nThe HTML pages are in docs/_build/html.",
+      "exit_code": 0
+    },
+    {
+      "name": "retis_checkpoint_example",
+      "command": "python examples/sampling/retis_minus.py --samples 6 --burn-in 2 --block-size 2 --checkpoint ../retis-smoke.npz",
+      "exit_code": 0,
+      "observed_samples": 6,
+      "observed_rate_estimate_au": 0.3778337531486146,
+      "physical_converged": false
+    },
+    {
+      "name": "retis_resume_example",
+      "command": "python examples/sampling/retis_minus.py --samples 4 --block-size 2 --resume ../retis-smoke.npz",
+      "exit_code": 0,
+      "observed_cumulative_samples": 10,
+      "observed_rate_estimate_au": 0.3375,
+      "physical_converged": false
+    },
+    {
+      "name": "ipi_failure_baseline_comparison",
+      "baseline_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+      "working_directory": "/workspace/scratch/393ad8c6351d/PyRPMD-t10-baseline",
+      "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/393ad8c6351d/t10-venv/bin/python -m pytest -q tests/test_ipi_clients.py",
+      "stdout_summary": "12 failed, 7 passed in 2.73s",
+      "exit_code": 1,
+      "qualification": "The same twelve node IDs failed on the unmodified baseline. Eleven were denied IPv4 socket creation (EPERM); one hit AF_UNIX path-length limits in the long sandbox pytest temporary path. Only unchanged native extension artifacts were shared with the baseline."
+    },
+    {
+      "name": "ipi_with_socket_permission",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/393ad8c6351d/t10-venv/bin/python -m pytest -q tests/test_ipi_clients.py",
+      "stdout_summary": "19 passed in 4.07s",
+      "exit_code": 0,
+      "qualification": "Run with approved permission for local sockets; same source, no implementation or test changes."
+    },
+    {
+      "name": "ipi_extra_failure_baseline_comparison",
+      "baseline_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+      "working_directory": "/workspace/scratch/393ad8c6351d/PyRPMD-t10-baseline",
+      "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/393ad8c6351d/t10-venv/bin/python -m pytest -q tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire tests/test_potentials.py::SocketTests::test_ipi_protocol",
+      "stdout_summary": "2 failed in 1.59s",
+      "exit_code": 1,
+      "qualification": "Both unchanged baseline tests fail on denied IPv4 socket creation (EPERM), matching the restricted full-suite run."
+    },
+    {
+      "name": "ipi_extra_with_socket_permission",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /workspace/scratch/393ad8c6351d/t10-venv/bin/python -m pytest -q tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire tests/test_potentials.py::SocketTests::test_ipi_protocol",
+      "stdout_summary": "2 passed in 1.33s",
+      "exit_code": 0,
+      "qualification": "Both local socket tests pass with approved socket permission; no source changes."
+    },
+    {
+      "name": "final_full_suite",
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q",
+      "stdout_summary": "14 failed, 8217 passed, 225 skipped, 48 warnings, 486 subtests passed in 2514.37s (0:41:54)",
+      "exit_code": 1,
+      "failed_node_ids": [
+        "tests/test_ipi_clients.py::test_accept_oserror_closes_provider_and_uses_potential_error",
+        "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[disconnect]",
+        "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[header]",
+        "tests/test_ipi_clients.py::test_bad_client_closes_entire_pool_and_cannot_return_stale_forces[truncate]",
+        "tests/test_ipi_clients.py::test_close_while_accept_completes_does_not_leak_the_new_connection",
+        "tests/test_ipi_clients.py::test_evaluate_rechecks_close_after_coordinate_preparation",
+        "tests/test_ipi_clients.py::test_existing_unix_address_is_not_removed_on_bind_failure",
+        "tests/test_ipi_clients.py::test_fast_client_takes_more_work_than_slow_client",
+        "tests/test_ipi_clients.py::test_missing_clients_timeout_and_close_listener",
+        "tests/test_ipi_clients.py::test_multiple_clients_are_concurrent_ordered_and_persistent",
+        "tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[bind_system]",
+        "tests/test_ipi_clients.py::test_rebind_cannot_mix_cells_inside_one_batch_and_rejects_closed[set_cell]",
+        "tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire",
+        "tests/test_potentials.py::SocketTests::test_ipi_protocol"
+      ],
+      "warning_categories": [
+        "FutureWarning for deprecated metadynamics/opes task names in existing FES workflow tests"
+      ],
+      "qualification": "Restricted execution denied local socket creation. All fourteen failures are on unchanged files, match failing baseline node IDs, and are covered by the permission-enabled 19-test and 2-test passing reruns. This is not recorded as a zero-failure full-suite invocation."
+    }
+  ],
+  "reference_model": {
+    "potential_au": "(x*x-1)**2+(y*y+z*z)/2",
+    "coordinate": "centroid x of atom 0",
+    "reference": "classical continuous-time, separable harmonic spectators cancel; no quantum convergence claim"
+  },
+  "ffs_continuous_executed_config_additions": {
+    "max_trial_steps": 2000,
+    "replicates": 8,
+    "rng_streams": "numpy.random.SeedSequence(20261102).spawn(8)",
+    "provenance": "Parameters read from the executed example source; the original run JSON below is retained without rewriting its result fields."
+  },
+  "ffs_continuous_derived_comparison": {
+    "provenance": "Derived arithmetically from the recorded run, not a second simulation. The original emitted comparison contained only the rate diagnostic; the final example now emits all three.",
+    "flux": {
+      "difference": 0.019401533298653184,
+      "difference_in_standard_errors": 2.849205655843703,
+      "within_three_standard_errors": true,
+      "within_three_standard_errors_plus_one_percent_dt_allowance": true
+    },
+    "crossing_probability": {
+      "difference": 0.04151509007855769,
+      "difference_in_standard_errors": 0.759586942717703,
+      "within_three_standard_errors": true,
+      "within_three_standard_errors_plus_one_percent_dt_allowance": true
+    },
+    "rate": {
+      "difference": 0.024736878566375187,
+      "difference_in_standard_errors": 1.0583751700605097,
+      "within_three_standard_errors": true,
+      "within_three_standard_errors_plus_one_percent_dt_allowance": true
+    },
+    "all_within_three_standard_errors": true
+  },
+  "ffs_discrete_reproducibility": {
+    "test": "tests/test_ffs.py::test_double_well_rate_matches_exact_markov_chain_with_replicate_errors",
+    "seed_per_run": "4812 + run_index, run_index=0..7",
+    "max_trial_steps": 1000,
+    "reference": "Exact stationary distribution and committor of each discrete Markov matrix; not the continuous Hamiltonian rate."
+  },
+  "working_directory": "/workspace/scratch/393ad8c6351d/PyRPMD",
+  "validated_implementation_commit": "6c8490234290ee843604b65a9986225f9b01b0dc",
+  "validated_implementation_tree": "236fb5e1f6c25bd5742c226e8a17057ff0d2be34",
+  "source_regression_assessment": {
+    "new_source_failures_observed": 0,
+    "full_suite_zero_failure_exit": false,
+    "all_full_suite_failure_nodes_reproduced_on_baseline": true,
+    "all_full_suite_failure_nodes_passed_with_local_socket_permission": true,
+    "socket_related_files_unchanged": [
+      "src/pyrpmd/potentials/socket.py",
+      "tests/test_ipi_clients.py",
+      "tests/test_periodic_materials.py",
+      "tests/test_potentials.py"
+    ],
+    "qualification": "The long baseline temporary path triggers an AF_UNIX address-length error for one baseline case before its socket operation; current full-suite failures are all EPERM. No production source or tests were changed to mask environment errors. Optional dependency skips are retained."
+  },
+  "distribution_manifest": {
+    "new_files_checked": 11,
+    "missing_new_files": [],
+    "existing_patterns_cover_new_modules_tests_examples_and_json": true
+  }
+}
