@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping
 from contextlib import nullcontext
 from pathlib import Path
@@ -16,7 +17,9 @@ class NequIPBatchedPotential(_TensorBatchPotential):
     """Evaluate all frames with one NequIP forward call.
 
     ``model`` is a NequIP GraphModel or a local ``.nequip.pth`` /
-    ``.nequip.pt2`` artifact. AOTInductor artifacts must use ``--target batch``.
+    ``.nequip.pt2`` artifact. AOTInductor artifacts must use ``--target batch``,
+    PyTorch >=2.13, and ``AOTI_RUNTIME_CHECK_INPUTS=1``. Their compiled shape
+    bounds remain authoritative; the native runtime validates every call.
     The model's precision is preserved and must match ``dtype``. CUDA graph
     construction uses NequIP's native Alchemiops batch cell list; CPU uses
     matscipy by default. There is no device or per-frame inference fallback.
@@ -49,6 +52,7 @@ class NequIPBatchedPotential(_TensorBatchPotential):
             raise BackendUnavailableError(
                 "NequIP batching requires the NequIP >=0.19.1 graph API"
             ) from exc
+        self._aoti = False
         self.model, metadata = self._load_model(model)
         self._keys = AtomicDataDict
         # NequIP deliberately scales/shifts and sums energies in its global
@@ -126,9 +130,10 @@ class NequIPBatchedPotential(_TensorBatchPotential):
                             for key, value in metadata.items()}
                 return self.torch.jit.freeze(module.eval()), metadata
             if str(path).endswith(".nequip.pt2"):
+                self._check_aoti_runtime(check_version=True)
                 from nequip.model.inference_models import load_aotinductor_model
                 from nequip.scripts._compile_utils import BATCH_INPUTS, ASE_OUTPUTS
-                # Torch 2.7 AOTI records the device *type* ("cuda"), not
+                # AOTI records the device *type* ("cuda"), not
                 # an ordinal. Its runtime resolves that type to the current
                 # CUDA device while loading; NequIP compares the type literally.
                 # Select the requested ordinal for allocation without passing
@@ -144,6 +149,7 @@ class NequIPBatchedPotential(_TensorBatchPotential):
                 # metadata when keys are supplied. That fallback cannot prove
                 # the artifact was compiled for independent frame batches.
                 self._check_aoti_metadata(metadata)
+                self._aoti = True
                 return module, metadata
             raise ValueError("NequIP model must be .nequip.pth or .nequip.pt2 "
                              "compiled with --target batch")
@@ -157,6 +163,23 @@ class NequIPBatchedPotential(_TensorBatchPotential):
             raise ValueError("NequIP batched models require an enabled ForceStressOutput "
                              "to provide energy-gradient forces")
         return model, model.metadata
+
+    def _check_aoti_runtime(self, *, check_version=False):
+        if check_version:
+            from packaging.version import Version
+
+            if Version(self.torch.__version__) < Version("2.13"):
+                raise BackendUnavailableError(
+                    "NequIP AOTI batching requires PyTorch >=2.13; older CPU "
+                    "compilers can specialize supposedly dynamic node counts. "
+                    "Use eager/TorchScript inference or recompile with a supported runtime."
+                )
+        if os.environ.get("AOTI_RUNTIME_CHECK_INPUTS") != "1":
+            raise PotentialError(
+                "NequIP AOTI requires AOTI_RUNTIME_CHECK_INPUTS=1 before loading "
+                "and throughout evaluation, so native shape/dtype/stride bounds "
+                "are checked before compiled kernels execute."
+            )
 
     def _check_aoti_metadata(self, metadata):
         from nequip.scripts._compile_utils import BATCH_INPUTS, ASE_OUTPUTS
@@ -204,6 +227,8 @@ class NequIPBatchedPotential(_TensorBatchPotential):
 
     def _evaluate_tensor(self, q):
         from ..torch_backend import TensorPESResult
+        if self._aoti:
+            self._check_aoti_runtime()
         torch = self.torch
         batch, natoms, _ = q.shape
         if self._layout is None or self._layout[0] != batch:
@@ -223,8 +248,8 @@ class NequIPBatchedPotential(_TensorBatchPotential):
         )
         with torch.enable_grad():
             data = self.neighborlist(data)
-            # AOTI artifacts assume their compiled strides and do not guard
-            # runtime strides. In particular expanded cells must be contiguous.
+            # Native AOTI checks require the strides used at compilation.
+            # In particular expanded cells must be contiguous.
             data = {key: value.contiguous() for key, value in data.items()}
             output = self.model(data)
         energy, forces = output.get("total_energy"), output.get("forces")
