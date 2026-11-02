@@ -145,7 +145,7 @@ extern "C" inline pyrpmd_rc_v1 pyrpmd_builtin_evaluate_v1(
             }
             energy = context.height * (y2m1 * y2m1) +
                 (.5 * context.confinement * norm2 -
-                 .5 * context.confinement * q[selected] * q[selected]);
+                 .5 * context.confinement * (q[selected] * q[selected]));
             f[selected] = -4. * context.height * y * y2m1 / context.width;
             break;
         }

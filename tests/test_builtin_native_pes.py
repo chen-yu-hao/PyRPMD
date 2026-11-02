@@ -230,6 +230,23 @@ def test_scaled_square_overflow_matches_python_failure(model):
     assert "nonfinite" in result.messages[0]
 
 
+def test_double_well_selected_coordinate_has_no_confinement_energy():
+    potential = DoubleWellPotential(height=1e-30, width=1e10, confinement=.3)
+    q = np.zeros((4, 1, 3))
+    q[:, 0, 0] = [.9, 1.7, 2.1, 3.1]
+    reference = potential.evaluate(q)
+    y = q[:, 0, 0] / potential.width
+    barrier = potential.height * (y*y - 1.)**2
+    # Confinement acts only on coordinates perpendicular to the chosen axis.
+    # Its selected-coordinate terms must cancel before adding the tiny barrier.
+    np.testing.assert_array_equal(reference.energy, barrier)
+    result = _call(potential.native_binding(1), q)
+    assert result.rc == 0
+    np.testing.assert_array_equal(result.status, 0)
+    np.testing.assert_allclose(result.energy, barrier, rtol=2e-15, atol=0.)
+    np.testing.assert_allclose(result.forces, reference.forces, rtol=2e-15, atol=0.)
+
+
 @pytest.mark.parametrize("target, field, value, expected_rc", [
     ("input", "abi_version", 2, 2),
     ("input", "struct_size", 0, 2),
