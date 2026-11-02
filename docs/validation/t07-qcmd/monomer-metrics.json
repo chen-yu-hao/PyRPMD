@@ -1,0 +1,311 @@
+{
+  "schema": "PyRPMD.t07-monomer-diagnostic.v1",
+  "cwd": "/workspace/scratch/a41bf9fc4cc2/PyRPMD",
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "logical_cpus_available": 9,
+    "cpu_model": "not exposed by this execution environment",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "threadpools": [
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      },
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/scipy.libs/libscipy_openblas-6cdc3b4a.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "temperature_K": 150,
+      "master_seed": 1707,
+      "copies": 8,
+      "beads": 32,
+      "production_fs": 1000.0,
+      "equilibration_fs": 500.0,
+      "pa_cmd_dt_fs": 0.025,
+      "f_qcmd_dt_fs": 0.1,
+      "omega_cm1": 14000.0,
+      "friction_scale": 1.0,
+      "pa_cmd_peak_cm1": 3155.666183820408,
+      "f_qcmd_peak_cm1": 3847.8768305939166,
+      "blue_shift_cm1": 692.2106467735084,
+      "pa_cmd_per_monomer_peaks_cm1": [
+        3399.9758238581167,
+        3338.89841384869,
+        2952.0748171223167,
+        3196.384457160026,
+        3176.0253204902174,
+        3033.5113638015537,
+        3135.3070471505985,
+        2992.7930904619357
+      ],
+      "f_qcmd_per_monomer_peaks_cm1": [
+        3725.7220105750625,
+        3705.3628739052533,
+        3705.3628739052533,
+        3644.2854638958256,
+        3847.8768305939166,
+        3888.595103933535,
+        3725.7220105750625,
+        3868.2359672637263
+      ],
+      "pa_cmd_elapsed_seconds": 69.27217463399575,
+      "f_qcmd_elapsed_seconds": 20.342702066001948,
+      "pa_cmd_microseconds_per_step": 1154.536243899929,
+      "f_qcmd_microseconds_per_step": 1356.1801377334632,
+      "equal_physical_duration_walltime_ratio": 3.4052592624736873,
+      "fft_bin_spacing_cm1": 20.359136669809086,
+      "cmd_output_directory": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150-final",
+      "fqcmd_output_directory": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150",
+      "cmd_report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150-final/report-cmd.json",
+      "fqcmd_report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150/report-f-qcmd.json",
+      "source_identity_equal": true,
+      "model_sha256": "4d04563e6285a6541dd8305444d38bccb0911ef2edb11ee82d8a644ec99ef4d6",
+      "physical_converged": false,
+      "pa_cmd_band_centroid_cm1": 3231.7393926179625,
+      "f_qcmd_band_centroid_cm1": 3785.089621022571
+    },
+    {
+      "temperature_K": 300,
+      "master_seed": 1707,
+      "copies": 8,
+      "beads": 32,
+      "production_fs": 1000.0,
+      "equilibration_fs": 500.0,
+      "pa_cmd_dt_fs": 0.025,
+      "f_qcmd_dt_fs": 0.1,
+      "omega_cm1": 14000.0,
+      "friction_scale": 1.0,
+      "pa_cmd_peak_cm1": 3542.489780546781,
+      "f_qcmd_peak_cm1": 3827.5176939241073,
+      "blue_shift_cm1": 285.0279133773265,
+      "pa_cmd_per_monomer_peaks_cm1": [
+        3807.1585572542986,
+        3725.7220105750625,
+        3562.848917216589,
+        3685.0037372354445,
+        3522.1306438769716,
+        3705.3628739052533,
+        3522.1306438769716,
+        3888.595103933535
+      ],
+      "f_qcmd_per_monomer_peaks_cm1": [
+        3725.7220105750625,
+        3664.644600565635,
+        3746.0811472448713,
+        3725.7220105750625,
+        3827.5176939241073,
+        3685.0037372354445,
+        3807.1585572542986,
+        3908.9542406033443
+      ],
+      "pa_cmd_elapsed_seconds": 67.71962033700402,
+      "f_qcmd_elapsed_seconds": 20.92876812400209,
+      "pa_cmd_microseconds_per_step": 1128.660338950067,
+      "f_qcmd_microseconds_per_step": 1395.251208266806,
+      "equal_physical_duration_walltime_ratio": 3.235719366556505,
+      "fft_bin_spacing_cm1": 20.359136669809086,
+      "cmd_output_directory": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-300-final",
+      "fqcmd_output_directory": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-300",
+      "cmd_report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-300-final/report-cmd.json",
+      "fqcmd_report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-300/report-f-qcmd.json",
+      "source_identity_equal": true,
+      "model_sha256": "66809c4518e359c84f49fd5297972363685369ca1013af8e1acc0b4a96a5a53c",
+      "physical_converged": false,
+      "pa_cmd_band_centroid_cm1": 3621.0561429724617,
+      "f_qcmd_band_centroid_cm1": 3780.2656433547972
+    },
+    {
+      "temperature_K": 150,
+      "master_seed": 2707,
+      "copies": 8,
+      "beads": 32,
+      "production_fs": 1000.0,
+      "equilibration_fs": 500.0,
+      "pa_cmd_dt_fs": 0.025,
+      "f_qcmd_dt_fs": 0.1,
+      "omega_cm1": 14000.0,
+      "friction_scale": 1.0,
+      "pa_cmd_peak_cm1": 3237.102730499644,
+      "f_qcmd_peak_cm1": 3766.44028391468,
+      "blue_shift_cm1": 529.3375534150359,
+      "pa_cmd_per_monomer_peaks_cm1": [
+        3196.384457160026,
+        3216.743593829835,
+        3114.9479104807897,
+        3196.384457160026,
+        3237.102730499644,
+        3114.9479104807897,
+        3216.743593829835,
+        2890.9974071128895
+      ],
+      "f_qcmd_per_monomer_peaks_cm1": [
+        3766.44028391468,
+        3746.0811472448713,
+        3746.0811472448713,
+        3522.1306438769716,
+        3827.5176939241073,
+        3725.7220105750625,
+        3766.44028391468,
+        3786.7994205844893
+      ],
+      "pa_cmd_elapsed_seconds": 71.11820481299947,
+      "f_qcmd_elapsed_seconds": 20.37441857199883,
+      "pa_cmd_microseconds_per_step": 1185.303413549991,
+      "f_qcmd_microseconds_per_step": 1358.2945714665886,
+      "equal_physical_duration_walltime_ratio": 3.490563647825481,
+      "fft_bin_spacing_cm1": 20.359136669809086,
+      "cmd_output_directory": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150-seed2707",
+      "fqcmd_output_directory": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150-seed2707",
+      "cmd_report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150-seed2707/report-cmd.json",
+      "fqcmd_report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150-seed2707/report-f-qcmd.json",
+      "source_identity_equal": true,
+      "model_sha256": "4d04563e6285a6541dd8305444d38bccb0911ef2edb11ee82d8a644ec99ef4d6",
+      "physical_converged": false,
+      "pa_cmd_band_centroid_cm1": 3279.5485723573356,
+      "f_qcmd_band_centroid_cm1": 3801.077180309425
+    }
+  ],
+  "pooled_150K_two_seeds": {
+    "pa-cmd": {
+      "peak_cm1": 3237.102730499644,
+      "band_centroid_cm1": 3255.5879627501395
+    },
+    "f-qcmd": {
+      "peak_cm1": 3766.44028391468,
+      "band_centroid_cm1": 3793.9911994121153
+    },
+    "blue_shift_cm1": 529.3375534150359
+  },
+  "fit": [
+    {
+      "temperature_K": 150,
+      "elapsed_seconds": 309.404502657002,
+      "training_steps": 194000,
+      "raw_total_variation": [
+        {
+          "iteration": 0,
+          "angle": 0.02584375,
+          "bond": 0.316359375
+        },
+        {
+          "iteration": 1,
+          "angle": 0.021390624999999996,
+          "bond": 0.18095312500000002
+        },
+        {
+          "iteration": 2,
+          "angle": 0.022250000000000013,
+          "bond": 0.10460937500000003
+        },
+        {
+          "iteration": 3,
+          "angle": 0.017593750000000002,
+          "bond": 0.05325000000000001
+        },
+        {
+          "iteration": 4,
+          "angle": 0.02795312499999998,
+          "bond": 0.03917968749999999
+        },
+        {
+          "iteration": 5,
+          "angle": 0.027109375,
+          "bond": 0.01578125000000001
+        }
+      ],
+      "report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-150/report-fit.json"
+    },
+    {
+      "temperature_K": 300,
+      "elapsed_seconds": 307.29718870200304,
+      "training_steps": 194000,
+      "raw_total_variation": [
+        {
+          "iteration": 0,
+          "angle": 0.02471874999999999,
+          "bond": 0.23375
+        },
+        {
+          "iteration": 1,
+          "angle": 0.03073437499999998,
+          "bond": 0.126640625
+        },
+        {
+          "iteration": 2,
+          "angle": 0.021812499999999995,
+          "bond": 0.0709296875
+        },
+        {
+          "iteration": 3,
+          "angle": 0.01871875,
+          "bond": 0.0342421875
+        },
+        {
+          "iteration": 4,
+          "angle": 0.021734374999999986,
+          "bond": 0.02968750000000001
+        },
+        {
+          "iteration": 5,
+          "angle": 0.012921875,
+          "bond": 0.011539062499999999
+        }
+      ],
+      "report": "/workspace/scratch/a41bf9fc4cc2/t07-monomer-300/report-fit.json"
+    }
+  ],
+  "commands": [
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage fit --output ../t07-monomer-150 --temperature 150 --beads 32 --copies 8",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage cmd --output ../t07-monomer-150-final --temperature 150 --beads 32 --copies 8 --equilibration-fs 500 --production-fs 1000",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage f-qcmd --output ../t07-monomer-150 --temperature 150 --beads 32 --copies 8 --equilibration-fs 500 --production-fs 1000",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage fit --output ../t07-monomer-300 --temperature 300 --beads 32 --copies 8",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage cmd --output ../t07-monomer-300-final --temperature 300 --beads 32 --copies 8 --equilibration-fs 500 --production-fs 1000",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage f-qcmd --output ../t07-monomer-300 --temperature 300 --beads 32 --copies 8 --equilibration-fs 500 --production-fs 1000",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage cmd --output ../t07-monomer-150-seed2707 --temperature 150 --beads 32 --copies 8 --seed 2707 --equilibration-fs 500 --production-fs 1000",
+    "cp ../t07-monomer-150/qcmd-model.npz ../t07-monomer-150-seed2707/qcmd-model.npz",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py --stage f-qcmd --output ../t07-monomer-150-seed2707 --temperature 150 --beads 32 --copies 8 --seed 2707 --equilibration-fs 500 --production-fs 1000"
+  ],
+  "independent_reference": {
+    "force_finite_difference_max_error_hartree_per_bohr": 3.981747895807908e-11,
+    "finite_difference_step_bohr": 1e-05,
+    "harmonic_modes_cm1": [
+      1580.26675262,
+      3853.07393198,
+      3920.71311612
+    ],
+    "tests_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_qcmd_monomer.py",
+    "tests_output": "6 passed in 0.23s"
+  },
+  "final_source_reruns_exact_q_p_dipole_vs_original": {
+    "150K": true,
+    "300K": true
+  },
+  "physical_converged": false,
+  "converged": false,
+  "limitations": [
+    "Second production seed at 150K uses the same fitted potential and does not measure fitting uncertainty.",
+    "Physical frequency scale of 1ps record is approximately 33.36 cm^-1; zero-padding grid 20.36 cm^-1 is not resolution.",
+    "Different q-TIP4P/F PES from Partridge-Schwenke gas-phase Fig4 of Trenins2019. No quantitative paper reproduction.",
+    "Bead/timestep/adiabaticity/thermostat/training/IBI/grid/window/seeds not converged.",
+    "Parallel jobs share execution host; timing is descriptive NumPy-reference walltime, not dedicated hardware benchmarking.",
+    "No liquid-water result; ordinary model dipoles at quasi-centroid geometry approximate conditional observables."
+  ]
+}

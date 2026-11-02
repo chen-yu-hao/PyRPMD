@@ -1,0 +1,44 @@
+# Gas-phase monomer example, not a converged spectrum or a liquid calculation.
+# First fit this *one-monomer* model from the repository root:
+# OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python examples/qcmd/validate_monomer.py \
+#   --stage fit --copies 1 --temperature 150 --output runs/qcmd-monomer
+# Then: pyrpmd run examples/qcmd/f-qcmd.inp
+task = "spectroscopy"
+temperature = "150 K"
+beads = 1
+seed = 1707
+
+[system]
+symbols = ["O", "H", "H"]
+geometry = [[0.0, 0.0, 0.0], [1.7799330379925404, 0.0, 0.0], [-0.5322725858440728, 1.6984838869109764, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "python"
+factory = "water_monomer.py:build"
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.1 fs"
+
+[sampling]
+equilibration_steps = 5000
+production_steps = 10000
+sample_interval = 1
+replicas = 4
+gamma_centroid = "0.413413734 fs^-1"
+
+[spectroscopy]
+method = "f-qcmd"
+qcmd_model_file = "../../runs/qcmd-monomer/qcmd-model.npz"
+spectra = ["ir"]
+window = "hann"
+normalize = false
+
+[properties]
+provider = "python"
+factory = "water_monomer.py:build_properties"
+
+[output]
+directory = "../../runs/spectroscopy-f-qcmd"
+checkpoint_steps = 1000
