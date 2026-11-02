@@ -11,6 +11,9 @@ _WORKFLOWS = {
         "metadynamics", "run_metadynamics", "reanalyze_metadynamics", "validate_metadynamics"
     ),
     "opes": ("opes", "run_opes", "reanalyze_opes", "validate_opes"),
+    "abf": ("abf", "run_abf", "reanalyze_abf", "validate_abf"),
+    "eabf": ("abf", "run_abf", "reanalyze_abf", "validate_abf"),
+    "steered": ("steered", "run_steered", "reanalyze_steered", "validate_steered"),
 }
 
 

@@ -1,0 +1,41 @@
+# Fixed-hill PLUMED file restart smoke example, not a converged molecular FES.
+# pyrpmd run examples/plumed/restart_metadynamics.inp --output runs/plumed-restart
+# pyrpmd resume runs/plumed-restart
+task = "plumed"
+temperature = "300 K"
+beads = 4
+seed = 51
+
+[system]
+symbols = ["H", "H"]
+geometry = [[0.0, 0.0, 0.0], [1.4, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = { k = 0.001 }
+
+[dynamics]
+timestep = "0.05 fs"
+integrator = "cayley-bcb"
+loop_backend = "python"
+
+[sampling]
+thermostat = "pile-l"
+integrator = "bcocb"
+equilibration_steps = 20
+production_steps = 200
+sample_interval = 5
+
+[plumed]
+restart = "files"
+input = """
+UNITS LENGTH=Bohr ENERGY=Ha TIME=atomic
+d: DISTANCE ATOMS=1,2 NOPBC
+wall: UPPER_WALLS ARG=d AT=3.0 KAPPA=0.01
+m: METAD ARG=d SIGMA=0.1 HEIGHT=0.00002 PACE=10 BIASFACTOR=5 TEMP=300 FILE=HILLS
+PRINT ARG=d,m.bias STRIDE=5 FILE=COLVAR
+"""
+
+[output]
+checkpoint_steps = 25

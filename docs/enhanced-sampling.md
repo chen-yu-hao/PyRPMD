@@ -706,3 +706,300 @@ These are implementation regressions, not claims of physical convergence.
   gives the physical hill-height, bias-factor and asymptotic FES conventions
   used for an independent formula cross-check. Code here is an independent
   implementation; no PLUMED code has been copied.
+
+## Centroid ABF and extended-system ABF
+
+The additional `fes.method="abf"` and `"eabf"` selectors support one or two
+nonperiodic centroid CVs. They produce the same `FESResult` NPZ/CSV/JSON layout
+described above, with `measure="cv_density"` and `uncertainty_kind="replica_spread"`.
+The evaluated CV Jacobian must have full row rank; repeated or functionally
+dependent CVs do not define a regular density in the declared dimension.
+The current implementation also rejects isolated rank-deficient points rather
+than attempting a singular-coordinate estimator. Row normalization keeps this
+geometrical check independent of the chosen CV units.
+They require an unconstrained system with all atoms mobile, a canonical
+sampling thermostat, and `loop_backend="auto"` or `"python"`. Fixed atoms,
+periodic cells/CVs, pressure coupling, replica exchange and the rate-flux
+measure are rejected. The existing `FluxMetricBias` is not involved.
+
+### Local mean force and the full-ring Jacobian
+
+Let `J[d,p,n,c]` be the public CV Jacobian and `G = sum_p J` the derivative
+with respect to the centroid. Define the mass-weighted dual field
+
+```{math}
+v=(GM^{-1}G^{T})^{-1}GM^{-1}.
+```
+
+The local free-energy gradient is
+
+```{math}
+g_i(q)=-v_i\cdot\frac{1}{P}\sum_p F_p(q)
+       -\frac{1}{\beta}\operatorname{div}_{\bar q}v_i.
+```
+
+`F_p` is the unbiased physical PES force, with no bead scaling. Ring spring
+forces cancel under a common centroid displacement. The divergence supplies
+the geometrical Jacobian/Fixman term for the probability-density measure:
+for a radial CV in three dimensions it contributes `-2/(beta*r)`. Omitting it
+would reconstruct a different free energy. Singular or ill-conditioned CV
+metrics fail explicitly.
+
+`derivative="analytic"` supports unmodified Cartesian components and a single
+`Distance` or `COMDistance`. Other centroid CVs, including learned coordinates,
+must explicitly request `derivative="finite_difference"`. That route takes
+`2*3N` additional centroid-Jacobian evaluations per force observation, uses
+`fd_step` (default `1e-5`) as a relative Cartesian displacement, and stores no
+dense Hessian. Study this step size separately. eABF avoids these second
+derivatives altogether.
+
+The applied bias is **projected ABF**: online Welford statistics estimate the
+mean force on the declared grid. Every `pace` production steps, a trapezoidal
+edge integration in 1D or sparse least-squares Helmholtz projection in 2D
+constructs a scalar free-energy estimate. The negative of its multilinear
+interpolant is the bias potential; its analytic derivative supplies forces.
+Consequently the energy and force remain consistent, including in 2D with
+noisy, nonconservative raw mean forces. The local field ramps linearly with
+`min(count/full_samples, 1)`. Evaluating a force never changes the history.
+Grid resolution, ramp, update interval, derivative scheme and walls are all
+scientific parameters. The method is not a native fused loop, although the
+existing native free-ring substeps remain available.
+
+```toml
+[fes]
+method = "abf"
+
+[[fes.cvs]]
+name = "x"
+kind = "cartesian"
+atom = 0
+axis = "x"
+estimator = "centroid"
+
+[fes.abf]
+cvs = ["x"]
+ranges = [["-1.5 bohr", "1.5 bohr"]]
+bins = [60]
+full_samples = 200
+pace = 100
+wall_stiffness = ["1 hartree/bohr^2"]
+derivative = "analytic"
+
+[fes.sampling]
+equilibration_steps = 1000
+production_steps = 100000
+sample_interval = 10
+replicas = 4
+thermostat = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+
+[fes.analysis]
+method = "mean_force"
+min_count = 50
+bootstrap = 0
+```
+
+Put `bins` and `ranges` in the method table: changing them changes sampling,
+so they are not reanalysis overrides. Coordinate arrays also accept `_au`
+spellings (`ranges_au`, `wall_stiffness_au`). Numerical values in ordinary
+spellings follow the selected CV's declared input units; unit strings pass
+through the common unit parser. Outside the grid the adaptive potential is
+held fixed in the outward direction and the wall adds
+`0.5*wall_stiffness*(value-boundary)^2`. The unbiased force estimator never
+includes the adaptive or wall force.
+
+### eABF and CZAR reconstruction
+
+For `method="eabf"`, replace the ABF table with, for example:
+
+```toml
+[fes.eabf]
+cvs = ["x"]
+ranges = [["-1.5 bohr", "1.5 bohr"]]
+bins = [60]
+full_samples = 200
+pace = 100
+wall_stiffness = ["1 hartree/bohr^2"]
+coupling = ["2 hartree/bohr^2"]
+extended_mass = ["10 me"]
+friction = "0.01 fs^-1"
+
+[fes.analysis]
+method = "czar"
+min_count = 50
+bootstrap = 0
+```
+
+The auxiliary variable `lambda` has its own momentum, mass and Langevin bath
+at physical inverse temperature `beta`. A symmetric auxiliary OU/kick/drift
+split surrounds the physical ring-polymer sampling step. Physical coordinates
+feel only the harmonic coupling `W = coupling*(xi-lambda)^2/2`; their ring
+Hamiltonian contains `P*W`. The adaptive force acts on `lambda`. Auxiliary
+masses for a length CV have ordinary mass units; for other CV dimensions the
+required units are `energy*time^2/CV^2`, with explicit `_au` inputs also accepted.
+
+The auxiliary free energy is Gaussian-smoothed by the coupling. The reported
+physical-CV surface instead uses the corrected z-averaged restraint estimator
+(CZAR):
+
+```{math}
+\nabla A(z)=-\beta^{-1}\nabla\log\widetilde\rho(z)
+             +\left\langle K(\lambda-z)\mid\xi=z\right\rangle.
+```
+
+This includes the physical CV's Jacobian through its sampled density without
+evaluating a CV Hessian. Boundary bins and cells missing a complete centered
+derivative stencil are masked; no pseudocounts bridge empty cells. Finite-bin
+derivative errors, insufficient mixing and finite timestep still require
+convergence studies. The auxiliary and physical histograms and conditional
+restraint statistics are retained in the checkpoint.
+
+### Analysis, uncertainty and replay
+
+Every production step contributes to the force/histogram statistics;
+`sample_interval` controls only the exported CV trace. Equilibration does not
+train the adaptive bias. Checkpoints atomically store the MD coordinates,
+momenta and clock, all thermostat/RNG state, online count/mean/M2 statistics,
+the current projected bias, and eABF auxiliary state. A failed substep rolls
+back these coupled states together. The usual `run`, `resume`, `prepare` and
+`analyze --recompute` routes are supported:
+
+```bash
+pyrpmd run examples/abf_double_well.inp --output runs/abf
+pyrpmd resume runs/abf
+pyrpmd analyze runs/abf --recompute
+```
+
+Each replica is reconstructed independently. Only common support is averaged,
+with a shared reference bin; disconnected islands are masked because their
+relative offsets are unknown. Two or more independent histories provide a
+descriptive replica standard deviation. A single history has NaN uncertainty;
+per-bin force variance is not relabeled as a correlation-corrected FES error.
+Both `converged` and `physical_converged` remain false. The tests compare
+radial Jacobians, nonlinear vector CVs, double-well and Müller–Brown numerical
+quadrature, CZAR Gaussian/entropy references, existing umbrella/MBAR estimates,
+and exact interrupted RNG replay. These checks establish implementation
+consistency, not convergence for a molecular production calculation.
+
+## Steered MD and nonequilibrium work
+
+`fes.method="steered"` uses a moving harmonic centroid restraint and writes
+`steered.npz` plus JSON summaries. Its target is the **restrained endpoint
+free-energy difference**, so it does not create a `FESResult` grid. The
+previous common-grid output description applies to the surface estimators.
+Unbiased-PMF/Hummer–Szabo reconstruction is not implemented.
+
+```toml
+[fes]
+method = "steered"
+
+[fes.steered]
+cvs = ["x"]
+start = ["-1 bohr"]
+end = ["1 bohr"]
+stiffness = ["2 hartree/bohr^2"]
+direction = "both"
+thermostat = "langevin"
+gamma = "0.01 fs^-1"
+initial_equilibrium = false
+
+[fes.sampling]
+equilibration_steps = 1000
+production_steps = 5000
+sample_interval = 10
+replicas = 100
+
+[fes.analysis]
+method = "crooks"
+measure = "restrained_endpoints"
+bootstrap = 200
+```
+
+Supply the same CV/system/PES sections as for ordinary FES. An explicit
+`centers`/`centers_au` schedule with `production_steps+1` entries can replace
+`start`/`end`. The reverse ensemble follows the exact reversed schedule.
+`replicas` is the number of independent pulls **per direction**. The steering
+method owns its symmetric Langevin splitting; generic Andersen, PILE and
+thermostat-parameter controls are rejected instead of silently ignored.
+
+Work is done **on** the system. Energies and work use `H_P/P`, so Jarzynski uses
+the physical `beta`, including when `P>1`. The output separates protocol work,
+finite-step shadow work, and bath heat. Estimation uses
+`total_work = protocol_work + shadow_work`; heat is excluded. This explicit
+shadow correction removes deterministic integration-map bias from the
+fluctuation relation, at the cost of two extra energy/PES evaluations per
+pulling step. Fixed-center equilibration uses Metropolis-corrected reversible
+dynamics; a finite equilibration duration still does not prove equilibrium.
+
+```python
+from pyrpmd.steered import jarzynski, crooks
+
+forward = jarzynski(forward_total_work, beta, bootstrap=200, seed=42)
+bidirectional = crooks(forward_total_work, reverse_total_work, beta,
+                       bootstrap=200, seed=42)
+```
+
+The reverse work array retains its native B-to-A sign. `crooks` solves the
+Crooks/Bennett equation, including unequal ensemble sizes. Diagnostics report
+work variance, dissipated work, exponential-weight ESS and concentration,
+second-cumulant and leading-order bias estimates, bootstrap uncertainty, and
+bidirectional overlap. A bootstrap only describes observed independent
+trajectories: it cannot discover unsampled low-work tails or initialization
+bias. `initial_equilibrium` is a user declaration, and neither that declaration
+nor a numerical estimator root sets `physical_converged=true`. Every pull has
+an atomic, identity-checked checkpoint containing RNG, thermostat/MD state,
+protocol position and the complete accumulated work/heat history.
+
+## Thermal strings and learned coordinates
+
+The existing `adaptive_string.py` optimizes a supplied Euclidean force oracle;
+it is not a thermal sampler. The new
+[finite-temperature string workflow](finite-temperature-string.md) adds
+restrained centroid sampling, the averaged CV mass metric, block diagnostics,
+fixed-endpoint path updates and exact iteration-boundary replay, while reusing
+the existing arc-length reparameterization. At finite restraint stiffness it
+targets a smoothed free-energy path; physical convergence remains unverified.
+`PathCV` continues to describe progress/distance from supplied Cartesian
+reference images; a CV-space string is not silently treated as Cartesian
+reference structures.
+
+The [mlcolvar route](mlcolvar.md) trains Deep-LDA or Deep-TICA, exports the full
+preprocessing/network/projection graph as CPU float64 TorchScript, and checks
+it with `TorchScriptCV`. The example and genuine optional end-to-end tests
+include Cartesian finite-difference derivatives and ring-bead scaling. The
+training dependency is optional; missing packages cause explicit pytest skips.
+The [PLUMED guide](plumed.md) describes the separate audited file-RESTART
+protocol for supported external bias histories. VES is not included here.
+
+```{toctree}
+:hidden:
+
+finite-temperature-string
+mlcolvar
+```
+
+### Additional method sources
+
+- E. Darve, D. Rodríguez-Gómez and A. Pohorille, *Adaptive biasing force method
+  for scalar and vector free energy calculations*, JCP **128**, 144120 (2008),
+  [doi:10.1063/1.2829861](https://doi.org/10.1063/1.2829861).
+- H. Alrachid and T. Lelièvre, *Long-time convergence of an adaptive
+  biasing force method: Variance reduction by Helmholtz projection*,
+  SMAI J. Comput. Math. **1**, 55–82 (2015),
+  [doi:10.5802/smai-jcm.4](https://doi.org/10.5802/smai-jcm.4).
+- A. Lesage, T. Lelièvre, G. Stoltz and J. Hénin, *Smoothed Biasing Forces Yield
+  Unbiased Free Energies with the Extended-System Adaptive Biasing Force Method*,
+  JPCB **121**, 3676–3685 (2017),
+  [doi:10.1021/acs.jpcb.6b10055](https://doi.org/10.1021/acs.jpcb.6b10055).
+- C. Jarzynski, *Nonequilibrium Equality for Free Energy Differences*,
+  PRL **78**, 2690 (1997), [doi:10.1103/PhysRevLett.78.2690](https://doi.org/10.1103/PhysRevLett.78.2690).
+- G. E. Crooks, *Entropy production fluctuation theorem and the nonequilibrium
+  work relation for free energy differences*, PRE **60**, 2721 (1999),
+  [doi:10.1103/PhysRevE.60.2721](https://doi.org/10.1103/PhysRevE.60.2721).
+- C. H. Bennett, *Efficient estimation of free energy differences from Monte
+  Carlo data*, J. Comput. Phys. **22**, 245–268 (1976),
+  [doi:10.1016/0021-9991(76)90078-4](https://doi.org/10.1016/0021-9991(76)90078-4).
+- D. A. Sivak, J. D. Chodera and G. E. Crooks, *Using Nonequilibrium Fluctuation
+  Theorems to Understand and Correct Errors in Equilibrium and Nonequilibrium
+  Simulations of Discrete Langevin Dynamics*, PRX **3**, 011007 (2013),
+  [doi:10.1103/PhysRevX.3.011007](https://doi.org/10.1103/PhysRevX.3.011007).

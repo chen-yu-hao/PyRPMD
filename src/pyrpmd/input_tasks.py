@@ -84,6 +84,13 @@ def validate_task_sections(d):
         raise InputError("[metadynamics] requires fes.method='metadynamics' or rate.pmf.method='metadynamics'")
     if "opes" in d and method != "opes" and rate_pmf_method != "opes":
         raise InputError("[opes] requires fes.method='opes' or rate.pmf.method='opes'")
+    for name in ("abf", "eabf", "steered"):
+        if name in d and method != name:
+            raise InputError(f"[{name}] requires fes.method='{name}'")
+    if method in ("abf", "eabf", "steered") and any(
+        name in d for name in ("reaction", "collision", "outcomes", "rate", "recrossing")
+    ):
+        raise InputError(f"{method} does not accept reaction, collision or rate settings")
     if method == "metadynamics":
         options = d.get("metadynamics", {})
         if options.get("shared_walkers", False) and options.get("multiple_walkers", False):
@@ -107,7 +114,8 @@ def validate_task_sections(d):
         if not any(key in analysis for key in ("bootstrap", "bootstrap_replicates", "bootstrap_samples")):
             analysis["bootstrap"] = 0
     analysis = d.get("analysis", {})
-    if analysis.get("measure", "cv_density") not in ("cv_density", "rate_flux"):
+    if (analysis.get("measure", "cv_density") not in ("cv_density", "rate_flux")
+            and not (method == "steered" and analysis.get("measure") == "restrained_endpoints")):
         raise InputError("analysis.measure must be cv_density or rate_flux")
     if "flux_axis" in analysis:
         if analysis.get("measure", "cv_density") != "rate_flux":
