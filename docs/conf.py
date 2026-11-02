@@ -33,6 +33,8 @@ include_patterns = [
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
     "rate-input-v2.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
+    "torch-materials-workflows.md",
+    "implementation-review-2026-11-03.md",
     "rpc-mts.md", "mixed-sampling.md", "trpmd-spectroscopy.md", "propagation-stack.md", "condensed-phase-nqe.md",
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
