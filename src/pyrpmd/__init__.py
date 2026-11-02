@@ -59,6 +59,9 @@ def __getattr__(name):
         from .analysis.diffusion import analyze_diffusion
 
         return analyze_diffusion
+    if name in ("CommittorSampler", "CommittorShot", "CommittorResult", "committor_statistics"):
+        from . import committor
+        return getattr(committor, name)
     if name == "OPESBias":
         from .opes import OPESBias
 
@@ -112,6 +115,7 @@ __all__ = [
     "NRPMDState", "NRPMDDynamics", "DiabaticResult",
     "JobSpec", "System", "State", "Dynamics", "NoseHooverChain", "run", "prepare",
     "resume_run", "extend_run", "analyze_run", "analyze_diffusion", "__version__",
+    "CommittorSampler", "CommittorShot", "CommittorResult", "committor_statistics",
     "OPESBias", "PlumedBias", "PlumedBiasResult", "TransitionInterfaceSampler",
     "TISPath", "TISResult", "TISMove", "PathGenerationError",
     "estimate_effective_flux", "combine_tis_rate",
