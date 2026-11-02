@@ -1,0 +1,211 @@
+Running Sphinx v8.2.3
+loading translations [en]... done
+loading pickled environment... The configuration has changed (5 options: 'html_css_files', 'html_permalinks_icon', 'html_theme_options', 'mathjax3_config', 'templates_path')
+done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'colon_fence', 'dollarmath'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output... 
+building [html]: targets for 0 source files that are out of date
+updating environment: [config changed ('include_patterns')] 68 added, 0 changed, 0 removed
+reading sources... [  1%] andersen-sampling
+reading sources... [  3%] batched-dynamics
+reading sources... [  4%] bond-constraints
+reading sources... [  6%] committor
+reading sources... [  7%] condensed-phase-nqe
+reading sources... [  9%] distribution
+reading sources... [ 10%] enhanced-sampling
+reading sources... [ 12%] general-coordinate-rates
+reading sources... [ 13%] index
+reading sources... [ 15%] instanton
+reading sources... [ 16%] literature-validation
+reading sources... [ 18%] low-temperature
+reading sources... [ 19%] manual/adaptive-nrpmd
+reading sources... [ 21%] manual/analysis-reports
+reading sources... [ 22%] manual/api
+reading sources... [ 24%] manual/development
+reading sources... [ 25%] manual/electrochemistry
+reading sources... [ 26%] manual/examples
+reading sources... [ 28%] manual/execution
+reading sources... [ 29%] manual/input
+reading sources... [ 31%] manual/installation
+reading sources... [ 32%] manual/jaxpip-generation
+reading sources... [ 34%] manual/nonadiabatic
+reading sources... [ 35%] manual/pcet
+reading sources... [ 37%] manual/periodic
+reading sources... [ 38%] manual/pes-generation
+reading sources... [ 40%] manual/potentials
+reading sources... [ 41%] manual/quickstart
+reading sources... [ 43%] manual/references
+reading sources... [ 44%] manual/reproduction
+reading sources... [ 46%] manual/results
+reading sources... [ 47%] manual/science
+reading sources... [ 49%] manual/troubleshooting
+reading sources... [ 50%] manual/workflows
+reading sources... [ 51%] mixed-sampling
+reading sources... [ 53%] molecular-nonadiabatic
+reading sources... [ 54%] nonadiabatic-comparison
+reading sources... [ 56%] nonadiabatic-ensembles
+reading sources... [ 57%] nonadiabatic-hopping-extensions
+reading sources... [ 59%] nonadiabatic-models
+reading sources... [ 60%] nonadiabatic-performance
+reading sources... [ 62%] nonadiabatic-spin-methods
+reading sources... [ 63%] nonadiabatic-workflow
+reading sources... [ 65%] opes
+reading sources... [ 66%] performance-dynamics
+reading sources... [ 68%] plumed
+reading sources... [ 69%] propagation-stack
+reading sources... [ 71%] publication-readiness
+reading sources... [ 72%] qcmd
+reading sources... [ 74%] quantum-statistics
+reading sources... [ 75%] rate-input-v2
+reading sources... [ 76%] rate-pmf-selection
+reading sources... [ 78%] rate-postprocessing
+reading sources... [ 79%] rate-studies
+reading sources... [ 81%] replica-exchange
+reading sources... [ 82%] rpc-mts
+reading sources... [ 84%] tier2-methods
+reading sources... [ 85%] tier2-ml-lifecycle
+reading sources... [ 87%] tier2-nonadiabatic
+reading sources... [ 88%] tier2-path-integral
+reading sources... [ 90%] tier2-sampling
+reading sources... [ 91%] tier2-spectroscopy
+reading sources... [ 93%] trajectory-export
+reading sources... [ 94%] transition-interface-sampling
+reading sources... [ 96%] transition-state-search
+reading sources... [ 97%] trpmd-spectroscopy
+reading sources... [ 99%] validation/tier1-2026-10-31/README
+reading sources... [100%] validation/tier1-2026-10-31/pmf-replay
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets... 
+copying downloadable files... [  3%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [  5%] ../../examples/rate/research.inp
+copying downloadable files... [  8%] ../../examples/materials/rigid_water.inp
+copying downloadable files... [ 10%] ../../benchmarks/condensed_phase/piglet_reference.py
+copying downloadable files... [ 13%] ../../benchmarks/condensed_phase/results/rejected_protocol.json
+copying downloadable files... [ 15%] ../../benchmarks/condensed_phase/results/execution_interruption.json
+copying downloadable files... [ 18%] ../../benchmarks/condensed_phase/results/harmonic_summary.json
+copying downloadable files... [ 21%] ../../benchmarks/condensed_phase/results/lj_summary.json
+copying downloadable files... [ 23%] ../../benchmarks/condensed_phase/results/piglet_harmonic_reference.json
+copying downloadable files... [ 26%] ../../benchmarks/condensed_phase/results/comparisons.json
+copying downloadable files... [ 28%] ../../benchmarks/condensed_phase/results/piglet_pressure_diagnostic.json
+copying downloadable files... [ 31%] ../../benchmarks/condensed_phase/results/integrity_manifest.json
+copying downloadable files... [ 33%] ../../benchmarks/condensed_phase/results/software_validation.json
+copying downloadable files... [ 36%] ../../benchmarks/condensed_phase/results/validation.pdf
+copying downloadable files... [ 38%] ../../examples/rate/general_coordinate.inp
+copying downloadable files... [ 41%] method-references.json
+copying downloadable files... [ 44%] references.bib
+copying downloadable files... [ 46%] ../../benchmarks/torch_literature/mixed_sampling_summary.json
+copying downloadable files... [ 49%] validation/t07-qcmd/monomer-metrics.json
+copying downloadable files... [ 51%] validation/t07-qcmd/monomer-spectra.csv
+copying downloadable files... [ 54%] ../../examples/rate/pilot.inp
+copying downloadable files... [ 56%] ../../examples/rate/minimal.inp
+copying downloadable files... [ 59%] ../../examples/rate/toy_exchange.py
+copying downloadable files... [ 62%] ../../benchmarks/transition_state_search/analytic.py
+copying downloadable files... [ 64%] ../../benchmarks/transition_state_search/h3.py
+copying downloadable files... [ 67%] ../../benchmarks/transition_state_search/rates.py
+copying downloadable files... [ 69%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 72%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 74%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 77%] validation/tier1-2026-10-31/ci-initial-feature.json
+copying downloadable files... [ 79%] validation/tier1-2026-10-31/merged-docs-verification.json
+copying downloadable files... [ 82%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 85%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 87%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 90%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 92%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 95%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 97%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files... 
+Writing evaluated template result to /workspace/scratch/a41bf9fc4cc2/PyRPMD/docs/_build/html/_static/basic.css
+Writing evaluated template result to /workspace/scratch/a41bf9fc4cc2/PyRPMD/docs/_build/html/_static/language_data.js
+Writing evaluated template result to /workspace/scratch/a41bf9fc4cc2/PyRPMD/docs/_build/html/_static/documentation_options.js
+copying static files: done
+copying extra files... 
+copying extra files: done
+copying assets: done
+writing output... [  1%] andersen-sampling
+writing output... [  3%] batched-dynamics
+writing output... [  4%] bond-constraints
+writing output... [  6%] committor
+writing output... [  7%] condensed-phase-nqe
+writing output... [  9%] distribution
+writing output... [ 10%] enhanced-sampling
+writing output... [ 12%] general-coordinate-rates
+writing output... [ 13%] index
+writing output... [ 15%] instanton
+writing output... [ 16%] literature-validation
+writing output... [ 18%] low-temperature
+writing output... [ 19%] manual/adaptive-nrpmd
+writing output... [ 21%] manual/analysis-reports
+writing output... [ 22%] manual/api
+writing output... [ 24%] manual/development
+writing output... [ 25%] manual/electrochemistry
+writing output... [ 26%] manual/examples
+writing output... [ 28%] manual/execution
+writing output... [ 29%] manual/input
+writing output... [ 31%] manual/installation
+writing output... [ 32%] manual/jaxpip-generation
+writing output... [ 34%] manual/nonadiabatic
+writing output... [ 35%] manual/pcet
+writing output... [ 37%] manual/periodic
+writing output... [ 38%] manual/pes-generation
+writing output... [ 40%] manual/potentials
+writing output... [ 41%] manual/quickstart
+writing output... [ 43%] manual/references
+writing output... [ 44%] manual/reproduction
+writing output... [ 46%] manual/results
+writing output... [ 47%] manual/science
+writing output... [ 49%] manual/troubleshooting
+writing output... [ 50%] manual/workflows
+writing output... [ 51%] mixed-sampling
+writing output... [ 53%] molecular-nonadiabatic
+writing output... [ 54%] nonadiabatic-comparison
+writing output... [ 56%] nonadiabatic-ensembles
+writing output... [ 57%] nonadiabatic-hopping-extensions
+writing output... [ 59%] nonadiabatic-models
+writing output... [ 60%] nonadiabatic-performance
+writing output... [ 62%] nonadiabatic-spin-methods
+writing output... [ 63%] nonadiabatic-workflow
+writing output... [ 65%] opes
+writing output... [ 66%] performance-dynamics
+writing output... [ 68%] plumed
+writing output... [ 69%] propagation-stack
+writing output... [ 71%] publication-readiness
+writing output... [ 72%] qcmd
+writing output... [ 74%] quantum-statistics
+writing output... [ 75%] rate-input-v2
+writing output... [ 76%] rate-pmf-selection
+writing output... [ 78%] rate-postprocessing
+writing output... [ 79%] rate-studies
+writing output... [ 81%] replica-exchange
+writing output... [ 82%] rpc-mts
+writing output... [ 84%] tier2-methods
+writing output... [ 85%] tier2-ml-lifecycle
+writing output... [ 87%] tier2-nonadiabatic
+writing output... [ 88%] tier2-path-integral
+writing output... [ 90%] tier2-sampling
+writing output... [ 91%] tier2-spectroscopy
+writing output... [ 93%] trajectory-export
+writing output... [ 94%] transition-interface-sampling
+writing output... [ 96%] transition-state-search
+writing output... [ 97%] trpmd-spectroscopy
+writing output... [ 99%] validation/tier1-2026-10-31/README
+writing output... [100%] validation/tier1-2026-10-31/pmf-replay
+
+generating indices... genindex done
+highlighting module code... 
+writing additional pages... search done
+copying images... [ 50%] ../benchmarks/condensed_phase/results/validation.png
+copying images... [100%] validation/t07-qcmd/monomer-spectra.png
+
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build succeeded.
+
+The HTML pages are in docs/_build/html.

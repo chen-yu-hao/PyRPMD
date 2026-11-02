@@ -1,0 +1,5 @@
+.............................s.......................................... [ 52%]
+..................................................................       [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_tier2_spectroscopy.py:296: could not import 'torch': No module named 'torch'
+137 passed, 1 skipped in 5.58s
