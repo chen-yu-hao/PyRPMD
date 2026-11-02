@@ -1,0 +1,343 @@
+{
+  "schema": "pyrpmd.instanton.production-validation.v1",
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "processor": "x86_64",
+    "logical_cpu_count": 9,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "threads": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": null
+    },
+    "validation_script_sha256": "84087387d13ca5efe566ae2be9fbebbcebbe0af1b85b56327886e82d03dd3871"
+  },
+  "h3": {
+    "stationary_points": {
+      "h2_bond_bohr": 1.4014719756078893,
+      "ts_bond_bohr": 1.7569999994859968,
+      "h2_energy_hartree": -0.17449577089730775,
+      "ts_energy_hartree": -0.15917600012106242,
+      "barrier_hartree": 0.015319770776245328,
+      "crossover_temperature_kelvin": 345.25934474943233,
+      "hydrogen_mass_amu": 1.00782503223,
+      "active_cartesian_dimensions": 9,
+      "reactant_rotor_symmetry_number": 1,
+      "instanton_rotor_symmetry_number": 1,
+      "reaction_degeneracy": 2,
+      "reactant_h_doublet_degeneracy": 2,
+      "instanton_doublet_degeneracy": 2,
+      "energy_zero": "BKMP2 separated hydrogen atoms; action shifted by the isolated H2 minimum",
+      "potential_identity": {
+        "provider": "BKMP2",
+        "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+        "execution_device": "cpu",
+        "thread_safety": "process_serial",
+        "native_batch": true,
+        "dtype": "float64",
+        "trajectory_batch_safe": true,
+        "atomic_numbers": [
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "multiplicity": 2,
+        "energy_zero": "three separated H atoms",
+        "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+        "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+        "library_sha256": "06479e082f573c4a9fe469215c306eb1317594269b138260415a7d110d6f73da"
+      }
+    },
+    "literature": {
+      "doi": "10.1063/1.4996339",
+      "citation": "Karandashev et al., Structural Dynamics 4, 061501 (2017), Table III",
+      "url": "https://www.nccr-must.ch/libraries.files/karandashev-20171.pdf",
+      "potential": "BKMP2",
+      "crossover_temperature_kelvin": 345.0,
+      "rate_unit": "cm^3/s",
+      "semiclassical_rates": {
+        "300": 5.2e-16,
+        "250": 4.3e-17,
+        "200": 2.2e-18
+      },
+      "exact_quantum_rates": {
+        "300": 3.24e-16,
+        "250": 3.67e-17,
+        "200": 2.01e-18
+      },
+      "precision": "two significant figures; up to 512 beads in the source"
+    },
+    "symmetry_convention": {
+      "doi": "10.1080/0144235X.2018.1472353",
+      "citation": "Richardson, Int. Rev. Phys. Chem. 37, 171-216 (2018), Table II and preceding paragraph",
+      "convention": "distinguishable rotors (sigma=1); multiply by two equivalent H2 attack channels"
+    },
+    "temperatures": [
+      {
+        "temperature_kelvin": 200.0,
+        "rows": [
+          {
+            "nbeads": 128,
+            "rate_cm3_s": 2.209232525215587e-18,
+            "relative_error_vs_literature_sci": 0.004196602370721392,
+            "relative_error_vs_exact_quantum": 0.09912065931123726,
+            "action_hbar": 21.157471301635358,
+            "gradient_max": 1.130698312756806e-10,
+            "optimizer_diagnostics": {
+              "force_calls": 66,
+              "force_configurations": 4224,
+              "physical_hessian_evaluations": 3,
+              "finite_difference_hessian_evaluations": 3,
+              "hessian_provider_calls": 0,
+              "hessian_provider_configurations": 0,
+              "method": "bofill",
+              "unique_beads": 64,
+              "hessian_update_interval": 0,
+              "trust_radius_bohr": 0.3,
+              "hessian_updates": 7,
+              "hessian_refreshes": 1,
+              "accepted_steps": 7,
+              "rejected_steps": 3,
+              "iterations": 10,
+              "history": [
+                {
+                  "gradient_max": 1.595453021840335,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 0.35140861790015593,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 0.09681469436858008,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 0.007768486219749779,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 0.00015346790286820122,
+                  "trust_radius_bohr": 0.0375
+                },
+                {
+                  "gradient_max": 2.2693288495440056e-06,
+                  "trust_radius_bohr": 0.0375
+                },
+                {
+                  "gradient_max": 1.1418669870755236e-08,
+                  "trust_radius_bohr": 0.0375
+                },
+                {
+                  "gradient_max": 1.1306983127568061e-10,
+                  "trust_radius_bohr": 0.0375
+                }
+              ],
+              "termination": "gradient tolerance",
+              "raw_negative_modes": 2,
+              "raw_near_zero_modes": 5,
+              "phase_projection_applied": true,
+              "projected_negative_modes": 1,
+              "projected_near_zero_modes": 5,
+              "phase_tolerance": 0.05,
+              "hessian_spectrum_scope": "full_ring_including_discrete_phase"
+            },
+            "removed_rigid_modes": 5,
+            "phase_mode_relative_residual": 0.019609755191807906,
+            "log_reactant_partition": -18.29886707047675,
+            "log_prefactor_au": -18.88458446349099
+          },
+          {
+            "nbeads": 192,
+            "rate_cm3_s": 2.231580664574857e-18,
+            "relative_error_vs_literature_sci": 0.014354847534025827,
+            "relative_error_vs_exact_quantum": 0.11023913660440643,
+            "action_hbar": 21.15869260730652,
+            "gradient_max": 2.0799112432356992e-11,
+            "optimizer_diagnostics": {
+              "force_calls": 40,
+              "force_configurations": 3840,
+              "physical_hessian_evaluations": 2,
+              "finite_difference_hessian_evaluations": 2,
+              "hessian_provider_calls": 0,
+              "hessian_provider_configurations": 0,
+              "method": "bofill",
+              "unique_beads": 96,
+              "hessian_update_interval": 0,
+              "trust_radius_bohr": 0.3,
+              "hessian_updates": 2,
+              "hessian_refreshes": 0,
+              "accepted_steps": 2,
+              "rejected_steps": 0,
+              "iterations": 2,
+              "history": [
+                {
+                  "gradient_max": 0.0005404118382878881,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 7.422476050455984e-08,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 2.0799112432356995e-11,
+                  "trust_radius_bohr": 0.3
+                }
+              ],
+              "termination": "gradient tolerance",
+              "raw_negative_modes": 2,
+              "raw_near_zero_modes": 5,
+              "phase_projection_applied": true,
+              "projected_negative_modes": 1,
+              "projected_near_zero_modes": 5,
+              "phase_tolerance": 0.05,
+              "hessian_spectrum_scope": "full_ring_including_discrete_phase"
+            },
+            "removed_rigid_modes": 5,
+            "phase_mode_relative_residual": 0.010605436719988336,
+            "log_reactant_partition": -18.321103544103316,
+            "log_prefactor_au": -18.895534660430446
+          },
+          {
+            "nbeads": 288,
+            "rate_cm3_s": 2.2416660104926445e-18,
+            "relative_error_vs_literature_sci": 0.018939095678474738,
+            "relative_error_vs_exact_quantum": 0.1152567216381315,
+            "action_hbar": 21.159235022238192,
+            "gradient_max": 9.795368904885748e-09,
+            "optimizer_diagnostics": {
+              "force_calls": 39,
+              "force_configurations": 5616,
+              "physical_hessian_evaluations": 2,
+              "finite_difference_hessian_evaluations": 2,
+              "hessian_provider_calls": 0,
+              "hessian_provider_configurations": 0,
+              "method": "bofill",
+              "unique_beads": 144,
+              "hessian_update_interval": 0,
+              "trust_radius_bohr": 0.3,
+              "hessian_updates": 1,
+              "hessian_refreshes": 0,
+              "accepted_steps": 1,
+              "rejected_steps": 0,
+              "iterations": 1,
+              "history": [
+                {
+                  "gradient_max": 0.0001597716370536767,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 9.795368904885748e-09,
+                  "trust_radius_bohr": 0.3
+                }
+              ],
+              "termination": "gradient tolerance",
+              "raw_negative_modes": 2,
+              "raw_near_zero_modes": 5,
+              "phase_projection_applied": true,
+              "projected_negative_modes": 1,
+              "projected_near_zero_modes": 5,
+              "phase_tolerance": 0.05,
+              "hessian_spectrum_scope": "full_ring_including_discrete_phase"
+            },
+            "removed_rigid_modes": 5,
+            "phase_mode_relative_residual": 0.005757790777824109,
+            "log_reactant_partition": -18.331040797509498,
+            "log_prefactor_au": -18.900420307376294
+          },
+          {
+            "nbeads": 432,
+            "rate_cm3_s": 2.2461787632759043e-18,
+            "relative_error_vs_literature_sci": 0.02099034694359303,
+            "relative_error_vs_exact_quantum": 0.11750187227656927,
+            "action_hbar": 21.159476019062023,
+            "gradient_max": 1.2884523309386609e-09,
+            "optimizer_diagnostics": {
+              "force_calls": 39,
+              "force_configurations": 8424,
+              "physical_hessian_evaluations": 2,
+              "finite_difference_hessian_evaluations": 2,
+              "hessian_provider_calls": 0,
+              "hessian_provider_configurations": 0,
+              "method": "bofill",
+              "unique_beads": 216,
+              "hessian_update_interval": 0,
+              "trust_radius_bohr": 0.3,
+              "hessian_updates": 1,
+              "hessian_refreshes": 0,
+              "accepted_steps": 1,
+              "rejected_steps": 0,
+              "iterations": 1,
+              "history": [
+                {
+                  "gradient_max": 4.7274295109020474e-05,
+                  "trust_radius_bohr": 0.3
+                },
+                {
+                  "gradient_max": 1.2884523309386609e-09,
+                  "trust_radius_bohr": 0.3
+                }
+              ],
+              "termination": "gradient tolerance",
+              "raw_negative_modes": 2,
+              "raw_near_zero_modes": 5,
+              "phase_projection_applied": true,
+              "projected_negative_modes": 1,
+              "projected_near_zero_modes": 5,
+              "phase_tolerance": 0.05,
+              "hessian_spectrum_scope": "full_ring_including_discrete_phase"
+            },
+            "removed_rigid_modes": 5,
+            "phase_mode_relative_residual": 0.003130697983738818,
+            "log_reactant_partition": -18.335468184598767,
+            "log_prefactor_au": -18.902595596754008
+          }
+        ],
+        "physics_fingerprint": "08bc05304ba8f8d0dc4b47e6fcb0bd36f8892a64cb18135a09b2118a35cdb1a5",
+        "bead_convergence": {
+          "relative_tolerance": 0.01,
+          "relative_changes": [
+            0.010115793201562412,
+            0.004519373230775381,
+            0.0020131245074551172
+          ],
+          "absolute_log_changes": [
+            0.010064971015953716,
+            0.004509191528658363,
+            0.002011100887724382
+          ],
+          "converged": true,
+          "required_successive_refinements": 2,
+          "refinement_ratios": [
+            1.5,
+            1.5,
+            1.5
+          ],
+          "minimum_refinement_ratio": 1.5,
+          "sufficient_refinement_span": true,
+          "relative_change_definition": "max(value_a,value_b)/min(value_a,value_b)-1"
+        },
+        "numerical_converged": true,
+        "discretization_converged": true,
+        "physical_converged": false,
+        "elapsed_seconds": 108.66329668500111,
+        "force_calls": 207,
+        "force_frames": 23163,
+        "hessian_calls": 0,
+        "hessian_frames": 0
+      }
+    ],
+    "gradient_tolerance": 1e-08,
+    "bead_relative_tolerance": 0.01,
+    "phase_tolerance": 0.05,
+    "limitations": [
+      "semiclassical and harmonic-reactant approximations",
+      "classical rigid rotors, no resolved nuclear-spin populations",
+      "bead convergence is not proof of exact quantum accuracy",
+      "dense prefactor supports at most 4096 active bead coordinates"
+    ]
+  }
+}
