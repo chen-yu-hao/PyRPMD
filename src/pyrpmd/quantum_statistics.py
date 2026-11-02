@@ -7,6 +7,7 @@ References and normalization conventions are in docs/quantum-statistics.md.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 import math
 
 import numpy as np
@@ -472,3 +473,143 @@ def harmonic_log_partition(beta, frequencies_au, *, beads=None, method="primitiv
     if not np.isfinite(y).all():
         raise ValueError("harmonic partition parameters overflow")
     return float(-np.sum(y + np.log(-np.expm1(-2 * y))))
+
+
+def exchange_thermodynamics(estimator_samples, *, block_size=None,
+                            minimum_average_sign=0.05, sign_sigma=3.0):
+    """Combine exchange-estimator numerators sampled from the bosonic action.
+
+    Accept a mapping of one-dimensional columns, or a nonempty sequence of
+    row mappings returned by ``BosonicExchangePotential.estimators``.  Required
+    columns are ``sign`` and ``potential_energy_numerator_hartree``,
+    ``kinetic_energy_numerator_hartree``, and
+    ``internal_energy_numerator_hartree``.  Optional columns are
+    ``virial_internal_energy_numerator_hartree`` and ``pressure_numerator_au``.
+    Every numerator is *already* signed.  In particular, a thermodynamic
+    fermion energy numerator contains a derivative of the signed exchange
+    weight; multiplying the boson energy estimator by ``sign`` is incorrect.
+
+    An observable is the ratio of its numerator mean to the mean sign.
+    Equal contiguous blocks give a delete-one-block jackknife uncertainty,
+    preserving numerator/denominator covariance.  The common complete-block
+    prefix supplies all means and errors; the number of unused trailing
+    frames is reported.  Automatic block selection inspects the sign, all
+    numerators, and each ratio's linear influence.  These finite-chain
+    diagnostics cannot establish mixing or choose a converged block length.
+
+    Fewer than four complete blocks, a nonpositive or small mean sign, a
+    ``sign_sigma``-standard-error interval reaching zero, or nonpositive
+    leave-one-block-out signs suppress *all* reweighted observables.  The
+    return value retains the sign diagnostic and explicit structured warnings
+    instead of returning unstable physical conclusions.  ``physical_converged``
+    is always false, including for bosons (whose sign is identically one).
+    No real-time or permutation-resolved observables are estimated here.
+    """
+    minimum_average_sign = _positive(minimum_average_sign, "minimum_average_sign")
+    if minimum_average_sign > 1:
+        raise ValueError("minimum_average_sign must be at most 1")
+    sign_sigma = _positive(sign_sigma, "sign_sigma")
+    channels = {
+        "potential_energy_numerator_hartree": ("potential_energy_hartree", "potential_energy_standard_error_hartree"),
+        "kinetic_energy_numerator_hartree": ("kinetic_energy_hartree", "kinetic_energy_standard_error_hartree"),
+        "internal_energy_numerator_hartree": ("internal_energy_hartree", "internal_energy_standard_error_hartree"),
+        "virial_internal_energy_numerator_hartree": ("virial_internal_energy_hartree", "virial_internal_energy_standard_error_hartree"),
+        "pressure_numerator_au": ("pressure_au", "pressure_standard_error_au"),
+    }
+    required = {"sign", *list(channels)[:3]}
+    if isinstance(estimator_samples, Mapping):
+        columns = dict(estimator_samples)
+    elif isinstance(estimator_samples, (list, tuple)) and estimator_samples:
+        rows = estimator_samples
+        if (any(not isinstance(row, Mapping) for row in rows)
+                or any(set(row) != set(rows[0]) for row in rows)):
+            raise ValueError("exchange estimator rows must be mappings with matching columns")
+        columns = {key: [row[key] for row in rows] for key in rows[0]}
+    else:
+        raise ValueError("exchange estimators require columns or a nonempty sequence of rows")
+    if not required <= set(columns) or set(columns) - {"sign", *channels}:
+        raise ValueError("exchange estimators have missing or unknown columns")
+    # Checkpoint JSON sorts mapping keys.  Use one canonical column order so
+    # reanalysis and uninterrupted sampling return identical diagnostics.
+    columns = {key: _series(columns[key], key) for key in ("sign", *channels)
+               if key in columns}
+    signs = columns["sign"]
+    if any(value.shape != signs.shape for value in columns.values()):
+        raise ValueError("exchange estimator column lengths disagree")
+    if np.any(np.abs(signs) > 1 + 64 * np.finfo(float).eps):
+        raise ValueError("exchange sign must lie in [-1,1] within floating-point roundoff")
+    if block_size is not None and _integer(block_size, "block_size") > len(signs):
+        raise ValueError("block_size must not exceed the number of exchange samples")
+
+    # Normalize only the arithmetic for correlation diagnostics and block
+    # means.  This avoids squaring huge energy offsets or treating a tiny but
+    # varying observable as numerically constant.  Data and units are intact.
+    scales = {key: max(float(np.max(np.abs(value))), np.finfo(float).tiny)
+              for key, value in columns.items()}
+    normalized = {key: value / scales[key] for key, value in columns.items()}
+    correlation_names = list(columns)
+    streams = list(normalized.values())
+    mean_normalized_sign = float(normalized["sign"].mean())
+    for key in channels:
+        if key in columns:
+            stream = normalized[key]
+            influence = mean_normalized_sign * stream - float(stream.mean()) * normalized["sign"]
+            if np.ptp(influence) != 0:
+                influence /= max(float(np.max(np.abs(influence))), np.finfo(float).tiny)
+            streams.append(influence)
+            correlation_names.append(key + "_ratio_influence")
+    diagnostics = _block_layout(streams, block_size)
+    count, length = diagnostics["complete_blocks"], diagnostics["block_length_frames"]
+    used = count * length
+    average_sign = float(signs[:used].mean())
+    sign_error = None
+    leave_sign = None
+    if count >= 4:
+        block_sign = signs[:used].reshape(count, length).mean(axis=1)
+        sign_error = float(block_sign.std(ddof=1) / math.sqrt(count))
+        leave_sign = (block_sign.sum() - block_sign) / (count - 1)
+    diagnostics.update({
+        "correlation_observables": correlation_names,
+        "samples_used": used,
+        "discarded_tail_frames": len(signs) - used,
+        "block_length_at_least_estimated_inefficiency": bool(length >= diagnostics["statistical_inefficiency"]),
+        "effective_samples": used / diagnostics["statistical_inefficiency"],
+        "uncertainty_scope": "conditional_on_blocks_exceeding_all_sign_numerator_and_ratio_correlation_times",
+        "minimum_average_sign": minimum_average_sign,
+        "sign_sigma": sign_sigma,
+    })
+    warnings = []
+    if count < 4:
+        warnings.append({"code": "fewer_than_four_complete_blocks",
+                         "message": "Fewer than four complete blocks; sign uncertainty and reweighted observables are unavailable."})
+    if average_sign <= 0:
+        warnings.append({"code": "nonpositive_average_sign",
+                         "message": "The mean sign is nonpositive; the fermion partition ratio is unresolved."})
+    elif average_sign < minimum_average_sign:
+        warnings.append({"code": "average_sign_below_threshold",
+                         "message": "The mean sign is below minimum_average_sign; no reweighted observables are reported."})
+    if sign_error is not None and average_sign <= sign_sigma * sign_error:
+        warnings.append({"code": "sign_uncertainty_reaches_zero",
+                         "message": "The mean-sign uncertainty interval reaches zero; reweighted observables are unresolved."})
+    if leave_sign is not None and np.any(leave_sign <= 0):
+        warnings.append({"code": "nonpositive_jackknife_sign",
+                         "message": "A leave-one-block-out mean sign is nonpositive; the ratio jackknife is unresolved."})
+    resolved = not warnings
+    result = {"samples": len(signs), "average_sign": average_sign,
+              "average_sign_standard_error": sign_error, "sign_resolved": resolved,
+              "warnings": warnings, "diagnostics": diagnostics,
+              "physical_converged": False,
+              "scope": "symmetric_equilibrium_observables_reweighted_from_bosonic_sampling"}
+    for key, (mean_key, error_key) in channels.items():
+        if key not in columns:
+            continue
+        result[mean_key] = result[error_key] = None
+        if resolved:
+            blocks = normalized[key][:used].reshape(count, length).mean(axis=1)
+            estimate = float(blocks.mean()) / average_sign * scales[key]
+            leave_num = (blocks.sum() - blocks) / (count - 1)
+            error = _jackknife_error(leave_num / leave_sign) * scales[key]
+            if not math.isfinite(estimate) or not math.isfinite(error):
+                raise ValueError("exchange reweighted estimate or uncertainty overflows float64")
+            result[mean_key], result[error_key] = estimate, error
+    return result
