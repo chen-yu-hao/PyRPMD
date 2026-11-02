@@ -1,0 +1,68 @@
+T15 test-environment diagnostics
+Trailing whitespace in the diagnostic traceback is normalized for git.
+
+The initial full pytest attempt ran in the default execution sandbox.
+That sandbox denies local socket creation, so 14 unchanged i-PI/socket
+tests failed with PermissionError: [Errno 1] Operation not permitted.
+The unsuitable run was interrupted after 5907 passed, 173 skipped and
+301 subtests passed (1493.48 s); it is not the final regression gate.
+
+A focused diagnostic used the same one-thread task interpreter:
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_ipi_clients.py -x
+
+F
+=================================== FAILURES ===================================
+_________ test_multiple_clients_are_concurrent_ordered_and_persistent __________
+
+    def test_multiple_clients_are_concurrent_ordered_and_persistent():
+        cell = np.array([[8., 0., 0.], [1., 9., 0.], [.3, .4, 10.]])
+>       pes = make_potential({"provider": "ipi", "params": {"port": 0, "clients": 2, "timeout": 3}},
+                             {"cell": cell, "pbc": [True] * 3})
+
+tests/test_ipi_clients.py:93:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/pyrpmd/potentials/__init__.py:133: in make_potential
+    provider = _make_potential(config, system)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/potentials/__init__.py:329: in _make_potential
+    return IPIPotential(**params, cell=cell, pbc=pbc)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socket.py:233: PermissionError
+=========================== short test summary info ============================
+FAILED tests/test_ipi_clients.py::test_multiple_clients_are_concurrent_ordered_and_persistent
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 0.82s
+
+
+The unchanged socket tests were then run with local sockets permitted:
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_ipi_clients.py
+
+...................                                                      [100%]
+19 passed in 3.76s
+
+The final full-pytest.log is from a fresh full-suite run in that same
+socket-capable execution environment, with no source workaround.

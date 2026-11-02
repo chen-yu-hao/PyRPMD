@@ -489,8 +489,10 @@ canonical_cm = generate_optimal_gle(
 The returned mappings contain `A`, `C`, `provenance`, and
 `parameter_metadata`; PIGLET also includes `beta` and `beads`. `A` is a drift
 rate in inverse atomic time. `C` is the free-bath mass-scaled covariance
-divided by the ring-polymer temperature `P/beta`. Consequently a canonical
-bath has `C=I`, not `C=kBT*I`. The diffusion is
+divided by the ring-polymer temperature `P/beta`. The canonical generator
+uses `C=I`; imported canonical baths may have a different positive auxiliary
+covariance block, while the physical variance remains one and its covariance
+with auxiliaries remains zero. The diffusion is
 
 $$
 D=AC+CA^T=BB^T.
@@ -594,8 +596,12 @@ Python propagation plans and the native JSON/TOML driver also accept
 inside a thermostat mapping with `"mode": "gle"`, or a `"file"` declaration
 inside `gle`. The PIGLET declaration uses `"generator": "piglet"` and explicit
 `beta`/`beads`. Native input file paths are resolved against the input's base
-directory. Legacy `task=pimd` and other workflow readers should receive the
-already resolved mapping returned by the functions above.
+directory. The existing `task=pimd` workflow requires
+`sampling.engine="native"` for GLE/PIGLET and should receive the already
+resolved mapping returned by the functions above. The legacy PIMD engine
+retains its existing PILE-L/Andersen support. Other workflow adapters should
+also receive resolved matrices; canonical umbrella/FES sampling accepts
+canonical GLE, while its sampling-measure checks continue to exclude PIGLET.
 
 Frequency bands, targets, all residuals, solver choices/versions, parameter
 bounds and import provenance enter run identity for the new format.
