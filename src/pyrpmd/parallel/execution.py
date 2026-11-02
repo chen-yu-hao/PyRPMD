@@ -82,11 +82,18 @@ def execution_plan(config=None):
     scheduling = c.get("scheduling", "static")
     if scheduling not in ("static", "dynamic"):
         raise ValueError("parallel.scheduling must be static or dynamic")
-    coordinators = _int(c.get("coordinator_ranks", int(scheduling == "dynamic")),
+    default_coordinators = int(scheduling == "dynamic" and backend == "mpi")
+    coordinators = _int(c.get("coordinator_ranks", default_coordinators),
                         "coordinator_ranks", 0)
     if scheduling == "dynamic":
-        if backend != "mpi" or coordinators != 1:
-            raise ValueError("Dynamic scheduling requires backend='mpi' and coordinator_ranks=1")
+        if backend == "mpi":
+            if coordinators != 1:
+                raise ValueError("Dynamic MPI scheduling requires coordinator_ranks=1")
+        elif coordinators != 0 or mode != "serial" or beads != 1:
+            raise ValueError(
+                "Dynamic local scheduling requires mode='serial', bead_workers=1 "
+                "and coordinator_ranks=0; use static or MPI scheduling for GPU/bead pools"
+            )
     elif coordinators != 0:
         raise ValueError("Static scheduling requires coordinator_ranks=0")
     raw_devices = c.get("devices", c.get("gpus", [0] if mode == "gpu" else []))
@@ -604,6 +611,20 @@ def _execute_batch(payload):
         return [(index, function(task)) for index, task in indexed_tasks]
 
 
+def _process_dynamic_init(plan):
+    """Keep CPU worker context/BLAS limits alive across dynamically assigned tasks."""
+    resources = ExitStack()
+    try:
+        resources.enter_context(_blas_thread_limit())
+        # Local dynamic scheduling is CPU-only: no slot-dependent GPU mapping.
+        resources.enter_context(_context(plan, 0))
+    except BaseException:
+        resources.close()
+        raise
+    # multiprocessing exits do not reliably run ordinary atexit handlers.
+    Finalize(None, resources.close, exitpriority=10)
+
+
 _TASK_TAG = 4101
 _RESULT_TAG = 4102
 
@@ -753,8 +774,9 @@ def _mpi_run(function, tasks, plan):
 def run_tasks(function, tasks, parallel_config=None):
     """Run importable ``function(task)``; MPI returns data on rank zero only.
 
-    Static process slots own task batches, keeping GPU placement fixed. MPI
-    dynamic scheduling uses one coordinator and refills complete trajectory
+    Static process slots own task batches, keeping GPU placement fixed. Local
+    dynamic CPU scheduling refills a bounded first-free-worker process queue.
+    MPI dynamic scheduling uses one coordinator and refills complete trajectory
     groups; each group's bead ranks remain attached to that group.
     """
     tasks = list(tasks)
@@ -769,6 +791,13 @@ def run_tasks(function, tasks, parallel_config=None):
     if not tasks:
         return []
     count = min(plan.trajectory_workers, len(tasks))
+    if plan.scheduling == "dynamic" and count > 1:
+        from .process_queue import ordered_process_map
+
+        return ordered_process_map(
+            function, tasks, max_workers=count,
+            initializer=_process_dynamic_init, initargs=(plan,),
+        )
     batches = [
         [(i, tasks[i]) for i in range(slot, len(tasks), count)] for slot in range(count)
     ]

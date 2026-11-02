@@ -261,7 +261,10 @@ def resolve_parallel(d, potential):
             parallel["trajectory_batch_size"], "parallel.trajectory_batch_size")
     parallel.setdefault("pes_ranks", 1)
     parallel.setdefault("scheduling", "static")
-    parallel.setdefault("coordinator_ranks", 1 if parallel["scheduling"] == "dynamic" else 0)
+    parallel.setdefault(
+        "coordinator_ranks",
+        int(parallel["scheduling"] == "dynamic" and parallel["backend"] == "mpi"),
+    )
     for k in (
         "trajectory_workers",
         "bead_workers",
