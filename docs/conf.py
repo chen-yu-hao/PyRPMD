@@ -29,6 +29,7 @@ root_doc = "index"
 include_patterns = [
     "index.md", "manual/*.md", "enhanced-sampling.md", "replica-exchange.md", "opes.md",
     "rate-pmf-selection.md",
+    "data-archive-plan.md",
     "plumed.md", "committor.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
     "rate-input-v2.md",
