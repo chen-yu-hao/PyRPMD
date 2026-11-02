@@ -18,8 +18,8 @@ from ..checkpoint import atomic_savez, load_checkpoint
 from ..dynamics import Dynamics, State
 from ..parallel import make_task_potential, root_call, run_tasks
 from ..propagation import loop_options
-from .fes import (_analyze_streams, _fingerprint, checked_integer,
-                  resolve_umbrellas, steer_to_center, write_json)
+from .fes import _analyze_streams, resolve_umbrellas, steer_to_center
+from .common import _fingerprint, checked_integer, write_json, fingerprint_matches
 from .sampling import checkpoint_cv_config, fes_sampler
 
 CHECKPOINT_KIND = "PyRPMD.replica_exchange.v1"
@@ -173,7 +173,10 @@ def _read(config, system, options, output, replica, *, complete=False):
     path = _path(output, replica)
     with load_checkpoint(path, expected_kind=CHECKPOINT_KIND, require_integrity=True) as archive:
         data = {name: archive[name] for name in archive.files}
-    if str(data["fingerprint"]) != _identity(config, system, options, replica):
+    identity = {"kind": CHECKPOINT_KIND, "replica": replica,
+                "centers": options["centers"], "stiffness": options["stiffness"],
+                "pairs": options["pairs"]}
+    if not fingerprint_matches(data["fingerprint"], checkpoint_cv_config(config), system, identity):
         raise ValueError(f"checkpoint physics differs: {path}")
     if (data["payload_version"].shape != () or data["payload_version"].dtype.kind not in "iu"
             or data["payload_version"] != 1):
@@ -230,6 +233,13 @@ def _read(config, system, options, output, replica, *, complete=False):
     for state in [*rngs, json.loads(str(data["exchange_rng"]))]:
         generator = np.random.default_rng()
         generator.bit_generator.state = state
+    if "operator_states" in data:
+        operators = json.loads(str(data["operator_states"]))
+        if (not isinstance(operators, list) or len(operators) != nwin
+                or any(not isinstance(state, dict) for state in operators)):
+            raise ValueError("invalid exchange thermostat operator states")
+    elif options["sampler"].operator_checkpoint and elapsed:
+        raise ValueError("exchange checkpoint is missing thermostat operator states")
     return data
 
 
@@ -260,7 +270,10 @@ def _advance_window(dynamics, state, bias, cv, stop, options, values, energies, 
                 values.append(value.copy())
                 energies.append(energy)
                 walkers.append(int(label))
-            dynamics._record_python_steps(1)
+            if sampler.operator_checkpoint and getattr(dynamics, "last_step_backend", "python") == "native":
+                dynamics.propagation_stats["native_steps"] += 1
+            else:
+                dynamics._record_python_steps(1)
 
 
 def _sample_ladder(task):
@@ -275,6 +288,8 @@ def _sample_ladder(task):
     nwin = len(centers)
     provider = make_task_potential(config["potential"], system)
     try:
+        store_operators = options["sampler"].operator_checkpoint or (
+            saved is not None and "operator_states" in saved)
         dynamics, states, biases = [], [], []
         for i, center in enumerate(centers):
             dyn = Dynamics(provider, system.masses, config["beta"], config["beads"], options["dt"],
@@ -292,6 +307,8 @@ def _sample_ladder(task):
                               float(saved["times"][i]))
                 dyn.rng.bit_generator.state = json.loads(str(saved["rngs"]))[i]
                 dyn.propagation_stats = json.loads(str(saved["propagation"]))[i]
+                if "operator_states" in saved:
+                    dyn.load_operator_state_dict(json.loads(str(saved["operator_states"]))[i])
             dynamics.append(dyn)
             states.append(state)
             biases.append(UmbrellaBias(cv, center, stiffness))
@@ -328,7 +345,10 @@ def _sample_ladder(task):
                         decisions=np.asarray(decisions, dtype=bool).reshape(-1, len(attempts)),
                         rngs=np.asarray(json.dumps([d.rng.bit_generator.state for d in dynamics])),
                         exchange_rng=np.asarray(json.dumps(rng.bit_generator.state)),
-                        propagation=np.asarray(json.dumps([d.propagation_stats for d in dynamics])))
+                        propagation=np.asarray(json.dumps([d.propagation_stats for d in dynamics])),
+                        **({"operator_states": np.asarray(json.dumps(
+                            [d.operator_state_dict() for d in dynamics], allow_nan=False))}
+                           if store_operators else {}))
 
         def save():
             nonlocal saved_elapsed
@@ -343,6 +363,8 @@ def _sample_ladder(task):
             before = ([s.copy() for s in states], [copy.deepcopy(d.rng.bit_generator.state) for d in dynamics],
                       [copy.deepcopy(d.propagation_stats) for d in dynamics], copy.deepcopy(rng.bit_generator.state),
                       labels.copy(), attempts.copy(), accepts.copy(), len(values[0]), len(history))
+            operator_before = ([d.operator_state_dict() for d in dynamics]
+                               if store_operators else None)
             try:
                 for i, (dyn, state, bias) in enumerate(zip(dynamics, states, biases)):
                     _advance_window(dyn, state, bias, cv, stop, options,
@@ -359,6 +381,8 @@ def _sample_ladder(task):
                 for i, (dyn, state, old) in enumerate(zip(dynamics, states, old_states)):
                     state.q[:], state.p[:] = old.q, old.p
                     state.step, state.time = old.step, old.time
+                    if store_operators:
+                        dyn.load_operator_state_dict(operator_before[i])
                     dyn.rng.bit_generator.state = old_rngs[i]
                     dyn.propagation_stats = old_stats[i]
                     del values[i][nobs:]
@@ -427,6 +451,10 @@ def _analyze(ladders, config, system, output, return_data):
 
 def run_replica_exchange_fes(config, system, output, executor=None, return_data=False):
     """Run independent same-temperature ladders and reconstruct the unbiased FES."""
+    from . import validate_bond_constraint_workflow
+    validate_bond_constraint_workflow(system, "replica_exchange_fes")
+    from .sampling import validate_andersen_schedule
+    validate_andersen_schedule(config, "replica_exchange_fes")
     options = exchange_options(config, system)
     if not options["enabled"]:
         raise ValueError("replica_exchange must be enabled")

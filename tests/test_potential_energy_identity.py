@@ -8,11 +8,12 @@ import numpy as np
 import pytest
 
 from pyrpmd.checkpoint import atomic_savez, load_checkpoint
-from pyrpmd.io import fingerprint, jsonable
+from pyrpmd.io import fingerprint, jsonable, write_json
 from pyrpmd.potentials import energy_convention_identity
 from pyrpmd.propagation import scientific_config
 from pyrpmd.reactions import path_identity
 from pyrpmd.system import System
+from pyrpmd.workflows.common import _legacy_fingerprint, fingerprint_matches
 from pyrpmd.workflows.fes import _fingerprint
 
 
@@ -71,6 +72,38 @@ def test_non_ase_historical_identities_are_unchanged(provider):
     assert _fingerprint(config, system, {"replica": 0}) == _legacy_digest(config, system, stream={"replica": 0})
 
 
+@pytest.mark.parametrize("method", ["umbrella", "metadynamics", "opes"])
+@pytest.mark.parametrize("provider", ["ase", "mace", "nequip", "fairchem", "builtin", "python"])
+def test_fes_alias_migration_preserves_the_selected_energy_convention(method, provider):
+    config = {"task": "fes", "fes": {"method": method}, "beads": 2, "beta": 100.,
+              "potential": {"provider": provider, "factory": "not_imported:factory"}}
+    historical = copy.deepcopy(config)
+    historical.pop("fes")
+    historical["task"] = "fes" if method == "umbrella" else method
+    system, stream = _system(), {"replica": 0}
+    current = _fingerprint(config, system, stream)
+    assert current == _fingerprint(historical, system, stream)
+    assert fingerprint_matches(current, historical, system, stream)
+    # The current main branch still writes schema 1, including its selected
+    # energy convention. Migrating its task spelling must remain possible.
+    assert fingerprint_matches(_legacy_fingerprint(historical, system, stream),
+                               config, system, stream)
+
+    # Both historical serializations before the ASE energy change are exact:
+    # schema 1 used aliases, and schema 2 wrapped a canonical task='fes' hash.
+    old_schema1 = _legacy_digest(historical, system, stream=stream)
+    old_canonical = copy.deepcopy(config)
+    old_canonical.pop("fes")
+    old_schema2 = hashlib.sha256(json.dumps({
+        "schema": 2, "method": method,
+        "physics_fingerprint": _legacy_digest(old_canonical, system, stream=stream),
+    }, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    unchanged_energy = energy_convention_identity(config) is None
+    assert fingerprint_matches(old_schema1, config, system, stream) == unchanged_energy
+    assert fingerprint_matches(old_schema2, config, system, stream) == unchanged_energy
+    assert (current == old_schema2) == unchanged_energy
+
+
 def test_resolved_network_uses_effective_path_potentials():
     config = {"task": "network", "potential": {}, "network": {"jobs": [
         {"config": {"task": "rate", "potential": {"provider": "builtin"}}},
@@ -81,6 +114,40 @@ def test_resolved_network_uses_effective_path_potentials():
     config["network"]["jobs"].pop()
     assert energy_convention_identity(config) is None
     assert fingerprint(config, _system()) == _legacy_digest(config, _system())
+
+
+@pytest.mark.parametrize("method", ["umbrella", "metadynamics", "opes"])
+@pytest.mark.parametrize("schema_version", [1, 2])
+def test_fes_task_migration_cannot_accept_old_ase_energy_convention(tmp_path, method, schema_version):
+    from pyrpmd.input import InputError
+    from pyrpmd.runner import _initialize_output
+    from pyrpmd.workflows.common import fingerprint_matches
+
+    system = _system()
+    legacy = {
+        "task": "fes" if method == "umbrella" else method,
+        "beads": 2, "beta": 100.,
+        "potential": {"provider": "ase", "factory": "not_imported:factory"},
+    }
+    current = {**legacy, "task": "fes", "fes": {"method": method}}
+    saved_config = legacy if schema_version == 1 else scientific_config(legacy)
+    manifest = {
+        "schema": "pyrpmd.run", "schema_version": schema_version,
+        "physics_fingerprint": _legacy_digest(saved_config, system), "files": {},
+    }
+    write_json(tmp_path / "manifest.json", manifest)
+    write_json(tmp_path / "input/resolved.json", legacy)
+    write_json(tmp_path / "input/system.json", system.to_dict())
+    before = {path: path.read_bytes() for path in tmp_path.rglob("*.json")}
+    message = ("Legacy saved input does not match" if schema_version == 1
+               else "Cannot resume with changed scientific settings")
+    with pytest.raises(InputError, match=message):
+        _initialize_output(current, system, tmp_path, resume=True)
+    assert {path: path.read_bytes() for path in before} == before
+    stream = {"replica": 0}
+    assert not fingerprint_matches(
+        _legacy_digest(legacy, system, stream=stream), current, system, stream,
+    )
 
 
 @pytest.fixture(params=["pimd", "diffusion"])

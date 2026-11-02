@@ -530,6 +530,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
     auto* c=static_cast<Cayley*>(PyCapsule_GetPointer(capsule,CAPSULE));if(!c)return nullptr;
     try {
         const auto P=c->beads,nd=c->nd,S=product(P,nd);
+        NativeFixedAtoms fixed(options,nd/3);
         double beta=number(field(options,"beta")),clock=number(field(options,"time"));
         if(!(beta>0) || std::abs((P/beta)*(P/beta)-c->omega2)>1e-14*std::max(1.,c->omega2))throw std::invalid_argument("native beta mismatch");
         auto steps=PyObject_Length(mo);
@@ -557,6 +558,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
         for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(bs.p);++i)biases.emplace_back(PySequence_Fast_GET_ITEM(bs.p,i),nd);
         std::unique_ptr<CV> constraint;
         if(field(options,"constraint")!=Py_None)constraint=std::make_unique<CV>(field(options,"constraint"),nd);
+        if(constraint && fixed.any)throw std::invalid_argument("combined fixed atoms and centroid RATTLE are unsupported");
         if(constraint && (constraint->bead_average || c->dt==0 || !biases.empty()))throw std::invalid_argument("native constraints require centroid, nonzero dt and no bias");
         double tolerance=number(field(options,"constraint_tolerance"));
         if(!(tolerance>0))throw std::invalid_argument("invalid constraint tolerance");
@@ -566,7 +568,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
         if(check_energy<0)throw std::invalid_argument("invalid energy checking option");
         std::vector<Fragment> fragments;PyRef fs(PySequence_Fast(field(options,"fragments"),"fragments must be a sequence"));Vec used(nd/3,0);
         for(Py_ssize_t i=0;i<PySequence_Fast_GET_SIZE(fs.p);++i){auto* f=PySequence_Fast_GET_ITEM(fs.p,i);Fragment frag{vector(field(f,"weights"),nd/3),vector(field(f,"reference"),3)};double total=0;
-            for(Py_ssize_t a=0;a<nd/3;++a){double w=frag.weights[a];if(w<0||(w>0&&(used[a]||w!=c->mass[a])))throw std::invalid_argument("invalid fragment mass/overlap");if(w>0){used[a]=1;total+=w;}}
+            for(Py_ssize_t a=0;a<nd/3;++a){double w=frag.weights[a];if(w<0||(w>0&&(used[a]||w!=c->mass[a])))throw std::invalid_argument("invalid fragment mass/overlap");if(w>0){if(fixed.mask[a])throw std::invalid_argument("fragment COM constraints cannot include fixed atoms");used[a]=1;total+=w;}}
             if(!(total>0))throw std::invalid_argument("empty native fragment");
             fragments.push_back(std::move(frag));}
         if(constraint && !fragments.empty())throw std::invalid_argument("combined centroid constraints are unsupported");
@@ -580,12 +582,15 @@ static PyObject* advance(PyObject*,PyObject* args) {
         bool force_valid=false;
         Vec current_q(q.doubles(),q.doubles()+S),current_p(p.doubles(),p.doubles()+S),trial_q(S),trial_p(S),work(c->workspace_size()),center(nd),pc(nd),forces(S),free_q(S);
         if(!finite(current_q)||!finite(current_p))throw std::invalid_argument("nonfinite initial state");
+        fixed.validate(current_q.data(),current_p.data(),P);
+        auto project_state=[&](Vec& x,Vec& momentum){project(x,momentum,fragments,*c);fixed.project(x.data(),momentum.data(),P);};
         Py_ssize_t completed=0,written=0;std::string failure;
         double previous_clock=clock;
         auto evaluate=[&](const Vec& x){pes.evaluate(x);forces=pes.force;
             if(!biases.empty())centroid(x,center,P,nd);
             double eb=0;for(const auto& b:biases)eb+=b.add(x,center,forces,*c,beta);
             if(!std::isfinite(eb)||!finite(forces))throw std::runtime_error("nonfinite biased forces/energy");
+            fixed.clear_force(forces.data(),P);
             return eb;
         };
         auto total_energy=[&](const Vec& x,const Vec& momentum,double eb){
@@ -608,8 +613,8 @@ static PyObject* advance(PyObject*,PyObject* args) {
                         const double eb=evaluate(trial_q);
                         if(check_energy && step==0)total_energy(trial_q,trial_p,eb);
                     }
-                    kick(trial_p,forces,*c);project(trial_q,trial_p,fragments,*c);
-                    c->propagate(trial_q.data(),trial_p.data(),work.data());project(trial_q,trial_p,fragments,*c);
+                    kick(trial_p,forces,*c);project_state(trial_q,trial_p);
+                    c->propagate(trial_q.data(),trial_p.data(),work.data());project_state(trial_q,trial_p);
                     if(constraint){free_q=trial_q;double lambda=0;bool converged=false;
                         for(int iteration=0;iteration<50;++iteration){centroid(trial_q,center,P,nd);auto d=constraint->eval(center.data());metric(d,*c);if(std::abs(d.v)<tolerance){converged=true;break;}
                             double derivative=0;for(Py_ssize_t i=0;i<nd;++i)derivative+=d.g[i]*old_normal->g[i]/c->mass[i/3];
@@ -618,7 +623,7 @@ static PyObject* advance(PyObject*,PyObject* args) {
                             for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_q[b*nd+i]=free_q[b*nd+i]+lambda*old_normal->g[i]/c->mass[i/3];}
                         if(!converged)throw std::runtime_error("centroid RATTLE constraint failed to converge");
                         for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_p[b*nd+i]+=lambda/c->dt*old_normal->g[i];}
-                    double eb=evaluate(trial_q);kick(trial_p,forces,*c);project(trial_q,trial_p,fragments,*c);
+                    double eb=evaluate(trial_q);kick(trial_p,forces,*c);project_state(trial_q,trial_p);
                     if(constraint){centroid(trial_q,center,P,nd);auto d=constraint->eval(center.data());double z=metric(d,*c);centroid(trial_p,pc,P,nd);double v=0;for(Py_ssize_t i=0;i<nd;++i)v+=d.g[i]*pc[i]/c->mass[i/3];for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t i=0;i<nd;++i)trial_p[b*nd+i]-=v/z*d.g[i];}
                     if(!finite(trial_q)||!finite(trial_p))throw std::runtime_error("nonfinite integration state");
                     // Fragment projection can change last-bit coordinates after the

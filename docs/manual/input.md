@@ -116,6 +116,12 @@ requirements.
 Some workflow settings, including automatically prepared rate windows and adaptive plans, are
 resolved at runtime and recorded in their sampling outputs.
 
+FES, metadynamics and OPES accept canonical thermostat parameters through
+`sampling.thermostat_params`; see the [common propagation stack](../propagation-stack.md).
+New NHC (`nhc`), SVR and GLE modes checkpoint their bath state with the sampling
+history. Existing metadynamics `nose-hoover-chain` inputs retain their explicit
+equilibration-reset policy.
+
 The gas-phase `rate` workflow supplies these additional starting values when omitted:
 
 | Field | Default | Meaning |
@@ -159,27 +165,44 @@ to choose lengths, replicas, bead number and uncertainty precision for the actua
 | --- | --- | --- |
 | `[system]` | All except `pcet` | `geometry`, `transition_state`, `reactants`, `separation`, `symbols`, `masses`, `masses_amu`, `isotopes`, `geometry_unit`, `fragments`, `charge`, `multiplicity`, `cell`, `cell_unit`, `pbc`, `fixed_atoms` |
 | `[potential]` | All except `pcet` | `provider`, `factory`, `library`, `manifest`, `params`, `units`, `derivative`, `device`, `abi_version`, `periodic`, `virial`, …; see [Potentials](potentials.md) |
-| `[dynamics]`, `[sampling]`, `[parallel]` | All except `pcet` | See above and [Execution and parallelism](execution.md) |
-| `[[cvs]]`, `[umbrella]`, `[analysis]` | `fes`, `rate`, `network`, `site_rate`, `surface_rate`; `metadynamics` and `opes` use `cvs` and `analysis` | See below |
-| `[reaction]` | `rate` (`drpmd` may use `electronic_weight`) | `fragments`, `forming_bonds`, `breaking_bonds`, `rinf`, `symmetry_factor`, `equivalent_paths` |
-| `[rate]` | `rate` | `pmf_method`, `dividing_surface`, `pmf_search_range`, `compare_ui` |
-| `[recrossing]` | `rate`, `network`, `site_rate`, `surface_rate` | Parent count, parent interval, child pairs, child time, bootstrap |
-| `[collision]`, `[outcomes]` | `drpmd` | Launch distribution, `bmax`, total trajectories, maximum time; product classification |
+| `[dynamics]`, `[sampling]`, `[parallel]` | All except `pcet` | See above and [Execution and parallelism](execution.md); `sampling.engine="native"` with `thermostat_params` selects the C++ PIMD driver (`pimd` only, see [Materials and surfaces](periodic.md#native-pimd-engine)) |
+| `[[cvs]]`, `[analysis]` | All FES methods; `rate`, `network`, `site_rate`, `surface_rate` | CV definitions and reconstruction settings; see below |
+| `[umbrella]` | Umbrella FES; `rate`, `network`, `site_rate`, `surface_rate` | Window centers and stiffness; `[fes.umbrella]` is the nested FES form |
+| `[reaction]` | `rate` (`drpmd` may use `electronic_weight`) | `fragments`, `forming_bonds`, `breaking_bonds`, `rinf`, `symmetry_factor`, `equivalent_paths`; `entry_side` picks one TS descent direction; `preparation` tunes the TS Hessian/descent (`gradient_tolerance`, `hessian_step`, `displacement`, `trace_step`, `trace_steps`, `bond_scale`) |
+| `[rate]` | `rate` | `pmf_method`, `dividing_surface`, `pmf_search_range`, `compare_ui`, optional `pmf_source`; see [PMF sources](../enhanced-sampling.md#choosing-a-pmf-source-for-rate) |
+| `[recrossing]` | `rate`, `network`, `site_rate`, `surface_rate` | Parent count, parent interval, child pairs, child time, bootstrap; `dynamics="trpmd"` with `friction_scale`, `child_batch_pairs` for batched children; see [TRPMD](../trpmd-spectroscopy.md) and [Trajectory batching](../batched-dynamics.md) |
+| `[collision]`, `[outcomes]` | `drpmd` | Launch distribution, `energy`, `bmax`, total trajectories, `max_time`; product classification (`factory`, `channels`, `bond_cutoffs`, `exit_distance`, `persistence`, `check_interval`) |
 | `[nonadiabatic]` | `drpmd` (experimental NRPMD) | See [Nonadiabatic NRPMD](nonadiabatic.md) |
 | `[electronic_friction]` | `diffusion` | `method = "centroid"`, `provider`, `gamma` or `tensor`, or Python `factory` and `params`; see [electronic friction](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/electronic-friction.md) |
-| `[initial_ensemble]` | `drpmd` (experimental nuclear state selection) | `method = "ne_rpmd"` or `"qct"`, explicit NE `beta`, fragment Hessians/modes and `vibrational_quanta`; see [Direct collisions](workflows.md) |
-| `[adaptive_umbrella]` | `fes`, `rate` | See [Gas phase and free energy](workflows.md) |
-| `[metadynamics]` | `metadynamics` | `grid.ranges` / `grid.bins` optionally select a bias grid |
-| `[opes]` | `opes` | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
-| `[replica_exchange]` | `fes` | Fixed-window same-temperature exchange interval and optional graph; [REUS guide](../replica-exchange.md) |
-| `[barostat]` | `pimd` | Default engine: `method="bzp"`, `pressure`, `time_constant`, `friction`; the native engine has separate controls in [Materials](periodic.md) |
-| `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md) |
+| `[initial_ensemble]` | `drpmd` (experimental nuclear state selection) | `method = "ne_rpmd"` or `"qct"`, explicit NE `beta`, per-fragment Hessians/modes and `vibrational_quanta` under `fragments`; requires `collision.sampling="fixed_energy"` and no top-level `temperature`; see [Direct collisions](workflows.md#selected-vibrational-initial-states) |
+| `[adaptive_umbrella]` | Umbrella FES; `rate` | See [Gas phase and free energy](workflows.md) |
+| `[fes]`, `[[fes.cvs]]`, `[fes.sampling]`, `[fes.analysis]`, `[fes.<method>]` | `fes` | Select umbrella / metadynamics / opes; common and method parameters, [migration guide](../enhanced-sampling.md) |
+| `[fes.metadynamics]` or `[metadynamics]` | FES method `metadynamics` | Hill settings and optional bias grid; `shared_walkers` for synchronized deposition, or `multiple_walkers` / `block_steps` for block synchronization |
+| `[fes.opes]` or `[opes]` | FES method `opes` | Probability-bias widths, barrier, update pace and optional freeze/relaxation steps; [OPES guide](../opes.md) |
+| `[replica_exchange]` | Umbrella FES | Fixed-window same-temperature exchange interval and optional graph; [REUS guide](../replica-exchange.md) |
+| `[barostat]` | `pimd` | Python engine: `method="bzp"`, `pressure`, `time_constant`, `friction`; native engine: `mode="bzp"`/`"mttk"`/`"rgb"`/`"scr"`, `pressure`, `tau`, `gamma`, plus `stress`, `reference_cell` for RGB; see [Materials](periodic.md) |
+| `[diffusion]`, `[site_rate]`, `[surface]` | The task of the same name (`[surface]` belongs to `surface_rate`) | See [Materials and surfaces](periodic.md); `surface.free_energy = {directory, axis, selection}` takes the PMF from a saved multidimensional FES run (`analysis.method="source"`) |
 | `[network]` | `network` | Entrances, channels, transition states |
 | `[pcet]` | `pcet` | PCET accepts only `schema_version`, `task`, `preset`, `description`, `temperature`, `pcet`, `output` |
-| `[output]` | All | `directory`, `checkpoint_interval` / `checkpoint_steps`, `trajectory_stride` |
+| `[output]` | All | `directory`, `checkpoint_interval` / `checkpoint_steps`, `trajectory_stride`; `trajectory_storage`, `chunk_frames` (`pimd`, `diffusion`); `diagnostics = {energy_parts, ring_radii}` (`drpmd`, on by default with `[initial_ensemble]`) |
 
 Every field and combination rule is in the
-[input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)*.
+[input specification](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md).
+
+### Selecting an FES method
+
+Use `task="fes"` and select `method="umbrella"`, `"metadynamics"` or `"opes"` under
+`[fes]`. The default is `umbrella`. Common `cvs`, `sampling` and `analysis` settings may
+be placed under `fes` or at the top level; each section must appear in only one place.
+Keep bias parameters in the selected method's table. Tables for inactive methods are
+rejected, including empty tables. Umbrella and MetaD support 1–3 CV dimensions; OPES
+supports 1–2. See the [unified FES guide](../enhanced-sampling.md) for a complete migration
+example and the common output format.
+
+The old `task="metadynamics"` and `task="opes"` spellings remain accepted with a
+deprecation warning. They dispatch to the corresponding FES method and can resume
+compatible legacy checkpoints. Output-directory defaults retain the task spelling
+from the original input; use an explicit directory when migrating a continuing run.
 
 ## Atoms, isotopes and geometry
 
@@ -210,7 +233,9 @@ explicitly in new inputs.
 
 ## Collective variables and bias
 
-`[[cvs]]` defines named CVs and `umbrella.cvs` selects the ones to bias. `centroid` evaluates the
+`[[cvs]]` (or `[[fes.cvs]]`) defines named CVs. The selected method's `cvs` list, such as
+`fes.umbrella.cvs` or `fes.metadynamics.cvs`, selects the ones to bias; top-level method
+tables such as `umbrella.cvs` remain supported. `centroid` evaluates the
 coordinate at the ring centroid; `bead_average` evaluates it on each bead and averages, which
 differs for nonlinear CVs. Custom CVs return the complete Jacobian; see
 [Potentials and plugins](potentials.md).
@@ -247,15 +272,17 @@ direction; otherwise they default to z and x.
 
 ### Umbrella windows
 
-Give the window centers in one of these forms; `cvs` names the biased CVs:
+Give the window centers in one of these forms; `cvs` names the biased CVs. For a new
+`task="fes"` input, this table can be written as `[fes.umbrella]`. Rate and other
+umbrella-based workflows continue to use `[umbrella]`:
 
 ```toml
 [umbrella]
 cvs = ["x"]
-centers = [-0.5, 0.0, 0.5]              # explicit list; in 2D use [[x, y], ...]
+centers = [-0.5, 0.0, 0.5]              # in 2D/3D use [[x, y], ...] / [[x, y, z], ...]
 # start = -1.0, stop = 1.0, count = 9   # evenly spaced, 1D
 # grid = [{start = -1.0, stop = 1.0, count = 3},
-#         {start = -1.0, stop = 1.0, count = 3}]  # 2D tensor grid; an axis may also be a list
+#         {start = -1.0, stop = 1.0, count = 3}]  # one grid axis per CV; an axis may be a list
 stiffness = "0.002 hartree/bohr^2"      # kappa is accepted as well
 ```
 
@@ -270,22 +297,30 @@ different dimensions, write each entry as a string with units.
 | `pyrpmd init DIR` | Write the bundled harmonic FES starter in a new or empty directory | Prints the input path and next commands |
 | `pyrpmd validate INPUT` | Parse the configuration and check the task | `--check-pes`, `--output DIR`, `--write-resolved FILE` |
 | `pyrpmd prepare INPUT` | Show preparation information | `--pilot` runs the numerical preparation; `--output FILE` writes JSON |
-| `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume` |
-| `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N` |
-| `pyrpmd extend DIR` | Raise an existing dRPMD ensemble's total time budget for unresolved trajectories | `--max-time '20 ps'` (required; total time from launch) |
+| `pyrpmd run INPUT` | Start a run, or continue one from its input | `--output DIR`, `--resume`; `--report` writes figures after the run |
+| `pyrpmd resume DIR` | Continue from the saved configuration | `--workers N`, `--loop-backend auto`, `--block-steps N`; `--adaptive-max-rounds`, `--adaptive-max-windows`, `--adaptive-max-pilot-steps` extend an exhausted adaptive pilot |
+| `pyrpmd extend DIR` | Raise a saved dRPMD time budget or fixed-window gas-phase rate production budget | Exactly one of `--max-time '20 ps'` or `--production-steps 200000`; both specify a new total |
 | `pyrpmd state-check INPUT` | Evolve prepared nuclear states without a collision kick and report harmonic-mode stability | `--time '100 fs'`, `--samples 8`, `--stride 10`, `--output report.json` |
-| `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below |
-| `pyrpmd report RUN [RUN ...]` | Generate figures and an HTML/JSON report from saved results | `--output DIR`, `--style`, `--formats`, `--overwrite`; [Reports](analysis-reports.md) |
-| `pyrpmd rate-postprocess DIR` | Recompute rates from saved PMF/FES and signed fluxes | `--spec FILE`, `--output FILE`, `--bootstrap`; [Rate postprocessing](../rate-postprocessing.md) |
-| `pyrpmd project DIR` | Boltzmann-marginalize a saved CV-density FES | Required `--axes` and `--output DIR`; optional `--selection FILE`; [Materials](periodic.md) |
-| `pyrpmd study INPUT` | Plan or run temperature/isotope/convergence scans | `--plan`, `--output DIR`, `--resume`; [Rate studies](../rate-studies.md) |
+| `pyrpmd analyze DIR` | Read results or reanalyze offline | `--recompute`, `--bins`, `--bootstrap`; diffusion options below; `--report` |
+| `pyrpmd report RUN [RUN ...]` | Automatic analysis, publication figures, `index.html` and `report.json` from saved results | `--output DIR` (required for several runs), `--style jctc\|nature`, `--formats png pdf svg`, `--labels`, `--series`, `--reference CSV`, `--kie A B`, `--convergence beads`, `--overwrite`; see [Automatic analysis](analysis-reports.md) |
+| `pyrpmd rate-postprocess DIR` | Rates from a saved PMF/FES and signed channel fluxes, without new dynamics | `--spec FILE.json` (2D dividing surface), `--output FILE`, `--bootstrap 200`, `--seed 0`; see [2D rate postprocessing](../rate-postprocessing.md) |
+| `pyrpmd project DIR` | Boltzmann-marginalize a saved CV-density FES onto fewer CVs | `--axes 0 1` (retained, zero based, required), `--selection mask.npy`, `--output DIR` (required) |
+| `pyrpmd study INPUT` | Temperature/isotope and numerical-convergence scans of an existing rate job | `--plan` (list cases without dynamics), `--output DIR`, `--resume`; see [Rate studies](../rate-studies.md) |
 | `pyrpmd checkpoint FILE` | Verify a checkpoint container | `--require-integrity` rejects legacy containers without checksums |
-| `pyrpmd info` | Show version and native capabilities | |
+| `pyrpmd info` | Show version, native capabilities, tasks, integrators and initial ensembles | |
 | `pyrpmd pes build/inspect/check` | Build and test C ABI potentials | See [Potentials](potentials.md) |
+| `pyrpmd-native INPUT` | Standalone C++ NVT/NPT trajectory driver (separate entry point) | `--output DIR`, `--resume CHECKPOINT`; see [native ensembles](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/native-ensembles.md) |
 
 `validate`, `prepare`, `state-check` and `run` accept the overrides `--pes`, `--pes-manifest`, `--temperature`,
 `--beads` and `--workers`, where they apply to the task; PCET accepts only `--temperature` and
 `--output`. `pyrpmd COMMAND --help` lists the options of the installed version.
+
+For `extend`, `--max-time` is the dRPMD duration from launch for unresolved trajectories.
+`--production-steps` is the total per window and replica for a fixed-window, one-dimensional
+gas-phase `rate`, excluding equilibration. Repeating the latest authorized target is idempotent;
+`resume` recovers that target after interruption and retains the latest completed extension.
+See [extending rate production](workflows.md#extending-fixed-window-rate-production) for scope,
+result generations and preserved run identity.
 
 - `validate --check-pes` and `prepare --pilot` run the same numerical preparation: constructing
   the PES, TS preparation, or PCET eigenstates. Without the option, only the input is checked.
@@ -296,8 +331,21 @@ different dimensions, write each entry as a string with units.
   backend.
 - `run` refuses an existing non-empty output directory. Continue a run with `pyrpmd resume DIR`
   or with `pyrpmd run INPUT --resume`.
-- `--bins` and `--bootstrap` imply `--recompute`. Offline reanalysis is available for `fes`,
-  `metadynamics`, `opes` and `diffusion`; for other tasks, `analyze` reads the saved summary.
+- `--bins` and `--bootstrap` imply `--recompute`. Offline reanalysis is available for all
+  three FES methods (including their legacy task aliases), `diffusion`, `spectroscopy`
+  and nonadiabatic populations; for other tasks, `analyze` reads the saved summary. FES bootstrap is available for umbrella
+  sampling; MetaD/OPES use independent-replica spread and require `bootstrap=0`.
+- `run --report` and `analyze --report` call `pyrpmd report` on the finished directory
+  (`--report-output`, `--report-style`, `--report-overwrite` need `--report`; the `plots` extra
+  provides matplotlib). If only the report fails, the numerical results stay saved and the error
+  prints the `pyrpmd report` command to retry.
+- `rate-postprocess`, `project` and `report` read saved files only and never call the PES.
+
+FES validation uses the selected method's preflight checks before a run directory is
+created. Umbrella checks include CV/window dimensions, stiffness, histogram ranges and
+at least two saved samples per window; `analysis.bootstrap` must be zero or at least
+two. These checks catch static input errors. Sample support, window overlap and
+scientific convergence are assessed from the resulting trajectories.
 
 Diffusion reanalysis accepts `--fit-range '10 fs' '100 fs'`, `--axes 0 1`, `--atoms 0` and
 `--max-lag N`, where the lag counts saved frames. The fit range must lie within the saved duration;
@@ -323,4 +371,4 @@ pyrpmd info > environment.json
 report with the error; the [troubleshooting guide](troubleshooting.md) explains recovery.
 
 The full section reference is in
-[docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md) *(Chinese)*.
+[docs/input.md](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/input.md).

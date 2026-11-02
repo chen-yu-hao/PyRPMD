@@ -1,0 +1,12 @@
+{
+  "momentum": 8.8,
+  "nodes": 65,
+  "dx": 0.0025,
+  "probabilities": {
+    "transmitted_lower": 0.9308025023110591,
+    "transmitted_upper": 0.05479592662541433,
+    "reflected_lower": 0.014276159289077174,
+    "reflected_upper": 0.00012541177414714862
+  },
+  "seconds": 1.0540851920013665
+}

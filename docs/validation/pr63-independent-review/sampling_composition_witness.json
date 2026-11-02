@@ -1,0 +1,17 @@
+{
+  "reviewed_commit": "3faac3aa42b5424b2711367608e0138c82f62e0a",
+  "baseline_source_sha256": "be99c738683150760fc67ef4f6d165a10a90fba215855a304a8d5d0b54af327c",
+  "before": {
+    "log_ratios_for_unchanged_configurations": [
+      0.0615,
+      0.0855
+    ],
+    "member_pes_calls": 8,
+    "error": null
+  },
+  "after": {
+    "log_ratios_for_unchanged_configurations": [],
+    "member_pes_calls": 0,
+    "error": "replica exchange requires time-independent Hamiltonians and biases"
+  }
+}

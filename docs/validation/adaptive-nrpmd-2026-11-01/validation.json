@@ -1,0 +1,29 @@
+{
+  "source_base_commit": "2f907ba96d22cb134198715e398b1d9f8d83d929",
+  "scope": "Reference CPU implementation; analytical model integration and targeted regressions, not chemical-rate validation.",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.17.0",
+    "pytest": "9.2.0",
+    "h5py": "3.16.0"
+  },
+  "targeted_regression": {
+    "command": "python -m pytest -q tests/test_nonadiabatic*.py tests/test_nrpmd*.py tests/test_complex_nonadiabatic.py tests/test_thermal_nrpmd*.py tests/test_electrochemistry*.py tests/test_constant_potential_nonadiabatic.py tests/test_adaptive_nrpmd.py tests/test_adaptive_constant_potential_example.py",
+    "tests": 442,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "passed": 439,
+    "duration_seconds": 50.239,
+    "skip_reason": "Three optional compiled nuclear-kernel cases; Python reference path exercised.",
+    "new_test_cases_by_file": {
+      "test_thermal_nrpmd_bias": 14,
+      "test_constant_potential_nonadiabatic": 20,
+      "test_adaptive_nrpmd": 21,
+      "test_adaptive_constant_potential_example": 2
+    }
+  },
+  "full_repository_suite_run": false,
+  "physical_converged": false
+}

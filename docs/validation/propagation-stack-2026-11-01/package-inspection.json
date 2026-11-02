@@ -1,0 +1,9 @@
+{
+  "wheel": "pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl",
+  "sdist": "pyrpmd-0.2.0.tar.gz",
+  "wheel_sha256": "d261dea1326087cc3763e2935144843b368b21ff903b132ae6634aee65230189",
+  "sdist_sha256": "93bda9f0768401099c3b72330757f18cfabb313c73201a6e0e28b17475a2cb2d",
+  "wheel_modules_match_final_source": 110,
+  "wheel_modules_and_both_extensions": true,
+  "sdist_new_headers_modules_tests_benchmark": true
+}

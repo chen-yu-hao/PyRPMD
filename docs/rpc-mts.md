@@ -2,8 +2,10 @@
 
 PyRPMD provides two explicit Python APIs for reducing evaluations of an expensive
 potential component. `SplitPotential` implements ring-polymer contraction (RPC),
-and `MTSDynamics` integrates a supplied fast/slow force split with two-level
-r-RESPA. They reuse the existing real-mass ring propagator and `State` arrays.
+and `ForceSplitting` integrates a supplied fast/slow force split with two-level
+r-RESPA in the [common propagation stack](propagation-stack.md). `MTSDynamics`
+is its compatibility adapter, retaining the existing `State` return values.
+Both reuse the real-mass ring propagator and `State` arrays.
 These APIs are opt-in; existing workflow defaults are unchanged.
 
 ## Define the Hamiltonian first
@@ -91,7 +93,10 @@ half-kick, `M` fast half-kick / free-ring / fast half-kick steps of length
 `dt/M`, and a final slow half-kick. The free-ring map is selected through the
 existing `normal-mode-bab`, `cayley-bcb` or `velocity-verlet` kernel. The last
 option retains its existing spring stability check at the inner time step.
-No thermostat, fictitious mass change or automatic force splitting is applied.
+No thermostat, fictitious mass change or automatic force splitting is applied
+by default. An explicit `thermostat` attaches the common heat-bath operators
+around each outer step; fixed atoms and static bias callbacks use the same
+projection/force rules as `Dynamics`.
 
 For a block of `L` outer steps, force reuse gives `L+1` slow calls and
 `L*M+1` fast calls. RPC reduces each slow call from `P` to `Pc` geometries.
@@ -115,8 +120,9 @@ explicit `energy()` queries are separate.
   rejected. A custom provider is responsible for being a deterministic function
   of its coordinates.
 - A `SplitPotential` acts on one complete ring. Its metadata rejects flattened
-  cross-trajectory batching. Contract each trajectory separately before any
-  future provider-side combination.
+  cross-trajectory evaluation. Composed `BatchedDynamics` contracts each ring
+  separately and batches only requests to the independent physical component
+  providers; no spring or RPC projection connects different trajectories.
 - For `Pc<P`, returned slow energies are distributed uniformly across the `P`
   output rows solely so their sum equals the contracted Hamiltonian energy.
   These rows are not physical bead energies. Use finite differences of the
@@ -126,11 +132,13 @@ explicit `energy()` queries are separate.
   applications require consistent unwrapped ring coordinates and appropriately
   bound component providers; wrapping beads individually before contraction
   changes the projected geometry.
-- `MTSDynamics` currently provides deterministic Python propagation with the
-  existing native free-ring kernel when available. It does not yet provide the
-  workflow CLI, bias/constraint callbacks, trajectory observation records or a
-  dedicated checkpoint adapter. Existing workflows continue using their
-  established integrators.
+- `MTSDynamics` retains its Python outer loop and the native free-ring kernel
+  when available. It now delegates to `Dynamics` with a `ForceSplitting`
+  component, so thermostats, fixed atoms, static biases and operator snapshots
+  use the shared stack. Its legacy methods still return `State`; use
+  `Dynamics(..., force_splitting=ForceSplitting(inner_steps=M))` for the common
+  observation/result API. RPC force-splitting setup remains an explicit Python
+  API, not a potential partition inferred from a workflow input.
 - MTS resonance and force-splitting errors are independent of RPC errors. A
   stable finite trajectory does not demonstrate converged equilibrium sampling
   or an accurate reaction rate. Compare both the outer time step and `Pc`

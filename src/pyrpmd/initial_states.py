@@ -19,17 +19,18 @@ and no global random number generator is used.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
-from dataclasses import dataclass
 import hashlib
 import json
+from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 
 from .dynamics import State
 from .units import parse_quantity, unit_factor
-
+from .validation import integer_count as _integer
+from .validation import positive_quantity as _positive
 
 _INVERSE_ENERGY = (0, -1, 0, 0, 0, 0)
 _SECTION_KEYS = {"method", "beta", "fragments"}
@@ -47,21 +48,6 @@ def _real_array(value, name):
     if result.dtype.kind not in "iuf" or not np.isfinite(result).all():
         raise ValueError(f"{name} must contain only finite real numbers")
     return np.array(result, dtype=float, copy=True, order="C")
-
-
-def _integer(value, name, minimum=0):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    if value < minimum:
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
-
-
-def _positive(value, name, dimension=None):
-    result = parse_quantity(value, dimension)
-    if result <= 0:
-        raise ValueError(f"{name} must be positive and finite")
-    return result
 
 
 def _load_array(path, name):

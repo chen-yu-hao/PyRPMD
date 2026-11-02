@@ -1,0 +1,18 @@
+2026-11-01T13:33:40.4859842Z Image: ubuntu-26.04
+2026-11-01T13:33:40.4860387Z Version: 20261025.179.1
+2026-11-01T13:33:41.2026171Z   OMPI_MCA_rmaps_base_oversubscribe: 1
+2026-11-01T13:33:42.8357148Z   OMPI_MCA_rmaps_base_oversubscribe: 1
+2026-11-01T13:33:43.2539667Z   OMPI_MCA_rmaps_base_oversubscribe: 1
+2026-11-01T13:33:50.7404243Z Get:21 http://azure.archive.ubuntu.com/ubuntu resolute/universe amd64v3 libopenmpi40 amd64 5.0.10-1 [2282 kB]
+2026-11-01T13:34:03.8451426Z   OMPI_MCA_rmaps_base_oversubscribe: 1
+2026-11-01T13:34:40.8033996Z   OMPI_MCA_rmaps_base_oversubscribe: 1
+2026-11-01T13:34:43.3961928Z   OMPI_MCA_rmaps_base_oversubscribe: 1
+2026-11-01T13:38:37.8249750Z 4452 passed, 140 skipped, 932 warnings, 357 subtests passed in 233.75s (0:03:53)
+2026-11-01T13:38:38.2713595Z ##[group]Run mpiexec -n 4 python tests/mpi_integration.py
+2026-11-01T13:38:38.2714054Z [36;1mmpiexec -n 4 python tests/mpi_integration.py[0m
+2026-11-01T13:38:38.2733443Z   OMPI_MCA_rmaps_base_oversubscribe: 1
+2026-11-01T13:38:38.3591180Z     prte-rmaps-base:alloc-error
+2026-11-01T13:38:38.3592266Z     /usr/lib/x86_64-linux-gnu/pmix2/share/pmix/help-prte-rmaps-base.txt: No such file or directory
+2026-11-01T13:38:38.3592980Z     /usr/lib/x86_64-linux-gnu/prrte3/share/prte/help-prte-rmaps-base.txt: No such file or directory.
+2026-11-01T13:38:38.3615922Z ##[error]Process completed with exit code 1.
+

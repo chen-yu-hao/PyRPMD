@@ -11,6 +11,7 @@ import sys
 from unittest.mock import patch
 import numpy as np
 
+from pyrpmd.checkpoint import load_checkpoint
 from pyrpmd.dynamics import Dynamics
 from pyrpmd.io import write_json
 from pyrpmd.parallel import root_call
@@ -55,6 +56,21 @@ def serial(root):
         raise RuntimeError(result.stdout + result.stderr)
 
 
+def portable_fes_metadata(value, directory):
+    """Normalize output locations while preserving every physical field."""
+    metadata = json.loads(str(value))
+
+    def relative_files(value):
+        if isinstance(value, dict):
+            return {key: relative_files(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [relative_files(item) for item in value]
+        return str(Path(value).relative_to(directory))
+
+    metadata["files"] = relative_files(metadata["files"])
+    return metadata
+
+
 def compare(root):
     count = 0
     patterns = ("meta/checkpoints/*.npz", "meta/fes.npz", "rate/checkpoints/*.npz",
@@ -64,10 +80,18 @@ def compare(root):
         assert paths
         for first in paths:
             second = root / "mpi" / first.relative_to(root / "serial")
-            with np.load(first, allow_pickle=False) as a, np.load(second, allow_pickle=False) as b:
+            # Validate hashes against each archive's own payload before
+            # comparing physical content and portable output provenance.
+            with load_checkpoint(first, require_integrity=True) as a, \
+                 load_checkpoint(second, require_integrity=True) as b:
                 assert set(a.files) == set(b.files)
+                for key in ("schema", "schema_version", "kind", "writer_version"):
+                    assert a.envelope[key] == b.envelope[key]
                 for key in a.files:
-                    np.testing.assert_array_equal(a[key], b[key], err_msg=f"{first}:{key}")
+                    if key == "fes_metadata":
+                        assert portable_fes_metadata(a[key], root / "serial") == portable_fes_metadata(b[key], root / "mpi")
+                    else:
+                        np.testing.assert_array_equal(a[key], b[key], err_msg=f"{first}:{key}")
             count += 1
     print(f"PASS: periodic 3D NHC MetaD + conditional surface rate; {count} NPZ files match serial exactly; completed resumes pass.", flush=True)
 

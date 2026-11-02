@@ -1,0 +1,43 @@
+# GitHub Actions log excerpt
+# Repository: chen-yu-hao/PyRPMD
+# Event: push
+# Head SHA: 4ba870dd7121a31e0e0987a90b194fec3f788ffd
+# Run: https://github.com/chen-yu-hao/PyRPMD/actions/runs/41312685089
+# Job: https://github.com/chen-yu-hao/PyRPMD/actions/runs/41312685089/job/124866188164
+# Failing step: Require working runtimes before tests
+2026-11-01T14:11:10.3315166Z ##[group]Run python - <<'PY'
+2026-11-01T14:11:10.3315349Z [36;1mpython - <<'PY'[0m
+2026-11-01T14:11:10.3315478Z [36;1mimport ase[0m
+2026-11-01T14:11:10.3315597Z [36;1mimport h5py[0m
+2026-11-01T14:11:10.3315717Z [36;1mimport MDAnalysis[0m
+2026-11-01T14:11:10.3315852Z [36;1mimport openmm[0m
+2026-11-01T14:11:10.3315982Z [36;1mfrom lammps import lammps[0m
+2026-11-01T14:11:10.3316141Z [36;1mprint("OpenMM", openmm.__version__)[0m
+2026-11-01T14:11:10.3316397Z [36;1mprint("ASE", ase.__version__, "MDAnalysis", MDAnalysis.__version__, "h5py", h5py.__version__)[0m
+2026-11-01T14:11:10.3316684Z [36;1mengine = lammps(cmdargs=["-log", "none", "-screen", "none"])[0m
+2026-11-01T14:11:10.3317038Z [36;1massert engine.extract_setting("world_size") == 1[0m
+2026-11-01T14:11:10.3317225Z [36;1mprint("LAMMPS", engine.version())[0m
+2026-11-01T14:11:10.3317382Z [36;1mengine.close()[0m
+2026-11-01T14:11:10.3317505Z [36;1mPY[0m
+2026-11-01T14:11:10.3342386Z shell: /usr/bin/bash -e {0}
+2026-11-01T14:11:10.3342549Z env:
+2026-11-01T14:11:10.3342782Z   OMP_NUM_THREADS: 1
+2026-11-01T14:11:10.3342915Z   OPENBLAS_NUM_THREADS: 1
+2026-11-01T14:11:10.3343044Z   OPENMM_CPU_THREADS: 1
+2026-11-01T14:11:10.3343205Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-01T14:11:10.3343437Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib/pkgconfig
+2026-11-01T14:11:10.3343663Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-01T14:11:10.3343871Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-01T14:11:10.3344074Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.15/x64
+2026-11-01T14:11:10.3344361Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib:/opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-01T14:11:10.3344616Z ##[endgroup]
+2026-11-01T14:11:10.9356594Z [1793542270.935452] [runnervmnwato:2271 :0]        ib_iface.c:1316 UCX  ERROR mana_0: iface 0x556cc953cc00 failed to create UD QP TX wr:256 sge:6 inl:64 resp:0 RX wr:4096 sge:1 resp:0 failed: Operation not supported
+2026-11-01T14:11:10.9358559Z [1793542270.935798] [runnervmnwato:2271 :0]      ucp_worker.c:1415 UCX  ERROR uct_iface_open(ud_verbs/mana_0:1) failed: Input/output error
+2026-11-01T14:11:10.9372324Z Abort(874661263): Fatal error in internal_Init_thread: Other MPI error, error stack:
+2026-11-01T14:11:10.9373136Z internal_Init_thread(71).: MPI_Init_thread(argc=(nil), argv=(nil), required=3, provided=0x7ffd6c711440) failed
+2026-11-01T14:11:10.9373547Z MPII_Init_thread(289)....: 
+2026-11-01T14:11:10.9373754Z MPID_Init(549)...........: 
+2026-11-01T14:11:10.9373974Z MPIDI_UCX_init_local(245): 
+2026-11-01T14:11:10.9374414Z MPIDI_UCX_init_worker(86):  ucx function returned with failed status(ucx_init.c 86 MPIDI_UCX_init_worker Input/output error)
+2026-11-01T14:11:10.9467564Z ##[error]Process completed with exit code 143.
+

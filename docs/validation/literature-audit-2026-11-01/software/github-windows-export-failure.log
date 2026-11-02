@@ -1,0 +1,29 @@
+2026-11-01T13:36:03.0533297Z Downloading h5py-3.16.0-cp311-cp311-win_amd64.whl (3.2 MB)
+2026-11-01T13:36:03.1126354Z    ---------------------------------------- 3.2/3.2 MB 94.5 MB/s  0:00:00
+2026-11-01T13:36:03.1181469Z Downloading numpy-2.4.6-cp311-cp311-win_amd64.whl (12.6 MB)
+2026-11-01T13:36:03.2973596Z    ---------------------------------------- 12.6/12.6 MB 71.8 MB/s  0:00:00
+2026-11-01T13:36:03.3039088Z Downloading scipy-1.17.1-cp311-cp311-win_amd64.whl (36.6 MB)
+2026-11-01T13:36:04.0911270Z    ---------------------------------------- 36.6/36.6 MB 46.5 MB/s  0:00:00
+2026-11-01T13:36:04.0949827Z Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+2026-11-01T13:36:04.1905005Z Installing collected packages: threadpoolctl, numpy, scipy, h5py, pyrpmd
+2026-11-01T13:36:13.7593054Z 
+2026-11-01T13:36:13.7602571Z Successfully installed h5py-3.16.0 numpy-2.4.6 pyrpmd-0.2.0 scipy-1.17.1 threadpoolctl-3.7.0
+2026-11-01T13:36:13.8350635Z + python C:\Users\runneradmin\AppData\Local\Temp\cibw-sdist-t5dh0qoo\pyrpmd-0.2.0/tests/wheel_smoke.py
+2026-11-01T13:36:14.3732548Z Traceback (most recent call last):
+2026-11-01T13:36:14.3739226Z   File "C:\Users\runneradmin\AppData\Local\Temp\cibw-sdist-t5dh0qoo\pyrpmd-0.2.0/tests/wheel_smoke.py", line 87, in <module>
+2026-11-01T13:36:14.3739715Z     main()
+2026-11-01T13:36:14.3740139Z   File "C:\Users\runneradmin\AppData\Local\Temp\cibw-sdist-t5dh0qoo\pyrpmd-0.2.0/tests/wheel_smoke.py", line 64, in main
+2026-11-01T13:36:14.3740591Z     receipt = write_trajectory(root / f"dimer.{suffix}",
+2026-11-01T13:36:14.3740844Z               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-11-01T13:36:14.3741411Z   File "C:\Users\runneradmin\AppData\Local\Temp\cibw-run-i2xrb8py\cp311-win_amd64\venv-test\Lib\site-packages\pyrpmd\trajectory_export.py", line 241, in write_trajectory
+2026-11-01T13:36:14.3741932Z     os.fsync(stream.fileno())
+2026-11-01T13:36:14.3742154Z OSError: [Errno 9] Bad file descriptor
+2026-11-01T13:36:16.1859854Z ##[error]cibuildwheel: Command python C:\Users\runneradmin\AppData\Local\Temp\cibw-sdist-t5dh0qoo\pyrpmd-0.2.0/tests/wheel_smoke.py failed with code 1. 
+2026-11-01T13:36:16.1866789Z 
+2026-11-01T13:36:16.1867140Z ##[endgroup]
+2026-11-01T13:36:16.1867746Z                                                              [31m✕ [0m16.25s
+2026-11-01T13:36:16.2146682Z ##[error]Process completed with exit code 1.
+2026-11-01T13:36:16.2239041Z Cleaning up orphan processes
+2026-11-01T13:36:16.2362096Z Terminate orphan process: pid (2968) (vctip)
+2026-11-01T13:36:16.2527426Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/download-artifact@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+

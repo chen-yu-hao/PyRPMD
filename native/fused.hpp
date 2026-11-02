@@ -193,6 +193,7 @@ static PyObject* run_block(PyObject*,PyObject* args){
     try{
         ensure(steps>0&&stride>0,"steps and stride must be positive");
         const Py_ssize_t P=c->beads,d=c->nd, size=P*d, rows=1+(steps-1)/stride;
+        NativeFixedAtoms fixed(spec,d/3);
         ensure(rows<=PY_SSIZE_T_MAX/d,"observation size overflow");
         PyObject* obs=field(spec,"observers");ensure(PyList_Check(obs),"observers must be a list");
         const Py_ssize_t ncv=PyList_Size(obs);ensure(ncv==0||rows<=PY_SSIZE_T_MAX/ncv,"CV output size overflow");
@@ -204,6 +205,7 @@ static PyObject* run_block(PyObject*,PyObject* args){
             PyObject* indices=field(f,"atoms");ensure(PyList_Check(indices)&&PyList_Size(indices)>0,"empty fragment");
             for(Py_ssize_t j=0;j<PyList_Size(indices);++j){long a=PyLong_AsLong(PyList_GetItem(indices,j));
                 ensure(!PyErr_Occurred()&&a>=0&&a<d/3,"fragment index out of range");
+                ensure(!fixed.mask[a],"fragment COM constraints cannot include fixed atoms");
                 item.atoms.push_back(a);item.mass+=c->mass[a];}
             auto r=numbers(field(f,"reference"),3);std::copy(r.begin(),r.end(),item.ref.begin());fragments.push_back(std::move(item));}
         Buffer qb(qo,size),pb(po,size),eb(eo,rows);
@@ -222,6 +224,7 @@ static PyObject* run_block(PyObject*,PyObject* args){
         std::vector<double> q(qb.data(),qb.data()+size),p(pb.data(),pb.data()+size),work(c->workspace_size()),center(d);
         for(double v:q)ensure(std::isfinite(v),"nonfinite q");
         for(double v:p)ensure(std::isfinite(v),"nonfinite p");
+        fixed.validate(q.data(),p.data(),P);
         PES pes(*binding_ptr,P,d);
         double initial=0.,minimum=std::numeric_limits<double>::infinity(),maximum=-minimum;
         double clock=number(field(spec,"time"));
@@ -229,10 +232,12 @@ static PyObject* run_block(PyObject*,PyObject* args){
         auto project=[&](){for(const auto& f:fragments){double com[3]={0,0,0},vel[3]={0,0,0};
             for(Py_ssize_t b=0;b<P;++b)for(size_t a:f.atoms)for(int k=0;k<3;++k){com[k]+=q[b*d+3*a+k]*c->mass[a];vel[k]+=p[b*d+3*a+k];}
             for(int k=0;k<3;++k){com[k]=com[k]/(P*f.mass)-f.ref[k];vel[k]/=P*f.mass;}
-            for(Py_ssize_t b=0;b<P;++b)for(size_t a:f.atoms)for(int k=0;k<3;++k){q[b*d+3*a+k]-=com[k];p[b*d+3*a+k]-=c->mass[a]*vel[k];}}};
+            for(Py_ssize_t b=0;b<P;++b)for(size_t a:f.atoms)for(int k=0;k<3;++k){q[b*d+3*a+k]-=com[k];p[b*d+3*a+k]-=c->mass[a]*vel[k];}}
+            fixed.project(q.data(),p.data(),P);};
         auto force=[&](){pes.evaluate(q.data());double bias_energy=0.;
             if(!biases.empty()){centroid(q.data(),center.data(),P,d);for(auto& b:biases)bias_energy+=b.apply(center.data(),pes.force.data(),P,c->mass);}
             for(double v:pes.force)ensure(std::isfinite(v),"nonfinite biased force");
+            fixed.clear_force(pes.force.data(),P);
             return bias_energy;};
         auto energy=[&](double bias_energy){double e=bias_energy;for(double v:pes.energy)e+=v;
             for(Py_ssize_t b=0;b<P;++b)for(Py_ssize_t j=0;j<d;++j){double dq=q[b*d+j]-q[((b+1)%P)*d+j];

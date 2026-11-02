@@ -1,0 +1,584 @@
+PyRPMD 0.2.0
+{
+  "name": "PyRPMD",
+  "version": "0.2.0",
+  "environment": {
+    "python": "3.12.14",
+    "executable": "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "dependencies": {
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "h5py": "3.16.0",
+      "threadpoolctl": "3.7.0",
+      "mpi4py": null,
+      "torch": null,
+      "ase": null,
+      "pymbar": null,
+      "matplotlib": null
+    }
+  },
+  "native": {
+    "available": true,
+    "openmp": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "workflows": [
+    "rate",
+    "drpmd",
+    "fes",
+    "network",
+    "metadynamics",
+    "opes",
+    "pcet",
+    "pimd",
+    "diffusion",
+    "site_rate",
+    "surface_rate"
+  ],
+  "materials": {
+    "cell": "fixed_or_isotropic_bzp",
+    "trajectory": "unwrapped_centroid",
+    "pressure_ensemble": true,
+    "fixed_atoms": true,
+    "streaming_trajectories": true
+  },
+  "integrators": [
+    "cayley-bcb",
+    "normal-mode-bab",
+    "velocity-verlet"
+  ],
+  "enhanced_sampling": [
+    "adaptive_umbrella",
+    "replica_exchange_umbrella",
+    "standard_metadynamics",
+    "well_tempered_metadynamics",
+    "opes"
+  ],
+  "sampling_python_apis": [
+    "plumed_centroid_bias",
+    "transition_interface_sampling"
+  ],
+  "scientific_tools": [
+    "general_centroid_site_rates",
+    "temperature_isotope_studies",
+    "ring_polymer_instanton",
+    "takahashi_imada_thermodynamics",
+    "open_path_momentum"
+  ],
+  "initial_ensembles": [
+    "thermal_parent",
+    "ne_rpmd",
+    "qct"
+  ],
+  "input_schema_version": 1,
+  "run_manifest_schema_version": 2,
+  "checkpoint_schema_version": 2,
+  "input_formats": [
+    "TOML .inp",
+    "Python build()"
+  ],
+  "postprocessing": [
+    "rate-postprocess"
+  ]
+}
+{
+  "created": true,
+  "directory": "/tmp/pyrpmd-wheel-bture398/example",
+  "input": "/tmp/pyrpmd-wheel-bture398/example/quickstart.inp",
+  "output": "/tmp/pyrpmd-wheel-bture398/example/run",
+  "task": "fes",
+  "purpose": "Short harmonic tutorial; not a converged scientific calculation",
+  "next_steps_shell": "posix",
+  "next_steps": [
+    "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python -m pyrpmd validate /tmp/pyrpmd-wheel-bture398/example/quickstart.inp --check-pes",
+    "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python -m pyrpmd run /tmp/pyrpmd-wheel-bture398/example/quickstart.inp",
+    "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python -m pyrpmd analyze /tmp/pyrpmd-wheel-bture398/example/run",
+    "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python -m pyrpmd resume /tmp/pyrpmd-wheel-bture398/example/run"
+  ],
+  "next_step_arguments": [
+    [
+      "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python",
+      "-m",
+      "pyrpmd",
+      "validate",
+      "/tmp/pyrpmd-wheel-bture398/example/quickstart.inp",
+      "--check-pes"
+    ],
+    [
+      "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python",
+      "-m",
+      "pyrpmd",
+      "run",
+      "/tmp/pyrpmd-wheel-bture398/example/quickstart.inp"
+    ],
+    [
+      "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python",
+      "-m",
+      "pyrpmd",
+      "analyze",
+      "/tmp/pyrpmd-wheel-bture398/example/run"
+    ],
+    [
+      "/workspace/scratch/a5e4820daedd/distribution-check/env/bin/python",
+      "-m",
+      "pyrpmd",
+      "resume",
+      "/tmp/pyrpmd-wheel-bture398/example/run"
+    ]
+  ]
+}
+{
+  "task": "fes",
+  "resolved": {
+    "schema_version": 1,
+    "task": "fes",
+    "preset": "pilot",
+    "temperature": "300 K",
+    "beads": 4,
+    "seed": 20261030,
+    "system": {
+      "symbols": [
+        "H"
+      ],
+      "geometry": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "geometry_unit": "bohr"
+    },
+    "potential": {
+      "provider": "harmonic",
+      "params": {
+        "k": 0.002
+      }
+    },
+    "dynamics": {
+      "integrator": "cayley-bcb",
+      "timestep": "0.1 fs"
+    },
+    "sampling": {
+      "equilibration_steps": 20,
+      "production_steps": 100,
+      "sample_interval": 5,
+      "andersen_interval": 10,
+      "replicas": 2,
+      "dt_au": 4.134137333517016,
+      "thermostat": "andersen",
+      "integrator": "cayley-bcb-andersen",
+      "interval_steps": 5
+    },
+    "cvs": [
+      {
+        "name": "x",
+        "kind": "cartesian",
+        "atom": 0,
+        "axis": "x",
+        "estimator": "centroid",
+        "unit": "bohr"
+      }
+    ],
+    "umbrella": {
+      "cvs": [
+        "x"
+      ],
+      "centers": [
+        -0.5,
+        0.0,
+        0.5
+      ],
+      "stiffness": "0.002 hartree/bohr^2"
+    },
+    "analysis": {
+      "bins": 12,
+      "ranges": [
+        [
+          -2.0,
+          2.0
+        ]
+      ],
+      "bootstrap": 0,
+      "min_count": 2
+    },
+    "output": {
+      "directory": "/tmp/pyrpmd-wheel-bture398/example/run",
+      "checkpoint_steps": 20
+    },
+    "temperature_K": 300.0,
+    "beta": 1052.5834160132904,
+    "dt_au": 4.134137333517016,
+    "parallel": {
+      "bead_workers": 1,
+      "mode": "serial",
+      "trajectory_workers": 1,
+      "backend": "serial",
+      "threads_per_rank": 1,
+      "pes_ranks": 1,
+      "scheduling": "static",
+      "coordinator_ranks": 0
+    },
+    "reaction": {
+      "electronic_weight": 1.0
+    },
+    "collision": {},
+    "outcomes": {},
+    "_input_path": "/tmp/pyrpmd-wheel-bture398/example/quickstart.inp",
+    "_base_directory": "/tmp/pyrpmd-wheel-bture398/example",
+    "_warnings": [],
+    "hamiltonian_convention": "sum_beads_beta_over_P"
+  },
+  "system": {
+    "symbols": [
+      "H"
+    ],
+    "masses": [
+      1837.1526474396187
+    ],
+    "geometry": [
+      [
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "fragments": [],
+    "charge": 0,
+    "multiplicity": 1
+  },
+  "diagnostics": [],
+  "ready": true,
+  "umbrella_preparation": {
+    "dimension": 1,
+    "windows": 3,
+    "cv_units": [
+      "bohr"
+    ],
+    "centers_au": [
+      [
+        -0.5
+      ],
+      [
+        0.0
+      ],
+      [
+        0.5
+      ]
+    ],
+    "stiffness_au": [
+      [
+        0.002
+      ]
+    ]
+  },
+  "pes_check": {
+    "energy_hartree": [
+      0.0
+    ],
+    "status": [
+      0
+    ]
+  },
+  "valid": true,
+  "input": "/tmp/pyrpmd-wheel-bture398/example/quickstart.inp",
+  "output": "/tmp/pyrpmd-wheel-bture398/example/run",
+  "preset": "pilot"
+}
+{
+  "task": "fes",
+  "status": "sampled",
+  "dimension": 1,
+  "units": [
+    "bohr"
+  ],
+  "energy_unit": "hartree",
+  "measure": "cv_density",
+  "beta": 1052.5834160132904,
+  "flux_axis": null,
+  "estimator": "mbar",
+  "windows": 3,
+  "streams": 6,
+  "samples": 120,
+  "overlap_connected": true,
+  "overlap_components": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "weight_effective_samples": 118.35627661162837,
+  "effective_samples_per_stream": [
+    6.55013476849954,
+    6.936018347574494,
+    4.069926246209314,
+    6.613610071427573,
+    2.9501629565864667,
+    5.449865458293288
+  ],
+  "bootstrap_replicates": 0,
+  "bootstrap_requested": 0,
+  "bootstrap_attempted": 0,
+  "bootstrap_reference_bin": null,
+  "standard_error_scope": "complete_bootstrap_support_per_bin_fixed_reference",
+  "bootstrap_diagnostics": [],
+  "bootstrap_block_plan": {
+    "policy": "ceil(5*g), capped at max(1, floor(N/2))",
+    "requested_block_lengths": [
+      16,
+      15,
+      25,
+      16,
+      34,
+      19
+    ],
+    "block_lengths": [
+      10,
+      10,
+      10,
+      10,
+      10,
+      10
+    ],
+    "block_length_capped": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "blocks_per_stream": [
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0
+    ],
+    "status": "limited_blocks",
+    "warnings": [
+      "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval."
+    ],
+    "mixing_established": false,
+    "observables": "CV and nonconstant centered CV squared; periodic CVs use nonconstant first and second circular harmonics"
+  },
+  "warnings": [
+    "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+    "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+  ],
+  "converged": false,
+  "convergence_note": "Overlap and bootstrap diagnose these samples; bead, timestep and sampling convergence require separate runs.",
+  "files": {
+    "data": "/tmp/pyrpmd-wheel-bture398/run/fes.npz",
+    "table": "/tmp/pyrpmd-wheel-bture398/run/fes.csv",
+    "hdf5": "/tmp/pyrpmd-wheel-bture398/run/fes.h5"
+  },
+  "software": "PyRPMD",
+  "version": "0.2.0",
+  "output": "/tmp/pyrpmd-wheel-bture398/run",
+  "preset": "pilot",
+  "input_warnings": []
+}
+{
+  "task": "fes",
+  "status": "sampled",
+  "dimension": 1,
+  "units": [
+    "bohr"
+  ],
+  "energy_unit": "hartree",
+  "measure": "cv_density",
+  "beta": 1052.5834160132904,
+  "flux_axis": null,
+  "estimator": "mbar",
+  "windows": 3,
+  "streams": 6,
+  "samples": 120,
+  "overlap_connected": true,
+  "overlap_components": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "weight_effective_samples": 118.35627661162837,
+  "effective_samples_per_stream": [
+    6.55013476849954,
+    6.936018347574494,
+    4.069926246209314,
+    6.613610071427573,
+    2.9501629565864667,
+    5.449865458293288
+  ],
+  "bootstrap_replicates": 0,
+  "bootstrap_requested": 0,
+  "bootstrap_attempted": 0,
+  "bootstrap_reference_bin": null,
+  "standard_error_scope": "complete_bootstrap_support_per_bin_fixed_reference",
+  "bootstrap_diagnostics": [],
+  "bootstrap_block_plan": {
+    "policy": "ceil(5*g), capped at max(1, floor(N/2))",
+    "requested_block_lengths": [
+      16,
+      15,
+      25,
+      16,
+      34,
+      19
+    ],
+    "block_lengths": [
+      10,
+      10,
+      10,
+      10,
+      10,
+      10
+    ],
+    "block_length_capped": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "blocks_per_stream": [
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0
+    ],
+    "status": "limited_blocks",
+    "warnings": [
+      "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval."
+    ],
+    "mixing_established": false,
+    "observables": "CV and nonconstant centered CV squared; periodic CVs use nonconstant first and second circular harmonics"
+  },
+  "warnings": [
+    "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+    "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+  ],
+  "converged": false,
+  "convergence_note": "Overlap and bootstrap diagnose these samples; bead, timestep and sampling convergence require separate runs.",
+  "files": {
+    "data": "/tmp/pyrpmd-wheel-bture398/run/fes.npz",
+    "table": "/tmp/pyrpmd-wheel-bture398/run/fes.csv",
+    "hdf5": "/tmp/pyrpmd-wheel-bture398/run/fes.h5"
+  },
+  "software": "PyRPMD",
+  "version": "0.2.0",
+  "output": "/tmp/pyrpmd-wheel-bture398/run",
+  "preset": "pilot",
+  "input_warnings": []
+}
+{
+  "task": "fes",
+  "status": "sampled",
+  "dimension": 1,
+  "units": [
+    "bohr"
+  ],
+  "energy_unit": "hartree",
+  "measure": "cv_density",
+  "beta": 1052.5834160132904,
+  "flux_axis": null,
+  "estimator": "mbar",
+  "windows": 3,
+  "streams": 6,
+  "samples": 120,
+  "overlap_connected": true,
+  "overlap_components": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "weight_effective_samples": 118.35627661162837,
+  "effective_samples_per_stream": [
+    6.55013476849954,
+    6.936018347574494,
+    4.069926246209314,
+    6.613610071427573,
+    2.9501629565864667,
+    5.449865458293288
+  ],
+  "bootstrap_replicates": 0,
+  "bootstrap_requested": 0,
+  "bootstrap_attempted": 0,
+  "bootstrap_reference_bin": null,
+  "standard_error_scope": "complete_bootstrap_support_per_bin_fixed_reference",
+  "bootstrap_diagnostics": [],
+  "bootstrap_block_plan": {
+    "policy": "ceil(5*g), capped at max(1, floor(N/2))",
+    "requested_block_lengths": [
+      16,
+      15,
+      25,
+      16,
+      34,
+      19
+    ],
+    "block_lengths": [
+      10,
+      10,
+      10,
+      10,
+      10,
+      10
+    ],
+    "block_length_capped": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "blocks_per_stream": [
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0,
+      2.0
+    ],
+    "status": "limited_blocks",
+    "warnings": [
+      "Bootstrap uncertainty has limited block support: some streams have fewer than 20 blocks or the requested 5*g length was capped at half the stream. The reported error is a finite-sample diagnostic, not a reliable interval."
+    ],
+    "mixing_established": false,
+    "observables": "CV and nonconstant centered CV squared; periodic CVs use nonconstant first and second circular harmonics"
+  },
+  "warnings": [
+    "Some streams have fewer than 20 estimated independent samples; increase sampling and replicas.",
+    "Unsampled/insufficient-count bins are masked; no extrapolation is reported."
+  ],
+  "converged": false,
+  "convergence_note": "Overlap and bootstrap diagnose these samples; bead, timestep and sampling convergence require separate runs.",
+  "files": {
+    "data": "/tmp/pyrpmd-wheel-bture398/run/fes.npz",
+    "table": "/tmp/pyrpmd-wheel-bture398/run/fes.csv",
+    "hdf5": "/tmp/pyrpmd-wheel-bture398/run/fes.h5"
+  },
+  "software": "PyRPMD",
+  "version": "0.2.0",
+  "output": "/tmp/pyrpmd-wheel-bture398/run",
+  "preset": "pilot",
+  "input_warnings": []
+}
+{"version": "0.2.0", "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]", "native": {"available": true, "openmp": true, "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"]}, "installed": "/workspace/scratch/a5e4820daedd/distribution-check/env/lib/python3.12/site-packages/pyrpmd/__init__.py"}

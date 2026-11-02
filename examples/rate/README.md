@@ -1,16 +1,30 @@
-# RPMD rate from a transition state
+# RPMD rate from endpoints or a transition state
 
-Starting from nothing but a TS structure and an analytic potential, this example runs the
-complete RPMDrate-style Bennett–Chandler calculation in about 15 seconds.
+Start with reactant/product structures or a TS guess and an analytic potential, then run the
+complete RPMDrate-style Bennett–Chandler calculation. The endpoint example first finds a saddle
+with CI-NEB and refines it with P-RFO:
+
+```bash
+python -m pyrpmd prepare examples/rate/from_endpoints.inp --pilot --output preparation.json
+python -m pyrpmd run examples/rate/from_endpoints.inp --output runs/rate-from-endpoints
+```
+
+`from_endpoints.inp` uses `reactant.xyz` and `product.xyz`, which contain the complete system in
+the same atom order and Cartesian frame. CI-NEB keeps these endpoints fixed. See
+[transition-state search](../../docs/transition-state-search.md) for refinement controls, path
+initialization, units, connectivity-radius overrides, and limitations.
+
+The existing TS example remains available:
 
 ```bash
 pyrpmd prepare examples/rate/pilot.inp --pilot
 pyrpmd run examples/rate/pilot.inp --output runs/rate
 ```
 
-`prepare` evaluates the PES, forms a finite-difference mass-weighted Hessian, follows its unique
-unstable mode in both directions and identifies the equivalent A + BC / AB + C channels. `run`
-then performs umbrella sampling, the flux-metric PMF, constrained parent chains, paired recrossing
+`prepare --pilot` evaluates the PES, refines an imperfect TS when needed, forms a finite-difference
+mass-weighted Hessian, follows its unique unstable mode in both directions and identifies the
+equivalent A + BC / AB + C channels. After successful preparation, `run`
+performs umbrella sampling, the flux-metric PMF, constrained parent chains, paired recrossing
 trajectories and parent-cluster/block uncertainty estimates. `minimal.inp` shows the smallest
 valid input: the TS structure and the PES selection.
 

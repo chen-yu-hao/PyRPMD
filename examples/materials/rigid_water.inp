@@ -1,0 +1,38 @@
+# Kinematic smoke test: one constrained water geometry with zero physical PES.
+# This is not an interacting liquid-water model or a converged quantum result.
+task = "pimd"
+temperature = "300 K"
+beads = 8
+seed = 1207
+
+[system]
+symbols = ["O", "H", "H"]
+geometry = [[0.0, 0.0, 0.0], [0.9572, 0.0, 0.0], [-0.23999, 0.92730, 0.0]]
+geometry_unit = "angstrom"
+bond_constraints = [
+  { atoms = [0, 1], length = "0.9572 angstrom" },
+  { atoms = [0, 2], length = "0.9572 angstrom" },
+  { atoms = [1, 2], length = "1.5139 angstrom" },
+]
+
+[potential]
+provider = "builtin"
+name = "free"
+
+[dynamics]
+integrator = "velocity-verlet"
+timestep = "0.05 fs"
+loop_backend = "auto"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 10
+equilibration_steps = 32
+production_steps = 128
+sample_interval = 8
+replicas = 1
+
+[output]
+trajectory_storage = "stream"
+chunk_frames = 8
+checkpoint_steps = 16

@@ -1,0 +1,205 @@
+{
+  "format": "PyRPMD.propagation-stack-batch-counts.v1",
+  "scope": "identical scalar operators, independent harmonic frames, no timing or physical convergence claim",
+  "trajectories": 8,
+  "beads": 4,
+  "steps": 16,
+  "seed": {
+    "initial_conditions": 1301,
+    "operators": 1729
+  },
+  "cases": [
+    {
+      "thermostat": "none",
+      "split_inner_steps": null,
+      "contracted_beads": null,
+      "scalar": {
+        "physical": {
+          "calls": 392,
+          "frames": 1568,
+          "maximum_frames_per_call": 4
+        }
+      },
+      "batched": {
+        "physical": {
+          "calls": 49,
+          "frames": 1568,
+          "maximum_frames_per_call": 32
+        }
+      },
+      "call_reduction_factor": 8.0,
+      "maximum_absolute_differences": {
+        "position": 0.0,
+        "momentum": 0.0,
+        "energy_trace": 0.0
+      },
+      "thermostat_and_rng_states_identical": true
+    },
+    {
+      "thermostat": "andersen",
+      "split_inner_steps": null,
+      "contracted_beads": null,
+      "scalar": {
+        "physical": {
+          "calls": 392,
+          "frames": 1568,
+          "maximum_frames_per_call": 4
+        }
+      },
+      "batched": {
+        "physical": {
+          "calls": 49,
+          "frames": 1568,
+          "maximum_frames_per_call": 32
+        }
+      },
+      "call_reduction_factor": 8.0,
+      "maximum_absolute_differences": {
+        "position": 0.0,
+        "momentum": 0.0,
+        "energy_trace": 0.0
+      },
+      "thermostat_and_rng_states_identical": true
+    },
+    {
+      "thermostat": "pile-l",
+      "split_inner_steps": null,
+      "contracted_beads": null,
+      "scalar": {
+        "physical": {
+          "calls": 392,
+          "frames": 1568,
+          "maximum_frames_per_call": 4
+        }
+      },
+      "batched": {
+        "physical": {
+          "calls": 49,
+          "frames": 1568,
+          "maximum_frames_per_call": 32
+        }
+      },
+      "call_reduction_factor": 8.0,
+      "maximum_absolute_differences": {
+        "position": 0.0,
+        "momentum": 0.0,
+        "energy_trace": 0.0
+      },
+      "thermostat_and_rng_states_identical": true
+    },
+    {
+      "thermostat": "nhc",
+      "split_inner_steps": null,
+      "contracted_beads": null,
+      "scalar": {
+        "physical": {
+          "calls": 392,
+          "frames": 1568,
+          "maximum_frames_per_call": 4
+        }
+      },
+      "batched": {
+        "physical": {
+          "calls": 49,
+          "frames": 1568,
+          "maximum_frames_per_call": 32
+        }
+      },
+      "call_reduction_factor": 8.0,
+      "maximum_absolute_differences": {
+        "position": 0.0,
+        "momentum": 0.0,
+        "energy_trace": 0.0
+      },
+      "thermostat_and_rng_states_identical": true
+    },
+    {
+      "thermostat": "svr",
+      "split_inner_steps": null,
+      "contracted_beads": null,
+      "scalar": {
+        "physical": {
+          "calls": 392,
+          "frames": 1568,
+          "maximum_frames_per_call": 4
+        }
+      },
+      "batched": {
+        "physical": {
+          "calls": 49,
+          "frames": 1568,
+          "maximum_frames_per_call": 32
+        }
+      },
+      "call_reduction_factor": 8.0,
+      "maximum_absolute_differences": {
+        "position": 0.0,
+        "momentum": 0.0,
+        "energy_trace": 0.0
+      },
+      "thermostat_and_rng_states_identical": true
+    },
+    {
+      "thermostat": "gle",
+      "split_inner_steps": null,
+      "contracted_beads": null,
+      "scalar": {
+        "physical": {
+          "calls": 392,
+          "frames": 1568,
+          "maximum_frames_per_call": 4
+        }
+      },
+      "batched": {
+        "physical": {
+          "calls": 49,
+          "frames": 1568,
+          "maximum_frames_per_call": 32
+        }
+      },
+      "call_reduction_factor": 8.0,
+      "maximum_absolute_differences": {
+        "position": 0.0,
+        "momentum": 0.0,
+        "energy_trace": 0.0
+      },
+      "thermostat_and_rng_states_identical": true
+    },
+    {
+      "thermostat": "gle",
+      "split_inner_steps": 3,
+      "contracted_beads": 2,
+      "scalar": {
+        "fast": {
+          "calls": 648,
+          "frames": 2592,
+          "maximum_frames_per_call": 4
+        },
+        "slow": {
+          "calls": 392,
+          "frames": 784,
+          "maximum_frames_per_call": 2
+        }
+      },
+      "batched": {
+        "fast": {
+          "calls": 81,
+          "frames": 2592,
+          "maximum_frames_per_call": 32
+        },
+        "slow": {
+          "calls": 49,
+          "frames": 784,
+          "maximum_frames_per_call": 16
+        }
+      },
+      "call_reduction_factor": 8.0,
+      "maximum_absolute_differences": {
+        "position": 0.0,
+        "momentum": 0.0,
+        "energy_trace": 0.0
+      },
+      "thermostat_and_rng_states_identical": true
+    }
+  ]
+}

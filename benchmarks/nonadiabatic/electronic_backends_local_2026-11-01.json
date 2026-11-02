@@ -1,0 +1,995 @@
+{
+  "format": "PyRPMD.electronic_backend_benchmark.v1",
+  "correctness_passed": true,
+  "speedup_is_acceptance_gate": false,
+  "environment": {
+    "software": {
+      "pyrpmd": "0.2.0",
+      "numpy": "2.3.5",
+      "python": "3.12.14",
+      "scipy": "1.17.0",
+      "torch": null,
+      "threadpoolctl": "3.6.0"
+    },
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "cpu_model": "x86_64",
+    "logical_cpus": 9,
+    "affinity_cpus": 9,
+    "requested_threads": 1,
+    "loaded_threadpools_during_measurement": [
+      {
+        "user_api": "blas",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "version": "0.3.30",
+        "threading_layer": "pthreads",
+        "architecture": "SkylakeX"
+      },
+      {
+        "user_api": "openmp",
+        "internal_api": "openmp",
+        "num_threads": 1,
+        "prefix": "libgomp",
+        "filepath": "/lib/x86_64-linux-gnu/libgomp.so.1.0.0",
+        "version": null
+      }
+    ],
+    "electronic_capabilities": {
+      "numpy": true,
+      "native": true,
+      "torch": false,
+      "cuda_available": false,
+      "precision": "float64/complex128"
+    },
+    "torch_device_requested": "cpu"
+  },
+  "code_identity": {
+    "source_sha256": {
+      "benchmarks/nonadiabatic/electronic_backends.py": "570afd66201c29c47f87322636c5dd7aaf4473bfb4b6b602b4b45b451a791fb4",
+      "native/electronic.cpp": "f4dd6bdcd7a752d1df15466a6a94cd0c1604a897f49a45da734b4adb40c32be2",
+      "src/pyrpmd/electronic_backends.py": "98d6d10d7d4de85f4747bdfc5077f007885fe05d5ec20479054c6e502e518c8f",
+      "src/pyrpmd/batched_nonadiabatic.py": "8c652eb56462c43ec457cc19a8cf26a5b33991d246fb226e1a3bf78b03b0083f",
+      "src/pyrpmd/nonadiabatic.py": "cd180bdfb3b5cfaf48ba30b77900eff030feaf9d888699a1ab058c82dd355d55",
+      "src/pyrpmd/nonadiabatic_ensemble.py": "86f88128376fec1c6bcfef20fe9d176b90d3423f9e0dd1a508dad11a0918a14c",
+      "src/pyrpmd/dynamics.py": "10fb488284c1e0d1a4c778b21fe1e0843a2dc3455cfbc4ecaef3c021cf9caba1",
+      "src/pyrpmd/potentials/nonadiabatic_models.py": "fd7dbcc94d311a0571df2f65905b3215d2f6f70d371ea3d13693e14b17c29012",
+      "src/pyrpmd/potentials/nah2_leps.py": "402b2e8c431a1966b7afe76fe1fd250d75ce3ae5966e1c8576f3ec9db7653835"
+    },
+    "available_native_binaries": {
+      "pyrpmd._electronic": {
+        "file": "_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "1c0db081fd920d9a09a8a95b51bebceaced7307a20eff14f253f14f1e0dc8fb9"
+      },
+      "pyrpmd._native": {
+        "file": "_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "e9825e3cd0250bf289fc3d0c10802b1e692193e0c6785bece05cde321ab7bf83"
+      }
+    }
+  },
+  "settings": {
+    "backends": [
+      "numpy",
+      "native",
+      "torch"
+    ],
+    "torch_device": "cpu",
+    "batch": 16,
+    "beads": 8,
+    "states": 4,
+    "steps": 8,
+    "threads": 1,
+    "ring_native": false,
+    "warmups": 2,
+    "repeats": 5,
+    "kernel_inner": 10,
+    "seed": 20261101
+  },
+  "timing": "perf_counter_ns wall time; explicit CUDA synchronization; median of independent timed repeats",
+  "precision": "float64/complex128",
+  "unavailable_backends": [
+    {
+      "backend": "torch",
+      "device": "cpu",
+      "status": "unavailable",
+      "reason": "torch electronic backend requires the optional PyTorch dependency"
+    }
+  ],
+  "kernel_cases": [
+    {
+      "case": "complex_lvc",
+      "trajectory_batch": 16,
+      "beads": 8,
+      "electronic_states": 4,
+      "atoms": 1,
+      "matrix_input_dtype": "complex128",
+      "duration_atomic": 0.025,
+      "rows": [
+        {
+          "backend": "numpy",
+          "device": "cpu",
+          "api": "host_array",
+          "includes_pes": false,
+          "input_preparation_in_timing": false,
+          "host_device_transfers_in_timing": false,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "z": 0.0,
+              "delta_p": 0.0
+            }
+          },
+          "median_seconds": 0.0007293091000000001,
+          "samples_seconds": [
+            0.0007293091000000001,
+            0.0007285340000000001,
+            0.0007805124,
+            0.0007191899,
+            0.0007351249000000001
+          ],
+          "min_seconds": 0.0007191899,
+          "max_seconds": 0.0007805124,
+          "warmups": 2,
+          "repeats": 5,
+          "inner_calls_per_sample": 10,
+          "speedup_vs_numpy_host_array": 1.0,
+          "frames_per_second": 175508.5737995042
+        },
+        {
+          "backend": "native",
+          "device": "cpu",
+          "api": "host_array",
+          "includes_pes": false,
+          "input_preparation_in_timing": false,
+          "host_device_transfers_in_timing": false,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "z": 4.440892098500626e-16,
+              "delta_p": 4.336808689942018e-19
+            }
+          },
+          "median_seconds": 0.0006163569000000001,
+          "samples_seconds": [
+            0.0006112402,
+            0.0006133183000000001,
+            0.0006163569000000001,
+            0.0007026350000000001,
+            0.0006284662000000001
+          ],
+          "min_seconds": 0.0006112402,
+          "max_seconds": 0.0007026350000000001,
+          "warmups": 2,
+          "repeats": 5,
+          "inner_calls_per_sample": 10,
+          "speedup_vs_numpy_host_array": 1.1832577845725423,
+          "frames_per_second": 207671.88620748787
+        }
+      ]
+    },
+    {
+      "case": "nah2_5g",
+      "trajectory_batch": 16,
+      "beads": 8,
+      "electronic_states": 2,
+      "atoms": 3,
+      "matrix_input_dtype": "float64",
+      "duration_atomic": 0.05,
+      "rows": [
+        {
+          "backend": "numpy",
+          "device": "cpu",
+          "api": "host_array",
+          "includes_pes": false,
+          "input_preparation_in_timing": false,
+          "host_device_transfers_in_timing": false,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "z": 0.0,
+              "delta_p": 0.0
+            }
+          },
+          "median_seconds": 0.0002546909,
+          "samples_seconds": [
+            0.0003442548,
+            0.00031684860000000004,
+            0.0002546909,
+            0.0002479928,
+            0.00025134180000000003
+          ],
+          "min_seconds": 0.0002479928,
+          "max_seconds": 0.0003442548,
+          "warmups": 2,
+          "repeats": 5,
+          "inner_calls_per_sample": 10,
+          "speedup_vs_numpy_host_array": 1.0,
+          "frames_per_second": 502569.9779615212
+        },
+        {
+          "backend": "native",
+          "device": "cpu",
+          "api": "host_array",
+          "includes_pes": false,
+          "input_preparation_in_timing": false,
+          "host_device_transfers_in_timing": false,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "z": 3.3306690738754696e-16,
+              "delta_p": 6.938893903907228e-18
+            }
+          },
+          "median_seconds": 0.00019801650000000003,
+          "samples_seconds": [
+            0.00019466140000000003,
+            0.0002120336,
+            0.0002075038,
+            0.00018826670000000002,
+            0.00019801650000000003
+          ],
+          "min_seconds": 0.00018826670000000002,
+          "max_seconds": 0.0002120336,
+          "warmups": 2,
+          "repeats": 5,
+          "inner_calls_per_sample": 10,
+          "speedup_vs_numpy_host_array": 1.2862104925599631,
+          "frames_per_second": 646410.7788997381
+        }
+      ]
+    }
+  ],
+  "end_to_end_cases": [
+    {
+      "case": "complex_lvc",
+      "description": "synthetic complex Hermitian linear-vibronic model; not an electronic-structure fit",
+      "trajectory_batch": 16,
+      "beads": 8,
+      "electronic_states": 4,
+      "atoms": 1,
+      "beta_hartree_inverse": 20.0,
+      "dt_atomic": 0.05,
+      "masses_electron_mass": [
+        15.0
+      ],
+      "model_identity": {
+        "schema": "pyrpmd.nonadiabatic_model",
+        "version": 1,
+        "model": "lvc",
+        "parameters": {
+          "h0": {
+            "real": [
+              [
+                -0.035789137299054245,
+                -0.017688718022379885,
+                0.003847754403384639,
+                0.012015152838482153
+              ],
+              [
+                -0.017688718022379885,
+                0.00024851001092001095,
+                0.01208731389869473,
+                0.013031851641484031
+              ],
+              [
+                0.003847754403384639,
+                0.01208731389869473,
+                0.010629243795055286,
+                -0.004144519663506879
+              ],
+              [
+                0.012015152838482153,
+                0.013031851641484031,
+                -0.004144519663506879,
+                -0.026311559248087188
+              ]
+            ],
+            "imag": [
+              [
+                0.0,
+                0.0038830628007021748,
+                -0.0044683001136781334,
+                0.014458776176560937
+              ],
+              [
+                -0.0038830628007021748,
+                0.0,
+                -0.020368086075932688,
+                0.0036006721645517317
+              ],
+              [
+                0.0044683001136781334,
+                0.020368086075932688,
+                0.0,
+                -0.01831622750000418
+              ],
+              [
+                -0.014458776176560937,
+                -0.0036006721645517317,
+                0.01831622750000418,
+                0.0
+              ]
+            ]
+          },
+          "linear": {
+            "real": [
+              [
+                [
+                  -0.0028408849756544523,
+                  -0.005052972618869549,
+                  0.0031725794306726707,
+                  0.0006699869730252728
+                ],
+                [
+                  -0.005052972618869549,
+                  0.003939230368567525,
+                  0.0002647322410517447,
+                  -0.00016398528615915245
+                ],
+                [
+                  0.0031725794306726707,
+                  0.0002647322410517447,
+                  -0.00031556242235701386,
+                  0.0006655184350576034
+                ],
+                [
+                  0.0006699869730252728,
+                  -0.00016398528615915245,
+                  0.0006655184350576034,
+                  0.00809927790701343
+                ]
+              ],
+              [
+                [
+                  -0.0014577795539829402,
+                  -0.001303038868315286,
+                  0.0005130346318176182,
+                  -0.0010089139465340213
+                ],
+                [
+                  -0.001303038868315286,
+                  0.0008066082836824222,
+                  0.007147724134946428,
+                  0.0001194828545122667
+                ],
+                [
+                  0.0005130346318176182,
+                  0.007147724134946428,
+                  -0.010921023833650696,
+                  -0.014066017971126363
+                ],
+                [
+                  -0.0010089139465340213,
+                  0.0001194828545122667,
+                  -0.014066017971126363,
+                  -0.007983972094301543
+                ]
+              ],
+              [
+                [
+                  0.0015531954445467883,
+                  -0.0006883980485498502,
+                  -0.0028205184284296283,
+                  0.0006469289206312051
+                ],
+                [
+                  -0.0006883980485498502,
+                  -0.001276735129349619,
+                  0.002120930333777493,
+                  0.002712575260696708
+                ],
+                [
+                  -0.0028205184284296283,
+                  0.002120930333777493,
+                  -0.0034545284081124315,
+                  -0.0009336439023113683
+                ],
+                [
+                  0.0006469289206312051,
+                  0.002712575260696708,
+                  -0.0009336439023113683,
+                  -0.004951416439206262
+                ]
+              ]
+            ],
+            "imag": [
+              [
+                [
+                  0.0,
+                  0.0010556099943913834,
+                  -0.002866353757406942,
+                  0.001420884748653202
+                ],
+                [
+                  -0.0010556099943913834,
+                  0.0,
+                  0.0005433131933606222,
+                  0.00449008790966491
+                ],
+                [
+                  0.002866353757406942,
+                  -0.0005433131933606222,
+                  0.0,
+                  -0.0013802488925005708
+                ],
+                [
+                  -0.001420884748653202,
+                  -0.00449008790966491,
+                  0.0013802488925005708,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  0.002084474547406975,
+                  0.0027535811633248525,
+                  -0.0017058814705806944
+                ],
+                [
+                  -0.002084474547406975,
+                  0.0,
+                  0.002891808455504199,
+                  -0.0029037144166391676
+                ],
+                [
+                  -0.0027535811633248525,
+                  -0.002891808455504199,
+                  0.0,
+                  0.0006784178659349137
+                ],
+                [
+                  0.0017058814705806944,
+                  0.0029037144166391676,
+                  -0.0006784178659349137,
+                  0.0
+                ]
+              ],
+              [
+                [
+                  0.0,
+                  -0.005848721646691419,
+                  -5.181572878304786e-05,
+                  0.006409466783997116
+                ],
+                [
+                  0.005848721646691419,
+                  0.0,
+                  -0.00232424160105415,
+                  -0.0035692007433690853
+                ],
+                [
+                  5.181572878304786e-05,
+                  0.00232424160105415,
+                  0.0,
+                  0.0034576265524231737
+                ],
+                [
+                  -0.006409466783997116,
+                  0.0035692007433690853,
+                  -0.0034576265524231737,
+                  0.0
+                ]
+              ]
+            ]
+          },
+          "harmonic": [
+            0.1,
+            0.2,
+            0.15
+          ],
+          "reference": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "coordinates": [
+            0,
+            1,
+            2
+          ],
+          "natoms": 1
+        }
+      },
+      "initial_arrays": {
+        "q": {
+          "shape": [
+            16,
+            8,
+            1,
+            3
+          ],
+          "dtype": "float64",
+          "sha256": "def73fd8d51ee13eb1793785a2826d3aee02cdf116fd2255c7a15a5dee32a3b3"
+        },
+        "p": {
+          "shape": [
+            16,
+            8,
+            1,
+            3
+          ],
+          "dtype": "float64",
+          "sha256": "91e983704f74885a52cfb7f576b95a25e72ebdd1048700ffbe0326fd4d43d164"
+        },
+        "mapping_q": {
+          "shape": [
+            16,
+            8,
+            4
+          ],
+          "dtype": "float64",
+          "sha256": "0825e7b1f8208ab547da9a6282d700b99bf54800fd6d6015d2a78552c0b2afed"
+        },
+        "mapping_p": {
+          "shape": [
+            16,
+            8,
+            4
+          ],
+          "dtype": "float64",
+          "sha256": "b2d4caf41dbef39f02b0d848ec4c86ea8a8fe457e5ef108029c5864317a6ec4f"
+        }
+      },
+      "rows": [
+        {
+          "backend": "numpy",
+          "device": "cpu",
+          "driver": "NRPMDDynamics_scalar_loop",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 0.0,
+              "p": 0.0,
+              "mapping_q": 0.0,
+              "mapping_p": 0.0,
+              "populations": 0.0,
+              "density": 0.0,
+              "energy": 0.0,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.087594929,
+          "samples_seconds": [
+            0.086774498,
+            0.085914105,
+            0.087594929,
+            0.08875542700000001,
+            0.105514905
+          ],
+          "min_seconds": 0.085914105,
+          "max_seconds": 0.105514905,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 32,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 1.0,
+          "speedup_vs_same_backend_scalar": 1.0,
+          "trajectory_steps_per_second": 1461.2718049009434
+        },
+        {
+          "backend": "numpy",
+          "device": "cpu",
+          "driver": "BatchedNRPMDDynamics",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 0.0,
+              "p": 0.0,
+              "mapping_q": 0.0,
+              "mapping_p": 0.0,
+              "populations": 0.0,
+              "density": 0.0,
+              "energy": 0.0,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.025573652000000002,
+          "samples_seconds": [
+            0.025573652000000002,
+            0.021561425000000002,
+            0.027968847,
+            0.039268467,
+            0.025141291000000003
+          ],
+          "min_seconds": 0.021561425000000002,
+          "max_seconds": 0.039268467,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 2,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 3.425202196385561,
+          "speedup_vs_same_backend_scalar": 3.425202196385561,
+          "trajectory_steps_per_second": 5005.151395663004
+        },
+        {
+          "backend": "native",
+          "device": "cpu",
+          "driver": "NRPMDDynamics_scalar_loop",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 2.7755575615628914e-17,
+              "p": 1.249000902703301e-16,
+              "mapping_q": 5.828670879282072e-15,
+              "mapping_p": 2.886579864025407e-15,
+              "populations": 1.7763568394002505e-15,
+              "density": 1.5543122344752192e-15,
+              "energy": 5.967448757360216e-16,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.109350604,
+          "samples_seconds": [
+            0.09303501500000001,
+            0.109350604,
+            0.114303785,
+            0.14423371200000001,
+            0.08650787800000001
+          ],
+          "min_seconds": 0.08650787800000001,
+          "max_seconds": 0.14423371200000001,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 32,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 0.801046595042127,
+          "speedup_vs_same_backend_scalar": 1.0,
+          "trajectory_steps_per_second": 1170.546803746964
+        },
+        {
+          "backend": "native",
+          "device": "cpu",
+          "driver": "BatchedNRPMDDynamics",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 2.7755575615628914e-17,
+              "p": 1.249000902703301e-16,
+              "mapping_q": 5.828670879282072e-15,
+              "mapping_p": 2.886579864025407e-15,
+              "populations": 1.7763568394002505e-15,
+              "density": 1.5543122344752192e-15,
+              "energy": 5.967448757360216e-16,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.017952586,
+          "samples_seconds": [
+            0.018217166,
+            0.017447446000000002,
+            0.018320631,
+            0.017281806,
+            0.017952586
+          ],
+          "min_seconds": 0.017281806,
+          "max_seconds": 0.018320631,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 2,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 4.87923739788797,
+          "speedup_vs_same_backend_scalar": 6.091078132142077,
+          "trajectory_steps_per_second": 7129.892038951937
+        }
+      ]
+    },
+    {
+      "case": "nah2_5g",
+      "description": "published NaH2 5G molecular PES with actual Na/H masses",
+      "trajectory_batch": 16,
+      "beads": 8,
+      "electronic_states": 2,
+      "atoms": 3,
+      "beta_hartree_inverse": 1000.0,
+      "dt_atomic": 0.1,
+      "masses_electron_mass": [
+        41907.7857228091,
+        1837.1526474396187,
+        1837.1526474396187
+      ],
+      "model_identity": {
+        "schema": "pyrpmd.molecular_potential",
+        "version": 1,
+        "model": "nah2_leps_5g_1992",
+        "parameters": {
+          "symbols": [
+            "Na",
+            "H",
+            "H"
+          ]
+        },
+        "source": {
+          "repository": "https://github.com/shuyinan/chempotpy",
+          "commit": "4716d22e87ae01770cad9ec995c4a02a8e479296",
+          "path": "chempotpy/NaH2/NaH2_LEPS_5G_1992_DPEM.f",
+          "sha256": "b98e2cb6a7355d868346b2a901441998705f9dead1dd233146285fd618d08f61",
+          "license": "Apache-2.0",
+          "native_units": "hartree,bohr",
+          "translation": "numpy_forward_derivative_v1"
+        }
+      },
+      "initial_arrays": {
+        "q": {
+          "shape": [
+            16,
+            8,
+            3,
+            3
+          ],
+          "dtype": "float64",
+          "sha256": "1a6ce811c22306ad25222a7374bb5d3bb5c675ab3e82d9fc4e501bf618b84544"
+        },
+        "p": {
+          "shape": [
+            16,
+            8,
+            3,
+            3
+          ],
+          "dtype": "float64",
+          "sha256": "10777455aab8ecb5d33488e70f49f942d02779396a72d99f9b8050a4da0ab207"
+        },
+        "mapping_q": {
+          "shape": [
+            16,
+            8,
+            2
+          ],
+          "dtype": "float64",
+          "sha256": "b68ef4a824a70ec972fed10810e9183334c404a29630134c81ddcbf586fd5ed0"
+        },
+        "mapping_p": {
+          "shape": [
+            16,
+            8,
+            2
+          ],
+          "dtype": "float64",
+          "sha256": "89de199baf435d7fbccb245c6458e6d3cd91b360bc51248fb36c4a01c83f9e23"
+        }
+      },
+      "rows": [
+        {
+          "backend": "numpy",
+          "device": "cpu",
+          "driver": "NRPMDDynamics_scalar_loop",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 0.0,
+              "p": 0.0,
+              "mapping_q": 0.0,
+              "mapping_p": 0.0,
+              "populations": 0.0,
+              "density": 0.0,
+              "energy": 0.0,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.42084641300000003,
+          "samples_seconds": [
+            0.408835074,
+            0.391179635,
+            0.42084641300000003,
+            0.45009029,
+            0.43773861500000005
+          ],
+          "min_seconds": 0.391179635,
+          "max_seconds": 0.45009029,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 32,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 1.0,
+          "speedup_vs_same_backend_scalar": 1.0,
+          "trajectory_steps_per_second": 304.14896277136614
+        },
+        {
+          "backend": "numpy",
+          "device": "cpu",
+          "driver": "BatchedNRPMDDynamics",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 0.0,
+              "p": 0.0,
+              "mapping_q": 0.0,
+              "mapping_p": 0.0,
+              "populations": 0.0,
+              "density": 0.0,
+              "energy": 0.0,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.041215337000000005,
+          "samples_seconds": [
+            0.04208034,
+            0.041215337000000005,
+            0.038165710000000005,
+            0.042525952000000006,
+            0.039697498000000005
+          ],
+          "min_seconds": 0.038165710000000005,
+          "max_seconds": 0.042525952000000006,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 2,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 10.210917673680552,
+          "speedup_vs_same_backend_scalar": 10.210917673680552,
+          "trajectory_steps_per_second": 3105.640019393751
+        },
+        {
+          "backend": "native",
+          "device": "cpu",
+          "driver": "NRPMDDynamics_scalar_loop",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 3.2526065174565133e-19,
+              "p": 4.0245584642661925e-16,
+              "mapping_q": 1.7763568394002505e-15,
+              "mapping_p": 1.3322676295501878e-15,
+              "populations": 1.1102230246251565e-15,
+              "density": 8.881784197001252e-16,
+              "energy": 1.3322676295501878e-15,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.41633991000000004,
+          "samples_seconds": [
+            0.38566835800000004,
+            0.39810475700000003,
+            0.417413268,
+            0.430817031,
+            0.41633991000000004
+          ],
+          "min_seconds": 0.38566835800000004,
+          "max_seconds": 0.430817031,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 32,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 1.0108240956289778,
+          "speedup_vs_same_backend_scalar": 1.0,
+          "trajectory_steps_per_second": 307.44110022985785
+        },
+        {
+          "backend": "native",
+          "device": "cpu",
+          "driver": "BatchedNRPMDDynamics",
+          "includes_pes": true,
+          "includes_nuclear_free_ring": true,
+          "includes_observation_or_io": false,
+          "state_reset_and_driver_construction_in_timing": false,
+          "electronic_host_array_api": true,
+          "ring_native": false,
+          "steps": 8,
+          "checks": {
+            "passed": true,
+            "absolute_tolerance": 5e-10,
+            "relative_tolerance": 2e-11,
+            "max_absolute_errors": {
+              "q": 3.2526065174565133e-19,
+              "p": 4.0245584642661925e-16,
+              "mapping_q": 1.7763568394002505e-15,
+              "mapping_p": 1.3322676295501878e-15,
+              "populations": 1.1102230246251565e-15,
+              "density": 8.881784197001252e-16,
+              "energy": 1.3322676295501878e-15,
+              "step": 0.0,
+              "time": 0.0
+            }
+          },
+          "initial_comparison_passed": true,
+          "median_seconds": 0.037723428,
+          "samples_seconds": [
+            0.048732175,
+            0.035862995,
+            0.039407986,
+            0.037723428,
+            0.037372069
+          ],
+          "min_seconds": 0.035862995,
+          "max_seconds": 0.048732175,
+          "warmups": 2,
+          "repeats": 5,
+          "pes_calls_per_step": 2,
+          "pes_frames_per_step": 256,
+          "speedup_vs_numpy_scalar": 11.156102064743427,
+          "speedup_vs_same_backend_scalar": 11.036640413485221,
+          "trajectory_steps_per_second": 3393.1168715632098
+        }
+      ]
+    }
+  ],
+  "scope": "electronic kernel and integration steps; excludes physical validation, I/O, sampling and interprocess scheduling"
+}

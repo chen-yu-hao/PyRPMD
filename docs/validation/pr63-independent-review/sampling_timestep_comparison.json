@@ -1,0 +1,6 @@
+{
+  "paired_fine_minus_coarse_mean": -0.003815146122685187,
+  "paired_seed_t_95_halfwidth": 0.07090343218363528,
+  "seed_count": 4,
+  "note": "Pointwise intervals from four seeds; no joint/physical convergence guarantee"
+}

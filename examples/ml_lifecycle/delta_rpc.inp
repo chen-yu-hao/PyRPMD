@@ -1,0 +1,39 @@
+# Learned-difference surrogate: Pc<P samples an approximate Hamiltonian.
+task = "pimd"
+temperature = "300 K"
+beads = 8
+seed = 220
+
+[system]
+symbols = ["H"]
+geometry = [[0.5, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "delta"
+contracted_beads = 1
+
+[potential.reference]
+provider = "builtin"
+name = "harmonic"
+params = {k = 0.002}
+
+[potential.correction]
+provider = "builtin"
+name = "harmonic"
+params = {k = 0.0002}
+
+[dynamics]
+timestep = "0.1 fs"
+loop_backend = "python"
+
+[sampling]
+equilibration_steps = 20
+production_steps = 80
+sample_interval = 4
+replicas = 2
+thermostat = "pile-l"
+
+[output]
+directory = "runs/delta_rpc"
+checkpoint_steps = 20

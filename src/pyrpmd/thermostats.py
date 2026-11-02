@@ -8,15 +8,12 @@ This global chain is a sampling thermostat, never part of real-time RPMD.
 """
 from __future__ import annotations
 
+import numbers
+
 import numpy as np
 
 from .units import parse_quantity
-
-
-def _integer(value, name):
-    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, np.integer)) or value < 1:
-        raise ValueError(f"{name} must be a positive integer")
-    return int(value)
+from .validation import positive_integer as _integer
 
 
 def nhc_options(sampling):
@@ -41,6 +38,8 @@ class NoseHooverChain:
     """
 
     def __init__(self, dynamics, *, tdamp, chain_length=3, substeps=1):
+        if getattr(dynamics, "bond_constraints", ()):
+            raise ValueError("Nose-Hoover bond-constraint sampling is not implemented; use Andersen")
         self.dynamics = dynamics
         self.length = _integer(chain_length, "chain_length")
         self.substeps = _integer(substeps, "substeps")
@@ -116,3 +115,98 @@ class NoseHooverChain:
             self.load_state_dict(bath)
             raise
         return state
+
+
+class PythonNHCBath:
+    """Pure-Python NHC operator for installations without ``_thermal``.
+
+    This adapts the existing chain bath, without calling ``Dynamics.step``.
+    Its distinct checkpoint format keeps a restored Python chain on the same
+    implementation even if a compiled extension is subsequently installed.
+    """
+
+    checkpoint_format = "pyrpmd.python-nhc-bath.v1"
+
+    def __init__(self, dynamics, q, duration, thermostat):
+        from .engine import normalize_thermostat
+        spec = normalize_thermostat(thermostat)
+        if spec["mode"] != "nhc":
+            raise ValueError("Python NHC bath requires thermostat mode nhc")
+        if (isinstance(duration, (bool, np.bool_)) or not isinstance(duration, numbers.Real)
+                or np.iscomplexobj(duration) or not np.isfinite(duration) or duration <= 0):
+            raise ValueError("NHC bath duration must be positive and finite")
+        self.dynamics = dynamics
+        self.duration = float(duration)
+        self.shape = (dynamics.nbeads, len(dynamics.masses), 3)
+        self.q = self._coordinates(q)
+        dynamics._check_fixed(self.q, np.zeros_like(self.q))
+        self.q.flags.writeable = False
+        self.chain = NoseHooverChain(
+            dynamics, tdamp=spec.get("tau", 1.0),
+            chain_length=spec.get("chain_length", 3), substeps=spec.get("substeps", 1),
+        )
+        self.identity = {
+            "masses": dynamics.masses.tolist(), "beta": dynamics.beta,
+            "beads": dynamics.nbeads, "fixed_atoms": list(dynamics.fixed_atoms),
+            "duration": self.duration,
+        }
+
+    def _coordinates(self, q):
+        values = np.asarray(q)
+        if values.dtype.kind not in "fiu" or values.shape != self.shape or not np.isfinite(values).all():
+            raise ValueError("NHC bath coordinates must be finite real [P,N,3] arrays")
+        return np.array(values, dtype=np.float64, order="C", copy=True)
+
+    def state(self):
+        import copy
+        return {"format": self.checkpoint_format, "identity": copy.deepcopy(self.identity),
+                "q": self.q.copy(), "chain": self.chain.state_dict()}
+
+    def restore(self, state):
+        if (not isinstance(state, dict) or set(state) != {"format", "identity", "q", "chain"}
+                or state["format"] != self.checkpoint_format or state["identity"] != self.identity):
+            raise ValueError("Python NHC checkpoint parameters or format differ")
+        q = self._coordinates(state["q"])
+        self.dynamics._check_fixed(q, np.zeros_like(q))
+        chain = state["chain"]
+        if not isinstance(chain, dict):
+            raise ValueError("invalid Python NHC chain checkpoint")
+        for key in ("eta", "momentum"):
+            value = np.asarray(chain.get(key))
+            if value.dtype.kind not in "fiu" or not np.isfinite(value).all():
+                raise ValueError("NHC checkpoint chain variables must be finite real arrays")
+        # The existing loader validates every parameter and both arrays before
+        # committing either chain variable. Coordinates are a detached reference.
+        self.chain.load_state_dict(chain)
+        q.flags.writeable = False
+        self.q = q
+
+    def apply_thermostat(self, q, p, dt=None, *, step=None):
+        """Apply a bath substep atomically; no random draw or force request."""
+        duration = self.duration if dt is None else dt
+        if (isinstance(duration, (bool, np.bool_)) or not isinstance(duration, numbers.Real)
+                or np.iscomplexobj(duration) or not np.isfinite(duration) or duration <= 0):
+            raise ValueError("NHC bath duration must be positive and finite")
+        if step is not None and (isinstance(step, (bool, np.bool_))
+                or not isinstance(step, (int, np.integer)) or step < 0):
+            raise ValueError("NHC bath logical step must be a nonnegative integer")
+        coordinates = self._coordinates(q)
+        if (not isinstance(p, np.ndarray) or p.dtype != np.dtype(np.float64)
+                or p.shape != self.shape or not p.flags.writeable or not np.isfinite(p).all()):
+            raise ValueError("NHC bath momenta must be a writable finite float64 [P,N,3] array")
+        if np.shares_memory(np.asarray(q), p):
+            raise ValueError("NHC bath coordinates and momenta must not overlap")
+        self.dynamics._check_parameters()
+        self.dynamics._check_fixed(coordinates, p)
+        previous = self.chain.state_dict()
+        candidate = p.copy()
+        try:
+            with np.errstate(over="raise", invalid="raise", divide="raise"):
+                self.chain._bath(candidate, float(duration))
+                if not np.isfinite(candidate).all() or not np.isfinite([self.chain.eta, self.chain.momentum]).all():
+                    raise FloatingPointError("nonfinite NHC state; reduce duration or increase tdamp")
+            p[:] = candidate
+        except BaseException:
+            self.chain.load_state_dict(previous)
+            raise
+        return p

@@ -5,9 +5,12 @@ on:
   push:
     paths:
       - 'benchmarks/h3/**'
+      - 'benchmarks/transition_state_search/**'
       - 'src/pyrpmd/**'
       - 'native/**'
       - 'tests/test_h3_*.py'
+      - 'tests/test_ts_search_literature.py'
+      - 'tests/test_ts_rate_benchmark.py'
       - 'tests/test_equivalent_surfaces.py'
       - 'setup.py'
       - 'pyproject.toml'
@@ -15,9 +18,12 @@ on:
   pull_request:
     paths:
       - 'benchmarks/h3/**'
+      - 'benchmarks/transition_state_search/**'
       - 'src/pyrpmd/**'
       - 'native/**'
       - 'tests/test_h3_*.py'
+      - 'tests/test_ts_search_literature.py'
+      - 'tests/test_ts_rate_benchmark.py'
       - 'tests/test_equivalent_surfaces.py'
       - 'setup.py'
       - 'pyproject.toml'
@@ -44,11 +50,19 @@ jobs:
         with:
           python-version: '3.12'
       - run: sudo apt-get update && sudo apt-get install -y gfortran
-      - run: python -m pip install -e '.[test]'
+      - run: python -m pip install -e '.[test,ase]'
       - run: python benchmarks/h3/build_pes.py
       - run: python benchmarks/h3/pes.py --check --output validation/pes-check.json
-      - run: python -m pytest -q tests/test_h3_pes.py tests/test_h3_pmf_diagnostics.py tests/test_h3_benchmark_integrity.py tests/test_equivalent_surfaces.py
+      - run: python -m pytest -q tests/test_h3_pes.py tests/test_h3_pmf_diagnostics.py tests/test_h3_benchmark_integrity.py tests/test_equivalent_surfaces.py tests/test_ts_search_literature.py tests/test_ts_rate_benchmark.py
       - run: python benchmarks/h3/numerics.py --output validation/numerics.json
+      - name: Published analytic saddles and independent ASE comparison
+        run: python benchmarks/transition_state_search/analytic.py --output validation/transition-state-search/analytic.json
+      - name: Endpoint and approximate-TS searches on the real BKMP2 surface
+        run: python benchmarks/transition_state_search/h3.py --output validation/transition-state-search/h3.json
+      - name: Classical rate scale, channel and endpoint handoff checks
+        run: python benchmarks/transition_state_search/h3_rate_sanity.py --output validation/transition-state-search/h3-rate-sanity.json
+      - name: Complete covalent-radius table against ASE
+        run: python benchmarks/transition_state_search/covalent_radii.py --output validation/transition-state-search/covalent-radii.json
       - name: Preserve physical validation evidence
         if: always()
         uses: actions/upload-artifact@v7

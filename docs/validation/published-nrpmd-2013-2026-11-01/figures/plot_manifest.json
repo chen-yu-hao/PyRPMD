@@ -1,0 +1,339 @@
+{
+  "schema_version": 1,
+  "title": "NRPMD against the published Fig. 1(c) benchmark",
+  "inputs": {
+    "summary": "docs/validation/published-nrpmd-2013-2026-11-01/summary.json",
+    "summary_sha256": "5d0743299b14489f74a75bd77606104f3bc57edfe0a09dcf225ecc59a45d3136",
+    "published_csv": "/workspace/scratch/77e630723d2d/PyRPMD/examples/nonadiabatic/data/richardson_thoss_2013_fig1c.csv",
+    "published_csv_sha256": "ba7b1983ec2823e54afcd62e96c22194396d528bf5a075edfe35586e9dd73f97"
+  },
+  "plot_script_sha256": "e6f8583933c1c42ee78fc51bf54e74412f70e6c03835808980db5e2c1cd6cadf",
+  "matplotlib_version": "3.10.8",
+  "panels": {
+    "columns_beads": [
+      1,
+      4,
+      8
+    ],
+    "rows_observables": [
+      "Cxx",
+      "C11"
+    ]
+  },
+  "statuses": [
+    {
+      "beads": 1,
+      "average_sign": 1.0,
+      "estimate_available": true,
+      "confidence_intervals_available": true,
+      "unavailable_reasons": []
+    },
+    {
+      "beads": 4,
+      "average_sign": 0.45703125,
+      "estimate_available": true,
+      "confidence_intervals_available": true,
+      "unavailable_reasons": []
+    },
+    {
+      "beads": 8,
+      "average_sign": 0.1064453125,
+      "estimate_available": true,
+      "confidence_intervals_available": false,
+      "unavailable_reasons": [
+        "bootstrap_contains_unresolved_signed_normalization"
+      ]
+    }
+  ],
+  "interval_scope": "pointwise_95_percent_source_chain_circular_block_joint_ratio_bootstrap_conditional_on_source_mixing_and_block_lengths",
+  "published_error_bar_scope": "conservative_graphic_readout_bound_not_author_sampling_error",
+  "published_extraction_provenance": {
+    "schema_version": 1,
+    "publication": {
+      "authors": [
+        "Jeremy O. Richardson",
+        "Michael Thoss"
+      ],
+      "title": "Communication: Nonadiabatic ring-polymer molecular dynamics",
+      "journal": "The Journal of Chemical Physics 139, 031102 (2013)",
+      "doi": "10.1063/1.4816124",
+      "figure": "1(c)",
+      "printed_page": "031102-4",
+      "pdf_page_number": 5
+    },
+    "source": {
+      "repository_record": "https://open.fau.de/handle/openfau/3580",
+      "pdf_url": "https://open.fau.de/bitstreams/c56516c7-4f8a-456b-95ee-7a55a144cfd0/download",
+      "sha256": "20bc0e0f1424aae7beb97b2718bce7a3dae0b6947e23ce8e9f6ead2004086dce",
+      "bytes": 413607,
+      "repository": "Friedrich-Alexander-Universitaet Erlangen-Nuernberg",
+      "retrieved_date_UTC": "2026-11-01"
+    },
+    "method": "PDF vector polyline vertices and filled circular marker centers",
+    "coordinate_system": "PDF points, origin upper left, y increases downward",
+    "calibration": "printed tick values matched to vector tick locations; endpoint affine map with interior-tick residual checks",
+    "series": {
+      "dvr": "published black DVR markers",
+      "P1": "published blue one-bead NRPMD polyline",
+      "P4": "published green four-bead NRPMD polyline",
+      "P8": "published red eight-bead NRPMD polyline"
+    },
+    "model": {
+      "equation": 15,
+      "m": 1,
+      "hbar": 1,
+      "omega": 1,
+      "kappa": 1,
+      "beta": 1,
+      "alpha": 0,
+      "Delta": 1,
+      "units": "paper reduced units",
+      "constant_potential": false
+    },
+    "observables": {
+      "Cxx": "Kubo nuclear-position autocorrelation, Eq. 12(a)",
+      "C11": "Kubo electronic population autocorrelation, Eq. 12(b)"
+    },
+    "uncertainty": {
+      "meaning": "conservative absolute ordinate graphic-readout bound; not a statistical confidence interval or the authors' Monte Carlo uncertainty",
+      "formula": "abs(value_axis_slope) * (half_line_width_or_marker_outer_radius + 0.003 PDF points) + max_interior_tick_residual",
+      "coordinate_tolerance_pt": 0.003,
+      "time_coordinate_bound": "abs(time_axis_slope) * 0.003 PDF points + max_interior_tick_residual",
+      "reported_simulation_uncertainty": "not available from this figure",
+      "between_vertex_interpolation_uncertainty": "not quantified; use original supplied vertices/markers for comparison"
+    },
+    "rows": 166,
+    "panels": [
+      {
+        "observable": "Cxx",
+        "frame_pdf_points": [
+          408.0989990234375,
+          54.97998046875,
+          530.95703125,
+          119.21197509765625
+        ],
+        "time_calibration": {
+          "pdf_positions_pt": [
+            408.0989990234375,
+            432.6709899902344,
+            457.24200439453125,
+            481.8139953613281,
+            506.3840026855469,
+            530.9569702148438
+          ],
+          "printed_values": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "slope": 0.040697400026330106,
+          "intercept": -16.608568213601735,
+          "maximum_interior_tick_residual": 5.588937381517667e-05
+        },
+        "value_calibration": {
+          "pdf_positions_pt": [
+            54.97998046875,
+            73.33197021484375,
+            91.68402099609375,
+            110.0360107421875
+          ],
+          "printed_values": [
+            2.0,
+            1.0,
+            0.0,
+            -1.0
+          ],
+          "slope": -0.054489943882630225,
+          "intercept": 4.995856050410293,
+          "maximum_interior_tick_residual": 1.108600747201649e-06
+        },
+        "traces": [
+          {
+            "series": "P1",
+            "drawing_indices": [
+              107
+            ],
+            "vertical_graphic_radius_pt": 0.5,
+            "points": 21,
+            "absolute_uncertainty": 0.027409550373710206
+          },
+          {
+            "series": "P4",
+            "drawing_indices": [
+              108
+            ],
+            "vertical_graphic_radius_pt": 0.5,
+            "points": 21,
+            "absolute_uncertainty": 0.027409550373710206
+          },
+          {
+            "series": "P8",
+            "drawing_indices": [
+              109
+            ],
+            "vertical_graphic_radius_pt": 0.5,
+            "points": 21,
+            "absolute_uncertainty": 0.027409550373710206
+          },
+          {
+            "series": "dvr",
+            "drawing_indices": [
+              110,
+              111,
+              112,
+              113,
+              114,
+              115,
+              116,
+              117,
+              118,
+              119,
+              120,
+              121,
+              122,
+              123,
+              124,
+              125,
+              126,
+              127,
+              128,
+              129
+            ],
+            "vertical_graphic_radius_pt": 0.875,
+            "points": 20,
+            "absolute_uncertainty": 0.047843279329696536
+          }
+        ]
+      },
+      {
+        "observable": "C11",
+        "frame_pdf_points": [
+          408.0989990234375,
+          122.5,
+          530.95703125,
+          186.73199462890625
+        ],
+        "time_calibration": {
+          "pdf_positions_pt": [
+            408.0989990234375,
+            432.6709899902344,
+            457.24200439453125,
+            481.8139953613281,
+            506.3840026855469,
+            530.9569702148438
+          ],
+          "printed_values": [
+            0.0,
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0
+          ],
+          "slope": 0.040697400026330106,
+          "intercept": -16.608568213601735,
+          "maximum_interior_tick_residual": 5.588937381517667e-05
+        },
+        "value_calibration": {
+          "pdf_positions_pt": [
+            122.5009765625,
+            138.5579833984375,
+            154.61700439453125,
+            170.67498779296875,
+            186.73199462890625
+          ],
+          "printed_values": [
+            0.5,
+            0.4,
+            0.3,
+            0.2,
+            0.1
+          ],
+          "slope": -0.0062275207842175835,
+          "intercept": 1.2628773776299198,
+          "maximum_interior_tick_residual": 4.6561968754521565e-06
+        },
+        "traces": [
+          {
+            "series": "P1",
+            "drawing_indices": [
+              332
+            ],
+            "vertical_graphic_radius_pt": 0.5,
+            "points": 21,
+            "absolute_uncertainty": 0.0031370991513368965
+          },
+          {
+            "series": "P4",
+            "drawing_indices": [
+              333
+            ],
+            "vertical_graphic_radius_pt": 0.5,
+            "points": 21,
+            "absolute_uncertainty": 0.0031370991513368965
+          },
+          {
+            "series": "P8",
+            "drawing_indices": [
+              334
+            ],
+            "vertical_graphic_radius_pt": 0.5,
+            "points": 21,
+            "absolute_uncertainty": 0.0031370991513368965
+          },
+          {
+            "series": "dvr",
+            "drawing_indices": [
+              335,
+              336,
+              337,
+              338,
+              339,
+              340,
+              341,
+              342,
+              343,
+              344,
+              345,
+              346,
+              347,
+              348,
+              349,
+              350,
+              351,
+              352,
+              353,
+              354
+            ],
+            "vertical_graphic_radius_pt": 0.875,
+            "points": 20,
+            "absolute_uncertainty": 0.00547241944541849
+          }
+        ]
+      }
+    ],
+    "numerical_reference_used_for_calibration": false,
+    "original_pdf_or_image_redistributed": false,
+    "parser": {
+      "name": "PyMuPDF",
+      "version": "1.26.6"
+    },
+    "extraction_script_sha256": "39340da0f4fc770fd04748dff5e0e8ad287130fbebb658646bb7709ebd90a62f",
+    "csv_sha256": "ba7b1983ec2823e54afcd62e96c22194396d528bf5a075edfe35586e9dd73f97"
+  },
+  "original_pdf_or_image_embedded": false,
+  "physical_converged": false,
+  "artifacts": {
+    ".svg": {
+      "file": "published_nrpmd_comparison.svg",
+      "sha256": "37711c016ee1e5e141f177684cf3b289c0ab76c67c7464866d8c3417befdbab2"
+    },
+    ".png": {
+      "file": "published_nrpmd_comparison.png",
+      "sha256": "c4b1c1cb3d46ec428ee806fed7ea5e435e24f6a98015a3e06ee379d7242caf8f"
+    }
+  }
+}

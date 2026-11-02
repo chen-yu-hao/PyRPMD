@@ -1,0 +1,1816 @@
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=77
+  - wheel
+* Getting build dependencies for sdist...
+running egg_info
+writing src/PyRPMD.egg-info/PKG-INFO
+writing dependency_links to src/PyRPMD.egg-info/dependency_links.txt
+writing entry points to src/PyRPMD.egg-info/entry_points.txt
+writing requirements to src/PyRPMD.egg-info/requires.txt
+writing top-level names to src/PyRPMD.egg-info/top_level.txt
+reading manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'docs/validation/tier1-2026-10-31/*.npz'
+no previously-included directories found matching 'docs/_build'
+no previously-included directories found matching 'benchmarks/brhcl/build'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+warning: no previously-included files matching '*.o' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'THIRD_PARTY_NOTICES.md'
+adding license file 'native/thermal-NOTICE.md'
+writing manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+* Installed build dependency versions:
+  - setuptools==84.2.1
+  - wheel==0.48.0
+* Building sdist...
+running sdist
+running egg_info
+writing src/PyRPMD.egg-info/PKG-INFO
+writing dependency_links to src/PyRPMD.egg-info/dependency_links.txt
+writing entry points to src/PyRPMD.egg-info/entry_points.txt
+writing requirements to src/PyRPMD.egg-info/requires.txt
+writing top-level names to src/PyRPMD.egg-info/top_level.txt
+reading manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'docs/validation/tier1-2026-10-31/*.npz'
+no previously-included directories found matching 'docs/_build'
+no previously-included directories found matching 'benchmarks/brhcl/build'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+warning: no previously-included files matching '*.o' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'THIRD_PARTY_NOTICES.md'
+adding license file 'native/thermal-NOTICE.md'
+writing manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+running check
+creating pyrpmd-0.2.0
+creating pyrpmd-0.2.0/benchmarks
+creating pyrpmd-0.2.0/benchmarks/analysis_reports
+creating pyrpmd-0.2.0/benchmarks/brhcl
+creating pyrpmd-0.2.0/benchmarks/efficiency
+creating pyrpmd-0.2.0/benchmarks/fes_methods
+creating pyrpmd-0.2.0/benchmarks/h3
+creating pyrpmd-0.2.0/benchmarks/h3/convergence_inputs
+creating pyrpmd-0.2.0/benchmarks/h3/preparation_results
+creating pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+creating pyrpmd-0.2.0/benchmarks/h3/reproduction_results/literature_reference
+creating pyrpmd-0.2.0/benchmarks/hho2
+creating pyrpmd-0.2.0/benchmarks/literature
+creating pyrpmd-0.2.0/benchmarks/loop_native
+creating pyrpmd-0.2.0/benchmarks/materials
+creating pyrpmd-0.2.0/benchmarks/pmf_accuracy
+creating pyrpmd-0.2.0/benchmarks/published_rates
+creating pyrpmd-0.2.0/benchmarks/surface
+creating pyrpmd-0.2.0/benchmarks/trpmd
+creating pyrpmd-0.2.0/benchmarks/water
+creating pyrpmd-0.2.0/docs
+creating pyrpmd-0.2.0/docs/_static
+creating pyrpmd-0.2.0/docs/_templates
+creating pyrpmd-0.2.0/docs/manual
+creating pyrpmd-0.2.0/docs/releases
+creating pyrpmd-0.2.0/docs/validation
+creating pyrpmd-0.2.0/docs/validation/analysis-reports-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+creating pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+creating pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/distribution
+creating pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/h3-archived-comparison
+creating pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/water-pilot
+creating pyrpmd-0.2.0/docs/validation/electrode-model-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+creating pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+creating pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/figures
+creating pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+creating pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence/configs
+creating pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/figures
+creating pyrpmd-0.2.0/docs/validation/fes-replica-exchange-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/fused-production-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+creating pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+creating pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-a
+creating pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-b
+creating pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-a
+creating pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-b
+creating pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/figures
+creating pyrpmd-0.2.0/docs/validation/implementation-guide-audit-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/integration-review-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/jaxpip-generation-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/materials-extensions-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/native-loop-bkmp2-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/nonadiabatic-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/nrpmd-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/pcet-model-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/periodic-core-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/periodic-materials-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/pes-generation-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+creating pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/figures
+creating pyrpmd-0.2.0/docs/validation/potentials-parallelism-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/dynamics
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/run
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/run/input
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/dynamics
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/run
+creating pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/run/input
+creating pyrpmd-0.2.0/docs/validation/sampling-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/state-selected-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/surface-accuracy-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+creating pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+creating pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+creating pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+creating pyrpmd-0.2.0/docs/validation/umbrella-reliability-2026-10-31
+creating pyrpmd-0.2.0/docs/zh
+creating pyrpmd-0.2.0/docs/zh/manual
+creating pyrpmd-0.2.0/examples/analysis
+creating pyrpmd-0.2.0/examples/drpmd
+creating pyrpmd-0.2.0/examples/electrochemistry
+creating pyrpmd-0.2.0/examples/ensembles
+creating pyrpmd-0.2.0/examples/fes
+creating pyrpmd-0.2.0/examples/instanton
+creating pyrpmd-0.2.0/examples/manual
+creating pyrpmd-0.2.0/examples/materials
+creating pyrpmd-0.2.0/examples/metadynamics
+creating pyrpmd-0.2.0/examples/network
+creating pyrpmd-0.2.0/examples/nonadiabatic
+creating pyrpmd-0.2.0/examples/opes
+creating pyrpmd-0.2.0/examples/pcet
+creating pyrpmd-0.2.0/examples/pes
+creating pyrpmd-0.2.0/examples/pesgen
+creating pyrpmd-0.2.0/examples/pesgen/jaxpip
+creating pyrpmd-0.2.0/examples/plumed
+creating pyrpmd-0.2.0/examples/potentials
+creating pyrpmd-0.2.0/examples/quantum_statistics
+creating pyrpmd-0.2.0/examples/rate
+creating pyrpmd-0.2.0/examples/sampling
+creating pyrpmd-0.2.0/examples/slurm
+creating pyrpmd-0.2.0/examples/state_selected
+creating pyrpmd-0.2.0/examples/studies
+creating pyrpmd-0.2.0/examples/surface
+creating pyrpmd-0.2.0/examples/surface/pt111
+creating pyrpmd-0.2.0/native
+creating pyrpmd-0.2.0/native/examples
+creating pyrpmd-0.2.0/native/include/pyrpmd
+creating pyrpmd-0.2.0/native/onnx
+creating pyrpmd-0.2.0/packaging/conda
+creating pyrpmd-0.2.0/src/PyRPMD.egg-info
+creating pyrpmd-0.2.0/src/pyrpmd
+creating pyrpmd-0.2.0/src/pyrpmd/analysis
+creating pyrpmd-0.2.0/src/pyrpmd/electrochemistry
+creating pyrpmd-0.2.0/src/pyrpmd/parallel
+creating pyrpmd-0.2.0/src/pyrpmd/pesgen
+creating pyrpmd-0.2.0/src/pyrpmd/pesgen/_native
+creating pyrpmd-0.2.0/src/pyrpmd/potentials
+creating pyrpmd-0.2.0/src/pyrpmd/templates
+creating pyrpmd-0.2.0/src/pyrpmd/workflows
+creating pyrpmd-0.2.0/tests
+creating pyrpmd-0.2.0/tests/onnx
+creating pyrpmd-0.2.0/tools
+copying files to pyrpmd-0.2.0...
+copying LICENSE -> pyrpmd-0.2.0
+copying MANIFEST.in -> pyrpmd-0.2.0
+copying README.md -> pyrpmd-0.2.0
+copying README.zh-CN.md -> pyrpmd-0.2.0
+copying THIRD_PARTY_NOTICES.md -> pyrpmd-0.2.0
+copying pyproject.toml -> pyrpmd-0.2.0
+copying setup.py -> pyrpmd-0.2.0
+copying benchmarks/batched_dynamics.py -> pyrpmd-0.2.0/benchmarks
+copying benchmarks/rpc_mts.py -> pyrpmd-0.2.0/benchmarks
+copying benchmarks/tier1_recrossing.py -> pyrpmd-0.2.0/benchmarks
+copying benchmarks/analysis_reports/README.md -> pyrpmd-0.2.0/benchmarks/analysis_reports
+copying benchmarks/analysis_reports/validate.py -> pyrpmd-0.2.0/benchmarks/analysis_reports
+copying benchmarks/brhcl/README.md -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/SOURCE.md -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/build_pes.py -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/channels.py -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/exports.map -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/pes.py -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/reference.py -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/report.py -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/sampling.py -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/scan.py -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/source.json -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/wrapper.cpp -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/brhcl/wrapper.f90 -> pyrpmd-0.2.0/benchmarks/brhcl
+copying benchmarks/efficiency/README.md -> pyrpmd-0.2.0/benchmarks/efficiency
+copying benchmarks/efficiency/audit_optimization.py -> pyrpmd-0.2.0/benchmarks/efficiency
+copying benchmarks/efficiency/free_ring_coefficients.py -> pyrpmd-0.2.0/benchmarks/efficiency
+copying benchmarks/efficiency/native-ensembles-summary.json -> pyrpmd-0.2.0/benchmarks/efficiency
+copying benchmarks/efficiency/native_ensembles.py -> pyrpmd-0.2.0/benchmarks/efficiency
+copying benchmarks/efficiency/native_mode_fusion.py -> pyrpmd-0.2.0/benchmarks/efficiency
+copying benchmarks/fes_methods/README.md -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/benchmark.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/budget_comparison.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/extract_literature.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/metadynamics_compare.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/metadynamics_equivalence.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/metadynamics_parameters.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/metadynamics_performance.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/ogre_benchmark.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/ogre_models.c -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/optimization.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/optimization_report.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/refresh_diagnostics.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/settings_scan.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/solver_check.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/summarize.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/fes_methods/summarize_settings.py -> pyrpmd-0.2.0/benchmarks/fes_methods
+copying benchmarks/h3/PREPARATION_HARDENING.md -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/RATE_POSTPROCESS.md -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/README.md -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/SOURCE.md -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/STATE_PREPARATION_STUDY.md -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/STATE_SELECTED_REPRODUCTION.md -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/analyze_preparation_study.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/analyze_state_selected_reproduction.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/audit_state_selected_initial.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/build_pes.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/convergence.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/convergence_report.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/diatomic_action.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/diatomic_switch.cpp -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/diatomic_switch.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/drpmd.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/drpmd_optimization.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/enhanced_sampling.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/fes2d.inp -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/fes_bond_extended.inp -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/fused_propagation.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/h2_reference.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/native_propagation.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/numerics.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/package_preparation_study.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/pes.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/plot_h2_reference.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/pmf_diagnostics.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/preparation_audit.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/rate.inp -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/rate_postprocess.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/render.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/render_preparation_report.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/render_reproduction_report.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/report.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/rpmd.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/run_preparation_study.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/run_reproduction_checks.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/solver_check.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/source.json -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/state_preparation_study.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/state_selected_reproduction.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/state_selected_sensitivity.py -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/wrapper.f90 -> pyrpmd-0.2.0/benchmarks/h3
+copying benchmarks/h3/convergence_inputs/base.inp -> pyrpmd-0.2.0/benchmarks/h3/convergence_inputs
+copying benchmarks/h3/preparation_results/README.md -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/audit_hold_statistics.csv -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/audit_paired_time_means.csv -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/internal_energy_references.csv -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/preparation_cross_sections.csv -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/preparation_energy_hold.svg -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/preparation_numerics.csv -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/preparation_paired_comparisons.csv -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/preparation_scattering.svg -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/provenance.json -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/preparation_results/unresolved_endpoint_diagnostics.json -> pyrpmd-0.2.0/benchmarks/h3/preparation_results
+copying benchmarks/h3/reproduction_results/README.md -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/all_case_results.csv -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/analysis.json -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/h2_reference.csv -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/initial_audit.json -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/paired_sensitivity_results.csv -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/paper_comparison.csv -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/provenance.json -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/scattering_comparison.svg -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/stratified_cross_sections.csv -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results
+copying benchmarks/h3/reproduction_results/literature_reference/marjollet_2021_digitization_provenance.json -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results/literature_reference
+copying benchmarks/h3/reproduction_results/literature_reference/marjollet_2021_requested_energy_interpolation.csv -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results/literature_reference
+copying benchmarks/h3/reproduction_results/literature_reference/marjollet_2021_rpmd_fig5b_fig6b_digitized.csv -> pyrpmd-0.2.0/benchmarks/h3/reproduction_results/literature_reference
+copying benchmarks/hho2/README.md -> pyrpmd-0.2.0/benchmarks/hho2
+copying benchmarks/hho2/channels.py -> pyrpmd-0.2.0/benchmarks/hho2
+copying benchmarks/hho2/scan.py -> pyrpmd-0.2.0/benchmarks/hho2
+copying benchmarks/literature/README.md -> pyrpmd-0.2.0/benchmarks/literature
+copying benchmarks/literature/campaign.json -> pyrpmd-0.2.0/benchmarks/literature
+copying benchmarks/literature/evidence.py -> pyrpmd-0.2.0/benchmarks/literature
+copying benchmarks/loop_native/README.md -> pyrpmd-0.2.0/benchmarks/loop_native
+copying benchmarks/loop_native/benchmark.py -> pyrpmd-0.2.0/benchmarks/loop_native
+copying benchmarks/loop_native/cayley_common.h -> pyrpmd-0.2.0/benchmarks/loop_native
+copying benchmarks/loop_native/loop_c.c -> pyrpmd-0.2.0/benchmarks/loop_native
+copying benchmarks/loop_native/loop_cpp.cpp -> pyrpmd-0.2.0/benchmarks/loop_native
+copying benchmarks/loop_native/loop_fortran.f90 -> pyrpmd-0.2.0/benchmarks/loop_native
+copying benchmarks/loop_native/toy_pes.c -> pyrpmd-0.2.0/benchmarks/loop_native
+copying benchmarks/materials/README.md -> pyrpmd-0.2.0/benchmarks/materials
+copying benchmarks/materials/grid_bias.py -> pyrpmd-0.2.0/benchmarks/materials
+copying benchmarks/materials/harmonic_validation.json -> pyrpmd-0.2.0/benchmarks/materials
+copying benchmarks/materials/harmonic_validation.py -> pyrpmd-0.2.0/benchmarks/materials
+copying benchmarks/materials/ni_h_eam.py -> pyrpmd-0.2.0/benchmarks/materials
+copying benchmarks/materials/ni_h_eam_validation.json -> pyrpmd-0.2.0/benchmarks/materials
+copying benchmarks/pmf_accuracy/render_validation.py -> pyrpmd-0.2.0/benchmarks/pmf_accuracy
+copying benchmarks/published_rates/README.md -> pyrpmd-0.2.0/benchmarks/published_rates
+copying benchmarks/published_rates/compare.py -> pyrpmd-0.2.0/benchmarks/published_rates
+copying benchmarks/published_rates/diagnose_pilot_pmf.py -> pyrpmd-0.2.0/benchmarks/published_rates
+copying benchmarks/published_rates/h3.py -> pyrpmd-0.2.0/benchmarks/published_rates
+copying benchmarks/published_rates/references.json -> pyrpmd-0.2.0/benchmarks/published_rates
+copying benchmarks/published_rates/umbrella-normalization.md -> pyrpmd-0.2.0/benchmarks/published_rates
+copying benchmarks/surface/README.md -> pyrpmd-0.2.0/benchmarks/surface
+copying benchmarks/surface/accuracy.py -> pyrpmd-0.2.0/benchmarks/surface
+copying benchmarks/trpmd/harmonic-spectrum-evidence.json -> pyrpmd-0.2.0/benchmarks/trpmd
+copying benchmarks/trpmd/harmonic_spectrum.py -> pyrpmd-0.2.0/benchmarks/trpmd
+copying benchmarks/water/README.md -> pyrpmd-0.2.0/benchmarks/water
+copying benchmarks/water/pilot.py -> pyrpmd-0.2.0/benchmarks/water
+copying benchmarks/water/qtip4pf.py -> pyrpmd-0.2.0/benchmarks/water
+copying benchmarks/water/references.json -> pyrpmd-0.2.0/benchmarks/water
+copying benchmarks/water/replay.py -> pyrpmd-0.2.0/benchmarks/water
+copying docs/analysis-reports.md -> pyrpmd-0.2.0/docs
+copying docs/batched-dynamics.md -> pyrpmd-0.2.0/docs
+copying docs/block-propagation.md -> pyrpmd-0.2.0/docs
+copying docs/bond-constraints.md -> pyrpmd-0.2.0/docs
+copying docs/checkpoints.md -> pyrpmd-0.2.0/docs
+copying docs/conf.py -> pyrpmd-0.2.0/docs
+copying docs/development.md -> pyrpmd-0.2.0/docs
+copying docs/distribution.md -> pyrpmd-0.2.0/docs
+copying docs/electrochemistry.md -> pyrpmd-0.2.0/docs
+copying docs/electronic-friction.md -> pyrpmd-0.2.0/docs
+copying docs/enhanced-sampling.md -> pyrpmd-0.2.0/docs
+copying docs/general-coordinate-rates.md -> pyrpmd-0.2.0/docs
+copying docs/grid-metadynamics.md -> pyrpmd-0.2.0/docs
+copying docs/h3-pmf-estimator-audit.md -> pyrpmd-0.2.0/docs
+copying docs/index.md -> pyrpmd-0.2.0/docs
+copying docs/input.md -> pyrpmd-0.2.0/docs
+copying docs/instanton.md -> pyrpmd-0.2.0/docs
+copying docs/integrators.md -> pyrpmd-0.2.0/docs
+copying docs/interfaces.md -> pyrpmd-0.2.0/docs
+copying docs/jaxpip-native.md -> pyrpmd-0.2.0/docs
+copying docs/literature-validation.md -> pyrpmd-0.2.0/docs
+copying docs/materials-npt.md -> pyrpmd-0.2.0/docs
+copying docs/materials.md -> pyrpmd-0.2.0/docs
+copying docs/mbar-rate-pmf.md -> pyrpmd-0.2.0/docs
+copying docs/native-ensembles.md -> pyrpmd-0.2.0/docs
+copying docs/native-pimd-workflow.md -> pyrpmd-0.2.0/docs
+copying docs/native-propagation.md -> pyrpmd-0.2.0/docs
+copying docs/nonadiabatic-methods.md -> pyrpmd-0.2.0/docs
+copying docs/nonadiabatic-soc-rpsh.md -> pyrpmd-0.2.0/docs
+copying docs/nonadiabatic.md -> pyrpmd-0.2.0/docs
+copying docs/opes.md -> pyrpmd-0.2.0/docs
+copying docs/parallel.md -> pyrpmd-0.2.0/docs
+copying docs/pcet.md -> pyrpmd-0.2.0/docs
+copying docs/performance-dynamics.md -> pyrpmd-0.2.0/docs
+copying docs/periodic-materials-audit.md -> pyrpmd-0.2.0/docs
+copying docs/plumed.md -> pyrpmd-0.2.0/docs
+copying docs/potential-adapters.md -> pyrpmd-0.2.0/docs
+copying docs/potentials.md -> pyrpmd-0.2.0/docs
+copying docs/publication-readiness.md -> pyrpmd-0.2.0/docs
+copying docs/quantum-statistics.md -> pyrpmd-0.2.0/docs
+copying docs/rate-postprocessing.md -> pyrpmd-0.2.0/docs
+copying docs/rate-studies.md -> pyrpmd-0.2.0/docs
+copying docs/reaction-networks.md -> pyrpmd-0.2.0/docs
+copying docs/replica-exchange.md -> pyrpmd-0.2.0/docs
+copying docs/rpc-mts.md -> pyrpmd-0.2.0/docs
+copying docs/science.md -> pyrpmd-0.2.0/docs
+copying docs/state-selected.md -> pyrpmd-0.2.0/docs
+copying docs/streaming-trajectories.md -> pyrpmd-0.2.0/docs
+copying docs/surface-catalysis.md -> pyrpmd-0.2.0/docs
+copying docs/thermal-nrpmd.md -> pyrpmd-0.2.0/docs
+copying docs/trajectory-export.md -> pyrpmd-0.2.0/docs
+copying docs/transition-interface-sampling.md -> pyrpmd-0.2.0/docs
+copying docs/trpmd-spectroscopy.md -> pyrpmd-0.2.0/docs
+copying docs/ux-review-2026-10-31.md -> pyrpmd-0.2.0/docs
+copying docs/validation.md -> pyrpmd-0.2.0/docs
+copying docs/_static/manual.css -> pyrpmd-0.2.0/docs/_static
+copying docs/_templates/language-switcher.html -> pyrpmd-0.2.0/docs/_templates
+copying docs/manual/analysis-reports.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/api.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/development.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/electrochemistry.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/examples.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/execution.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/input.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/installation.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/jaxpip-generation.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/nonadiabatic.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/pcet.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/periodic.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/pes-generation.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/potentials.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/quickstart.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/results.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/science.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/troubleshooting.md -> pyrpmd-0.2.0/docs/manual
+copying docs/manual/workflows.md -> pyrpmd-0.2.0/docs/manual
+copying docs/releases/0.2.0.md -> pyrpmd-0.2.0/docs/releases
+copying docs/validation/batched-dynamics-2026-10-31.json -> pyrpmd-0.2.0/docs/validation
+copying docs/validation/implementation-guide-audit-2026-10-31.md -> pyrpmd-0.2.0/docs/validation
+copying docs/validation/materials-2026-10-30.md -> pyrpmd-0.2.0/docs/validation
+copying docs/validation/analysis-reports-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/analysis-reports-2026-10-31
+copying docs/validation/analysis-reports-2026-10-31/testing-followup.json -> pyrpmd-0.2.0/docs/validation/analysis-reports-2026-10-31
+copying docs/validation/analysis-reports-2026-10-31/testing-followup.md -> pyrpmd-0.2.0/docs/validation/analysis-reports-2026-10-31
+copying docs/validation/audit-optimization-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/benchmark-report.json -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/benchmark-summary.json -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/mpi-integration.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/mpi-materials.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/mpi-results.json -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/mpi-surface.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/mpi-workflow.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/pytest-final.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/pytest-native-final.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/pytest-socket.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/audit-optimization-2026-10-30/pytest.txt -> pyrpmd-0.2.0/docs/validation/audit-optimization-2026-10-30
+copying docs/validation/branch-review-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/branch-review-2026-10-30/applications.json -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/branch-review-2026-10-30/dispatch-final.txt -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/branch-review-2026-10-30/dispatch-tests.txt -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/branch-review-2026-10-30/mpi.json -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/branch-review-2026-10-30/pytest.txt -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/branch-review-2026-10-30/sdist.json -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/branch-review-2026-10-30/wheel.json -> pyrpmd-0.2.0/docs/validation/branch-review-2026-10-30
+copying docs/validation/brhcl-multichannel-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/cabi-batch-after.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/cabi-batch-before.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/comparisons.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/fes-extra-correlation-verification.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/integration-review.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/integration-verification.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/native-smoke.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-final-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-final-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-final-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-final-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-mixed-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-mixed-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-mixed-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-mixed-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p1-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p16-final-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p16-final-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p16-final-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p16-final-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-final-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-final-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-final-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-final-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-halfdt-final-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-halfdt-final-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-halfdt-final-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-halfdt-final-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-mixed-fes.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-mixed-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-mixed-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-mixed-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-model.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-plan.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/p8-summary.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/pes-tests.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/pes-verification.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/plot-data.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/pytest-full.txt -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/pytest-full.xml -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/reference-coarse8-tighter.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/reference-coarse8.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/reference32.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/reference32.npz -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/sampling-engine.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/evidence/sampling-verification.json -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/evidence
+copying docs/validation/brhcl-multichannel-2026-10-30/figures/brhcl-2d-pmf.pdf -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+copying docs/validation/brhcl-multichannel-2026-10-30/figures/brhcl-2d-pmf.png -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+copying docs/validation/brhcl-multichannel-2026-10-30/figures/brhcl-channels.pdf -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+copying docs/validation/brhcl-multichannel-2026-10-30/figures/brhcl-channels.png -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+copying docs/validation/brhcl-multichannel-2026-10-30/figures/brhcl-mixing.png -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+copying docs/validation/brhcl-multichannel-2026-10-30/figures/brhcl-validation.pdf -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+copying docs/validation/brhcl-multichannel-2026-10-30/figures/brhcl-validation.png -> pyrpmd-0.2.0/docs/validation/brhcl-multichannel-2026-10-30/figures
+copying docs/validation/combined-integration-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/capabilities.json -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/final-import.txt -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/final-manual-validation.json -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/final-package-inspection.json -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/installed-wheel-smoke.json -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/manual-validation.json -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/mpi-materials.txt -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/mpi-surface.txt -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/nrpmd-installed-smoke.json -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/nrpmd-package-inspection.json -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/pytest-final-targeted.txt -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/pytest-final-tree.txt -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/pytest-full.txt -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/combined-integration-2026-10-30/pytest-with-nrpmd.txt -> pyrpmd-0.2.0/docs/validation/combined-integration-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/baseline-build.log -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/baseline-tests.txt -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/candidate-build.log -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/candidate-tests.txt -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/package-validation.json -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/results.json -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/drpmd-optimization-2026-10-30/wheel-smoke.json -> pyrpmd-0.2.0/docs/validation/drpmd-optimization-2026-10-30
+copying docs/validation/ecosystem-2026-11-01/distribution/README.md -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/distribution
+copying docs/validation/ecosystem-2026-11-01/distribution/conda-build-final.log -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/distribution
+copying docs/validation/ecosystem-2026-11-01/distribution/conda-render.json -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/distribution
+copying docs/validation/ecosystem-2026-11-01/distribution/evidence.json -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/distribution
+copying docs/validation/ecosystem-2026-11-01/distribution/smoke.log -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/distribution
+copying docs/validation/ecosystem-2026-11-01/h3-archived-comparison/README.md -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/h3-archived-comparison
+copying docs/validation/ecosystem-2026-11-01/h3-archived-comparison/broad-pilot.json -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/h3-archived-comparison
+copying docs/validation/ecosystem-2026-11-01/h3-archived-comparison/execution.json -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/h3-archived-comparison
+copying docs/validation/ecosystem-2026-11-01/h3-archived-comparison/stiff-pilot.json -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/h3-archived-comparison
+copying docs/validation/ecosystem-2026-11-01/water-pilot/README.md -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/water-pilot
+copying docs/validation/ecosystem-2026-11-01/water-pilot/diffusion-diagnostic.json -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/water-pilot
+copying docs/validation/ecosystem-2026-11-01/water-pilot/model.xml -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/water-pilot
+copying docs/validation/ecosystem-2026-11-01/water-pilot/report.json -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/water-pilot
+copying docs/validation/ecosystem-2026-11-01/water-pilot/spectrum-diagnostic.npz -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/water-pilot
+copying docs/validation/ecosystem-2026-11-01/water-pilot/trajectory.npz -> pyrpmd-0.2.0/docs/validation/ecosystem-2026-11-01/water-pilot
+copying docs/validation/electrode-model-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/electrode-model-2026-10-31
+copying docs/validation/electrode-model-2026-10-31/her-demo.csv -> pyrpmd-0.2.0/docs/validation/electrode-model-2026-10-31
+copying docs/validation/electrode-model-2026-10-31/pytest.txt -> pyrpmd-0.2.0/docs/validation/electrode-model-2026-10-31
+copying docs/validation/electrode-model-2026-10-31/shared-number-demo.json -> pyrpmd-0.2.0/docs/validation/electrode-model-2026-10-31
+copying docs/validation/electrode-model-2026-10-31/validation.json -> pyrpmd-0.2.0/docs/validation/electrode-model-2026-10-31
+copying docs/validation/enhanced-sampling-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31
+copying docs/validation/enhanced-sampling-2026-10-31/benchmark_hills.py -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31
+copying docs/validation/enhanced-sampling-2026-10-31/h3-comparison.pdf -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31
+copying docs/validation/enhanced-sampling-2026-10-31/h3-comparison.png -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31
+copying docs/validation/enhanced-sampling-2026-10-31/render.py -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/adaptive-matched-config.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/adaptive-matched.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/adaptive-production-config.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/adaptive-production.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/adaptive-short-config.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/adaptive-short.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/bkmp2-build.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/checkpoint-sha256.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/fixed96-production-config.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/fixed96-production.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/fixed96-short-config.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/fixed96-short.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/hill-kernel-timing.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/metadynamics-config.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/metadynamics.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/mpi.txt -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/pytest-bkmp2.txt -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/pytest-focused.txt -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/pytest-full.txt -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/enhanced-sampling-2026-10-31/evidence/verification.json -> pyrpmd-0.2.0/docs/validation/enhanced-sampling-2026-10-31/evidence
+copying docs/validation/fes-methods-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30
+copying docs/validation/fes-methods-2026-10-30/evidence/baseline.log -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/baseline.xml -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/full-tests.log -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/full-tests.xml -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/harmonic-dynamics.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/harmonic-quantum.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/manifest.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/method-summary.csv -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/ogre-model-checks.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/paper-data-provenance.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/paper-summary.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/pymbar-checks.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/source-provenance.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/evidence/summary.json -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/evidence
+copying docs/validation/fes-methods-2026-10-30/figures/ackley-paper-grid.png -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/figures
+copying docs/validation/fes-methods-2026-10-30/figures/double-well-comparison.png -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/figures
+copying docs/validation/fes-methods-2026-10-30/figures/harmonic-methods.png -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/figures
+copying docs/validation/fes-methods-2026-10-30/figures/quantum-checks.png -> pyrpmd-0.2.0/docs/validation/fes-methods-2026-10-30/figures
+copying docs/validation/fes-optimization-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30
+copying docs/validation/fes-optimization-2026-10-30/evidence/ackley_three_way_common_support.csv -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/all_cases.csv -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/archive-manifest.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/diagnostic-refresh.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/full-tests-release.log -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/integration-meta-equivalence.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/integration-meta-performance.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/integration-native-build.log -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/integration-tests.log -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/integration.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/intermediate-tests-before-legacy-fixture-update.log -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/manifest.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/metadynamics-history_diagnosis.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/metadynamics-performance.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/metadynamics-trajectory_equivalence.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/metadynamics_common_support.csv -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/metadynamics_common_support.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/optimization-summary.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/paired_comparisons.csv -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/settings_summary.csv -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence
+copying docs/validation/fes-optimization-2026-10-30/evidence/configs/ackley-adaptive-tuned.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence/configs
+copying docs/validation/fes-optimization-2026-10-30/evidence/configs/coverage-original.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence/configs
+copying docs/validation/fes-optimization-2026-10-30/evidence/configs/double-adaptive-tuned.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence/configs
+copying docs/validation/fes-optimization-2026-10-30/evidence/configs/thermostat500.json -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/evidence/configs
+copying docs/validation/fes-optimization-2026-10-30/figures/double-well-budget-residuals.png -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/figures
+copying docs/validation/fes-optimization-2026-10-30/figures/optimization-overview.png -> pyrpmd-0.2.0/docs/validation/fes-optimization-2026-10-30/figures
+copying docs/validation/fes-replica-exchange-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/fes-replica-exchange-2026-10-31
+copying docs/validation/fes-replica-exchange-2026-10-31/available-suite.txt -> pyrpmd-0.2.0/docs/validation/fes-replica-exchange-2026-10-31
+copying docs/validation/fes-replica-exchange-2026-10-31/example.json -> pyrpmd-0.2.0/docs/validation/fes-replica-exchange-2026-10-31
+copying docs/validation/fes-replica-exchange-2026-10-31/focused-tests.txt -> pyrpmd-0.2.0/docs/validation/fes-replica-exchange-2026-10-31
+copying docs/validation/fused-production-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/fused-production-2026-10-30
+copying docs/validation/fused-production-2026-10-30/results.json -> pyrpmd-0.2.0/docs/validation/fused-production-2026-10-30
+copying docs/validation/h3-bkmp2-2026-10-29/README.md -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/drpmd.png -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/fes2d.png -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/github-execution.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/github-pmf-diagnostics.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/github-summary.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/local-coarse-pmf-diagnostics.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/local-coarse-prefix-verification.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/local-fes2d-resume-evidence.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/local-rate-resume-evidence.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/local-sampling-length-comparison.json -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-bkmp2-2026-10-29/pmf-recrossing.png -> pyrpmd-0.2.0/docs/validation/h3-bkmp2-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/PMF-CONVERGENCE.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/PMF-CONVERGENCE.md -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/README.md -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/artifact-receipt.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/ci-summary.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/execution.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/independent-scientific-review.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/regression-summary.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/study-plan.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/verify_saved_case.py -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-a/benchmark.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-a
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-a/independent-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-a
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-a/solver-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-a
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-b/benchmark.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-b
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-b/independent-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-b
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-b/solver-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k400-b
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-a/benchmark.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-a
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-a/independent-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-a
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-a/solver-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-a
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-b/benchmark.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-b
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-b/independent-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-b
+copying docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-b/solver-check.json -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/cases/k800-b
+copying docs/validation/h3-pmf-refinement-2026-10-29/figures/pmf-comparison.pdf -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/figures
+copying docs/validation/h3-pmf-refinement-2026-10-29/figures/pmf-comparison.png -> pyrpmd-0.2.0/docs/validation/h3-pmf-refinement-2026-10-29/figures
+copying docs/validation/implementation-guide-audit-2026-10-31/docs-contract-checks.json -> pyrpmd-0.2.0/docs/validation/implementation-guide-audit-2026-10-31
+copying docs/validation/implementation-guide-audit-2026-10-31/environment.json -> pyrpmd-0.2.0/docs/validation/implementation-guide-audit-2026-10-31
+copying docs/validation/implementation-guide-audit-2026-10-31/free-ring-coefficients-outlier-check.json -> pyrpmd-0.2.0/docs/validation/implementation-guide-audit-2026-10-31
+copying docs/validation/implementation-guide-audit-2026-10-31/free-ring-coefficients.json -> pyrpmd-0.2.0/docs/validation/implementation-guide-audit-2026-10-31
+copying docs/validation/implementation-guide-audit-2026-10-31/package-verification.json -> pyrpmd-0.2.0/docs/validation/implementation-guide-audit-2026-10-31
+copying docs/validation/implementation-guide-audit-2026-10-31/validation.json -> pyrpmd-0.2.0/docs/validation/implementation-guide-audit-2026-10-31
+copying docs/validation/integration-review-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/integration-review-2026-10-30
+copying docs/validation/jaxpip-generation-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/jaxpip-generation-2026-10-31
+copying docs/validation/jaxpip-generation-2026-10-31/REVIEWED-INTEGRATION.md -> pyrpmd-0.2.0/docs/validation/jaxpip-generation-2026-10-31
+copying docs/validation/jaxpip-generation-2026-10-31/local-h2.json -> pyrpmd-0.2.0/docs/validation/jaxpip-generation-2026-10-31
+copying docs/validation/jaxpip-generation-2026-10-31/review-integration.json -> pyrpmd-0.2.0/docs/validation/jaxpip-generation-2026-10-31
+copying docs/validation/materials-extensions-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/materials-extensions-2026-10-31
+copying docs/validation/materials-extensions-2026-10-31/grid-bias-benchmark.json -> pyrpmd-0.2.0/docs/validation/materials-extensions-2026-10-31
+copying docs/validation/materials-extensions-2026-10-31/grid-metadynamics.md -> pyrpmd-0.2.0/docs/validation/materials-extensions-2026-10-31
+copying docs/validation/materials-extensions-2026-10-31/materials-smoke-summaries.json -> pyrpmd-0.2.0/docs/validation/materials-extensions-2026-10-31
+copying docs/validation/native-ensembles-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+copying docs/validation/native-ensembles-2026-10-31/full-source-followup.md -> pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+copying docs/validation/native-ensembles-2026-10-31/mode-fusion-followup.json -> pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+copying docs/validation/native-ensembles-2026-10-31/pytest-full-source-targeted.txt -> pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+copying docs/validation/native-ensembles-2026-10-31/pytest-workflow-followup.txt -> pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+copying docs/validation/native-ensembles-2026-10-31/pytest-workflow-targeted.txt -> pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+copying docs/validation/native-ensembles-2026-10-31/workflow-followup.md -> pyrpmd-0.2.0/docs/validation/native-ensembles-2026-10-31
+copying docs/validation/native-loop-bkmp2-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/native-loop-bkmp2-2026-10-30
+copying docs/validation/nonadiabatic-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/nonadiabatic-2026-10-31
+copying docs/validation/nonadiabatic-2026-10-31/checks.json -> pyrpmd-0.2.0/docs/validation/nonadiabatic-2026-10-31
+copying docs/validation/nonadiabatic-2026-10-31/examples.json -> pyrpmd-0.2.0/docs/validation/nonadiabatic-2026-10-31
+copying docs/validation/nonadiabatic-2026-10-31/pytest.txt -> pyrpmd-0.2.0/docs/validation/nonadiabatic-2026-10-31
+copying docs/validation/nrpmd-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/nrpmd-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/force-after.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/force-before.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/force-log-provenance.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/force-targeted.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/mpi-integration.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/mpi-log-provenance.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/mpi-materials.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/mpi-results.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/mpi-surface.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/mpi-transport-startup.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/mpi-workflow.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/package-metadata.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/package-report.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/pytest.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/pytest.txt -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/runner-retirement.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/science-digest-comparison.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/sdist-smoke.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/source.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/wheel-smoke.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/workflow-benchmark-report.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-integration-2026-10-30/workflow-benchmark-source.json -> pyrpmd-0.2.0/docs/validation/optimization-integration-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/dispatch-benchmark-report.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/final-installation.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/final-installed-smoke.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/final-package-source.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/initial-installation.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/initial-installed-smoke.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/initial-package-check.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/initial-package-source.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/override-after.txt -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/override-before.txt -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/override-log-provenance.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/override-targeted.txt -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/pytest-final.txt -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/restore-instructions.md -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/restore-smoke-summary.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/restore-validation.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/restore.py -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/serial-build.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/serial-capabilities.json -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/serial-dependencies.txt -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/serial-pytest.txt -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/optimization-release-2026-10-30/serial-report.txt -> pyrpmd-0.2.0/docs/validation/optimization-release-2026-10-30
+copying docs/validation/pcet-model-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/pcet-model-2026-10-30
+copying docs/validation/pcet-model-2026-10-30/compare_pypcet.py -> pyrpmd-0.2.0/docs/validation/pcet-model-2026-10-30
+copying docs/validation/pcet-model-2026-10-30/reference_results.json -> pyrpmd-0.2.0/docs/validation/pcet-model-2026-10-30
+copying docs/validation/periodic-core-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/periodic-core-2026-10-30
+copying docs/validation/periodic-core-2026-10-30/pytest.txt -> pyrpmd-0.2.0/docs/validation/periodic-core-2026-10-30
+copying docs/validation/periodic-materials-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/periodic-materials-2026-10-31
+copying docs/validation/periodic-materials-2026-10-31/eam-validation.json -> pyrpmd-0.2.0/docs/validation/periodic-materials-2026-10-31
+copying docs/validation/periodic-materials-2026-10-31/pytest-final.txt -> pyrpmd-0.2.0/docs/validation/periodic-materials-2026-10-31
+copying docs/validation/periodic-materials-2026-10-31/validation.json -> pyrpmd-0.2.0/docs/validation/periodic-materials-2026-10-31
+copying docs/validation/pes-generation-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/pes-generation-2026-10-31
+copying docs/validation/pmf-accuracy-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/1d-accuracy.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/2d-accuracy.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/bkmp2-pes-check.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/h3-fes2d-benchmark.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/h3-rate-summary.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/h3-solver-check.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/hho2-pilot-plan.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/hho2-scan-audit.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/plot-data.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/pytest-final.txt -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/pytest-final.xml -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/evidence/test-summary.json -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/evidence
+copying docs/validation/pmf-accuracy-2026-10-30/figures/analytic-2d-validation.png -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/figures
+copying docs/validation/pmf-accuracy-2026-10-30/figures/h3-real-pmf-validation.png -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/figures
+copying docs/validation/pmf-accuracy-2026-10-30/figures/pmf-regression-fixes.png -> pyrpmd-0.2.0/docs/validation/pmf-accuracy-2026-10-30/figures
+copying docs/validation/potentials-parallelism-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/potentials-parallelism-2026-10-31
+copying docs/validation/potentials-parallelism-2026-10-31/evidence.json -> pyrpmd-0.2.0/docs/validation/potentials-parallelism-2026-10-31
+copying docs/validation/rate-postprocess-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31
+copying docs/validation/rate-postprocess-2026-10-31/followup-validation.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31
+copying docs/validation/rate-postprocess-2026-10-31/h3-summary.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31
+copying docs/validation/rate-postprocess-2026-10-31/review-fixes-validation.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31
+copying docs/validation/rate-postprocess-2026-10-31/tests.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31
+copying docs/validation/rate-postprocess-2026-10-31/pilot/metadata-upgrade.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot
+copying docs/validation/rate-postprocess-2026-10-31/pilot/rate-postprocess-spec.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot
+copying docs/validation/rate-postprocess-2026-10-31/pilot/replay-subset.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot
+copying docs/validation/rate-postprocess-2026-10-31/pilot/dynamics/channel_recrossing.npz -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/dynamics
+copying docs/validation/rate-postprocess-2026-10-31/pilot/dynamics/surface-identity.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/dynamics
+copying docs/validation/rate-postprocess-2026-10-31/pilot/run/fes.npz -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/run
+copying docs/validation/rate-postprocess-2026-10-31/pilot/run/summary.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/run
+copying docs/validation/rate-postprocess-2026-10-31/pilot/run/input/resolved.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/pilot/run/input
+copying docs/validation/rate-postprocess-2026-10-31/quick/metadata-upgrade.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick
+copying docs/validation/rate-postprocess-2026-10-31/quick/rate-postprocess-spec.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick
+copying docs/validation/rate-postprocess-2026-10-31/quick/replay-subset.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick
+copying docs/validation/rate-postprocess-2026-10-31/quick/dynamics/channel_recrossing.npz -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/dynamics
+copying docs/validation/rate-postprocess-2026-10-31/quick/dynamics/surface-identity.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/dynamics
+copying docs/validation/rate-postprocess-2026-10-31/quick/run/fes.npz -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/run
+copying docs/validation/rate-postprocess-2026-10-31/quick/run/summary.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/run
+copying docs/validation/rate-postprocess-2026-10-31/quick/run/input/resolved.json -> pyrpmd-0.2.0/docs/validation/rate-postprocess-2026-10-31/quick/run/input
+copying docs/validation/sampling-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/sampling-2026-10-31
+copying docs/validation/sampling-2026-10-31/local-evidence.json -> pyrpmd-0.2.0/docs/validation/sampling-2026-10-31
+copying docs/validation/state-selected-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/state-selected-2026-10-31
+copying docs/validation/surface-accuracy-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/surface-accuracy-2026-10-31
+copying docs/validation/surface-accuracy-2026-10-31/quality-replay.json -> pyrpmd-0.2.0/docs/validation/surface-accuracy-2026-10-31
+copying docs/validation/surface-accuracy-2026-10-31/reference.json -> pyrpmd-0.2.0/docs/validation/surface-accuracy-2026-10-31
+copying docs/validation/surface-accuracy-2026-10-31/results.json -> pyrpmd-0.2.0/docs/validation/surface-accuracy-2026-10-31
+copying docs/validation/surface-catalysis-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-catalysis-2026-10-30/integration-adaptive.txt -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-catalysis-2026-10-30/integration-mpi.txt -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-catalysis-2026-10-30/integration-pytest.txt -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-catalysis-2026-10-30/integration-results.json -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-catalysis-2026-10-30/mpi.txt -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-catalysis-2026-10-30/pytest.txt -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-catalysis-2026-10-30/results.json -> pyrpmd-0.2.0/docs/validation/surface-catalysis-2026-10-30
+copying docs/validation/surface-features-2026-10-30/README.md -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/mpi-existing.txt -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/mpi-new.txt -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/pip-check.txt -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/production-input-validation.json -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/projection.json -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/pt111-dynamics.json -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/pt111-meta.json -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/pt111-rate.json -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/pytest.txt -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/results.json -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-features-2026-10-30/source_sha256.json -> pyrpmd-0.2.0/docs/validation/surface-features-2026-10-30
+copying docs/validation/surface-pr-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/mpi-existing.txt -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/mpi-new.txt -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/pip-check.txt -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/production-validation.json -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/pt111-dynamics.json -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/pt111-projection.json -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/pt111-rate.json -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/pt111-run.json -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/pytest.txt -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/results.json -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/surface-pr-2026-10-31/source_sha256.json -> pyrpmd-0.2.0/docs/validation/surface-pr-2026-10-31
+copying docs/validation/tier1-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/ci-initial-feature.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/merged-docs-verification.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/pmf-estimator-diagnostic.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/pmf-replay.md -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/pmf-sampling-diagnostic.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/pytest-final-targeted.txt -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/pytest-full.txt -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/recrossing-performance.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/rpc-mts.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/sphinx-merged-en-html.txt -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/sphinx-merged-en-singlehtml.txt -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/sphinx-merged-zh-html.txt -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/sphinx-merged-zh-singlehtml.txt -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/sphinx-strict.txt -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/trpmd-spectrum.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/verification.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31
+copying docs/validation/tier1-2026-10-31/broad-pilot/calculation.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/broad-pilot/comparison.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/broad-pilot/driver.py -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/broad-pilot/manifest.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/broad-pilot/rate_pmf.csv -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/broad-pilot/recrossing.csv -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/broad-pilot/settings.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/broad-pilot/summary.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/broad-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/calculation.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/comparison.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/driver.py -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/manifest.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/rate_pmf.csv -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/recrossing.csv -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/settings.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier1-2026-10-31/stiff-pilot/summary.json -> pyrpmd-0.2.0/docs/validation/tier1-2026-10-31/stiff-pilot
+copying docs/validation/tier2-scientific-range-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/documentation-build.txt -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/general-coordinate-result.json -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/instanton-results.json -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/package-build.json -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/pytest-non-socket.txt -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/pytest-socket.txt -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/summary.json -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/tier2-scientific-range-2026-10-31/wheel-import-smoke.json -> pyrpmd-0.2.0/docs/validation/tier2-scientific-range-2026-10-31
+copying docs/validation/umbrella-reliability-2026-10-31/README.md -> pyrpmd-0.2.0/docs/validation/umbrella-reliability-2026-10-31
+copying docs/validation/umbrella-reliability-2026-10-31/counterexamples.json -> pyrpmd-0.2.0/docs/validation/umbrella-reliability-2026-10-31
+copying docs/validation/umbrella-reliability-2026-10-31/validation.json -> pyrpmd-0.2.0/docs/validation/umbrella-reliability-2026-10-31
+copying docs/zh/conf.py -> pyrpmd-0.2.0/docs/zh
+copying docs/zh/index.md -> pyrpmd-0.2.0/docs/zh
+copying docs/zh/input.md -> pyrpmd-0.2.0/docs/zh
+copying docs/zh/parallel.md -> pyrpmd-0.2.0/docs/zh
+copying docs/zh/periodic-materials-audit.md -> pyrpmd-0.2.0/docs/zh
+copying docs/zh/replica-exchange.md -> pyrpmd-0.2.0/docs/zh
+copying docs/zh/manual/analysis-reports.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/api.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/development.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/electrochemistry.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/examples.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/execution.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/input.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/installation.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/jaxpip-generation.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/nonadiabatic.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/pcet.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/periodic.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/pes-generation.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/potentials.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/quickstart.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/results.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/science.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/troubleshooting.md -> pyrpmd-0.2.0/docs/zh/manual
+copying docs/zh/manual/workflows.md -> pyrpmd-0.2.0/docs/zh/manual
+copying examples/analysis/README.md -> pyrpmd-0.2.0/examples/analysis
+copying examples/analysis/reference-rates.csv -> pyrpmd-0.2.0/examples/analysis
+copying examples/drpmd/README.md -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/bead.py -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/free_scattering.inp -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/gpu.py -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/minimal.inp -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/mpi.py -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/mpi_dynamic.py -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/python_pes.py -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/reactant_a.xyz -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/reactant_b.xyz -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/torch_pes.py -> pyrpmd-0.2.0/examples/drpmd
+copying examples/drpmd/toy_pes.py -> pyrpmd-0.2.0/examples/drpmd
+copying examples/electrochemistry/README.md -> pyrpmd-0.2.0/examples/electrochemistry
+copying examples/electrochemistry/fes2d.inp -> pyrpmd-0.2.0/examples/electrochemistry
+copying examples/electrochemistry/her_scan.py -> pyrpmd-0.2.0/examples/electrochemistry
+copying examples/electrochemistry/sample_grand_canonical.py -> pyrpmd-0.2.0/examples/electrochemistry
+copying examples/electrochemistry/toy_electrode.py -> pyrpmd-0.2.0/examples/electrochemistry
+copying examples/ensembles/native_npt.toml -> pyrpmd-0.2.0/examples/ensembles
+copying examples/ensembles/native_nvt.toml -> pyrpmd-0.2.0/examples/ensembles
+copying examples/ensembles/pimd_native.inp -> pyrpmd-0.2.0/examples/ensembles
+copying examples/ensembles/pimd_native_npt.inp -> pyrpmd-0.2.0/examples/ensembles
+copying examples/fes/README.md -> pyrpmd-0.2.0/examples/fes
+copying examples/fes/adaptive_harmonic.inp -> pyrpmd-0.2.0/examples/fes
+copying examples/fes/custom_cv.py -> pyrpmd-0.2.0/examples/fes
+copying examples/fes/custom_input.py -> pyrpmd-0.2.0/examples/fes
+copying examples/fes/harmonic2d.inp -> pyrpmd-0.2.0/examples/fes
+copying examples/fes/replica_exchange_2d.inp -> pyrpmd-0.2.0/examples/fes
+copying examples/instanton/eckart.py -> pyrpmd-0.2.0/examples/instanton
+copying examples/manual/low_level.py -> pyrpmd-0.2.0/examples/manual
+copying examples/manual/quickstart.inp -> pyrpmd-0.2.0/examples/manual
+copying examples/materials/diffusion.inp -> pyrpmd-0.2.0/examples/materials
+copying examples/materials/fixed_slab.inp -> pyrpmd-0.2.0/examples/materials
+copying examples/materials/npt_free.inp -> pyrpmd-0.2.0/examples/materials
+copying examples/materials/pimd.inp -> pyrpmd-0.2.0/examples/materials
+copying examples/materials/rigid_water.inp -> pyrpmd-0.2.0/examples/materials
+copying examples/materials/site_rate.inp -> pyrpmd-0.2.0/examples/materials
+copying examples/metadynamics/grid_fixed_slab.inp -> pyrpmd-0.2.0/examples/metadynamics
+copying examples/metadynamics/standard.inp -> pyrpmd-0.2.0/examples/metadynamics
+copying examples/metadynamics/well_tempered_2d.inp -> pyrpmd-0.2.0/examples/metadynamics
+copying examples/network/two_entrances.py -> pyrpmd-0.2.0/examples/network
+copying examples/nonadiabatic/README.md -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/atom.xyz -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/diatom.xyz -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/exchange.inp -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/friction_surface.inp -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/matrix_pes.py -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/method_models.py -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/soc_and_rpsh.py -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/nonadiabatic/thermal_rates.py -> pyrpmd-0.2.0/examples/nonadiabatic
+copying examples/opes/harmonic_2d.inp -> pyrpmd-0.2.0/examples/opes
+copying examples/pcet/README.md -> pyrpmd-0.2.0/examples/pcet
+copying examples/pcet/harmonic_scan.inp -> pyrpmd-0.2.0/examples/pcet
+copying examples/pes/README.md -> pyrpmd-0.2.0/examples/pes
+copying examples/pes/atom.xyz -> pyrpmd-0.2.0/examples/pes
+copying examples/pes/pes.toml -> pyrpmd-0.2.0/examples/pes
+copying examples/pesgen/README.md -> pyrpmd-0.2.0/examples/pesgen
+copying examples/pesgen/nh3_inversion.py -> pyrpmd-0.2.0/examples/pesgen
+copying examples/pesgen/water.toml -> pyrpmd-0.2.0/examples/pesgen
+copying examples/pesgen/water.xyz -> pyrpmd-0.2.0/examples/pesgen
+copying examples/pesgen/jaxpip/h2_pipeline.py -> pyrpmd-0.2.0/examples/pesgen/jaxpip
+copying examples/plumed/centroid_metadynamics.py -> pyrpmd-0.2.0/examples/plumed
+copying examples/potentials/README.md -> pyrpmd-0.2.0/examples/potentials
+copying examples/potentials/lammps_lj.inp -> pyrpmd-0.2.0/examples/potentials
+copying examples/potentials/on_the_fly.py -> pyrpmd-0.2.0/examples/potentials
+copying examples/potentials/openmm_harmonic.inp -> pyrpmd-0.2.0/examples/potentials
+copying examples/potentials/openmm_harmonic.py -> pyrpmd-0.2.0/examples/potentials
+copying examples/potentials/periodic_torch.inp -> pyrpmd-0.2.0/examples/potentials
+copying examples/potentials/periodic_torch.py -> pyrpmd-0.2.0/examples/potentials
+copying examples/quantum_statistics/harmonic_validation.json -> pyrpmd-0.2.0/examples/quantum_statistics
+copying examples/quantum_statistics/harmonic_validation.py -> pyrpmd-0.2.0/examples/quantum_statistics
+copying examples/rate/README.md -> pyrpmd-0.2.0/examples/rate
+copying examples/rate/general_coordinate.inp -> pyrpmd-0.2.0/examples/rate
+copying examples/rate/minimal.inp -> pyrpmd-0.2.0/examples/rate
+copying examples/rate/pilot.inp -> pyrpmd-0.2.0/examples/rate
+copying examples/rate/toy_exchange.py -> pyrpmd-0.2.0/examples/rate
+copying examples/rate/ts.xyz -> pyrpmd-0.2.0/examples/rate
+copying examples/sampling/transition_interface.py -> pyrpmd-0.2.0/examples/sampling
+copying examples/slurm/mpi_cpu.slurm -> pyrpmd-0.2.0/examples/slurm
+copying examples/slurm/mpi_gpu.slurm -> pyrpmd-0.2.0/examples/slurm
+copying examples/state_selected/README.md -> pyrpmd-0.2.0/examples/state_selected
+copying examples/state_selected/atom.xyz -> pyrpmd-0.2.0/examples/state_selected
+copying examples/state_selected/diatom.xyz -> pyrpmd-0.2.0/examples/state_selected
+copying examples/state_selected/ne_rpmd.inp -> pyrpmd-0.2.0/examples/state_selected
+copying examples/state_selected/qct.inp -> pyrpmd-0.2.0/examples/state_selected
+copying examples/studies/drpmd.json -> pyrpmd-0.2.0/examples/studies
+copying examples/studies/site_rate.json -> pyrpmd-0.2.0/examples/studies
+copying examples/surface/README.md -> pyrpmd-0.2.0/examples/surface
+copying examples/surface/ase_emt.py -> pyrpmd-0.2.0/examples/surface
+copying examples/surface/diffusion.inp -> pyrpmd-0.2.0/examples/surface
+copying examples/surface/fes2d.inp -> pyrpmd-0.2.0/examples/surface
+copying examples/surface/toy_surface.py -> pyrpmd-0.2.0/examples/surface
+copying examples/surface/pt111/README.md -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/check_dynamics.py -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/common.py -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/eann.py -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/fetch_model.py -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/pilot.py -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/production.py -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/rate_from_fes.py -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/system.json -> pyrpmd-0.2.0/examples/surface/pt111
+copying examples/surface/pt111/transition_state.json -> pyrpmd-0.2.0/examples/surface/pt111
+copying native/ABI.md -> pyrpmd-0.2.0/native
+copying native/CMakeLists.txt -> pyrpmd-0.2.0/native
+copying native/README.md -> pyrpmd-0.2.0/native
+copying native/cayley.cpp -> pyrpmd-0.2.0/native
+copying native/fused.hpp -> pyrpmd-0.2.0/native
+copying native/propagation.h -> pyrpmd-0.2.0/native
+copying native/ring_fft.h -> pyrpmd-0.2.0/native
+copying native/thermal-NOTICE.md -> pyrpmd-0.2.0/native
+copying native/thermal.cpp -> pyrpmd-0.2.0/native
+copying native/thermal.hpp -> pyrpmd-0.2.0/native
+copying native/examples/harmonic_pes.c -> pyrpmd-0.2.0/native/examples
+copying native/examples/periodic_cosine_pes.c -> pyrpmd-0.2.0/native/examples
+copying native/include/pyrpmd/pes_api_v1.h -> pyrpmd-0.2.0/native/include/pyrpmd
+copying native/include/pyrpmd/pes_api_v2.h -> pyrpmd-0.2.0/native/include/pyrpmd
+copying native/include/pyrpmd/thermal_pes.h -> pyrpmd-0.2.0/native/include/pyrpmd
+copying native/onnx/CMakeLists.txt -> pyrpmd-0.2.0/native/onnx
+copying native/onnx/README.md -> pyrpmd-0.2.0/native/onnx
+copying native/onnx/context_test.cpp -> pyrpmd-0.2.0/native/onnx
+copying native/onnx/onnx_pes.cpp -> pyrpmd-0.2.0/native/onnx
+copying packaging/conda/README.md -> pyrpmd-0.2.0/packaging/conda
+copying packaging/conda/prepare_release.py -> pyrpmd-0.2.0/packaging/conda
+copying packaging/conda/recipe.yaml -> pyrpmd-0.2.0/packaging/conda
+copying packaging/conda/variants.yaml -> pyrpmd-0.2.0/packaging/conda
+copying src/PyRPMD.egg-info/PKG-INFO -> pyrpmd-0.2.0/src/PyRPMD.egg-info
+copying src/PyRPMD.egg-info/SOURCES.txt -> pyrpmd-0.2.0/src/PyRPMD.egg-info
+copying src/PyRPMD.egg-info/dependency_links.txt -> pyrpmd-0.2.0/src/PyRPMD.egg-info
+copying src/PyRPMD.egg-info/entry_points.txt -> pyrpmd-0.2.0/src/PyRPMD.egg-info
+copying src/PyRPMD.egg-info/requires.txt -> pyrpmd-0.2.0/src/PyRPMD.egg-info
+copying src/PyRPMD.egg-info/top_level.txt -> pyrpmd-0.2.0/src/PyRPMD.egg-info
+copying src/pyrpmd/__init__.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/__main__.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/_matrix_path.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/barostat.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/batched.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/bias.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/block_propagation.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/bond_constraints.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/checkpoint.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/cli.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/constants.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/cv.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/cv_periodic.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/dynamics.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/electronic_friction.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/geometry.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/initial_states.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/input.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/instanton.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/io.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/isomorphic.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/kc_rpmd.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/multitime.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/mv_rpmd.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/native_ensemble.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/nonadiabatic.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/opes.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/path_integral.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/pcet.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/pcet_input.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/plumed.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/propagation.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/quantum_statistics.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/reactions.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/runner.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/scaffold.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/studies.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/surface_hopping.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/system.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/thermal_nrpmd.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/thermostats.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/trajectory.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/trajectory_export.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/transition_interface.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/units.py -> pyrpmd-0.2.0/src/pyrpmd
+copying src/pyrpmd/analysis/__init__.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/diagnostics.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/diffusion.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/fes.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/metadynamics.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/projection.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/rate_io.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/rate_postprocess.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/recrossing.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_compare.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_observables.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_render.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_sampling.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/reporting.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/scattering.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/spectroscopy.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/analysis/surface.py -> pyrpmd-0.2.0/src/pyrpmd/analysis
+copying src/pyrpmd/electrochemistry/__init__.py -> pyrpmd-0.2.0/src/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/kinetics.py -> pyrpmd-0.2.0/src/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/potentials.py -> pyrpmd-0.2.0/src/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/reservoir.py -> pyrpmd-0.2.0/src/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/sampling.py -> pyrpmd-0.2.0/src/pyrpmd/electrochemistry
+copying src/pyrpmd/parallel/__init__.py -> pyrpmd-0.2.0/src/pyrpmd/parallel
+copying src/pyrpmd/parallel/execution.py -> pyrpmd-0.2.0/src/pyrpmd/parallel
+copying src/pyrpmd/pesgen/__init__.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/__main__.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/build.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/formats.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/jaxpip_data.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/jaxpip_export.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/jaxpip_fit.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/reference.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/workflow.py -> pyrpmd-0.2.0/src/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/_native/bridge.cpp -> pyrpmd-0.2.0/src/pyrpmd/pesgen/_native
+copying src/pyrpmd/pesgen/_native/pes_api_v1.h -> pyrpmd-0.2.0/src/pyrpmd/pesgen/_native
+copying src/pyrpmd/pesgen/_native/worker.f90 -> pyrpmd-0.2.0/src/pyrpmd/pesgen/_native
+copying src/pyrpmd/potentials/__init__.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/adapters.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/base.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/builtin.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/cabi.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/cache.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/contraction.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/diabatic.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/lammps.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/native.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/openmm.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/optional.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/python.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/potentials/socket.py -> pyrpmd-0.2.0/src/pyrpmd/potentials
+copying src/pyrpmd/templates/quickstart.inp -> pyrpmd-0.2.0/src/pyrpmd/templates
+copying src/pyrpmd/workflows/__init__.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/adaptive_umbrella.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/batched_recrossing.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/drpmd.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/extend.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/fes.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/materials.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/metadynamics.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/native_pimd.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/network.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/opes.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/pcet.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/prepare.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/rate.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/replica_exchange.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/sampling.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/site_rate.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/state_selected.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/surface.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying src/pyrpmd/workflows/surface_source.py -> pyrpmd-0.2.0/src/pyrpmd/workflows
+copying tests/mpi_adaptive_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_dynamic_integration.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_engine_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_exchange_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_integration.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_materials_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_opes_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_surface_extensions_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_surface_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/mpi_workflow_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/package_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/test_adaptive_umbrella.py -> pyrpmd-0.2.0/tests
+copying tests/test_analysis_efficiency.py -> pyrpmd-0.2.0/tests
+copying tests/test_ase_force_consistency.py -> pyrpmd-0.2.0/tests
+copying tests/test_atomic_json.py -> pyrpmd-0.2.0/tests
+copying tests/test_barostat.py -> pyrpmd-0.2.0/tests
+copying tests/test_batched_dynamics.py -> pyrpmd-0.2.0/tests
+copying tests/test_batched_recrossing.py -> pyrpmd-0.2.0/tests
+copying tests/test_bond_constraints.py -> pyrpmd-0.2.0/tests
+copying tests/test_brhcl_channels.py -> pyrpmd-0.2.0/tests
+copying tests/test_brhcl_pes.py -> pyrpmd-0.2.0/tests
+copying tests/test_brhcl_plan.py -> pyrpmd-0.2.0/tests
+copying tests/test_brhcl_reference.py -> pyrpmd-0.2.0/tests
+copying tests/test_brhcl_sampling.py -> pyrpmd-0.2.0/tests
+copying tests/test_brhcl_scan.py -> pyrpmd-0.2.0/tests
+copying tests/test_cabi_lifecycle.py -> pyrpmd-0.2.0/tests
+copying tests/test_cabi_v2.py -> pyrpmd-0.2.0/tests
+copying tests/test_checkpoint.py -> pyrpmd-0.2.0/tests
+copying tests/test_cli_native.py -> pyrpmd-0.2.0/tests
+copying tests/test_cli_pes_validation.py -> pyrpmd-0.2.0/tests
+copying tests/test_cli_ux.py -> pyrpmd-0.2.0/tests
+copying tests/test_combined_integration.py -> pyrpmd-0.2.0/tests
+copying tests/test_complex_nonadiabatic.py -> pyrpmd-0.2.0/tests
+copying tests/test_constraint_workflow_guards.py -> pyrpmd-0.2.0/tests
+copying tests/test_cv_efficiency.py -> pyrpmd-0.2.0/tests
+copying tests/test_cv_fes.py -> pyrpmd-0.2.0/tests
+copying tests/test_diffusion_analysis.py -> pyrpmd-0.2.0/tests
+copying tests/test_drpmd.py -> pyrpmd-0.2.0/tests
+copying tests/test_drpmd_checkpoint_clock.py -> pyrpmd-0.2.0/tests
+copying tests/test_drpmd_classifier_optimization.py -> pyrpmd-0.2.0/tests
+copying tests/test_drpmd_extend.py -> pyrpmd-0.2.0/tests
+copying tests/test_drpmd_native_workflow.py -> pyrpmd-0.2.0/tests
+copying tests/test_drpmd_propagation_resume.py -> pyrpmd-0.2.0/tests
+copying tests/test_dynamic_scheduling.py -> pyrpmd-0.2.0/tests
+copying tests/test_dynamics.py -> pyrpmd-0.2.0/tests
+copying tests/test_dynamics_validation.py -> pyrpmd-0.2.0/tests
+copying tests/test_electrochemistry_integration.py -> pyrpmd-0.2.0/tests
+copying tests/test_electrochemistry_kinetics.py -> pyrpmd-0.2.0/tests
+copying tests/test_electrochemistry_potentials.py -> pyrpmd-0.2.0/tests
+copying tests/test_electrochemistry_sampling.py -> pyrpmd-0.2.0/tests
+copying tests/test_electronic_friction.py -> pyrpmd-0.2.0/tests
+copying tests/test_electronic_friction_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_equivalent_surfaces.py -> pyrpmd-0.2.0/tests
+copying tests/test_exchange_bootstrap.py -> pyrpmd-0.2.0/tests
+copying tests/test_feature_integration.py -> pyrpmd-0.2.0/tests
+copying tests/test_fes_block_sampling.py -> pyrpmd-0.2.0/tests
+copying tests/test_fes_bootstrap_support.py -> pyrpmd-0.2.0/tests
+copying tests/test_fes_correlation.py -> pyrpmd-0.2.0/tests
+copying tests/test_fes_extra_correlation.py -> pyrpmd-0.2.0/tests
+copying tests/test_fes_pile_l.py -> pyrpmd-0.2.0/tests
+copying tests/test_fes_rpmdrate_fixed_initialization.py -> pyrpmd-0.2.0/tests
+copying tests/test_force_buffer_ownership.py -> pyrpmd-0.2.0/tests
+copying tests/test_fused_propagation.py -> pyrpmd-0.2.0/tests
+copying tests/test_general_coordinate_rates.py -> pyrpmd-0.2.0/tests
+copying tests/test_generic_fortran_binding.py -> pyrpmd-0.2.0/tests
+copying tests/test_grid_bias_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_grid_metadynamics.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_benchmark_integrity.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_convergence.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_convergence_report.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_diatomic_action.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_diatomic_switch.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_pes.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_pmf_diagnostics.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_preparation_analysis.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_preparation_archive.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_preparation_audit.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_preparation_report.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_preparation_study.py -> pyrpmd-0.2.0/tests
+copying tests/test_h3_rate_postprocess.py -> pyrpmd-0.2.0/tests
+copying tests/test_hho2_channels.py -> pyrpmd-0.2.0/tests
+copying tests/test_hho2_scan.py -> pyrpmd-0.2.0/tests
+copying tests/test_initial_states.py -> pyrpmd-0.2.0/tests
+copying tests/test_input_cli.py -> pyrpmd-0.2.0/tests
+copying tests/test_input_preflight.py -> pyrpmd-0.2.0/tests
+copying tests/test_instanton.py -> pyrpmd-0.2.0/tests
+copying tests/test_integrator_workflows.py -> pyrpmd-0.2.0/tests
+copying tests/test_integrators.py -> pyrpmd-0.2.0/tests
+copying tests/test_ipi_clients.py -> pyrpmd-0.2.0/tests
+copying tests/test_isomorphic.py -> pyrpmd-0.2.0/tests
+copying tests/test_jaxpip_export_link.py -> pyrpmd-0.2.0/tests
+copying tests/test_jaxpip_pesgen.py -> pyrpmd-0.2.0/tests
+copying tests/test_kc_rpmd.py -> pyrpmd-0.2.0/tests
+copying tests/test_lammps_provider.py -> pyrpmd-0.2.0/tests
+copying tests/test_literature_evidence.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_eam.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_efficiency.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_extensions.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_input_cv.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_integration_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_stream_failures.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_stream_validation.py -> pyrpmd-0.2.0/tests
+copying tests/test_materials_workflows.py -> pyrpmd-0.2.0/tests
+copying tests/test_mbar_rate_analysis.py -> pyrpmd-0.2.0/tests
+copying tests/test_metadynamics.py -> pyrpmd-0.2.0/tests
+copying tests/test_metadynamics_cv_identity.py -> pyrpmd-0.2.0/tests
+copying tests/test_mv_rpmd.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_block_compatibility.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_ensemble_portability.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_ensembles.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_observation_validation.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_outcomes.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_override_compatibility.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_pimd_followup.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_pimd_integration_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_pimd_preflight.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_propagation.py -> pyrpmd-0.2.0/tests
+copying tests/test_native_sampling.py -> pyrpmd-0.2.0/tests
+copying tests/test_nonadiabatic.py -> pyrpmd-0.2.0/tests
+copying tests/test_nonadiabatic_method_invariants.py -> pyrpmd-0.2.0/tests
+copying tests/test_nonadiabatic_public_extensions.py -> pyrpmd-0.2.0/tests
+copying tests/test_nrpmd_contraction.py -> pyrpmd-0.2.0/tests
+copying tests/test_nrpmd_input.py -> pyrpmd-0.2.0/tests
+copying tests/test_nrpmd_integration.py -> pyrpmd-0.2.0/tests
+copying tests/test_nrpmd_workflow.py -> pyrpmd-0.2.0/tests
+copying tests/test_onnx_native.py -> pyrpmd-0.2.0/tests
+copying tests/test_openmm_provider.py -> pyrpmd-0.2.0/tests
+copying tests/test_opes.py -> pyrpmd-0.2.0/tests
+copying tests/test_parallel.py -> pyrpmd-0.2.0/tests
+copying tests/test_path_integral.py -> pyrpmd-0.2.0/tests
+copying tests/test_pcet_science.py -> pyrpmd-0.2.0/tests
+copying tests/test_pcet_workflow.py -> pyrpmd-0.2.0/tests
+copying tests/test_periodic_basis_reduction.py -> pyrpmd-0.2.0/tests
+copying tests/test_periodic_geometry_cache.py -> pyrpmd-0.2.0/tests
+copying tests/test_periodic_materials.py -> pyrpmd-0.2.0/tests
+copying tests/test_pesgen.py -> pyrpmd-0.2.0/tests
+copying tests/test_pesgen_bridge_failures.py -> pyrpmd-0.2.0/tests
+copying tests/test_pesgen_native.py -> pyrpmd-0.2.0/tests
+copying tests/test_plumed.py -> pyrpmd-0.2.0/tests
+copying tests/test_pmf_1d_accuracy.py -> pyrpmd-0.2.0/tests
+copying tests/test_pmf_2d_accuracy.py -> pyrpmd-0.2.0/tests
+copying tests/test_pmf_sampling_accuracy.py -> pyrpmd-0.2.0/tests
+copying tests/test_potential_adapters.py -> pyrpmd-0.2.0/tests
+copying tests/test_potential_diagnostics.py -> pyrpmd-0.2.0/tests
+copying tests/test_potential_energy_identity.py -> pyrpmd-0.2.0/tests
+copying tests/test_potential_input_v2.py -> pyrpmd-0.2.0/tests
+copying tests/test_potentials.py -> pyrpmd-0.2.0/tests
+copying tests/test_prepare_buffer_ownership.py -> pyrpmd-0.2.0/tests
+copying tests/test_projection_io.py -> pyrpmd-0.2.0/tests
+copying tests/test_published_rate_comparison.py -> pyrpmd-0.2.0/tests
+copying tests/test_python_potential_defensive_checks.py -> pyrpmd-0.2.0/tests
+copying tests/test_python_potential_rebinding.py -> pyrpmd-0.2.0/tests
+copying tests/test_qtip4pf_benchmark.py -> pyrpmd-0.2.0/tests
+copying tests/test_quantum_statistics.py -> pyrpmd-0.2.0/tests
+copying tests/test_rate_mbar_backend.py -> pyrpmd-0.2.0/tests
+copying tests/test_rate_postprocess_core.py -> pyrpmd-0.2.0/tests
+copying tests/test_rate_postprocess_docs.py -> pyrpmd-0.2.0/tests
+copying tests/test_rate_postprocess_io.py -> pyrpmd-0.2.0/tests
+copying tests/test_rate_postprocess_science.py -> pyrpmd-0.2.0/tests
+copying tests/test_rate_workflows.py -> pyrpmd-0.2.0/tests
+copying tests/test_reaction_network.py -> pyrpmd-0.2.0/tests
+copying tests/test_recrossing_statistics.py -> pyrpmd-0.2.0/tests
+copying tests/test_replica_exchange.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_data_validation.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_followup_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_observables.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_render.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_render_validation.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_sampling.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_sampling_validation.py -> pyrpmd-0.2.0/tests
+copying tests/test_report_workflow_e2e.py -> pyrpmd-0.2.0/tests
+copying tests/test_reporting.py -> pyrpmd-0.2.0/tests
+copying tests/test_reweighting_reuse.py -> pyrpmd-0.2.0/tests
+copying tests/test_rpc_mts.py -> pyrpmd-0.2.0/tests
+copying tests/test_runner_ux.py -> pyrpmd-0.2.0/tests
+copying tests/test_sampling_public_api.py -> pyrpmd-0.2.0/tests
+copying tests/test_scattering_analysis.py -> pyrpmd-0.2.0/tests
+copying tests/test_site_rate.py -> pyrpmd-0.2.0/tests
+copying tests/test_state_selected_check.py -> pyrpmd-0.2.0/tests
+copying tests/test_state_selected_input.py -> pyrpmd-0.2.0/tests
+copying tests/test_state_selected_native.py -> pyrpmd-0.2.0/tests
+copying tests/test_state_selected_workflow.py -> pyrpmd-0.2.0/tests
+copying tests/test_studies.py -> pyrpmd-0.2.0/tests
+copying tests/test_study_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_adaptive.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_analysis.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_area_normalization.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_dynamics.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_examples.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_extensions.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_geometry.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_hopping.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_source.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_uncertainty.py -> pyrpmd-0.2.0/tests
+copying tests/test_surface_workflow.py -> pyrpmd-0.2.0/tests
+copying tests/test_system_units.py -> pyrpmd-0.2.0/tests
+copying tests/test_task_potential_reuse.py -> pyrpmd-0.2.0/tests
+copying tests/test_thermal_nrpmd.py -> pyrpmd-0.2.0/tests
+copying tests/test_thermostats.py -> pyrpmd-0.2.0/tests
+copying tests/test_tier1_independent_review.py -> pyrpmd-0.2.0/tests
+copying tests/test_tier1_input.py -> pyrpmd-0.2.0/tests
+copying tests/test_torch_periodic.py -> pyrpmd-0.2.0/tests
+copying tests/test_trajectory_export.py -> pyrpmd-0.2.0/tests
+copying tests/test_trajectory_stream.py -> pyrpmd-0.2.0/tests
+copying tests/test_transition_interface.py -> pyrpmd-0.2.0/tests
+copying tests/test_trpmd_rates.py -> pyrpmd-0.2.0/tests
+copying tests/test_trpmd_spectroscopy.py -> pyrpmd-0.2.0/tests
+copying tests/test_worker_thread_limits.py -> pyrpmd-0.2.0/tests
+copying tests/wheel_smoke.py -> pyrpmd-0.2.0/tests
+copying tests/onnx/jaxpip_roundtrip.py -> pyrpmd-0.2.0/tests/onnx
+copying tools/export_jaxpip_onnx.py -> pyrpmd-0.2.0/tools
+copying tools/requirements-jaxpip-export.txt -> pyrpmd-0.2.0/tools
+Writing pyrpmd-0.2.0/setup.cfg
+Creating tar archive
+removing 'pyrpmd-0.2.0' (and everything under it)
+* Building wheel from sdist
+* Creating isolated environment: venv+pip...
+* Installing packages in isolated environment:
+  - setuptools>=77
+  - wheel
+* Getting build dependencies for wheel...
+running egg_info
+writing src/PyRPMD.egg-info/PKG-INFO
+writing dependency_links to src/PyRPMD.egg-info/dependency_links.txt
+writing entry points to src/PyRPMD.egg-info/entry_points.txt
+writing requirements to src/PyRPMD.egg-info/requires.txt
+writing top-level names to src/PyRPMD.egg-info/top_level.txt
+reading manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'docs/validation/tier1-2026-10-31/*.npz'
+no previously-included directories found matching 'docs/_build'
+no previously-included directories found matching 'benchmarks/brhcl/build'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+warning: no previously-included files matching '*.o' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'THIRD_PARTY_NOTICES.md'
+adding license file 'native/thermal-NOTICE.md'
+writing manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+* Installed build dependency versions:
+  - setuptools==84.2.1
+  - wheel==0.48.0
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/block_propagation.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/trajectory_export.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/pcet.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/native_ensemble.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/path_integral.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/system.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/propagation.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/nonadiabatic.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/dynamics.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/kc_rpmd.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/studies.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/multitime.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/cli.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/instanton.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/units.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/barostat.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/initial_states.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/isomorphic.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/thermostats.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/trajectory.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/reactions.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/pcet_input.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/surface_hopping.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/electronic_friction.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/__main__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/cv_periodic.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/_matrix_path.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/bias.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/__init__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/checkpoint.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/opes.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/scaffold.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/geometry.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/input.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/plumed.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/transition_interface.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/batched.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/constants.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/thermal_nrpmd.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/runner.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/mv_rpmd.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/io.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/cv.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/quantum_statistics.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+copying src/pyrpmd/bond_constraints.py -> build/lib.linux-x86_64-cpython-312/pyrpmd
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/reservoir.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/potentials.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/__init__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/kinetics.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry
+copying src/pyrpmd/electrochemistry/sampling.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/rate.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/adaptive_umbrella.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/pcet.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/native_pimd.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/prepare.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/network.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/site_rate.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/replica_exchange.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/fes.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/state_selected.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/surface_source.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/__init__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/surface.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/opes.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/extend.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/batched_recrossing.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/materials.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/drpmd.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/metadynamics.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+copying src/pyrpmd/workflows/sampling.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/workflows
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/parallel
+copying src/pyrpmd/parallel/__init__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/parallel
+copying src/pyrpmd/parallel/execution.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/parallel
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/openmm.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/base.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/contraction.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/native.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/cabi.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/cache.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/lammps.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/socket.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/adapters.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/__init__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/optional.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/diabatic.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/python.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+copying src/pyrpmd/potentials/builtin.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/potentials
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/jaxpip_data.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/jaxpip_fit.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/__main__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/jaxpip_export.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/__init__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/reference.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/build.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/formats.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+copying src/pyrpmd/pesgen/workflow.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/spectroscopy.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_observables.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/recrossing.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/scattering.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/fes.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/diagnostics.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_compare.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/rate_postprocess.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_sampling.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/diffusion.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/projection.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/__init__.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/surface.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/report_render.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/reporting.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/metadynamics.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+copying src/pyrpmd/analysis/rate_io.py -> build/lib.linux-x86_64-cpython-312/pyrpmd/analysis
+running egg_info
+writing src/PyRPMD.egg-info/PKG-INFO
+writing dependency_links to src/PyRPMD.egg-info/dependency_links.txt
+writing entry points to src/PyRPMD.egg-info/entry_points.txt
+writing requirements to src/PyRPMD.egg-info/requires.txt
+writing top-level names to src/PyRPMD.egg-info/top_level.txt
+reading manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+warning: no previously-included files found matching 'docs/validation/tier1-2026-10-31/*.npz'
+no previously-included directories found matching 'docs/_build'
+no previously-included directories found matching 'benchmarks/brhcl/build'
+warning: no previously-included files matching '__pycache__' found anywhere in distribution
+warning: no previously-included files matching '*.py[cod]' found anywhere in distribution
+warning: no previously-included files matching '*.so' found anywhere in distribution
+warning: no previously-included files matching '*.o' found anywhere in distribution
+adding license file 'LICENSE'
+adding license file 'THIRD_PARTY_NOTICES.md'
+adding license file 'native/thermal-NOTICE.md'
+writing manifest file 'src/PyRPMD.egg-info/SOURCES.txt'
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/templates
+copying src/pyrpmd/templates/quickstart.inp -> build/lib.linux-x86_64-cpython-312/pyrpmd/templates
+creating build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native
+copying src/pyrpmd/pesgen/_native/bridge.cpp -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native
+copying src/pyrpmd/pesgen/_native/worker.f90 -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native
+copying src/pyrpmd/pesgen/_native/pes_api_v1.h -> build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native
+running build_ext
+building 'pyrpmd._native' extension
+/usr/bin/c++ -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIC -fPIC -I/tmp/build-env-tfklz9_b/include -I/opt/codex/runtimes/codex-primary-runtime/dependencies/python/include/python3.12 -c native/cayley.cpp -o build/temp.linux-x86_64-cpython-312/native/cayley.o -O3 -std=c++17 -fopenmp
+/usr/bin/c++ -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIC -pthread -shared -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--build-id=sha1 -Wl,--exclude-libs,ALL build/temp.linux-x86_64-cpython-312/native/cayley.o -L/install/lib -o build/lib.linux-x86_64-cpython-312/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so -fopenmp
+building 'pyrpmd._thermal' extension
+/usr/bin/c++ -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIC -fPIC -I/tmp/build-env-tfklz9_b/include -I/opt/codex/runtimes/codex-primary-runtime/dependencies/python/include/python3.12 -c native/thermal.cpp -o build/temp.linux-x86_64-cpython-312/native/thermal.o -O3 -std=c++17 -fopenmp
+/usr/bin/c++ -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -fstack-protector -fstack-clash-protection -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -fPIC -pthread -shared -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--build-id=sha1 -Wl,--exclude-libs,ALL build/temp.linux-x86_64-cpython-312/native/thermal.o -L/install/lib -o build/lib.linux-x86_64-cpython-312/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so -fopenmp
+installing to build/bdist.linux-x86_64/wheel
+running install
+running install_lib
+creating build/bdist.linux-x86_64/wheel
+creating build/bdist.linux-x86_64/wheel/pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/block_propagation.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/trajectory_export.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pcet.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/native_ensemble.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/path_integral.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/system.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/propagation.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/nonadiabatic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/dynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/kc_rpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/studies.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/multitime.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/cli.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/instanton.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/reservoir.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/potentials.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/kinetics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electrochemistry/sampling.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/electrochemistry
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/units.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/barostat.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/initial_states.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/isomorphic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/thermostats.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/trajectory.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/reactions.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pcet_input.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/templates
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/templates/quickstart.inp -> build/bdist.linux-x86_64/wheel/./pyrpmd/templates
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/surface_hopping.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/rate.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/adaptive_umbrella.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/pcet.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/native_pimd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/prepare.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/network.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/site_rate.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/replica_exchange.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/fes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/state_selected.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/surface_source.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/surface.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/opes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/extend.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/batched_recrossing.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/materials.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/drpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/metadynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/workflows/sampling.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/workflows
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/electronic_friction.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/__main__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/parallel
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/parallel/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/parallel
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/parallel/execution.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/parallel
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/cv_periodic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/_matrix_path.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/bias.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/checkpoint.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/opes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/scaffold.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/geometry.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/input.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/plumed.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/transition_interface.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/batched.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/constants.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/openmm.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/base.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/contraction.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/native.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/cabi.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/cache.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/lammps.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/socket.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/adapters.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/optional.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/diabatic.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/python.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/potentials/builtin.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/potentials
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/thermal_nrpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/jaxpip_data.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/jaxpip_fit.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/__main__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/jaxpip_export.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+creating build/bdist.linux-x86_64/wheel/pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native/bridge.cpp -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native/worker.f90 -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/_native/pes_api_v1.h -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen/_native
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/reference.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/build.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/formats.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/pesgen/workflow.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/pesgen
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/runner.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/spectroscopy.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_observables.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/recrossing.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/scattering.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/fes.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/diagnostics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_compare.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/rate_postprocess.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_sampling.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/diffusion.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/projection.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/__init__.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/surface.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/report_render.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/reporting.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/metadynamics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/analysis/rate_io.py -> build/bdist.linux-x86_64/wheel/./pyrpmd/analysis
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/mv_rpmd.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/io.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/cv.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/quantum_statistics.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+copying build/lib.linux-x86_64-cpython-312/pyrpmd/bond_constraints.py -> build/bdist.linux-x86_64/wheel/./pyrpmd
+running install_data
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+copying native/include/pyrpmd/pes_api_v1.h -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+copying native/include/pyrpmd/pes_api_v2.h -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+copying native/include/pyrpmd/thermal_pes.h -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/include/pyrpmd
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/share/pyrpmd/examples
+copying native/examples/harmonic_pes.c -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/share/pyrpmd/examples
+copying native/examples/periodic_cosine_pes.c -> build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.data/data/share/pyrpmd/examples
+running install_egg_info
+Copying src/PyRPMD.egg-info to build/bdist.linux-x86_64/wheel/./PyRPMD-0.2.0-py3.12.egg-info
+running install_scripts
+creating build/bdist.linux-x86_64/wheel/pyrpmd-0.2.0.dist-info/WHEEL
+creating '/workspace/scratch/a5e4820daedd/distribution-check/final/.tmp-gd78b01k/pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl' and adding 'build/bdist.linux-x86_64/wheel' to it
+adding 'pyrpmd/__init__.py'
+adding 'pyrpmd/__main__.py'
+adding 'pyrpmd/_matrix_path.py'
+adding 'pyrpmd/_native.cpython-312-x86_64-linux-gnu.so'
+adding 'pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so'
+adding 'pyrpmd/barostat.py'
+adding 'pyrpmd/batched.py'
+adding 'pyrpmd/bias.py'
+adding 'pyrpmd/block_propagation.py'
+adding 'pyrpmd/bond_constraints.py'
+adding 'pyrpmd/checkpoint.py'
+adding 'pyrpmd/cli.py'
+adding 'pyrpmd/constants.py'
+adding 'pyrpmd/cv.py'
+adding 'pyrpmd/cv_periodic.py'
+adding 'pyrpmd/dynamics.py'
+adding 'pyrpmd/electronic_friction.py'
+adding 'pyrpmd/geometry.py'
+adding 'pyrpmd/initial_states.py'
+adding 'pyrpmd/input.py'
+adding 'pyrpmd/instanton.py'
+adding 'pyrpmd/io.py'
+adding 'pyrpmd/isomorphic.py'
+adding 'pyrpmd/kc_rpmd.py'
+adding 'pyrpmd/multitime.py'
+adding 'pyrpmd/mv_rpmd.py'
+adding 'pyrpmd/native_ensemble.py'
+adding 'pyrpmd/nonadiabatic.py'
+adding 'pyrpmd/opes.py'
+adding 'pyrpmd/path_integral.py'
+adding 'pyrpmd/pcet.py'
+adding 'pyrpmd/pcet_input.py'
+adding 'pyrpmd/plumed.py'
+adding 'pyrpmd/propagation.py'
+adding 'pyrpmd/quantum_statistics.py'
+adding 'pyrpmd/reactions.py'
+adding 'pyrpmd/runner.py'
+adding 'pyrpmd/scaffold.py'
+adding 'pyrpmd/studies.py'
+adding 'pyrpmd/surface_hopping.py'
+adding 'pyrpmd/system.py'
+adding 'pyrpmd/thermal_nrpmd.py'
+adding 'pyrpmd/thermostats.py'
+adding 'pyrpmd/trajectory.py'
+adding 'pyrpmd/trajectory_export.py'
+adding 'pyrpmd/transition_interface.py'
+adding 'pyrpmd/units.py'
+adding 'pyrpmd/analysis/__init__.py'
+adding 'pyrpmd/analysis/diagnostics.py'
+adding 'pyrpmd/analysis/diffusion.py'
+adding 'pyrpmd/analysis/fes.py'
+adding 'pyrpmd/analysis/metadynamics.py'
+adding 'pyrpmd/analysis/projection.py'
+adding 'pyrpmd/analysis/rate_io.py'
+adding 'pyrpmd/analysis/rate_postprocess.py'
+adding 'pyrpmd/analysis/recrossing.py'
+adding 'pyrpmd/analysis/report_compare.py'
+adding 'pyrpmd/analysis/report_observables.py'
+adding 'pyrpmd/analysis/report_render.py'
+adding 'pyrpmd/analysis/report_sampling.py'
+adding 'pyrpmd/analysis/reporting.py'
+adding 'pyrpmd/analysis/scattering.py'
+adding 'pyrpmd/analysis/spectroscopy.py'
+adding 'pyrpmd/analysis/surface.py'
+adding 'pyrpmd/electrochemistry/__init__.py'
+adding 'pyrpmd/electrochemistry/kinetics.py'
+adding 'pyrpmd/electrochemistry/potentials.py'
+adding 'pyrpmd/electrochemistry/reservoir.py'
+adding 'pyrpmd/electrochemistry/sampling.py'
+adding 'pyrpmd/parallel/__init__.py'
+adding 'pyrpmd/parallel/execution.py'
+adding 'pyrpmd/pesgen/__init__.py'
+adding 'pyrpmd/pesgen/__main__.py'
+adding 'pyrpmd/pesgen/build.py'
+adding 'pyrpmd/pesgen/formats.py'
+adding 'pyrpmd/pesgen/jaxpip_data.py'
+adding 'pyrpmd/pesgen/jaxpip_export.py'
+adding 'pyrpmd/pesgen/jaxpip_fit.py'
+adding 'pyrpmd/pesgen/reference.py'
+adding 'pyrpmd/pesgen/workflow.py'
+adding 'pyrpmd/pesgen/_native/bridge.cpp'
+adding 'pyrpmd/pesgen/_native/pes_api_v1.h'
+adding 'pyrpmd/pesgen/_native/worker.f90'
+adding 'pyrpmd/potentials/__init__.py'
+adding 'pyrpmd/potentials/adapters.py'
+adding 'pyrpmd/potentials/base.py'
+adding 'pyrpmd/potentials/builtin.py'
+adding 'pyrpmd/potentials/cabi.py'
+adding 'pyrpmd/potentials/cache.py'
+adding 'pyrpmd/potentials/contraction.py'
+adding 'pyrpmd/potentials/diabatic.py'
+adding 'pyrpmd/potentials/lammps.py'
+adding 'pyrpmd/potentials/native.py'
+adding 'pyrpmd/potentials/openmm.py'
+adding 'pyrpmd/potentials/optional.py'
+adding 'pyrpmd/potentials/python.py'
+adding 'pyrpmd/potentials/socket.py'
+adding 'pyrpmd/templates/quickstart.inp'
+adding 'pyrpmd/workflows/__init__.py'
+adding 'pyrpmd/workflows/adaptive_umbrella.py'
+adding 'pyrpmd/workflows/batched_recrossing.py'
+adding 'pyrpmd/workflows/drpmd.py'
+adding 'pyrpmd/workflows/extend.py'
+adding 'pyrpmd/workflows/fes.py'
+adding 'pyrpmd/workflows/materials.py'
+adding 'pyrpmd/workflows/metadynamics.py'
+adding 'pyrpmd/workflows/native_pimd.py'
+adding 'pyrpmd/workflows/network.py'
+adding 'pyrpmd/workflows/opes.py'
+adding 'pyrpmd/workflows/pcet.py'
+adding 'pyrpmd/workflows/prepare.py'
+adding 'pyrpmd/workflows/rate.py'
+adding 'pyrpmd/workflows/replica_exchange.py'
+adding 'pyrpmd/workflows/sampling.py'
+adding 'pyrpmd/workflows/site_rate.py'
+adding 'pyrpmd/workflows/state_selected.py'
+adding 'pyrpmd/workflows/surface.py'
+adding 'pyrpmd/workflows/surface_source.py'
+adding 'pyrpmd-0.2.0.data/data/include/pyrpmd/pes_api_v1.h'
+adding 'pyrpmd-0.2.0.data/data/include/pyrpmd/pes_api_v2.h'
+adding 'pyrpmd-0.2.0.data/data/include/pyrpmd/thermal_pes.h'
+adding 'pyrpmd-0.2.0.data/data/share/pyrpmd/examples/harmonic_pes.c'
+adding 'pyrpmd-0.2.0.data/data/share/pyrpmd/examples/periodic_cosine_pes.c'
+adding 'pyrpmd-0.2.0.dist-info/licenses/LICENSE'
+adding 'pyrpmd-0.2.0.dist-info/licenses/THIRD_PARTY_NOTICES.md'
+adding 'pyrpmd-0.2.0.dist-info/licenses/native/thermal-NOTICE.md'
+adding 'pyrpmd-0.2.0.dist-info/METADATA'
+adding 'pyrpmd-0.2.0.dist-info/WHEEL'
+adding 'pyrpmd-0.2.0.dist-info/entry_points.txt'
+adding 'pyrpmd-0.2.0.dist-info/top_level.txt'
+adding 'pyrpmd-0.2.0.dist-info/RECORD'
+removing build/bdist.linux-x86_64/wheel
+Successfully built pyrpmd-0.2.0.tar.gz and pyrpmd-0.2.0-cp312-cp312-linux_x86_64.whl

@@ -1,0 +1,14 @@
+{
+  "status": "complete",
+  "method": "symmetric primitive transfer-matrix quadrature",
+  "physical_units": "same reduced atomic units as the Cao-Voth model",
+  "beta": 5.0,
+  "potential": "q^2/2 + 0.1*q^4",
+  "field": 0.01,
+  "centroid_bead_error_log_log_slope_P16_through_P128": -1.9806033245867565,
+  "max_grid_change_centroid_variance": 5.634603894577594e-10,
+  "max_field_extrapolation_change": 6.487255177489715e-10,
+  "runtime_seconds": 1.5417053260025568,
+  "script_sha256": "59ebea5b30749589b8876b822bb73ce6a204ff2bd396a8b4159e23fb5a8bd2d2",
+  "note": "This independently evaluates the finite-P measure; it is not another PA-CMD trajectory."
+}

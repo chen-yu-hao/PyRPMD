@@ -1,0 +1,21 @@
+{
+  "beads": 1,
+  "cells_per_axis": 6,
+  "centroid_friction_time_fs": 100.0,
+  "checkpoint_steps": 1000,
+  "cutoff_angstrom": 9.0,
+  "density_g_cm3": 0.997,
+  "dispersion_correction": false,
+  "dt_fs": 0.25,
+  "equilibration_steps": 80000,
+  "ewald_tolerance": 1e-05,
+  "initial_checkpoint": null,
+  "isotope": "H2O",
+  "platform": "CPU",
+  "record_stride": 20,
+  "seed": 541,
+  "segment_steps": 16000,
+  "segments": 2,
+  "temperature_K": 298.0,
+  "threads": 2
+}

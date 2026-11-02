@@ -1,0 +1,20 @@
+{
+  "JS_exact_frozen_to_WT": 0.04682122547375099,
+  "JS_reweighted_to_unbiased": 0.0007299276331669957,
+  "JS_sample_to_WT": 0.04810816378254945,
+  "JS_sample_to_exact_frozen": 0.001207721830512765,
+  "Kish_ESS": 14432.661261795824,
+  "adaptive_detailed_balance_claim": false,
+  "exact_unbiased_variance": 1.0,
+  "final_permuted_walker_bias_difference": 4.440892098500626e-16,
+  "hill_count": 800,
+  "maximum_simultaneous_height_error": 0.0,
+  "reweighted_mean": -0.024948667129661525,
+  "reweighted_variance": 1.0171062762704495,
+  "seed": 57859,
+  "spline_energy_error": 3.7161540511476687e-09,
+  "spline_force_error": 4.421515376051843e-08,
+  "steps_adapting_per_walker": 20000,
+  "steps_frozen_per_walker": 30000,
+  "walkers": 4
+}

@@ -1,0 +1,121 @@
+........................................................................ [  7%]
+.................................... [ 10%]
+........................................................................ [ 18%]
+..........................................ssssss........................ [ 25%]
+........................................................................ [ 32%]
+........................................................................ [ 40%]
+........................................................................ [ 47%]
+........................................................................ [ 54%]
+........................................................................ [ 61%]
+........................................................................ [ 69%]
+........................................................................ [ 76%]
+........................................................................ [ 83%]
+................................................................... [ 90%]
+....F.........Fss................................ [ 95%]
+ss............................................                           [100%]
+=================================== FAILURES ===================================
+______ PeriodicPotentialTests.test_ipi_real_cell_inverse_and_virial_wire _______
+
+self = <test_periodic_materials.PeriodicPotentialTests testMethod=test_ipi_real_cell_inverse_and_virial_wire>
+
+    def test_ipi_real_cell_inverse_and_virial_wire(self):
+        cell = np.array([[9., 0., 0.], [2., 10., 0.], [.3, .4, 12.]])
+        with self.assertRaisesRegex(ValueError, "PBC flags"):
+            IPIPotential(port=0, cell=cell, pbc=[True, True, False])
+        flags = [True, True, False]
+>       pes = IPIPotential(port=0, timeout=4, cell=cell, pbc=flags, init={"pbc": flags})
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_periodic_materials.py:163: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py313/lib/python3.13/socket.py:233: PermissionError
+________________________ SocketTests.test_ipi_protocol _________________________
+
+self = <test_potentials.SocketTests testMethod=test_ipi_protocol>
+
+    def test_ipi_protocol(self):
+>       pes = IPIPotential(port=0, timeout=5)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_potentials.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../distribution-check/unit-py313/lib/python3.13/site-packages/pyrpmd/potentials/socket.py:136: in __init__
+    self.server = socket.socket(socket.AF_UNIX if unix else socket.AF_INET, socket.SOCK_STREAM)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <socket.socket fd=-1, family=0, type=0, proto=0>
+family = <AddressFamily.AF_INET: 2>, type = <SocketKind.SOCK_STREAM: 1>
+proto = 0, fileno = None
+
+    def __init__(self, family=-1, type=-1, proto=-1, fileno=None):
+        # For user code address family and type values are IntEnum members, but
+        # for the underlying _socket.socket they're just integers. The
+        # constructor of _socket.socket converts the given argument to an
+        # integer automatically.
+        if fileno is None:
+            if family == -1:
+                family = AF_INET
+            if type == -1:
+                type = SOCK_STREAM
+            if proto == -1:
+                proto = 0
+>       _socket.socket.__init__(self, family, type, proto, fileno)
+E       PermissionError: [Errno 1] Operation not permitted
+
+../distribution-check/unit-py313/lib/python3.13/socket.py:233: PermissionError
+=============================== warnings summary ===============================
+tests/test_periodic_materials.py: 19 warnings
+tests/test_potentials.py: 45 warnings
+  /workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+tests/test_trajectory_export.py: 10 warnings
+  /workspace/scratch/a5e4820daedd/distribution-check/unit-py313/lib/python3.13/site-packages/ase/io/ulm.py:658: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (stop - start,) + self.shape[1:]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 10 durations =============================
+9.33s call     tests/test_dynamics.py::ThermalTests::test_bcocb_harmonic_configuration
+9.26s call     tests/test_native_ensembles.py::test_ideal_gas_npt_volume_distribution[bzp-4]
+9.26s call     tests/test_native_ensembles.py::test_ideal_gas_npt_volume_distribution[mttk-4]
+7.55s call     tests/test_path_integral.py::test_open_sampler_end_to_end_matches_finite_bead_gaussian
+7.42s call     tests/test_path_integral.py::test_closed_sampler_targets_harmonic_centroid_and_is_reproducible
+2.60s call     tests/test_native_ensembles.py::test_ideal_gas_npt_volume_distribution[mttk-1]
+2.49s call     tests/test_trajectory_stream.py::test_writing_does_not_retain_a_frame_history_in_memory
+2.06s call     tests/test_thermostats.py::test_nhc_harmonic_extended_energy_and_time_reversal
+2.05s call     tests/test_native_ensembles.py::test_ideal_gas_npt_volume_distribution[bzp-1]
+1.68s call     tests/test_bond_constraints.py::test_rigid_water_triangle_preserves_angular_momentum_and_all_three_distances
+=========================== short test summary info ============================
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [2] ../distribution-check/unit-py313/lib/python3.13/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+SKIPPED [2] tests/test_trajectory_export.py:92: could not import 'MDAnalysis': No module named 'MDAnalysis'
+FAILED tests/test_periodic_materials.py::PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire
+FAILED tests/test_potentials.py::SocketTests::test_ipi_protocol - PermissionE...
+2 failed, 978 passed, 10 skipped, 74 warnings, 64 subtests passed in 102.72s (0:01:42)

@@ -1,0 +1,38 @@
+[
+  {
+    "method": "primitive",
+    "beta": 1.0,
+    "fitted_order": 1.9996717435438276,
+    "fit_beads": "16,32,64,128"
+  },
+  {
+    "method": "suzuki_chin",
+    "beta": 1.0,
+    "fitted_order": 4.0029592792222495,
+    "fit_beads": "16,32,64,128"
+  },
+  {
+    "method": "primitive",
+    "beta": 4.0,
+    "fitted_order": 1.9946741967833757,
+    "fit_beads": "16,32,64,128"
+  },
+  {
+    "method": "suzuki_chin",
+    "beta": 4.0,
+    "fitted_order": 3.9905290567794003,
+    "fit_beads": "16,32,64,128"
+  },
+  {
+    "method": "primitive",
+    "beta": 10.0,
+    "fitted_order": 1.9681691501603011,
+    "fit_beads": "16,32,64,128"
+  },
+  {
+    "method": "suzuki_chin",
+    "beta": 10.0,
+    "fitted_order": 3.9427942665814038,
+    "fit_beads": "16,32,64,128"
+  }
+]

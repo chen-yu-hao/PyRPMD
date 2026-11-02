@@ -152,6 +152,7 @@ class MetadynamicsBias:
 
     history_dependent = True
     _signed_bias_before = False
+    _shared_clocks = False
 
     def __init__(self, cv, sigma, height, beta, *, mode="well_tempered",
                  bias_factor=None, hills=None):
@@ -275,8 +276,33 @@ class MetadynamicsBias:
             raise ValueError("invalid metadynamics hill height/time/bias")
         if isinstance(step, (bool, np.bool_)) or not isinstance(step, (int, np.integer)) or step < 1:
             raise ValueError("metadynamics hill step must be a positive integer")
-        if self._hills and (step <= self._hills[-1]["step"] or time <= self._hills[-1]["time"]):
-            raise ValueError("metadynamics hill clocks must strictly increase")
+        extra = {}
+        walker = hill.get("walker")
+        if walker is not None and (isinstance(walker, (bool, np.bool_))
+                or not isinstance(walker, (int, np.integer)) or walker < 0):
+            raise ValueError("metadynamics walker must be a nonnegative integer")
+        if walker is not None:
+            extra["walker"] = int(walker)
+        if self._shared_clocks:
+            if walker is None or walker >= self.walkers:
+                raise ValueError("shared hill requires an in-range walker index")
+            last = self._hills[-1] if self._hills else None
+            same = last is not None and step == last["step"] and time == last["time"]
+            if same:
+                if walker != last["walker"] + 1:
+                    raise ValueError("shared hills must contain each walker in order")
+            elif (walker != 0 or (last is not None and
+                    (last["walker"] != self.walkers-1 or step <= last["step"] or time <= last["time"]))):
+                raise ValueError("shared deposition clocks must increase between complete walker batches")
+        elif self._hills:
+            previous = self._hills[-1]
+            if walker is not None and "walker" in previous:
+                if ((step, walker) <= (previous["step"], previous["walker"])
+                        or (step == previous["step"] and time != previous["time"])
+                        or (step > previous["step"] and time <= previous["time"])):
+                    raise ValueError("shared metadynamics hills must increase by (step, walker) with consistent times")
+            elif step <= previous["step"] or time <= previous["time"]:
+                raise ValueError("metadynamics hill clocks must strictly increase")
         count = self.hill_count
         if count == len(self._heights):
             centers = np.empty((max(16, 2 * count), self.cv.dimension))
@@ -285,7 +311,7 @@ class MetadynamicsBias:
             self._centers, self._heights = centers, heights
         self._centers[count], self._heights[count] = center, height
         self._hills.append({"center": center.tolist(), "height": height,
-                           "step": int(step), "time": time, "bias_before": before})
+                           "step": int(step), "time": time, "bias_before": before, **extra})
 
     def truncate_history(self, count):
         """Discard hills after ``count``, for transactional step rollback."""
@@ -298,7 +324,7 @@ class MetadynamicsBias:
         """Compatibility name for :meth:`truncate_history`."""
         self.truncate_history(count)
 
-    def deposit(self, values, *, step, time):
+    def deposit(self, values, *, step, time, walker=None):
         """Add one hill after a successful integration step, without RNG use."""
         center = np.asarray(values, float)
         if center.shape != (self.cv.dimension,):
@@ -308,7 +334,8 @@ class MetadynamicsBias:
         if self.mode == "well_tempered":
             height *= np.exp(-self.beta * before / (self.bias_factor - 1.0))
         hill = {"center": center, "height": height, "step": step,
-                "time": time, "bias_before": before}
+                "time": time, "bias_before": before,
+                **({"walker": walker} if walker is not None else {})}
         self._append(hill)
         last = self._hills[-1]
         return {**last, "center": last["center"].copy()}

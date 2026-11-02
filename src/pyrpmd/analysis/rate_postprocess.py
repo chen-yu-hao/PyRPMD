@@ -12,10 +12,14 @@ and basin definitions. Every result therefore keeps ``converged=False``.
 
 from __future__ import annotations
 
+from functools import partial
+
 import numpy as np
 from scipy.special import logsumexp
 
 from ..constants import AU_RATE_TO_CM3_S
+from ..validation import checked_integer as _integer
+from ..validation import finite_positive
 from .fes import _block_resample, statistical_inefficiency
 from .recrossing import _plateau_diagnostics
 
@@ -29,20 +33,11 @@ def _real_array(value, name):
         raise ValueError(f"{name} must contain real numbers") from exc
 
 
-def _positive(value, name, *, zero=False):
-    if isinstance(value, (bool, np.bool_)) or np.ndim(value) != 0:
-        raise ValueError(f"{name} must be a finite scalar")
-    value = float(_real_array(value, name))
-    if not np.isfinite(value) or value < 0 or (not zero and value == 0):
-        raise ValueError(f"{name} must be finite and {'nonnegative' if zero else 'positive'}")
-    return value
-
-
-def _integer(value, name, minimum):
-    if (isinstance(value, (bool, np.bool_))
-            or not isinstance(value, (int, np.integer)) or value < minimum):
-        raise ValueError(f"{name} must be an integer >= {minimum}")
-    return int(value)
+_positive = partial(
+    finite_positive,
+    shape="zero_dim",
+    type_message="{name} must be a finite scalar",
+)
 
 
 class _Grid:
@@ -356,7 +351,7 @@ def channel_rates(k_tst_au, time_au, parent_numerator, parent_denominator,
     is not inferred from these records. Plateau detection is a finite-window
     diagnostic, not proof of physical convergence or product completeness.
     """
-    static = _positive(k_tst_au, "k_tst_au", zero=True)
+    static = _positive(k_tst_au, "k_tst_au", allow_zero=True)
     times = _real_array(time_au, "time_au")
     if (times.ndim != 1 or len(times) < 2 or not np.isfinite(times).all()
             or times[0] < 0 or np.any(np.diff(times) <= 0)):

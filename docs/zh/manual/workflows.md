@@ -1,6 +1,8 @@
 # 气相反应、自由能与增强采样
 
 本章介绍 `rate`、`drpmd`、`fes`、`network` 和 `metadynamics`。从仓库根目录运行命令，每个计算使用新的输出目录。
+三种 FES 方法现在统一使用 `task="fes"` 加 `[fes] method="umbrella" | "metadynamics" | "opes"`。
+公共结果、旧入口兼容、三维伞形、共享 walkers 与外部 PMF 见[统一增强采样](../enhanced-sampling.md)。
 周期材料与固定表面见[材料与表面](periodic.md)，局域电化学见 [PCET](pcet.md)，单位与归一化见[科学概念](science.md)。
 
 ## 气相 RPMD 速率：`rate`
@@ -68,6 +70,37 @@ pyrpmd resume runs/manual-rate
 数学定义见[速率约定](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/science.md)和
 [UI / MBAR 说明](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/mbar-rate-pmf.md)。
 [H₃/BKMP2 基准](https://github.com/chen-yu-hao/PyRPMD/blob/main/benchmarks/h3/README.md)在已发表的反应势能面上运行完整工作流。
+
+### 扩展固定窗口速率生产采样
+
+使用以下命令把已有伞抽样流推进到更大的生产预算：
+
+```bash
+pyrpmd extend runs/manual-rate --production-steps 200000
+pyrpmd resume runs/manual-rate
+```
+
+目标是**每个已有窗口、每个副本累计 200000 个生产步**，不含平衡阶段。例如，已完成 50000 个生产步的
+采样流将再推进 150000 步。位置、动量、随机数发生器状态和采样节奏从检查点继续。
+已有伞样本以只追加的数据块保留；原始解析输入与运行 manifest 保持不变，另行记录已授权的预算。
+
+此扩展支持使用本地伞抽样的一维固定窗口气相 `rate`，不支持自适应伞、副本交换或外部提供的 PMF。
+窗口中心、刚度、副本数及科学设置保持固定。重复最近已授权的目标会恢复中断工作或返回其完成结果；
+更小的目标会被拒绝。即使扩展已经完成，普通 `resume` 仍识别这一目标。
+
+每个严格增大的目标都会创建新一代结果：重建 PMF，并重新生成受约束母构型与回穿子轨迹，
+即使分割面不变也会重新生成。自动选择的 `xi_star` 可能随新 PMF 移动；显式配置的
+`recrossing.dividing_surface` 保持固定。之前各代结果都会保留，新一代仅在全部完成后才成为当前结果，
+使每次回穿计算与生成它的 PMF 和伞采样端点对应。
+
+扩展后，`results/summary.json` 标识当前已发布的结果。其 `rate_extension.generation` 给出已完成代次的目录，
+例如 `extensions/rate/production-000000200000/`；扩展计算的 `rate_pmf.*`、`recrossing.*` 和 `umbrella/`
+均从该目录读取。根目录中的 PMF 与回穿文件保留原始结果。`report` 和 `rate-postprocess` 会自动选择已发布代次。
+首次扩展尚未完成时，如果原始 `umbrella/fes.h5` 不可用，报告会省略已经超过原始预算的共享检查点对应的原始采样曲线；
+原始 PMF 与回穿结果仍可读取。
+
+此命令仅扩展伞生产采样，不增加母链/子轨迹数量或其传播时间，也不会自动刷新所属速率研究的汇总结果。
+扩展后仍需检查 PMF 支持、回穿平台和误差诊断；更大的预算本身不证明收敛，也不保证原先保留为 `null` 的速率可报告。
 
 ## 直接碰撞：`drpmd`
 
@@ -217,7 +250,9 @@ PES 按全局 → 入口 → TS 继承，更具体的 `potential` 表整体替�
 
 ## Metadynamics
 
-`task="metadynamics"` 在一至三维 CV 上支持 standard 和 well-tempered 模式，多个副本各自积累偏置历史。
+`task="fes"` 加 `[fes] method="metadynamics"` 在一至三维 CV 上支持 standard 和 well-tempered 模式，默认多个副本各自积累偏置历史。
+旧 `task="metadynamics"` 继续作为带弃用提示的别名。`[fes.metadynamics] multiple_walkers=true`
+启用 block 边界同步的共享偏置，详见[共享 walker 与续算](../enhanced-sampling.md#metad-共享偏置-multiple-walker)。
 CV 可以声明周期。该工作流支持分子体系、固定晶胞的周期体系，以及 `system.fixed_atoms` 指定的固定基底原子。
 采样可选择 Andersen、Nosé–Hoover 链或 PILE-L，并可对长度 CV 添加二次软墙。
 
@@ -249,4 +284,5 @@ standard 模式的自由能估计为 $F\approx -V+C$，WT 模式为 $F\approx-\g
 历史偏置在 Python 时间步循环中运行并使用编译子步骤，因此拒绝 `loop_backend="native"`。直接求和的计算量随 hill 数增长；
 可选的[网格偏置](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/grid-metadynamics.md)通过局部插值使每步偏置查询量与历史长度无关。
 网格默认间距不超过 `sigma/5`；网格加密需要独立检查，非周期 CV 超出范围会报错并回滚该步。
-Metadynamics 只输出自由能估计。方法与续跑时序见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。
+Metadynamics 只输出自由能估计。三维估计可用 `pyrpmd project RUN --axes 0 1 --output NEW` 约化到一或两个 CV，
+见[输出与分析](results.md)。方法与续跑时序见[增强采样规范](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/enhanced-sampling.md)。

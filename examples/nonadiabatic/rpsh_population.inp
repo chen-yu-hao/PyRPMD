@@ -1,0 +1,37 @@
+# Nonequilibrium harmonic-reference nuclear packet on Tully model I.
+# The preparation is NOT a thermal ensemble of the Tully potential.
+task = "nonadiabatic"
+method = "rpsh"
+beta = 2000.0
+beads = 4
+seed = 20261101
+
+[model]
+name = "tully1"
+
+[system]
+masses = [2000.0]
+
+[initial]
+kind = "harmonic_ring"
+frequencies = [0.005]
+centers = [-0.2]
+centroid_momenta = [20.0]
+active_surface = 0
+
+[ensemble]
+trajectories = 16
+steps = 100
+sample_stride = 5
+
+[dynamics]
+dt = "0.2 autime"
+electronic_substeps = 8
+rescaling = "ring"
+frustrated_hops = "keep"
+decoherence = "edc"
+decoherence_constant = 0.1
+block_steps = 32
+
+[output]
+directory = "runs/rpsh-population"

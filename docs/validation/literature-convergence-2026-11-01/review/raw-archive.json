@@ -1,0 +1,14 @@
+{
+  "schema": "pyrpmd.andersen-raw-archive.v1",
+  "file": "pyrpmd-andersen-mode-evidence-2026-11-01.tar.gz",
+  "bytes": 6842667,
+  "sha256": "f06ba8bf6f7e3fae571d7e1572bd663134a156d0beee315c3e065d4b031477c8",
+  "members": [
+    "free-mode-observations.npz",
+    "workflow-fixed-checkpoint.npz",
+    "workflow-geometric-checkpoint.npz",
+    "raw-manifest.json"
+  ],
+  "availability": "Prepared in the task workspace. Persistent upload has not completed; do not infer public availability from this receipt.",
+  "raw_checkpoints_committed_to_git": false
+}

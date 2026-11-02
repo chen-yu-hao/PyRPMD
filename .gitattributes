@@ -1,0 +1,38 @@
+# Keep source, tests, scripts, and scientific READMEs visible in PR review.
+# Machine-generated numerical evidence can be expanded separately on GitHub.
+docs/validation/adaptive-nrpmd-2026-11-01/*.json linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.json linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.csv linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.svg linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.png linguist-generated=true
+docs/validation/adaptive-nrpmd-study-2026-11-01/**/*.npz linguist-generated=true
+docs/validation/adaptive-nrpmd-refinement-2026-11-01/**/*.json linguist-generated=true
+docs/validation/adaptive-nrpmd-refinement-2026-11-01/**/*.csv linguist-generated=true
+docs/validation/adaptive-nrpmd-refinement-2026-11-01/**/*.npz linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.json linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.svg linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.png linguist-generated=true
+docs/validation/published-nrpmd-2013-2026-11-01/**/*.npz linguist-generated=true
+examples/nonadiabatic/data/richardson_thoss_2013_fig1c.csv linguist-generated=true
+examples/nonadiabatic/data/richardson_thoss_2013_fig1c.provenance.json linguist-generated=true
+# Preserve the bytes of generated evidence so recorded checksums are portable.
+# CSV writers use CRLF; plotting/test tools retain whitespace in their output.
+docs/validation/tier2-literature-2026-11-01/**/*.csv -text whitespace=cr-at-eol linguist-generated
+docs/validation/tier2-literature-2026-11-01/**/*.svg -text -whitespace linguist-generated
+docs/validation/tier2-literature-2026-11-01/**/*.log -text -whitespace linguist-generated
+docs/validation/tier2-literature-2026-11-01/**/*.xml -text -whitespace linguist-generated
+docs/validation/pr63-independent-review/**/*.csv -text whitespace=cr-at-eol linguist-generated
+docs/validation/pr63-independent-review/**/*.log -text -whitespace linguist-generated
+docs/validation/pr63-independent-review/**/*.xml -text -whitespace linguist-generated
+# Preserve original build stdout, including terminal trailing spaces.
+docs/validation/ecosystem-2026-11-01/distribution/*.log -whitespace
+
+# Retain checksummed audit output exactly, including traceback whitespace,
+# captured API response endings, and the CSV writer's standard CRLF records.
+docs/validation/literature-audit-2026-11-01/software/*.log -whitespace
+docs/validation/literature-audit-2026-11-01/software/*.xml -whitespace
+docs/validation/literature-audit-2026-11-01/software/github-*.json -whitespace
+docs/validation/literature-audit-2026-11-01/h3/compact-results.csv -whitespace
+
+# Preserve the checksummed strict-Sphinx stdout for the sampling correction.
+docs/validation/literature-convergence-2026-11-01/review/andersen-docs.log -whitespace

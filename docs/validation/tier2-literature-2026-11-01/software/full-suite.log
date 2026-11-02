@@ -1,0 +1,202 @@
+........................................................................ [  1%]
+........................................................................ [  2%]
+........................................................................ [  4%]
+.................................................................sssssss [  5%]
+................................ssssssssssssssss.ss....................s [  7%]
+sssssssssssssssssssssssssss............................................. [  8%]
+......................................................... [ 10%]
+........................................................................ [ 11%]
+...................................................................................................................................... [ 14%]
+........................................................................ [ 15%]
+.................................... [ 16%]
+........................................................................ [ 18%]
+........................................................................ [ 19%]
+........................................................................ [ 21%]
+........................................................................ [ 22%]
+................................................................... [ 24%]
+........................................................................ [ 25%]
+........................................................................ [ 27%]
+................................................................s....... [ 28%]
+........................................................................ [ 30%]
+..................ssss. [ 30%]
+...........ssssssss................... [ 31%]
+........................................................................ [ 32%]
+........................................................................ [ 34%]
+..........................s............................................. [ 35%]
+...................................................... [ 36%]
+.................................................................ssssss. [ 38%]
+........................................................................ [ 39%]
+.................................................................sssssss [ 41%]
+s.......................................s............................... [ 42%]
+........................................................................ [ 44%]
+................................................................... [ 45%]
+........................................................................ [ 47%]
+........................................................................ [ 48%]
+........................................................................ [ 50%]
+........................................................................ [ 51%]
+........................................................................ [ 53%]
+........................................................................ [ 54%]
+........................................................................ [ 56%]
+........................................................................ [ 57%]
+........................................................................ [ 59%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+................................. [ 65%]
+..........................................................sssss [ 67%]
+sss..................................................................... [ 68%]
+................................................................s....... [ 70%]
+........................................................................ [ 71%]
+..................................................................... [ 73%]
+.................................................................. [ 74%]
+.............................................................. [ 75%]
+............................................................. [ 77%]
+........................................................................ [ 78%]
+........................................................................ [ 80%]
+........................................................................ [ 81%]
+........................................................................ [ 83%]
+........................................................................ [ 84%]
+..................................... [ 85%]
+........................................................................ [ 86%]
+........................................................................................ [ 88%]
+........................................................................ [ 90%]
+........................................................................ [ 91%]
+........................................................................ [ 93%]
+........................................................ [ 94%]
+........................................................................ [ 95%]
+........................................................................ [ 97%]
+........................................................................ [ 98%]
+................................................sssss                    [100%]
+=============================== warnings summary ===============================
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_trace.py:1006: FutureWarning: `torch.jit.trace` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_trace.py:1145: FutureWarning: `torch.jit.trace_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[centroid]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[bead_average]
+tests/test_advanced_cv.py::test_torchscript_cpu_real_autograd_jacobian[full_ring]
+tests/test_advanced_cv.py::test_torchscript_rejects_bad_output_shape
+tests/test_advanced_cv.py::test_torchscript_rejects_detached_derivatives
+tests/test_potentials.py::TorchCPUTests::test_torchscript_autograd_and_units
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+    warnings.warn(
+
+tests/test_ase_force_consistency.py: 170 warnings
+tests/test_barostat.py: 2 warnings
+tests/test_parallel.py: 5 warnings
+tests/test_periodic_materials.py: 19 warnings
+tests/test_potential_adapters.py: 24 warnings
+tests/test_potential_energy_identity.py: 186 warnings
+tests/test_potentials.py: 45 warnings
+tests/test_surface_examples.py: 33 warnings
+tests/test_surface_geometry.py: 1 warning
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/geometry/geometry.py:403: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D.shape = (-1, len(p2), 3)
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/geometry/geometry.py:404: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D_len.shape = (-1, len(p2))
+
+tests/test_ase_force_consistency.py: 141 warnings
+  /workspace/scratch/82b1e823c721/optional-test-deps/ase/atoms.py:1548: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    D.shape = (-1, 3)
+
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================= slowest 15 durations =============================
+13.92s call     tests/test_barostat.py::test_free_gas_samples_exact_npt_volume_distribution[4]
+12.72s call     tests/test_barostat.py::test_free_gas_samples_exact_npt_volume_distribution[1]
+11.74s call     tests/test_reaction_network.py::NetworkWorkflowTests::test_two_actual_toy_pipelines_interruption_resume_and_matrix
+10.77s call     tests/test_electrochemistry_sampling.py::test_joint_hmc_mc_matches_exact_centroid_number_covariance[4]
+10.45s call     tests/test_electrochemistry_sampling.py::test_joint_hmc_mc_matches_exact_centroid_number_covariance[1]
+10.43s call     tests/test_transition_interface.py::test_double_well_conditional_probability_matches_analytic_flux
+9.48s setup    tests/test_report_workflow_e2e.py::test_actual_workflow_exports_match_archives_and_never_execute_dynamics
+7.27s call     tests/test_surface_workflow.py::test_periodic_surface_rate_public_run_and_completed_resume
+6.64s setup    tests/test_rate_mbar_backend.py::RateMBARIntegrationTests::test_actual_pipeline_writes_supported_pmf_and_records_all_draws
+6.47s call     tests/test_electrochemistry_sampling.py::test_static_umbrella_reuses_physical_bias_scaling_and_fixed_substrate
+5.75s call     tests/test_report_workflow_e2e.py::test_cli_recompute_shortcut_reports_new_grid_without_resampling
+4.53s call     tests/test_initial_states.py::InitialEnsembleAnalyticTests::test_harmonic_canonical_variances_and_free_translation_spreads
+4.45s call     tests/test_native_ensembles.py::test_ideal_gas_npt_volume_distribution[mttk-4]
+4.32s call     tests/test_general_coordinate_rates.py::test_complete_general_coordinate_workflow_and_resume
+3.72s call     tests/test_adaptive_umbrella.py::test_adaptive_rate_pmf_reaches_actual_recrossing_children
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_onnx_native.py:20: optional native ONNX plugin not configured
+SKIPPED [1] tests/test_brhcl_pes.py:45: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:57: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:71: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:91: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:102: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:126: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_pes.py:147: optional pinned BrHCl_LEPS1 has not been built
+SKIPPED [1] tests/test_brhcl_reference.py:246: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [11] tests/test_brhcl_reference.py:260: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [4] tests/test_brhcl_reference.py:290: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:331: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_reference.py:349: build optional pinned BrHCl PES for actual-source cache checks
+SKIPPED [1] tests/test_brhcl_scan.py:50: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:83: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:100: build optional pinned BrHCl PES first
+SKIPPED [15] tests/test_brhcl_scan.py:139: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:166: build optional pinned BrHCl PES first
+SKIPPED [8] tests/test_brhcl_scan.py:186: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_brhcl_scan.py:209: build optional pinned BrHCl PES first
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+SKIPPED [1] tests/test_h3_diatomic_action.py:210: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:237: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:248: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_action.py:222: Build verified benchmarks/h3/build/libbkmp2.so for the real-PES checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:279: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:306: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:286: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:299: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_diatomic_switch.py:312: Build verified BKMP2 for the real-PES switch checks
+SKIPPED [1] tests/test_h3_pes.py:29: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:35: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_pes.py:18: optional real BKMP2 PES has not been built
+SKIPPED [1] tests/test_h3_preparation_study.py:307: Build verified BKMP2 for the full-PES near-threshold launch check
+SKIPPED [6] tests/test_integrator_workflows.py:123: optional real BKMP2 PES has not been built
+SKIPPED [4] tests/test_jaxpip_pesgen.py:138: optional real JaxPIP environment
+SKIPPED [2] tests/test_jaxpip_pesgen.py:167: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:189: optional real JaxPIP environment
+SKIPPED [1] tests/test_jaxpip_pesgen.py:196: optional real JaxPIP environment
+SKIPPED [1] tests/test_materials_eam.py:85: Set PYRPMD_NIALH_POTENTIAL to opt into the source-pinned real EAM check
+SKIPPED [1] tests/test_pesgen_native.py:48: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:65: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:95: explicit pinned native Caracal build/source required
+SKIPPED [2] tests/test_pesgen_native.py:110: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:149: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pesgen_native.py:158: explicit pinned native Caracal build/source required
+SKIPPED [1] tests/test_pesgen_native.py:174: full MPI installation for original optimizer
+SKIPPED [1] tests/test_pmf_2d_accuracy.py:117: independent optional reference solver
+SKIPPED [1] tests/test_worker_thread_limits.py:88: This BLAS runtime cannot provide four threads
+SKIPPED [1] tests/test_worker_thread_limits.py:99: This BLAS runtime cannot provide four threads
+SKIPPED [2] tests/test_worker_thread_limits.py:119: This BLAS runtime cannot provide four threads
+SKIPPED [1] tests/test_worker_thread_limits.py:147: This BLAS runtime cannot provide four threads
+4712 passed, 97 skipped, 928 warnings, 357 subtests passed in 302.23s (0:05:02)

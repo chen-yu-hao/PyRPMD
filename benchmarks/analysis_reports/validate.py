@@ -178,10 +178,14 @@ def verify_fes_data(case, report, run_index):
         scales = [unit_factor(unit, "length") / unit_factor(report["settings"]["length_unit"], "length")
                   if unit in ("bohr", "angstrom") else 1.0 for unit in units]
         assert len(rows) == free_energy.size
+        # Independently check the common payload rather than sharing the
+        # report adapter: this oracle must catch a broken adapter/export.
+        error = archive.get("uncertainty", archive["standard_error"])
+        error_mask = archive.get("uncertainty_mask", archive.get(
+            "standard_error_mask", np.zeros(free_energy.shape, bool)))
+        error_mask = mask | error_mask | ~np.isfinite(error)
+        error = np.where(error_mask, np.nan, error) * factor
         if free_energy.ndim == 1:
-            error = archive["standard_error"]
-            error_mask = archive.get("standard_error_mask", np.zeros(free_energy.shape, bool))
-            error = np.where(mask | error_mask | ~np.isfinite(error), np.nan, error) * factor
             _verify_curve(rows, centers[0] * scales[0],
                           np.where(mask, np.nan, free_energy) * factor, error)
         else:
@@ -193,6 +197,15 @@ def verify_fes_data(case, report, run_index):
                     assert row["z"] == "", "Unsupported FES bins must remain empty in reusable CSV data"
                 else:
                     _assert_close(float(row["z"]), free_energy[i, j] * factor)
+            if np.isfinite(error).any():
+                error_rows = read_figure_csv(report, run_index, "fes-error")
+                assert len(error_rows) == error.size
+                for row, cell in zip(error_rows, np.ndindex(error.shape)):
+                    assert bool(int(row["masked"])) == error_mask[cell]
+                    if error_mask[cell]:
+                        assert row["z"] == ""
+                    else:
+                        _assert_close(float(row["z"]), error[cell])
         if "overlap" in archive:
             overlap = archive["overlap"]
             overlap_rows = read_figure_csv(report, run_index, "fes-overlap")
@@ -227,7 +240,12 @@ def verify_metadynamics_data(case, report, run_index):
         rows = read_figure_csv(report, run_index, suffix)
         assert [row["series"] for row in rows] == labels, "Saved MetaD replica identities must remain separate"
         _verify_curve(rows, times, values)
-    assert not any(item["id"] == f"run-{run_index:03d}-fes-error" for item in report["figures"])
+    # Unified reports may display the saved spread, explicitly as descriptive
+    # replica SD. They must never silently label it a calibrated standard error.
+    assert report["runs"][run_index - 1]["metadata"]["uncertainty_kind"] == "replica_spread"
+    for item in report["figures"]:
+        if item["id"] == f"run-{run_index:03d}-fes-error":
+            assert "1 SD" in item["caption"] and "descriptive" in item["caption"]
     return {"hills_per_replica": case["summary"]["hills_per_replica"],
             "replica_labels_preserved": True, "biased_clock_matches_saved_hills": True,
             "hill_height_and_bias_csv_match_archive": True}

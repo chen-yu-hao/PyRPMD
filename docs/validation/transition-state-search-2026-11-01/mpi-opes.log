@@ -1,0 +1,2 @@
+OPES serial reference, frozen histogram, completed resume and offline analysis: PASS
+{"files": 3, "arrays": 39, "ranks": 4, "trajectory_groups": 2, "bead_ranks": 2, "histories": 2, "beads": 4, "retained_frozen_samples": 20, "kernels_per_history": 6, "exact_serial_equivalence": true, "completed_resume": true, "offline_analysis": true, "unchanged_completed_checkpoints": true, "converged": false}

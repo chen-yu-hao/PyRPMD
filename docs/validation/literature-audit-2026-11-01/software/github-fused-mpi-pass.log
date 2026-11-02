@@ -1,0 +1,55 @@
+# GitHub Actions log excerpt
+# Repository: chen-yu-hao/PyRPMD
+# Run: https://github.com/chen-yu-hao/PyRPMD/actions/runs/41312690979
+# Job: https://github.com/chen-yu-hao/PyRPMD/actions/runs/41312690979/job/124866208162
+# Workflow head SHA: 4ba870dd7121a31e0e0987a90b194fec3f788ffd
+# Full-suite and subsequent MPI step excerpt; omitted build output is not reproduced here.
+
+# ...
+2026-11-01T13:47:53.4595189Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-01T13:47:53.4644406Z ##[group]Checking out the ref
+2026-11-01T13:47:53.4647791Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/62/merge
+2026-11-01T13:47:53.5972574Z Note: switching to 'refs/remotes/pull/62/merge'.
+2026-11-01T13:47:53.5974082Z 
+2026-11-01T13:47:53.5975183Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-01T13:47:53.5977712Z changes and commit them, and you can discard any commits you make in this
+2026-11-01T13:47:53.5979864Z state without impacting any branches by switching back to a branch.
+2026-11-01T13:47:53.5981084Z 
+# ...
+2026-11-01T13:47:53.5992960Z HEAD is now at 1cd400a Merge 4ba870dd7121a31e0e0987a90b194fec3f788ffd into 2f907ba96d22cb134198715e398b1d9f8d83d929
+2026-11-01T13:47:53.5996697Z ##[endgroup]
+2026-11-01T13:47:53.6050873Z [command]/usr/bin/git log -1 --format=%H
+2026-11-01T13:47:53.6088195Z 1cd400a90054e87b86e2d6dc172b8f5782aeb1eb
+# ...
+2026-11-01T13:55:40.5926391Z SKIPPED [7] tests/test_torch_periodic.py:13: could not import 'torch': No module named 'torch'
+2026-11-01T13:55:40.5927027Z SKIPPED [2] tests/test_trajectory_export.py:92: could not import 'MDAnalysis': No module named 'MDAnalysis'
+2026-11-01T13:55:40.5927955Z 4475 passed, 120 skipped, 932 warnings, 365 subtests passed in 408.13s (0:06:48)
+2026-11-01T13:55:41.4929459Z ##[group]Run mpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_integration.py | tee runs/fused-mpi.txt
+2026-11-01T13:55:41.4930225Z [36;1mmpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_integration.py | tee runs/fused-mpi.txt[0m
+2026-11-01T13:55:41.4931068Z [36;1mmpiexec --map-by :OVERSUBSCRIBE -n 4 python tests/mpi_workflow_smoke.py "$RUNNER_TEMP/pyrpmd-fused-mpi" | tee runs/fused-mpi-workflows.txt[0m
+2026-11-01T13:55:41.4952763Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-01T13:55:41.4953101Z env:
+2026-11-01T13:55:41.4953312Z   OMP_NUM_THREADS: 1
+2026-11-01T13:55:41.4953531Z   OPENBLAS_NUM_THREADS: 1
+# ...
+2026-11-01T13:55:41.4956051Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.15/x64/lib
+2026-11-01T13:55:41.4956372Z ##[endgroup]
+2026-11-01T13:55:42.7165113Z MPI G=2 B=2: ordered tasks, collective failure, continuous parents and restart passed; MPI GPU node-local routing passed with a mock provider (no CUDA test)
+2026-11-01T13:55:49.7788620Z FES + rate G2 B2 MPI workflows and exact resume: PASS
+2026-11-01T13:55:56.9949163Z {"files": 6, "arrays": 120, "ranks": 4, "trajectory_groups": 2, "bead_ranks": 2, "thermostats": ["andersen", "pile-l"], "exact_serial_equivalence": true, "completed_resume": true, "offline_analysis": true}
+2026-11-01T13:55:57.1615223Z ##[group]Run python benchmarks/h3/fused_propagation.py --output runs/fused-native.json
+2026-11-01T13:55:57.1615876Z [36;1mpython benchmarks/h3/fused_propagation.py --output runs/fused-native.json[0m
+2026-11-01T13:55:57.1636710Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-01T13:55:57.1637300Z env:
+2026-11-01T13:55:57.1637523Z   OMP_NUM_THREADS: 1
+# ...
+2026-11-01T13:57:31.9117958Z }
+2026-11-01T13:57:33.6769972Z ....................................                                     [100%]
+2026-11-01T13:57:33.6770679Z 36 passed in 1.52s
+2026-11-01T13:57:33.7785893Z ##[group]Run mkdir -p runs
+2026-11-01T13:57:33.7786224Z [36;1mmkdir -p runs[0m
+2026-11-01T13:57:33.7786561Z [36;1mgit archive --format=tar.gz HEAD -o runs/fused-source.tar.gz[0m
+2026-11-01T13:57:33.7787486Z [36;1mgit rev-parse HEAD > runs/fused-source-commit.txt[0m
+2026-11-01T13:57:33.7808344Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-01T13:57:33.7808703Z env:
+

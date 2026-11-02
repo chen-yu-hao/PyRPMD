@@ -1,0 +1,39 @@
+{
+  "schema": "pyrpmd.h3.raw-data-index.v1",
+  "archive_filename": "h3-literature-audit-data-2026-11-01.tar.gz",
+  "archive_path_at_creation": "/workspace/scratch/a5e4820daedd/h3-literature-audit-data-2026-11-01.tar.gz",
+  "archive_bytes": 79606450,
+  "archive_sha256": "63a9cde1cebf70661004ac7179f8a93b0d6b95b120014ed00e45bae91ae9cca8",
+  "raw_data_only": true,
+  "contains_git_backed_source_code": false,
+  "contains_pes_source": false,
+  "contains_compiled_binary": false,
+  "contains_numerical_binary_data": true,
+  "manifest_path": "h3-literature-audit-data-2026-11-01/manifest.json",
+  "manifest_sha256": "95e512d0c6405346cface3b529fdacc87812e78c7db1f06c0c4733d19004d1f0",
+  "archive_file_count": 2058,
+  "uncompressed_file_bytes": 92211510,
+  "integrity_checks": {
+    "all_archive_member_hashes_verified": true,
+    "all_archive_member_sizes_verified": true,
+    "no_symlinks_or_unsafe_paths": true,
+    "source_index_hashes_match_current_repository_files": true
+  },
+  "source_repository": "PyRPMD",
+  "base_revision": "45763a7ab84100b376e2e5e5df06a8013a82659b",
+  "revision_scope": "Base core revision plus the audit files whose exact hashes are listed below; new audit drivers are not asserted to exist in the base revision. The final reviewed repository commit is recorded with the release/PR.",
+  "source_index_path": "h3-literature-audit-data-2026-11-01/provenance/source-index.json",
+  "source_index_sha256": "1d9e08233e9df35b177850ecb6b5f103d4d65fb44e958e3b871bd7f0f0291731",
+  "source_and_reports_in_repository": "docs/validation/literature-audit-2026-11-01/h3/ and benchmarks/h3/; exact original executed scripts are retained under h3/orchestration-original/.",
+  "scientific_status": "Sampling completed; all three extended workflows have their own recrossing trajectories and exact full-data PMF replay. Thermal rate convergence is not established.",
+  "cases": [
+    "smoke",
+    "pilot",
+    "long-a",
+    "long-b",
+    "classical"
+  ],
+  "production_cv_samples_per_extended_case": 444000,
+  "new_umbrella_steps_during_recovery": 0,
+  "seconds_to_package_and_verify": 3.989562504000787
+}

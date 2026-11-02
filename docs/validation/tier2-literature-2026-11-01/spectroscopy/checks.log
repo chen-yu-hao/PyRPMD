@@ -1,0 +1,13 @@
+........................................................................ [ 93%]
+.....                                                                    [100%]
+=============================== warnings summary ===============================
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/test_tier2_spectroscopy.py::test_torchscript_property_contract_runs_real_optional_torch
+  /workspace/scratch/82b1e823c721/test-deps/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+77 passed, 2 warnings in 7.88s

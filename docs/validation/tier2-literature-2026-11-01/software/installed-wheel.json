@@ -1,0 +1,19 @@
+{
+  "installed_import_path": "/workspace/scratch/82b1e823c721/tier2-literature-installed/pyrpmd/__init__.py",
+  "outside_checkout": true,
+  "new_opes_schema": 2,
+  "new_first_log_weight": -8.0,
+  "legacy_schema": 1,
+  "legacy_first_log_weight": 0.0,
+  "two_state_propagator": "matches independent diagonal exponential",
+  "native_capabilities": {
+    "available": true,
+    "openmp": true,
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ]
+  },
+  "cli_info_exit_code": 0
+}

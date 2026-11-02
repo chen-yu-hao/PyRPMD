@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "recorded_utc": "2026-11-01T14:05:26.176527+00:00",
+  "command": "PYTHONPATH=/workspace/scratch/82b1e823c721/test-deps:src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 python -m pytest -q tests/test_spectroscopy_literature.py tests/test_tier2_spectroscopy.py tests/test_spectroscopy_workflow.py tests/test_path_integral_literature_reference.py",
+  "total_passed": 77,
+  "spectroscopy_passed": 64,
+  "path_integral_reference_and_provenance_passed": 13,
+  "failed": 0,
+  "skipped": 0,
+  "runtime_seconds": 7.88,
+  "warnings": [
+    "torch.jit.script and torch.jit.load deprecation FutureWarnings from the installed Torch version"
+  ],
+  "python": "3.12.14",
+  "package_versions": {
+    "numpy": "2.5.4",
+    "scipy": "1.17.0",
+    "matplotlib": "3.10.8",
+    "torch": "2.15.0+cpu",
+    "pytest": "9.2.0"
+  },
+  "source_sha256": {
+    "tests/test_spectroscopy_literature.py": "32bcdb0d513db79ad9d81587f0eb5f3e65d250994e92504d424edec2a0c3dfb5",
+    "tests/test_tier2_spectroscopy.py": "99288b4742c484499a05f5236f1345f835a090d93a0e9e2abed237f2f970e33a",
+    "tests/test_spectroscopy_workflow.py": "a748d59e1c738e3f4ace4902e4b16d114c212d7377c8ea82da9668b1445a1b52",
+    "tests/test_path_integral_literature_reference.py": "b25e37ceed853a4fa6567a58ea434285697f5a7169407ba7471db479e3901314",
+    "benchmarks/tier2_literature/spectroscopy.py": "8f45e09fa4ce6897bcb3ba1c7518d0a612cc1413de8dc682cfc2216bd8a152de",
+    "benchmarks/tier2_literature/spectroscopy_static.py": "59ebea5b30749589b8876b822bb73ce6a204ff2bd396a8b4159e23fb5a8bd2d2",
+    "benchmarks/tier2_literature/path_integral.py": "c80cbb90f93f96d79a7178e3fac09d762bcae8254a5396e84f2a6b6467e09fdd"
+  },
+  "log": "checks.log"
+}

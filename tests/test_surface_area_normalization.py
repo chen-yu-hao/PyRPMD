@@ -5,8 +5,9 @@ from itertools import permutations
 import numpy as np
 import pytest
 
-from pyrpmd.analysis.surface import normalize_surface_rates, surface_normalization
-from pyrpmd.constants import BOHR_M
+from pyrpmd.analysis.fes_result import FESResult, write_fes_result
+from pyrpmd.analysis.surface import basin_qtst, normalize_surface_rates, surface_normalization
+from pyrpmd.constants import ATOMIC_TIME_S, BOHR_M
 from pyrpmd.system import System
 
 
@@ -71,3 +72,35 @@ def test_explicit_area_is_available_for_clusters_and_3d_periodic_slabs(cell, pbc
 def test_first_order_rate_does_not_require_a_surface_plane():
     assert surface_normalization({}, _system(None, None)) == {
         "reaction_order": 1, "path_multiplicity": 1}
+
+
+def test_saved_fes_density_keeps_basin_and_area_normalizations_separate(tmp_path):
+    beta, metric = 3.2, .07
+    surface = FESResult.from_data(
+        {"free_energy": np.zeros(9), "edges": [np.linspace(-2.25, 2.25, 10)],
+         "mask": np.zeros(9, bool), "beta": beta, "measure": "cv_density"},
+        method="umbrella", cv_units=["bohr"],
+    )
+    write_fes_result(tmp_path, surface)
+    saved = FESResult.read(tmp_path, summary={})
+    rate = basin_qtst(saved.grid[:, 0], saved.free_energy, saved.metadata["beta"],
+                      metric, (-1.3, -.2), .6, saved.mask) / ATOMIC_TIME_S
+    expected = np.sqrt(metric / (2 * np.pi * beta)) / 1.1 / ATOMIC_TIME_S
+    assert rate == pytest.approx(expected, rel=3e-15)
+    settings = surface_normalization(
+        {"reaction_order": 2, "reference_adsorbates": 2},
+        _system(np.array([[4., 0., 0.], [2., -1., 25.], [1., 3., 0.]]),
+                [True, False, True]),
+    )
+    normalized = normalize_surface_rates(
+        {"rate_s_inv": None, "rate_estimate_s_inv": rate,
+         "rate_standard_error_s_inv": None, "conditional_rate_standard_error_s_inv": .1 * rate},
+        settings,
+    )
+    factor = 12. * (BOHR_M * 100.)**2 / 2
+    assert normalized["second_order"]["rate_estimate"] == pytest.approx(expected * factor)
+    assert normalized["second_order"]["rate_standard_error"] is None
+    assert normalized["second_order"]["conditional_rate_standard_error"] == pytest.approx(.1 * expected * factor)
+    assert normalized["settings"]["area_lattice_vectors"] == [0, 2]
+    assert saved.measure == "cv_density" and saved.energy_unit == "hartree"
+    np.testing.assert_array_equal(saved.free_energy, surface.free_energy)

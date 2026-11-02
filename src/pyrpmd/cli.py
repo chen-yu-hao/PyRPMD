@@ -74,11 +74,14 @@ def parser():
     c.add_argument("--adaptive-max-windows", type=int)
     c.add_argument("--adaptive-max-pilot-steps", type=int)
     extend = commands.add_parser(
-        "extend", help="Raise the total time budget of unresolved dRPMD trajectories"
+        "extend", help="Raise a saved dRPMD time or fixed-window rate production budget"
     )
     extend.add_argument("directory")
-    extend.add_argument("--max-time", required=True,
-                        help="New total duration from launch, e.g. '20 ps' (not added time)")
+    budget = extend.add_mutually_exclusive_group(required=True)
+    budget.add_argument("--max-time",
+                        help="dRPMD: new total duration from launch, e.g. '20 ps' (not added time)")
+    budget.add_argument("--production-steps", type=int, metavar="INT",
+                        help="Fixed-window gas-phase rate: total production steps per window and replica, excluding equilibration (not added steps)")
     a = commands.add_parser(
         "analyze", help="Read results or reanalyze saved free-energy/transport data"
     )
@@ -102,6 +105,12 @@ def parser():
                    help="Diffusion Cartesian axes (0=x, 1=y, 2=z)")
     a.add_argument("--atoms", nargs="+", type=int, help="Diffusion atom indices")
     a.add_argument("--max-lag", type=int, help="Maximum diffusion lag in saved frames")
+    export = commands.add_parser("export", help="Export a saved materials centroid trajectory as extxyz, H5MD or ASE .traj")
+    export.add_argument("source", help="Run directory, trajectory manifest.json or materials trajectory .npz")
+    export.add_argument("destination", help="Output .extxyz/.xyz, .h5md/.h5 or .traj file")
+    export.add_argument("--replica", type=int, default=0, help="0-based replica within a run (default: 0)")
+    export.add_argument("--format", choices=("extxyz", "h5md", "traj"))
+    export.add_argument("--overwrite", action="store_true", help="Atomically replace an existing export after validation")
     rate = commands.add_parser(
         "rate-postprocess", help="Compute rates from saved PMF/FES and signed channel fluxes"
     )
@@ -110,6 +119,9 @@ def parser():
     rate.add_argument("--output", help="New result JSON (default: DIRECTORY/rate_postprocess.json)")
     rate.add_argument("--bootstrap", type=int, default=200)
     rate.add_argument("--seed", type=int, default=0)
+    na_rate = commands.add_parser("nonadiabatic-rate", help="Run a signed thermal NRPMD population-rate workflow")
+    na_rate.add_argument("input", help="TOML/JSON thermal NRPMD rate specification")
+    na_rate.add_argument("--output", required=True, help="New run directory")
     projection = commands.add_parser("project", help="Boltzmann-marginalize a saved CV-density FES")
     projection.add_argument("directory")
     projection.add_argument("--axes", type=int, nargs="+", required=True, help="Retained CV axes, zero based")
@@ -362,6 +374,10 @@ def main(argv=None):
                         "parallel": execution_plan(config["parallel"]).__dict__,
                         "warnings": config["_warnings"],
                     }
+            if config["task"] == "fes":
+                from .input import fes_method
+
+                result["method"] = fes_method(config)
             if config.get("initial_ensemble"):
                 result["temperature_K"] = None
                 result["beta_au"] = config["beta"]
@@ -428,7 +444,8 @@ def main(argv=None):
         elif args.command == "extend":
             from .runner import extend_run
 
-            result = extend_run(args.directory, max_time=args.max_time)
+            result = extend_run(args.directory, max_time=args.max_time,
+                                production_steps=args.production_steps)
             if result is not None:
                 _print(result)
         elif args.command == "analyze":
@@ -445,6 +462,15 @@ def main(argv=None):
                     }.items() if value is not None} or None,
                 )
             _print(_report_after_result(args, result, args.directory))
+        elif args.command == "nonadiabatic-rate":
+            from .workflows.nonadiabatic_rate import run_nonadiabatic_rate
+
+            print(json.dumps(jsonable(run_nonadiabatic_rate(args.input, args.output)), indent=2, allow_nan=False))
+        elif args.command == "export":
+            from .trajectory_export import export_materials_trajectory
+            from .parallel import root_call
+            _print(root_call(export_materials_trajectory, args.source, args.destination,
+                replica=args.replica, format=args.format, overwrite=args.overwrite))
         elif args.command == "rate-postprocess":
             from .analysis.rate_io import postprocess_rate
             from .parallel import root_call
@@ -475,7 +501,7 @@ def main(argv=None):
             from .dynamics import native_capabilities
 
             dependencies = {}
-            for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "pymbar", "matplotlib"):
+            for distribution in ("numpy", "scipy", "h5py", "threadpoolctl", "mpi4py", "torch", "ase", "openmm", "lammps", "pymbar", "matplotlib"):
                 try:
                     dependencies[distribution] = importlib.metadata.version(distribution)
                 except importlib.metadata.PackageNotFoundError:
@@ -491,24 +517,32 @@ def main(argv=None):
                         "dependencies": dependencies,
                     },
                     "native": native_capabilities(),
-                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate"],
+                    "workflows": ["rate", "drpmd", "fes", "network", "metadynamics", "opes", "pcet", "pimd", "diffusion", "site_rate", "surface_rate", "nonadiabatic", "spectroscopy", "plumed"],
                     "materials": {
                         "cell": "fixed_or_isotropic_bzp",
                         "trajectory": "unwrapped_centroid",
                         "pressure_ensemble": True,
                         "fixed_atoms": True,
                         "streaming_trajectories": True,
+                        "bond_constraints": "per_bead_shake_rattle_velocity_verlet_fixed_cell",
                     },
+                    "trajectory_formats": ["extxyz", "h5md", "ase_traj"],
                     "integrators": ["cayley-bcb", "normal-mode-bab", "velocity-verlet"],
-                    "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "opes"],
-                    "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling"],
+                    "enhanced_sampling": ["adaptive_umbrella", "replica_exchange_umbrella", "standard_metadynamics", "well_tempered_metadynamics", "shared_walker_metadynamics", "opes", "opes_explore", "adaptive_opes_bandwidth"],
+                    "sampling_python_apis": ["plumed_centroid_bias", "transition_interface_sampling", "temperature_hamiltonian_replica_exchange", "positive_ensemble_retis", "audited_biased_kinetics"],
+                    "path_integral_actions": ["suzuki_chin", "bosonic", "pigs"],
+                    "spectroscopy_methods": ["pa-cmd", "rpmd", "trpmd", "f-cmd_quadratic_centroid_pmf"],
+                    "nonadiabatic_python_apis": ["adiabatic_rpsh", "quasi_diabatic_nrpmd", "two_state_mash"],
+                    "ml_lifecycle": ["committee", "active_learning_candidates", "delta_rpc"],
+                    "unimplemented_methods": ["qcmd", "h-cmd"],
                     "scientific_tools": ["general_centroid_site_rates", "temperature_isotope_studies", "ring_polymer_instanton", "takahashi_imada_thermodynamics", "open_path_momentum"],
                     "initial_ensembles": ["thermal_parent", "ne_rpmd", "qct"],
                     "input_schema_version": 1,
                     "run_manifest_schema_version": 2,
                     "checkpoint_schema_version": 2,
                     "input_formats": ["TOML .inp", "Python build()"],
-                    "postprocessing": ["rate-postprocess"],
+                    "postprocessing": ["rate-postprocess", "export"],
+                    "additional_workflow_commands": ["nonadiabatic-rate"],
                 }
             )
         elif args.command == "study":

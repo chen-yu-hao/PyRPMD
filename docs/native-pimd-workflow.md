@@ -41,7 +41,7 @@ checkpoint_interval = "1 ps"
 
 Supported sampling thermostats are Andersen, Langevin, PILE-L/G, SVR,
 Cartesian/normal-mode GLE, normal-mode GLE with centroid SVR, parameterized
-PIGLET, and FFL-rescale. `none` and `trpmd` are rejected in this equilibrium
+PIGLET, FFL-rescale and NHC (`nhc`). `none` and `trpmd` are rejected in this equilibrium
 workflow. They remain available in the separate native dynamics API.
 
 `thermostat_params` uses the controls documented in
@@ -54,6 +54,15 @@ locations. Andersen uses its explicit `interval` or `sampling.andersen_interval`
 The native Andersen kernel uses the middle thermostat splitting, not the
 historical workflow's boundary-refresh sequence; trajectories are not expected
 to reproduce historical RNG streams or finite-step samples bitwise.
+
+For NHC, `sampling.integrator` resolves to `obcbo` with the fixed-cell Cayley
+map and `obabo` with normal-mode integration or pressure control. Its parameters
+include `tau` (or `tdamp`), `chain_length` and `substeps`. Output
+`sampling_splitting` reports the complete map executed by `NativeEnsemble`:
+NHC fixed-cell sampling uses OBCBO/OBABO, other fixed-cell baths use
+BCOCB/BAOAB, and pressure-controlled trajectories use the OBABO wrapper.
+Historical non-NHC native inputs retain their existing particle-integrator
+labels in the resolved input.
 
 For NPT add `[barostat]` with `mode="bzp"`, `"mttk"`, `"rgb"` or `"scr"`,
 using explicit pressure/time/friction settings. Pressure accepts `bar`, `GPa`

@@ -1,0 +1,1022 @@
+FFFFF.FF.FFFFF.FF.FFFFF.FF.FFFFF.FF.FFFFFF.FFF.FFF.FFF.FFF.FFF.FFF.      [100%]
+=================================== FAILURES ===================================
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[committee-attribute-time_dependent] _
+
+marker = 'time_dependent', location = 'attribute', wrapper = 'committee'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[committee-attribute-history_dependent] _
+
+marker = 'history_dependent', location = 'attribute', wrapper = 'committee'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[committee-attribute-stateful] _
+
+marker = 'stateful', location = 'attribute', wrapper = 'committee'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[committee-metadata-time_dependent] _
+
+marker = 'time_dependent', location = 'metadata', wrapper = 'committee'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[committee-metadata-history_dependent] _
+
+marker = 'history_dependent', location = 'metadata', wrapper = 'committee'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[committee-capabilities-time_dependent] _
+
+marker = 'time_dependent', location = 'capabilities', wrapper = 'committee'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[committee-capabilities-history_dependent] _
+
+marker = 'history_dependent', location = 'capabilities', wrapper = 'committee'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[delta-attribute-time_dependent] _
+
+marker = 'time_dependent', location = 'attribute', wrapper = 'delta'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[delta-attribute-history_dependent] _
+
+marker = 'history_dependent', location = 'attribute', wrapper = 'delta'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[delta-attribute-stateful] _
+
+marker = 'stateful', location = 'attribute', wrapper = 'delta'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[delta-metadata-time_dependent] _
+
+marker = 'time_dependent', location = 'metadata', wrapper = 'delta'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[delta-metadata-history_dependent] _
+
+marker = 'history_dependent', location = 'metadata', wrapper = 'delta'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[delta-capabilities-time_dependent] _
+
+marker = 'time_dependent', location = 'capabilities', wrapper = 'delta'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[delta-capabilities-history_dependent] _
+
+marker = 'history_dependent', location = 'capabilities', wrapper = 'delta'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[difference-attribute-time_dependent] _
+
+marker = 'time_dependent', location = 'attribute', wrapper = 'difference'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[difference-attribute-history_dependent] _
+
+marker = 'history_dependent', location = 'attribute', wrapper = 'difference'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[difference-attribute-stateful] _
+
+marker = 'stateful', location = 'attribute', wrapper = 'difference'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[difference-metadata-time_dependent] _
+
+marker = 'time_dependent', location = 'metadata', wrapper = 'difference'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[difference-metadata-history_dependent] _
+
+marker = 'history_dependent', location = 'metadata', wrapper = 'difference'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[difference-capabilities-time_dependent] _
+
+marker = 'time_dependent', location = 'capabilities', wrapper = 'difference'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[difference-capabilities-history_dependent] _
+
+marker = 'history_dependent', location = 'capabilities', wrapper = 'difference'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[split-attribute-time_dependent] _
+
+marker = 'time_dependent', location = 'attribute', wrapper = 'split'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[split-attribute-history_dependent] _
+
+marker = 'history_dependent', location = 'attribute', wrapper = 'split'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[split-attribute-stateful] _
+
+marker = 'stateful', location = 'attribute', wrapper = 'split'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[split-metadata-time_dependent] _
+
+marker = 'time_dependent', location = 'metadata', wrapper = 'split'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[split-metadata-history_dependent] _
+
+marker = 'history_dependent', location = 'metadata', wrapper = 'split'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[split-capabilities-time_dependent] _
+
+marker = 'time_dependent', location = 'capabilities', wrapper = 'split'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_composed_potential_rejects_dynamic_member_before_evaluation[split-capabilities-history_dependent] _
+
+marker = 'history_dependent', location = 'capabilities', wrapper = 'split'
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("location", ["attribute", "metadata", "capabilities"])
+    @pytest.mark.parametrize("wrapper", ["committee", "delta", "difference", "split"])
+    def test_composed_potential_rejects_dynamic_member_before_evaluation(marker, location, wrapper):
+        member = _MarkedProvider(marker, location)
+        static = HarmonicPotential()
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:35: Failed
+_ test_python_adapter_cannot_hide_dynamic_member_attributes[False-time_dependent] _
+
+marker = 'time_dependent', callback_only = False
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("callback_only", [False, True])
+    def test_python_adapter_cannot_hide_dynamic_member_attributes(marker, callback_only):
+        member = _MarkedProvider(marker, "attribute")
+        if callback_only:
+            def callback(q):
+                return member.evaluate(q)
+            setattr(callback, marker, True)
+            wrapped = PythonPotential(callback)
+        else:
+            wrapped = PythonPotential(member)
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:58: Failed
+_ test_python_adapter_cannot_hide_dynamic_member_attributes[False-history_dependent] _
+
+marker = 'history_dependent', callback_only = False
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("callback_only", [False, True])
+    def test_python_adapter_cannot_hide_dynamic_member_attributes(marker, callback_only):
+        member = _MarkedProvider(marker, "attribute")
+        if callback_only:
+            def callback(q):
+                return member.evaluate(q)
+            setattr(callback, marker, True)
+            wrapped = PythonPotential(callback)
+        else:
+            wrapped = PythonPotential(member)
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:58: Failed
+__ test_python_adapter_cannot_hide_dynamic_member_attributes[False-stateful] ___
+
+marker = 'stateful', callback_only = False
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("callback_only", [False, True])
+    def test_python_adapter_cannot_hide_dynamic_member_attributes(marker, callback_only):
+        member = _MarkedProvider(marker, "attribute")
+        if callback_only:
+            def callback(q):
+                return member.evaluate(q)
+            setattr(callback, marker, True)
+            wrapped = PythonPotential(callback)
+        else:
+            wrapped = PythonPotential(member)
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:58: Failed
+_ test_python_adapter_cannot_hide_dynamic_member_attributes[True-time_dependent] _
+
+marker = 'time_dependent', callback_only = True
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("callback_only", [False, True])
+    def test_python_adapter_cannot_hide_dynamic_member_attributes(marker, callback_only):
+        member = _MarkedProvider(marker, "attribute")
+        if callback_only:
+            def callback(q):
+                return member.evaluate(q)
+            setattr(callback, marker, True)
+            wrapped = PythonPotential(callback)
+        else:
+            wrapped = PythonPotential(member)
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:58: Failed
+_ test_python_adapter_cannot_hide_dynamic_member_attributes[True-history_dependent] _
+
+marker = 'history_dependent', callback_only = True
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("callback_only", [False, True])
+    def test_python_adapter_cannot_hide_dynamic_member_attributes(marker, callback_only):
+        member = _MarkedProvider(marker, "attribute")
+        if callback_only:
+            def callback(q):
+                return member.evaluate(q)
+            setattr(callback, marker, True)
+            wrapped = PythonPotential(callback)
+        else:
+            wrapped = PythonPotential(member)
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:58: Failed
+___ test_python_adapter_cannot_hide_dynamic_member_attributes[True-stateful] ___
+
+marker = 'stateful', callback_only = True
+
+    @pytest.mark.parametrize("marker", ["time_dependent", "history_dependent", "stateful"])
+    @pytest.mark.parametrize("callback_only", [False, True])
+    def test_python_adapter_cannot_hide_dynamic_member_attributes(marker, callback_only):
+        member = _MarkedProvider(marker, "attribute")
+        if callback_only:
+            def callback(q):
+                return member.evaluate(q)
+            setattr(callback, marker, True)
+            wrapped = PythonPotential(callback)
+        else:
+            wrapped = PythonPotential(member)
+>       with pytest.raises(ValueError, match="deterministic position-only"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:58: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[None-beta-value0] _
+
+section = None, key = 'beta', value = np.complex64(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[None-beta-(2+3j)0] _
+
+section = None, key = 'beta', value = np.complex128(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[None-beta-(2+0j)] _
+
+section = None, key = 'beta', value = np.complex128(2+0j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[dynamics-dt-value0] _
+
+section = 'dynamics', key = 'dt', value = np.complex64(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[dynamics-dt-(2+3j)0] _
+
+section = 'dynamics', key = 'dt', value = np.complex128(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[dynamics-dt-(2+0j)] _
+
+section = 'dynamics', key = 'dt', value = np.complex128(2+0j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-nuclear_step-value0] _
+
+section = 'sampling', key = 'nuclear_step', value = np.complex64(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-nuclear_step-(2+3j)0] _
+
+section = 'sampling', key = 'nuclear_step', value = np.complex128(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-nuclear_step-(2+0j)] _
+
+section = 'sampling', key = 'nuclear_step', value = np.complex128(2+0j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-centroid_step-value0] _
+
+section = 'sampling', key = 'centroid_step', value = np.complex64(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-centroid_step-(2+3j)0] _
+
+section = 'sampling', key = 'centroid_step', value = np.complex128(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-centroid_step-(2+0j)] _
+
+section = 'sampling', key = 'centroid_step', value = np.complex128(2+0j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-relative_tolerance-value0] _
+
+section = 'rate', key = 'relative_tolerance', value = np.complex64(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-relative_tolerance-(2+3j)0] _
+
+section = 'rate', key = 'relative_tolerance', value = np.complex128(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-relative_tolerance-(2+0j)] _
+
+section = 'rate', key = 'relative_tolerance', value = np.complex128(2+0j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: Failed
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-min_average_sign-value0] _
+
+section = 'rate', key = 'min_average_sign', value = np.complex64(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'positive finite number'
+E         Actual message: 'rate.min_average_sign must not exceed one'
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: AssertionError
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-min_average_sign-(2+3j)0] _
+
+section = 'rate', key = 'min_average_sign', value = np.complex128(2+3j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'positive finite number'
+E         Actual message: 'rate.min_average_sign must not exceed one'
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: AssertionError
+_ test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-min_average_sign-(2+0j)] _
+
+section = 'rate', key = 'min_average_sign', value = np.complex128(2+0j)
+
+    @pytest.mark.parametrize("value", [np.complex64(2+3j), np.complex128(2+3j),
+                                      np.complex128(2+0j), 2+3j])
+    @pytest.mark.parametrize("section,key", [(None, "beta"), ("dynamics", "dt"),
+        ("sampling", "nuclear_step"), ("sampling", "centroid_step"),
+        ("rate", "relative_tolerance"), ("rate", "min_average_sign")])
+    def test_thermal_rate_rejects_complex_physical_controls_before_factory(section, key, value):
+        from pyrpmd.workflows.nonadiabatic_rate import resolve_nonadiabatic_rate_config
+    
+        config = {"masses": [1.], "q": [[0., 0., 0.]], "beta": 2., "nstates": 2,
+                  "potential": {"factory": "unimportable_review_sentinel:build"}}
+        if section is None:
+            config[key] = value
+        else:
+            config[section] = {key: value}
+>       with pytest.raises(ValueError, match="positive finite number"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'positive finite number'
+E         Actual message: 'rate.min_average_sign must not exceed one'
+
+../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py:87: AssertionError
+=============================== warnings summary ===============================
+tests/test_tier2_nonadiabatic_ml_review.py: 18 warnings
+  /workspace/scratch/276eb7a1796a/PyRPMD-baseline/src/pyrpmd/workflows/nonadiabatic_rate.py:41: ComplexWarning: Casting complex values to real discards the imaginary part
+    value = float(value)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[committee-attribute-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[committee-attribute-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[committee-attribute-stateful]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[committee-metadata-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[committee-metadata-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[committee-capabilities-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[committee-capabilities-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[delta-attribute-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[delta-attribute-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[delta-attribute-stateful]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[delta-metadata-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[delta-metadata-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[delta-capabilities-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[delta-capabilities-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[difference-attribute-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[difference-attribute-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[difference-attribute-stateful]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[difference-metadata-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[difference-metadata-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[difference-capabilities-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[difference-capabilities-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[split-attribute-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[split-attribute-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[split-attribute-stateful]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[split-metadata-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[split-metadata-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[split-capabilities-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_composed_potential_rejects_dynamic_member_before_evaluation[split-capabilities-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_python_adapter_cannot_hide_dynamic_member_attributes[False-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_python_adapter_cannot_hide_dynamic_member_attributes[False-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_python_adapter_cannot_hide_dynamic_member_attributes[False-stateful]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_python_adapter_cannot_hide_dynamic_member_attributes[True-time_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_python_adapter_cannot_hide_dynamic_member_attributes[True-history_dependent]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_python_adapter_cannot_hide_dynamic_member_attributes[True-stateful]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[None-beta-value0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[None-beta-(2+3j)0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[None-beta-(2+0j)]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[dynamics-dt-value0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[dynamics-dt-(2+3j)0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[dynamics-dt-(2+0j)]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-nuclear_step-value0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-nuclear_step-(2+3j)0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-nuclear_step-(2+0j)]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-centroid_step-value0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-centroid_step-(2+3j)0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[sampling-centroid_step-(2+0j)]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-relative_tolerance-value0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-relative_tolerance-(2+3j)0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-relative_tolerance-(2+0j)]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-min_average_sign-value0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-min_average_sign-(2+3j)0]
+FAILED ../PyRPMD/tests/test_tier2_nonadiabatic_ml_review.py::test_thermal_rate_rejects_complex_physical_controls_before_factory[rate-min_average_sign-(2+0j)]
+52 failed, 15 passed, 18 warnings in 1.83s

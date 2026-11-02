@@ -1,0 +1,54 @@
+schema_version: 1
+context:
+  version: "0.2.0"
+package:
+  name: pyrpmd
+  version: ${{ version }}
+source:
+  path: ../..
+build:
+  number: 0
+  skip: match(python, "<3.11")
+  script:
+    - python -m pip install . -vv --no-deps --no-build-isolation
+    - python -c "from importlib.metadata import version; assert version('PyRPMD') == '${{ version }}'"
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - ${{ stdlib('c') }}
+  host:
+    - python
+    - pip
+    - setuptools >=77
+    - wheel
+    - if: linux
+      then: libgomp
+  run:
+    - python
+    - numpy >=1.26
+    - scipy >=1.11
+    - h5py >=3.10
+    - threadpoolctl >=3.1
+    - if: linux
+      then: libgomp
+tests:
+  - python:
+      imports:
+        - pyrpmd
+        - pyrpmd._native
+        - pyrpmd._thermal
+      pip_check: true
+  - script: python tests/wheel_smoke.py
+    files:
+      source:
+        - tests/wheel_smoke.py
+about:
+  homepage: https://github.com/chen-yu-hao/PyRPMD
+  repository: https://github.com/chen-yu-hao/PyRPMD
+  documentation: https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/index.md
+  summary: Ring-polymer dynamics, reaction networks and adaptive free-energy sampling
+  license: MIT
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_NOTICES.md
+    - native/thermal-NOTICE.md

@@ -1,0 +1,24 @@
+{
+  "temperature_kelvin": 100.0,
+  "transition_state": {
+    "geometry_bohr": [[0.0, 0.0, 0.0]],
+    "masses": [1822.0],
+    "energy_hartree": 0.01,
+    "hessian": [[-0.04, 0.0], [0.0, 0.02]],
+    "active_mask": [[true, true, false]]
+  },
+  "reactants": [{
+    "geometry_bohr": [[-1.0, 0.0, 0.0]],
+    "masses": [1822.0],
+    "energy_hartree": 0.0,
+    "hessian": [[0.08, 0.0], [0.0, 0.02]],
+    "active_mask": [[true, true, false]]
+  }],
+  "products": [{
+    "geometry_bohr": [[1.0, 0.0, 0.0]],
+    "masses": [1822.0],
+    "energy_hartree": 0.0,
+    "hessian": [[0.08, 0.0], [0.0, 0.02]],
+    "active_mask": [[true, true, false]]
+  }]
+}

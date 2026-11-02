@@ -1,5 +1,6 @@
 include README.md README.zh-CN.md LICENSE THIRD_PARTY_NOTICES.md
 include pyproject.toml setup.py
+recursive-include packaging *.yaml *.md *.py
 include native/CMakeLists.txt native/README.md native/ABI.md native/thermal-NOTICE.md
 include native/onnx/CMakeLists.txt native/onnx/README.md
 include tools/export_jaxpip_onnx.py tools/requirements-jaxpip-export.txt
@@ -10,6 +11,7 @@ prune docs/_build
 recursive-include examples *.inp *.toml *.py *.xyz *.json *.md *.slurm
 include examples/analysis/reference-rates.csv
 recursive-include tests *.py
+recursive-include tests/data *.json
 include benchmarks/h3/*.py benchmarks/h3/*.md benchmarks/h3/*.f90 benchmarks/h3/*.inp benchmarks/h3/source.json
 include benchmarks/h3/diatomic_switch.cpp
 recursive-include benchmarks/h3/convergence_inputs *.inp
@@ -27,9 +29,39 @@ recursive-include benchmarks/surface *.py *.md
 include benchmarks/batched_dynamics.py benchmarks/rpc_mts.py benchmarks/tier1_recrossing.py
 recursive-include benchmarks/trpmd *.py *.json
 recursive-include benchmarks/published_rates *.py *.json *.md
+recursive-include benchmarks/transition_state_search *.py *.md
+recursive-include benchmarks/water *.py *.json *.md
+recursive-include benchmarks/literature *.py *.json *.md
 include benchmarks/efficiency/native-ensembles-summary.json
+include benchmarks/efficiency/propagation_stack_batching.json
 recursive-include benchmarks/analysis_reports *.py *.md
+recursive-include benchmarks/nonadiabatic *.py *.md *.json
+recursive-include benchmarks/molecular_nonadiabatic *.py *.md *.json *.inp *.f
+include benchmarks/molecular_nonadiabatic/vendor/chempotpy/LICENSE
+recursive-include src/pyrpmd/potentials/_licenses *.txt
+recursive-include benchmarks/tier2_literature *.py *.md
+recursive-include docs/validation/pr63-independent-review *.pt
+recursive-include docs/validation/tier2-literature-2026-11-01 *.svg *.jsonl *.pt *.py.gz
+# Exclude local restart caches; explicitly retain unique raw sampling evidence.
+recursive-exclude docs/validation/tier2-literature-2026-11-01 *.npz
+recursive-include docs/validation/tier2-literature-2026-11-01/sampling/opes_v2 trajectory.npz
+recursive-include docs/validation/tier2-literature-2026-11-01/sampling/opes_before_initialization_fix trajectory.npz
+include docs/validation/tier2-literature-2026-11-01/sampling/shared_metadynamics/seed_*.npz
+include docs/validation/tier2-literature-2026-11-01/sampling/replica_exchange/raw_moments.npz
+include docs/validation/tier2-literature-2026-11-01/sampling/ml_lifecycle/training_and_heldout.npz
+recursive-include docs/validation/tier2-literature-2026-11-01/sampling/plumed_comparator *.dat *_KERNELS
+recursive-include docs/validation/tier2-literature-2026-11-01/sampling/plumed_comparator_before_initialization_fix *.dat *_KERNELS
+prune docs/validation/tier2-literature-2026-11-01/sampling/opes
+recursive-exclude docs/validation/tier2-literature-2026-11-01/sampling bck.*
 global-exclude __pycache__ *.py[cod] *.so *.o
 
 recursive-include src/pyrpmd/pesgen/_native *.cpp *.f90 *.h
 recursive-include src/pyrpmd/templates *.inp
+
+# Torch validation tests import these independent reference harnesses.
+include benchmarks/torch_device_backend.py benchmarks/torch_paper_validation.py benchmarks/torch_observable_validation.py
+recursive-include benchmarks/torch_literature *.md *.json *.gz
+
+include benchmarks/torch_bcocb_validation.py
+
+include benchmarks/rpmdrate_normal_modes.py benchmarks/rpmdrate_normal_modes_validation.py

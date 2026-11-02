@@ -1,4 +1,4 @@
-# Free-energy surfaces in one or two CV dimensions
+# Free-energy surfaces in one to three CV dimensions
 
 These examples reconstruct a centroid free-energy surface from umbrella sampling and check it
 against an exact answer.
@@ -7,6 +7,7 @@ against an exact answer.
 pyrpmd run examples/fes/harmonic2d.inp --output runs/fes2d          # 2D centroid surface
 pyrpmd run examples/fes/custom_input.py --output runs/fes-custom    # Python-defined 2D CV
 pyrpmd run examples/fes/adaptive_harmonic.inp --output runs/fes-adaptive
+pyrpmd run examples/fes/harmonic3d.inp --output runs/fes3d          # unified nested input, 3D MBAR
 ```
 
 The harmonic potential has the exact centroid surface `F(x,y) = 0.001*(x*x+y*y) + constant`
@@ -22,7 +23,13 @@ coordinates, including bin volume. Bins without sampling support are masked; if 
 overlap graph is disconnected, the global surface is masked because component offsets cannot be
 identified. Correlated circular-block bootstrap runs independently inside each stream.
 
-`fes.h5`, `fes.npz` and `fes.csv` carry the samples, diagnostics, standard errors and mask.
+The shared `FESResult` layout is `fes.npz`, `fes.csv`, `fes.json` and
+`summary.json`, with grid, free energy, `uncertainty`, its statistical kind,
+units and masks. Umbrella `fes.h5` additionally carries stream diagnostics.
+`harmonic3d.inp` demonstrates `[fes] method="umbrella"` with common nested
+sections and `[fes.umbrella]`. The older examples retain supported top-level
+sections for compatibility regressions. See [enhanced sampling](../../docs/enhanced-sampling.md)
+for MetaD/OPES under the same entry point and their different uncertainty meaning.
 
 ## Custom CVs
 

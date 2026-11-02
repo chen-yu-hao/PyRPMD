@@ -21,25 +21,23 @@ thermodynamic consistency of independently supplied forward/reverse rates.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, fields
 import math
-import numbers
+from dataclasses import dataclass, fields
+from functools import partial
 
 from scipy.constants import elementary_charge
 
 from ..constants import N_A
-
+from ..validation import finite_real
 
 FARADAY_C_MOL = N_A * elementary_charge
 
 
-def _nonnegative(value, name):
-    if isinstance(value, bool) or not isinstance(value, numbers.Real):
-        raise ValueError(f"{name} must be a finite nonnegative real number")
-    value = float(value)
-    if not math.isfinite(value) or value < 0:
-        raise ValueError(f"{name} must be a finite nonnegative real number")
-    return value
+_nonnegative = partial(
+    finite_real,
+    nonnegative=True,
+    message="{name} must be a finite nonnegative real number",
+)
 
 
 @dataclass(frozen=True)

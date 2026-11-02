@@ -1,0 +1,27 @@
+[13d968332fed:108099] Read -1, expected 13418, errno = 38
+[13d968332fed:108100] Read -1, expected 57525, errno = 38
+[13d968332fed:108101] Read -1, expected 57525, errno = 38
+[13d968332fed:108102] Read -1, expected 57525, errno = 38
+[13d968332fed:108101] Read -1, expected 9544, errno = 38
+[13d968332fed:108100] Read -1, expected 9544, errno = 38
+[13d968332fed:108102] Read -1, expected 9544, errno = 38
+[13d968332fed:108100] Read -1, expected 4459, errno = 38
+[13d968332fed:108101] Read -1, expected 4459, errno = 38
+[13d968332fed:108102] Read -1, expected 4459, errno = 38
+[13d968332fed:108101] Read -1, expected 9535, errno = 38
+[13d968332fed:108100] Read -1, expected 9535, errno = 38
+[13d968332fed:108102] Read -1, expected 9535, errno = 38
+[13d968332fed:108099] Read -1, expected 13782, errno = 38
+[13d968332fed:108100] Read -1, expected 58236, errno = 38
+[13d968332fed:108102] Read -1, expected 58236, errno = 38
+[13d968332fed:108101] Read -1, expected 58236, errno = 38
+[13d968332fed:108100] Read -1, expected 9776, errno = 38
+[13d968332fed:108102] Read -1, expected 9776, errno = 38
+[13d968332fed:108101] Read -1, expected 9776, errno = 38
+[13d968332fed:108100] Read -1, expected 4533, errno = 38
+[13d968332fed:108101] Read -1, expected 4533, errno = 38
+[13d968332fed:108102] Read -1, expected 4533, errno = 38
+[13d968332fed:108100] Read -1, expected 9535, errno = 38
+[13d968332fed:108101] Read -1, expected 9535, errno = 38
+[13d968332fed:108102] Read -1, expected 9535, errno = 38
+Surface rate serial versus G2 B2 MPI: PASS; 27 array/checkpoint files match exactly, fixed substrate remains exact, and both completed resumes pass.

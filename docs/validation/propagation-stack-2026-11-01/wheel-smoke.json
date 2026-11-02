@@ -1,0 +1,8 @@
+{
+  "isolated_wheel_import": true,
+  "native_nhc_selective_prefix": true,
+  "dynamics_nhc_checkpoint": true,
+  "mts_rpc_nhc_composition": true,
+  "batched_nhc": true,
+  "explicit_trpmd_zero_friction": true
+}

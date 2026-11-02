@@ -1,0 +1,40 @@
+# Advanced centroid RPSH with the explicit diagonal BO correction.
+# dboc_step controls a Cartesian finite difference of the DBOC scalar.
+task = "nonadiabatic"
+method = "rpsh-ca"
+beta = 100.0
+beads = 4
+seed = 20261105
+
+[model]
+name = "tully1"
+
+[system]
+masses = [2000.0]
+positions = [[-0.4, 0.0, 0.0]]
+
+[initial]
+kind = "point"
+active_surface = 0
+momenta = [[20.0, 0.0, 0.0]]
+
+[ensemble]
+trajectories = 4
+steps = 6
+sample_stride = 2
+
+[dynamics]
+dt = "0.1 autime"
+integrator = "cayley-bcb"
+native = false
+electronic_substeps = 8
+rescaling = "bead"
+frustrated_hops = "reverse"
+decoherence = "none"
+dboc = true
+dboc_step = "1e-4 bohr"
+geometric_force = false
+block_steps = 3
+
+[output]
+directory = "runs/rpsh-dboc"

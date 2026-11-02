@@ -30,7 +30,9 @@ def opes_input():
 
 def test_opes_public_default_and_frozen_run_resume_offline(tmp_path, monkeypatch):
     job = opes_input()
-    config, _ = JobSpec.from_mapping(job).resolve()
+    with pytest.warns(FutureWarning, match="deprecated"):
+        config, _ = JobSpec.from_mapping(job).resolve()
+    assert config["task"] == "fes" and config["fes"]["method"] == "opes"
     assert config["analysis"]["method"] == "kde"
     assert config["analysis"]["measure"] == "cv_density"
     assert config["analysis"]["bootstrap"] == 0
@@ -38,7 +40,8 @@ def test_opes_public_default_and_frozen_run_resume_offline(tmp_path, monkeypatch
     assert "opes_preparation" in prepare(job)
     output = tmp_path / "run"
     result = run(job, output=output)
-    assert result["task"] == "opes" and result["samples"] == 5
+    assert result["task"] == "fes" and result["method"] == "opes"
+    assert result["samples"] == 5
     assert result["converged"] is False
     assert result["estimator"] == "reweighted_histogram"
     checkpoint = output / "checkpoints" / "opes_0000.npz"
@@ -69,14 +72,15 @@ def test_opes_public_default_and_frozen_run_resume_offline(tmp_path, monkeypatch
 def test_opes_rejects_irrelevant_bias_and_rate_inputs(section):
     job = opes_input()
     job[section] = {}
-    with pytest.raises(InputError, match="OPES uses"):
+    message = "does not accept umbrella parameters" if section == "umbrella" else "OPES uses"
+    with pytest.raises(InputError, match=message):
         JobSpec.from_mapping(job).resolve()
 
 
 def test_opes_options_cannot_be_silently_attached_to_fes():
     job = opes_input()
     job["task"] = "fes"
-    with pytest.raises(InputError, match="requires task='opes'"):
+    with pytest.raises(InputError, match="fes.method='umbrella' does not accept opes parameters"):
         JobSpec.from_mapping(job).resolve()
 
 

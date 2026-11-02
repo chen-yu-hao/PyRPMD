@@ -348,7 +348,8 @@ class CollisionTests(unittest.TestCase):
 
     def test_pilot_inference_rejects_unknown_radii_or_production(self):
         missing = system()
-        missing["symbols"] = ["Xe", "H"]
+        # The sourced table now includes Xe and extends through Cm.
+        missing["symbols"] = ["Og", "H"]
         with self.assertRaisesRegex(ValueError, "no covalent radii"):
             drpmd.resolve_pilot_outcomes(missing, separation_au=4.0)
         with self.assertRaisesRegex(ValueError, "Production dRPMD requires explicit"):

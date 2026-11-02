@@ -1,0 +1,302 @@
+{
+  "base_revision": "2f907ba96d22cb134198715e398b1d9f8d83d929",
+  "comparison": "main/current Python NativeEnsemble wrappers against the same current _thermal extension",
+  "scope": "constructor schema/fingerprint and complete checkpoint/observation compatibility; not an independently built old native engine",
+  "cases": [
+    {
+      "case": "thermostat=none,fuse_modes=False",
+      "fingerprint": "c47a832d110c35961acb4ff8955aca648fedeb573703fb49ea9b45ad4689c8da",
+      "terminal_digest": "a7111259eddfe74c331ad035a0270daa67cb2508bff63a515f37025a3b60bff8",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=andersen,fuse_modes=False",
+      "fingerprint": "ffc8f2f235894b735165b47d60d7e73fcf386d63973cca5c58dc898e4ea22532",
+      "terminal_digest": "b96478a486bb7acfa8dd2dd97c1368916518474436d226fab9d07e4a8ffd0a6b",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=langevin,fuse_modes=False",
+      "fingerprint": "194b740c847639dd5afd7fc2e0f045c0b3b1707ab581b3869fb93f67d7256099",
+      "terminal_digest": "dec845188da3d29461d33e2739f576bbc564d132f3ebd45edf91a5d3a6b41ea8",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=pile-l,fuse_modes=False",
+      "fingerprint": "388a88440d05db2722c31ca164f8b0fd7fb42af7060885cb8ad306e55d5850ba",
+      "terminal_digest": "3b6f5740ca915279e61b1855ce6d2d00174f08a73afd566d932cf30fbfc4d976",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=pile-g,fuse_modes=False",
+      "fingerprint": "579ccb588300455145f2bf56b06a7608361801ddb8f94a1474d31c556383fe83",
+      "terminal_digest": "19494ef004a702f6b6eb2b567f9075673d88bfec9d44acbbb4a676c50165cc02",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=svr,fuse_modes=False",
+      "fingerprint": "26d62beff8e85c509db8eda33fdac760f1f2446ba8ffb6dd6b1cb6a5353f5a09",
+      "terminal_digest": "637467eaa7ea3cd170a54c6b11f0fff413c1bd4d005d2f2fba6450c24b7827a7",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=gle,fuse_modes=False",
+      "fingerprint": "b5a6d3cc49c388a969ad6fa9d3a71c4cfce59eb02ad09de8dd98120a6d4ef114",
+      "terminal_digest": "06137ed10331833720b11e33c6ba1ea9e10821ef3da60a14c84b764be8246f01",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=nm-gle,fuse_modes=False",
+      "fingerprint": "6a75c0c91f937a5e9bb8d5a30781dfd61b74f62b9bfda8352ea5f4ebcfc8ddcb",
+      "terminal_digest": "4e49a7a1379ed1629491c98c0bd64001fd2dca7821ef9f5617422043319a9428",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=nm-gle-g,fuse_modes=False",
+      "fingerprint": "6e9b2844fff258224668fbeb31dfbdae69b850cb509e70a744e5ba13b22d5744",
+      "terminal_digest": "8ae49ebf8e8f26c61078f06cea724f33d4ec62191f83a5de77a2a7e401c3ad09",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=piglet,fuse_modes=False",
+      "fingerprint": "7eb208960f11916dfa60b1bfd0331848141c02cb089abab1e9001d6e1de73b72",
+      "terminal_digest": "9a332e1679365ae75328c582e5435755eb77621b83fbd5757491506199bce514",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=trpmd,fuse_modes=False",
+      "fingerprint": "142d4093e2a7bbab202559cd7abd8867c0abb21ddb24d2d03f3a1b5da42bfd62",
+      "terminal_digest": "660bd8efc89fdfcee216b12e699de0adb05fcede481ffe4be8c70095d4450d35",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=ffl,fuse_modes=False",
+      "fingerprint": "cf6c49e39d126622fa3c75c812621845267f1ae27627dbe016e4d55b77c9f793",
+      "terminal_digest": "173f458c0d8e04acf20b8d177b808b9b8b5acfb281f89c714c321f183924d887",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=bzp,fuse_modes=False",
+      "fingerprint": "014e0bb79f54ea976880e3622db1dadae600698ef9650bbc902ea5d833de04b7",
+      "terminal_digest": "29407f30abbf3610ae9dc2d93042922fa75328884d9001e56af88a43abb359a3",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=mttk,fuse_modes=False",
+      "fingerprint": "e9118c4e0310fc2882b68c1972229265b452bbb0ca0f78252f702f3e3ea68746",
+      "terminal_digest": "21bde1be0353cad67d37e90b5f77a0dc317c1ce2fd73b2486351dd3ddfdf5b6f",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=rgb,fuse_modes=False",
+      "fingerprint": "877c5b1b8751f6abb3041e6f25b546f8bd330c0f22a036d8f0af7d76fe502f6c",
+      "terminal_digest": "2aa72c6bb3b4ebc0f85ece6e328734d58ebe136950ea85c73e12b47e109e81a7",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=scr,fuse_modes=False",
+      "fingerprint": "3841e0faab08352d0c297cf4af3ae1217301f64a287bf4653f856350f96d4269",
+      "terminal_digest": "9beb4a575e22f6b1469d94b85ad99ba5f7ee352e10c982f1f693753257b68a6e",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=none,fuse_modes=True",
+      "fingerprint": "9618a3bd6d3fa9d27d7449df90323e2a4a5695a5e2c1500d88fd58b8c08c8a05",
+      "terminal_digest": "d5b677c215347214217cec80b1965cee82bd54e1caaf3f22d23ee130fe8857ad",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=andersen,fuse_modes=True",
+      "fingerprint": "fc5b0661cec9fd941b7c88f151dfe0f9233b4c926bef4e402ffe62e4020cb051",
+      "terminal_digest": "bed12b0acda14e68edc0896065a4208b9723f328c82eeba082394ca04719654d",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=langevin,fuse_modes=True",
+      "fingerprint": "629785e0c273794b2a69b422d210c012d81c4ef6a0979c003d33a0fa1d67c064",
+      "terminal_digest": "24fd9a700dc486ab9bde1ab13dffdfdad3ee666aa75077dfe18f99d0f96bbaef",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=pile-l,fuse_modes=True",
+      "fingerprint": "a5ca1526d4781b408cb8e0df3b6d2e243eb58099f8eb972834124d8a1dcb23e2",
+      "terminal_digest": "cf3d7f1ed033f4fa7929d13eeacdc0fef2ba471794a9a7c360fcf4215063e7f5",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=pile-g,fuse_modes=True",
+      "fingerprint": "f7d73c5d44909bcb1f58c3f0a2cf3cda3911134a62da960198c4a3e8704695cf",
+      "terminal_digest": "b376e76716b01dad29437603c9e53108a882d96ef0f722909b00f99c7ab2f414",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=svr,fuse_modes=True",
+      "fingerprint": "ae246417e5cce78584bffe950e372f38adb11c771465ae98407177abc15a67d0",
+      "terminal_digest": "9c751e5e4c848d966680206d71ffba9aa3a563581dec3ff5f4482eab7e82e285",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=gle,fuse_modes=True",
+      "fingerprint": "43459ec3249e0b3d091f6f8e352463d5ecb155ec9b06c6beff37bb55648b11f8",
+      "terminal_digest": "52490d07f083171c220b2520faf7e51d3c08ceed7afedc7b77d48b7135c3e098",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=nm-gle,fuse_modes=True",
+      "fingerprint": "b9245d5d6307aed00667d1d207f4364da74402c98f3ce86a4172f69da33851d6",
+      "terminal_digest": "d127cdad3faf8a2fa7f21e5372fd46849739035af4ffa9e7090c97107543b5cb",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=nm-gle-g,fuse_modes=True",
+      "fingerprint": "226390017d8f79096f888c1aa2c3002438068d8f7178d45df15bf291ae4e48aa",
+      "terminal_digest": "82d2685429b9b3e69cbac4e75c7b868c2ea8bcb071c1f0bfa5b6d48d18486193",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=piglet,fuse_modes=True",
+      "fingerprint": "a337ef3fc418655c60867b98ff67b6407455c2ae54ccbb7e045237c79aa01109",
+      "terminal_digest": "2bd272a0fd3c679d919a782e3116c1a3c4dcaa0637db503e29f94fc515125052",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=trpmd,fuse_modes=True",
+      "fingerprint": "7c77b86fc29a01bda162c3ba6961334ccc4946d754c636bf52a433ffde91e43c",
+      "terminal_digest": "fb222d3682c3d51b8027057974c37742a9fcb4b3ce7168f9a52ed5d30b4490d4",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "thermostat=ffl,fuse_modes=True",
+      "fingerprint": "40a358ea639a6c725480ed0cc4079059ed6c1ffcd067fd6350bc597d3517eb05",
+      "terminal_digest": "e5f0f0bcdefd1b57fd379c2eadfc441456697a16c0805612c5b73ff83a9435d1",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=bzp,fuse_modes=True",
+      "fingerprint": "5b6ce1be88961867d1a09344edf11eb9a18a547e5e43e3a066a2328429e2d06f",
+      "terminal_digest": "d50cba4bc1264d90031fc481e81a74e5ce5c27b2da00d18ee623118e3c5ca35c",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=mttk,fuse_modes=True",
+      "fingerprint": "ad95f4d4c166df9a2e764aff2a516a7b7af56fe0f07038d8b4ef3babc8a7ecd1",
+      "terminal_digest": "5c94f92c85d1a3ac454cfad700f74f9b5341ff822d8e16d85d8c333d7e467351",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=rgb,fuse_modes=True",
+      "fingerprint": "51e66abf9f593ebbd941f498d81093211f05d90cf1f7b7473791f63b00718d30",
+      "terminal_digest": "b692a86f55337a81095841ed814e7f5a247ee76d7a4b6b7c6c4a77db93057c85",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    },
+    {
+      "case": "barostat=scr,fuse_modes=True",
+      "fingerprint": "1375953a65e59e0e5142e400654914fefae8b1988cafbaf659fd99134aef51cf",
+      "terminal_digest": "c46cbc4987b0801fa4173ed302c7bbdcd2ffd6ec258627091cdfee49aaa14134",
+      "fingerprints_equal": true,
+      "initial_checkpoints_equal": true,
+      "terminal_checkpoints_equal": true,
+      "observation_arrays_equal": true
+    }
+  ],
+  "passed": 32,
+  "steps_per_case": 9,
+  "rng_abi": "mt19937_64-normal-v1-libstdc++-20240904",
+  "current_native_ensemble_sha256": "9875b8bb5d658d8c146641a0e5ba1f2125b98da967e2e3093643d3888172e21f",
+  "current_thermal_binary_sha256": "2aea62f8f79aa29d1ab736de73b7adb1aca8095f478ae84897afb323c843980d",
+  "current_thermal_header_sha256": "60890d93319d7098b1f841028a86df198151badf33e1a648958fa7df4fb2e5a7",
+  "current_thermal_binding_sha256": "5584cb886eb3975280810896106bdc3795a9244c1b3ea6244e801ad8c8e91a58"
+}

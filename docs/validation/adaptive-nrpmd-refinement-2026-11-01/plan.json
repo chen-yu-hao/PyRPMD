@@ -1,0 +1,73 @@
+{
+  "reason": "both_original_endpoint_voltage_P4_cases_failed_positive_effective_sample_gate",
+  "selection": "all_points_failing_original_positive_effective_sample_gate; no_seed_or_threshold_selection",
+  "selected_cases": [
+    {
+      "potential_V": -0.6,
+      "beads": 4
+    },
+    {
+      "potential_V": 0.6,
+      "beads": 4
+    }
+  ],
+  "original_report_sha256": {
+    "Um0_6_P4": "b9d000bf79a75ba81349daeac70e99602ed5de9e9519eddb413d6730b6516129",
+    "Up0_6_P4": "4663135e9235a3b8ad8e75522f4cad24f1e52b26e481bdd9502fd06e91f9bebc"
+  },
+  "runner_sha256": "6690704e5d3656ee2294e22c0d72a2d32f8d4f4bdabc5922245455c80ba187e4",
+  "config": {
+    "potentials_V": [
+      -0.6,
+      0.0,
+      0.6
+    ],
+    "beads": [
+      1,
+      2,
+      4
+    ],
+    "production_chains": 3,
+    "images": 5,
+    "pilot_iterations": 3,
+    "pilot_samples": 512,
+    "pilot_burn_in": 256,
+    "pilot_stride": 2,
+    "production_samples": 2048,
+    "production_burn_in": 512,
+    "production_stride": 2,
+    "bootstrap_replicates": 64,
+    "bootstrap_block_multiplier": 2.0,
+    "dynamics_parents": 16,
+    "dynamics_dts": [
+      0.02,
+      0.01,
+      0.005
+    ],
+    "dynamics_duration": 2.0,
+    "min_average_sign": 0.1,
+    "min_effective_samples": 20.0,
+    "overlap_threshold": 0.01,
+    "beta": 3.0,
+    "mass": 1.5,
+    "stiffness": 5.0,
+    "seed": 20261101
+  },
+  "source_identity": {
+    "sha256": "3a2ba3ffe563bd20494ad106c041acdf400e11248f0ef7211ff44f0e435f56ca",
+    "files": {
+      "examples/electrochemistry/adaptive_nrpmd_study.py": "fb9bced91ce37b49ca5c064d74bae6c4b068127b14ef77f1acac1921c2c57eb0",
+      "examples/electrochemistry/adaptive_constant_potential.py": "57156f86d4c8420718cdb008b2e745b405b2a87714972763392dd64a297a5231",
+      "src/pyrpmd/adaptive_nrpmd.py": "facf20d510b05b8e8f206a178e4433101cda490610005fd8b1bd83ce6f8db8fb",
+      "src/pyrpmd/thermal_nrpmd.py": "2643b6cb7fedf48f038fff44d7f62bbda2f8ee82594a8025d2bbfe74ea6ad9ac",
+      "src/pyrpmd/nonadiabatic.py": "68bc1c565ee795a640bcada4f21baff4083472594ad4b8eb620f62d85e9a94a6",
+      "src/pyrpmd/dynamics.py": "9bd6d3052b9878df5c64855c80d9088d5ef82f0981c21838e225ddfaee502c46",
+      "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+      "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+      "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+      "src/pyrpmd/electrochemistry/nonadiabatic.py": "5b4656c36b861cdec7fc94e39dcc315f0b0ec8d76b0cd6555cc5f83f00f5a7b8",
+      "src/pyrpmd/electrochemistry/potentials.py": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe",
+      "src/pyrpmd/electrochemistry/reservoir.py": "c2092e405d6d880e21afa512597c37858daeed067f351ac134ddb5c5b5379be3"
+    }
+  }
+}

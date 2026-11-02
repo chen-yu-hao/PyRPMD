@@ -1,0 +1,42 @@
+# Analytic workflow check. No real-system or converged-spectrum claim.
+task = "spectroscopy"
+temperature = "300 K"
+beads = 8
+seed = 57
+
+[system]
+symbols = ["H"]
+geometry = [[0.1, 0.0, 0.0]]
+geometry_unit = "bohr"
+
+[potential]
+provider = "harmonic"
+params = {k = 0.05}
+
+[dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.02 fs"
+
+[sampling]
+equilibration_steps = 500
+production_steps = 2000
+sample_interval = 2
+replicas = 2
+gamma_centroid = "0.05 fs^-1"
+
+[spectroscopy]
+method = "pa-cmd"
+target_frequency = "14000 cm^-1"
+friction_scale = 0.5
+spectra = ["ir", "raman", "sfg"]
+sfg_component = "xxz"
+max_lag = 250
+normalize = false
+
+[properties]
+provider = "python"
+factory = "harmonic_properties.py:build"
+
+[output]
+directory = "../../runs/spectroscopy-pacmd"
+checkpoint_steps = 500

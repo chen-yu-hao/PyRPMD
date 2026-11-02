@@ -1,0 +1,184 @@
+{
+  "package_file": "/workspace/scratch/82b1e823c721/packaging-validation/isolated-install/pyrpmd/__init__.py",
+  "package_version": "0.2.0",
+  "working_directory": "/workspace/scratch/82b1e823c721/packaging-validation",
+  "checkout_absent_from_sys_path": true,
+  "public_tier2_exports_checked": [
+    "ActiveLearningMonitor",
+    "AdiabaticPythonPotential",
+    "AdiabaticRPSHDynamics",
+    "AdiabaticRPSHState",
+    "AdiabaticResult",
+    "BosonicExchangePotential",
+    "CallablePropertyModel",
+    "CentroidForceMatch",
+    "CommitteePotential",
+    "CommitteeResult",
+    "CoordinationNumber",
+    "DeltaLearningPotential",
+    "Dihedral",
+    "ElectronicFrame",
+    "ExchangeResult",
+    "GaussianTrialWavefunction",
+    "MASHDynamics",
+    "OPESExploreBias",
+    "PACMDDynamics",
+    "PIGSPotential",
+    "PathCV",
+    "PropertyModel",
+    "PropertyResult",
+    "QDNRPMDDynamics",
+    "QDNRPMDState",
+    "QuadraticCentroidPotential",
+    "RETISResult",
+    "RMSD",
+    "ReplicaExchange",
+    "ReplicaExchangeMove",
+    "ReplicaExchangeTIS",
+    "SharedMetadynamicsBias",
+    "SuzukiChinPotential",
+    "TorchScriptCV",
+    "TorchScriptPropertyModel",
+    "bosonic_exchange",
+    "centroid_force_training_data",
+    "estimate_biased_rate",
+    "evaluate_property_trajectory",
+    "fit_quadratic_centroid_pmf",
+    "ibi_update",
+    "reduced_configurational_energy",
+    "relative_raman_spectrum",
+    "relative_sfg_spectrum",
+    "rescale_biased_time",
+    "run_nonadiabatic_rate",
+    "validate_property_result"
+  ],
+  "lazy_torch_and_plumed_imports": true,
+  "native_module": "/workspace/scratch/82b1e823c721/packaging-validation/isolated-install/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+  "thermal_module": "/workspace/scratch/82b1e823c721/packaging-validation/isolated-install/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+  "module_cli_info_exit_code": 0,
+  "installed_console_entrypoint_info_exit_code": 0,
+  "packaged_spectroscopy_example_validation_exit_code": 0,
+  "cli_info": {
+    "name": "PyRPMD",
+    "version": "0.2.0",
+    "environment": {
+      "python": "3.12.14",
+      "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "dependencies": {
+        "numpy": "2.5.4",
+        "scipy": "1.17.0",
+        "h5py": "3.16.0",
+        "threadpoolctl": "3.7.0",
+        "mpi4py": null,
+        "torch": "2.15.0+cpu",
+        "ase": null,
+        "pymbar": null,
+        "matplotlib": "3.10.8"
+      }
+    },
+    "native": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    },
+    "workflows": [
+      "rate",
+      "drpmd",
+      "fes",
+      "network",
+      "metadynamics",
+      "opes",
+      "pcet",
+      "pimd",
+      "diffusion",
+      "site_rate",
+      "surface_rate",
+      "spectroscopy",
+      "plumed"
+    ],
+    "materials": {
+      "cell": "fixed_or_isotropic_bzp",
+      "trajectory": "unwrapped_centroid",
+      "pressure_ensemble": true,
+      "fixed_atoms": true,
+      "streaming_trajectories": true
+    },
+    "integrators": [
+      "cayley-bcb",
+      "normal-mode-bab",
+      "velocity-verlet"
+    ],
+    "enhanced_sampling": [
+      "adaptive_umbrella",
+      "replica_exchange_umbrella",
+      "standard_metadynamics",
+      "well_tempered_metadynamics",
+      "shared_walker_metadynamics",
+      "opes",
+      "opes_explore",
+      "adaptive_opes_bandwidth"
+    ],
+    "sampling_python_apis": [
+      "plumed_centroid_bias",
+      "transition_interface_sampling",
+      "temperature_hamiltonian_replica_exchange",
+      "positive_ensemble_retis",
+      "audited_biased_kinetics"
+    ],
+    "path_integral_actions": [
+      "suzuki_chin",
+      "bosonic",
+      "pigs"
+    ],
+    "spectroscopy_methods": [
+      "pa-cmd",
+      "rpmd",
+      "trpmd",
+      "f-cmd_quadratic_centroid_pmf"
+    ],
+    "nonadiabatic_python_apis": [
+      "adiabatic_rpsh",
+      "quasi_diabatic_nrpmd",
+      "two_state_mash"
+    ],
+    "ml_lifecycle": [
+      "committee",
+      "active_learning_candidates",
+      "delta_rpc"
+    ],
+    "unimplemented_methods": [
+      "qcmd",
+      "h-cmd"
+    ],
+    "scientific_tools": [
+      "general_centroid_site_rates",
+      "temperature_isotope_studies",
+      "ring_polymer_instanton",
+      "takahashi_imada_thermodynamics",
+      "open_path_momentum"
+    ],
+    "initial_ensembles": [
+      "thermal_parent",
+      "ne_rpmd",
+      "qct"
+    ],
+    "input_schema_version": 1,
+    "run_manifest_schema_version": 2,
+    "checkpoint_schema_version": 2,
+    "input_formats": [
+      "TOML .inp",
+      "Python build()"
+    ],
+    "postprocessing": [
+      "rate-postprocess"
+    ],
+    "additional_workflow_commands": [
+      "nonadiabatic-rate"
+    ]
+  }
+}
