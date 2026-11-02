@@ -294,6 +294,44 @@ case requires two GPUs. Framework/TorchScript deprecation warnings remain
 visible. The NequIP AOTI cases exercise metadata and layout guards with a mock
 loader; they do not compile or execute an AOTI artifact.
 
+### Existing-suite regression record
+
+The full repository suite ran in separate baseline and T04 worktrees with
+the same CPU environment and each worktree's own `src` on `PYTHONPATH`:
+
+```bash
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q
+```
+
+| Source snapshot | Raw pytest summary |
+| --- | --- |
+| Baseline `8cc402f` | `14 failed, 8763 passed, 205 skipped, 48 warnings, 486 subtests passed in 2540.40s` |
+| T04 implementation/tests `9956bc6` | `14 failed, 8838 passed, 210 skipped, 135 warnings, 486 subtests passed in 2110.09s` |
+
+The failed-node sets were identical. All 14 failures occurred in existing
+i-PI socket tests because the restricted environment rejected socket creation
+with `PermissionError: [Errno 1] Operation not permitted`. With local socket
+access enabled, the entire `tests/test_ipi_clients.py` file passed in both
+worktrees (baseline `19 passed in 3.73s`, T04 `19 passed in 3.70s`). The two
+other affected nodes, `PeriodicPotentialTests::test_ipi_real_cell_inverse_and_virial_wire`
+and `SocketTests::test_ipi_protocol`, also passed (baseline `2 passed in 1.33s`,
+T04 `2 passed in 1.21s`). Socket implementation and test files were unchanged.
+The restricted full runs therefore are recorded with their actual failures;
+the targeted reruns establish the environment cause without hiding it.
+
+The six existing adapter/input/identity/trajectory-batching test files also
+returned `170 passed, 7 skipped` before and after the implementation.
+Missing optional packages and CUDA cases remain skipped, not counted as passes.
+
+A final refinement of the random-model helper seeds only the CPU generator,
+preserving accelerator RNG state. Independent checks for float64
+and float32 confirmed all 75 model state tensors and 1,968 parameters were
+bit-identical to the recorded implementation, while CPU RNG/default dtype were
+preserved and no accelerator seed entry point was called. Thus the recorded
+CPU model and benchmark data are unchanged by that helper refinement.
+
+### Throughput benchmark
+
 The real MACE throughput benchmark includes graph construction, energy,
 forces, virial and the NumPy boundary on both paths:
 

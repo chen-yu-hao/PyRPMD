@@ -35,7 +35,8 @@ def make_random_mace(dtype="float64", device="cpu", seed=1729):
     try:
         torch.set_default_dtype(getattr(torch, dtype))
         with torch.random.fork_rng(devices=[]):
-            torch.manual_seed(seed)
+            # Construction uses CPU tensors; leave accelerator RNGs untouched.
+            torch.default_generator.manual_seed(int(seed))
             model = modules.ScaleShiftMACE(
                 r_max=2.8,
                 num_bessel=4,
