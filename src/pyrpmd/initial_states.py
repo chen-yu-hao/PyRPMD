@@ -33,7 +33,7 @@ from .validation import integer_count as _integer
 from .validation import positive_quantity as _positive
 
 _INVERSE_ENERGY = (0, -1, 0, 0, 0, 0)
-_SECTION_KEYS = {"method", "beta", "fragments"}
+_SECTION_KEYS = {"method", "beta", "fragments", "j0_energy_policy"}
 _FRAGMENT_KEYS = {
     "vibrational_quanta", "j", "hessian", "hessian_file", "hessian_unit",
     "frequencies", "frequency_unit", "modes", "modes_file",
@@ -96,6 +96,10 @@ def normalize_initial_ensemble(section):
     all zero. Atoms use an empty fragment mapping. Hessian-derived modes are
     ordered by increasing frequency; choose an explicit mode basis when a
     particular direction within a degenerate vibrational subspace is intended.
+
+    j0_energy_policy defaults to the historical 'project' preparation. QCT
+    additionally accepts 'preserve_actions', a deterministic constrained-phase
+    preparation whose final phases are correlated. NE-RPMD retains 'project'.
     """
     if not isinstance(section, Mapping):
         raise ValueError("initial_ensemble must be a mapping")
@@ -106,6 +110,15 @@ def normalize_initial_ensemble(section):
     if method not in ("qct", "ne_rpmd"):
         raise ValueError("initial_ensemble.method must be 'qct' or 'ne_rpmd'")
     result = {"method": method}
+    policy = section.get("j0_energy_policy", "project")
+    if not isinstance(policy, str) or policy not in ("project", "preserve_actions"):
+        raise ValueError("initial_ensemble.j0_energy_policy must be 'project' or 'preserve_actions'")
+    if method != "qct" and policy != "project":
+        raise ValueError("initial_ensemble.j0_energy_policy='preserve_actions' requires method='qct'")
+    # An omitted policy retains the original canonical configuration and hash,
+    # including old resolved inputs loaded directly by resume/extend.
+    if "j0_energy_policy" in section:
+        result["j0_energy_policy"] = policy
     if "beta" in section:
         result["beta"] = _positive(section["beta"], "initial_ensemble.beta", _INVERSE_ENERGY)
     elif method == "ne_rpmd":
@@ -294,6 +307,35 @@ def _project_centroid_j0(q, p, masses, target_com):
         p -= masses[None, :, None] * np.cross(omega, relative)[None, :, :]
 
 
+def _qct_preparation_report(reference, q, p):
+    """Fixed preparation-frame energies, before collision orientation or kick."""
+    masses = reference.masses
+    root_mass = np.sqrt(masses)[:, None]
+    rows = reference.modes.reshape(reference.nmodes, 3 * len(masses))
+    coordinates = ((q - reference.geometry) * root_mass).ravel() @ rows.T
+    com_momentum = p.sum(axis=0)
+    internal_p = p - masses[:, None] * com_momentum / masses.sum()
+    momenta = (internal_p / root_mass).ravel() @ rows.T
+    target = (np.asarray(reference.vibrational_quanta) + 0.5) * reference.frequencies
+    potential = 0.5 * (reference.frequencies * coordinates) ** 2
+    actual = 0.5 * momenta ** 2 + potential
+    kinetic = float(0.5 * np.sum(internal_p ** 2 / masses[:, None]))
+    relative = q - np.average(q, axis=0, weights=masses)
+    return {
+        "atoms": list(reference.atoms),
+        "vibrational_quanta": list(reference.vibrational_quanta),
+        "target_mode_energies_au": target.tolist(),
+        "reference_mode_energies_au": actual.tolist(),
+        "reference_mode_energy_error_au": (actual - target).tolist(),
+        "reference_mode_energy_relative_error": ((actual - target) / target).tolist(),
+        "cartesian_kinetic_energy_au": kinetic,
+        "reference_harmonic_potential_energy_au": float(potential.sum()),
+        "cartesian_harmonic_energy_error_au": float(kinetic + potential.sum() - target.sum()),
+        "centroid_com_momentum_au": com_momentum.tolist(),
+        "centroid_angular_momentum_au": np.cross(relative, internal_p).sum(axis=0).tolist(),
+    }
+
+
 @dataclass(frozen=True)
 class PreparedInitialEnsemble:
     """Reusable reference preparation; independent draws return ordinary State."""
@@ -305,6 +347,7 @@ class PreparedInitialEnsemble:
     references: tuple[HarmonicReference, ...]
     ring_transform: np.ndarray
     ring_frequencies: np.ndarray
+    j0_energy_policy: str = "project"
 
     @property
     def vibrational_quanta(self):
@@ -340,10 +383,20 @@ class PreparedInitialEnsemble:
             })
         return {
             "method": self.method, "beads": self.beads, "beta_au": self.beta,
+            "j0_energy_policy": self.j0_energy_policy,
+            "phase_sampling": (
+                "uniform_seed_phases_then_deterministic_j0_constraints_v1"
+                if self.j0_energy_policy == "preserve_actions"
+                else "independent_uniform_phases_before_rigid_velocity_projection"
+            ),
             "vibrational_quanta": self.vibrational_quanta, "rotation": "j0",
             "free_ring_translation": "all_noncentroid_fragment_com_modes",
             "ring_rotations": "omitted", "mode_convention": "orthonormal_mass_weighted_rows",
-            "j0_projection": "rigid_velocity_removed_at_sampled_centroid_geometry_without_rescaling",
+            "j0_projection": (
+                "phase_constraints_preserve_each_preparation_reference_action"
+                if self.j0_energy_policy == "preserve_actions"
+                else "rigid_velocity_removed_at_sampled_centroid_geometry_without_rescaling"
+            ),
             "ring_centroid_convention": "orthogonal_Q0_equals_sqrtP_times_bead_mean",
             "reference_doi": "10.1063/5.0076216",
             "approximation": "harmonic_initial_ensemble; not an exact quantum pure state; no final-state assignment",
@@ -351,7 +404,12 @@ class PreparedInitialEnsemble:
         }
 
     def sample(self, rng):
-        """Draw one state; caller supplies a trajectory-specific NumPy Generator."""
+        """Draw one state with the selected j=0 policy and a caller-owned RNG.
+
+        A failed action-preserving phase solve raises without redrawing phases.
+        The construction-basis energy report is available before collision
+        launch through preparation_diagnostics().
+        """
         if not isinstance(rng, np.random.Generator):
             raise TypeError("sample requires a numpy.random.Generator")
         q = np.empty((self.beads, self.natoms, 3))
@@ -361,8 +419,16 @@ class PreparedInitialEnsemble:
             nu = np.asarray(reference.vibrational_quanta)
             if self.method == "qct":
                 phase = rng.uniform(0, 2 * np.pi, reference.nmodes)
-                mode_q = (np.sqrt(2 * (nu + 0.5) / omega) * np.cos(phase))[None, :]
-                mode_p = (np.sqrt(2 * (nu + 0.5) * omega) * np.sin(phase))[None, :]
+                if self.j0_energy_policy == "preserve_actions":
+                    from .qct_constraints import constrain_qct_phases
+
+                    mode_q, mode_p = constrain_qct_phases(
+                        phase, omega, nu, reference.modes, reference.geometry, reference.masses,
+                    )
+                    mode_q, mode_p = mode_q[None, :], mode_p[None, :]
+                else:
+                    mode_q = (np.sqrt(2 * (nu + 0.5) / omega) * np.cos(phase))[None, :]
+                    mode_p = (np.sqrt(2 * (nu + 0.5) * omega) * np.sin(phase))[None, :]
             else:
                 variance_p = self.beads / self.beta
                 variance_q = variance_p / (omega[None, :] ** 2 + self.ring_frequencies[:, None] ** 2)
@@ -391,10 +457,64 @@ class PreparedInitialEnsemble:
                 local_p += ((self.ring_transform.T @ translation_p)[:, None, :]
                             * reference.masses[None, :, None] / total_root)
             target_com = np.average(reference.geometry, axis=0, weights=reference.masses)
-            _project_centroid_j0(local_q, local_p, reference.masses, target_com)
+            if self.j0_energy_policy == "preserve_actions":
+                # The constrained phases already enforce j=0. Remove only
+                # residual translation; another rigid-velocity projection here
+                # would reintroduce the action error this policy avoids.
+                local_q += target_com - np.average(local_q[0], axis=0, weights=reference.masses)
+                local_p -= reference.masses[None, :, None] * (
+                    local_p[0].sum(axis=0) / reference.masses.sum()
+                )
+                report = _qct_preparation_report(reference, local_q[0], local_p[0])
+                target_energy = sum(report["target_mode_energies_au"])
+                relative_error = max(map(abs, report["reference_mode_energy_relative_error"]), default=0.0)
+                angular = np.linalg.norm(report["centroid_angular_momentum_au"])
+                angular_scale = max(1.0, float(
+                    np.linalg.norm((local_q[0] - target_com) * root_mass[0])
+                    * np.linalg.norm(local_p[0] / root_mass[0])
+                ))
+                checked = [relative_error, target_energy, angular, angular_scale,
+                           report["cartesian_harmonic_energy_error_au"]]
+                if (not np.isfinite(checked).all() or relative_error > 2e-10
+                        or abs(report["cartesian_harmonic_energy_error_au"]) > 2e-10 * target_energy
+                        or angular > 2e-10 * angular_scale):
+                    raise RuntimeError(
+                        "QCT preserve_actions failed its final preparation energy/angular-momentum check; "
+                        "check reference orthogonality and floating-point coordinate precision"
+                    )
+            else:
+                _project_centroid_j0(local_q, local_p, reference.masses, target_com)
             q[:, list(reference.atoms)] = local_q
             p[:, list(reference.atoms)] = local_p
         return State(q, p)
+
+    def preparation_diagnostics(self, state):
+        """QCT energy errors in the construction frame, before launch/propagation.
+
+        Unlike the orientation-aligned trajectory diagnostics, these quantities
+        use the supplied mode basis directly, including the chosen basis within
+        degenerate subspaces. Do not call this on rotated or propagated states.
+        Cartesian harmonic energy uses the complete internal kinetic energy;
+        it need not equal the sum of reference-projected mode energies.
+        """
+        if self.method != "qct" or self.beads != 1:
+            raise ValueError("preparation_diagnostics requires a one-bead qct ensemble")
+        self._validate_diagnostic_state(state)
+        return {
+            "method": self.method, "j0_energy_policy": self.j0_energy_policy,
+            "frame": "unrotated_preparation_reference",
+            "fragments": [
+                _qct_preparation_report(reference, state.q[0, list(reference.atoms)],
+                                        state.p[0, list(reference.atoms)])
+                for reference in self.references
+            ],
+        }
+
+    def _validate_diagnostic_state(self, state):
+        if state.q.shape != (self.beads, self.natoms, 3) or state.p.shape != state.q.shape:
+            raise ValueError("Diagnostic state shape does not match the prepared ensemble")
+        if not np.isfinite(state.q).all() or not np.isfinite(state.p).all():
+            raise ValueError("Diagnostic state must be finite")
 
     def diagnostics(self, state):
         """JSON-safe initial/sparse diagnostics, not final quantum-state binning.
@@ -405,10 +525,7 @@ class PreparedInitialEnsemble:
         conserved ring Hamiltonian. Individual action estimates may be negative
         or nonintegral; only ensemble/survival comparisons are appropriate.
         """
-        if state.q.shape != (self.beads, self.natoms, 3) or state.p.shape != state.q.shape:
-            raise ValueError("Diagnostic state shape does not match the prepared ensemble")
-        if not np.isfinite(state.q).all() or not np.isfinite(state.p).all():
-            raise ValueError("Diagnostic state must be finite")
+        self._validate_diagnostic_state(state)
         fragments = []
         for reference in self.references:
             ids = list(reference.atoms)
@@ -492,4 +609,5 @@ def prepare_initial_ensemble(config_section, system, beads, beta):
         if (not np.isfinite(reference.frequencies ** 2).all()
                 or not np.isfinite(beads / beta / reference.frequencies ** 2).all()):
             raise ValueError("Harmonic variances overflow; check frequencies and beta")
-    return PreparedInitialEnsemble(section["method"], beads, beta, len(masses), references, transform, frequencies)
+    return PreparedInitialEnsemble(section["method"], beads, beta, len(masses), references,
+                                   transform, frequencies, section.get("j0_energy_policy", "project"))

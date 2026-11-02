@@ -196,6 +196,8 @@ def check_state_selected(spec, *, duration="100 fs", samples=8, stride=10, outpu
                 },
                 "frames": [initial_frame],
             }
+            if prepared.method == "qct":
+                trajectory["preparation_diagnostics"] = prepared.preparation_diagnostics(state)
             while state.step < steps:
                 count = min(block_steps, steps - state.step)
                 global_steps = state.step + np.arange(1, count + 1)

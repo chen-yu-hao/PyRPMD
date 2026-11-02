@@ -504,6 +504,10 @@ def _initial_ensemble_task(task, services):
     ensemble = prepare_initial_ensemble(config["initial_ensemble"], system, beads, beta)
     labels = {"method": ensemble.method,
               "vibrational_quanta": ensemble.vibrational_quanta, "rotation": "j0"}
+    if ensemble.j0_energy_policy == "preserve_actions":
+        # Distinguish the constrained preparation in cross-section grouping,
+        # while retaining historical labels for project-policy checkpoints.
+        labels["j0_energy_policy"] = ensemble.j0_energy_policy
     plan = execution_plan(config.get("parallel"))
     seed = int(config.get("seed", 0))
     potential = make_trajectory_potential(task, factory=services.potential)
@@ -547,6 +551,8 @@ def _initial_ensemble_task(task, services):
                     raise FileExistsError(f"Initial state already exists: {initial_path}; use resume explicitly")
                 prepared = ensemble.sample(np.random.default_rng(
                     np.random.SeedSequence([seed, 5, trajectory_id])))
+                preparation_diagnostics = (ensemble.preparation_diagnostics(prepared)
+                                           if ensemble.method == "qct" else None)
                 child, launch = services.launch(
                     prepared, masses, fragments, beta,
                     config["collision"]["bmax_au"], config["system"]["separation_au"],
@@ -556,6 +562,8 @@ def _initial_ensemble_task(task, services):
                 )
                 parent_id = group
                 launch["initial_state"] = labels
+                if preparation_diagnostics is not None:
+                    launch["preparation_diagnostics"] = preparation_diagnostics
                 launch["initial_diagnostics"] = ensemble.diagnostics(child)
                 if classifier is not None and hasattr(classifier, "validate_reactants"):
                     try:

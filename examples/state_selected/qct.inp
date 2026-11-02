@@ -19,6 +19,8 @@ equilibrium = 1.4
 
 [initial_ensemble]
 method = "qct"
+# Enforce the harmonic mode actions and zero fragment angular momentum together.
+j0_energy_policy = "preserve_actions"
 
 [[initial_ensemble.fragments]]
 
