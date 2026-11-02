@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-02",
+  "baseline_main": "8cc402f",
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "visible_vcpus": 9,
+  "cpu_model_source": "lscpu run outside filesystem-limited test subprocess",
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "OMP_NUM_THREADS": 1,
+  "OPENBLAS_NUM_THREADS": 1,
+  "environment_note": "Shared VM with concurrent project tasks; elapsed timings include scheduling contention.",
+  "library_install": "../t12-venv/bin/python -m pip install -e '.[test]'",
+  "docs_install": "../t12-venv/bin/python -m pip install -e '.[docs]'",
+  "tested_implementation_commit": "73bcd7eecb147a648e1c379d9d21ea4f91baac4e",
+  "full_test_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t12-venv/bin/python -m pytest -q",
+  "docs_build_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t12-venv/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html",
+  "baseline_test_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t12-venv/bin/python -m pytest -q tests/test_mash.py tests/test_rp_mash.py tests/test_nonadiabatic_task_input.py tests/test_nonadiabatic_task_workflow.py tests/test_nonadiabatic_extension_input.py tests/test_nonadiabatic_checkpoint_validation.py tests/test_extended_nonadiabatic_workflow.py tests/test_electronic_friction.py tests/test_electronic_friction_review.py",
+  "full_test_environment": "Local IPC sockets enabled. The restrictive execution sandbox denies socket(AF_INET, SOCK_STREAM); the existing i-PI file passes all 19 tests when that restriction is lifted.",
+  "ipi_environment_check_command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t12-venv/bin/python -m pytest -q tests/test_ipi_clients.py",
+  "full_test_result": "8247 passed, 225 skipped, 51 warnings, 486 subtests passed in 1573.77s (0:26:13)",
+  "full_test_exit_code": 0,
+  "docs_build_exit_code": 0,
+  "docs_build_result": "build succeeded; -W --keep-going enabled",
+  "reference_backend": "CPU NumPy/SciPy; native=False; float64 nuclear data and complex128 electronic data",
+  "reference_commands": [
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t12-venv/bin/python examples/nonadiabatic/multistate_mash_reference.py --trajectories 128 --output ../t12-mash-reference.json",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t12-venv/bin/python examples/nonadiabatic/iesh_friction_reference.py --trajectories 32 --output ../t12-iesh-reference.json",
+    "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../t12-venv/bin/python examples/nonadiabatic/iesh_performance.py > ../t12-iesh-performance.json"
+  ],
+  "log_formatting_note": "Trailing whitespace in the archived Sphinx log was removed; diagnostic text and result are unchanged."
+}

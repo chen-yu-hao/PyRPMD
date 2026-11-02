@@ -37,6 +37,7 @@ include_patterns = [
     "nonadiabatic-workflow.md", "nonadiabatic-models.md",
     "nonadiabatic-ensembles.md", "nonadiabatic-comparison.md",
     "nonadiabatic-spin-methods.md", "nonadiabatic-hopping-extensions.md",
+    "nonadiabatic-iesh-multistate.md",
     "molecular-nonadiabatic.md", "nonadiabatic-performance.md",
     "tier2-*.md",
     "andersen-sampling.md", "trajectory-export.md", "bond-constraints.md", "distribution.md",
