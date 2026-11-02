@@ -33,7 +33,8 @@ def _dimension(unit):
         "hartree": DIMS["energy"],
         "dimensionless": DIMS["dimensionless"],
     }[unit]
-FES_DIMENSIONS = {"umbrella": (1, 2, 3), "metadynamics": (1, 2, 3), "opes": (1, 2)}
+FES_DIMENSIONS = {"umbrella": (1, 2, 3), "metadynamics": (1, 2, 3), "opes": (1, 2),
+                  "abf": (1, 2), "eabf": (1, 2), "steered": (1, 2)}
 
 
 def fes_method(config):
@@ -53,7 +54,7 @@ def fes_method(config):
             default = selected[0]
     method = table.get("method", default)
     if not isinstance(method, str) or method not in FES_DIMENSIONS:
-        raise ValueError("fes.method must be umbrella, metadynamics or opes")
+        raise ValueError("fes.method must be one of " + ", ".join(FES_DIMENSIONS))
     if task in ("metadynamics", "opes") and method != task:
         raise ValueError(f"task='{task}' conflicts with fes.method='{method}'")
     return method
@@ -125,7 +126,7 @@ def fingerprint_matches(saved, config, system, extras):
 def validate_cv_dimension(cv, method):
     """Apply the same dimension check and diagnostic to every FES method."""
     if not isinstance(method, str) or method not in FES_DIMENSIONS:
-        raise ValueError("fes.method must be umbrella, metadynamics or opes")
+        raise ValueError("fes.method must be one of " + ", ".join(FES_DIMENSIONS))
     supported = FES_DIMENSIONS[method]
     if cv.dimension not in supported:
         raise ValueError(f"{method} FES supports {supported[0]}–{supported[-1]} CV dimensions; "

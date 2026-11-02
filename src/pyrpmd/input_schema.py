@@ -28,7 +28,7 @@ def _unknown_fields(unknown, allowed, section):
 
 
 _ROOT = set(
-    "schema_version task preset temperature beads seed system potential dynamics sampling reaction preparation collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
+    "schema_version task preset temperature beads seed system potential dynamics sampling reaction preparation collision outcomes cvs umbrella analysis parallel output native description rate recrossing network metadynamics opes abf eabf steered adaptive_umbrella pcet diffusion site_rate surface nonadiabatic replica_exchange barostat electronic_friction initial_ensemble fes path_integral active_learning".split()
 )
 _SECTIONS = {
     "path_integral": set("method alpha fd_step beta_fd_step groups projection_time trial".split()),
@@ -78,6 +78,9 @@ _SECTIONS = {
     "opes": set(
         "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps mode adaptive_sigma sigma_min sigma_min_au".split()
     ),
+    "abf": set("cvs ranges ranges_au bins full_samples pace wall_stiffness wall_stiffness_au derivative fd_step".split()),
+    "eabf": set("cvs ranges ranges_au bins full_samples pace wall_stiffness wall_stiffness_au coupling coupling_au extended_mass extended_mass_au friction friction_au".split()),
+    "steered": set("cvs centers centers_au start start_au end end_au stiffness stiffness_au direction thermostat gamma gamma_au initial_equilibrium".split()),
     "replica_exchange": set("enabled interval_steps pairs".split()),
     "barostat": set("method pressure time_constant friction mode tau gamma compressibility cell_mask reference_cell reference_cell_unit stress".split()),
     "adaptive_umbrella": set(

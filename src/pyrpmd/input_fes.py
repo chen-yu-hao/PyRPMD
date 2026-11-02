@@ -7,7 +7,7 @@ import warnings
 
 from .input_schema import InputError, _SECTIONS, _unknown_fields
 
-_FES_METHODS = ("umbrella", "metadynamics", "opes")
+_FES_METHODS = ("umbrella", "metadynamics", "opes", "abf", "eabf", "steered")
 _FES_COMMON = ("cvs", "sampling", "analysis")
 
 
