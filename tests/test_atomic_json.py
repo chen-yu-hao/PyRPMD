@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 import json
 from pathlib import Path
-from threading import Barrier
+from threading import Barrier, local
 
 import numpy as np
 import pytest
@@ -58,10 +58,15 @@ def test_failed_json_replacement_preserves_previous_file_and_cleans_up(
 def test_independent_json_writers_do_not_share_a_temporary_file(tmp_path, monkeypatch, writer):
     path = tmp_path / "result.json"
     rendezvous = Barrier(2)
+    arrivals = local()
     replace = io.os.replace
 
     def publish_together(source, destination):
-        rendezvous.wait(timeout=10)
+        # Force the first attempts to collide. A platform-specific retry may
+        # run after the other writer finished and must not wait for it again.
+        if not getattr(arrivals, "arrived", False):
+            arrivals.arrived = True
+            rendezvous.wait(timeout=10)
         return replace(source, destination)
 
     monkeypatch.setattr(io.os, "replace", publish_together)

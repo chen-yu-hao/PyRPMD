@@ -6,7 +6,9 @@ import hashlib
 import importlib.util
 import json
 import os
+import sys
 import tempfile
+import time
 import tomllib
 from dataclasses import asdict, is_dataclass
 from functools import partial
@@ -71,6 +73,26 @@ def jsonable(
     return convert(value)
 
 
+def _replace_text_file(source, destination):
+    """Retry short Windows rename conflicts without changing publication mode.
+
+    Concurrent MoveFileEx replacements can report access denied (5), sharing
+    violation (32), or lock violation (33). Do not retry generic EACCES or other
+    platforms/errors. A persistent denial still raises the original OS error;
+    there is no unlink/copy fallback and the destination stays atomic.
+    """
+    delays = (.005, .01, .02, .04, .08)
+    for attempt in range(len(delays) + 1):
+        try:
+            os.replace(source, destination)
+            return
+        except OSError as error:
+            if (sys.platform != "win32" or getattr(error, "winerror", None) not in (5, 32, 33)
+                    or attempt == len(delays)):
+                raise
+            time.sleep(delays[attempt])
+
+
 def atomic_write_text(path, text):
     """Publish UTF-8 text using a unique temporary beside the destination.
 
@@ -78,6 +100,8 @@ def atomic_write_text(path, text):
     removes the temporary. Separate writers never share a temporary filename;
     the last completed replacement wins. This is not a run-directory lock.
     All fallible durability work precedes the commit at ``os.replace``.
+    Transient Windows replacement conflicts receive at most five retries
+    (155 ms of total backoff); persistent permission failures still propagate.
     """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -87,7 +111,7 @@ def atomic_write_text(path, text):
             f.write(text)
             f.flush()
             os.fsync(f.fileno())
-        os.replace(tmp, path)
+        _replace_text_file(tmp, path)
     finally:
         if os.path.exists(tmp):
             os.unlink(tmp)
