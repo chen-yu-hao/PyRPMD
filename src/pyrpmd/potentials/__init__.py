@@ -17,6 +17,7 @@ from .builtin import (
 )
 from .python import PythonPotential, RPMDratePotential, import_object
 from .cabi import CABIPotential, build_object
+from .batched_ml import BATCHED_ML_PROVIDERS as _BATCHED_ML_PROVIDERS
 from ..geometry import validate_cell_pbc
 import numpy as np
 
@@ -99,6 +100,17 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
             raise PotentialError("Torch periodic must be a boolean")
         if config.get("virial", "auto") not in ("auto", "autograd", "provided", "none"):
             raise PotentialError("Torch virial must be auto, autograd, provided, or none")
+    if kind in _BATCHED_ML_PROVIDERS:
+        params = config.get("params", {})
+        if not isinstance(params, dict):
+            raise PotentialError("batched ML params must be a mapping")
+        for key in ("dtype", "virial"):
+            if key in config and key in params:
+                raise PotentialError(f"Specify {key} in potential.{key} or params.{key}, not both")
+        if config.get("dtype", params.get("dtype", "float64")) not in ("float32", "float64"):
+            raise PotentialError("batched ML dtype must be float32 or float64")
+        if not isinstance(config.get("virial", params.get("virial", False)), (bool, np.bool_)):
+            raise PotentialError("batched ML virial must be a boolean")
     if periodic and kind in ("rpmdrate", "f2py", "diabatic_python", "pyscf"):
         raise PotentialError(
             f"Provider {kind!r} has no periodic cell/PBC contract"
@@ -107,7 +119,7 @@ def validate_periodic_spec(config, system=None, *, _nested=False):
         raise PotentialError("C ABI v1 is nonperiodic; use a cell-aware C ABI v2 library")
     if periodic and kind == "torch" and config.get("periodic") is not True:
         raise PotentialError("Periodic Torch models require potential.periodic=true and a cell/PBC contract")
-    if periodic and kind == "deepmd" and not pbc.all():
+    if periodic and kind in ("deepmd", "deepmd-batched") and not pbc.all():
         raise PotentialError("DeePMD requires all or no periodic axes; partial PBC is unsupported")
     if periodic and kind == "openmm" and not pbc.all():
         raise PotentialError("OpenMM requires all or no periodic axes; partial PBC is unsupported")
@@ -307,15 +319,19 @@ def _make_potential(config, system=None):
             cell=cell, pbc=pbc, periodic=spec.get("periodic", False),
             virial=spec.get("virial", "auto"),
         )
-    if kind in ("mace", "nequip", "deepmd", "fairchem", "tblite", "xtb", "pyscf"):
+    if kind in ("mace", "nequip", "deepmd", "fairchem", "tblite", "xtb", "pyscf") or kind in _BATCHED_ML_PROVIDERS:
         from .adapters import make_named_potential
 
         if "units" in spec:
-            if kind != "deepmd":
+            if kind not in ("deepmd", "deepmd-batched"):
                 raise ValueError(f"{kind} has fixed backend units; potential.units is unsupported")
             if "units" in params:
                 raise ValueError("Specify DeePMD units in potential.units or params.units, not both")
             params["units"] = spec["units"]
+        if kind in _BATCHED_ML_PROVIDERS:
+            for key in ("dtype", "virial"):
+                if key in spec:
+                    params[key] = spec[key]
         return make_named_potential(
             kind, symbols=get("symbols"), model=spec.get("model"),
             device=spec.get("device", "cpu"), params=params, cell=cell, pbc=pbc,
@@ -347,4 +363,19 @@ __all__ = [
     "RPMDratePotential",
     "CABIPotential",
     "build_object",
+    "MACEBatchedPotential",
+    "NequIPBatchedPotential",
+    "FairchemBatchedPotential",
+    "DeepMDBatchedPotential",
+    "MetatomicBatchedPotential",
 ]
+
+
+def __getattr__(name):
+    from . import batched_ml
+
+    if name in batched_ml.__all__:
+        value = getattr(batched_ml, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(name)

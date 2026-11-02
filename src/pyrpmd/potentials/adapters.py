@@ -409,6 +409,11 @@ def make_named_potential(kind, *, symbols, model=None, device="cpu", params=None
     if protected & set(options):
         raise ValueError("named adapters obtain symbols/cell/charge/spin from System, model/device from potential")
     common = dict(symbols=symbols, cell=cell, pbc=pbc, charge=charge, multiplicity=multiplicity)
+    from .batched_ml import BATCHED_ML_PROVIDERS, make_batched_ml_potential
+    if kind in BATCHED_ML_PROVIDERS:
+        if model is None:
+            raise ValueError(f"{kind} requires an explicit local model checkpoint")
+        return make_batched_ml_potential(kind, model=model, device=device, **common, **options)
     if kind in ("tblite", "xtb", "pyscf"):
         if model is not None:
             raise ValueError(f"{kind} uses potential.params.method, not a model checkpoint")

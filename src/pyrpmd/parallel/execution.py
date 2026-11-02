@@ -574,6 +574,7 @@ def make_task_potential(spec, system):
             "mace",
             "nequip",
             "fairchem",
+            "mace-batched", "nequip-batched", "fairchem-batched", "deepmd-batched", "metatomic",
             "openmm",
         ):
             raise ValueError(
