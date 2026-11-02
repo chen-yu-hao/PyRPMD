@@ -1,6 +1,7 @@
 """Black-box collection checks against small, independently specified suites."""
 
 import os
+import importlib.util
 from pathlib import Path
 import subprocess
 import sys
@@ -94,3 +95,30 @@ def test_local_helper_cycle_terminates_and_preserves_core_selection(tmp_path):
     }, "-m", "not campaign")
     assert result.returncode == 0, result.stdout + result.stderr
     assert "1 passed" in result.stdout
+
+
+@pytest.mark.parametrize("platform", ["linux", "darwin", "win32"])
+def test_platform_guards_keep_unaffected_cases_and_other_systems_enabled(platform):
+    spec = importlib.util.spec_from_file_location(
+        "isolated_test_selection", Path(__file__).with_name("conftest.py")
+    )
+    selection = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(selection)
+    limited = (
+        "test_native_pimd_followup.py::"
+        "test_publication_failure_rolls_back_state_and_does_not_leave_file[link]"
+    )
+    unaffected = limited.replace("[link]", "[native]")
+    model = (
+        "test_drpmd_extend.py::"
+        "test_identity_and_all_checkpoints_are_validated_before_any_continuation[model]"
+    )
+    assert selection._platform_skip_reason(unaffected, platform) is None
+    assert selection._platform_skip_reason(model.replace("[model]", "[checkpoint]"), platform) is None
+    assert selection._platform_skip_reason("test_native_ensembles.py::test_in_memory_dynamics", platform) is None
+    if platform == "win32":
+        assert "EBADF" in selection._platform_skip_reason(limited, platform)
+        assert "source hashes" in selection._platform_skip_reason(model, platform)
+    else:
+        assert selection._platform_skip_reason(limited, platform) is None
+        assert selection._platform_skip_reason(model, platform) is None

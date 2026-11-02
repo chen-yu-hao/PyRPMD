@@ -35,8 +35,9 @@ it has an `import benchmarks...` / `from benchmarks...` statement (including
 inside a function), a literal `import_module("benchmarks...")` / `__import__`
 call, or a static benchmark path in an assignment, call argument or `/` path
 expression. Both `ROOT / "benchmarks" / "family" / "driver.py"` and
-`ROOT / "benchmarks/family/driver.py"` are recognized. Local test/helper imports
-are followed transitively, with cycles handled. A comment, an embedded Python
+`ROOT / "benchmarks/family/driver.py"` are recognized. For the repository's flat
+test layout, local `.py` test/helper imports are followed transitively, with
+cycles handled. A comment, an embedded Python
 source string, a test filename prefix, or the installed optional packages alone
 do not determine the marker. A mixed module containing library and campaign
 tests is marked as a whole; split such modules to move independent tests into
@@ -67,6 +68,37 @@ POSIX-specific Caracal/JaxPIP writers require `fcntl` and are skipped with an
 explicit reason where unavailable; their portable readers and validation
 checks remain covered. Only the directory-fsync fault-injection parameter is
 skipped on non-POSIX systems, matching the implementation's durability steps.
+
+### Observed Windows runtime limitations
+
+The first Windows library run exposed existing runtime gaps in addition to
+test-only path assumptions. T01 preserves library behavior, scientific
+identities and convergence gates. `tests/conftest.py` therefore records a
+Windows-only registry of exact affected test names (and parameter names where
+only part of a test is affected), each with a diagnostic skip reason. The
+[initial Actions log](https://github.com/chen-yu-hao/PyRPMD/actions/runs/41476577723/job/125383616891)
+provides the failure evidence. These cases still execute on Linux and macOS.
+
+| Existing limitation | Affected checks | Follow-up needed before removing the guard |
+| --- | --- | --- |
+| Native trajectory publication calls `os.fsync()` on a read-only file descriptor, which raises `EBADF` on Windows. | 40 parametrized native streaming, journal, publication and restart cases. In-memory native dynamics and pre-publication failure checks remain enabled. | Make native trajectory flush/publication portable while preserving atomic writes and rollback semantics. |
+| File/source walkers omit drive-letter absolute paths or split a `.py:factory` at the drive colon. | 16 source-provenance, model-change and early resume-preflight cases. Other checkpoint integrity cases remain enabled. | Correct Windows path parsing with explicit run-identity compatibility and restart regression evidence. |
+| Archived rate generations write relative mapping keys using `\\`, while the report reader looks them up using `/`. | Two archived-generation report/reanalysis cases. | Align writer/reader lookup with compatibility for previously written manifests. |
+| Simultaneous `os.replace()` calls targeting one JSON destination can raise `WinError 5`. | Three writer-policy variants sharing the same concurrent publication operation. | Define and verify portable concurrent publication behavior without losing atomicity. |
+
+This registry does not certify the skipped Windows capabilities. Keep its
+entries narrow and remove them only with regression evidence for the relevant
+runtime fix. Do not replace it with blanket native, resume, or Windows skips.
+Additional capability guards cover Python builds without `socket.AF_UNIX` and
+the existing POSIX-only writers. The C ABI tests still execute on Windows when a
+compiler is present; cleanup of temporary loaded DLLs is best-effort only on
+Windows because those files remain locked until the process releases them.
+
+The macOS fixes canonicalize temporary paths and keep Unix socket names short.
+The symmetric teaching-saddle tests accept either physically equivalent
+entrance orientation; the short seeded MBAR fixture specifies its intended
+reactant fragments. Both Hessian eigenvector signs are checked without relaxing
+PMF support or convergence criteria.
 
 For the read-only file/hash inventory and the staged validation-data archive
 proposal, see [Data archive plan](data-archive-plan.md). No data is moved or
