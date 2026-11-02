@@ -21,7 +21,7 @@ import tempfile
 import numpy as np
 
 from .. import __version__
-from ..input import InputError, rate_pmf_options
+from ..input import InputError, rate_pmf_options, rate_pmf_stage
 from ..io import file_sha256, write_json
 from ..parallel import root_call, run_tasks
 from ..rate_artifacts import (EXTENSION_FORMAT, RECEIPT_FORMAT, generation_name,
@@ -43,6 +43,27 @@ def _json(path):
 
 def _enabled(value):
     return bool(value) and (not isinstance(value, dict) or value.get("enabled", True))
+
+
+def _extension_options(config):
+    """Reject unsupported protocols before authentication or ledger changes."""
+    options = rate_pmf_options(config)
+    method = options.get("sampler", "umbrella")
+    if options["source"] is not None or method == "external" or any(
+        config.get(key) for key in ("source_pmf", "pmf_source", "saved_pmf")
+    ):
+        raise InputError("Rate production extension requires local umbrella checkpoints, not an external PMF")
+    if method != "umbrella":
+        raise InputError(
+            f"Rate production extension supports fixed umbrella PMFs; {method} "
+            "production extension is not implemented. Ordinary resume remains available."
+        )
+    request = config.get("rate", {}).get("pmf", {})
+    saved = config.get("rate", {}).get("pmf_stage", {}).get("config", {})
+    if any(_enabled(scope.get(name)) for scope in (config, request, saved)
+           for name in ("adaptive_umbrella", "replica_exchange")):
+        raise InputError("Rate production extension requires fixed windows without adaptive umbrellas or replica exchange")
+    return options
 
 
 def _pointer(request):
@@ -104,21 +125,13 @@ def _prepare_extension(directory, target):
     config = _json(path / "input" / "resolved.json")
     if config.get("task") != "rate":
         raise InputError("Production-step extension supports only fixed-window gas-phase rate runs")
-    if (_enabled(config.get("adaptive_umbrella"))
-            or _enabled(config.get("replica_exchange"))):
-        raise InputError("Rate production extension requires fixed windows without adaptive umbrellas or replica exchange")
-    if any(config.get(key) for key in ("source_pmf", "pmf_source", "saved_pmf")):
-        raise InputError("Rate production extension requires local umbrella checkpoints, not an external PMF")
+    pmf_options = _extension_options(config)
     if config.get("_base_directory") and config["_base_directory"] not in sys.path:
         sys.path.insert(0, config["_base_directory"])
     system = _read_identity(config, path)
     if any(system.pbc) or system.fixed_atoms:
         raise InputError("Production-step extension supports only nonperiodic gas-phase rate runs")
     _authenticate(config, system, path)
-    original = fes.checked_integer(config["sampling"]["production_steps"],
-                                   "sampling.production_steps")
-    if target <= original:
-        raise InputError("The new total production-steps must exceed the original production budget")
     preparation = _json(path / "preparation.json")
     if preparation.get("ready") is not True:
         raise InputError("The saved rate preparation is not ready")
@@ -126,11 +139,17 @@ def _prepare_extension(directory, target):
     # prepared reaction. No TS search, provider construction or input rewrite.
     prepared_config, system = rate._prepare(config, system, path, return_system=True,
                                             _preparation=preparation, _write=False)
-    cv, _, _, _ = fes.resolve_umbrellas(prepared_config, system)
+    sampling_config = rate_pmf_stage(prepared_config, system)
+    if sampling_config is None:
+        sampling_config = copy.deepcopy(prepared_config)
+    original = fes.checked_integer(sampling_config["sampling"]["production_steps"],
+                                   "PMF sampling.production_steps")
+    if target <= original:
+        raise InputError("The new total production-steps must exceed the original production budget")
+    cv, _, _, _ = fes.resolve_umbrellas(sampling_config, system)
     if cv.dimension != 1:
         raise InputError("Rate production extension currently requires one reaction coordinate")
-    sampling_config = copy.deepcopy(prepared_config)
-    if rate_pmf_options(prepared_config)["method"] == "mbar":
+    if pmf_options["method"] == "mbar":
         sampling_config["analysis"]["bootstrap"] = 0
     manifest = _json(path / "manifest.json")
     identity = {
@@ -165,7 +184,7 @@ def _prepare_extension(directory, target):
     records = fes.validate_fes_checkpoints(
         sampling_config, system, path / "umbrella", production_steps=maximum,
     )
-    neq = config["sampling"]["equilibration_steps"]
+    neq = sampling_config["sampling"]["equilibration_steps"]
     if any(record["elapsed"] < neq + minimum for record in records):
         raise InputError("An umbrella checkpoint is incomplete for the last completed production budget; resume the run first")
     if ledger["requests"] and ledger["requests"][-1]["status"] == "running":
@@ -211,7 +230,7 @@ def _bind_generation(prepared, pmf, tasks):
     target = prepared["ledger"]["requests"][-1]["production_steps"]
     records = fes.validate_fes_checkpoints(prepared["sampling_config"],
         prepared["system"], path / "umbrella", production_steps=target)
-    neq = prepared["config"]["sampling"]["equilibration_steps"]
+    neq = prepared["sampling_config"]["sampling"]["equilibration_steps"]
     if any(record["elapsed"] != neq + target for record in records):
         raise InputError("A rate generation requires complete umbrella production")
     starts = {str(task["chain"]): hashlib.sha256(

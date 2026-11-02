@@ -66,14 +66,14 @@ _SECTIONS = {
         "cvs grid centers centers_au kappa stiffness stiffness_au start stop count".split()
     ),
     "rate": set(
-        "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source".split()
+        "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source pmf".split()
     ),
     "recrossing": set(
         "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale".split()
     ),
     "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(
-        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid multiple_walkers block_steps shared_walkers".split()
+        "cvs mode sigma sigma_au height height_au pace bias_factor walls walls_during_equilibration grid multiple_walkers block_steps shared_walkers freeze_after_steps freeze_equilibration_steps".split()
     ),
     "opes": set(
         "cvs sigma sigma_au barrier barrier_au bias_factor pace freeze_after_steps freeze_equilibration_steps mode adaptive_sigma sigma_min sigma_min_au".split()

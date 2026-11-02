@@ -160,6 +160,11 @@ electronic_weight = 1.0
 
 ### 速率 PMF 后端与分割面
 
+统一的 `[rate.pmf]` 接口可选择伞形采样、冻结偏置重加权的 MetaD／OPES 或已有结果，
+并独立配置 PMF 的动力学和采样参数。完整示例、阶段时间预算和兼容规则见
+[为速率选择 PMF 方法](rate-pmf-selection.md)。下文的旧选择字段仍可使用，
+但不要在同一输入中与 `[rate.pmf]` 混用。
+
 默认 `rate.pmf_method = "ui"` 保留 Gaussian umbrella integration。
 它假设每窗分布接近高斯；偏斜、多峰及尾部外推可能产生统计误差条之外的偏差。
 UI 在实测端点缺少支持时仍可保留模型值并警告，不能据此认定端点已有可靠采样。

@@ -1,0 +1,70 @@
+# Short input/workflow pilot; missing PMF support correctly withholds a rate.
+# The analytic teaching PES does not predict the physical H + H2 rate.
+task = "rate"
+preset = "pilot"
+temperature = "1000 K"
+beads = 4
+seed = 612
+
+[system]
+transition_state = "ts.xyz"
+
+[potential]
+provider = "python"
+factory = "toy_exchange.py:build"
+
+[dynamics]
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 20
+
+[reaction]
+rinf = "5 angstrom"
+
+[rate]
+dividing_surface = 1.0
+
+[rate.pmf]
+method = "opes"
+estimator = "reweighted_histogram"
+
+[rate.pmf.dynamics]
+integrator = "normal-mode-bab"
+timestep = "0.2 fs"
+
+[rate.pmf.sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.02 fs^-1"
+equilibration_steps = 50
+production_steps = 1000
+interval_steps = 5
+replicas = 2
+
+[rate.pmf.opes]
+sigma = 0.05
+barrier = "0.5 kcal/mol"
+bias_factor = 10.0
+pace = 20
+freeze_after_steps = 200
+freeze_equilibration_steps = 100
+
+[rate.pmf.analysis]
+bins = 40
+ranges = [[-0.15, 1.15]]
+bootstrap = 0
+
+[recrossing]
+parent_replicas = 2
+parent_samples = 4
+equilibration = "5 fs"
+parent_interval = "1 fs"
+child_pairs = 1
+child_time = "10 fs"
+bootstrap = 30
+
+[output]
+directory = "runs/pmf-opes"
+checkpoint_interval = "2 fs"

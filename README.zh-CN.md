@@ -132,7 +132,7 @@ mpiexec -n 4 pyrpmd run examples/drpmd/mpi.py --output runs/mpi
 | 方面 | PyRPMD 提供 |
 | --- | --- |
 | 输入 | Python `build()` 返回 `JobSpec` 或字典，或 TOML，严格检查字段、单位、原子索引和路径；命令行可覆盖 PES、温度、珠子数和 worker 数 |
-| RPMD 速率 | TS + PES → 数值 Hessian 与双向下降 → 通道识别 → PMF（Gaussian UI 或直方图 MBAR）→ 受约束母链 → 成对回穿子轨迹；同一抽样上的 UI/MBAR 配对比较 |
+| RPMD 速率 | TS + PES → 数值 Hessian 与双向下降 → 通道识别 → PMF → 受约束母链 → 成对回穿子轨迹；可选伞形 UI/MBAR、冻结偏置 MetaD/OPES 重加权或兼容的外部 PMF（[选择指南](docs/zh/rate-pmf-selection.md)） |
 | 等价通道 | 由原子置换得到等价 TS，按 RPMDrate 的 `min_bond(max_TS(s1))` 组合；区分 H + H₂ 的两个交换出口 |
 | 反应网络 | 同一原子与同位素组成下的不同入口、TS 和 PES；每条路径填入速率矩阵，按入口、通道和 TS 分别报告 |
 | dRPMD | 两个反应物 XYZ 和初始质心距离；常驻母链按设定间隔发射碰撞 |
@@ -336,6 +336,7 @@ GitHub **Documentation** 工作流构建两个版本、运行入门示例，并�
 - [恒电位电极模型与 HER 后处理](docs/electrochemistry.md)
 - [自适应受限反应路径、恒电势矩阵与有符号热 NRPMD](docs/zh/manual/adaptive-nrpmd.md)
 - [统一 FES、自适应伞抽样与共享偏置 metadynamics](docs/zh/enhanced-sampling.md)
+- [速率 PMF 方法选择与独立采样设置](docs/zh/rate-pmf-selection.md)
 - [电化学 PCET 模型](docs/pcet.md)、[可运行 PCET 示例](examples/pcet/README.md)
 - [固定晶胞、PIMD、材料扩散与位点速率](docs/materials.md)
 - [表面催化与周期 slab](docs/surface-catalysis.md)

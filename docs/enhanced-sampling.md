@@ -48,7 +48,7 @@ the umbrella method only.
 | Method | Supported CV dimensions | Reconstruction | `uncertainty_kind` |
 | --- | --- | --- | --- |
 | `umbrella` | 1–3 | MBAR with bin-volume correction | `block_bootstrap` |
-| `metadynamics` | 1–3 | Standard or well-tempered bias estimate | `replica_spread` |
+| `metadynamics` | 1–3 | Standard or well-tempered bias estimate; optional frozen-bias reweighted histogram | `replica_spread` |
 | `opes` | 1–2 | KDE or frozen-bias reweighted histogram | `replica_spread` |
 
 All three use the same CV selection/unit validation, propagation and sampling
@@ -146,7 +146,10 @@ saved trajectories do not establish a reaction rate. A separate
 can rescale an audited infrequent-MetaD or OPES-flooding history with an explicit
 transition-region bias reference. It does not convert these standard FES runs
 to kinetics automatically. The gas-phase rate workflow retains its prescribed
-PMF measure and unbiased recrossing dynamics.
+PMF measure and unbiased recrossing dynamics. Its `[rate.pmf]` selector can use
+umbrella sampling, frozen-bias MetaD/OPES reweighting or a compatible external
+surface; see [choosing a rate PMF](rate-pmf-selection.md) for the separate PMF
+and recrossing settings.
 
 ## Adaptive umbrella placement
 
@@ -584,9 +587,12 @@ dissociate rather than explore the desired barrier. Simply extending time or
 increasing hill height is not a remedy for an unsuitable CV/domain. Use an
 appropriate nonsingular CV and a physically defined confined model for such
 exploration. Length-CV walls are available as described above; they change the
-sampled ensemble and do not remove a pole in a different CV. The current
-metadynamics estimator uses `cv_density`, so its raw bias estimate cannot replace a `rate_flux`
-umbrella PMF or supply a rate from biased trajectory times.
+sampled ensemble and do not remove a pole in a different CV. The default
+metadynamics bias estimator uses `cv_density`, so its raw bias estimate cannot
+replace a `rate_flux` PMF or supply a rate from biased trajectory times. The
+separate frozen-bias rate route explicitly samples the flux metric and
+reweights stationary production; it requires sufficient support through the
+reactant reference and dividing surface and does not allow static walls.
 
 `analysis.bootstrap` must be zero; fixed-umbrella MBAR and ordinary equilibrium
 bootstrap are not applied to these evolving-bias samples. Time-dependent
@@ -622,13 +628,26 @@ Python users can call `run_metadynamics`, `reanalyze_metadynamics`,
 
 ## Choosing a PMF source for `rate`
 
-Omitting `rate.pmf_source` (or setting it to `"umbrella"`) keeps the existing
-umbrella-sampling rate workflow. To reuse a saved surface:
+New inputs select `umbrella`, `metadynamics`, `opes` or `external` with
+`[rate.pmf] method`. The [rate PMF guide](rate-pmf-selection.md) provides complete
+examples, inheritance rules and the training/freeze/production clock. Built-in
+MetaD/OPES rate PMFs require `estimator="reweighted_histogram"`, explicit
+`freeze_after_steps` and `freeze_equilibration_steps`, and `analysis.bootstrap=0`.
+They include the rate-flux metric in propagation and use only stationary
+fixed-bias samples with weights proportional to `exp(beta*V_frozen)`.
+Correlated barrier and total-rate uncertainty remain unavailable.
+
+To reuse a saved surface:
 
 ```toml
-[rate.pmf_source]
+[rate.pmf]
+method = "external"
 directory = "runs/umbrella-rate-flux"
 ```
+
+Legacy inputs that omit `[rate.pmf]` retain the existing umbrella-sampling
+workflow and `[rate.pmf_source]` syntax. Do not combine the new selector with
+`rate.pmf_method` or `rate.pmf_source`.
 
 The default accepts only an umbrella `FESResult` with `measure="rate_flux"`,
 one dimensionless centroid RPMDrate coordinate, and hartree energies. The
@@ -642,10 +661,11 @@ Selecting MetaD/OPES requires both explicit
 `allow_non_umbrella=true` and source metadata `reweighted=true`, in addition
 to the same `rate_flux` and provenance checks. A raw `-V` or WT-scaled bias
 surface is rejected with a message explaining that the PMF must be
-reweighted. This selector does not implement time-dependent MetaD
-reweighting; the current MetaD workflow does not produce a ready-to-use gas
-rate PMF. OPES's frozen-bias CV-density reconstruction likewise does not
-automatically acquire the rate-flux measure.
+reweighted. This selector does not implement time-dependent MetaD reweighting.
+An ordinary `cv_density` reconstruction retains its original measure; reuse
+requires a surface sampled with `measure="rate_flux"` and reconstructed from
+frozen-bias production. Selecting the built-in MetaD/OPES rate method performs
+that protocol within the rate calculation.
 
 A stored pointwise uncertainty grid alone does not identify the covariance
 between reference and barrier bins. External-source rate runs therefore

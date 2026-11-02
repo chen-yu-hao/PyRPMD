@@ -24,9 +24,33 @@ pyrpmd run examples/rate/pilot.inp --output runs/rate
 `prepare --pilot` evaluates the PES, refines an imperfect TS when needed, forms a finite-difference
 mass-weighted Hessian, follows its unique unstable mode in both directions and identifies the
 equivalent A + BC / AB + C channels. After successful preparation, `run`
-performs umbrella sampling, the flux-metric PMF, constrained parent chains, paired recrossing
-trajectories and parent-cluster/block uncertainty estimates. `minimal.inp` shows the smallest
-valid input: the TS structure and the PES selection.
+obtains the flux-metric PMF, then runs constrained parent chains and paired recrossing
+trajectories. The examples above use the default umbrella route and its paired block
+uncertainty estimates. `minimal.inp` shows the smallest valid input: the TS structure
+and the PES selection.
+
+## Choose the PMF method
+
+Use `[rate.pmf]` to select a sampler and its compatible estimator, with PMF-specific
+`dynamics`, `sampling` and `analysis` tables. The root dynamics still control recrossing.
+The complete short pilots are:
+
+| Input | PMF route |
+| --- | --- |
+| [`pmf_umbrella.inp`](pmf_umbrella.inp) | Umbrella + MBAR, with PMF PILE-L and a separate timestep |
+| [`pmf_metadynamics.inp`](pmf_metadynamics.inp) | Well-tempered MetaD, followed by frozen-bias relaxation and reweighting |
+| [`pmf_opes.inp`](pmf_opes.inp) | OPES, followed by frozen-bias relaxation and reweighting |
+
+```bash
+pyrpmd validate examples/rate/pmf_metadynamics.inp --check-pes
+pyrpmd run examples/rate/pmf_metadynamics.inp --output runs/rate-meta
+```
+
+See [PMF selection and phase budgets](../../docs/rate-pmf-selection.md) /
+[中文指南](../../docs/zh/rate-pmf-selection.md) for the compatibility table, external
+PMF sources, inheritance rules and uncertainty limits. These short pilots can correctly
+report unsupported PMF bins; they do not establish a converged rate. Existing inputs
+without `[rate.pmf]` retain the original umbrella workflow.
 
 > **Scope.** `toy_exchange.py` is an analytic teaching potential with Morse reactant asymptotes.
 > The H labels supply convenient isotope masses and connectivity radii; these are not fitted H3
@@ -36,11 +60,11 @@ valid input: the TS structure and the PES selection.
 
 ## How the rate is defined
 
-The rate follows RPMDrate: umbrella forces include the flux metric, a constrained canonical
+The rate follows RPMDrate: PMF sampling forces include the flux metric, a constrained canonical
 parent samples the dividing surface, and unconstrained Maxwell momenta generate paired ±p
 children. An unsuccessful child trajectory is never replaced by an assumed transmission.
 
 | Summary field | Meaning |
 | --- | --- |
 | `rate_estimate_cm3_s` | Finite-time estimate |
-| `rate_cm3_s` | The rate, reported when window overlap, the time-plateau check and the endpoint energy-drift check all pass |
+| `rate_cm3_s` | The rate, reported when PMF support, the time-plateau check and the endpoint energy-drift check all pass |

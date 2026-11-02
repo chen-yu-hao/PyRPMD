@@ -138,6 +138,29 @@ def test_source_measure_change_needs_reweighting_provenance(tmp_path):
         read_source(config, system)
 
 
+@pytest.mark.parametrize("method", ["metadynamics", "opes"])
+def test_frozen_reweighting_cannot_relabel_cv_density_as_rate_flux(method, tmp_path):
+    config, system, result, directory = saved_source(tmp_path, method, reweighted=True)
+    config["rate"]["pmf_source"]["allow_non_umbrella"] = True
+    result.metadata["estimator"] = "reweighted_histogram"
+    write_fes_result(directory, result)
+    # A source that actually sampled the flux metric remains admissible.
+    accepted, _ = read_source(config, system)
+    assert accepted.measure == "rate_flux"
+
+    source_path = directory / "input/resolved.json"
+    source = json.loads(source_path.read_text())
+    source["analysis"]["measure"] = "cv_density"
+    write_json(source_path, source)
+    write_json(directory / "manifest.json", {
+        "physics_fingerprint": fingerprint(scientific_config(source), system), "files": {},
+    })
+    # Removing a fixed history bias does not supply the missing flux metric,
+    # even when the output metadata claims rate_flux and reweighted=True.
+    with pytest.raises(ValueError, match="preserves its sampling measure"):
+        read_source(config, system)
+
+
 def test_source_search_domain_is_not_silently_clipped(tmp_path):
     config, system, _, _ = saved_source(tmp_path)
     config["rate"]["pmf_search_range"] = [0.0, 2.0]

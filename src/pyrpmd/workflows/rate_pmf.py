@@ -14,7 +14,7 @@ from ..analysis.fes import (
     umbrella_integration,
 )
 from ..constants import AU_RATE_TO_CM3_S
-from ..input import rate_pmf_options
+from ..input import rate_pmf_options, rate_pmf_stage
 from .prepare import prepare_rate, prepared_system
 from ..checkpoint import atomic_savez as _atomic_npz
 from ..io import write_report_json as write_json, report_jsonable as jsonable
@@ -61,6 +61,19 @@ def _prepare(config, system, output, return_system=False, *, _preparation=None, 
         from .rate_source import read_source
 
         read_source(result, system)
+        return (result, system) if return_system else result
+    stage = rate_pmf_stage(result, system)
+    if stage is not None:
+        from .fes_dispatch import validate_fes
+
+        validate_fes(stage, system)
+        if pmf_options.get("sampler", "umbrella") == "umbrella":
+            _, _, centers, _ = resolve_umbrellas(stage, system)
+            _check_pmf_domain(centers[:, 0], pmf_options)
+            if stage.get("adaptive_umbrella"):
+                from .adaptive_umbrella import validate_adaptive_umbrella
+
+                validate_adaptive_umbrella(stage, system)
         return (result, system) if return_system else result
     umbrella = result.setdefault("umbrella", {})
     if not any(k in umbrella for k in ("centers", "centers_au", "grid", "start")):
@@ -336,6 +349,29 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         centers = np.array([estimate["xi_star"] or 0.0])
         streams = [{"last_q": np.repeat(system.geometry[None], config["beads"], axis=0)}]
         sampled = {"summary": {"warnings": []}}
+    elif pmf_options.get("sampler", "umbrella") in ("metadynamics", "opes"):
+        from .rate_curve import estimate_fes_curve
+
+        surface = sampled["rate_surface"]
+        sampler = pmf_options["sampler"]
+        if (surface.method != sampler or surface.metadata.get("reweighted") is not True
+                or surface.metadata.get("estimator") != "reweighted_histogram"):
+            raise ValueError("Built-in enhanced rate PMFs require an authenticated frozen-bias reweighted surface")
+        estimate = estimate_fes_curve(
+            surface, pmf_options,
+            uncertainty_reason="frozen_bias_pmf_correlated_barrier_uncertainty_unavailable",
+            strict_search=True,
+            warnings=[
+                "The rate PMF uses only frozen-bias production samples reweighted to the rate-flux measure.",
+                "Correlated paired-endpoint uncertainty is not implemented for frozen-bias PMFs; barrier and total-rate uncertainty are unavailable. Independent-history spread is not a standard error.",
+            ],
+        )
+        method = "reweighted_histogram"
+        streams = [{"last_q": s["state"].q} for s in sampled["streams"]]
+        coordinate = rate_coordinate(config, system)
+        centers = np.array([float(np.asarray(coordinate.value(s["last_q"])).reshape(-1)[0]) for s in streams])
+        if not streams:
+            raise ValueError("Enhanced rate PMF did not return any completed sampling streams")
     else:
         streams = sampled["streams"]
         centers = np.array([s["center"][0] for s in streams])
@@ -404,6 +440,8 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
     diagnostics = {
         "schema_version": 2,
         "method": method,
+        "sampler": pmf_options.get("sampler", "umbrella"),
+        "estimator": method,
         "ready": bool(estimate["ready"]),
         "status": status,
         "failure_reason": None if estimate["ready"] else source_status,
@@ -424,6 +462,8 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
         "pmf_method": (
             "Saved, validated rate-flux FESResult"
             if method == "source" else (
+                "Frozen-bias reweighted histogram with the rate-flux metric"
+                if method == "reweighted_histogram" else
                 "Gaussian umbrella integration; MBAR overlap checked"
                 if method == "ui" else "Histogram MBAR with paired endpoint bootstrap"
             )
@@ -436,14 +476,20 @@ def _pmf_and_parent_tasks(sampled, config, system, output, options):
             dict.fromkeys(sampled["summary"]["warnings"] + estimate["warnings"])
         ),
         "intermediate_fes_bootstrap": (
-            0 if method in ("mbar", "source") else pmf_options["bootstrap"]
+            0 if method in ("mbar", "source", "reweighted_histogram") else pmf_options["bootstrap"]
         ),
         "intermediate_fes_purpose": (
             "Validated external FESResult; no intermediate umbrella sampling."
             if method == "source" else
+            "Bias training and relaxation are discarded; only fixed-bias production enters the rate PMF."
+            if method == "reweighted_histogram" else
             "Saved umbrella samples, overlap and a preliminary histogram; the selected rate PMF backend owns barrier bootstrap."
         ),
     }
+    if "pmf" in config.get("rate", {}):
+        from .rate_plan import rate_pmf_plan
+
+        diagnostics["plan"] = rate_pmf_plan(config)
     for key in (
         "support",
         "solver",

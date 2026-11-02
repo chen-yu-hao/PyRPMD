@@ -505,6 +505,22 @@ def scientific_config(config):
     if (result.get("rate") == {}
             and "child_batch_pairs" in config.get("rate", {}).get("recrossing", {})):
         result.pop("rate")
+    rate = result.get("rate", {})
+    request = rate.get("pmf")
+    if isinstance(request, dict) and isinstance(request.get("dynamics"), dict):
+        for key in ("loop_backend", "block_steps", "electronic_backend", "electronic_device"):
+            request["dynamics"].pop(key, None)
+        if not request["dynamics"]:
+            request.pop("dynamics")
+    stage = rate.get("pmf_stage")
+    if isinstance(stage, dict) and isinstance(stage.get("config"), dict):
+        # A saved PMF stage is a second simulation, with its own physical
+        # clock and operators. Apply the same explicit execution exclusions
+        # as a top-level run, without recursively dropping scientific keys.
+        stage["config"] = scientific_config(stage["config"])
+        for key in ("output", "parallel", "resume", "_resume", "_warnings",
+                    "_input_path", "_base_directory"):
+            stage["config"].pop(key, None)
     return result
 
 

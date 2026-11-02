@@ -105,9 +105,17 @@ def read_source(config, system):
     if (source.get("task") not in ("fes", "metadynamics", "opes")
             or fes_method(source) != result.method):
         raise ValueError("rate PMF source method disagrees with its saved input")
-    if (source.get("analysis", {}).get("measure", "cv_density") != result.measure
-            and result.metadata.get("reweighted") is not True):
-        raise ValueError("rate PMF source measure differs from its sampling ensemble without reweighting provenance")
+    source_measure = source.get("analysis", {}).get("measure", "cv_density")
+    if source_measure != result.measure:
+        # The built-in frozen estimator removes only the historical bias.
+        # Its reweighted flag cannot certify a change in the target measure.
+        if result.metadata.get("estimator") == "reweighted_histogram":
+            raise ValueError(
+                "Frozen-bias reweighting preserves its sampling measure; "
+                "a rate_flux source must have sampled the flux metric"
+            )
+        if result.metadata.get("reweighted") is not True:
+            raise ValueError("rate PMF source measure differs from its sampling ensemble without reweighting provenance")
     try:
         beta_matches = np.isclose(source.get("beta", np.nan), config["beta"], rtol=1e-13, atol=0)
         if "beta" in result.metadata:
@@ -136,82 +144,25 @@ def read_source(config, system):
 
 
 def source_estimate(config, system):
-    """Interpolate supported endpoints without inventing barrier covariance."""
+    """Authenticate the source before using the common supported FES estimator."""
+    from .rate_curve import estimate_fes_curve
+
     result, paths = read_source(config, system)
-    options = rate_pmf_options(config)
-    grid = np.asarray(result.grid[..., 0], float)
-    curve = np.asarray(result.free_energy, float)
-    mask = np.asarray(result.mask, bool)
-    search = options["search_range"] or [0.0, float(grid[-1])]
-    if options["search_range"] is not None and (search[0] < grid[0] or search[1] > grid[-1]):
-        raise ValueError("rate.pmf_search_range extends beyond the saved source PMF grid")
-    eligible = (grid >= search[0]) & (grid <= search[1]) & ~mask
-    xi = options["xi_star"]
-    if xi is None and np.any(eligible):
-        indices = np.flatnonzero(eligible)
-        xi = float(grid[indices[np.argmax(curve[indices])]])
-
-    def endpoint(value):
-        if value is None or value < grid[0] or value > grid[-1]:
-            return None
-        i = int(np.searchsorted(grid, value))
-        bracket = [i] if i < len(grid) and np.isclose(grid[i], value, rtol=0, atol=1e-14) else [i - 1, i]
-        if any(index < 0 or index >= len(grid) or mask[index] for index in bracket):
-            return None
-        return float(np.interp(value, grid, curve))
-
-    reference, surface = endpoint(0.0), endpoint(xi)
-    ready = reference is not None and surface is not None
-    if ready:
-        # A hole between endpoints may disconnect the free-energy gauge.
-        ready = not bool(np.any(mask[(grid >= min(0.0, xi)) & (grid <= max(0.0, xi))]))
-    if result.metadata.get("overlap_connected") is False or result.metadata.get("connected") is False:
-        ready = False
     warnings = [
         "Rate PMF loaded from a saved FESResult; no new biased trajectories were sampled.",
         "The saved pointwise uncertainty does not supply paired endpoint covariance; uncertainty for the re-referenced rate PMF, its barrier and the total rate is unavailable.",
     ]
     if result.method != "umbrella":
         warnings.append("MetaD/OPES PMF requires reweighting; this source explicitly declares a reweighted rate-flux estimate.")
-    # Re-referencing every point to F(0) changes its uncertainty. The source's
-    # marginal errors alone cannot determine covariance with that endpoint.
-    standard_error = np.full_like(curve, np.nan)
-    unavailable = "source_missing_paired_endpoint_covariance"
-    uncertainty = {
-        "available": False,
-        "block_status": "unavailable",
-        "reason": unavailable,
-        "reasons": [unavailable],
-        "bootstrap_requested": 0,
-        "bootstrap_attempted": 0,
-        "bootstrap_valid": 0,
-        "bootstrap_rejected": 0,
-        "surface_held_fixed": True,
-        "selection_uncertainty_included": False,
-    }
-    return {
-        "ready": ready,
-        "status": "ready" if ready else "unsupported_source_pmf",
-        "xi_star": xi,
-        "reference": 0.0,
-        "free_energy_barrier_hartree": surface - reference if ready else None,
-        "barrier_standard_error_hartree": None,
-        "barrier_percentile_95_ci_hartree": None,
-        "barrier_uncertainty": uncertainty,
-        "pmf_bootstrap_barriers": [],
-        "xi": grid,
-        "free_energy": curve - reference if reference is not None else curve,
-        "standard_error": standard_error,
-        "mask": mask,
-        "overlap_connected": ready,
-        "bootstrap": {
-            "requested": 0, "attempted": 0, "valid": 0, "failures": [],
-            "block_plan": {"status": "unavailable"}, "skipped_reason": unavailable,
-        },
-        "warnings": warnings,
-        "source": paths,
-        "source_method": result.method,
-        "source_reweighted": result.metadata.get("reweighted", False),
-        "source_sha256": {key: file_sha256(path) for key, path in paths.items() if key.endswith("_file")},
-        "support": {"search_range": search, "reference": reference is not None, "dividing_surface": surface is not None},
-    }
+    estimate = estimate_fes_curve(
+        result, rate_pmf_options(config),
+        uncertainty_reason="source_missing_paired_endpoint_covariance",
+        unsupported_status="unsupported_source_pmf", warnings=warnings,
+        strict_search=True,
+    )
+    estimate.update(
+        source=paths, source_method=result.method,
+        source_reweighted=result.metadata.get("reweighted", False),
+        source_sha256={key: file_sha256(path) for key, path in paths.items() if key.endswith("_file")},
+    )
+    return estimate

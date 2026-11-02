@@ -14,7 +14,7 @@ import copy
 from pathlib import Path
 
 from ..checkpoint import atomic_savez as _atomic_npz
-from ..input import rate_pmf_options
+from ..input import rate_pmf_options, rate_pmf_stage
 from ..io import fingerprint as _fingerprint
 from ..parallel import root_call, run_tasks
 from ..validation import checked_integer
@@ -54,22 +54,32 @@ def run_rate(config, system, output, executor=None):
         raise ValueError("Gas-phase run_rate does not support periodic/fixed-atom systems; use surface_rate")
     config, system = root_call(_prepare, config, system, str(output), True)
     options = _recrossing_options(config)
-    sampling_config = config
     pmf_options = rate_pmf_options(config)
+    stage = rate_pmf_stage(config, system)
+    sampling_config = stage if stage is not None else config
     if pmf_options["source"] is None and pmf_options["method"] == "mbar":
-        sampling_config = copy.deepcopy(config)
+        sampling_config = copy.deepcopy(sampling_config)
         # The rate backend performs the one paired endpoint bootstrap. The
         # intermediate FES only saves samples, overlap and a preliminary curve.
         sampling_config["analysis"]["bootstrap"] = 0
+    if stage is not None:
+        from ..io import write_json
+        root_call(write_json, Path(output) / "input" / "pmf-resolved.json", sampling_config)
     sampled = None
     if pmf_options["source"] is None:
-        sampled = run_fes(
-            sampling_config,
-            system,
-            Path(output) / "umbrella",
-            executor=executor,
-            return_data=True,
-        )
+        sampler = pmf_options.get("sampler", "umbrella")
+        if sampler == "umbrella":
+            sampled = run_fes(sampling_config, system, Path(output) / "umbrella",
+                              executor=executor, return_data=True)
+        else:
+            from ..analysis.fes_result import FESResult
+            from .metadynamics import run_metadynamics
+            from .opes import run_opes
+
+            worker = {"metadynamics": run_metadynamics, "opes": run_opes}[sampler]
+            sampled = worker(sampling_config, system, Path(output) / "pmf",
+                             executor=executor, return_data=True)
+            sampled["rate_surface"] = root_call(FESResult.read, Path(output) / "pmf")
     pmf, parent_tasks = root_call(
         _pmf_and_parent_tasks, sampled, config, system, str(output), options
     )

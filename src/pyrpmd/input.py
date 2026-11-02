@@ -21,6 +21,7 @@ from .input_schema import (
 )
 from .input_options import validate_nonadiabatic, rate_pmf_options
 from .input_fes import fes_method, normalize_fes_task, _normalize_fes_input
+from .input_rate_pmf import normalize_rate_pmf_input, resolve_rate_pmf_stage, rate_pmf_stage
 from .input_paths import (
     _path, _plugin_paths, _initial_ensemble_spec, _nested_potential_paths,
     _cv_model_paths,
@@ -197,6 +198,7 @@ class JobSpec:
                 unknown = set(d[section]) - allowed
                 if unknown:
                     raise _unknown_fields(unknown, allowed, section)
+        normalize_rate_pmf_input(d, self.base_directory)
         validate_input_preflight(d)
         if _integer(d.get("schema_version", 1), "schema_version") != 1:
             raise InputError("Supported schema_version is 1")
@@ -270,6 +272,7 @@ class JobSpec:
             )
         if str(base) not in sys.path:
             sys.path.insert(0, str(base))
+        resolve_rate_pmf_stage(d, resolved, system)
         validate_workflow(resolved, system, materials=materials, source_pmf=source_pmf)
         return resolved, system
 

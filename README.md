@@ -167,7 +167,7 @@ to a research calculation.
 | Area | What PyRPMD provides |
 | --- | --- |
 | Inputs | Python `build()` returning a `JobSpec` or dict, or TOML with strict checks on fields, units, atom indices and paths; command-line overrides for PES, temperature, beads and workers |
-| RPMD rates | TS + PES → numerical Hessian and two-sided descent → channel identification → PMF (Gaussian UI or histogram MBAR) → constrained parents → paired recrossing children; paired UI/MBAR comparison on the same draws |
+| RPMD rates | TS + PES → numerical Hessian and two-sided descent → channel identification → PMF → constrained parents → paired recrossing children; choose umbrella UI/MBAR, frozen-bias MetaD/OPES reweighting or a compatible external PMF ([selection guide](docs/rate-pmf-selection.md)) |
 | Equivalent channels | Equivalent TSs from atom permutations, combined as RPMDrate's `min_bond(max_TS(s1))`; the two H + H₂ exchange exits are distinguished |
 | Reaction networks | Separate entrances, TSs and PESs for one atom and isotope inventory; each path fills a rate matrix, reported per entrance, channel and TS |
 | dRPMD | Two reactant XYZ files and an initial COM distance; persistent parent chains launch collisions at a set interval |
@@ -429,6 +429,7 @@ Reference specifications (some in Chinese):
 - [Constant-potential electrode models and HER postprocessing](docs/electrochemistry.md)
 - [Adaptive restrained paths, constant-potential matrices and signed thermal NRPMD](docs/manual/adaptive-nrpmd.md)
 - [Unified FES, adaptive umbrellas and shared-bias metadynamics](docs/enhanced-sampling.md)
+- [Rate PMF selection and independent sampling settings](docs/rate-pmf-selection.md)
 - [Electrochemical PCET model](docs/pcet.md), [runnable PCET example](examples/pcet/README.md)
 - [Fixed cells, PIMD, materials diffusion and site rates](docs/materials.md)
 - [Surface catalysis and periodic slabs](docs/surface-catalysis.md)

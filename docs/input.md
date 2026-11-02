@@ -256,6 +256,12 @@ can specify times. Each child pair propagates with opposite momenta; an uncomput
 
 ### Rate PMF backend and dividing surface
 
+The unified `[rate.pmf]` interface selects umbrella, frozen-bias MetaD/OPES or an
+external result, and supports independent PMF dynamics/sampling settings. See
+[choosing the PMF method](rate-pmf-selection.md) for complete examples, phase budgets
+and compatibility rules. The legacy selectors described below remain supported;
+do not combine them with `[rate.pmf]` in one input.
+
 The default `rate.pmf_method="ui"` retains Gaussian umbrella integration. It assumes
 nearly Gaussian window distributions; skewness, multiple modes and tail extrapolation
 can introduce bias outside statistical error bars. UI can retain model values with a

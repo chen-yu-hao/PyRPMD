@@ -374,7 +374,10 @@ def resume_run(directory, *, parallel=None, execution=None, adaptive_budget=None
         from .parallel import root_call
         from .workflows.adaptive_umbrella import extend_adaptive_budget
 
-        if config["task"] not in ("fes", "rate") or not config.get("adaptive_umbrella"):
+        adaptive = config.get("adaptive_umbrella")
+        if config["task"] == "rate" and "pmf" in config.get("rate", {}):
+            adaptive = config.get("rate", {}).get("pmf_stage", {}).get("config", {}).get("adaptive_umbrella")
+        if config["task"] not in ("fes", "rate") or not adaptive:
             raise InputError("adaptive budget overrides require an adaptive FES or rate run")
         # Authenticate saved inputs/model files before modifying the plan.
         root_call(_initialize_output, config, system, path, True)
@@ -549,6 +552,9 @@ def prepare(job, *, numerical=False):
         result["method"] = fes_method(config)
     if config["task"] == "rate":
         from .workflows.prepare import prepare_rate, prepared_system
+        from .workflows.rate_plan import rate_pmf_plan
+
+        result["pmf_plan"] = rate_pmf_plan(config)
 
         result["reaction_preparation"] = prepare_rate(
             config, system, numerical=numerical
@@ -556,6 +562,10 @@ def prepare(job, *, numerical=False):
         result["ready"] = result["reaction_preparation"].get("ready", False)
         system = prepared_system(system, result["reaction_preparation"])
         result["system"] = system.to_dict()
+        if numerical and result["ready"] and "pmf" in config.get("rate", {}):
+            from .workflows.rate import _prepare
+
+            _prepare(config, system, ".", _preparation=result["reaction_preparation"], _write=False)
     elif config["task"] == "drpmd":
         result["ready"] = not (
             config["collision"].get("bmax_unvalidated", False)

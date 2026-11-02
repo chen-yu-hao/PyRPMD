@@ -9,8 +9,11 @@ from pathlib import Path
 import numpy as np
 
 from ..checkpoint import load_checkpoint
+from ..bias import CompositeBias, FluxMetricBias
+from ..cv import RPMDrateCoordinate
 from ..dynamics import Dynamics, State
-from ..opes import OPESBias, normalized_weights
+from ..opes import OPESBias
+from ..analysis.frozen_bias import frozen_samples, weighted_histogram
 from ..parallel import make_task_potential, root_call
 from ..propagation import loop_options
 from ..units import parse_quantity
@@ -99,13 +102,25 @@ def resolve_opes(config, system):
     method = analysis.get("method", "kde")
     if method not in ("kde", "reweighted_histogram"):
         raise ValueError("OPES analysis.method must be kde or reweighted_histogram")
-    if analysis.get("measure", "cv_density") != "cv_density":
-        raise ValueError("OPES estimates CV-density free energies, not rate_flux")
+    measure = analysis.get("measure", "cv_density")
+    if measure not in ("cv_density", "rate_flux"):
+        raise ValueError("OPES analysis.measure must be cv_density or rate_flux")
+    if measure == "rate_flux":
+        if method != "reweighted_histogram":
+            raise ValueError("rate_flux OPES requires frozen-bias reweighted_histogram, not a KDE estimate")
+        if (cv.dimension != 1 or len(cv.cvs) != 1
+                or not isinstance(cv.cvs[0], RPMDrateCoordinate)):
+            raise ValueError("rate_flux OPES requires one centroid RPMDrate coordinate")
+        FluxMetricBias(cv.cvs[0], system.masses, config["beta"])
+        if config.get("adaptive_umbrella", {}).get("enabled"):
+            raise ValueError("rate_flux OPES does not combine adaptive umbrellas")
     for key in ("bootstrap", "bootstrap_replicates", "bootstrap_samples"):
         if checked_integer(analysis.get(key, 0), "analysis." + key, 0) != 0:
             raise ValueError("OPES bootstrap is not implemented; use independent histories and convergence studies")
     if method == "reweighted_histogram" and (freeze is None or (nprod // interval) * interval <= freeze + relax):
         raise ValueError("reweighted_histogram requires saved frozen-bias samples after freeze_after_steps + freeze_equilibration_steps")
+    if measure == "rate_flux" and nprod // interval - (freeze + relax) // interval < 2:
+        raise ValueError("rate_flux reweighted_histogram requires at least two saved frozen-bias samples")
     bins = analysis.get("bins", 40)
     if np.isscalar(bins):
         bins = [bins] * cv.dimension
@@ -130,7 +145,7 @@ def resolve_opes(config, system):
     return cv, selected, {"sigma": sigma, "barrier": barrier, "bias_factor": bias.bias_factor,
         "bias_mode": bias.mode, "adaptive_sigma": bias.adaptive_sigma, "sigma_min": minimum,
         "pace": pace, "neq": neq, "nprod": nprod, "interval": interval, "freeze": freeze,
-        "freeze_equilibration_steps": relax, "method": method, "bins": bins, "ranges": ranges,
+        "freeze_equilibration_steps": relax, "method": method, "measure": measure, "bins": bins, "ranges": ranges,
         "min_count": checked_integer(analysis.get("min_count", 1), "analysis.min_count")}
 
 
@@ -285,6 +300,13 @@ def _sample_replica(task):
         runtime = SamplingRuntime(state, elapsed, samples, clocks, biases, energies,
                                   operator_checkpoint=store_operators)
         update = _OPESUpdate(bias, cv, options, config["beta"])
+        metric = (FluxMetricBias(cv.cvs[0], system.masses, config["beta"])
+                  if options["measure"] == "rate_flux" else None)
+
+        def total_bias(current):
+            # An OPES rollback reconstructs update.bias. Always compose with
+            # the current object rather than retaining a pre-rollback bias.
+            return current if metric is None else CompositeBias(current, metric)
 
         def save(current):
             operators = ({"operator_state": json.dumps(dynamics.operator_state_dict(), allow_nan=False)}
@@ -302,6 +324,8 @@ def _sample_replica(task):
                             interval=options["interval"], sampling=config["sampling"],
                             checkpoint_steps=config.get("output", {}).get("checkpoint_steps", 1000),
                             update=update, sampler=sampler, save=save,
+                            active_bias=lambda elapsed, current: total_bias(current),
+                            energy_bias=total_bias,
                             fallback_reason="OPES probability updates require the Python workflow")
         return _read_stream(config, system, output, replica, cv, options)
     finally:
@@ -316,15 +340,21 @@ def _analyze(streams, config, system, output, return_data):
     cv, _, options = resolve_opes(config, system)
     biases = [_new_bias(cv, options, config["beta"], stream["bias_state"]) for stream in streams]
     arrays, log_weights = [], []
-    for stream in streams:
-        selected = np.ones(len(stream["samples"]), dtype=bool)
+    for index, stream in enumerate(streams):
         if options["method"] == "reweighted_histogram":
-            selected = stream["sample_steps"] > options["neq"] + options["freeze"] + options["freeze_equilibration_steps"]
-        samples = stream["samples"][selected].copy()
+            samples, logs = frozen_samples(
+                stream, config["beta"], equilibration_steps=options["neq"],
+                freeze_after_steps=options["freeze"],
+                freeze_equilibration_steps=options["freeze_equilibration_steps"],
+                final_bias=biases[index],
+            )
+        else:
+            samples = stream["samples"].copy()
+            logs = config["beta"] * stream["sample_bias"]
         if not len(samples):
             raise ValueError("OPES analysis has no samples in the selected production stage")
         arrays.append(samples)
-        log_weights.append(config["beta"] * stream["sample_bias"][selected])
+        log_weights.append(logs)
     bounds = options["ranges"]
     if bounds is None:
         combined = np.concatenate(arrays)
@@ -348,12 +378,9 @@ def _analyze(streams, config, system, output, return_data):
             raw.append(-density_factor * bias.log_probability(grid) / config["beta"])
             ess.append(bias.effective_sample_size)
         else:
-            weights = normalized_weights(log_weights[index])
-            mass = np.histogramdd(arrays[index], bins=edges, weights=weights)[0]
-            volume = np.prod(np.meshgrid(*[np.diff(edge) for edge in edges], indexing="ij"), axis=0)
-            with np.errstate(divide="ignore"):
-                raw.append(-np.log(mass / volume) / config["beta"])
-            ess.append(float(1.0 / np.sum(weights**2)))
+            free, effective = weighted_histogram(arrays[index], log_weights[index], edges, config["beta"])
+            raw.append(free)
+            ess.append(effective)
     raw = np.asarray(raw)
     mask |= ~np.isfinite(raw)
     common = ~np.any(mask, axis=0)
@@ -394,7 +421,7 @@ def _analyze(streams, config, system, output, return_data):
     if not common.any():
         warnings.append("Independent histories have no common sampled bin; their aggregate FES is masked.")
     summary = {"task": "opes", "beta": config["beta"], "status": "finite_time_estimate" if all(stream.get("complete", True) for stream in streams) else "partial_finite_time_estimate", "method": "opes", "algorithm": biases[0].method,
-        "estimator": options["method"], "measure": "cv_density", "energy_unit": "hartree",
+        "estimator": options["method"], "measure": options["measure"], "energy_unit": "hartree",
         "dimension": cv.dimension, "units": cv.units, "replicas": len(streams),
         "samples": sum(len(values) for values in arrays), "kernels_per_replica": [len(bias) for bias in biases],
         "log_z_per_replica": [bias.log_z for bias in biases], "weight_effective_sample_size": ess,
@@ -405,6 +432,13 @@ def _analyze(streams, config, system, output, return_data):
         "sample_bias_convention": "physical V before the probability update; H_P contains P*V; log weights are beta*V",
         "files": {"data": str(output / "fes.npz"), "table": str(output / "fes.csv"),
                   "checkpoints": [stream["checkpoint"] for stream in streams]}}
+    if options["method"] == "reweighted_histogram":
+        summary.update(reweighted=True, retained_samples_per_replica=[len(values) for values in arrays])
+    if options["measure"] == "rate_flux":
+        summary["sample_bias_convention"] = (
+            "physical V before the probability update; H_P contains P*V - P*log(flux_metric)/beta; "
+            "frozen log weights are beta*V and preserve the rate_flux measure")
+        warnings.append("RPMDrate xi can have a pole outside the reaction corridor; fixed-bias relaxation and stationary coverage require system-specific checks.")
     result = FESResult.from_data(data, method="opes", cv_units=cv.units, metadata=summary)
     summary = write_fes_result(output, result, summary)
     return {"summary": summary, "data": data, "streams": streams} if return_data else summary
