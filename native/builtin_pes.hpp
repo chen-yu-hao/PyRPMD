@@ -138,14 +138,16 @@ extern "C" inline pyrpmd_rc_v1 pyrpmd_builtin_evaluate_v1(
         case Kind::double_well: {
             const int64_t selected = 3 * context.atom + context.axis;
             const double y = q[selected] / context.width, y2m1 = y*y - 1.;
-            double norm2 = 0.;
+            // Sum only the perpendicular coordinates. Subtracting the selected
+            // term from the full norm relies on exact cancellation, which FMA
+            // contraction (clang on arm64 by default) breaks at O(eps) of the
+            // confinement energy, swamping a small barrier.
+            double perpendicular2 = 0.;
             for (int64_t j = 0; j < dims; ++j) {
-                norm2 += q[j] * q[j];
+                if (j != selected) perpendicular2 += q[j] * q[j];
                 f[j] = -context.confinement * q[j];
             }
-            energy = context.height * (y2m1 * y2m1) +
-                (.5 * context.confinement * norm2 -
-                 .5 * context.confinement * (q[selected] * q[selected]));
+            energy = context.height * (y2m1 * y2m1) + .5 * context.confinement * perpendicular2;
             f[selected] = -4. * context.height * y * y2m1 / context.width;
             break;
         }
