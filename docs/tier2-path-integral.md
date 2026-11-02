@@ -246,3 +246,195 @@ SC-NPT pressure and recovery, PIGLET centroid covariance and its ideal-gas NPT
 measure. See [condensed-phase validation](condensed-phase-nqe.md) for the
 coupled crystal and anharmonic FCC solid evidence, bead/timestep comparisons
 and retained sampling uncertainties.
+
+## Fermionic reweighting and periodic minimum-image exchange (T08)
+
+This extension supersedes the nonperiodic-only exchange restriction above.
+It adds fermionic estimators from positive bosonic sampling and an explicitly
+selected periodic **minimum-image approximation**. Exchange with the existing
+centroid BZP NPT propagator remains unsupported. Suzuki–Chin and PIGS behavior
+is unchanged.
+
+### Selecting statistics and reporting uncertainty
+
+```toml
+[path_integral]
+method = "fermionic"
+groups = [[0, 1, 2]]
+minimum_average_sign = 0.05
+sign_sigma = 3.0
+# Optional: choose only after examining correlation and block-length stability.
+block_size = 20
+```
+
+`method="fermionic"` evolves the same positive bosonic sampling action as
+`method="bosonic"`. Each group contains identical, equal-mass particles;
+separate groups can represent different spin species. Spin multiplicities
+are not inferred, and all listed groups use the selected statistics. Unlisted
+particles remain distinguishable. The physical potential must be symmetric
+within each group. The method estimates symmetric equilibrium observables,
+not real-time fermionic dynamics or labeled-particle observables.
+
+The configuration estimator `sign` is the continuous ratio `W_F / W_B`, not
+an individually sampled permutation parity of exactly +1 or -1. Its bosonic
+ensemble mean is `Z_F / Z_B`. Signed prefix recurrences are normalized by the
+positive bosonic prefix weights and use compensated summation. The work and
+memory remain `O(N² + PN)` for a group; no factorial permutation enumeration
+is used in production. Multiple groups are combined using products that
+never divide by a group's sign, including at fermionic nodes.
+
+`BosonicExchangePotential(..., statistics="fermionic").estimators(q)` returns
+`sign` and already signed potential, kinetic and internal-energy numerators.
+For total signed spring numerator `M`, physical bead-average potential `V`,
+and `s = W_F/W_B`, the primitive total-energy numerator is
+
+```text
+A_E = (3*N*P/(2*beta) + V)*s - M/P
+E_F = mean_B(A_E) / mean_B(s)
+```
+
+`M` is the signed weighted quadratic spring energy, divided by the bosonic
+weight. It includes interior springs and the derivative of the signed
+exchange recurrence. Multiplying the bosonic primitive energy by `s` would
+omit that derivative and is incorrect. No estimator divides by the sign of
+an individual configuration. `ExchangeResult.energy` is a sampling free
+energy, whereas `ExchangeResult.spring_energy` is the weighted quadratic
+spring energy; neither alone is a physical total-energy estimator.
+
+For a nonperiodic bound system, the API also provides the signed unshifted
+virial energy `s*(V - sum(q*F_physical)/(2*P))`. This additional estimator
+requires an integrable confined distribution; it is not provided for periodic
+paths. All quantities use atomic units, and `PESResult.forces` retains the
+physical force convention without bead scaling.
+
+`pyrpmd.quantum_statistics.exchange_thermodynamics` accepts the saved rows or
+matching one-dimensional columns. Each replica's `thermodynamics` report
+contains the average sign and its block standard error, energy ratios and
+their joint delete-one-block jackknife errors, and correlation diagnostics.
+The joint errors retain covariance between numerator and denominator. The
+same complete-block prefix is used for all means and errors, and discarded
+trailing frames are reported. Automatic block selection examines the sign,
+numerators and ratio influence functions; the resulting errors remain
+conditional on adequate block length and mixing.
+
+Physical ratios and their errors are `null` when fewer than four complete
+blocks are available, the mean sign is nonpositive or below
+`minimum_average_sign`, its `sign_sigma`-standard-error interval reaches zero,
+or a jackknife denominator is nonpositive. Structured `warnings` explain the
+failure. The workflow retains the unweighted potential only under
+`bosonic_sampling_potential_energy_hartree` for fermionic runs; that value is
+not presented as a fermionic energy. `status="complete"` describes the run
+clock, and `physical_converged` is always false. Finite sampling, time step,
+bead convergence and the sign problem require separate assessment.
+
+The nonperiodic example is `examples/path_integral/fermionic.inp`. Its short
+run illustrates configuration and reporting, not a converged physical result.
+
+### Periodic exchange, affine virial and fixed-cell pressure
+
+For a periodic system, set `periodic_mode="minimum_image"` explicitly in the
+exchange table. Both statistics are supported. The workflow requires
+`dynamics.integrator="velocity-verlet"` with the Andersen thermostat: the
+existing analytic normal-mode spring propagation assumes unwrapped quadratic
+springs and is not invariant under independent bead-image changes.
+
+```toml
+[dynamics]
+integrator = "velocity-verlet"
+timestep = "0.01 au"
+
+[sampling]
+thermostat = "andersen"
+andersen_interval = 10
+
+[path_integral]
+method = "bosonic"
+groups = [[0, 1]]
+periodic_mode = "minimum_image"
+```
+
+Every interior and exchange endpoint displacement uses the existing exact
+nearest-image geometry, including skew cells and partial periodicity. The
+class caches the cell geometry. Periodic particles outside the exchange
+groups also receive minimum-image distinguishable springs. Thus the total
+sampling action, its forces, and the exchange affine virial are invariant
+under independent lattice translations of the beads. Derivatives at an
+exact nearest-image tie are not defined. The wrapper subtracts the engine's
+ordinary unwrapped springs once; the wrapper's correction by itself need
+not be image invariant, but the complete sampling Hamiltonian is.
+
+`ExchangeResult.virial` is the negative affine strain derivative of the
+bosonic spring free energy. When the physical provider supplies its own
+configurational virial, the wrapper returns the physical virial plus the
+exchange correction, with the subtracted ordinary spring contribution
+handled consistently. A missing physical virial is never replaced by
+Cartesian `q dot F`.
+
+For a fully periodic fixed cell, `estimators(q, volume=Vbox,
+require_pressure=True)` returns a signed primitive pressure numerator:
+
+```text
+A_p = (N*P/(beta*Vbox) + trace(sum(W_physical))/(3*P*Vbox))*s
+      - 2*M/(3*P*Vbox)
+p = mean_B(A_p) / mean_B(s)
+```
+
+It requires the physical provider's virial and the matching fixed-cell
+volume. With optional pressure reporting, the field is absent if the provider
+has no virial. This pressure is consistent with the declared MIC action;
+it is not a winding-complete periodic quantum result. A periodic free-particle
+example is `examples/path_integral/bosonic_periodic.inp`.
+
+MIC retains one nearest image for each link. It does **not** sum winding
+sectors or all periodic free-density-matrix images, and it does not provide a
+superfluid estimator. Increasing sampling alone cannot remove this
+approximation. Compare cell size, temperature and bead number, and consult
+the MIC validity analysis of
+[Higer, Feldman and Hirshberg (2025)](https://doi.org/10.1063/5.0265906).
+Full winding summation remains future work.
+
+### Why exchange + centroid BZP NPT still fails explicitly
+
+Adding an affine exchange virial does not suffice for the existing barostat.
+Its centroid pressure contains `sum((q-q_centroid)*F)`, and it dilates only
+the particle centroids. For the all-bead MIC domain, independently changing a
+bead's lattice image leaves the action, force and affine virial unchanged,
+but changes this centroid-offset term. The all-bead torus measure has `NP`
+coordinate volume factors, while the existing centroid generator assumes
+unbounded internal offsets and `N` centroid factors. A consistent periodic
+barostat measure or explicit winding representation is needed.
+
+Both workflow validation and `BosonicExchangePotential.set_cell` therefore
+reject BZP NPT with an actionable explanation. The fixed-cell pressure
+estimator does not advertise NPT support. A dedicated regression demonstrates
+this image-dependence of the unsupported centroid expression.
+
+### Restart and independent checks
+
+Atomic checkpoints now also contain `exchange_estimators`, with signed
+numerators, sign and any applicable optional estimator columns. The full
+position, momentum, clock and RNG state remain present. Invalid histories or
+changed physics are rejected. Legacy nonperiodic bosonic checkpoints without
+the new history reconstruct it from saved paths without consuming RNG or
+changing trajectories. Existing input fingerprints remain unchanged; new
+statistics, groups, periodic approximation and reporting controls participate
+in the existing scientific identity.
+
+The new `tests/test_exchange_core.py`, `test_exchange_statistics.py`,
+`test_exchange_workflows.py` and `test_exchange_harmonic_reference.py` cover
+explicit representative-cycle sums, force and strain finite differences,
+skew-cell image invariance, zero-sign nodes, multiple groups, pressure,
+joint statistical errors and interrupted bitwise recovery. The harmonic
+reference includes two and three particles, several inverse temperatures and
+finite bead counts. Independent Gaussian determinants over all permutations
+check the analytic partition functions. Independent Gaussian-mixture samples
+from the positive recursive density then check the production estimators and
+average sign within measured sampling errors.
+
+For an isotropic trap of frequency `omega`, the finite-`P` cycle factor is
+`z_k = [2*sinh(k*P*asinh(beta*omega/(2*P)))]**(-3)`. A length-`k` cycle has
+`k*P` beads at inverse temperature `k*beta`; using only `P` beads at that
+temperature is a different discretization. These tests verify finite-`P`
+estimators, not MD ergodicity or the infinite-bead limit. The fermionic
+reweighting construction follows
+[Hirshberg, Invernizzi and Parrinello (2020)](https://doi.org/10.1063/5.0008720).
