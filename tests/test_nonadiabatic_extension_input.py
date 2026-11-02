@@ -28,7 +28,7 @@ def molecular(method="sm-nrpmd"):
     return raw
 
 
-@pytest.mark.parametrize("method", sorted(METHODS))
+@pytest.mark.parametrize("method", sorted(METHODS - {"iesh", "multistate-mash"}))
 def test_every_method_constructs_real_molecular_driver(method):
     raw = molecular(method)
     before = deepcopy(raw)

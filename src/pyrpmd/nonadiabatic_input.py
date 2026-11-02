@@ -29,12 +29,17 @@ from .potentials.nonadiabatic_models import (
 from .system import System
 from .potentials.nah2_leps import NaH2LEPS5G
 from .nonadiabatic_registry import METHODS
+from .iesh import NewnsAndersonModel
 from .units import parse_quantity
 
 
 _ROOT = set("schema_version task method beta temperature beads seed model system "
             "initial ensemble dynamics parallel output native description".split())
 _MODELS = {
+    "newns_anderson": (NewnsAndersonModel,
+                       {"nband", "band_min", "band_max", "chemical_potential", "discretization",
+                        "level_energy", "level_slope", "hybridization", "hybridization_slope",
+                        "bare_force_constant", "center", "coordinate", "natoms"}),
     "nah2_leps_5g_1992": (NaH2LEPS5G, {"symbols"}),
     "tully1": (TullyModelOne, {"a", "b", "c", "d", "natoms", "coordinate"}),
     "tully2": (TullyModelTwo, {"a", "b", "c", "d", "e0", "natoms", "coordinate"}),
@@ -203,8 +208,10 @@ def _coordinates(value, count, natoms):
     return [int(index) for index in raw]
 
 
-def _initial(raw, method, model, system_spec):
+def _initial(raw, method, model, system_spec, *, nelectrons=None):
     electronic_key = "initial_state" if method in _MAPPING else "active_surface"
+    if method == "iesh":
+        electronic_key = "occupied"
     common = {"kind", electronic_key}
     if not isinstance(raw, Mapping):
         raise _error("initial must be a table")
@@ -212,9 +219,23 @@ def _initial(raw, method, model, system_spec):
     fields = {"momenta"} if kind == "point" else {
         "frequencies", "coordinates", "centers", "centroid_momenta"}
     spec = _table(raw, "initial", common | fields)
-    electronic = _integer(spec.get(electronic_key, 0), f"initial.{electronic_key}", 0)
-    if electronic >= model.nstates:
-        raise _error(f"initial.{electronic_key} must be < model.nstates ({model.nstates})")
+    if method == "iesh":
+        electronic = spec.get("occupied", list(range(nelectrons)))
+        _no_booleans(electronic, "initial.occupied")
+        try:
+            value = np.asarray(electronic)
+            if (value.shape != (nelectrons,) or value.dtype.kind not in "iu"
+                    or np.any(value < 0) or np.any(value >= model.nstates)
+                    or len(np.unique(value)) != nelectrons):
+                raise ValueError
+        except (TypeError, ValueError, OverflowError) as exc:
+            raise _error("initial.occupied must contain dynamics.nelectrons distinct integer "
+                         "adiabatic orbital indices in [0, model.nstates)") from exc
+        electronic = value.astype(int).tolist()
+    else:
+        electronic = _integer(spec.get(electronic_key, 0), f"initial.{electronic_key}", 0)
+        if electronic >= model.nstates:
+            raise _error(f"initial.{electronic_key} must be < model.nstates ({model.nstates})")
     initial = {"kind": kind, electronic_key: electronic}
     shape = (model.natoms, 3)
     if kind == "point":
@@ -258,19 +279,21 @@ def _dynamics(raw, method, root):
         allowed |= _RPSH
     if method in _ADVANCED_SH:
         allowed |= {"dboc", "dboc_step", "geometric_force"}
-    if method == "rp-mash":
+    if method in {"rp-mash", "multistate-mash"}:
         allowed |= {"rtol", "atol", "max_step", "max_events", "gap_tolerance"}
+    if method == "iesh":
+        allowed |= {"nelectrons", "electronic_substeps", "gap_tolerance", "max_hop_probability"}
     spec = _table(raw, "dynamics", allowed)
-    native = _native(root.get("native", method != "rp-mash"), "native")
+    native = _native(root.get("native", method not in {"rp-mash", "multistate-mash"}), "native")
     if "native" in spec:
         chosen = _native(spec["native"], "dynamics.native")
         if "native" in root and chosen != native:
             raise _error("native and dynamics.native conflict; supply only one or the same value")
         native = chosen
-    if method == "rp-mash":
+    if method in {"rp-mash", "multistate-mash"}:
         integrator = _choice(spec.get("integrator", "adaptive-dop853"), "dynamics.integrator", {"adaptive-dop853"})
         if native is not False:
-            raise _error("rp-mash uses adaptive-dop853 event integration and requires native=false")
+            raise _error(f"{method} uses adaptive-dop853 event integration and requires native=false")
     else:
         try:
             integrator = normalize_integrator(spec.get("integrator", "cayley-bcb"))
@@ -291,12 +314,23 @@ def _dynamics(raw, method, root):
         if backend != "torch" and device != "cpu":
             raise _error("a CUDA electronic_device requires electronic_backend='torch'")
         options.update(electronic_backend=backend,electronic_device=device)
-    if method == "rp-mash":
+    if method in {"rp-mash", "multistate-mash"}:
         options.update(rtol=_quantity(spec.get("rtol",1e-9),"dynamics.rtol",(0,0,0,0,0,0)),
                        atol=_quantity(spec.get("atol",1e-11),"dynamics.atol",(0,0,0,0,0,0)),
                        max_step=_quantity(spec.get("max_step",dt/4),"dynamics.max_step","time"),
                        max_events=_integer(spec.get("max_events",64),"dynamics.max_events"),
                        gap_tolerance=_quantity(spec.get("gap_tolerance",1e-10),"dynamics.gap_tolerance","energy"))
+    if method == "iesh":
+        options.update(
+            electronic_substeps=_integer(spec.get("electronic_substeps", 4), "dynamics.electronic_substeps"),
+            gap_tolerance=_quantity(spec.get("gap_tolerance", 1e-10), "dynamics.gap_tolerance", "energy"),
+            max_hop_probability=_quantity(spec.get("max_hop_probability", 1.),
+                                           "dynamics.max_hop_probability", (0, 0, 0, 0, 0, 0)),
+        )
+        if options["max_hop_probability"] > 1.:
+            raise _error("dynamics.max_hop_probability must be <= 1")
+        if "nelectrons" in spec:
+            options["nelectrons"] = _integer(spec["nelectrons"], "dynamics.nelectrons")
     if method == "rpsh" or method in _ADVANCED_SH:
         decoherence = _choice(spec.get("decoherence", "none"), "dynamics.decoherence", {"none", "edc"})
         if method == "rpsh-dm" and decoherence != "none":
@@ -352,11 +386,14 @@ def _check_reference(model, geometry, method, options):
         result = model.evaluate(geometry[None])
         if method in ("sm-nrpmd", "rp-mash") and model.nstates != 2:
             raise ValueError(f"{method} currently requires exactly two electronic states")
+        if method == "multistate-mash" and model.nstates < 2:
+            raise ValueError("multistate-mash requires at least two electronic states")
         if method in _MAPPING:
             return
-        if method in {"rpsh","rpsh-ba","rp-mash"} and (
+        if method in {"rpsh","rpsh-ba","rp-mash","iesh","multistate-mash"} and (
                 np.any(np.imag(result.matrix) != 0) or np.any(np.imag(result.gradients) != 0)):
-            raise ValueError("RPSH requires a real symmetric matrix and real gradients; "
+            label = method if method in {"iesh", "multistate-mash"} else "RPSH"
+            raise ValueError(f"{label} requires a real symmetric matrix and real gradients; "
                              "choose a method supporting complex Hermitian models")
         energies = np.linalg.eigvalsh(result.matrix)[0]
         if not np.isfinite(energies).all():
@@ -407,6 +444,8 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
     if not np.isfinite(beta) or beta <= 0 or not np.isfinite(temperature) or temperature <= 0:
         raise _error("beta and its corresponding temperature must be representable positive finite floats")
     beads = _integer(root.get("beads", 1), "beads")
+    if method in {"iesh", "multistate-mash"} and beads != 1:
+        raise _error(f"{method} currently requires beads=1; no ring-polymer extension is implemented")
     seed = _integer(root.get("seed", 0), "seed", 0)
     system_spec = _table(root.get("system", {}), "system", {"masses", "positions", "symbols", "unit"})
     if "symbols" in system_spec:
@@ -431,6 +470,8 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
                 raise _error("model.params.symbols and system.symbols disagree")
         params["symbols"] = system_spec["symbols"]
     model = _model(model_spec)
+    if isinstance(model, NewnsAndersonModel) and method != "iesh":
+        raise _error("newns_anderson requires method='iesh' so its bare nuclear potential is counted once")
     symbols = tuple(getattr(model,"symbols",("X",)*model.natoms))
     if "symbols" in system_spec and tuple(system_spec["symbols"]) != symbols:
         raise _error("system.symbols must match the molecular PES atom order; reduced models use X")
@@ -441,7 +482,15 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
         system_spec["positions"] = (_real_array(system_spec["positions"],"system.positions",(model.natoms,3))
                                     *parse_quantity("1 "+unit,"length")).tolist()
     masses = _masses(system_spec.get("masses", _MISSING), model)
-    initial, geometry, warning = _initial(root.get("initial", {}), method, model, system_spec)
+    if method == "iesh":
+        options, dt, native = _dynamics(root.get("dynamics", {}), method, root)
+        options.setdefault("nelectrons", max(model.nstates // 2, 1))
+        if not 1 <= options["nelectrons"] <= model.nstates:
+            raise _error("dynamics.nelectrons must be in [1, model.nstates]")
+        initial, geometry, warning = _initial(root.get("initial", {}), method, model, system_spec,
+                                             nelectrons=options["nelectrons"])
+    else:
+        initial, geometry, warning = _initial(root.get("initial", {}), method, model, system_spec)
     metadata = getattr(model, "metadata", {})
     system = System(symbols=symbols, masses=masses, geometry=geometry,
                     charge=metadata.get("charge", 0),
@@ -454,7 +503,8 @@ def resolve_nonadiabatic_job(raw, *, base_directory=".", input_path=None):
         "steps": _integer(ensemble["steps"], "ensemble.steps", 0),
         "sample_stride": _integer(ensemble.get("sample_stride", 1), "ensemble.sample_stride"),
     }
-    options, dt, native = _dynamics(root.get("dynamics", {}), method, root)
+    if method != "iesh":
+        options, dt, native = _dynamics(root.get("dynamics", {}), method, root)
     parallel = _parallel(root.get("parallel", {}))
     output = _table(root.get("output", {}), "output", {"directory"})
     directory = output.get("directory", "runs/nonadiabatic")
