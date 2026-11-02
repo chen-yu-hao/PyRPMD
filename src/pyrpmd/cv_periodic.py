@@ -11,7 +11,8 @@ import numpy as np
 
 from .cv import (
     PeriodicDistance, BondDifference, Angle, _indices, _distance,
-    _AffineCoordinate, _PeriodicCellCV,
+    _AffineCoordinate, _PeriodicCellCV, _hvp_arguments, _distance_hvp,
+    _hessian_hvp, _angle_hvp, _check_hvp_gradient_override,
 )
 from .geometry import validate_cell_pbc
 
@@ -30,6 +31,29 @@ class PeriodicBondDifference(_PeriodicCellCV, BondDifference):
         b, gb = _distance(q, *self.bonds[1], geometry=self._geometry)
         return a - b, ga - gb
 
+    def centroid_value_gradient_hessian(self, q):
+        a, ga, ha = _distance(q, *self.bonds[0], hessian=True, geometry=self._geometry)
+        b, gb, hb = _distance(q, *self.bonds[1], hessian=True, geometry=self._geometry)
+        return a - b, ga - gb, ha - hb
+
+    def centroid_value_gradient_hvp(self, q, v):
+        """Apply each bond's minimum-image Hessian on its selected branch."""
+        q, v = _hvp_arguments(q, v)
+        if ("centroid_value_gradient_hessian" in self.__dict__
+                or type(self).centroid_value_gradient_hessian is not _PERIODIC_DIFFERENCE_HESSIAN):
+            return _hessian_hvp(self, q, v)
+        _check_hvp_gradient_override(
+            self, _PERIODIC_DIFFERENCE_GRADIENT, _PERIODIC_DIFFERENCE_HVP,
+        )
+        a, ga, ha = _distance_hvp(q, v, *self.bonds[0], geometry=self._geometry)
+        b, gb, hb = _distance_hvp(q, v, *self.bonds[1], geometry=self._geometry)
+        return a - b, ga - gb, ha - hb
+
+
+_PERIODIC_DIFFERENCE_HESSIAN = PeriodicBondDifference.centroid_value_gradient_hessian
+_PERIODIC_DIFFERENCE_GRADIENT = PeriodicBondDifference.centroid_value_gradient
+_PERIODIC_DIFFERENCE_HVP = PeriodicBondDifference.centroid_value_gradient_hvp
+
 
 class PeriodicAngle(_PeriodicCellCV, Angle):
     def __init__(self, atoms, cell, pbc, **kwargs):
@@ -46,6 +70,24 @@ class PeriodicAngle(_PeriodicCellCV, Angle):
         image[a] = q[b] + self._geometry.minimum_image(q[a] - q[b])
         image[c] = q[b] + self._geometry.minimum_image(q[c] - q[b])
         return super().centroid_value_gradient(image)
+
+    def centroid_value_gradient_hvp(self, q, v):
+        """Differentiate the angle within the same two image branches."""
+        q, v = _hvp_arguments(q, v)
+        if hasattr(self, "centroid_value_gradient_hessian"):
+            return _hessian_hvp(self, q, v)
+        _check_hvp_gradient_override(self, _PERIODIC_ANGLE_GRADIENT, _PERIODIC_ANGLE_HVP)
+        a, b, c = self.atoms
+        if min(a, b, c) < 0 or max(a, b, c) >= len(q):
+            raise ValueError("angle atom index out of range")
+        image = q.copy()
+        image[a] = q[b] + self._geometry.minimum_image(q[a] - q[b])
+        image[c] = q[b] + self._geometry.minimum_image(q[c] - q[b])
+        return _angle_hvp(image, v, self.atoms)
+
+
+_PERIODIC_ANGLE_GRADIENT = PeriodicAngle.centroid_value_gradient
+_PERIODIC_ANGLE_HVP = PeriodicAngle.centroid_value_gradient_hvp
 
 
 class LinearProjection(_AffineCoordinate):

@@ -123,7 +123,7 @@ def _original_methods(obj, originals):
 def _check_cv_methods(cv):
     from .cv import _BUILTIN_CV_METHODS
     methods = ("value", "value_and_jacobian", "centroid_value_gradient",
-               "centroid_value_gradient_hessian", "surfaces")
+               "centroid_value_gradient_hessian", "centroid_value_gradient_hvp", "surfaces")
     if (any(k in getattr(cv, "__dict__", {}) for k in methods)
             or not _original_methods(cv, _BUILTIN_CV_METHODS.get(type(cv), {}))):
         raise NativeUnavailableError("overridden CV methods require Python")
