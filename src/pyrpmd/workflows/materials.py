@@ -148,7 +148,10 @@ def resolve_materials(config, system):
         raise ValueError("PILE-L sampling needs loop_backend='auto' or 'python'")
     expected_sampler = ({"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}[loop["integrator"]]
                         if thermostat == "pile-l" else loop["integrator"] + "-andersen")
-    if sampling.get("integrator", expected_sampler) != expected_sampler:
+    if thermostat == "pile-l":
+        from .sampling import middle_sampling_method
+        expected_sampler = middle_sampling_method(loop["integrator"], sampling.get("integrator"))
+    elif sampling.get("integrator", expected_sampler) != expected_sampler:
         raise ValueError(f"materials sampling.integrator must be {expected_sampler} for the selected method")
     gamma = sampling.get("gamma_centroid", 1.0 / (100.0 * FS_TO_AU))
     if not isinstance(gamma, (int, float, np.number)) or isinstance(gamma, (bool, np.bool_)) or not np.isfinite(gamma) or gamma <= 0:
@@ -157,7 +160,7 @@ def resolve_materials(config, system):
     sample_dt = float(sampling.get("dt_au", dt))
     if not np.isfinite(dt) or dt <= 0 or not np.isfinite(sample_dt) or sample_dt <= 0:
         raise ValueError("materials timesteps must be positive and finite")
-    options.update(thermostat=thermostat, gamma_centroid=float(gamma), sample_dt=sample_dt,
+    options.update(thermostat=thermostat, sampling_method=expected_sampler, gamma_centroid=float(gamma), sample_dt=sample_dt,
                    electronic_friction=friction_spec,
                    production_dt=sample_dt if task == "pimd" else dt)
     if options["nprod"] // options["interval"] < (3 if task == "diffusion" else 1):
@@ -688,9 +691,11 @@ def _sample_replica(task):
                     if piston is not None:
                         piston.step(state, dynamics, thermostat=options["thermostat"],
                                     gamma_centroid=options["gamma_centroid"],
-                                    andersen_interval=options["andersen_interval"])
+                                    andersen_interval=options["andersen_interval"],
+                                    method=options["sampling_method"] if options["thermostat"] == "pile-l" else None)
                     elif is_sampling and options["thermostat"] == "pile-l":
-                        dynamics.sample_step(state, gamma_centroid=options["gamma_centroid"])
+                        dynamics.sample_step(state, gamma_centroid=options["gamma_centroid"],
+                                             method=options["sampling_method"])
                         dynamics._record_python_steps(1)
                         reasons = dynamics.propagation_stats["fallback_reasons"]
                         reason = "PILE-L sampling uses Python/NumPy"
@@ -701,6 +706,10 @@ def _sample_replica(task):
                                           else dynamics.sample_momenta())
                         dynamics.propagate(state, 1, record_centroids=False)
                     prospective = elapsed + 1
+                    expected = {"cayley-bcb": "bcocb", "normal-mode-bab": "baoab"}.get(sampling.integrator_name)
+                    if (config["task"] == "diffusion" and prospective == options["neq"]
+                            and options["thermostat"] == "pile-l" and options["sampling_method"] != expected):
+                        state.p[:] = sampling.sample_momenta()
                     record = prospective >= options["neq"] and (prospective - options["neq"]) % options["interval"] == 0
                     observation = observe() if record else None
                     if monitor is not None:

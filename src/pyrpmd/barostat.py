@@ -186,7 +186,7 @@ class BZPBarostat:
         self.momentum = decay * self.momentum + amplitude * float(rng.normal())
 
     def step(self, state, dynamics, *, thermostat="pile-l", gamma_centroid=1.0,
-             andersen_interval=10):
+             andersen_interval=10, method=None):
         """Advance one pressure-controlled step, restoring every state on error.
 
         The palindrome is piston OU/2, pressure kick/2, dilation/2,
@@ -202,6 +202,9 @@ class BZPBarostat:
             raise ValueError("BZP and Dynamics must share the potential, masses, beta and bead count")
         if dynamics.fixed_atoms:
             raise ValueError("BZP requires all atoms mobile")
+        pressure_plan = dynamics.plan.barostat_spec
+        if not isinstance(pressure_plan, dict) or pressure_plan.get("mode", "none") != "none":
+            raise ValueError("use the configured pressure plan through Dynamics.step; do not attach a second piston")
         if dynamics.loop_backend == "native":
             raise ValueError("BZP requires loop_backend='auto' or 'python'")
         if thermostat not in ("pile-l", "andersen", None):
@@ -209,18 +212,23 @@ class BZPBarostat:
         if (isinstance(andersen_interval, (bool, np.bool_))
                 or not isinstance(andersen_interval, (int, np.integer)) or andersen_interval < 1):
             raise ValueError("andersen_interval must be a positive integer")
+        if method is not None:
+            if thermostat != "pile-l":
+                raise ValueError("an explicit middle method requires PILE-L")
+            dynamics._sampling_kernel(method)  # Reject before moving the cell or drawing noise.
         dt = _real(dynamics.dt, "BZP timestep", positive=True)
         self._check_state(state)
         saved_state = state.copy()
         saved_piston = self.snapshot()
         saved_rng = copy.deepcopy(dynamics.rng.bit_generator.state)
+        saved_operators = dynamics.operator_state_dict()
         saved_stats = copy.deepcopy(dynamics.propagation_stats)
         try:
             self._thermostat(dynamics.rng, dt / 2)
             self._piston_kick(state, dt / 2)
             self._dilate(state, dt / 2)
             if thermostat == "pile-l":
-                dynamics.sample_step(state, gamma_centroid=gamma_centroid)
+                dynamics.sample_step(state, gamma_centroid=gamma_centroid, method=method)
             else:
                 if thermostat == "andersen" and state.step % andersen_interval == 0:
                     state.p[:] = dynamics.sample_momenta()
@@ -240,6 +248,7 @@ class BZPBarostat:
             dynamics.rng.bit_generator.state = saved_rng
             dynamics.propagation_stats = saved_stats
             self.restore(saved_piston)
+            dynamics.load_operator_state_dict(saved_operators)
             raise
         return state
 

@@ -202,6 +202,7 @@ class PropagationPlan:
     thermostat: object = None
     barostat: object = None
     force_splitting: ForceSplitting | None = None
+    sampling_integrator: str | None = None
 
     def __post_init__(self):
         from .dynamics import normalize_integrator
@@ -211,9 +212,20 @@ class PropagationPlan:
         object.__setattr__(self, "_thermostat_json", json.dumps(normalize_thermostat(self.thermostat), sort_keys=True))
         if self.force_splitting is not None and not isinstance(self.force_splitting, ForceSplitting):
             raise TypeError("force_splitting must be ForceSplitting(inner_steps=...)")
+        if self.sampling_integrator is not None:
+            if self.sampling_integrator not in ("bcocb", "baoab"):
+                raise ValueError("sampling_integrator must be bcocb or baoab")
+            if self.integrator == "velocity-verlet":
+                raise ValueError("middle normal-mode sampling requires Cayley or normal-mode dynamics")
+            if self.thermostat_spec["mode"] not in ("pile-l", "trpmd"):
+                raise ValueError("explicit sampling_integrator requires PILE-L or TRPMD")
         barostat = self.barostat
         if barostat is None or isinstance(barostat, (str, dict)):
-            object.__setattr__(self, "_barostat_json", json.dumps(normalize_barostat(barostat), sort_keys=True, allow_nan=False))
+            normalized_barostat = normalize_barostat(barostat)
+            if (self.sampling_integrator is not None and normalized_barostat["mode"] != "none"
+                    and (normalized_barostat["mode"] != "bzp" or self.thermostat_spec["mode"] != "pile-l")):
+                raise ValueError("explicit middle NPT requires isotropic BZP and PILE-L")
+            object.__setattr__(self, "_barostat_json", json.dumps(normalized_barostat, sort_keys=True, allow_nan=False))
         else:
             from .barostat import BZPBarostat
             if not isinstance(barostat, BZPBarostat):
@@ -235,15 +247,24 @@ class PropagationPlan:
         return json.loads(self._barostat_json) if self._barostat_json is not None else self.barostat
 
     @property
+    def ring_integrator(self):
+        """Actual free-ring kernel, independent of the requested NVE kernel."""
+        return {"bcocb": "cayley-bcb", "baoab": "normal-mode-bab"}.get(
+            self.sampling_integrator, self.integrator)
+
+    @property
     def active(self):
         return (self.thermostat_spec["mode"] != "none" or self.force_splitting is not None
                 or self._barostat_json != '{"mode": "none"}')
 
     def state_dict(self):
         barostat = self.barostat_spec
-        return {"integrator": self.integrator, "thermostat": self.thermostat_spec,
+        result = {"integrator": self.integrator, "thermostat": self.thermostat_spec,
                 "barostat": barostat if isinstance(barostat, dict) else json.loads(self._external_barostat_json),
                 "inner_steps": None if self.force_splitting is None else self.force_splitting.inner_steps}
+        if self.sampling_integrator is not None:
+            result["sampling_integrator"] = self.sampling_integrator
+        return result
 
 
 class _Composition:
@@ -251,6 +272,8 @@ class _Composition:
 
     def __init__(self, dynamics, plan):
         self.dynamics, self.plan = dynamics, plan
+        method = plan.sampling_integrator
+        self.integrator = dynamics._sampling_kernel(method) if method else dynamics.integrator
         self.baths = {}
         self.native_engine = None
         self._native_state = None
@@ -458,7 +481,8 @@ class _Composition:
                               potential=d.potential,
                               potential_identity=d._runtime_potential_identity,
                               thermostat=self.plan.thermostat_spec, barostat=self.plan.barostat_spec,
-                              integrator=d.integrator_name, fixed_atoms=d.fixed_atoms,
+                              integrator=self.plan.integrator, fixed_atoms=d.fixed_atoms,
+                              sampling_integrator=self.plan.sampling_integrator,
                               cell=d._initial_cell, pbc=d.pbc, seed=seed, **({"allow_python": True} if allow_python else {}))
 
     def _can_native(self, bias, fragments):
@@ -558,7 +582,7 @@ class _Composition:
             self.native_engine.set_state(state.q, state.p, step=state.step)
         return self.native_engine
 
-    def _split_step(self, q, p, bias, project, cache):
+    def _split_step(self, q, p, bias, project, cache, *, middle=False, step=0):
         d = self.dynamics
         from .potentials.base import validate_result
         def force(kind):
@@ -578,19 +602,31 @@ class _Composition:
                 if extra.shape != q.shape or not np.isfinite(extra).all():
                     raise ValueError("bias returned invalid forces")
                 f = f + extra
-            d.integrator.kick(p, f, 0.5 * d.dt)
+            self.integrator.kick(p, f, 0.5 * d.dt)
             project(q, p)
         slow_kick()
-        h = d.integrator.dt
+        h = self.integrator.dt
         for _ in range(self.plan.force_splitting.inner_steps):
             endpoint = False
             def kick(_q, _p):
                 nonlocal endpoint
                 if endpoint:
                     cache["fast"] = force("fast")
-                d.integrator.kick(_p, cache["fast"], 0.5 * h)
+                self.integrator.kick(_p, cache["fast"], 0.5 * h)
                 endpoint = True
-            deterministic_step(q, p, kick=kick, free=d.integrator.free_step, project=project)
+            if middle:
+                kick(q, p)
+                project(q, p)
+                self.integrator.half_step(q, p)
+                project(q, p)
+                self._bath(q, p, h, step)
+                project(q, p)
+                self.integrator.half_step(q, p)
+                project(q, p)
+                kick(q, p)
+                project(q, p)
+            else:
+                deterministic_step(q, p, kick=kick, free=self.integrator.free_step, project=project)
         cache["slow"] = force("slow")
         slow_kick()
 
@@ -607,12 +643,15 @@ class _Composition:
         def deterministic():
             if self.plan.force_splitting is None:
                 deterministic_step(state.q, state.p, kick=lambda q, p: d._kick(q, p, bias),
-                                   free=d.integrator.free_step, project=project)
+                                   free=self.integrator.free_step, project=project)
             else:
                 self._split_step(state.q, state.p, bias, project, cache)
         if mode == "none" or (mode == "trpmd" and (
                 d.nbeads == 1 or self.plan.thermostat_spec.get("pile_scale", 1) == 0)):
             deterministic()
+        elif self.plan.force_splitting is not None and self.plan.sampling_integrator is not None:
+            # One OU of duration h per inner step, not dt (which over-damps M-fold).
+            self._split_step(state.q, state.p, bias, project, cache, middle=True, step=state.step)
         elif mode == "andersen" and (self.plan.force_splitting is not None or d.integrator_name == "velocity-verlet"):
             if state.step % self.plan.thermostat_spec.get("interval", 10) == 0:
                 self._bath(state.q, state.p, d.dt, state.step)
@@ -627,11 +666,11 @@ class _Composition:
         else:
             d._kick(state.q, state.p, bias)
             project(state.q, state.p)
-            d.integrator.half_step(state.q, state.p)
+            self.integrator.half_step(state.q, state.p)
             project(state.q, state.p)
             self._bath(state.q, state.p, d.dt, state.step)
             project(state.q, state.p)
-            d.integrator.half_step(state.q, state.p)
+            self.integrator.half_step(state.q, state.p)
             project(state.q, state.p)
             d._kick(state.q, state.p, bias)
             project(state.q, state.p)

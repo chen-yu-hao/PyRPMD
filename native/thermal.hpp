@@ -61,7 +61,7 @@ struct Config {
     size_t atoms=0,beads=0; double beta=1,dt=.01;
     Vec masses; std::vector<uint8_t> fixed;
     Thermostat thermostat=Thermostat::PileL; Barostat barostat=Barostat::None;
-    bool cayley=true,initialize_momenta=true,has_cell=false,fuse_modes=true;
+    bool cayley=true,initialize_momenta=true,has_cell=false,fuse_modes=true,middle_npt=false;
     double gamma=1,gamma0=1,pile_scale=1,tau=1;
     uint64_t interval=10,seed=0;
     size_t gle_size=0; Vec gle_T,gle_S,gle_Croot;
@@ -351,9 +351,35 @@ private:
         for(size_t j=0;j<d;++j){s.q[j]*=halfscale;s.p[j]/=halfscale;s.q[j]+=.5*c.dt*s.p[j]/c.masses[j/3];}
         for(double& x:s.cell)x*=halfscale;
     }
+    // Symmetric centroid BZP wrapper around a fixed-volume BCOCB/BAOAB step.
+    // Keep the old coupled-kick NPT map unchanged unless explicitly selected.
+    // Piston kicks here do NOT contain the coupled physical-kick h^2/h^3 terms.
+    void piston_kick(double h){
+        Mat v=stress_volume();
+        s.cell_p[0]+=h*(v[0]+v[4]+v[8]-3*c.beads*c.pressure*det(s.cell)+3*theta);
+    }
+    void centroid_dilate(double h){
+        means();double x=h*s.cell_p[0]/baro_mass;
+        require(std::isfinite(x)&&std::abs(x)<50,"unstable BZP dilation; reduce timestep");
+        double a=std::exp(x),b=std::exp(-x);
+        for(size_t k=0;k<c.beads;++k)for(size_t j=0;j<d;++j){
+            s.q[k*d+j]+=(a-1)*centroid_q[j];
+            s.p[k*d+j]+=(b-1)*centroid_p[j];
+        }
+        for(double& v:s.cell)v*=a;
+        require(det(s.cell)>0&&std::isfinite(det(s.cell)),"invalid propagated cell");
+        s.force_valid=false;
+    }
     void one_step(){
         if(!s.force_valid)refresh();
-        if(c.barostat==Barostat::None&&c.thermostat==Thermostat::NHC){
+        if(c.middle_npt){
+            baro_bath(.5*c.dt);piston_kick(.5*c.dt);centroid_dilate(.5*c.dt);
+            refresh();kick(.5*c.dt);
+            if(c.fuse_modes)free_bath_free();
+            else {free_ring(true);bath(c.dt);free_ring(true);}
+            refresh();kick(.5*c.dt);centroid_dilate(.5*c.dt);
+            refresh();piston_kick(.5*c.dt);baro_bath(.5*c.dt);
+        }else if(c.barostat==Barostat::None&&c.thermostat==Thermostat::NHC){
             // Preserve the established symmetric O-B-C-B-O chain splitting.
             bath(.5*c.dt);kick(.5*c.dt);free_ring(false);
             refresh();kick(.5*c.dt);bath(.5*c.dt);
@@ -478,6 +504,8 @@ public:
         if(c.has_cell){inverse(cell);for(double x:cell)require(std::isfinite(x),"nonfinite cell");}
         for(size_t atom=0;atom<c.atoms;++atom)if(c.fixed[atom])--mobile;
         require(mobile>0,"at least one mobile atom is required");
+        if(c.middle_npt)require(c.barostat==Barostat::BZP&&c.thermostat==Thermostat::PileL,
+                               "middle NPT requires isotropic BZP and PILE-L");
         if(c.barostat!=Barostat::None){
             require(c.has_cell&&c.pbc==std::array<int32_t,3>{1,1,1}&&mobile==c.atoms,"NPT requires 3D PBC and all atoms mobile");
             require(c.baro_tau>0&&c.baro_gamma>=0&&std::isfinite(baro_mass)&&baro_mass>0&&std::isfinite(c.baro_gamma)&&std::isfinite(c.pressure),"invalid barostat parameters");

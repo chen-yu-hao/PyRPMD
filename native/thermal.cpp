@@ -78,6 +78,7 @@ thermal::Config config(PyObject* dict){
     auto thermostat=integer(dict,"thermostat"),barostat=integer(dict,"barostat");require(thermostat<=12&&barostat<=4,"unknown thermostat/barostat");
     c.thermostat=static_cast<thermal::Thermostat>(thermostat);c.barostat=static_cast<thermal::Barostat>(barostat);
     c.fuse_modes=PyDict_GetItemString(dict,"fuse_modes")?boolean(dict,"fuse_modes"):true;
+    c.middle_npt=PyDict_GetItemString(dict,"middle_npt")?boolean(dict,"middle_npt"):false;
     c.cayley=boolean(dict,"cayley");c.initialize_momenta=boolean(dict,"initialize_momenta");c.has_cell=boolean(dict,"has_cell");
     c.gamma=num(dict,"gamma");c.gamma0=num(dict,"gamma0");c.pile_scale=num(dict,"pile_scale");c.tau=num(dict,"tau");
     c.interval=integer(dict,"interval");c.seed=integer(dict,"seed");c.gle_size=integer(dict,"gle_size");require(c.gle_size<=64,"GLE dimension exceeds 64");
@@ -197,5 +198,6 @@ PyMODINIT_FUNC PyInit__thermal(){
     const char* abi="mt19937_64-normal-v1-unknown-standard-library";
 #endif
     if(PyModule_AddStringConstant(m,"rng_abi",abi)<0
-            ||PyModule_AddIntConstant(m,"COMPOSABLE_OPERATORS_API",1)<0){Py_DECREF(m);return nullptr;}return m;
+            ||PyModule_AddIntConstant(m,"COMPOSABLE_OPERATORS_API",1)<0
+            ||PyModule_AddIntConstant(m,"MIDDLE_BZP_API",1)<0){Py_DECREF(m);return nullptr;}return m;
 }

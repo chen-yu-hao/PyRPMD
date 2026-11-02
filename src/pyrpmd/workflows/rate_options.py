@@ -36,6 +36,11 @@ def _recrossing_dynamics(config):
         raise ValueError("recrossing.friction_scale must be finite and nonnegative")
     if method == "rpmd" and "friction_scale" in raw:
         raise ValueError("recrossing.friction_scale requires dynamics='trpmd'")
+    if "integrator" in raw:
+        if method != "trpmd":
+            raise ValueError("recrossing.integrator requires dynamics='trpmd'")
+        from .sampling import middle_sampling_method
+        middle_sampling_method(loop_options(config)["integrator"], raw["integrator"])
     batch = checked_integer(raw.get("child_batch_pairs", 1), "recrossing.child_batch_pairs")
     if batch > 1 and execution_plan(config.get("parallel", {})).bead_workers > 1:
         raise ValueError(

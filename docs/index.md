@@ -79,7 +79,7 @@ Python equivalents are `prepare`, `run`, `analyze_run` and `resume_run`; see the
 | Getting started | [Installation](manual/installation.md) · [Quickstart](manual/quickstart.md) · [Input and CLI](manual/input.md) · [Scientific conventions](manual/science.md) |
 | Tasks | [Gas phase and free energy](manual/workflows.md) · [Materials and surfaces](manual/periodic.md) · [PCET](manual/pcet.md) · [Electrode models](manual/electrochemistry.md) · [Nonadiabatic NRPMD](manual/nonadiabatic.md) · [Examples](manual/examples.md) |
 | Models and runs | [Potentials and plugins](manual/potentials.md) · [PES generation](manual/pes-generation.md) · [JaxPIP fitting](manual/jaxpip-generation.md) · [Execution, parallelism and restart](manual/execution.md) · [Output and analysis](manual/results.md) · [Automatic analysis and figures](manual/analysis-reports.md) |
-| Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
+| Dynamics extensions | [Common propagation stack](propagation-stack.md) · [Expensive potentials](performance-dynamics.md) · [Trajectory batching](batched-dynamics.md) · [RPC/MTS](rpc-mts.md) · [Mixed sampling](mixed-sampling.md) · [TRPMD and spectra](trpmd-spectroscopy.md) |
 | Reference | [Python API](manual/api.md) · [Troubleshooting](manual/troubleshooting.md) · [Developer guide](manual/development.md) |
 
 ```{toctree}
@@ -120,6 +120,7 @@ Propagation stack <propagation-stack>
 Expensive potentials <performance-dynamics>
 Trajectory batching <batched-dynamics>
 RPC/MTS <rpc-mts>
+Mixed sampling <mixed-sampling>
 TRPMD and spectra <trpmd-spectroscopy>
 Output and analysis <manual/results>
 Standard trajectory formats <trajectory-export>

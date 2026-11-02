@@ -65,3 +65,10 @@ recursive-include benchmarks/torch_literature *.md *.json *.gz
 include benchmarks/torch_bcocb_validation.py
 
 include benchmarks/rpmdrate_normal_modes.py benchmarks/rpmdrate_normal_modes_validation.py
+
+include benchmarks/mixed_sampling_validation.py
+
+# Existing paper regressions require their checked-in reference files in source archives.
+include benchmarks/paper_validation/dac_spin_statistical.py benchmarks/paper_validation/dac_p*_liu2024_reference.csv
+
+recursive-include examples/nonadiabatic/data *.csv

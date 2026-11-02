@@ -358,7 +358,10 @@ class TorchDynamics:
     ``integrator="cayley-bcocb"`` instead applies B(dt/2) C(dt)**(1/2)
     O(dt) C(dt)**(1/2) B(dt/2), with a principal square-root Cayley map,
     NOT a Cayley map at half dt (Korol et al., JCP 152, 104102, Eq. 17).
-    B includes all fast/slow/RPC terms; this option requires inner_steps=1.
+    With MTS the palindrome is Bs(dt/2) [Bf(h/2) C(h)**(1/2)
+    O(h) C(h)**(1/2) Bf(h/2)]**M Bs(dt/2). Slow/RPC forces are evaluated
+    only at outer endpoints. This extension has timestep and contraction bias;
+    the single-step harmonic exactness is NOT claimed for the composed MTS map.
     Its harmonic configurational marginal is exact within the physical-force
     stability limit, but stored momenta have finite-step bias. Use position-
     based quantum estimators; energy() remains the mechanical Hamiltonian.
@@ -393,8 +396,6 @@ class TorchDynamics:
             raise ValueError("inner_steps>1 requires an explicit slow potential component")
         if integrator not in ("normal-mode-bab", "cayley-bcb", "cayley-bcocb"):
             raise ValueError("integrator must be normal-mode-bab, cayley-bcb, or cayley-bcocb")
-        if integrator == "cayley-bcocb" and self.inner_steps != 1:
-            raise ValueError("cayley-bcocb requires inner_steps=1; BCOCB/MTS is not implemented")
         if thermostat not in (None, "pile-l", "trpmd"):
             raise ValueError("thermostat must be None, pile-l, or trpmd")
         self.potential, self.device = potential, potential.device
@@ -435,7 +436,7 @@ class TorchDynamics:
                                     (h / 2) * omega.square() / root_den))
         gamma = 2 * omega
         gamma[0] = self.gamma_centroid if thermostat == "pile-l" else 0
-        ou_dt = self.dt if integrator == "cayley-bcocb" else self.dt / 2
+        ou_dt = h if integrator == "cayley-bcocb" else self.dt / 2
         self._decay = torch.exp(-gamma * ou_dt).reshape(1, -1, 1, 1)
         self._noise = torch.sqrt(-torch.expm1(-gamma * (2 * ou_dt))).reshape(1, -1, 1, 1)
         if not all(torch.isfinite(v).all().item() for v in

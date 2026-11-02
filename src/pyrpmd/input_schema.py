@@ -69,7 +69,7 @@ _SECTIONS = {
         "recrossing pmf_points pmf_method pmf_search_range dividing_surface compare_ui pmf_source".split()
     ),
     "recrossing": set(
-        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale".split()
+        "parent_replicas parent_samples equilibration equilibration_steps parent_interval parent_interval_steps child_pairs child_pairs_per_parent child_steps child_time dividing_surface plateau_fraction plateau_tolerance bootstrap constraint_tolerance child_batch_pairs dynamics friction_scale integrator".split()
     ),
     "surface": set("reactant_basin dividing_surface product_side max_relative_standard_error normalization free_energy".split()),
     "metadynamics": set(
