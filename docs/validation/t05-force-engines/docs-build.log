@@ -1,0 +1,68 @@
+Running Sphinx v8.2.3
+loading translations [en]... done
+loading pickled environment... The configuration has changed (5 options: 'html_css_files', 'html_permalinks_icon', 'html_theme_options', 'mathjax3_config', 'templates_path')
+done
+myst v4.0.1: MdParserConfig(commonmark_only=False, gfm_only=False, enable_extensions={'dollarmath', 'colon_fence'}, disable_syntax=[], all_links_external=False, links_external_new_tab=False, url_schemes=('http', 'https', 'mailto', 'ftp'), ref_domains=None, fence_as_directive=set(), number_code_blocks=[], title_to_header=False, heading_anchors=4, heading_slug_func=None, html_meta={}, footnote_sort=True, footnote_transition=True, words_per_minute=200, substitutions={}, linkify_fuzzy_links=True, dmath_allow_labels=True, dmath_allow_space=True, dmath_allow_digits=True, dmath_double_inline=False, update_mathjax=True, mathjax_classes='tex2jax_process|mathjax_process|math|output_area', enable_checkboxes=False, suppress_warnings=[], highlight_code_blocks=True)
+building [mo]: targets for 0 po files that are out of date
+writing output... 
+building [html]: targets for 0 source files that are out of date
+updating environment: 0 added, 0 changed, 0 removed
+reading sources... 
+looking for now-outdated files... none found
+no targets are out of date.
+preparing documents... done
+copying assets... 
+copying downloadable files... [  3%] validation/tier1-2026-10-31/recrossing-performance.json
+copying downloadable files... [  5%] ../../examples/materials/rigid_water.inp
+copying downloadable files... [  8%] ../../benchmarks/condensed_phase/piglet_reference.py
+copying downloadable files... [ 11%] ../../benchmarks/condensed_phase/results/rejected_protocol.json
+copying downloadable files... [ 14%] ../../benchmarks/condensed_phase/results/execution_interruption.json
+copying downloadable files... [ 16%] ../../benchmarks/condensed_phase/results/harmonic_summary.json
+copying downloadable files... [ 19%] ../../benchmarks/condensed_phase/results/lj_summary.json
+copying downloadable files... [ 22%] ../../benchmarks/condensed_phase/results/piglet_harmonic_reference.json
+copying downloadable files... [ 24%] ../../benchmarks/condensed_phase/results/comparisons.json
+copying downloadable files... [ 27%] ../../benchmarks/condensed_phase/results/piglet_pressure_diagnostic.json
+copying downloadable files... [ 30%] ../../benchmarks/condensed_phase/results/integrity_manifest.json
+copying downloadable files... [ 32%] ../../benchmarks/condensed_phase/results/software_validation.json
+copying downloadable files... [ 35%] ../../benchmarks/condensed_phase/results/validation.pdf
+copying downloadable files... [ 38%] ../../examples/rate/general_coordinate.inp
+copying downloadable files... [ 41%] ../../examples/rate/research.inp
+copying downloadable files... [ 43%] method-references.json
+copying downloadable files... [ 46%] references.bib
+copying downloadable files... [ 49%] ../../benchmarks/torch_literature/mixed_sampling_summary.json
+copying downloadable files... [ 51%] ../../examples/rate/pilot.inp
+copying downloadable files... [ 54%] ../../examples/rate/minimal.inp
+copying downloadable files... [ 57%] ../../examples/rate/toy_exchange.py
+copying downloadable files... [ 59%] ../../benchmarks/transition_state_search/analytic.py
+copying downloadable files... [ 62%] ../../benchmarks/transition_state_search/h3.py
+copying downloadable files... [ 65%] ../../benchmarks/transition_state_search/rates.py
+copying downloadable files... [ 68%] validation/tier1-2026-10-31/pytest-full.txt
+copying downloadable files... [ 70%] validation/tier1-2026-10-31/pytest-final-targeted.txt
+copying downloadable files... [ 73%] validation/tier1-2026-10-31/sphinx-strict.txt
+copying downloadable files... [ 76%] validation/tier1-2026-10-31/ci-initial-feature.json
+copying downloadable files... [ 78%] validation/tier1-2026-10-31/merged-docs-verification.json
+copying downloadable files... [ 81%] validation/tier1-2026-10-31/verification.json
+copying downloadable files... [ 84%] validation/batched-dynamics-2026-10-31.json
+copying downloadable files... [ 86%] validation/tier1-2026-10-31/rpc-mts.json
+copying downloadable files... [ 89%] validation/tier1-2026-10-31/trpmd-spectrum.json
+copying downloadable files... [ 92%] validation/tier1-2026-10-31/pmf-sampling-diagnostic.json
+copying downloadable files... [ 95%] validation/tier1-2026-10-31/pmf-estimator-diagnostic.json
+copying downloadable files... [ 97%] validation/tier1-2026-10-31/broad-pilot/manifest.json
+copying downloadable files... [100%] validation/tier1-2026-10-31/stiff-pilot/manifest.json
+
+copying static files... 
+Writing evaluated template result to /workspace/scratch/95eaa921c632/PyRPMD/docs/_build/html/_static/basic.css
+Writing evaluated template result to /workspace/scratch/95eaa921c632/PyRPMD/docs/_build/html/_static/language_data.js
+Writing evaluated template result to /workspace/scratch/95eaa921c632/PyRPMD/docs/_build/html/_static/documentation_options.js
+copying static files: done
+copying extra files... 
+copying extra files: done
+copying assets: done
+generating indices... genindex done
+highlighting module code... 
+writing additional pages... search done
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build succeeded.
+
+The HTML pages are in docs/_build/html.

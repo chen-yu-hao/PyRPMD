@@ -7,7 +7,9 @@ No OpenMM integration step, thermostat, or constraint projection is performed.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor, wait
 import hashlib
+from numbers import Integral
 from pathlib import Path
 
 import numpy as np
@@ -54,13 +56,35 @@ class OpenMMPotential(Potential):
     is called with ``factory_kwargs`` and must return a System, not a Simulation
     or Context. Its original object is copied through XML serialization so later
     external mutations cannot change this provider. Backend units are fixed.
+
+    ``batch_mode="contexts"`` gives each batch row a persistent Context and
+    evaluates independent rows concurrently, using at most ``max_workers`` host
+    workers. Contexts grow to the largest batch seen and remain resident until
+    :meth:`close`. Select CPU ``properties={"Threads": "1"}`` when assigning
+    cores to these workers. GPU copies use the explicitly selected device and
+    precision; their Contexts require additional device memory. OpenMM's public
+    API still transfers each copy separately. No integrator is ever stepped.
+
+    The default ``batch_mode="serial"`` preserves the original one-Context
+    execution and metadata, including existing run identities/checkpoints.
     """
 
     def __init__(self, model=None, symbols=None, *, factory=None,
                  factory_kwargs=None, cell=None, pbc=None, device="cpu",
-                 platform=None, properties=None):
+                 platform=None, properties=None, batch_mode="serial",
+                 max_workers=1):
         self.closed = False
         self.context = self.integrator = None
+        self._contexts, self._integrators = [], []
+        self._executor = None
+        if batch_mode not in ("serial", "contexts"):
+            raise ValueError("OpenMM batch_mode must be serial or contexts")
+        if (isinstance(max_workers, bool) or not isinstance(max_workers, Integral)
+                or max_workers < 1):
+            raise ValueError("OpenMM max_workers must be a positive integer")
+        if batch_mode == "serial" and max_workers != 1:
+            raise ValueError("OpenMM max_workers > 1 requires batch_mode='contexts'")
+        self.batch_mode, self.max_workers = batch_mode, int(max_workers)
         self.symbols = _symbols(symbols)
         self.cell, self.pbc = _box(cell, pbc)
         if (model is None) == (factory is None):
@@ -138,6 +162,7 @@ class OpenMMPotential(Potential):
             backend = openmm.Platform.getPlatformByName(selected)
         except Exception as exc:
             raise BackendUnavailableError(f"OpenMM {selected} platform is unavailable: {exc}") from exc
+        self._backend, self._properties = backend, opts.copy()
         try:
             if self.pbc.all():
                 # Use PyRPMD's cell already during Context construction; the
@@ -145,10 +170,12 @@ class OpenMMPotential(Potential):
                 # reject an otherwise valid cutoff before setPeriodicBoxVectors.
                 self.system.setDefaultPeriodicBoxVectors(*[
                     openmm.Vec3(*row) for row in self.cell * BOHR_NM])
-            self.integrator = openmm.VerletIntegrator(1.0 * unit.femtosecond)
-            self.context = openmm.Context(self.system, self.integrator, backend, opts)
-            if self.pbc.all():
-                self._set_box(self.cell)
+            self.context, self.integrator = self._new_context()
+            self._contexts.append(self.context)
+            self._integrators.append(self.integrator)
+            if batch_mode == "contexts" and self.max_workers > 1:
+                self._executor = ThreadPoolExecutor(
+                    max_workers=self.max_workers, thread_name_prefix="pyrpmd-openmm")
         except Exception as exc:
             self.close()
             raise PotentialError(f"Cannot initialize OpenMM {selected} context: {exc}") from exc
@@ -162,10 +189,62 @@ class OpenMMPotential(Potential):
             "virial": False, "physical_particle_indices": self.particle_indices.tolist(),
             "required_bond_constraints": list(self.required_bond_constraints),
         }
+        if batch_mode == "contexts":
+            # Keep legacy metadata byte-for-byte compatible. The new explicit
+            # execution policy is fingerprinted only when it is requested.
+            self.metadata.update(batch_mode=batch_mode, max_workers=self.max_workers,
+                                 batch_residency="persistent_context_per_row")
+
+    def _new_context(self):
+        integrator = self.openmm.VerletIntegrator(1.0 * self.unit.femtosecond)
+        context = self.openmm.Context(self.system, integrator, self._backend,
+                                      self._properties)
+        if self.pbc.all():
+            context.setPeriodicBoxVectors(*[
+                self.openmm.Vec3(*row) for row in self.cell * BOHR_NM])
+        return context, integrator
+
+    def _ensure_contexts(self, count):
+        """Publish new copies only after the complete allocation succeeds."""
+        pending_contexts, pending_integrators = [], []
+        try:
+            for _ in range(len(self._contexts), count):
+                context, integrator = self._new_context()
+                pending_contexts.append(context)
+                pending_integrators.append(integrator)
+        except Exception as exc:
+            # Release Contexts before their bound Integrators. Existing copies
+            # are untouched, so a smaller subsequent request can still work.
+            pending_contexts.clear()
+            pending_integrators.clear()
+            raise PotentialError(
+                f"Cannot allocate OpenMM batch of {count} persistent Contexts: {exc}"
+            ) from exc
+        self._contexts.extend(pending_contexts)
+        self._integrators.extend(pending_integrators)
 
     def _set_box(self, cell):
         vectors = [self.openmm.Vec3(*row) for row in cell * BOHR_NM]
-        self.context.setPeriodicBoxVectors(*vectors)
+        previous = [self.openmm.Vec3(*row) for row in self.cell * BOHR_NM]
+        attempted = []
+        try:
+            for context in self._contexts:
+                # Include the failing Context: a backend setter may mutate
+                # its state before raising.
+                attempted.append(context)
+                context.setPeriodicBoxVectors(*vectors)
+            self.system.setDefaultPeriodicBoxVectors(*vectors)
+        except Exception as exc:
+            try:
+                for context in reversed(attempted):
+                    context.setPeriodicBoxVectors(*previous)
+                self.system.setDefaultPeriodicBoxVectors(*previous)
+            except Exception as rollback_exc:
+                self.close()
+                raise PotentialError(
+                    "OpenMM cell update and rollback failed; provider is closed"
+                ) from rollback_exc
+            raise PotentialError(f"OpenMM cell update failed; previous cell restored: {exc}") from exc
 
     def bind_system(self, system):
         if self.closed:
@@ -210,6 +289,8 @@ class OpenMMPotential(Potential):
         x = coordinates(x)
         if x.shape[1] != len(self.symbols):
             raise PotentialError("OpenMM atom count mismatch")
+        if self.batch_mode == "contexts":
+            return self._evaluate_contexts(x)
         energies, forces = [], []
         positions = np.zeros((self.system.getNumParticles(), 3), dtype=float)
         for frame in x:
@@ -221,6 +302,46 @@ class OpenMMPotential(Potential):
             energies.append(state.getPotentialEnergy().value_in_unit(self.unit.kilojoule_per_mole) * KJ_MOL_TO_AU)
             raw = state.getForces(asNumpy=True).value_in_unit(self.unit.kilojoule_per_mole/self.unit.nanometer)
             forces.append(np.asarray(raw)[self.particle_indices] * KJ_MOL_TO_AU * BOHR_NM)
+        return validate_result(PESResult(energies, forces), x.shape)
+
+    def _evaluate_contexts(self, x):
+        self._ensure_contexts(len(x))
+        # Convert the complete host batch once. Only virtual sites are zeroed;
+        # OpenMM recomputes them in each independent Context below.
+        positions = np.zeros((len(x), self.system.getNumParticles(), 3), dtype=float)
+        positions[:, self.particle_indices] = x * BOHR_NM
+        energies = np.empty(len(x))
+        forces = np.empty_like(x)
+
+        def evaluate_row(index):
+            context = self._contexts[index]
+            try:
+                context.setPositions(positions[index] * self.unit.nanometer)
+                if self._virtual_sites:
+                    context.computeVirtualSites()
+                state = context.getState(getEnergy=True, getForces=True)
+                energies[index] = (state.getPotentialEnergy().value_in_unit(
+                    self.unit.kilojoule_per_mole) * KJ_MOL_TO_AU)
+                raw = state.getForces(asNumpy=True).value_in_unit(
+                    self.unit.kilojoule_per_mole/self.unit.nanometer)
+                forces[index] = np.asarray(raw)[self.particle_indices] * KJ_MOL_TO_AU * BOHR_NM
+            except Exception as exc:
+                raise PotentialError(f"OpenMM batch row {index} failed: {exc}") from exc
+
+        if self._executor is None or len(x) == 1:
+            for index in range(len(x)):
+                evaluate_row(index)
+        else:
+            futures = []
+            try:
+                for index in range(len(x)):
+                    futures.append(self._executor.submit(evaluate_row, index))
+            finally:
+                # A failed frame must not leave other workers modifying their
+                # Contexts after this method returns or a caller closes/retries.
+                wait(futures)
+            for future in futures:
+                future.result()
         return validate_result(PESResult(energies, forces), x.shape)
 
     def set_cell(self, cell):
@@ -235,6 +356,11 @@ class OpenMMPotential(Potential):
     def close(self):
         # Delete Context before its bound Integrator, without finalizing any
         # global platform state shared with another process-local provider.
+        if self._executor is not None:
+            self._executor.shutdown(wait=True)
+            self._executor = None
         self.context = None
+        self._contexts.clear()
         self.integrator = None
+        self._integrators.clear()
         self.closed = True

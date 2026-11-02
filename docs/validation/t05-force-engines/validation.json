@@ -1,0 +1,105 @@
+{
+  "schema": "pyrpmd.t05.validation.v1",
+  "recorded_at_utc": "2026-11-02T16:55:03.843683+00:00",
+  "base_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+  "implementation_commit": "23f0cf2b0fd701701c486eff008d5fe65ea99dd9",
+  "branch": "feat/t05-force-engine-batching",
+  "python_executable": "/workspace/scratch/95eaa921c632/t05-venv/bin/python",
+  "working_directory": "/workspace/scratch/95eaa921c632/PyRPMD",
+  "environment": {
+    "LD_LIBRARY_PATH": "/workspace/scratch/95eaa921c632/t05-venv/lib",
+    "UCX_TLS": "tcp,sm,self",
+    "MPIR_CVAR_CH4_CMA_ENABLE": "0",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1"
+  },
+  "checks": [
+    {
+      "name": "related tests before changes",
+      "command": "python -m pytest -q tests/test_openmm_provider.py tests/test_lammps_provider.py tests/test_parallel.py tests/test_potential_adapters.py tests/test_qtip4pf_benchmark.py tests/test_bond_constraints.py tests/test_constraint_workflow_guards.py tests/test_checkpoint.py",
+      "exit_code": 0,
+      "result": "143 passed, 7 skipped, 31 warnings in 19.90s",
+      "log": "baseline-related.log"
+    },
+    {
+      "name": "full regression after implementation",
+      "command": "python -m pytest -q",
+      "exit_code": 0,
+      "result": "8217 passed, 167 skipped, 1059 warnings, 486 subtests passed in 2584.90s (0:43:04)",
+      "log": "full-pytest.log"
+    },
+    {
+      "name": "private engine subgroup tests, including real static and dynamic MPI",
+      "command": "python -m pytest -q tests/test_engine_subcommunicators.py",
+      "exit_code": 0,
+      "result": "13 passed in 227.30s (0:03:47)",
+      "log": "mpi-subcommunicators.log"
+    },
+    {
+      "name": "existing static MPI topology compatibility",
+      "command": "mpiexec -n 4 python tests/mpi_integration.py",
+      "exit_code": 0,
+      "result": "MPI G=2 B=2: ordered tasks, collective failure, continuous parents and restart passed; MPI GPU node-local routing passed with a mock provider (no CUDA test)",
+      "output_capture": "terminal tool output"
+    },
+    {
+      "name": "existing dynamic MPI topology compatibility",
+      "command": "mpiexec -n 5 python tests/mpi_dynamic_integration.py",
+      "exit_code": 0,
+      "result": "Dynamic MPI C=1 G=2 B=2: availability dispatch, ordered forces, failure drain/cleanup, empty/underfilled queues, serialization failure, worker cache reuse/opt-out/statefulness and collective cache cleanup, mock GPU placement, exact thermal/selected dRPMD static equivalence and resume passed",
+      "output_capture": "terminal tool output"
+    },
+    {
+      "name": "strict documentation build",
+      "command": "python -m sphinx -W --keep-going -b html docs docs/_build/html",
+      "exit_code": 0,
+      "result": "build succeeded.",
+      "log": "docs-build.log"
+    },
+    {
+      "name": "benchmark completeness, source provenance and accuracy",
+      "result": "Four original-layout cases and two translated-LJ cases complete; seven timed samples per mode; all recorded source hashes verified against their exact source versions; all LAMMPS energy/force/virial relative errors <= 1e-10.",
+      "exit_code": 0
+    }
+  ],
+  "benchmarks": [
+    {
+      "report": "benchmark-cpu.json",
+      "log": "benchmark-cpu.log",
+      "command": "python benchmarks/efficiency/force_engine_adapters.py --legacy-ref 8cc402fb12391e4fb644d3e186e5e58d1699759a --rpmd-copy --warmup 2 --repeats 7 --output docs/validation/t05-force-engines/benchmark-cpu.json",
+      "benchmark_source_commit": "a928171521c94e886f9e638278a3e05e3cf5d8d8",
+      "complete": true,
+      "cases": 4
+    },
+    {
+      "report": "benchmark-lammps-offset.json",
+      "log": "benchmark-lammps-offset.log",
+      "command": "python benchmarks/efficiency/force_engine_adapters.py --engine lammps --legacy-ref 8cc402fb12391e4fb644d3e186e5e58d1699759a --lj-grid-offset 0.25 --warmup 2 --repeats 7 --output docs/validation/t05-force-engines/benchmark-lammps-offset.json",
+      "complete": true,
+      "cases": 2
+    }
+  ],
+  "source_sha256": {
+    "src/pyrpmd/potentials/openmm.py": "3aa0694518f19ef540fb09a637c65d5400c9e2b4ca88cd55db00170756ab8015",
+    "src/pyrpmd/potentials/lammps.py": "16731e3d45647d4090700328ddddc6c2055dce38d416140ca31404f167bbfc3f",
+    "src/pyrpmd/parallel/execution.py": "62f9fc544225b82d7a3d1fb23811de6e8293f1cdf1de9304c87e5f0efd01c38a",
+    ".github/workflows/ecosystem.yml": "2ebddf20e414ee11dcfe89fbd3f8cde82bc74432bfb136ec791dc5382cb2ce01",
+    "tests/test_openmm_batch_provider.py": "1ca1f84df22ba9f53dea376ff6ba9df6d57624e7ccda0f50f3781a09d4b45dd5",
+    "tests/test_lammps_batch_provider.py": "1c728f34f6a8d724efabaad7dbc49154e74fef06a0e98f829485483a240ee634",
+    "tests/test_engine_subcommunicators.py": "59805cbbf8b88c70e8184cdd21799c6eecee218e22c093bfcc91bd81ad06e44c",
+    "tests/mpi_engine_subcommunicator_smoke.py": "6d19681f782ed7b0c33692c5c477af80c699044b2b72e65fe80ee018b9ecf91d",
+    "benchmarks/efficiency/force_engine_adapters.py": "d5d946c5712757bfe43f1fb7e4d9321b85787d04172cf3d62e7d631ea58075e3",
+    "docs/potential-adapters.md": "2811de39af641f5ae154685320c93025a7ca0f1ed8dee946ea780fe922321de3"
+  },
+  "limitations": [
+    "Only Reference and CPU OpenMM platforms are available; CUDA was not measured.",
+    "CPU timings use a shared host with an 8-CPU quota, not a dedicated node.",
+    "OpenMM Context pools retain per-copy public API transfers; native_batch remains false.",
+    "LAMMPS conservatively rebuilds when wrapped coordinates cross periodic faces, even for small unwrapped displacements.",
+    "Both the boundary-grid regression and the uniformly translated periodic-grid comparison are retained; no slower result was discarded.",
+    "Actual MPI correctness was exercised on one host, not a multi-node scaling benchmark.",
+    "MPIR_CVAR_CH4_CMA_ENABLE=0 is a managed-host workaround for unavailable cross-process memory access; it is not a production or CI code change.",
+    "Existing serial inputs retain their original metadata and scientific identity; explicit new mode/worker/skin options remain part of normal potential input identity."
+  ]
+}

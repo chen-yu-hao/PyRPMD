@@ -1,0 +1,27 @@
+..............................................sssssss................... [ 48%]
+........................................................................ [ 96%]
+......                                                                   [100%]
+=============================== warnings summary ===============================
+tests/test_parallel.py: 5 warnings
+tests/test_potential_adapters.py: 24 warnings
+  /workspace/scratch/95eaa921c632/t05-venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    a.shape = (-1,) + shape
+
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[metadynamics]
+  /workspace/scratch/95eaa921c632/PyRPMD/src/pyrpmd/runner.py:163: FutureWarning: task='metadynamics' is deprecated; use task='fes' with [fes] method='metadynamics'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+tests/test_constraint_workflow_guards.py::test_run_resolved_rejects_before_creating_run_manifest[opes]
+  /workspace/scratch/95eaa921c632/PyRPMD/src/pyrpmd/runner.py:163: FutureWarning: task='opes' is deprecated; use task='fes' with [fes] method='opes'.
+    config = normalize_fes_task(copy.deepcopy(config))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_potential_adapters.py:266: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:276: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:289: could not import 'tblite.interface': No module named 'tblite'
+SKIPPED [1] tests/test_potential_adapters.py:305: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [1] tests/test_potential_adapters.py:325: could not import 'pyscf': No module named 'pyscf'
+SKIPPED [2] tests/test_potential_adapters.py:339: could not import 'pyscf': No module named 'pyscf'
+143 passed, 7 skipped, 31 warnings in 19.90s
