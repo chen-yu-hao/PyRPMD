@@ -287,8 +287,11 @@ def _resume_parallel(current, overrides):
     if counts:
         merged.pop("workers", None)
         merged["trajectory_workers"] = merged["trajectory_groups"] = counts[0]
-    if "scheduling" in overrides and "coordinator_ranks" not in overrides:
-        merged["coordinator_ranks"] = int(overrides["scheduling"] == "dynamic")
+    if ("scheduling" in overrides or "backend" in overrides) and "coordinator_ranks" not in overrides:
+        merged["coordinator_ranks"] = int(
+            merged.get("scheduling", "static") == "dynamic"
+            and merged.get("backend", "serial") == "mpi"
+        )
     try:
         execution_plan(merged)
     except (ValueError, TypeError) as error:
