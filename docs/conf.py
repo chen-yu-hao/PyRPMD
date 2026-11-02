@@ -28,6 +28,7 @@ source_suffix = {".md": "markdown"}
 root_doc = "index"
 include_patterns = [
     "index.md", "manual/*.md", "enhanced-sampling.md", "replica-exchange.md", "opes.md",
+    "rate-pmf-selection.md",
     "plumed.md", "committor.md", "transition-interface-sampling.md", "transition-state-search.md", "rate-postprocessing.md",
     "general-coordinate-rates.md", "rate-studies.md", "instanton.md", "low-temperature.md",
     "quantum-statistics.md", "performance-dynamics.md", "batched-dynamics.md",
@@ -70,7 +71,7 @@ html_context = {
     "doc_path": "docs",
     # English-only extension guides return to the Chinese contents rather than
     # claiming a translation at a nonexistent same-name page.
-    "bilingual_pages": ["index", "genindex", "search", "enhanced-sampling", "replica-exchange"] + [
+    "bilingual_pages": ["index", "genindex", "search", "enhanced-sampling", "replica-exchange", "rate-pmf-selection"] + [
         "manual/" + path.stem
         for path in sorted((ROOT / "docs" / "manual").glob("*.md"))
         if (ROOT / "docs" / "zh" / "manual" / path.name).is_file()

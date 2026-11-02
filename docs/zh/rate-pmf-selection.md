@@ -1,6 +1,6 @@
 # 为 RPMD 速率选择 PMF 方法
 
-**中文** · [English](../rate-pmf-selection.md)
+**中文** · [English](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/rate-pmf-selection.md)
 
 标准气相 `task="rate"` 现在用 `[rate.pmf]` 集中选择 PMF 的获取方式。
 随后仍由同一次速率任务运行受约束母链和成对回穿子轨迹。

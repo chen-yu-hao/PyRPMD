@@ -89,6 +89,7 @@ pyrpmd report runs/job                  # 可选：由保存数据生成图、in
 :hidden:
 
 气相与自由能 <manual/workflows>
+速率 PMF 方法选择 <rate-pmf-selection>
 统一增强采样 <enhanced-sampling>
 材料与表面 <manual/periodic>
 PCET <manual/pcet>

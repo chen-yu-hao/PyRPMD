@@ -1,6 +1,6 @@
 # Choose the PMF method for an RPMD rate
 
-**English** · [中文](zh/rate-pmf-selection.md)
+**English** · [中文](https://github.com/chen-yu-hao/PyRPMD/blob/main/docs/zh/rate-pmf-selection.md)
 
 For the standard gas-phase `task="rate"` workflow, use `[rate.pmf]` to choose
 how to obtain the PMF. The subsequent constrained parent chains and paired
