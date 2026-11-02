@@ -1,0 +1,280 @@
+{
+  "label": "final-control",
+  "hardware": {
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "logical_cpus": 9,
+    "affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "cgroup_cpu_max": "800000 100000",
+    "python": "3.12.14",
+    "python_compiler": "Clang 22.1.3 ",
+    "numpy": "2.3.5",
+    "native": {
+      "available": true,
+      "openmp": true,
+      "integrators": [
+        "cayley-bcb",
+        "normal-mode-bab",
+        "velocity-verlet"
+      ]
+    },
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "integrator_threads": 1
+  },
+  "method": {
+    "potential": "HarmonicPotential(k=0.002)",
+    "integrator": "cayley-bcb",
+    "beta": 1000.0,
+    "dt": 0.1,
+    "mass": 1836.0,
+    "thermostat": "none",
+    "warmup_steps": 10,
+    "observation": "one final sample, no centroids; energy extrema every step",
+    "construction_included": false,
+    "timing_clock": "time.perf_counter_ns",
+    "process_cpu_timing_clock": "time.process_time_ns",
+    "random_initial_state_seed": 1907
+  },
+  "results": [
+    {
+      "natoms": 3,
+      "beads": 32,
+      "requested_backend": "auto",
+      "selected_backend": "native",
+      "steps_per_repeat": 6736,
+      "repeats": 7,
+      "microseconds_per_step": [
+        7.984856591448932,
+        10.20483580760095,
+        7.813518557007127,
+        6.98718557007126,
+        8.441937796912114,
+        7.591892220902613,
+        7.577347090261283
+      ],
+      "median_microseconds_per_step": 7.813518557007127,
+      "minimum_microseconds_per_step": 6.98718557007126,
+      "maximum_microseconds_per_step": 10.20483580760095,
+      "process_cpu_microseconds_per_step": [
+        7.7563310570071256,
+        8.718391923990499,
+        7.72496036223278,
+        6.977754899049881,
+        7.554097832541568,
+        7.5835209323040385,
+        6.70104468527316
+      ],
+      "median_process_cpu_microseconds_per_step": 7.5835209323040385,
+      "minimum_process_cpu_microseconds_per_step": 6.70104468527316,
+      "maximum_process_cpu_microseconds_per_step": 8.718391923990499,
+      "loop_stats_last_repeat_including_warmup": {
+        "native_steps": 6746,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      }
+    },
+    {
+      "natoms": 300,
+      "beads": 32,
+      "requested_backend": "auto",
+      "selected_backend": "native",
+      "steps_per_repeat": 432,
+      "repeats": 7,
+      "microseconds_per_step": [
+        681.3013796296298,
+        736.0842592592593,
+        693.6121574074074,
+        715.2191643518519,
+        654.5752615740741,
+        657.1761041666667,
+        709.9869675925926
+      ],
+      "median_microseconds_per_step": 693.6121574074074,
+      "minimum_microseconds_per_step": 654.5752615740741,
+      "maximum_microseconds_per_step": 736.0842592592593,
+      "process_cpu_microseconds_per_step": [
+        629.8888912037037,
+        626.2005416666667,
+        634.1896805555557,
+        663.896912037037,
+        594.4895138888888,
+        614.9506458333334,
+        640.5800208333334
+      ],
+      "median_process_cpu_microseconds_per_step": 629.8888912037037,
+      "minimum_process_cpu_microseconds_per_step": 594.4895138888888,
+      "maximum_process_cpu_microseconds_per_step": 663.896912037037,
+      "loop_stats_last_repeat_including_warmup": {
+        "native_steps": 442,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      }
+    },
+    {
+      "natoms": 3000,
+      "beads": 32,
+      "requested_backend": "auto",
+      "selected_backend": "native",
+      "steps_per_repeat": 25,
+      "repeats": 7,
+      "microseconds_per_step": [
+        8299.819720000001,
+        8217.53764,
+        8357.14744,
+        9798.212000000001,
+        9098.73444,
+        7915.976960000001,
+        9008.751920000002
+      ],
+      "median_microseconds_per_step": 8357.14744,
+      "minimum_microseconds_per_step": 7915.976960000001,
+      "maximum_microseconds_per_step": 9798.212000000001,
+      "process_cpu_microseconds_per_step": [
+        7473.999320000002,
+        7257.519400000001,
+        7558.35208,
+        7446.229600000001,
+        7307.138040000002,
+        7122.17,
+        7887.22116
+      ],
+      "median_process_cpu_microseconds_per_step": 7446.229600000001,
+      "minimum_process_cpu_microseconds_per_step": 7122.17,
+      "maximum_process_cpu_microseconds_per_step": 7887.22116,
+      "loop_stats_last_repeat_including_warmup": {
+        "native_steps": 35,
+        "python_steps": 0,
+        "fallback_reasons": {}
+      }
+    },
+    {
+      "natoms": 3,
+      "beads": 32,
+      "requested_backend": "python",
+      "selected_backend": "python",
+      "steps_per_repeat": 786,
+      "repeats": 7,
+      "microseconds_per_step": [
+        222.62620737913485,
+        359.21508651399495,
+        383.4860394402036,
+        252.14022773536897,
+        197.53733333333335,
+        274.4791628498728,
+        270.3044949109415
+      ],
+      "median_microseconds_per_step": 270.3044949109415,
+      "minimum_microseconds_per_step": 197.53733333333335,
+      "maximum_microseconds_per_step": 383.4860394402036,
+      "process_cpu_microseconds_per_step": [
+        218.48620483460564,
+        269.25687913486007,
+        271.87805597964376,
+        237.18764631043257,
+        197.54438295165394,
+        264.04725063613233,
+        265.5511374045801
+      ],
+      "median_process_cpu_microseconds_per_step": 264.04725063613233,
+      "minimum_process_cpu_microseconds_per_step": 197.54438295165394,
+      "maximum_process_cpu_microseconds_per_step": 271.87805597964376,
+      "loop_stats_last_repeat_including_warmup": {
+        "native_steps": 0,
+        "python_steps": 796,
+        "fallback_reasons": {
+          "explicit Python loop backend": 796
+        }
+      }
+    },
+    {
+      "natoms": 300,
+      "beads": 32,
+      "requested_backend": "python",
+      "selected_backend": "python",
+      "steps_per_repeat": 217,
+      "repeats": 7,
+      "microseconds_per_step": [
+        1256.7734976958525,
+        1157.6098248847927,
+        1154.4835760368665,
+        2186.976221198157,
+        1273.5713502304147,
+        1437.6822258064517,
+        1352.1806589861753
+      ],
+      "median_microseconds_per_step": 1273.5713502304147,
+      "minimum_microseconds_per_step": 1154.4835760368665,
+      "maximum_microseconds_per_step": 2186.976221198157,
+      "process_cpu_microseconds_per_step": [
+        1120.0271751152075,
+        1082.2427465437788,
+        1100.34734562212,
+        1244.1204377880185,
+        1154.984534562212,
+        1319.618737327189,
+        1133.0711751152076
+      ],
+      "median_process_cpu_microseconds_per_step": 1133.0711751152076,
+      "minimum_process_cpu_microseconds_per_step": 1082.2427465437788,
+      "maximum_process_cpu_microseconds_per_step": 1319.618737327189,
+      "loop_stats_last_repeat_including_warmup": {
+        "native_steps": 0,
+        "python_steps": 227,
+        "fallback_reasons": {
+          "explicit Python loop backend": 227
+        }
+      }
+    },
+    {
+      "natoms": 3000,
+      "beads": 32,
+      "requested_backend": "python",
+      "selected_backend": "python",
+      "steps_per_repeat": 20,
+      "repeats": 7,
+      "microseconds_per_step": [
+        32949.172600000005,
+        24635.823,
+        19359.0527,
+        20210.595950000003,
+        23199.8558,
+        20112.442700000003,
+        42483.87995
+      ],
+      "median_microseconds_per_step": 23199.8558,
+      "minimum_microseconds_per_step": 19359.0527,
+      "maximum_microseconds_per_step": 42483.87995,
+      "process_cpu_microseconds_per_step": [
+        19817.784900000002,
+        20738.64615,
+        18370.412350000002,
+        18216.79155,
+        18036.73205,
+        18384.648650000003,
+        20478.757950000003
+      ],
+      "median_process_cpu_microseconds_per_step": 18384.648650000003,
+      "minimum_process_cpu_microseconds_per_step": 18036.73205,
+      "maximum_process_cpu_microseconds_per_step": 20738.64615,
+      "loop_stats_last_repeat_including_warmup": {
+        "native_steps": 0,
+        "python_steps": 30,
+        "fallback_reasons": {
+          "explicit Python loop backend": 30
+        }
+      }
+    }
+  ]
+}

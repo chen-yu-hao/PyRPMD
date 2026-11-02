@@ -1,0 +1,42 @@
+[
+  {
+    "case": "pile-l-cayley-bcb",
+    "backend": "native",
+    "max_abs": {
+      "q": 4.440892098500626e-16,
+      "p": 1.7763568394002505e-15
+    },
+    "numpy_rng_equal": true,
+    "bath_rng_equal": true
+  },
+  {
+    "case": "pile-l-normal-mode-bab",
+    "backend": "native",
+    "max_abs": {
+      "q": 2.220446049250313e-16,
+      "p": 9.992007221626409e-16
+    },
+    "numpy_rng_equal": true,
+    "bath_rng_equal": true
+  },
+  {
+    "case": "langevin-cayley-bcb",
+    "backend": "native",
+    "max_abs": {
+      "q": 8.326672684688674e-17,
+      "p": 2.6645352591003757e-15
+    },
+    "numpy_rng_equal": true,
+    "bath_rng_equal": true
+  },
+  {
+    "case": "langevin-normal-mode-bab",
+    "backend": "native",
+    "max_abs": {
+      "q": 1.1102230246251565e-16,
+      "p": 2.6645352591003757e-15
+    },
+    "numpy_rng_equal": true,
+    "bath_rng_equal": true
+  }
+]

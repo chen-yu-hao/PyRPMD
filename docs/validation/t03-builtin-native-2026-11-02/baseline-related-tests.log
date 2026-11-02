@@ -1,0 +1,8 @@
+........ss..........s................................................ [ 30%]
+........................................................................ [ 61%]
+........................................................................ [ 92%]
+.................                                                        [100%]
+=========================== short test summary info ============================
+SKIPPED [2] ../../../../opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/_pytest/unittest.py:521: optional PyTorch runtime not installed
+SKIPPED [1] tests/test_fused_propagation.py:120: optional real BKMP2 not built
+227 passed, 3 skipped, 3 subtests passed in 13.15s
