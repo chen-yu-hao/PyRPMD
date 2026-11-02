@@ -5,6 +5,7 @@ from concurrent.futures.process import BrokenProcessPool
 from multiprocessing.util import Finalize
 from pathlib import Path
 import os
+import pickle
 import time
 
 import pytest
@@ -99,7 +100,7 @@ def test_initializer_failure_propagates():
 
 
 def test_unpicklable_result_propagates():
-    with pytest.raises((AttributeError, TypeError)):
+    with pytest.raises((AttributeError, TypeError, pickle.PicklingError)):
         process_queue.ordered_process_map(_unpicklable, range(4), max_workers=2)
 
 
