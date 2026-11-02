@@ -37,6 +37,9 @@ def _real(value, name, *, positive=False, nonnegative=False):
 
 
 def _occupied(value, nstates, nelectrons=None):
+    if (isinstance(value, (list, tuple))
+            and any(isinstance(entry, (bool, np.bool_)) for entry in value)):
+        raise ValueError("occupied must contain integer orbital indices, not booleans")
     raw = np.asarray(value)
     if (raw.ndim != 1 or raw.dtype.kind not in "iu" or not raw.size
             or np.any(raw < 0) or np.any(raw >= nstates)
@@ -314,6 +317,8 @@ class IESHDynamics:
     Its optional bare_potential(q) must return a scalar PESResult, added once.
     Without it U0=0.  Providers remain caller-owned.  ``native`` selects only
     the existing free nuclear map; electronic algebra uses NumPy complex128.
+    ``native=True`` requires the compiled nuclear map; False selects Python.
+    ``native=None`` explicitly permits the existing nuclear API's auto selection.
     """
     def __init__(self, potential, masses, beta, nbeads, dt, nstates=None, *,
                  nelectrons=None, seed=0, native=True, threads=1,
@@ -328,8 +333,16 @@ class IESHDynamics:
             raise ValueError("nelectrons cannot exceed nstates (spinless Pauli exclusion)")
         if isinstance(nbeads, (bool, np.bool_)) or nbeads != 1:
             raise ValueError("IESH supports classical nuclei, P=1 only")
+        if (native is not None and not isinstance(native, (bool, np.bool_))
+                and not (isinstance(native, str) and native == "required")):
+            raise ValueError("native must be True/False/None/'required'")
+        if isinstance(native, np.bool_):
+            native = bool(native)
         self.integrator = CayleyIntegrator(masses, beta, nbeads, dt,
                                           threads=threads, native=native, scheme=integrator)
+        if native is True and not self.integrator.native:
+            raise ValueError("IESH native=True requires the compiled nuclear kernel; "
+                             "install/rebuild the extension or use native=False")
         self.dt, self.beta, self.nbeads = self.integrator.dt, self.integrator.beta, 1
         if self.dt <= 0.:
             raise ValueError("IESH dt must be positive")

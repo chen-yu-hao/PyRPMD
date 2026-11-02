@@ -95,6 +95,21 @@ class MASHDynamics(AdiabaticRPSHDynamics):
 # endpoint integrator and active-surface population estimator.  Runeson and
 # Manolopoulos changed the estimator even for two states; the separately named
 # class below must not change the interpretation of existing MASH calculations.
+def _reject_boolean_entries(value, name, error=ValueError):
+    """Check before heterogeneous Python sequences coerce bools into numbers."""
+    if isinstance(value, (bool, np.bool_)):
+        raise error(f"{name} must contain numerical values, not booleans")
+    if isinstance(value, np.ndarray):
+        if value.dtype.kind == "b":
+            raise error(f"{name} must contain numerical values, not booleans")
+        if value.dtype.kind == "O":
+            for item in value.flat:
+                _reject_boolean_entries(item, name, error)
+    elif isinstance(value, (list, tuple)):
+        for item in value:
+            _reject_boolean_entries(item, name, error)
+
+
 def multistate_mash_parameters(nstates):
     """Return the observable coefficients of JCP 159, 094115 (2023), Eq. 28.
 
@@ -124,6 +139,8 @@ class MultistateMASHState(State):
     sampling: str = "custom"
 
     def __post_init__(self):
+        for name in ("q", "p", "coefficients"):
+            _reject_boolean_entries(getattr(self, name), name)
         super().__post_init__()
         value = np.asarray(self.coefficients)
         if (value.ndim != 1 or value.size < 2 or value.dtype.kind not in "fciu"
@@ -166,7 +183,9 @@ class MultistateMASHDynamics:
     electronic coefficient swap is made at a reflection: the reflected nuclear
     velocity carries the electronic trajectory back into the original region.
     ``dt`` is the output interval; ``rtol``, ``atol`` and ``max_step`` control
-    the CPU reference integration.  Native propagation, P>1, complex SOC and
+    the CPU reference integration.  Convergence in ``max_step`` is necessary:
+    sign-change detection can miss an even number of boundary crossings within
+    one internal solver step.  Native propagation, P>1, complex SOC and
     degenerate adiabatic surfaces are explicitly unsupported.
 
     The two-state equations of motion reduce to original MASH, but the 2023
@@ -178,6 +197,11 @@ class MultistateMASHDynamics:
     def __init__(self, potential, masses, beta, nbeads, dt, nstates, *, seed=0,
                  rtol=1e-9, atol=1e-11, max_step=None, max_events=64,
                  gap_tolerance=1e-10, native=False, threads=1):
+        if callable(getattr(potential, "bare_potential", None)):
+            raise ValueError("multistate MASH requires a complete diabatic potential including scalar nuclear terms; "
+                             "a separate bare_potential (such as a Newns-Anderson provider) requires IESH "
+                             "or an explicit full-potential adapter")
+        _reject_boolean_entries(masses, "masses")
         self.nstates = _positive_integer(nstates, "nstates")
         self.alpha, self.observable_offset = multistate_mash_parameters(self.nstates)
         if _positive_integer(nbeads, "nbeads") != 1:
@@ -214,7 +238,12 @@ class MultistateMASHDynamics:
         cache = getattr(self, "_frame_cache", None)
         if cache is not None and np.array_equal(q, cache[0]):
             return cache[1]
-        result = validate_diabatic_result(self.potential.evaluate(q), q.shape, self.nstates)
+        raw = self.potential.evaluate(q)
+        fields = raw[:2] if isinstance(raw, (tuple, list)) else (
+            getattr(raw, "matrix", None), getattr(raw, "gradients", None))
+        for name, value in zip(("diabatic matrix", "diabatic gradients"), fields):
+            _reject_boolean_entries(value, name, PotentialError)
+        result = validate_diabatic_result(raw, q.shape, self.nstates)
         if np.any(result.matrix.imag != 0.) or np.any(result.gradients.imag != 0.):
             raise PotentialError("multistate MASH requires real symmetric matrices; complex SOC is unsupported")
         matrix, gradients = result.matrix[0].real, result.gradients[0].real
@@ -287,6 +316,7 @@ class MultistateMASHDynamics:
                 c[initial], c[largest] = c[largest], c[initial]
                 sampling = "population"
             else:
+                _reject_boolean_entries(coefficients, "coefficients")
                 raw = np.asarray(coefficients)
                 if (raw.shape != (self.nstates,) or raw.dtype.kind not in "fciu"
                         or not np.isfinite(raw).all()

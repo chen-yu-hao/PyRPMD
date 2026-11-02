@@ -353,7 +353,7 @@ def test_failed_step_after_random_draw_rolls_back_nuclei_orbitals_rng_and_diagno
 
 @pytest.mark.parametrize("bad", [{"nelectrons": 6}, {"nelectrons": True},
                                  {"electronic_substeps": 0}, {"max_hop_probability": 1.1},
-                                 {"gap_tolerance": 0.}])
+                                 {"gap_tolerance": 0.}, {"native": 1}, {"native": 0.}])
 def test_invalid_dynamics_parameters_fail(bad):
     with pytest.raises(ValueError):
         dynamics(**bad)
@@ -382,3 +382,66 @@ def test_invalid_live_state_and_modified_parameters_are_rejected():
     dyn.electronic_substeps = 20
     with pytest.raises(ValueError, match="immutable"):
         dyn.initialize(nuclear())
+
+
+@pytest.mark.parametrize("occupied", [[True, 2], (0, False), [np.bool_(True), 3]])
+def test_heterogeneous_boolean_occupation_list_is_not_silently_integer_cast(occupied):
+    dyn = dynamics()
+    with pytest.raises(ValueError, match="boolean"):
+        dyn.initialize(nuclear(), occupied=occupied)
+
+
+def test_explicit_native_request_cannot_silently_fall_back(monkeypatch):
+    import pyrpmd.dynamics as nuclear_module
+    original = nuclear_module.importlib.import_module
+    calls = []
+
+    def unavailable(name, *args, **kwargs):
+        if name == "pyrpmd._native":
+            calls.append(name)
+            raise ImportError("injected unavailable extension")
+        return original(name, *args, **kwargs)
+
+    monkeypatch.setattr(nuclear_module.importlib, "import_module", unavailable)
+    with pytest.raises(ValueError, match="native=True requires"):
+        dynamics(native=True)
+    with pytest.raises(RuntimeError, match="Native kernel not installed"):
+        dynamics(native="required")
+    automatic = dynamics(native=None)
+    assert automatic.native is False
+    attempts = len(calls)
+    explicit = dynamics(native=np.bool_(False))
+    assert explicit.native is False and len(calls) == attempts
+
+
+def test_batched_midpoint_evaluations_match_sequential_quadrature():
+    class RecordBatches:
+        def __init__(self, potential):
+            self.potential, self.nstates = potential, potential.nstates
+            self.batches = []
+
+        def evaluate(self, q):
+            self.batches.append(len(q))
+            return self.potential.evaluate(q)
+
+    provider = RecordBatches(NewnsAndersonModel(nband=4, hybridization_slope=.1))
+    dyn = IESHDynamics(provider, [20.], 10., 1, .03, nelectrons=2,
+                       native=False, electronic_substeps=3)
+    state = dyn.initialize(nuclear(.2, .7))
+    new_q = state.q+.03*state.p/20.
+    provider.batches.clear()
+    actual_c, actual_p = dyn._electronic_step(state, new_q)
+    assert provider.batches == [3]
+    expected_c = state.coefficients.copy()
+    expected_p = np.zeros((2, 5))
+    for k in range(3):
+        q = state.q+(new_q-state.q)*(k+.5)/3
+        e, u, _, d = dyn._adiabatic(q, couplings=True)
+        c = u[0].T @ expected_c
+        phase = np.exp(-.005j*e[0])[:, None]
+        mid = c*phase
+        velocity_coupling = np.einsum("ac,ijac->ij", (new_q[0]-state.q[0])/.03, d[0])
+        expected_p += determinant_hopping_probabilities(mid, state.occupied, velocity_coupling, .01)
+        expected_c = u[0] @ (mid*phase)
+    np.testing.assert_allclose(actual_c, expected_c, atol=2e-15)
+    np.testing.assert_allclose(actual_p, expected_p, atol=2e-15)

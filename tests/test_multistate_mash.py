@@ -401,3 +401,49 @@ def test_explicitly_rejects_unsupported_options_and_inconsistent_states():
     soc[0, 1], soc[1, 0] = 1e-15j, -1e-15j
     with pytest.raises(PotentialError, match="complex SOC"):
         MultistateMASHDynamics(Constant(soc), [1.], 2., 1, .1, 3).initialize(nuclear())
+
+
+def test_rejects_separate_newns_anderson_bare_potential_in_public_api():
+    from pyrpmd.iesh import NewnsAndersonModel
+    # evaluate() supplies only h; silently omitting this nonzero U0 would
+    # change the physical Hamiltonian even when the orbital dimensions match.
+    model = NewnsAndersonModel(nband=2, bare_force_constant=.3)
+    with pytest.raises(ValueError, match="separate bare_potential.*requires IESH"):
+        MultistateMASHDynamics(model, [1.], 2., 1, .1, model.nstates)
+
+
+@pytest.mark.parametrize("field", ["q", "p", "coefficients", "masses", "initial_coefficients"])
+def test_rejects_mixed_boolean_entries_before_array_conversion(field):
+    q, p, c = [[[0., 0., 0.]]], [[[0., 0., 0.]]], [1., 0., 0.]
+    if field == "q":
+        q[0][0][1] = False
+    elif field == "p":
+        p[0][0][1] = False
+    elif field == "coefficients":
+        c[1] = False
+    if field in ("q", "p", "coefficients"):
+        with pytest.raises(ValueError, match="booleans"):
+            MultistateMASHState(q, p, coefficients=c)
+    elif field == "masses":
+        with pytest.raises(ValueError, match="booleans"):
+            MultistateMASHDynamics(Constant(np.diag([0., 1., 2.])), [1., True], 2., 1, .1, 3)
+    else:
+        driver = MultistateMASHDynamics(Constant(np.diag([0., 1., 2.])), [1.], 2., 1, .1, 3)
+        with pytest.raises(ValueError, match="booleans"):
+            driver.initialize(nuclear(), coefficients=[1., False, 0.])
+
+
+@pytest.mark.parametrize("field", ["matrix", "gradients"])
+def test_rejects_provider_boolean_entries_before_array_conversion(field):
+    class Invalid:
+        def evaluate(self, q):
+            matrix = np.diag([0., 1., 2.]).tolist()
+            gradients = np.zeros((1, 3, 3, 1, 3)).tolist()
+            if field == "matrix":
+                matrix[0][0] = False
+            else:
+                gradients[0][0][0][0][0] = False
+            return DiabaticResult([matrix], gradients)
+    driver = MultistateMASHDynamics(Invalid(), [1.], 2., 1, .1, 3)
+    with pytest.raises(PotentialError, match="booleans"):
+        driver.initialize(nuclear())
