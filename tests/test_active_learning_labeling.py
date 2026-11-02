@@ -6,6 +6,7 @@ import json
 import socket
 import struct
 import threading
+import warnings
 
 import numpy as np
 import pytest
@@ -190,6 +191,20 @@ def test_dataset_owns_immutable_coordinates_labels_and_identity():
             value.setflags(write=True)
     with pytest.raises(FrozenInstanceError):
         labelled.sha256 = "changed"
+
+
+@pytest.mark.parametrize("field", ["positions", "energy", "forces"])
+def test_extended_precision_overflow_fails_explicitly_before_admitting_labels(field):
+    if np.finfo(np.longdouble).max <= np.finfo(np.float64).max:
+        pytest.skip("longdouble has no wider exponent range than float64")
+    values = {"positions": np.zeros((1, 1, 3), dtype=np.longdouble),
+              "energy": np.zeros(1, dtype=np.longdouble),
+              "forces": np.zeros((1, 1, 3), dtype=np.longdouble)}
+    values[field].flat[0] = np.longdouble("1e400")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)
+        with pytest.raises(ValueError, match="finite float64"):
+            LabelledDataset(**values, reference_identity=IDENTITY)
 
 
 def test_provider_input_mutation_does_not_change_recorded_geometries():

@@ -318,7 +318,11 @@ def _label_positions(positions):
     if (q.dtype.kind not in "fiu" or q.ndim != 3 or q.shape[-1] != 3
             or q.shape[1] < 1 or not np.isfinite(q).all()):
         raise ValueError("label positions must be finite real [batch,atom,3] coordinates")
-    return np.array(q, dtype="<f8", order="C", copy=True)
+    with np.errstate(over="ignore"):
+        result = np.array(q, dtype="<f8", order="C", copy=True)
+    if not np.isfinite(result).all():
+        raise ValueError("label positions must be representable as finite float64 coordinates")
+    return result
 
 
 def _frozen_array(value, dtype):
@@ -392,7 +396,10 @@ class LabelledDataset:
         good = status == 0
         if (not np.isfinite(energy[good]).all() or not np.isfinite(forces[good]).all()):
             raise ValueError("successful reference labels must be finite")
-        energy, forces = np.array(energy, dtype="<f8", copy=True), np.array(forces, dtype="<f8", copy=True)
+        with np.errstate(over="ignore"):
+            energy, forces = np.array(energy, dtype="<f8", copy=True), np.array(forces, dtype="<f8", copy=True)
+        if not np.isfinite(energy[good]).all() or not np.isfinite(forces[good]).all():
+            raise ValueError("successful reference labels must be representable as finite float64 values")
         energy[~good], forces[~good] = np.nan, np.nan
         reference_json = _reference_json(reference_identity)
         provenance_json = _label_provenance(provenance, n)
