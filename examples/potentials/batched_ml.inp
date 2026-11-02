@@ -1,0 +1,42 @@
+# Requires a local MACE energy model trained for the chosen chemistry.
+# This short execution example is not a physical convergence calculation.
+task = "pimd"
+preset = "pilot"
+temperature = "300 K"
+beads = 8
+seed = 482
+
+[system]
+symbols = ["O", "D", "T"]
+geometry = [[0.0, 0.0, 0.0], [1.8, 0.0, 0.0], [-0.6, 1.7, 0.0]]
+geometry_unit = "bohr"
+charge = 0
+multiplicity = 1
+
+[potential]
+provider = "mace-batched"
+model = "models/local.model"
+device = "cpu"
+dtype = "float64"
+virial = false
+
+[parallel]
+trajectory_batch_size = 4
+bead_workers = 1
+
+[dynamics]
+loop_backend = "auto"
+integrator = "cayley-bcb"
+timestep = "0.1 fs"
+
+[sampling]
+thermostat = "pile-l"
+gamma_centroid = "0.01 fs^-1"
+equilibration_steps = 20
+production_steps = 40
+interval_steps = 2
+replicas = 4
+
+[output]
+directory = "runs/batched-ml"
+checkpoint_steps = 20

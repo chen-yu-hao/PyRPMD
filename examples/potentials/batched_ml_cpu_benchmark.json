@@ -1,0 +1,223 @@
+{
+  "benchmark": "real untrained MACE: ASE per-frame versus one native graph batch",
+  "physical_accuracy_claim": false,
+  "hardware": [
+    {
+      "cpu_model": null,
+      "cpu_model_note": "host CPU model is not exposed by this environment",
+      "logical_cpus": 9,
+      "affinity_cpus": 9,
+      "machine": "x86_64",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+      "device": "cpu",
+      "gpu_model": null
+    }
+  ],
+  "versions": {
+    "mace-torch": "0.3.17",
+    "torch": "2.7.1+cpu",
+    "e3nn": "0.4.4",
+    "ase": "3.29.0",
+    "vesin-torch": "0.6.2",
+    "numpy": "2.3.5"
+  },
+  "python": "3.12.14",
+  "model": {
+    "architecture": "ScaleShiftMACE",
+    "interactions": 2,
+    "hidden_irreps": "8x0e + 8x1o",
+    "correlation": 2,
+    "radial_mlp": [
+      8,
+      8
+    ],
+    "cutoff_angstrom": 2.8,
+    "atomic_numbers": [
+      1,
+      8
+    ],
+    "seed": 1729,
+    "trained": false
+  },
+  "settings": {
+    "dtype": "float64",
+    "threads": 1,
+    "torch_threads": 1,
+    "warmup": 2,
+    "repeats": 3,
+    "virial": true,
+    "pbc": [
+      true,
+      true,
+      true
+    ],
+    "numpy_boundary_included": true,
+    "neighbor_construction_included": true,
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "tolerance": {
+    "rtol": 1e-10,
+    "atol": 2e-13
+  },
+  "cuda_available": false,
+  "cuda_measured": false,
+  "results": [
+    {
+      "device": "cpu",
+      "beads": 8,
+      "trajectories": 1,
+      "frames": 8,
+      "atoms": 64,
+      "scalar_seconds": [
+        0.3412826639978448,
+        0.2921978579979623,
+        0.40435156600142363
+      ],
+      "batch_seconds": [
+        0.12028590199770406,
+        0.09762844500073697,
+        0.1595532790015568
+      ],
+      "scalar_median_ms_per_step": 341.2826639978448,
+      "batch_median_ms_per_step": 120.28590199770406,
+      "speedup": 2.837262375139848,
+      "scalar_forwards_per_step": 8,
+      "batch_forwards_per_step": 1,
+      "energy_relative_norm_error": 9.890727690997002e-17,
+      "forces_relative_norm_error": 6.539781614809635e-15,
+      "virial_relative_norm_error": 8.922407376840597e-16,
+      "maximum_force_error_hartree_per_bohr": 1.0177947894207673e-17
+    },
+    {
+      "device": "cpu",
+      "beads": 32,
+      "trajectories": 1,
+      "frames": 32,
+      "atoms": 64,
+      "scalar_seconds": [
+        0.9808071439983905,
+        0.9482666179974331,
+        0.8724112119962228
+      ],
+      "batch_seconds": [
+        0.33592689400393283,
+        0.33230863900098484,
+        0.3943936889991164
+      ],
+      "scalar_median_ms_per_step": 948.2666179974331,
+      "batch_median_ms_per_step": 335.92689400393283,
+      "speedup": 2.822836262661159,
+      "scalar_forwards_per_step": 32,
+      "batch_forwards_per_step": 1,
+      "energy_relative_norm_error": 1.0194569536723038e-16,
+      "forces_relative_norm_error": 6.040173750977069e-15,
+      "virial_relative_norm_error": 8.780667189611319e-16,
+      "maximum_force_error_hartree_per_bohr": 1.0177947894207673e-17
+    },
+    {
+      "device": "cpu",
+      "beads": 64,
+      "trajectories": 1,
+      "frames": 64,
+      "atoms": 64,
+      "scalar_seconds": [
+        3.978789508997579,
+        3.9595072439988144,
+        3.9882290640016436
+      ],
+      "batch_seconds": [
+        1.5375415419985075,
+        1.1605848600011086,
+        1.4182723720005015
+      ],
+      "scalar_median_ms_per_step": 3978.789508997579,
+      "batch_median_ms_per_step": 1418.2723720005015,
+      "speedup": 2.8053775759485586,
+      "scalar_forwards_per_step": 64,
+      "batch_forwards_per_step": 1,
+      "energy_relative_norm_error": 1.4309164939283555e-16,
+      "forces_relative_norm_error": 5.9194811456007605e-15,
+      "virial_relative_norm_error": 9.433541061889738e-16,
+      "maximum_force_error_hartree_per_bohr": 1.0177947894207673e-17
+    },
+    {
+      "device": "cpu",
+      "beads": 8,
+      "trajectories": 1,
+      "frames": 8,
+      "atoms": 512,
+      "scalar_seconds": [
+        0.8032921600024565,
+        0.6709581559989601,
+        0.7295901629986474
+      ],
+      "batch_seconds": [
+        0.5900629169991589,
+        0.6939283569954569,
+        0.799335454001266
+      ],
+      "scalar_median_ms_per_step": 729.5901629986474,
+      "batch_median_ms_per_step": 693.9283569954569,
+      "speedup": 1.0513911928280286,
+      "scalar_forwards_per_step": 8,
+      "batch_forwards_per_step": 1,
+      "energy_relative_norm_error": 1.3984834371076962e-16,
+      "forces_relative_norm_error": 8.632151769814702e-15,
+      "virial_relative_norm_error": 1.117529080647077e-15,
+      "maximum_force_error_hartree_per_bohr": 1.3992984288641042e-17
+    },
+    {
+      "device": "cpu",
+      "beads": 32,
+      "trajectories": 1,
+      "frames": 32,
+      "atoms": 512,
+      "scalar_seconds": [
+        5.254832627004362,
+        2.6877666500004125,
+        3.956578780998825
+      ],
+      "batch_seconds": [
+        5.252938937002909,
+        5.984433026998886,
+        6.658318685003906
+      ],
+      "scalar_median_ms_per_step": 3956.578780998825,
+      "batch_median_ms_per_step": 5984.433026998886,
+      "speedup": 0.6611451349106328,
+      "scalar_forwards_per_step": 32,
+      "batch_forwards_per_step": 1,
+      "energy_relative_norm_error": 1.483244053536003e-16,
+      "forces_relative_norm_error": 8.684020340584771e-15,
+      "virial_relative_norm_error": 9.89337772515734e-16,
+      "maximum_force_error_hartree_per_bohr": 1.481968844516124e-17
+    },
+    {
+      "device": "cpu",
+      "beads": 64,
+      "trajectories": 1,
+      "frames": 64,
+      "atoms": 512,
+      "scalar_seconds": [
+        11.565163289000338,
+        24.224556697998196,
+        18.78201415899821
+      ],
+      "batch_seconds": [
+        14.93130424899573,
+        28.02013714199711,
+        17.632728625998425
+      ],
+      "scalar_median_ms_per_step": 18782.01415899821,
+      "batch_median_ms_per_step": 17632.728625998425,
+      "speedup": 1.065179108541671,
+      "scalar_forwards_per_step": 64,
+      "batch_forwards_per_step": 1,
+      "energy_relative_norm_error": 1.4414222042288687e-16,
+      "forces_relative_norm_error": 8.675112310529416e-15,
+      "virial_relative_norm_error": 9.260367948050132e-16,
+      "maximum_force_error_hartree_per_bohr": 1.481968844516124e-17
+    }
+  ]
+}
