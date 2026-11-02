@@ -3,6 +3,7 @@
 from copy import deepcopy
 import hashlib
 import json
+from pathlib import Path
 from unittest.mock import Mock
 
 import numpy as np
@@ -134,7 +135,8 @@ def test_bad_hills_replica_does_not_leave_a_partial_height_curve(tmp_path):
     curves = [plot for plot in run["_plots"] if "hill-" in plot["id"]]
     assert len(curves) == 2
     assert all([series["label"] for series in plot["series"]] == ["Replica 0001"] for plot in curves)
-    assert any(item["figure"] == "replicas/0000/HILLS.csv" for item in run["skipped"])
+    assert any(Path(item["figure"]).parts == ("replicas", "0000", "HILLS.csv")
+               for item in run["skipped"])
 
 
 def test_incomplete_pilot_plan_has_progress_without_production_or_raw_pilot_reads(tmp_path):

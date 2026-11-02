@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -100,7 +101,7 @@ def test_hashed_chunked_checkpoints_retain_committed_sample_history(tmp_path, mo
     collect_sampling(run, tmp_path, result["summary"], [("x (bohr)", 1.)], "hartree")
     rows = run["sampling_diagnostics"]["sampling"]["windows"]
     assert [row["samples"] for row in rows] == [30, 30]
-    assert any(".chunks/" in path for path in run["_sources"])
+    assert any(".chunks/" in Path(path).as_posix() for path in run["_sources"])
     assert not run["skipped"]
 
 

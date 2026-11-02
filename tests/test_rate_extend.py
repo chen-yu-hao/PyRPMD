@@ -95,7 +95,7 @@ def read_json(path):
 def file_hashes(directory):
     directory = Path(directory)
     return {
-        str(path.relative_to(directory)): hashlib.sha256(path.read_bytes()).hexdigest()
+        path.relative_to(directory).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(directory.rglob("*"))
         if path.is_file() and path.suffix not in (".lock", ".tmp")
     }

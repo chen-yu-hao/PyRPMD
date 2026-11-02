@@ -117,7 +117,15 @@ class RateSamplerTests(unittest.TestCase):
         result = prepare(source / "pilot.inp", numerical=True)
         self.assertTrue(result["ready"])
         reaction = result["reaction_preparation"]["reaction"]
-        self.assertEqual(reaction["forming_bonds"], [[0, 1]])
+        # Atoms 0 and 2 are equivalent in this symmetric teaching saddle. An
+        # unstable Hessian eigenvector can have either sign on a valid LAPACK
+        # implementation, swapping the inferred entrance and exit channels.
+        # Check the complete channel identity, not one arbitrary orientation.
+        self.assertIn(
+            (reaction["fragments"], reaction["forming_bonds"], reaction["breaking_bonds"]),
+            [([[0], [1, 2]], [[0, 1]], [[1, 2]]),
+             ([[0, 1], [2]], [[1, 2]], [[0, 1]])],
+        )
         potential = import_object(str(source / "toy_exchange.py") + ":build")()
         x = np.array([[[-2.0, 0.2, 0.1], [0.1, 0.0, 0.0], [1.7, 0.1, -0.1]]])
         force = potential.evaluate(x).forces

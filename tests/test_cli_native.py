@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 class NativeCLITests(unittest.TestCase):
     def test_object_build_output_and_force_check(self):
         with tempfile.TemporaryDirectory() as directory:
-            base = Path(directory)
+            base = Path(directory).resolve()
             obj = base / "test.o"
             library = base / "libtest.so"
             manifest = base / "pes.toml"

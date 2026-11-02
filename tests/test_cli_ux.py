@@ -21,7 +21,7 @@ from pyrpmd.scaffold import _command_text, init_project
 class StarterTests(unittest.TestCase):
     def test_tutorial_runs_from_unrelated_directory_and_resumes(self):
         with tempfile.TemporaryDirectory() as temporary:
-            base = Path(temporary)
+            base = Path(temporary).resolve()
             environment = dict(os.environ)
             environment["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src")
             environment.update(OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1")
@@ -101,7 +101,7 @@ class DiagnosticTests(unittest.TestCase):
 
     def test_validation_explains_paths_without_creating_run(self):
         with tempfile.TemporaryDirectory() as temporary:
-            base = Path(temporary)
+            base = Path(temporary).resolve()
             starter = init_project(base / "starter")
             for extra in ([], ["--check-pes"]):
                 with self.subTest(extra=extra):
@@ -122,7 +122,7 @@ class DiagnosticTests(unittest.TestCase):
             for name, contents in (("bad.inp", 'task = "fes"\n[system\n'),
                                    ("bad.py", "def build(:\n    return {}\n")):
                 with self.subTest(name=name):
-                    path = Path(temporary) / name
+                    path = (Path(temporary) / name).resolve()
                     path.write_text(contents)
                     status, stdout, stderr = self.invoke(["validate", str(path)])
                     self.assertEqual(status, 2)

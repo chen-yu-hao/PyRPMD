@@ -5,6 +5,7 @@ import copy
 import ctypes
 import io
 import json
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -300,7 +301,8 @@ class NativeStateSelectedCheckTests(unittest.TestCase):
         compiler = shutil.which("cc") or shutil.which("gcc")
         if compiler is None:
             self.skipTest("C compiler required")
-        with tempfile.TemporaryDirectory() as directory:
+        # Windows keeps loaded ctypes DLLs locked until the process exits.
+        with tempfile.TemporaryDirectory(ignore_cleanup_errors=os.name == "nt") as directory:
             path = Path(directory)
             source = path / "bond.c"
             source.write_text(r'''

@@ -1,8 +1,10 @@
 """Protocol-level tests with real loopback clients, not mocked futures."""
 from concurrent.futures import ThreadPoolExecutor
 import json
+from pathlib import Path
 import socket
 import struct
+from tempfile import TemporaryDirectory
 import threading
 import time
 
@@ -199,16 +201,20 @@ def test_invalid_client_counts_rejected(clients):
         IPIPotential(port=0, clients=clients)
 
 
-def test_existing_unix_address_is_not_removed_on_bind_failure(tmp_path):
-    address = tmp_path / "driver.sock"
-    pes = IPIPotential(unix=address)
-    try:
-        with pytest.raises(OSError):
-            IPIPotential(unix=address)
-        assert address.exists()
-    finally:
-        pes.close()
-    assert not address.exists()
+@pytest.mark.skipif(not hasattr(socket, "AF_UNIX"),
+                    reason="this Python build does not expose AF_UNIX sockets")
+def test_existing_unix_address_is_not_removed_on_bind_failure():
+    # Pytest's per-test directory can exceed the AF_UNIX path limit on macOS.
+    with TemporaryDirectory(prefix="ipi-") as directory:
+        address = Path(directory) / "driver.sock"
+        pes = IPIPotential(unix=address)
+        try:
+            with pytest.raises(OSError):
+                IPIPotential(unix=address)
+            assert address.exists()
+        finally:
+            pes.close()
+        assert not address.exists()
 
 
 @pytest.mark.parametrize("cell,declared", [(np.eye(3), [False] * 3), (None, [True] * 3)])
