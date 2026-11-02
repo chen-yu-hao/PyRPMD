@@ -13,12 +13,13 @@ about liquid water or an experimentally fitted material equation of state.
 | --- | --- | --- |
 | SC NVT | Total, potential and kinetic energy; canonical constant-volume heat capacity | Even P; temperature-independent physical PES; all Cartesian degrees of freedom sampled |
 | SC NPT | Isotropic BZP; SC pressure and constant-pressure heat capacity | Full 3D PBC, all atoms mobile, physical PES cell derivative; no rigid-bond/fixed-atom virial |
-| PIGLET NPT | Explicit per-mode GLE matrices with canonical centroid and BZP piston | Matrices must match beta and P and carry provenance; harmonic calibration and anharmonic transferability must be checked |
+| PIGLET NPT | Explicit per-mode GLE matrices with a canonical centroid bath target and BZP piston | Matrices must match beta and P and carry provenance; the supplied P=4 fit fails the anharmonic pressure check below |
 | RPC virial | Exact strain derivative of the stated contracted Hamiltonian | A contracted-Hamiltonian quantity; its convergence to the full physical model requires a Pc refinement |
 
-SC and PIGLET are equilibrium sampling methods. The SC sampling potential is
-not a Born–Oppenheimer PES for real-time RPMD. Combining SC with a PIGLET bath
-is not supported. A physical configurational virial includes explicit cell
+SC and PIGLET are used to estimate static quantum equilibrium observables;
+PIGLET does not sample a canonical ring-polymer measure. The SC sampling
+potential is not a Born–Oppenheimer PES for real-time RPMD. Combining SC with
+a PIGLET bath is not supported. A physical configurational virial includes explicit cell
 dependence, has units of energy, and excludes kinetic and ring-spring terms.
 It is not replaced by an unqualified Cartesian `q dot F` in periodic systems.
 
@@ -26,10 +27,10 @@ It is not replaced by an unqualified Cartesian `q dot F` in periodic systems.
 
 Write the sum-beads sampling potential as
 
-\[
+$$
 U_{SC}=\sum_j\left[w_jV(q_j)+c_jG(q_j)\right],\qquad
 G=\sum_i |F_i|^2/m_i,\qquad c_j=w_jd_j\beta^2/P^2.
-\]
+$$
 
 The weights are 2/3 and 4/3 on alternating beads; the corresponding `d` values
 are alpha/6 and (1-alpha)/12. `SuzukiChinPotential` accepts general alpha in
@@ -39,14 +40,14 @@ zero based.
 
 For `delta=q-q.mean(axis=0)`, the thermodynamic centroid-virial estimators are
 
-\[
+$$
 E=\frac{3N}{2\beta}+\frac{1}{P}\left[
 \sum_j(w_jV_j+3c_jG_j)-\frac12\sum_j\delta_j\cdot F_{SC,j}\right],
-\]
+$$
 
-\[
+$$
 V_{TD}=\frac1P\sum_j(w_jV_j+2c_jG_j),\qquad K_{TD}=E-V_{TD}.
-\]
+$$
 
 These are derivatives of the SC partition function. Averaging `Usc/P`, or
 using fictitious bead momenta as physical kinetic energy, gives a different
@@ -56,10 +57,10 @@ using even beads, with distinct field names. See Kapil, Behler and Ceriotti,
 
 The heat capacity uses a scaled-coordinate derivative:
 
-\[
+$$
 a(x)=\frac{x}{P}U_{SC}\left(\bar q+\sqrt{x/\beta}\delta;x\right),\qquad
 \frac{C_V}{k_B}=\frac{3N}{2}+\beta^2\left[\mathrm{Var}(E)-\langle a''(\beta)\rangle\right].
-\]
+$$
 
 The force-square coefficient is recomputed at the shifted inverse temperature;
 holding it fixed loses the required explicit temperature derivative. Symmetric
@@ -100,20 +101,20 @@ does not establish bead, timestep, cell-size or sampling convergence.
 SC requires the strain derivative of its action, including the force-square
 term. With `W=-dV/dstrain`, the effective virial is
 
-\[
+$$
 W_{SC,j}=w_jW_j+2c_j\left[
 \sum_iF_i\otimes F_i/m_i-D_{F/m}W_j\right].
-\]
+$$
 
 The directional derivative uses the same mass-weighted, bead-normalized
 finite displacement as the SC force. A missing physical virial fails clearly.
 The low-noise pressure estimator replaces fictitious centroid kinetic energy
 by its canonical expectation:
 
-\[
+$$
 p=\frac{3N/\beta+\mathrm{Tr}\sum_jW_{SC,j}/P-
 \sum_j\delta_j\cdot F_{SC,j}/P}{3V}.
-\]
+$$
 
 The BZP dynamical piston uses the corresponding instantaneous centroid kinetic
 term. It scales centroids and the cell while retaining internal bead offsets;
@@ -142,8 +143,8 @@ observation = sc.estimators(state.q, volume=piston.volume)
 PIGLET controls the quantum fluctuations using specifically fitted per-mode
 GLE matrices; an identity covariance thermostat is not a PIGLET calibration.
 The implementation requires matching `beta`, `beads`, and a nonempty
-`provenance`. NPT additionally requires a canonical centroid: unit physical
-momentum variance and zero physical/auxiliary covariances. Its piston is coupled
+`provenance`. NPT additionally requires a canonical centroid bath target: unit
+physical momentum variance and zero physical/auxiliary covariances. Its piston is coupled
 to a bath at the canonical target temperature. This bath condition is necessary
 for the supported composition; it does not establish a canonical steady state
 of the coupled anharmonic PIGLET system. Unsupported pressure geometries and
@@ -162,7 +163,7 @@ in this repository. All 324 A and 324 C entries were compared with that source.
 [The independent harmonic reference](../benchmarks/condensed_phase/piglet_reference.py)
 solves the continuous coordinate/momentum/auxiliary Lyapunov equation without
 the production thermostat or integrator. On beta*omega values
-0.5, 1, 2, 4, 8, 12 and 20, the largest absolute error of potential and
+0.5, 1, 2, 4, 8, 12 and 20, the largest absolute relative error of potential and
 centroid-virial kinetic energy is **0.3486%**. This checks units and the
 harmonic fit. The anharmonic solid/NPT comparison remains a separate test.
 
@@ -174,9 +175,9 @@ correlation structure needed by that fluctuation estimator.
 
 For an explicit additive decomposition,
 
-\[
+$$
 U_{RPC}=\sum_jV_f(q_j)+\frac{P}{P_c}\sum_kV_s((Tq)_k),
-\]
+$$
 
 the homogeneous strain derivative is
 `sum(W_fast)+(P/Pc)*sum(W_slow_contracted)`. The coordinate contraction
@@ -193,10 +194,13 @@ physical virials consistently. See [Markland and Manolopoulos, JCP 129,
 
 ## Reproducing the model-solid validation
 
-The checked-in driver, models, matrix data, raw time series and summaries are
-under [benchmarks/condensed_phase](../benchmarks/condensed_phase). All model
-parameters, seeds, bead counts and timesteps are explicit. The LJ potential
-requires a C++ compiler and builds its local callback into the output folder.
+The checked-in driver, models, matrix data, figures and summaries are under
+[benchmarks/condensed_phase](https://github.com/chen-yu-hao/PyRPMD/tree/codex/condensed-phase-nqe-20261102/benchmarks/condensed_phase). Complete raw time
+series are supplied as an accompanying review archive and can also be
+regenerated with the driver. Summary filenames/checksums refer to that archive;
+the public source distribution excludes the raw CSVs. All model parameters,
+seeds, bead counts and timesteps are explicit. The LJ potential requires a
+C++ compiler and builds its local callback into the output folder.
 
 ```bash
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src
@@ -208,6 +212,11 @@ python benchmarks/condensed_phase/validate.py --case lj \
   --output /tmp/condensed-phase-validation
 python benchmarks/condensed_phase/piglet_reference.py \
   --output /tmp/condensed-phase-validation/piglet_harmonic_reference.json
+python benchmarks/condensed_phase/piglet_pressure_diagnostic.py \
+  --jobs 4 --output /tmp/condensed-phase-validation
+python benchmarks/condensed_phase/seal_results.py /tmp/condensed-phase-validation
+python benchmarks/condensed_phase/analyze_results.py /tmp/condensed-phase-validation
+python benchmarks/condensed_phase/plot_validation.py /tmp/condensed-phase-validation
 ```
 
 `--resume` accepts completed LJ CSVs only when their protocol, numerical model,
@@ -303,15 +312,122 @@ displacement is measured after removing a common translation for the
 diagnostic only; no COM constraint is applied to propagation or pressure.
 
 The protocol includes primitive P=32/64, SC P=4/8/16/32, timestep refinements,
-SC-NPT, genuine PIGLET-NPT, and P=16/Pc=4 RPC-NPT. A separate full P=16 NPT
+SC-NPT, PIGLET-NPT with the published calibration, and P=16/Pc=4/8 RPC-NPT. A separate full P=16 NPT
 reference isolates contraction error from bead discretization. Coarse SC P=4
 and P=8 are retained to expose substantial bead error at this quantum state
 point; a successfully completed trajectory is not called bead converged.
+
+The primitive P=32 NPT attempt at piston tau=5 failed during equilibration:
+the step-38 cell proposal crossed the model's requirement that each box side
+exceed the 2.5-sigma cutoff. It contributed no production frames. The reference
+was repeated with tau=10, retaining all four original seeds and all other
+parameters. This failure and its replay are retained in
+[rejected_protocol.json](../benchmarks/condensed_phase/results/rejected_protocol.json).
+All other LJ NPT protocols use tau=5. The SC16/32 and matched-P RPC references
+were added to resolve observed bead/contraction uncertainty; Pc=8 was added
+after the Pc=4 bias was observed. These additions retain the original seed
+set and do not replace any earlier results. A separate provenance-guard
+interruption and identical-protocol recovery are recorded in
+[execution_interruption.json](../benchmarks/condensed_phase/results/execution_interruption.json).
+
+At fixed volume, the SC total energies at P=8, 16 and 32 are respectively
+-173.85588, -169.15794 and -168.09831 epsilon. The primitive P=32 and P=64
+values are -169.40092 and -168.32731. The paired SC32-minus-primitive64
+difference is 0.22900 [-0.09058, 0.54857] epsilon, while the SC16→32
+and primitive32→64 shifts are 1.05963 [0.61189, 1.50737] and
+1.07361 [0.75047, 1.39674] epsilon. These resolved refinements show substantial
+remaining bead dependence. Agreement of the largest-P approaches within a
+sampling interval does not establish an infinite-P result.
+
+At matched full P=16 under NPT, the RPC Pc=4-minus-full energy difference is
+12.55370 [12.51462, 12.59278] epsilon; Pc=8 reduces it to
+6.58351 [6.55500, 6.61203] epsilon. Their volume differences are
+0.30281 [0.29640, 0.30922] and 0.17143 [0.16770, 0.17516] sigma cubed.
+Both contraction levels remain strongly biased for this particular
+repulsive/attractive decomposition. These are observables of the contracted
+Hamiltonian without an additional full-P physical correction. An exact
+contracted virial is therefore not evidence that this aggressive contraction
+is a converged approximation to the full model.
+
+SC16-NPT and primitive32-NPT give volumes 33.24770 and 33.22156 sigma cubed,
+but their energy difference, 0.45540 [0.06650, 0.84430] epsilon, remains
+resolved. This is a comparison of two finite-P approaches with different
+piston times; a converged equation of state is not asserted. The SC8 dt=0.04
+NPT energy also has a positive pointwise second-half-minus-first-half shift
+of 0.15025 [0.05641, 0.24410] epsilon. Full drift diagnostics are retained.
+The LJ SC timestep comparisons use equal step counts and therefore different
+physical durations. Sampled LJ heat capacities are tabulated in the executed
+report, with broad intervals at the refined bead counts. The deterministic
+crystal checks independently test the Cv estimator; the NPT volume quadrature
+separately supplies the finite-P Cp reference.
+
+### PIGLET: the anharmonic pressure check fails for this calibration
+
+The original PIGLET-NPT trajectories showed a pressure discrepancy. A focused
+diagnostic retained both the actual BZP feedback pressure and the pressure
+obtained by replacing centroid kinetic energy with its canonical expectation.
+It used the same four seeds at dt=0.04 and dt=0.02, with **equal physical**
+equilibration time 120 and production time 480. The original campaign is
+retained separately.
+
+Define the centroid kinetic ratio and the exact difference as
+
+$$
+R=\frac{\beta}{3N}\sum_i\frac{|\bar p_i|^2}{m_i},\qquad
+p_{\mathrm{feedback}}-p_{\mathrm{CV},T}
+=\frac{\sum_i|\bar p_i|^2/m_i-3N/\beta}{3V}.
+$$
+
+| dt | Pressure using canonical kinetic expectation, 95% interval | Actual feedback pressure, 95% interval | Centroid kinetic ratio R, 95% interval |
+| ---: | ---: | ---: | ---: |
+| 0.04 | 0.97634 [0.96706, 0.98561] | 1.00160 [0.98857, 1.01463] | 1.13176 [1.11048, 1.15305] |
+| 0.02 | 0.97758 [0.97212, 0.98304] | 1.00260 [0.99374, 1.01147] | 1.13044 [1.11022, 1.15065] |
+
+The canonical centroid kinetic target is one and the pressure target is one.
+Both timesteps fail the kinetic-ratio and canonical-substituted pressure
+checks. The per-frame pressure identity holds to about 1e-15, locating the
+algebraic discrepancy in the kinetic substitution. Halving the timestep at
+equal physical duration does not remove the observed discrepancy.
+
+For the piston, the stationary balance is
+`mean(V*(p_feedback-p_external)+1/beta)=0`; it is not simply a constraint on
+the unweighted mean pressure. Its measured four-seed 95% intervals are
+[-0.5403, 0.3445] at dt=0.04 and [-0.4369, 0.2124] at dt=0.02, compatible
+with zero. Pressure feedback can therefore be mechanically consistent while
+the substituted physical observable is biased under this sampled measure.
+
+This is a **failed anharmonic pressure/transferability validation** for the
+published P=4 fit at this state point. The canonical centroid bath condition
+is necessary for the supported coupling and does not prove that the coupled
+anharmonic system has canonical centroid momenta. The data do not isolate
+the microscopic cause among noncanonical energy transfer, finite-bead
+approximation and remaining equilibration/sampling effects. No parameters
+were refitted, and this implementation is not presented as production-accurate
+PIGLET-NPT for arbitrary anharmonic materials. The harmonic Lyapunov check
+and deterministic implementation tests establish their narrower claims.
 
 Detailed executed values and confidence intervals are in
 [the harmonic summary](../benchmarks/condensed_phase/results/harmonic_summary.json),
 [the LJ summary](../benchmarks/condensed_phase/results/lj_summary.json), and
 [the independent PIGLET calibration check](../benchmarks/condensed_phase/results/piglet_harmonic_reference.json).
+The [executed-results report](https://github.com/chen-yu-hao/PyRPMD/blob/codex/condensed-phase-nqe-20261102/benchmarks/condensed_phase/results/RESULTS.md)
+contains all LJ protocol means and intervals. The
+[paired comparisons](../benchmarks/condensed_phase/results/comparisons.json)
+retain bead/contraction differences, half-trajectory drift and the
+volume-weighted pressure balances; the
+[PIGLET diagnostic](../benchmarks/condensed_phase/results/piglet_pressure_diagnostic.json)
+records both pressure definitions, source identities and raw-file hashes.
+The [integrity manifest](../benchmarks/condensed_phase/results/integrity_manifest.json)
+links these summaries to the accompanying raw-data archive, and the
+[software validation record](../benchmarks/condensed_phase/results/software_validation.json)
+states the executed regression and source-package checks.
+
+![Deterministic references, sampled intervals and finite-bead solid comparisons](../benchmarks/condensed_phase/results/validation.png)
+
+[PDF figure](../benchmarks/condensed_phase/results/validation.pdf). The lower
+panels show 95% Student intervals across four independent trajectories;
+these are sampling intervals, not bounds on bead, timestep or model error.
+The red PIGLET point is retained despite its failed pressure check.
 
 ## Remaining physical scope
 
@@ -332,3 +448,9 @@ SC 的总能量、热容和压力由高阶作用量求导得到，不能把修�
 仍需通过 Pc 收敛检验它对全势的近似误差。本次代表性体系包括 27 原子的
 耦合谐振晶体和 32 原子的周期性非谐 FCC Lennard-Jones 固体；不声称已完成
 液态水或真实材料的热力学极限验证。
+
+这组 P=4 PIGLET 参数通过了独立谐振频率响应核验，但在非谐固体中的压力
+检验失败：质心动能比约 1.13，使用正则动能期望的压力约 0.977，而外压
+目标为 1；相同物理时长下减半时间步仍未消除偏差。保留该失败结果，不能
+据此宣称 PIGLET-NPT 已达到任意材料的生产精度。SC 热容的确定性高阶估计量
+核验通过，有限轨迹的 Cp 置信区间仍宽，采样精度与实现正确性分别报告。

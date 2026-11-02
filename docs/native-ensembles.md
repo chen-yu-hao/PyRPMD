@@ -174,18 +174,18 @@ For an all-mobile, fully periodic system, let `pbar_i` denote the average
 momentum over the P beads, and define
 `R = Tr(sum_j W_j) - sum_ji (q_ji-qbar_i) dot F_ji`. Then
 
-\[
+$$
 p_{\mathrm{control}}=
 \frac{P\sum_i |\bar p_i|^2/m_i+R}{3PV},\qquad
 p_{\mathrm{CV},T}=\frac{N}{\beta V}+\frac{R}{3PV}.
-\]
+$$
 
 Their pointwise difference is
 
-\[
+$$
 p_{\mathrm{control}}-p_{\mathrm{CV},T}
 =\frac{\sum_i |\bar p_i|^2/m_i-3N/\beta}{3V}.
-\]
+$$
 
 The usual equality of ensemble means follows from canonical centroid kinetic
 moments conditional on coordinates and volume. A PIGLET centroid **bath covariance** satisfying the

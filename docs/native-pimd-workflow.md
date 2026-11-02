@@ -155,10 +155,10 @@ kinetic term fixed to the configured temperature. For the all-mobile, fully
 periodic case, the latter can be reconstructed from each saved centroid
 velocity `vbar_i` and its **same-frame** volume:
 
-\[
+$$
 p_{\mathrm{CV},T}=p_{\mathrm{recorded}}+
 \frac{3N/\beta-\sum_i m_i|\bar v_i|^2}{3V}.
-\]
+$$
 
 Apply this correction before averaging. The usual equality of ensemble means
 follows from canonical conditional centroid kinetic moments.

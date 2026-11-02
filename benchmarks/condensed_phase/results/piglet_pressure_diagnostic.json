@@ -1,0 +1,590 @@
+{
+  "schema": "PyRPMD.piglet-pressure-diagnostic.v1",
+  "reason": "Observed low-noise pressure differs from external pressure in main anharmonic solid campaign",
+  "target_pressure": 1.0,
+  "canonical_centroid_kinetic_ratio": 1.0,
+  "equal_physical_duration": true,
+  "groups": [
+    {
+      "dt": 0.04,
+      "replicas": [
+        {
+          "dt": 0.04,
+          "seed": 82719,
+          "burn_steps": 3000,
+          "production_steps": 12000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.04_seed82719.csv",
+          "sha256": "910f9acd9d5ce79fe29e95eff0b8a18a080201d66e24b3cb0d316734f2012761",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.38481997897527,
+            "configurational_cv_pressure": 0.98434084292105,
+            "piston_feedback_pressure": 1.012131701274947,
+            "centroid_kinetic_ratio": 1.1448897401808575,
+            "pressure_difference_from_centroid_kinetic": 0.027790858353896872,
+            "pressure_identity_residual": 2.91311571219699e-19,
+            "internal_energy_hartree": -171.58992329111007
+          },
+          "half_means": {
+            "volume": [
+              33.39498883072712,
+              33.374651127223416
+            ],
+            "configurational_cv_pressure": [
+              0.9778972536422128,
+              0.9907844321998872
+            ],
+            "piston_feedback_pressure": [
+              1.0035980615841376,
+              1.0206653409657558
+            ],
+            "centroid_kinetic_ratio": [
+              1.1339657975063164,
+              1.1558136828553986
+            ]
+          }
+        },
+        {
+          "dt": 0.04,
+          "seed": 82720,
+          "burn_steps": 3000,
+          "production_steps": 12000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.04_seed82720.csv",
+          "sha256": "5c6e7b6b0e0372e7e486b5db3d3256b989fb33ad38ca5b1476eb0e3b00e50958",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.387805019988534,
+            "configurational_cv_pressure": 0.9751966338881213,
+            "piston_feedback_pressure": 1.0000363498184144,
+            "centroid_kinetic_ratio": 1.1296693633625736,
+            "pressure_difference_from_centroid_kinetic": 0.024839715930292963,
+            "pressure_identity_residual": 8.003783725195334e-19,
+            "internal_energy_hartree": -171.499042375533
+          },
+          "half_means": {
+            "volume": [
+              33.400890590188,
+              33.37471944978905
+            ],
+            "configurational_cv_pressure": [
+              0.9771600899885249,
+              0.9732331777877177
+            ],
+            "piston_feedback_pressure": [
+              1.0033807287608274,
+              0.9966919708760013
+            ],
+            "centroid_kinetic_ratio": [
+              1.1365678039893348,
+              1.1227709227358127
+            ]
+          }
+        },
+        {
+          "dt": 0.04,
+          "seed": 82721,
+          "burn_steps": 3000,
+          "production_steps": 12000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.04_seed82721.csv",
+          "sha256": "adfcc96e5bda560eb484e88451595cdbd4ba3ac418a6f8692c763675a81c7673",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.378667766270155,
+            "configurational_cv_pressure": 0.9703538287895903,
+            "piston_feedback_pressure": 0.9922381962299668,
+            "centroid_kinetic_ratio": 1.114013000825566,
+            "pressure_difference_from_centroid_kinetic": 0.021884367440376574,
+            "pressure_identity_residual": 2.5240226575462544e-18,
+            "internal_energy_hartree": -171.72849201363596
+          },
+          "half_means": {
+            "volume": [
+              33.37681594836321,
+              33.3805195841771
+            ],
+            "configurational_cv_pressure": [
+              0.9704804717892728,
+              0.9702271857899081
+            ],
+            "piston_feedback_pressure": [
+              0.9915580186854034,
+              0.9929183737745306
+            ],
+            "centroid_kinetic_ratio": [
+              1.1097192984119735,
+              1.1183067032391587
+            ]
+          }
+        },
+        {
+          "dt": 0.04,
+          "seed": 82722,
+          "burn_steps": 3000,
+          "production_steps": 12000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.04_seed82722.csv",
+          "sha256": "219d1be22343e2ad223f4ca0745a5aa02273ca241312a66f8029a5513fdebadb",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.38523095533538,
+            "configurational_cv_pressure": 0.9754552340628444,
+            "piston_feedback_pressure": 1.0019875640538065,
+            "centroid_kinetic_ratio": 1.1384770296908016,
+            "pressure_difference_from_centroid_kinetic": 0.026532329990962118,
+            "pressure_identity_residual": 5.208123248350941e-19,
+            "internal_energy_hartree": -171.7231417385987
+          },
+          "half_means": {
+            "volume": [
+              33.40685626753762,
+              33.36360564313314
+            ],
+            "configurational_cv_pressure": [
+              0.9664593897622592,
+              0.9844510783634292
+            ],
+            "piston_feedback_pressure": [
+              0.9966009936764499,
+              1.0073741344311629
+            ],
+            "centroid_kinetic_ratio": [
+              1.157492079684273,
+              1.1194619796973297
+            ]
+          }
+        }
+      ],
+      "statistics": {
+        "volume": {
+          "mean": 33.384130930142334,
+          "standard_error": 0.0019371357595631773,
+          "confidence_interval_95": [
+            33.37796609960148,
+            33.39029576068319
+          ],
+          "independent_replicas": 4
+        },
+        "configurational_cv_pressure": {
+          "mean": 0.9763366349154016,
+          "standard_error": 0.002914586659399851,
+          "confidence_interval_95": [
+            0.9670611193697654,
+            0.9856121504610378
+          ],
+          "independent_replicas": 4
+        },
+        "piston_feedback_pressure": {
+          "mean": 1.0015984528442838,
+          "standard_error": 0.004094257154689751,
+          "confidence_interval_95": [
+            0.98856869928946,
+            1.0146282063991077
+          ],
+          "independent_replicas": 4
+        },
+        "centroid_kinetic_ratio": {
+          "mean": 1.1317622835149497,
+          "standard_error": 0.006688518056299191,
+          "confidence_interval_95": [
+            1.1104764339388569,
+            1.1530481330910425
+          ],
+          "independent_replicas": 4
+        },
+        "pressure_difference_from_centroid_kinetic": {
+          "mean": 0.02526181792888213,
+          "standard_error": 0.0012778754592020069,
+          "confidence_interval_95": [
+            0.02119504789513198,
+            0.02932858796263228
+          ],
+          "independent_replicas": 4
+        },
+        "pressure_identity_residual": {
+          "mean": 1.0341312315301453e-18,
+          "standard_error": 5.074194688261938e-19,
+          "confidence_interval_95": [
+            -5.807039822647967e-19,
+            2.6489664453250873e-18
+          ],
+          "independent_replicas": 4
+        },
+        "internal_energy_hartree": {
+          "mean": -171.63514985471943,
+          "standard_error": 0.05554729081768771,
+          "confidence_interval_95": [
+            -171.8119261251507,
+            -171.45837358428815
+          ],
+          "independent_replicas": 4
+        }
+      }
+    },
+    {
+      "dt": 0.02,
+      "replicas": [
+        {
+          "dt": 0.02,
+          "seed": 82719,
+          "burn_steps": 6000,
+          "production_steps": 24000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.02_seed82719.csv",
+          "sha256": "2defaa408d844dd4d6d41a46fee92aff963b0991d7171f5a66da0c2fa96c3ba7",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.38670531840071,
+            "configurational_cv_pressure": 0.9754638650599596,
+            "piston_feedback_pressure": 0.9996897012144594,
+            "centroid_kinetic_ratio": 1.1263523373436153,
+            "pressure_difference_from_centroid_kinetic": 0.02422583615449997,
+            "pressure_identity_residual": -1.795416210090735e-18,
+            "internal_energy_hartree": -171.6354682115296
+          },
+          "half_means": {
+            "volume": [
+              33.3886375503798,
+              33.38477308642163
+            ],
+            "configurational_cv_pressure": [
+              0.9881275257933225,
+              0.9628002043265964
+            ],
+            "piston_feedback_pressure": [
+              1.0109913217744744,
+              0.9883880806544448
+            ],
+            "centroid_kinetic_ratio": [
+              1.1192669194197007,
+              1.1334377552675299
+            ]
+          }
+        },
+        {
+          "dt": 0.02,
+          "seed": 82720,
+          "burn_steps": 6000,
+          "production_steps": 24000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.02_seed82720.csv",
+          "sha256": "1baf5407b2672fd9be6e2b1c1b3de331d96882faee041c880b93cd23344acb1f",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.39599214398086,
+            "configurational_cv_pressure": 0.9804616630703744,
+            "piston_feedback_pressure": 1.0088411679832263,
+            "centroid_kinetic_ratio": 1.1480597986078205,
+            "pressure_difference_from_centroid_kinetic": 0.028379504912851957,
+            "pressure_identity_residual": -4.095573706563993e-19,
+            "internal_energy_hartree": -171.48694999389292
+          },
+          "half_means": {
+            "volume": [
+              33.40123751857414,
+              33.39074676938759
+            ],
+            "configurational_cv_pressure": [
+              0.9822717126461199,
+              0.978651613494629
+            ],
+            "piston_feedback_pressure": [
+              1.009554935486772,
+              1.0081274004796807
+            ],
+            "centroid_kinetic_ratio": [
+              1.1424205030259804,
+              1.1536990941896605
+            ]
+          }
+        },
+        {
+          "dt": 0.02,
+          "seed": 82721,
+          "burn_steps": 6000,
+          "production_steps": 24000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.02_seed82721.csv",
+          "sha256": "a8bf20ff3f1162c543f12b501902d8d62299ec3867a4c05ae2fa3af94dbac678",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.37766929117534,
+            "configurational_cv_pressure": 0.9738564596045842,
+            "piston_feedback_pressure": 0.9964550343275645,
+            "centroid_kinetic_ratio": 1.1179463390256417,
+            "pressure_difference_from_centroid_kinetic": 0.022598574722980255,
+            "pressure_identity_residual": -5.708708426405603e-18,
+            "internal_energy_hartree": -171.6783899785467
+          },
+          "half_means": {
+            "volume": [
+              33.359236152654745,
+              33.39610242969591
+            ],
+            "configurational_cv_pressure": [
+              0.9746569447754259,
+              0.9730559744337423
+            ],
+            "piston_feedback_pressure": [
+              0.9968077398365996,
+              0.9961023288185288
+            ],
+            "centroid_kinetic_ratio": [
+              1.1155403874475052,
+              1.1203522906037786
+            ]
+          }
+        },
+        {
+          "dt": 0.02,
+          "seed": 82722,
+          "burn_steps": 6000,
+          "production_steps": 24000,
+          "burn_time": 120.0,
+          "production_time": 480.0,
+          "sample_time_interval": 0.8,
+          "raw": "piglet_pressure_dt0.02_seed82722.csv",
+          "sha256": "33b33426e6eff2895c56426fe6f376b5125ddb12c66783ad325f1fc7d1697a37",
+          "source_sha256_before_execution": {
+            "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+            "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+            "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+            "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+            "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+            "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+            "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+            "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+            "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+            "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+            "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+            "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+            "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+            "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f",
+            "piglet_pressure_diagnostic.py": "1a8c03413795da1bca3cce4bf3dfbb098834637bc7fc905177eb6b2f6149a2ce"
+          },
+          "means": {
+            "volume": 33.39374609016326,
+            "configurational_cv_pressure": 0.9805333971550234,
+            "piston_feedback_pressure": 1.0054214883546124,
+            "centroid_kinetic_ratio": 1.129381751981984,
+            "pressure_difference_from_centroid_kinetic": 0.02488809119958903,
+            "pressure_identity_residual": 1.0728626600762954e-17,
+            "internal_energy_hartree": -171.49679794047768
+          },
+          "half_means": {
+            "volume": [
+              33.379926345158744,
+              33.40756583516777
+            ],
+            "configurational_cv_pressure": [
+              0.9890327205635765,
+              0.9720340737464702
+            ],
+            "piston_feedback_pressure": [
+              1.0122256845002813,
+              0.9986172922089437
+            ],
+            "centroid_kinetic_ratio": [
+              1.120475685374822,
+              1.138287818589146
+            ]
+          }
+        }
+      ],
+      "statistics": {
+        "volume": {
+          "mean": 33.38852821093005,
+          "standard_error": 0.004124880156766361,
+          "confidence_interval_95": [
+            33.37540100131541,
+            33.401655420544685
+          ],
+          "independent_replicas": 4
+        },
+        "configurational_cv_pressure": {
+          "mean": 0.9775788462224854,
+          "standard_error": 0.0017168117651236204,
+          "confidence_interval_95": [
+            0.9721151849637001,
+            0.9830425074812706
+          ],
+          "independent_replicas": 4
+        },
+        "piston_feedback_pressure": {
+          "mean": 1.0026018479699657,
+          "standard_error": 0.002786027680028499,
+          "confidence_interval_95": [
+            0.9937354644732408,
+            1.0114682314666905
+          ],
+          "independent_replicas": 4
+        },
+        "centroid_kinetic_ratio": {
+          "mean": 1.1304350567397654,
+          "standard_error": 0.006353330128359896,
+          "confidence_interval_95": [
+            1.1102159247465189,
+            1.150654188733012
+          ],
+          "independent_replicas": 4
+        },
+        "pressure_difference_from_centroid_kinetic": {
+          "mean": 0.025023001747480303,
+          "standard_error": 0.0012178407714352514,
+          "confidence_interval_95": [
+            0.021147288884002326,
+            0.02889871461095828
+          ],
+          "independent_replicas": 4
+        },
+        "pressure_identity_residual": {
+          "mean": 7.037361484025539e-19,
+          "standard_error": 3.524947505251609e-18,
+          "confidence_interval_95": [
+            -1.0514220016004452e-17,
+            1.1921692312809561e-17
+          ],
+          "independent_replicas": 4
+        },
+        "internal_energy_hartree": {
+          "mean": -171.5744015311117,
+          "standard_error": 0.048487820892145116,
+          "confidence_interval_95": [
+            -171.72871141756116,
+            -171.42009164466225
+          ],
+          "independent_replicas": 4
+        }
+      }
+    }
+  ],
+  "interpretation": "Feedback uses actual centroid kinetic energy; replacing it by its canonical expectation is a separate diagnostic in a noncanonical PIGLET state."
+}

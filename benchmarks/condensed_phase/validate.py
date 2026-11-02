@@ -17,7 +17,6 @@ import json
 import math
 from pathlib import Path
 import platform
-import inspect
 import sys
 import time
 
@@ -157,9 +156,14 @@ def numerical_source_identity():
                "native_ensemble.py", "pimd_methods.py", "suzuki_chin.py", "constants.py",
                "potentials/contraction.py")]]
     hashes = {name:hashlib.sha256((root/name).read_bytes()).hexdigest() for name in files}
-    for function in (run_trajectory, primitive_observables):
-        tree = ast.dump(ast.parse(inspect.getsource(function)), include_attributes=False)
-        hashes["validate.py::"+function.__name__+"::AST"] = hashlib.sha256(tree.encode()).hexdigest()
+    # Resolve by name rather than inspect.getsource(live_function). The latter
+    # uses the code object's original line number: report-only edits above the
+    # function can then spuriously change the identity of an ongoing run.
+    module = ast.parse(Path(__file__).read_text())
+    definitions = {node.name:node for node in module.body if isinstance(node, ast.FunctionDef)}
+    for name in ("run_trajectory", "primitive_observables"):
+        tree = ast.dump(ast.Module(body=[definitions[name]], type_ignores=[]), include_attributes=False)
+        hashes["validate.py::"+name+"::AST"] = hashlib.sha256(tree.encode()).hexdigest()
     import importlib.util
     spec = importlib.util.find_spec("pyrpmd._native")
     if spec is not None:
@@ -172,7 +176,8 @@ def trajectory_identity(args, method, beads, dt, pressure, replica):
             "method":method, "beads":beads, "dt":dt, "external_pressure":pressure,
             "seed":82719+replica,"burn":args.burn,"steps":args.steps,"stride":args.stride,
             "beta":5.,"mass":100.,"density":1.,"switch_start":2.,"cutoff":2.5,
-            "tau":5.,"contracted_beads":({"rpc":4,"rpc8":8}.get(method)),
+            "tau":10. if method=="primitive" and beads==32 and pressure is not None else 5.,
+            "contracted_beads":({"rpc":4,"rpc8":8}.get(method)),
             "numerical_source_sha256":numerical_source_identity()}
 
 
@@ -309,7 +314,10 @@ def lj(args):
         return result
     for method, beads, dt, pressure in protocols:
         cases = []
-        for replica in range(args.replicas):
+        tau = 10. if method=="primitive" and beads==32 and pressure is not None else 5.
+        replicas = (range(args.replicas) if getattr(args,"replica_index",None) is None
+                    else [args.replica_index])
+        for replica in replicas:
             physical = LennardJonesSolid(library, len(geometry), cell.copy())
             provider = physical
             if method in ("rpc", "rpc8"):
@@ -324,7 +332,7 @@ def lj(args):
             else:
                 rows = run_trajectory(provider, geometry, cell, masses, beta, beads, dt,
                                       82719+replica, args.burn, args.steps, args.stride, method,
-                                      pressure=pressure, tau=5.)
+                                      pressure=pressure, tau=tau)
                 if identity["numerical_source_sha256"] != numerical_source_identity():
                     raise RuntimeError("numerical source changed during trajectory; do not adopt mixed-version evidence")
             digest = save_csv(path, rows)
@@ -342,6 +350,7 @@ def lj(args):
             print(json.dumps({"event":"lj", "method":method,"beads":beads,"dt":dt,
                               "ensemble":ensemble,"replica":replica, **means}),flush=True)
         result["cases"].append(dict(method=method,beads=beads,dt=dt,external_pressure=pressure,
+                                    barostat_tau=None if pressure is None else tau,
                                     replicas=cases,statistics={k:interval([c["means"][k] for c in cases]) for k in keys}))
         # Preserve completed protocols if a later case is interrupted.
         write_report(args, result)
@@ -362,6 +371,8 @@ def write_report(args, result):
           "results":result}
     args.output.mkdir(parents=True,exist_ok=True)
     suffix = "" if args.protocol_index is None else f"_case_{args.protocol_index}"
+    if getattr(args,"replica_index",None) is not None:
+        suffix += f"_replica_{args.replica_index}"
     (args.output/(args.case+suffix+"_summary.json")).write_text(json.dumps(data,indent=2,allow_nan=False)+"\n")
 
 
@@ -377,6 +388,7 @@ def main():
     parser.add_argument("--quick",action="store_true")
     parser.add_argument("--jobs",type=int,default=1,help="independent LJ protocols to run concurrently")
     parser.add_argument("--protocol-index",type=int,default=None,help=argparse.SUPPRESS)
+    parser.add_argument("--replica-index",type=int,default=None,help=argparse.SUPPRESS)
     parser.add_argument("--resume",action="store_true",help="reuse complete CSVs with matching saved step clocks")
     args=parser.parse_args()
     if min(args.samples,args.replicas,args.burn,args.steps,args.stride)<1 or args.steps<args.stride:

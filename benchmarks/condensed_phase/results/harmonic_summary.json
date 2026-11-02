@@ -1,0 +1,733 @@
+{
+  "schema": "PyRPMD.condensed-phase-validation.v1",
+  "case": "harmonic",
+  "run_options": {
+    "case": "harmonic",
+    "output": "benchmarks/condensed_phase/results",
+    "samples": 32768,
+    "replicas": 4,
+    "burn": 4000,
+    "steps": 16000,
+    "stride": 20,
+    "quick": false
+  },
+  "python": "3.12.14",
+  "numpy": "2.3.5",
+  "convergence_claim": "finite-size model validation; no claim for water or a real material",
+  "results": {
+    "model": "27-atom pinned coupled harmonic crystal, periodic nearest-neighbour graph",
+    "parameters": {
+      "beta": 8.0,
+      "atoms": 27,
+      "mass": 1.0,
+      "gamma": 1.5,
+      "volume": 729.0000000000001,
+      "bulk": 0.2
+    },
+    "quantum_reference": {
+      "energy": 35.12819304272311,
+      "heat_capacity_kB": 6.820296728545594,
+      "pressure": 0.07228023259819569,
+      "log_partition": -278.6857926547374
+    },
+    "gaussian_estimator_cases": [
+      {
+        "beads": 4,
+        "samples": 32768,
+        "seed": 7143,
+        "finite_bead_reference": {
+          "energy": 32.102776870028535,
+          "heat_capacity_kB": 67.07694583866412,
+          "pressure": 0.06605509644038793,
+          "log_partition": -272.39050906591183
+        },
+        "production_estimators": {
+          "method": "suzuki_chin",
+          "ensemble": "NVT",
+          "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+          "temperature_K": 39471.87810049839,
+          "samples": 32768,
+          "internal_energy_hartree": 32.09790111896227,
+          "internal_energy_standard_error_hartree": 0.013241574400105689,
+          "heat_capacity_kind": "Cv",
+          "heat_capacity_over_kB": 61.00724733797193,
+          "heat_capacity_standard_error_over_kB": 2.9464733552988376,
+          "heat_capacity_hartree_per_K": 0.0001931984563245346,
+          "diagnostics": {
+            "statistical_inefficiency": 1.0,
+            "block_length_frames": 256,
+            "complete_blocks": 128,
+            "effective_samples": 32768.0,
+            "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+            "reason": null
+          },
+          "physical_converged": false,
+          "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+          "potential_energy_hartree": 16.048669948508746,
+          "kinetic_energy_hartree": 16.04923117045353,
+          "pressure_au": 0.06604442248763986,
+          "operator_potential_energy_hartree": 16.061879625194756,
+          "operator_kinetic_energy_hartree": 15.682182317975858,
+          "operator_internal_energy_hartree": 31.744061943170614,
+          "finite_difference": {
+            "heat_capacity_curvature_coarse_minus_fine_over_kB": -2.1868727102167078e-05,
+            "maximum_dimensionless_curvature_change": 3.6422781477085664e-05,
+            "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+          }
+        },
+        "deterministic_production_moments": {
+          "energy": 32.102776870028364,
+          "heat_capacity_kB": 67.0769381655918,
+          "pressure": 0.06605509644038625,
+          "method": "quadratic production-estimator basis probes + exact Gaussian Wick moments"
+        }
+      },
+      {
+        "beads": 8,
+        "samples": 32768,
+        "seed": 7147,
+        "finite_bead_reference": {
+          "energy": 34.75370053842357,
+          "heat_capacity_kB": 17.148228682078955,
+          "pressure": 0.07150967188976043,
+          "log_partition": -278.03274744624866
+        },
+        "production_estimators": {
+          "method": "suzuki_chin",
+          "ensemble": "NVT",
+          "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+          "temperature_K": 39471.87810049839,
+          "samples": 32768,
+          "internal_energy_hartree": 34.754824066399564,
+          "internal_energy_standard_error_hartree": 0.011291433578287309,
+          "heat_capacity_kind": "Cv",
+          "heat_capacity_over_kB": 20.280453113204032,
+          "heat_capacity_standard_error_over_kB": 1.870764737701824,
+          "heat_capacity_hartree_per_K": 6.422437343103001e-05,
+          "diagnostics": {
+            "statistical_inefficiency": 1.0667544714062644,
+            "block_length_frames": 256,
+            "complete_blocks": 128,
+            "effective_samples": 30717.471431643604,
+            "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+            "reason": null
+          },
+          "physical_converged": false,
+          "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+          "potential_energy_hartree": 17.379938860040546,
+          "kinetic_energy_hartree": 17.37488520635901,
+          "pressure_au": 0.07151776060036663,
+          "operator_potential_energy_hartree": 17.380522698185132,
+          "operator_kinetic_energy_hartree": 17.32820909081719,
+          "operator_internal_energy_hartree": 34.708731789002314,
+          "finite_difference": {
+            "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.0356555619464927e-05,
+            "maximum_dimensionless_curvature_change": 1.4752671290807484e-05,
+            "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+          }
+        },
+        "deterministic_production_moments": {
+          "energy": 34.75370053842344,
+          "heat_capacity_kB": 17.148225209196426,
+          "pressure": 0.07150967188975965,
+          "method": "quadratic production-estimator basis probes + exact Gaussian Wick moments"
+        }
+      },
+      {
+        "beads": 16,
+        "samples": 32768,
+        "seed": 7155,
+        "finite_bead_reference": {
+          "energy": 35.09899022026063,
+          "heat_capacity_kB": 7.718507489110644,
+          "pressure": 0.07222014448613298,
+          "log_partition": -278.63790633837226
+        },
+        "production_estimators": {
+          "method": "suzuki_chin",
+          "ensemble": "NVT",
+          "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+          "temperature_K": 39471.87810049839,
+          "samples": 32768,
+          "internal_energy_hartree": 35.07572895989562,
+          "internal_energy_standard_error_hartree": 0.009827959533399431,
+          "heat_capacity_kind": "Cv",
+          "heat_capacity_over_kB": 7.40641752338189,
+          "heat_capacity_standard_error_over_kB": 1.4148017581013757,
+          "heat_capacity_hartree_per_K": 2.345472865683193e-05,
+          "diagnostics": {
+            "statistical_inefficiency": 1.0,
+            "block_length_frames": 256,
+            "complete_blocks": 128,
+            "effective_samples": 32768.0,
+            "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+            "reason": null
+          },
+          "physical_converged": false,
+          "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+          "potential_energy_hartree": 17.536919619505404,
+          "kinetic_energy_hartree": 17.53880934039022,
+          "pressure_au": 0.07217012163571934,
+          "operator_potential_energy_hartree": 17.5393872027846,
+          "operator_kinetic_energy_hartree": 17.53680415419936,
+          "operator_internal_energy_hartree": 35.07619135698396,
+          "finite_difference": {
+            "heat_capacity_curvature_coarse_minus_fine_over_kB": -3.1802287256436565e-06,
+            "maximum_dimensionless_curvature_change": 4.329286923621112e-06,
+            "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+          }
+        },
+        "deterministic_production_moments": {
+          "energy": 35.09899022026069,
+          "heat_capacity_kB": 7.718504823751175,
+          "pressure": 0.07222014448613293,
+          "method": "quadratic production-estimator basis probes + exact Gaussian Wick moments"
+        }
+      },
+      {
+        "beads": 32,
+        "samples": 32768,
+        "seed": 7171,
+        "finite_bead_reference": {
+          "energy": 35.12625520222364,
+          "heat_capacity_kB": 6.881703477570596,
+          "pressure": 0.0722762452720651,
+          "log_partition": -278.6826686227475
+        },
+        "production_estimators": {
+          "method": "suzuki_chin",
+          "ensemble": "NVT",
+          "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+          "temperature_K": 39471.87810049839,
+          "samples": 32768,
+          "internal_energy_hartree": 35.124434194281775,
+          "internal_energy_standard_error_hartree": 0.00923546800930251,
+          "heat_capacity_kind": "Cv",
+          "heat_capacity_over_kB": 7.686202893592252,
+          "heat_capacity_standard_error_over_kB": 1.4007275905028063,
+          "heat_capacity_hartree_per_K": 2.434075620250004e-05,
+          "diagnostics": {
+            "statistical_inefficiency": 1.0006557891772605,
+            "block_length_frames": 256,
+            "complete_blocks": 128,
+            "effective_samples": 32746.525183191974,
+            "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+            "reason": null
+          },
+          "physical_converged": false,
+          "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+          "potential_energy_hartree": 17.55873722410075,
+          "kinetic_energy_hartree": 17.565696970181023,
+          "pressure_au": 0.07226454252815148,
+          "operator_potential_energy_hartree": 17.56052296590107,
+          "operator_kinetic_energy_hartree": 17.567335265122693,
+          "operator_internal_energy_hartree": 35.127858231023765,
+          "finite_difference": {
+            "heat_capacity_curvature_coarse_minus_fine_over_kB": -7.636207572702183e-07,
+            "maximum_dimensionless_curvature_change": 1.2401607420997607e-06,
+            "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+          }
+        },
+        "deterministic_production_moments": {
+          "energy": 35.12625520222324,
+          "heat_capacity_kB": 6.881708723478198,
+          "pressure": 0.07227624527206215,
+          "method": "quadratic production-estimator basis probes + exact Gaussian Wick moments"
+        }
+      }
+    ],
+    "npt": [
+      {
+        "beads": 8,
+        "dt": 0.04,
+        "reference": {
+          "volume": 727.7564188843501,
+          "volume_second_moment": 529873.3847967915,
+          "energy": 34.89771097531493,
+          "pressure": 0.07228023259819567,
+          "enthalpy": 87.50011420710567,
+          "heat_capacity_Cp_kB": 18.124486646566645,
+          "relative_endpoint_weight": 1.2669712249113854e-134
+        },
+        "replicas": [
+          {
+            "seed": 18017,
+            "means": {
+              "volume": 727.6439846509182,
+              "pressure_au": 0.07247846623990156,
+              "internal_energy_hartree": 34.9864281648744
+            },
+            "raw": "crystal_sc_npt_p8_dt0.04_seed18017.csv",
+            "sha256": "f1af63d329674a633fe4e5e421eb0ac0ed19f48f9252d1c1e713cfb314889f74",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 34.9864281648744,
+              "internal_energy_standard_error_hartree": 0.06810688820939319,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": 11.270531669539139,
+              "heat_capacity_standard_error_over_kB": 14.268074844378447,
+              "heat_capacity_hartree_per_K": 3.5691650017398185e-05,
+              "diagnostics": {
+                "statistical_inefficiency": 2.2248042114492512,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 359.5822031813195,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.58070462412071,
+              "enthalpy_standard_error_hartree": 0.08163344760184707,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 727.6439846509182,
+              "potential_energy_hartree": 17.493239423573073,
+              "kinetic_energy_hartree": 17.49318874130133,
+              "pressure_au": 0.07247846623990156,
+              "operator_potential_energy_hartree": 17.50613600232546,
+              "operator_kinetic_energy_hartree": 17.4438858619784,
+              "operator_internal_energy_hartree": 34.950021864303864,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.0558038818686554e-05,
+                "maximum_dimensionless_curvature_change": 1.6421447526226984e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          },
+          {
+            "seed": 18018,
+            "means": {
+              "volume": 728.447341108314,
+              "pressure_au": 0.07220023220927112,
+              "internal_energy_hartree": 34.98515698121712
+            },
+            "raw": "crystal_sc_npt_p8_dt0.04_seed18018.csv",
+            "sha256": "44e5155ec05e65a5e7d71dcb465a12dd2738e2f9f4e70d1d9c5254b756604617",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 34.98515698121712,
+              "internal_energy_standard_error_hartree": 0.06834137217977747,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": 32.59861706974169,
+              "heat_capacity_standard_error_over_kB": 9.654822491740392,
+              "heat_capacity_hartree_per_K": 0.0001032336774891454,
+              "diagnostics": {
+                "statistical_inefficiency": 2.4481975385470314,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 326.77101720917017,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.63750023206325,
+              "enthalpy_standard_error_hartree": 0.09753366221227715,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 728.447341108314,
+              "potential_energy_hartree": 17.504444875442832,
+              "kinetic_energy_hartree": 17.480712105774288,
+              "pressure_au": 0.07220023220927112,
+              "operator_potential_energy_hartree": 17.438068652190115,
+              "operator_kinetic_energy_hartree": 17.354379092501702,
+              "operator_internal_energy_hartree": 34.79244774469182,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.0557072508312614e-05,
+                "maximum_dimensionless_curvature_change": 1.6243867321463767e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          },
+          {
+            "seed": 18019,
+            "means": {
+              "volume": 728.6616338659758,
+              "pressure_au": 0.0722544819680467,
+              "internal_energy_hartree": 35.038298394775694
+            },
+            "raw": "crystal_sc_npt_p8_dt0.04_seed18019.csv",
+            "sha256": "2ecd4a8332ae44cbc5bacd844b80efd34f1225f8a2a78d6732bc71ec3f96ee07",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 35.038298394775694,
+              "internal_energy_standard_error_hartree": 0.07815298273957426,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": 26.484910884519365,
+              "heat_capacity_standard_error_over_kB": 13.622930293823387,
+              "heat_capacity_hartree_per_K": 8.387272204620837e-05,
+              "diagnostics": {
+                "statistical_inefficiency": 3.068397821028535,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 260.72238564288836,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.70613077598973,
+              "enthalpy_standard_error_hartree": 0.1251560610339923,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 728.6616338659758,
+              "potential_energy_hartree": 17.543905429539333,
+              "kinetic_energy_hartree": 17.49439296523636,
+              "pressure_au": 0.0722544819680467,
+              "operator_potential_energy_hartree": 17.585173946848904,
+              "operator_kinetic_energy_hartree": 17.487767822514066,
+              "operator_internal_energy_hartree": 35.07294176936297,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.0511145616689532e-05,
+                "maximum_dimensionless_curvature_change": 1.561964444363184e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          },
+          {
+            "seed": 18020,
+            "means": {
+              "volume": 727.6673814431533,
+              "pressure_au": 0.07234189295270502,
+              "internal_energy_hartree": 34.90199288291468
+            },
+            "raw": "crystal_sc_npt_p8_dt0.04_seed18020.csv",
+            "sha256": "8a9c196d97779cefd1fef8d525c27a3ffce191c5e24c8103c2da843816094d09",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 34.90199288291468,
+              "internal_energy_standard_error_hartree": 0.08935863651276321,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": 22.446453442108123,
+              "heat_capacity_standard_error_over_kB": 15.640424583438424,
+              "heat_capacity_hartree_per_K": 7.108368831905386e-05,
+              "diagnostics": {
+                "statistical_inefficiency": 2.5082877524048177,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 318.9426728384736,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.49796046774578,
+              "enthalpy_standard_error_hartree": 0.13190172214278126,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 727.6673814431533,
+              "potential_energy_hartree": 17.47320192934737,
+              "kinetic_energy_hartree": 17.428790953567315,
+              "pressure_au": 0.07234189295270502,
+              "operator_potential_energy_hartree": 17.431973601180506,
+              "operator_kinetic_energy_hartree": 17.350091315450694,
+              "operator_internal_energy_hartree": 34.7820649166312,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.049477102572638e-05,
+                "maximum_dimensionless_curvature_change": 1.6293605312966974e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          }
+        ],
+        "statistics": {
+          "volume": {
+            "mean": 728.1050852670903,
+            "standard_error": 0.26316721862351894,
+            "confidence_interval_95": [
+              727.26756972451,
+              728.9426008096706
+            ],
+            "independent_replicas": 4
+          },
+          "pressure_au": {
+            "mean": 0.0723187683424811,
+            "standard_error": 6.0705380632485934e-05,
+            "confidence_interval_95": [
+              0.0721255767281764,
+              0.0725119599567858
+            ],
+            "independent_replicas": 4
+          },
+          "internal_energy_hartree": {
+            "mean": 34.977969105945476,
+            "standard_error": 0.028188695703639074,
+            "confidence_interval_95": [
+              34.888260095452665,
+              35.06767811643829
+            ],
+            "independent_replicas": 4
+          },
+          "heat_capacity_Cp_kB": {
+            "mean": 23.20012826647708,
+            "standard_error": 4.490774704319251,
+            "confidence_interval_95": [
+              8.908478900854744,
+              37.491777632099414
+            ],
+            "independent_replicas": 4
+          }
+        }
+      },
+      {
+        "beads": 8,
+        "dt": 0.02,
+        "reference": {
+          "volume": 727.7564188843501,
+          "volume_second_moment": 529873.3847967915,
+          "energy": 34.89771097531493,
+          "pressure": 0.07228023259819567,
+          "enthalpy": 87.50011420710567,
+          "heat_capacity_Cp_kB": 18.124486646566645,
+          "relative_endpoint_weight": 1.2669712249113854e-134
+        },
+        "replicas": [
+          {
+            "seed": 18017,
+            "means": {
+              "volume": 727.8659679521198,
+              "pressure_au": 0.07234997845027971,
+              "internal_energy_hartree": 34.97167867913137
+            },
+            "raw": "crystal_sc_npt_p8_dt0.02_seed18017.csv",
+            "sha256": "18e1ff8883f920a9e495a78a610455af78f460888c2a8106a5fd4970efaf063f",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 34.97167867913137,
+              "internal_energy_standard_error_hartree": 0.07405679017732385,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": -15.33208017892693,
+              "heat_capacity_standard_error_over_kB": 17.484720655964278,
+              "heat_capacity_hartree_per_K": -4.855380880246658e-05,
+              "diagnostics": {
+                "statistical_inefficiency": 3.925751418104885,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 203.78264306561508,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.58200014302143,
+              "enthalpy_standard_error_hartree": 0.10168057255967762,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 727.8659679521198,
+              "potential_energy_hartree": 17.482696234642116,
+              "kinetic_energy_hartree": 17.48898244448926,
+              "pressure_au": 0.07234997845027971,
+              "operator_potential_energy_hartree": 17.511003975730315,
+              "operator_kinetic_energy_hartree": 17.44706409194156,
+              "operator_internal_energy_hartree": 34.958068067671874,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.0528901101274357e-05,
+                "maximum_dimensionless_curvature_change": 1.4949819160392508e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          },
+          {
+            "seed": 18018,
+            "means": {
+              "volume": 728.255801887213,
+              "pressure_au": 0.07228429128660162,
+              "internal_energy_hartree": 35.013493171821644
+            },
+            "raw": "crystal_sc_npt_p8_dt0.02_seed18018.csv",
+            "sha256": "715cab0e4d03c07fe118e721d97fa1d1c80f27a0ea972614e3a00d73640cd356",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 35.013493171821644,
+              "internal_energy_standard_error_hartree": 0.0810599353629087,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": 24.43338370474237,
+              "heat_capacity_standard_error_over_kB": 15.196680850448217,
+              "heat_capacity_hartree_per_K": 7.737592205054548e-05,
+              "diagnostics": {
+                "statistical_inefficiency": 4.297198387781246,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 186.16780697738756,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.65199192321492,
+              "enthalpy_standard_error_hartree": 0.12307421727235991,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 728.255801887213,
+              "potential_energy_hartree": 17.49938330424527,
+              "kinetic_energy_hartree": 17.514109867576376,
+              "pressure_au": 0.07228429128660162,
+              "operator_potential_energy_hartree": 17.369299523117174,
+              "operator_kinetic_energy_hartree": 17.31865029815851,
+              "operator_internal_energy_hartree": 34.68794982127568,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.0630749752884583e-05,
+                "maximum_dimensionless_curvature_change": 1.5166062837579375e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          },
+          {
+            "seed": 18019,
+            "means": {
+              "volume": 729.339466623906,
+              "pressure_au": 0.07223810563673869,
+              "internal_energy_hartree": 35.112819911227426
+            },
+            "raw": "crystal_sc_npt_p8_dt0.02_seed18019.csv",
+            "sha256": "9fbba0353563e38ebd17fdfaca4d85d3eba0ba200e8dd5074b69ea1bdb9bc7bb",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 35.112819911227426,
+              "internal_energy_standard_error_hartree": 0.10606199436759835,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": 42.70208194903296,
+              "heat_capacity_standard_error_over_kB": 20.140724290703215,
+              "heat_capacity_hartree_per_K": 0.00013522944689986068,
+              "diagnostics": {
+                "statistical_inefficiency": 6.615552554262399,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 120.9271626879542,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.82964620184731,
+              "enthalpy_standard_error_hartree": 0.16613847778976437,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 729.339466623906,
+              "potential_energy_hartree": 17.621381111048482,
+              "kinetic_energy_hartree": 17.49143880017894,
+              "pressure_au": 0.07223810563673869,
+              "operator_potential_energy_hartree": 17.645820897821867,
+              "operator_kinetic_energy_hartree": 17.472466782197003,
+              "operator_internal_energy_hartree": 35.118287680018874,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.0497940746354573e-05,
+                "maximum_dimensionless_curvature_change": 1.605446328767357e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          },
+          {
+            "seed": 18020,
+            "means": {
+              "volume": 728.5467057526973,
+              "pressure_au": 0.07220686940293339,
+              "internal_energy_hartree": 34.95856359090644
+            },
+            "raw": "crystal_sc_npt_p8_dt0.02_seed18020.csv",
+            "sha256": "bf1222c1d8d35b7af36e5745375d5f7527ab0dfbaa96c8817f7bfd01da3d43b4",
+            "thermodynamics": {
+              "method": "suzuki_chin",
+              "ensemble": "NPT",
+              "estimator": "thermodynamic_centroid_virial_and_scaled_coordinates",
+              "temperature_K": 39471.87810049839,
+              "samples": 800,
+              "internal_energy_hartree": 34.95856359090644,
+              "internal_energy_standard_error_hartree": 0.11753091421376644,
+              "heat_capacity_kind": "Cp",
+              "heat_capacity_over_kB": 42.81363445375263,
+              "heat_capacity_standard_error_over_kB": 21.004113184361486,
+              "heat_capacity_hartree_per_K": 0.00013558271266173944,
+              "diagnostics": {
+                "statistical_inefficiency": 5.2041560133999045,
+                "block_length_frames": 40,
+                "complete_blocks": 20,
+                "effective_samples": 153.72329306425914,
+                "uncertainty_scope": "conditional_on_blocks_exceeding_the_correlation_time",
+                "reason": null
+              },
+              "physical_converged": false,
+              "scope": "canonical_SC_temperature_independent_PES; unconstrained_3D_particles",
+              "enthalpy_hartree": 87.61808894136063,
+              "enthalpy_standard_error_hartree": 0.17129470574654196,
+              "external_pressure_au": 0.07228023259819569,
+              "mean_volume_bohr3": 728.5467057526973,
+              "potential_energy_hartree": 17.534738487735225,
+              "kinetic_energy_hartree": 17.42382510317121,
+              "pressure_au": 0.07220686940293339,
+              "operator_potential_energy_hartree": 17.44554395969163,
+              "operator_kinetic_energy_hartree": 17.315107011553938,
+              "operator_internal_energy_hartree": 34.76065097124557,
+              "finite_difference": {
+                "heat_capacity_curvature_coarse_minus_fine_over_kB": -1.046083492528993e-05,
+                "maximum_dimensionless_curvature_change": 1.6520035330813698e-05,
+                "scope": "same_sample_h_and_h_over_2_sensitivity; not a convergence guarantee"
+              }
+            }
+          }
+        ],
+        "statistics": {
+          "volume": {
+            "mean": 728.501985553984,
+            "standard_error": 0.3120495722259128,
+            "confidence_interval_95": [
+              727.5089045457883,
+              729.4950665621798
+            ],
+            "independent_replicas": 4
+          },
+          "pressure_au": {
+            "mean": 0.07226981119413835,
+            "standard_error": 3.109578412621754e-05,
+            "confidence_interval_95": [
+              0.07217085053083597,
+              0.07236877185744073
+            ],
+            "independent_replicas": 4
+          },
+          "internal_energy_hartree": {
+            "mean": 35.01413883827172,
+            "standard_error": 0.034916381397550135,
+            "confidence_interval_95": [
+              34.90301932929921,
+              35.12525834724423
+            ],
+            "independent_replicas": 4
+          },
+          "heat_capacity_Cp_kB": {
+            "mean": 23.654254982150256,
+            "standard_error": 13.694411587564266,
+            "confidence_interval_95": [
+              -19.927474577728034,
+              67.23598454202855
+            ],
+            "independent_replicas": 4
+          }
+        }
+      }
+    ]
+  },
+  "provenance_note": "First-campaign harmonic execution; source identity recorded retrospectively at seal time. Gaussian moments and NPT Cp postprocessing rerun on the retained data with the sealed analysis source."
+}

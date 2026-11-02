@@ -1,0 +1,39 @@
+{
+  "identity": {
+    "schema": "condensed-trajectory-identity-v1",
+    "model": "smooth LJ FCC32",
+    "method": "primitive",
+    "beads": 16,
+    "dt": 0.04,
+    "external_pressure": 1.0,
+    "seed": 82722,
+    "burn": 3000,
+    "steps": 12000,
+    "stride": 20,
+    "beta": 5.0,
+    "mass": 100.0,
+    "density": 1.0,
+    "switch_start": 2.0,
+    "cutoff": 2.5,
+    "tau": 5.0,
+    "contracted_beads": null,
+    "numerical_source_sha256": {
+      "benchmarks/condensed_phase/models.py": "28bf3db58ef7595de42de35827cfaa9ac60b197bac2dc1da1a44491cc6d8ff65",
+      "benchmarks/condensed_phase/lj.cpp": "828581643bef84ac5a2b3272247c405dbd843f4002c4aca42a3e972172847f12",
+      "benchmarks/condensed_phase/piglet_4_750K.json": "5aaeddf4ad3a9973174e5bcbc541553d27535dedab9658deb9eedbf341a64909",
+      "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+      "src/pyrpmd/engine.py": "f3e6984e7a790c5f70cf18efe11daeee48c886ac4f0b5a8ce0ebf10b75b4858f",
+      "src/pyrpmd/barostat.py": "98238feed00741d63422bdef6a1793b0212f91f253875551f3687f35c2b36812",
+      "src/pyrpmd/native_ensemble.py": "7faab1b19f9f46dd0cd7d397d1b026288141a9edebe0223be1a9217fa8e45394",
+      "src/pyrpmd/pimd_methods.py": "533ffb66d58508ccdd553309da279929a20916304ff29a53cbb4ce3be893d16a",
+      "src/pyrpmd/suzuki_chin.py": "cb29aa4c8341b5c46a142c10dd46fa9ffbc84952b8a5af6e00f9f9b0927adcbf",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/potentials/contraction.py": "f06446bed27bf6306b08485762323d70573ec5e2e54fec7f3cbf881a3e8254c2",
+      "validate.py::run_trajectory::AST": "03851cfaf13aa337d9c8f5b8f99d659c53c8a32c4fd78394287b2eab35bbb7e4",
+      "validate.py::primitive_observables::AST": "4753795b7154395229f9dc346d29df8d7658047e49c07606718902b779144c42",
+      "pyrpmd._native compiled binary": "7e423db35fb279646fcaadd6f969091d6ce67b1870f9422d4319eaf97084ab6f"
+    }
+  },
+  "recording": "captured_before_execution",
+  "raw_sha256": "650f68ea3e5423eec68c7615c433eb168fb2048b746958fb10ba990661e4d6f4"
+}

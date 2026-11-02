@@ -126,3 +126,20 @@ def test_resume_requires_matching_source_protocol_and_raw_identity(tmp_path):
     path.write_text(path.read_text()+"\n")
     with pytest.raises(ValueError,match="identity differs"):
         load_csv(path,**options)
+
+
+def test_numerical_identity_ignores_source_line_shifts_but_detects_physics_edits(monkeypatch):
+    import validate
+    source_path=Path(validate.__file__).resolve()
+    source=source_path.read_text()
+    baseline=validate.numerical_source_identity()
+    original=Path.read_text
+    replacement="\n# Report-only line shift while a live code object exists.\n"+source
+    monkeypatch.setattr(Path,"read_text",lambda path,*a,**kw:
+                        replacement if path.resolve()==source_path else original(path,*a,**kw))
+    assert validate.numerical_source_identity()==baseline
+    replacement=replacement.replace("for step in range(burn+steps):", "for step in range(burn+steps+1):")
+    changed=validate.numerical_source_identity()
+    key="validate.py::run_trajectory::AST"
+    assert changed[key]!=baseline[key]
+    assert {k:v for k,v in changed.items() if k!=key}=={k:v for k,v in baseline.items() if k!=key}

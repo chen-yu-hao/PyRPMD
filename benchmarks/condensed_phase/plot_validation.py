@@ -23,8 +23,9 @@ def main():
     sample_counts={c["samples"] for c in cases}
     sample_label=(f"{next(iter(sample_counts)):,} Gaussian draws" if len(sample_counts)==1 else "Gaussian samples")
     p=np.array([c["beads"] for c in cases])
-    for ax,key,title in ((axes[0,0],"energy","Coupled crystal: SC energy"),
-                         (axes[0,1],"heat_capacity_kB","Coupled crystal: SC heat capacity")):
+    crystal_atoms=harmonic["parameters"]["atoms"]
+    for ax,key,title in ((axes[0,0],"energy",f"{crystal_atoms}-atom harmonic crystal: SC energy"),
+                         (axes[0,1],"heat_capacity_kB",f"{crystal_atoms}-atom harmonic crystal: SC heat capacity")):
         reference=np.array([c["finite_bead_reference"][key] for c in cases])
         production=np.array([c["deterministic_production_moments"][key] for c in cases])
         sample_key = "internal_energy_hartree" if key=="energy" else "heat_capacity_over_kB"
@@ -36,7 +37,7 @@ def main():
         ax.errorbar(p*1.04,sampled,yerr=1.96*errors,fmt="x",color="#73588e",capsize=3,
                     label=sample_label+": +/-1.96 SE")
         ax.axhline(exact[key],color="#365d47",ls="--",label="Continuum quantum limit")
-        ax.set(xscale="log",title=title,xlabel="Beads P",ylabel=r"$E/\varepsilon$" if key=="energy" else r"$C_V/k_\mathrm{B}$")
+        ax.set(xscale="log",title=title,xlabel="Beads P",ylabel="E (model units)" if key=="energy" else r"$C_V/k_\mathrm{B}$")
         ax.set_xticks(p,labels=p)
         ax.legend(fontsize=8)
     ax=axes[1,0]
@@ -47,20 +48,23 @@ def main():
         means=np.array([c["statistics"]["internal_energy_hartree"]["mean"] for c in cases])/atoms
         limits=np.array([c["statistics"]["internal_energy_hartree"]["confidence_interval_95"] for c in cases]).T/atoms
         ax.errorbar(x,means,yerr=np.array([means-limits[0],limits[1]-means]),fmt=marker+"-",color=color,capsize=3,label=method.upper())
-    ax.set(xscale="log",title="Anharmonic FCC solid: bead refinement",xlabel="Beads P",ylabel=r"$E/(N\varepsilon)$")
+    ax.set(xscale="log",title=f"{atoms}-atom FCC solid: bead refinement",xlabel="Beads P",ylabel=r"$E/(N\varepsilon)$")
     ax.set_xticks([4,8,16,32,64],labels=[4,8,16,32,64]); ax.legend(fontsize=8)
     ax=axes[1,1]
     cases=[c for c in lj["cases"] if c["external_pressure"] is not None and c["dt"]==.04]
     labels=[f"{('RPC' if c['method']=='rpc8' else c['method'].upper())}\nP={c['beads']}"+
-            (" / Pc=4" if c["method"]=="rpc" else " / Pc=8" if c["method"]=="rpc8" else "") for c in cases]
+            ("\nPc=4" if c["method"]=="rpc" else "\nPc=8" if c["method"]=="rpc8" else "") for c in cases]
     means=np.array([c["statistics"]["volume"]["mean"] for c in cases])
     limits=np.array([c["statistics"]["volume"]["confidence_interval_95"] for c in cases]).T
-    ax.errorbar(np.arange(len(cases)),means,yerr=np.array([means-limits[0],limits[1]-means]),fmt="o",color="#365d47",capsize=3)
+    for index,case in enumerate(cases):
+        is_piglet=case["method"]=="piglet"
+        ax.errorbar(index,means[index],yerr=[[means[index]-limits[0,index]],[limits[1,index]-means[index]]],
+                    fmt="x" if is_piglet else "o",color="#b23838" if is_piglet else "#365d47",capsize=3)
     ax.set_xticks(np.arange(len(cases)),labels=labels,fontsize=8)
-    ax.set(title="FCC solid: isotropic NPT at p*=1",ylabel=r"$V/\sigma^3$")
+    ax.set(title=f"{atoms}-atom FCC solid: isotropic NPT at p*=1",ylabel=r"$V/\sigma^3$")
     replicas={c["statistics"]["volume"]["independent_replicas"] for c in lj["cases"]}
     replica_label=str(next(iter(replicas))) if len(replicas)==1 else "independent"
-    fig.suptitle("Condensed-phase NQE validation: model solids\nBottom panels: 95% Student intervals across "+replica_label+" replicas; not convergence bounds",fontsize=14,fontweight="bold")
+    fig.suptitle("Condensed-phase NQE validation: model solids\nBottom panels: 95% Student intervals across "+replica_label+" replicas; not convergence bounds\nPIGLET P4 (red cross): configurational-pressure check failed; see report",fontsize=12,fontweight="bold")
     fig.savefig(args.directory/"validation.png")
     fig.savefig(args.directory/"validation.pdf")
 
