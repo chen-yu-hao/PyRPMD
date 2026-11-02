@@ -1,0 +1,61 @@
+{
+  "model_identity": {
+    "schema": "pyrpmd.newns_anderson_model",
+    "version": 1,
+    "model": "newns-anderson",
+    "parameters": {
+      "nband": 63,
+      "band_min": -0.25,
+      "band_max": 0.25,
+      "chemical_potential": 0.0,
+      "discretization": "midpoint",
+      "level_energy": 0.0,
+      "level_slope": 0.02,
+      "hybridization": 0.05,
+      "hybridization_slope": 0.0,
+      "bare_force_constant": 0.0,
+      "center": 0.0,
+      "coordinate": 0,
+      "natoms": 1
+    }
+  },
+  "nelectrons": 32,
+  "trajectories": 32,
+  "seed": 20261102,
+  "dt_au": 1.0,
+  "duration_au": 200.0,
+  "electronic_substeps": 2,
+  "mass_electron": 2000.0,
+  "beta_hartree_inverse": 100000000.0,
+  "initial_position_bohr": -1.0,
+  "initial_momentum_au": 20.0,
+  "iesh_ground_surface_mechanical_energy_loss": {
+    "mean_hartree": 0.0018435385722673087,
+    "sem_hartree": 0.0008727620800614564
+  },
+  "ef_rpmd_p1_ground_surface_mechanical_energy_loss": {
+    "mean_hartree": 0.0026601469208006184,
+    "sem_hartree": 1.4432416593933878e-06
+  },
+  "iesh_final_excitation_energy": {
+    "mean_hartree": 0.0018435322089188494,
+    "sem_hartree": 0.0008727623451873597
+  },
+  "iesh_max_abs_total_energy_drift_hartree": 6.949158137814493e-09,
+  "iesh_max_step_hop_probability": 0.045138669888934294,
+  "accepted_hops": 7,
+  "frustrated_hops": 0,
+  "initial_velocity_times_level_slope_over_Gamma_squared": 0.07999999999999999,
+  "bandwidth_over_Gamma": 10.0,
+  "uniform_band_recurrence_time_estimate_au": 791.6813487046279,
+  "iesh_microseconds_per_step": 55025.38597281045,
+  "ef_rpmd_p1_microseconds_per_step": 6220.285837030133,
+  "physical_converged": false,
+  "limitations": [
+    "finite band, fixed electron number and finite trajectory ensemble",
+    "cold initial electronic determinant; no electronic thermostat",
+    "zero-temperature continuum friction with a small finite OU bath temperature",
+    "qualitative comparison; neither method is an exact quantum reference",
+    "P=1 only; step, band, electron count and ensemble convergence remain necessary"
+  ]
+}

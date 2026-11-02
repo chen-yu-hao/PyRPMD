@@ -1,0 +1,49 @@
+schema_version = 1
+task = "nonadiabatic"
+method = "multistate-mash"
+beads = 1
+beta = 100.0
+seed = 1202
+description = "Runeson-Manolopoulos 2023 three-state MASH; weighted observables, P=1."
+
+[model]
+name = "lvc"
+
+[model.params]
+h0 = [[0.0, 0.004, 0.001], [0.004, 0.002, 0.004], [0.001, 0.004, 0.0]]
+linear = [[[0.01, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, -0.01]]]
+harmonic = [0.0]
+coordinates = [0]
+natoms = 1
+
+[system]
+masses = [200.0]
+positions = [[-2.0, 0.0, 0.0]]
+
+[initial]
+kind = "point"
+momenta = [[5.0, 0.0, 0.0]]
+active_surface = 0
+
+[dynamics]
+dt = 4.0
+native = false
+integrator = "adaptive-dop853"
+rtol = 1e-9
+atol = 1e-11
+max_step = 1.0
+max_events = 64
+gap_tolerance = 1e-10
+block_steps = 10
+
+[ensemble]
+trajectories = 8
+steps = 40
+sample_stride = 2
+
+[parallel]
+trajectory_workers = 1
+threads = 1
+
+[output]
+directory = "runs/multistate-mash"

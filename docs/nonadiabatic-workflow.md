@@ -3,12 +3,14 @@
 `task="nonadiabatic"` runs independent nonequilibrium trajectories on a declared
 analytic model or the published molecular NaH2 5G diabatic potential. Supported
 methods are NRPMD, two-state W-spin SM-NRPMD, CA-RP-MASH, centroid RPSH,
-RPSH-BA, RPSH-DM and complex SOC RPSH. It uses the existing `validate`, `run`,
+RPSH-BA, RPSH-DM, complex SOC RPSH, P=1 IESH and P=1 multistate MASH.
+It uses the existing `validate`, `run`,
 `analyze` and `resume` commands. Each method retains its own estimator:
 mapping methods have signed fixed-diabatic density estimators, hopping methods
 report amplitude densities and active-surface occupations separately, and the
-MASH population workflow reports adiabatic active occupations without inventing
-a diabatic coherence estimator.
+`rp-mash` population workflow reports adiabatic active occupations. The
+separate `multistate-mash` workflow uses the original 2023 signed observable
+weights; IESH reports a one-particle density normalized to its electron count.
 
 ## Run the examples
 
@@ -27,6 +29,9 @@ pyrpmd resume runs/rpsh-population
 
 pyrpmd run examples/nonadiabatic/extensions/rp_mash.inp --output runs/rp-mash
 pyrpmd run examples/nonadiabatic/extensions/nah2_sm_nrpmd.inp --output runs/nah2-sm
+
+pyrpmd run examples/nonadiabatic/iesh.inp --output runs/iesh
+pyrpmd run examples/nonadiabatic/multistate_mash.inp --output runs/multistate-mash
 ```
 
 The first example is a small finite, one-mode spin-boson calculation. The second
@@ -34,8 +39,14 @@ is a short nuclear-packet calculation on Tully I, with optional centroid EDC.
 These small ensembles demonstrate the workflow; neither establishes a continuum
 bath limit, a scattering probability, a thermal rate or physical convergence.
 
+The [IESH and multistate-MASH guide](nonadiabatic-iesh-multistate.md) describes
+the two classical-nucleus methods, their distinct normalization and checkpoint
+contracts, and independent friction/Fourier comparison scripts. Both explicitly
+reject `beads>1` and complex SOC. Newns–Anderson inputs require `method="iesh"`
+so their separate bare nuclear potential cannot be omitted.
+
 The [extension examples](https://github.com/chen-yu-hao/PyRPMD/tree/main/examples/nonadiabatic/extensions)
-cover all new methods, DBOC and complex SOC. See [spin methods](nonadiabatic-spin-methods.md),
+cover spin and advanced hopping methods, DBOC and complex SOC. See [spin methods](nonadiabatic-spin-methods.md),
 [hopping extensions](nonadiabatic-hopping-extensions.md),
 [molecular potentials](molecular-nonadiabatic.md) and
 [electronic acceleration](nonadiabatic-performance.md) for exact variants.
@@ -50,10 +61,10 @@ does not turn an arbitrary initial condition into an equilibrium distribution.
 
 | Section | Required choices and useful fields |
 | --- | --- |
-| Root | `task="nonadiabatic"`; `method`: `nrpmd`, `sm-nrpmd`, `rp-mash`, `rpsh`, `rpsh-ca`, `rpsh-ba`, `rpsh-dm`, `soc-rpsh`; `beta` or `temperature`, `beads`, `seed` |
-| `model` | `name`: `tully1`, `tully2`, `tully3`, `lvc`, `spin_boson` or `nah2_leps_5g_1992`; `params` contains that model's constructor parameters |
+| Root | `task="nonadiabatic"`; `method`: `nrpmd`, `sm-nrpmd`, `rp-mash`, `rpsh`, `rpsh-ca`, `rpsh-ba`, `rpsh-dm`, `soc-rpsh`, `iesh`, `multistate-mash`; `beta` or `temperature`, `beads`, `seed` |
+| `model` | `name`: `tully1`, `tully2`, `tully3`, `lvc`, `spin_boson`, `nah2_leps_5g_1992` or `newns_anderson` (IESH only); `params` contains that model's constructor parameters |
 | `system` | `masses[N]`, `positions[N,3]`; molecular `symbols` and `unit="bohr"` or `"angstrom"`; NaH2 defaults to isotope masses, spin-boson to its declared masses |
-| `initial` | `kind="point"` or `"harmonic_ring"`; `initial_state` for NRPMD/SM-NRPMD, `active_surface` for hopping/MASH |
+| `initial` | `kind="point"` or `"harmonic_ring"`; `initial_state` for NRPMD/SM-NRPMD, `occupied` for IESH, `active_surface` for the other hopping/MASH methods |
 | `ensemble` | `trajectories`, required `steps`, `sample_stride` |
 | `dynamics` | `dt`, `integrator`, `native`, `loop_backend="auto"` or `"python"`, `block_steps` |
 | `parallel` | Local `trajectory_workers` and `threads_per_rank`; serial or process backend |
@@ -89,6 +100,9 @@ unavailable backend raises an error. RP-MASH uses `native=false` and
 `integrator="adaptive-dop853"`, with `rtol`, `atol`, `max_step`, `max_events`
 and `gap_tolerance` for event-resolving integration. The ordinary native
 free-ring splitting is not substituted for this event integrator.
+Multistate MASH accepts the same event-control fields at P=1. IESH accepts
+`nelectrons`, `electronic_substeps`, `gap_tolerance` and `max_hop_probability`;
+the other RPSH decoherence and momentum-rescaling choices are not IESH options.
 
 ## What is sampled
 
@@ -107,7 +121,11 @@ from the propagated diabatic surfaces, defining a nonequilibrium preparation.
 
 NRPMD uses focused MMST initialization and SM-NRPMD uses a focused W-spin
 latitude in the selected fixed diabatic state, factorized from this nuclear
-distribution. MASH uses its population hemisphere importance distribution.
+distribution. `rp-mash` uses its population hemisphere importance distribution.
+`multistate-mash` samples the complex unit sphere uniformly conditional on the
+selected adiabatic state having largest population. IESH starts from the
+specified occupied adiabatic determinant and samples subsequent hops; it does
+not automatically sample a thermal electronic distribution.
 RPSH starts on the selected centroid
 adiabatic eigenstate for each nuclear sample; this electronic vector generally
 depends on that sample's geometry. Using the same integer
@@ -125,9 +143,9 @@ independent unweighted trajectories.
 | File | Contents |
 | --- | --- |
 | `results/summary.json` | Model/method, final estimates, pointwise SEM, saved-frame norm/energy drift, explicit convergence status |
-| `results/populations.csv` | Common time grid, mean diabatic populations and SEM; RPSH also has active-surface fractions and adiabatic amplitude populations |
+| `results/populations.csv` | Common time grid, method-specific populations and SEM; IESH/multistate MASH also separate adiabatic weighted/one-particle populations and active occupations |
 | `results/nonadiabatic.npz` | Per-trajectory complex density estimator, energies, norms, nuclear centroids, means and available real/imaginary coherence SEMs |
-| `checkpoints/nonadiabatic_XXXXXX.npz` | One trajectory's complete state, hopping RNG, observations, physics identity and integrity envelope |
+| `checkpoints/nonadiabatic_XXXXXX.npz` | One trajectory's complete state, required RNG streams, observations, physics identity and integrity envelope |
 | `logs/nonadiabatic_XXXXXX_failure.json` | Failure context, when a trajectory stops unsuccessfully |
 
 For `rp-mash`, the population basis is `centroid_adiabatic`, and the NPZ omits
@@ -142,11 +160,15 @@ step is not a multiple of `sample_stride`. NPZ arrays are read with
 `pyrpmd.checkpoint.load_checkpoint(..., require_integrity=True)`; no pickle or
 object arrays are used.
 
-NRPMD stores the signed MMST density estimator and SM-NRPMD its signed W kernel;
+NRPMD stores the signed MMST density estimator, SM-NRPMD its signed W kernel,
+and multistate MASH its Runeson–Manolopoulos estimator;
 populations can be negative and
 are not clipped. RPSH amplitude density and active-surface occupation are
 different observables. Coherences are reported in the fixed diabatic basis,
 avoiding arbitrary instantaneous adiabatic eigenvector phases.
+IESH populations instead sum to the fixed electron count and its one-particle
+density is a Slater projector. See the method metadata before interpreting any
+population array as probabilities normalized to one.
 
 Each independent trajectory supplies one sample at each saved time. Beads and
 frames never increase the number of independent samples. SEM uses sample

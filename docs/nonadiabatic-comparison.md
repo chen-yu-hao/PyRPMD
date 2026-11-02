@@ -32,19 +32,22 @@ part of the focused population workflow.
 | --- | --- | --- | --- |
 | Standard reusable diabatic models | NQCModels provides an analytic model catalog; SHARP provides Tully/spin-boson examples | Teaching/example-specific matrix providers | Tully I–III, general Hermitian LVC, explicit finite-mode spin-boson; immutable parameters, analytic gradients and strict serialized identities |
 | Published molecular PES | POTLIB/ChemPotPy supplies the historical NaH₂ 5G matrix surface | A custom matrix provider was needed for a chemically specified molecule | Portable `NaH2LEPS5G` with full Cartesian matrix gradients, a pinned optional ChemPotPy bridge, and the CLI model `nah2_leps_5g_1992` |
-| General time-dependent population calculations | NQCDynamics has a distribution/factory to ensemble/reduction/output interface; SQD has model initializers and population output | NRPMD/RPSH kernels and collision/thermal-specific workflows; users wrote model trajectory loops | `task="nonadiabatic"` covers the eight explicit method selectors below, with time series and restart; the original NRPMD/RPSH ensemble API remains available |
-| Electronic observables | NQCDynamics distinguishes population estimates and discrete active states; MASH defines operator-pair weights | Selected population accessors and mostly final-state example diagnostics | Signed MMST/W-spin estimates and hopping amplitude densities; RPSH active fractions are separate; MASH CLI reports adiabatic active populations and does not label its propagation spin as a density estimator |
+| General time-dependent population calculations | NQCDynamics has a distribution/factory to ensemble/reduction/output interface; SQD has model initializers and population output | NRPMD/RPSH kernels and collision/thermal-specific workflows; users wrote model trajectory loops | `task="nonadiabatic"` covers the ten explicit method selectors below, with time series and restart; the original NRPMD/RPSH ensemble API remains available |
+| Electronic observables | NQCDynamics distinguishes population estimates and discrete active states; MASH defines operator-pair weights | Selected population accessors and mostly final-state example diagnostics | Signed MMST/W-spin and multistate-MASH estimates, hopping amplitude densities, and IESH one-particle occupations; active fractions remain separate; `rp-mash` retains its adiabatic population prescription |
 | Nuclear preparation for reduced models | NQCDynamics documents several initial distributions; SHARP has PIMD sampling | Hand-built model states plus other task-specific samplers | Exact finite-P harmonic Gaussian nuclear parents with explicit active coordinates and fixed spectators |
 | Uncertainty | Ensemble reductions vary by implementation and do not establish independence automatically | Strong collision/thermal analysis, no general model time-series interface | Per-trajectory histories, independent-trajectory pointwise SEM, real/imaginary coherence errors; one trajectory yields no SEM |
 | RPSH formulations | Original BA/DM papers specify different electronic states and hopping currents | Coherent centroid RPSH without EDC | Real BA; bead-wavefunction DM with a common centroid density; optional EDC for CA/BA; consistent DBOC energy/gradient and a stated complex-Hermitian CA/DM extension |
-| Spin formulations | SM-NRPMD and RP-MASH have distinct Hamiltonians, sampling and estimators | No dedicated spin-method driver | Two-state W-spin SM-NRPMD with focused preparation; two-state CA-RP-MASH with population importance sampling, resolved equator events and a separate general-correlation API |
+| Spin formulations | SM-NRPMD and RP-MASH have distinct Hamiltonians, sampling and estimators | No dedicated spin-method driver | Two-state W-spin SM-NRPMD; two-state CA-RP-MASH; P=1 Runeson–Manolopoulos 2023 multistate MASH with its own sampling and observable weights |
+| Molecule–metal dynamics | NQCDynamics implements IESH and compares it with electronic friction | Electronic-friction RPMD, without IESH | P=1 spinless Slater-determinant IESH, a quadrature-discretized Newns–Anderson model, energy-conserving hops and an explicit finite-model friction comparison |
 | Restart | Competitor object-saving facilities are not evidence of a complete identical restart contract | Complete collision checkpoints; RPSH API required separate state and RNG handling | Workflow saves state, RNG, history and identity, including BA transported frames and MASH sampling labels, with integrity and logical validation |
 | Quantum reference comparisons | NQCDynamics' spin-boson example points to literature exact data; this is not evidence of an included exact solver | Extensive local numerical invariants, no standard time-dependent model benchmark | Independent finite-box 1D multistate Fourier reference; analytic and full-Hamiltonian tests, plus a runnable population comparison |
 | Electronic acceleration | A GPU label alone does not establish the accelerated operation or a speedup | NumPy electronic propagation and optional native nuclear free-ring steps | Exact fixed-coordinate mapping flow and integrated nuclear impulse through NumPy, native C++/OpenMP or optional Torch; joint trajectory/bead NRPMD batch API; no CUDA hardware result claimed |
 
 The [workflow guide](nonadiabatic-workflow.md), [models](nonadiabatic-models.md)
 and [ensemble API](nonadiabatic-ensembles.md) specify the new contracts. All
-algorithms use the original complete matrix/positive-gradient provider contract.
+original algorithms use the complete matrix/positive-gradient provider contract.
+IESH explicitly uses a one-electron matrix and a separate bare nuclear energy,
+which is counted once regardless of the electron number.
 The spin methods and advanced hopping use their own states and restartable CLI
 workflow; they are not silently accepted by the original two-method
 `run_nonadiabatic_ensemble` API.
@@ -64,6 +67,8 @@ selectors, not interchangeable names for the same approximation.
 | `rpsh-ba` | One common adiabatic coefficient vector driven by bead-averaged energies and `v·d`; real matrices and transported bead frames |
 | `rpsh-dm` | One wavefunction per bead, averaged in the common centroid basis for hopping; nondegenerate Hermitian matrices; no additional EDC |
 | `soc-rpsh` | Explicit selector for the same extended CA driver as `rpsh-ca`, with complex-Hermitian SOC and the documented local Berry-force/rescaling prescription |
+| `iesh` | P=1 spinless independent-electron Slater determinant; real nondegenerate orbital matrix, fixed electron number and occupied-to-empty stochastic hops |
+| `multistate-mash` | P=1 Runeson–Manolopoulos 2023 multistate MASH; real nondegenerate matrices, adaptive population-boundary events and signed weighted observables |
 
 `dboc=true` is an option on the four extended RPSH selectors, not an additional
 method name. It corrects both energies and forces and uses the included electronic
@@ -73,11 +78,22 @@ surface-hopping implementation. All RPSH variants keep one shared active surface
 
 Definitions, initialization and observable contracts are in the
 [spin-method guide](nonadiabatic-spin-methods.md) and
-[hopping-extension guide](nonadiabatic-hopping-extensions.md). For MASH, general
+[hopping-extension guide](nonadiabatic-hopping-extensions.md). For `rp-mash`, general
 diabatic populations/coherences require the full-sphere operator-correlation API
 and its weights; the CLI's population-importance ensemble records only the
 corresponding adiabatic active populations. A pure propagation-spin outer product
 is not substituted for a MASH density estimator.
+
+The separate [IESH and multistate-MASH guide](nonadiabatic-iesh-multistate.md)
+defines their model, initial sampling, observables, finite-band limits and
+checkpoint contracts. The original 2023 multistate MASH estimator differs from
+the original two-state estimator even when only two states are present.
+
+```{toctree}
+:hidden:
+
+nonadiabatic-iesh-multistate
+```
 
 ## Paper attribution and reproduction boundaries
 
@@ -165,15 +181,17 @@ different acceptance criteria.
    or realistic conical-intersection dynamics. Beads, timesteps, ensemble size,
    preparation and domain must be converged for the desired observable.
 3. **Further formulations and preparation.** SU(N) SM-NRPMD, the SM electronic
-   thermal trace and its phase reweighting, bead-approximation RP-MASH, multistate
-   or complex-SOC MASH, non-Abelian degenerate-state hopping and phase-space
+   thermal trace and its phase reweighting, bead-approximation RP-MASH,
+   ring-polymer multistate MASH, complex-SOC MASH, non-Abelian degenerate-state hopping and phase-space
    surface hopping remain outside the implementations. The implemented DBOC
    and Berry-force combinations retain their stated approximation limits.
+   IESH has classical nuclei, a fixed electron number and no electronic
+   thermostat, interacting-electron or ring-polymer extension.
 4. **General correlated or signed ensembles.** The new workflow is unweighted
    and independently initialized. Arbitrary mixed/coherent MMST preparation,
    correlated nuclear/electronic parents and multi-chain signed thermal
    inference remain separate extensions. Existing thermal SEO/jackknife APIs
-   retain their own normalization and sign diagnostics. The MASH full-sphere
+   retain their own normalization and sign diagnostics. The `rp-mash` full-sphere
    operator-correlation API is implemented separately; it is not the CLI's
    unweighted population output.
 5. **Further acceleration and validation.** MPI bead splitting, GPU PES/nuclear
@@ -186,6 +204,9 @@ These are explicit scope boundaries, not features emulated by placeholders.
 
 ## Primary sources
 
+- N. Shenvi, S. Roy and J. C. Tully, *J. Chem. Phys.* **130**, 174107 (2009), [doi:10.1063/1.3125436](https://doi.org/10.1063/1.3125436), IESH.
+- J. Gardner et al., *J. Chem. Phys.* **158**, 064101 (2023), [doi:10.1063/5.0137137](https://doi.org/10.1063/5.0137137), IESH implementation and metal-surface/friction comparisons.
+- J. E. Runeson and D. E. Manolopoulos, *J. Chem. Phys.* **159**, 094115 (2023), [doi:10.1063/5.0158147](https://doi.org/10.1063/5.0158147), original multistate MASH and observable weights.
 - [NQCDynamics NRPMD implementation and initial-distribution scope](https://nqcd.github.io/NQCDynamics.jl/stable/dynamicssimulations/dynamicsmethods/nrpmd/).
 - [NQCModels analytic catalog](https://nqcd.github.io/NQCDynamics.jl/stable/NQCModels/analyticmodels/).
 - [NQCDynamics ensembles and reductions](https://nqcd.github.io/NQCDynamics.jl/stable/ensemble_simulations/).

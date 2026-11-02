@@ -1,0 +1,54 @@
+{
+  "iesh": {
+    "method": "iesh",
+    "completed": true,
+    "physical_converged": false,
+    "trajectories": 8,
+    "steps": 100,
+    "frames": 21,
+    "final_populations": [
+      0.47706512678688073,
+      0.9988022619358617,
+      0.9967137924373306,
+      0.9927256880331299,
+      0.9837206292354244,
+      0.9543776424678435,
+      0.45183445561199503,
+      0.08052991183846182,
+      0.03955644116292156,
+      0.01438989683712623,
+      0.006289125483221155,
+      0.002936741925160628,
+      0.0010582862443679357
+    ],
+    "physics_fingerprint": "1c111e799da505e129cd7e0d176b481299b5a8fb1ddd8831dd8107c77e278a1c",
+    "completed_resume_unchanged": true,
+    "matrix_gradient_check": {
+      "max_absolute_gradient_error": 3.204034260129163e-14,
+      "rms_gradient_error": 1.4229615712141197e-15,
+      "gradient_unit": "hartree/bohr",
+      "finite_difference_step_bohr": 1e-05
+    }
+  },
+  "mash": {
+    "method": "multistate-mash",
+    "completed": true,
+    "physical_converged": false,
+    "trajectories": 8,
+    "steps": 40,
+    "frames": 21,
+    "final_populations": [
+      0.8827921543889968,
+      -0.07971363285652125,
+      0.19692147846752434
+    ],
+    "physics_fingerprint": "9423b7d9f2d9171cef59a3167d4ca36ec8d2a57f2711086537051efd674d7eb4",
+    "completed_resume_unchanged": true,
+    "matrix_gradient_check": {
+      "max_absolute_gradient_error": 5.938825820006599e-14,
+      "rms_gradient_error": 1.616343658920229e-14,
+      "gradient_unit": "hartree/bohr",
+      "finite_difference_step_bohr": 1e-05
+    }
+  }
+}

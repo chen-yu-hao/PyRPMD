@@ -1,0 +1,221 @@
+[
+  {
+    "model": "tully1",
+    "model_identity": {
+      "schema": "pyrpmd.nonadiabatic_model",
+      "version": 1,
+      "model": "tully1",
+      "parameters": {
+        "natoms": 1,
+        "coordinate": 0,
+        "a": 0.01,
+        "b": 1.6,
+        "c": 0.005,
+        "d": 1.0
+      }
+    },
+    "trajectories": 128,
+    "seed": 20261102,
+    "duration_au": 240.0,
+    "dt_au": 4.0,
+    "max_step_au": 4.0,
+    "mass_electron": 200.0,
+    "center_bohr": -3.0,
+    "position_std_bohr": 0.6,
+    "mean_momentum_au": 5.0,
+    "momentum_std_au": 0.8333333333333334,
+    "initial_electronic_basis": "fixed_diabatic",
+    "initial_electronic_state": 0,
+    "population_basis": "fixed_diabatic",
+    "estimator": "Runeson-Manolopoulos-2023",
+    "mash_initial_mean": [
+      1.0747610839452921,
+      -0.07476108394529152
+    ],
+    "mash_final_mean": [
+      0.9292787475429689,
+      0.07072125245649381
+    ],
+    "mash_final_sem": [
+      0.037673014731476655,
+      0.03767301473148468
+    ],
+    "fourier_final_populations": [
+      0.8583073194907191,
+      0.14169268050936384
+    ],
+    "absolute_population_error": [
+      0.07097142805224976,
+      0.07097142805287003
+    ],
+    "fourier_points": 1024,
+    "fourier_dt_au": 0.5,
+    "fourier_time_refinement_max_diff": 8.111926883547227e-07,
+    "fourier_space_refinement_max_diff": 3.0158523900425394e-08,
+    "fourier_max_edge_population": 9.359274034321924e-14,
+    "fourier_max_norm_error": 8.415490526658687e-14,
+    "mash_max_abs_final_energy_drift_hartree": 1.0308824210936152e-09,
+    "mash_total_events": 122,
+    "mash_elapsed_seconds": 254.11151981299918,
+    "mash_microseconds_per_output_step": 33087.437475650935,
+    "physical_converged": false,
+    "limitations": [
+      "finite nuclear packet and finite trajectory ensemble",
+      "pointwise SEM excludes method and discretization error",
+      "reference refinements do not establish all domain limits",
+      "P=1, real Hamiltonians; no ring-polymer or complex-SOC extension"
+    ]
+  },
+  {
+    "model": "three_state_lvc",
+    "model_identity": {
+      "schema": "pyrpmd.nonadiabatic_model",
+      "version": 1,
+      "model": "lvc",
+      "parameters": {
+        "h0": {
+          "real": [
+            [
+              0.0,
+              0.004,
+              0.001
+            ],
+            [
+              0.004,
+              0.002,
+              0.004
+            ],
+            [
+              0.001,
+              0.004,
+              0.0
+            ]
+          ],
+          "imag": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        "linear": {
+          "real": [
+            [
+              [
+                0.01,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                -0.01
+              ]
+            ]
+          ],
+          "imag": [
+            [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0
+              ]
+            ]
+          ]
+        },
+        "harmonic": [
+          0.0
+        ],
+        "reference": [
+          0.0
+        ],
+        "coordinates": [
+          0
+        ],
+        "natoms": 1
+      }
+    },
+    "trajectories": 128,
+    "seed": 20261102,
+    "duration_au": 240.0,
+    "dt_au": 4.0,
+    "max_step_au": 4.0,
+    "mass_electron": 200.0,
+    "center_bohr": -3.0,
+    "position_std_bohr": 0.6,
+    "mean_momentum_au": 5.0,
+    "momentum_std_au": 0.8333333333333334,
+    "initial_electronic_basis": "fixed_diabatic",
+    "initial_electronic_state": 0,
+    "population_basis": "fixed_diabatic",
+    "estimator": "Runeson-Manolopoulos-2023",
+    "mash_initial_mean": [
+      1.0034528498239064,
+      -0.002817657821943505,
+      -0.0006351920019628241
+    ],
+    "mash_final_mean": [
+      0.5313714248237043,
+      0.37616770965905844,
+      0.0924608655172071
+    ],
+    "mash_final_sem": [
+      0.05186512367356686,
+      0.0513798874191055,
+      0.03914979491282922
+    ],
+    "fourier_final_populations": [
+      0.5869731761249435,
+      0.3679038213910738,
+      0.045123002484091713
+    ],
+    "absolute_population_error": [
+      0.05560175130123923,
+      0.008263888267984631,
+      0.047337863033115386
+    ],
+    "fourier_points": 1024,
+    "fourier_dt_au": 0.5,
+    "fourier_time_refinement_max_diff": 2.570398287549125e-07,
+    "fourier_space_refinement_max_diff": 1.2756462552943049e-13,
+    "fourier_max_edge_population": 3.05711134468304e-29,
+    "fourier_max_norm_error": 1.099120794378905e-13,
+    "mash_max_abs_final_energy_drift_hartree": 7.245581912229682e-11,
+    "mash_total_events": 192,
+    "mash_elapsed_seconds": 281.7096253319978,
+    "mash_microseconds_per_output_step": 36680.940798437216,
+    "physical_converged": false,
+    "limitations": [
+      "finite nuclear packet and finite trajectory ensemble",
+      "pointwise SEM excludes method and discretization error",
+      "reference refinements do not establish all domain limits",
+      "P=1, real Hamiltonians; no ring-polymer or complex-SOC extension"
+    ]
+  }
+]

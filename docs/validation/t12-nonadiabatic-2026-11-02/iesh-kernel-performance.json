@@ -1,0 +1,37 @@
+{
+  "benchmark": "all_single_excitation_slater_determinant_ratios",
+  "scope": "one electronic kernel; excludes force/eigenvalue evaluation and full trajectories",
+  "nstates": 64,
+  "nelectrons": 32,
+  "allowed_single_excitations": 1024,
+  "seed": 701,
+  "warmups": 3,
+  "repeats": 15,
+  "max_absolute_ratio_error": 6.817745718922426e-14,
+  "timings": {
+    "single_solve": {
+      "median_seconds": 0.000141960998007562,
+      "min_seconds": 0.00012665899703279138,
+      "max_seconds": 0.0051223089976701885
+    },
+    "separate_determinants": {
+      "median_seconds": 0.03378909200546332,
+      "min_seconds": 0.019617415993707255,
+      "max_seconds": 0.07171636199927889
+    }
+  },
+  "median_speedup": 238.0167262818442,
+  "runtime": {
+    "cpu_model": "x86_64",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "logical_cpus_visible": 9,
+    "affinity_cpus": 9,
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "thread_environment": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": null
+    }
+  }
+}
