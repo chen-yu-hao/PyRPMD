@@ -232,11 +232,17 @@ class TransitionInterfaceSampler:
             id(dyn.potential), dyn.beta, dyn.nbeads, dyn.dt, dyn.integrator_name,
             tuple(dyn.masses), dyn.fixed_atoms,
             None if dyn.fixed_positions is None else dyn.fixed_positions.tobytes(),
+            dyn.native, dyn.integrator.threads, dyn.pbc,
+            None if dyn.cell is None else (dyn.cell.shape, dyn.cell.tobytes()),
         )
 
     def _check_dynamics(self):
         dyn = self.dynamics
         dyn._check_parameters()
+        if dyn.plan.active:
+            raise ValueError("TIS requires bare dynamics; thermostat, barostat and force splitting are unsupported")
+        if dyn.bond_constraints:
+            raise ValueError("TIS does not support bond constraints or constrained momentum proposals")
         if self._dynamics_signature() != self._signature:
             raise ValueError("Dynamics changed after TIS construction; create a new sampler")
         for obj, cls, methods in (
