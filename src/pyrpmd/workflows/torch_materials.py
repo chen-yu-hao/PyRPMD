@@ -92,6 +92,8 @@ def resolve_torch_materials(config, system):
     legacy.setdefault("dynamics", {})["integrator"] = "cayley-bcb"
     from .materials import resolve_materials
     options = resolve_materials(legacy, system)
+    if not np.isclose(options["sample_dt"], float(config["dt_au"]), rtol=1e-14, atol=0):
+        raise ValueError("Torch materials sampling and production timesteps must match")
     options.update(device=device, normal_mode_layout=layout, block_steps=block,
                    threads=plan.threads, production_integrator=loop["integrator"])
     return options
@@ -153,9 +155,19 @@ def _validate_runtime(runtime, options):
     return runtime
 
 
-def _read_batch(config, system, output, options=None):
-    """Read and authenticate the one authoritative batch, without a PES/Torch."""
-    from .materials import _trajectory_schema, _stream_directory
+def _read_batch(config, system, output, options=None, *, analysis=False,
+                materialize=False, only_complete=False):
+    """Authenticate the batch, optionally collecting analysis in the same pass.
+
+    ``materialize=True`` retains every recorded field. Otherwise ``analysis``
+    retains scalar histories, mean radii and only transport-selected atoms.
+    ``only_complete`` limits collection to finished runs, so the run entrypoint
+    can replay a completed result in one pass without retaining histories when
+    it must instead continue propagation. Every mode validates every field of
+    every committed chunk, including fields not retained for analysis. Reading
+    a checkpoint or preparing its analysis never imports Torch or opens a PES.
+    """
+    from .materials import _collect_frames, _trajectory_schema, _stream_directory
     options = resolve_torch_materials(config, system) if options is None else options
     with load_checkpoint(_path(output), expected_kind=KIND, require_integrity=True) as saved:
         if set(saved.files) - {"_pyrpmd_checkpoint"} != _FIELDS:
@@ -192,10 +204,10 @@ def _read_batch(config, system, output, options=None):
             raise CheckpointError("Torch materials trajectory count differs from the batch")
         schema = _trajectory_schema(system, options)
         count = (step - options["neq"]) // options["interval"] + 1 if started else 0
-        for replica, descriptor in enumerate(trajectories):
-            descriptor = _descriptor(descriptor)
-            if descriptor["schema"] != schema or descriptor["frames"] != count:
-                raise CheckpointError("Torch materials trajectory schema/phase count mismatch")
+        collect = (analysis or materialize) and (not only_complete or step == total)
+        prepared = []
+
+        def checked_chunks(replica, descriptor):
             seen = 0
             for _, metadata, chunk in _walk_reverse(_stream_directory(output, replica), descriptor):
                 expected = (options["neq"] + np.arange(metadata["start"], metadata["stop"],
@@ -203,11 +215,28 @@ def _read_batch(config, system, output, options=None):
                 if not np.array_equal(chunk["sample_steps"], expected):
                     raise CheckpointError("Torch materials trajectory clock differs from the checkpoint")
                 seen += len(expected)
+                yield metadata["start"], metadata["stop"], chunk
             if seen != count:
                 raise CheckpointError("Torch materials trajectory prefix is incomplete")
-        return dict(**arrays, step=step, time=time, production_started=started,
-                    runtime=runtime, sources=sources, trajectories=trajectories,
-                    complete=step == total, frames=count)
+
+        for replica, descriptor in enumerate(trajectories):
+            descriptor = _descriptor(descriptor)
+            if descriptor["schema"] != schema or descriptor["frames"] != count:
+                raise CheckpointError("Torch materials trajectory schema/phase count mismatch")
+            chunks = checked_chunks(replica, descriptor)
+            if collect:
+                prepared.append(_collect_frames(chunks, schema, count, config, system, options,
+                                                full=materialize))
+            else:
+                for _ in chunks:
+                    pass
+        result = dict(**arrays, step=step, time=time, production_started=started,
+                      runtime=runtime, sources=sources, trajectories=trajectories,
+                      complete=step == total, frames=count)
+        if collect:
+            # These histories are derived in memory, never checkpoint fields.
+            result.update(analysis_data=prepared, analysis_materialized=materialize)
+        return result
 
 
 @contextmanager
@@ -307,7 +336,7 @@ def _save(config, system, output, state, sampler, production, started, writers, 
                  trajectories=json.dumps(descriptors, sort_keys=True))
 
 
-def _run_batch(config, system, output, options, *, saved=None):
+def _run_batch(config, system, output, options, *, saved=None, materialize=False):
     from .materials import _trajectory_schema, _stream_directory
     if saved is not None and saved["complete"]:
         return saved  # No provider construction or RNG consumption on replay.
@@ -367,7 +396,7 @@ def _run_batch(config, system, output, options, *, saved=None):
                 _record(state, sampler, writers)
             if state.step == total or state.step % options["checkpoint_steps"] == 0:
                 commit()
-        return _read_batch(config, system, output, options)
+        return _read_batch(config, system, output, options, analysis=True, materialize=materialize)
     finally:
         close = getattr(provider, "close", None)
         if callable(close):
@@ -385,20 +414,28 @@ def _streams(saved, config, system, output, options):
                    "production": {"torch_steps": saved["step"] - sampling_steps},
                    "production_integrator": options["production_integrator"] if config["task"] == "diffusion" else "bcocb",
                    "momentum_refresh": "independent_real_mass_maxwell" if config["task"] == "diffusion" else None}
-    return [dict(replica=replica, state=State(saved["q"][replica], saved["p"][replica],
+    streams = [dict(replica=replica, state=State(saved["q"][replica], saved["p"][replica],
                                             saved["step"], saved["time"]),
                  elapsed=saved["step"], complete=saved["complete"], frames=saved["frames"],
                  storage="stream", trajectory=descriptor,
                  trajectory_directory=str(_stream_directory(output, replica)),
                  checkpoint=str(_path(output)), propagation=copy.deepcopy(propagation), barostat=None)
             for replica, descriptor in enumerate(saved["trajectories"])]
+    if "analysis_data" in saved:
+        for stream, data in zip(streams, saved["analysis_data"]):
+            stream.update(data)
+            stream["times"] = (stream["sample_steps"] - options["neq"]) * options["production_dt"]
+    return streams
 
 
 def analyze_torch_materials(config, system, output, return_data=False, *, saved=None):
     from .materials import _analyze
     options = resolve_torch_materials(config, system)
-    saved = _read_batch(config, system, output, options) if saved is None else saved
-    result = _analyze(_streams(saved, config, system, output, options), config, system, output, return_data)
+    if saved is None or "analysis_data" not in saved or (
+            return_data and not saved.get("analysis_materialized", False)):
+        saved = _read_batch(config, system, output, options, analysis=True, materialize=return_data)
+    result = _analyze(_streams(saved, config, system, output, options), config, system, output,
+                      return_data, stream_data_prepared=True)
     summary = result["summary"] if return_data else result
     summary.update(engine="torch", tensor_runtime=saved["runtime"],
                    batch_checkpoint=str(_path(output)), sampling_integrator="bcocb")
@@ -417,10 +454,13 @@ def run_torch_materials(config, system, output, executor=None, return_data=False
     def run():
         # A complete replay remains usable for analysis without importing
         # Torch or constructing the model (the file hashes are still checked).
-        saved = _read_batch(config, system, output, options) if _path(output).exists() else None
+        saved = (_read_batch(config, system, output, options, analysis=True,
+                             materialize=return_data, only_complete=True)
+                 if _path(output).exists() else None)
         if saved is None or not saved["complete"]:
             with _execution_context(options["threads"]):
-                saved = _run_batch(config, system, output, options, saved=saved)
+                saved = _run_batch(config, system, output, options, saved=saved,
+                                   materialize=return_data)
         return analyze_torch_materials(config, system, output, return_data, saved=saved)
     return root_call(run)
 
