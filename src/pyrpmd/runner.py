@@ -166,6 +166,11 @@ def run_resolved(config, system, *, output=None, resume=False):
 
     validate_bond_constraint_workflow(system, config.get("task"))
     validate_andersen_schedule(config, config.get("task"))
+    if config.get("sampling", {}).get("engine") == "torch":
+        # Direct resolved calls must reject unsupported tensor combinations
+        # before creating or migrating an output directory.
+        from .workflows.torch_materials import resolve_torch_materials
+        resolve_torch_materials(config, system)
     if getattr(system, "bond_constraints", ()):
         # Direct resolved callers must fail before output creation, provider
         # construction or dispatch when the materials engine is incompatible.
@@ -702,6 +707,13 @@ def prepare(job, *, numerical=False):
         }
         if native_pimd:
             result["materials_preparation"]["engine"] = "native"
+        elif config.get("sampling", {}).get("engine") == "torch":
+            result["materials_preparation"].update(
+                engine="torch", device=materials_options["device"], dtype="float64",
+                normal_mode_layout=materials_options["normal_mode_layout"],
+                sampling_integrator="bcocb", batch_replicas=materials_options["replicas"],
+                checkpoint="atomic_tensor_batch_with_owned_rng_states",
+            )
     elif config["task"] == "site_rate":
         from .workflows.site_rate import validate_site_rate
 
@@ -719,7 +731,10 @@ def prepare(job, *, numerical=False):
                 x = np.repeat(x, config["beads"], axis=0)
             from .potentials import validate_result
 
-            if config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
+            if config.get("sampling", {}).get("engine") == "torch":
+                from .workflows.torch_materials import check_torch_materials
+                result["pes_check"] = check_torch_materials(config, system, provider)
+            elif config["task"] == "pimd" and config.get("sampling", {}).get("engine", "legacy") == "native":
                 from .potentials.base import PESResult
                 from .workflows.native_pimd import _engine
 
