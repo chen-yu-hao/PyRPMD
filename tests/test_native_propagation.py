@@ -224,7 +224,7 @@ def test_python_custom_pes_cv_bias_and_identity_forwarding(native_library):
     assert dynamics(delegated).propagate_block(state(),2).backend == "native"
     converted = PythonPotential(dyn.potential,units={"positions":"angstrom","energy":"eV"})
     assert dynamics(converted).propagate_block(state(),2).backend == "python"
-    assert dynamics(HarmonicPotential()).propagate_block(state(),2).backend == "python"
+    assert dynamics(HarmonicPotential()).propagate_block(state(),2).backend == "native"
     custom_bias = UmbrellaBias(custom, [1.7], .01)
     assert dyn.propagate_block(state(),2,bias=custom_bias).backend == "python"
 

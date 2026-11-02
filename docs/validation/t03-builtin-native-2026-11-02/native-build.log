@@ -1,0 +1,61 @@
+Obtaining file:///workspace/scratch/b4bae16c0d5f/pyrpmd-t03
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Getting requirements to build editable: started
+  Getting requirements to build editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: numpy>=1.26 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from PyRPMD==0.2.0) (2.3.5)
+Requirement already satisfied: scipy>=1.11 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from PyRPMD==0.2.0) (1.17.0)
+Requirement already satisfied: h5py>=3.10 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from PyRPMD==0.2.0) (3.16.0)
+Requirement already satisfied: threadpoolctl>=3.1 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from PyRPMD==0.2.0) (3.6.0)
+Requirement already satisfied: sphinx<9,>=8.2 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from PyRPMD==0.2.0) (8.2.3)
+Requirement already satisfied: myst-parser<5,>=4 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from PyRPMD==0.2.0) (4.0.1)
+Requirement already satisfied: pydata-sphinx-theme<0.17,>=0.16 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from PyRPMD==0.2.0) (0.16.1)
+Requirement already satisfied: docutils<0.22,>=0.19 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from myst-parser<5,>=4->PyRPMD==0.2.0) (0.21.2)
+Requirement already satisfied: jinja2 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from myst-parser<5,>=4->PyRPMD==0.2.0) (3.1.6)
+Requirement already satisfied: markdown-it-py~=3.0 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from myst-parser<5,>=4->PyRPMD==0.2.0) (3.0.0)
+Requirement already satisfied: mdit-py-plugins>=0.4.1,~=0.4 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from myst-parser<5,>=4->PyRPMD==0.2.0) (0.6.1)
+Requirement already satisfied: pyyaml in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from myst-parser<5,>=4->PyRPMD==0.2.0) (6.0.3)
+Requirement already satisfied: beautifulsoup4 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from pydata-sphinx-theme<0.17,>=0.16->PyRPMD==0.2.0) (4.15.0)
+Requirement already satisfied: Babel in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from pydata-sphinx-theme<0.17,>=0.16->PyRPMD==0.2.0) (2.18.0)
+Requirement already satisfied: pygments>=2.7 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from pydata-sphinx-theme<0.17,>=0.16->PyRPMD==0.2.0) (2.21.0)
+Requirement already satisfied: accessible-pygments in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from pydata-sphinx-theme<0.17,>=0.16->PyRPMD==0.2.0) (0.0.5)
+Requirement already satisfied: typing-extensions in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from pydata-sphinx-theme<0.17,>=0.16->PyRPMD==0.2.0) (4.16.0)
+Requirement already satisfied: sphinxcontrib-applehelp>=1.0.7 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.0.0)
+Requirement already satisfied: sphinxcontrib-devhelp>=1.0.6 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.0.0)
+Requirement already satisfied: sphinxcontrib-htmlhelp>=2.0.6 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.1.0)
+Requirement already satisfied: sphinxcontrib-jsmath>=1.0.1 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.0.0)
+Requirement already satisfied: sphinxcontrib-qthelp>=1.0.6 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.0.0)
+Requirement already satisfied: sphinxcontrib-serializinghtml>=1.1.9 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.0.0)
+Requirement already satisfied: snowballstemmer>=2.2 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (3.1.1)
+Requirement already satisfied: alabaster>=0.7.14 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (1.0.0)
+Requirement already satisfied: imagesize>=1.3 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.0.1)
+Requirement already satisfied: requests>=2.30.0 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (2.34.2)
+Requirement already satisfied: roman-numerals-py>=1.0.0 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (4.1.0)
+Requirement already satisfied: packaging>=23.0 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from sphinx<9,>=8.2->PyRPMD==0.2.0) (26.3)
+Requirement already satisfied: MarkupSafe>=2.0 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from jinja2->myst-parser<5,>=4->PyRPMD==0.2.0) (3.0.4)
+Requirement already satisfied: mdurl~=0.1 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from markdown-it-py~=3.0->myst-parser<5,>=4->PyRPMD==0.2.0) (0.1.2)
+Requirement already satisfied: charset_normalizer<4,>=2 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from requests>=2.30.0->sphinx<9,>=8.2->PyRPMD==0.2.0) (3.5.2)
+Requirement already satisfied: idna<4,>=2.5 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from requests>=2.30.0->sphinx<9,>=8.2->PyRPMD==0.2.0) (3.19)
+Requirement already satisfied: urllib3<3,>=1.26 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from requests>=2.30.0->sphinx<9,>=8.2->PyRPMD==0.2.0) (2.8.0)
+Requirement already satisfied: certifi>=2023.5.7 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from requests>=2.30.0->sphinx<9,>=8.2->PyRPMD==0.2.0) (2026.10.19)
+Requirement already satisfied: roman-numerals==4.1.0 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from roman-numerals-py>=1.0.0->sphinx<9,>=8.2->PyRPMD==0.2.0) (4.1.0)
+Requirement already satisfied: soupsieve>=1.6.1 in /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages (from beautifulsoup4->pydata-sphinx-theme<0.17,>=0.16->PyRPMD==0.2.0) (3.0.4)
+Building wheels for collected packages: PyRPMD
+  Building editable for PyRPMD (pyproject.toml): started
+  Building editable for PyRPMD (pyproject.toml): finished with status 'done'
+  Created wheel for PyRPMD: filename=pyrpmd-0.2.0-0.editable-cp312-cp312-linux_x86_64.whl size=27023 sha256=574ad272417b1905cc88647cae7157b3867bf8a7a022230d55575afc76b9e0a2
+  Stored in directory: /tmp/pip-ephem-wheel-cache-54etf6db/wheels/45/a3/85/9d82a8c399c492dec478749497214aa5a0f9f6dd54cdb12b16
+Successfully built PyRPMD
+Installing collected packages: PyRPMD
+  Attempting uninstall: PyRPMD
+    Found existing installation: PyRPMD 0.2.0
+    Uninstalling PyRPMD-0.2.0:
+      Successfully uninstalled PyRPMD-0.2.0
+Successfully installed PyRPMD-0.2.0
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.2
+[notice] To update, run: python -m pip install --upgrade pip

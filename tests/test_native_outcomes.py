@@ -250,7 +250,11 @@ def test_outcomes_reject_unsupported_backend_before_mutation(native_library):
     classifier = _h3()
     current = _separated()
     original = current.copy()
-    dyn = Dynamics(HarmonicPotential(), classifier.masses, 100., 1, .1)
+
+    class PythonHarmonic(HarmonicPotential):
+        """A custom provider retains the unsupported-native test case."""
+
+    dyn = Dynamics(PythonHarmonic(), classifier.masses, 100., 1, .1)
     assert not native_outcome_supported(dyn)
     with pytest.raises(RuntimeError, match="native outcomes require"):
         dyn.propagate_block(current, 20, outcome=_options(classifier))

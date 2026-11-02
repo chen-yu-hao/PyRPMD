@@ -13,6 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 
 from .validation import checked_integer as _integer
+from .potentials._builtin_native import resolve_native_binding
 
 
 class NativeUnavailableError(RuntimeError):
@@ -270,7 +271,7 @@ def _propagate(dynamics, state, steps, *, bias=None, observe=None, sample_interv
             factory = getattr(dynamics.potential, "native_binding", None)
             if factory is None:
                 raise NativeUnavailableError("PES has no explicit native binding")
-            binding = _atomic_binding(factory())
+            binding = _atomic_binding(resolve_native_binding(dynamics.potential, n))
             spec = {"observers": [] if observe is None else _cvs(observe, n),
                     "biases": _biases(bias, n, dynamics.masses),
                     "fragments": [{"atoms": ix.tolist(), "reference": ref.tolist()}
@@ -466,7 +467,7 @@ def native_supported(dynamics, *, bias=None, observe=None):
         factory = getattr(dynamics.potential, "native_binding", None)
         if factory is None:
             raise NativeUnavailableError("PES has no explicit stateless native binding")
-        _atomic_binding(factory())
+        _atomic_binding(resolve_native_binding(dynamics.potential, len(dynamics.masses)))
         n = len(dynamics.masses)
         _biases(bias, n, dynamics.masses)
         if observe is not None:

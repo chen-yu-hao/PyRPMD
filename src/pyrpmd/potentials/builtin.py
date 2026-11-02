@@ -5,7 +5,22 @@ from .base import Potential, PESResult, coordinates
 from ..geometry import validate_cell_pbc
 
 
-class FreePotential(Potential):
+class _BuiltinPotential(Potential):
+    def native_binding(self, natoms=None):
+        """Lease a compiled, immutable parameter snapshot for ``natoms``.
+
+        Dynamics supplies its atom count before the first force evaluation.
+        Direct callers can provide it explicitly, or omit it after evaluate().
+        Only the exact, unmodified built-in evaluator is eligible.
+        """
+        from ._builtin_native import builtin_binding
+        return builtin_binding(self, natoms)
+
+
+_BUILTIN_NATIVE_BINDING = _BuiltinPotential.native_binding
+
+
+class FreePotential(_BuiltinPotential):
     metadata = {
         "provider": "free",
         "thread_safety": "reentrant",
@@ -15,6 +30,7 @@ class FreePotential(Potential):
 
     def evaluate(self, x, *, cell=None, pbc=None):
         x = coordinates(x)
+        self._native_natoms = x.shape[1]
         return PESResult(np.zeros(len(x)), np.zeros_like(x), virial=np.zeros((len(x), 3, 3)))
 
     def set_cell(self, cell):
@@ -22,7 +38,7 @@ class FreePotential(Potential):
         self.cell, self.pbc = validate_cell_pbc(cell, [True, True, True])
 
 
-class PeriodicCosinePotential(Potential):
+class PeriodicCosinePotential(_BuiltinPotential):
     """Analytic fixed-lattice reference; not a fitted metal/hydrogen potential.
 
     Each active atom feels height[a]/2*(1-cos(2*pi*repeats[a]*s[a]))
@@ -67,6 +83,7 @@ class PeriodicCosinePotential(Potential):
 
     def evaluate(self, x):
         x = coordinates(x)
+        self._native_natoms = x.shape[1]
         if self.atoms is not None and np.max(self.atoms) >= x.shape[1]:
             raise ValueError("periodic_cosine atom index out of range")
         selected = x if self.atoms is None else x[:, self.atoms]
@@ -85,7 +102,7 @@ class PeriodicCosinePotential(Potential):
         return PESResult(e, forces)
 
 
-class HarmonicPotential(Potential):
+class HarmonicPotential(_BuiltinPotential):
     metadata = {
         "provider": "harmonic",
         "thread_safety": "reentrant",
@@ -104,6 +121,7 @@ class HarmonicPotential(Potential):
 
     def evaluate(self, x):
         x = coordinates(x)
+        self._native_natoms = x.shape[1]
         d = x - self.center
         f = -self.k * d
         return PESResult(
@@ -112,7 +130,7 @@ class HarmonicPotential(Potential):
         )
 
 
-class MorsePairPotential(Potential):
+class MorsePairPotential(_BuiltinPotential):
     metadata = {
         "provider": "morse_pair",
         "thread_safety": "reentrant",
@@ -134,6 +152,7 @@ class MorsePairPotential(Potential):
 
     def evaluate(self, x):
         x = coordinates(x)
+        self._native_natoms = x.shape[1]
         a, b = self.atoms
         d = x[:, a] - x[:, b]
         r = np.linalg.norm(d, axis=1)
@@ -148,7 +167,7 @@ class MorsePairPotential(Potential):
         return PESResult(v, f)
 
 
-class DoubleWellPotential(Potential):
+class DoubleWellPotential(_BuiltinPotential):
     """Separable Cartesian quartic model for validating barriers and FES only."""
 
     metadata = {
@@ -174,6 +193,7 @@ class DoubleWellPotential(Potential):
 
     def evaluate(self, x):
         x = coordinates(x)
+        self._native_natoms = x.shape[1]
         y = x[:, self.atom, self.axis] / self.width
         v = self.height * (y * y - 1) ** 2
         f = -self.confinement * x
