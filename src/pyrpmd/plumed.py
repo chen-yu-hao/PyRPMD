@@ -11,6 +11,8 @@ from __future__ import annotations
 import copy
 import importlib
 import math
+import re
+import shlex
 import threading
 from dataclasses import dataclass
 from functools import partial
@@ -22,6 +24,141 @@ from .constants import AMU_TO_AU, ATOMIC_TIME_S, BOHR_M, KCAL_MOL_TO_AU
 from .dynamics import Dynamics, State
 from .geometry import validate_cell_pbc
 from .validation import checked_integer, finite_positive
+
+
+@dataclass(frozen=True)
+class PlumedFileRestartPlan:
+    """Audited, file-only PLUMED state and its deterministic input program.
+
+    This deliberately describes a small subset, not a serializer for arbitrary
+    PLUMED actions. The workflow stores the listed files and the MD state in one
+    atomic checkpoint; PLUMED reconstructs the bias through its own RESTART.
+    """
+
+    input_lines: str
+    files: tuple[str, ...]
+
+
+def file_restart_plan(input_lines):
+    """Validate the fixed-hill restart profile before constructing a kernel.
+
+    Ordinary/WT METAD with fixed widths is reconstructed from HILLS. Stateful
+    options (grids, adaptive widths/pace, walkers, accumulated work, etc.) are
+    rejected. Only a small set of coordinate-only actions is admitted, and all
+    output paths must stay below the workflow's PLUMED directory. Round-trip
+    output precision and per-step flushing are explicit parts of this profile.
+    """
+    if not isinstance(input_lines, str) or not input_lines.strip() or "\x00" in input_lines:
+        raise ValueError("PLUMED restart input must be nonempty text")
+    # Expand PLUMED's standard ACTION ... / ... ACTION multiline notation.
+    records, pending, pending_action = [], None, None
+    for line in input_lines.splitlines():
+        try:
+            tokens = shlex.split(line, comments=True, posix=True)
+        except ValueError as error:
+            raise ValueError("invalid quoted PLUMED restart input") from error
+        if not tokens:
+            continue
+        if pending is not None:
+            if tokens[0] == "...":
+                if len(tokens) > 2 or (len(tokens) == 2 and tokens[1] != pending_action):
+                    raise ValueError("mismatched PLUMED multiline action terminator")
+                records.append(pending)
+                pending = pending_action = None
+            else:
+                if "..." in tokens:
+                    raise ValueError("nested PLUMED multiline actions are unsupported")
+                pending.extend(tokens)
+        elif tokens[-1] == "...":
+            pending = tokens[:-1]
+            action_tokens = pending[1:] if pending and pending[0].endswith(":") else pending
+            if not action_tokens:
+                raise ValueError("missing PLUMED multiline action")
+            pending_action = action_tokens[0]
+        elif "..." in tokens:
+            raise ValueError("invalid PLUMED multiline action")
+        else:
+            records.append(tokens)
+    if pending is not None:
+        raise ValueError("unterminated PLUMED multiline action")
+    stateless = {
+        "UNITS", "DISTANCE", "ANGLE", "TORSION", "POSITION", "COM", "CENTER",
+        "COORDINATION", "GROUP", "FIXEDATOM", "COMBINE", "CUSTOM", "MATHEVAL",
+        "CONSTANT", "RESTRAINT", "UPPER_WALLS", "LOWER_WALLS",
+    }
+    metad_keywords = {"ARG", "SIGMA", "HEIGHT", "PACE", "FILE", "BIASFACTOR", "TEMP", "FMT", "RESTART", "LABEL"}
+    print_keywords = {"ARG", "FILE", "STRIDE", "FMT", "RESTART", "UPDATE_FROM", "UPDATE_UNTIL", "LABEL"}
+    files, normalized = [], []
+    for record in records:
+        tokens = list(record)
+        head = 1 if tokens[0].endswith(":") else 0
+        if len(tokens) <= head:
+            raise ValueError("missing PLUMED action after label")
+        action = tokens[head]
+        if action not in stateless | {"METAD", "PRINT", "FLUSH"}:
+            raise ValueError(f"PLUMED action {action!r} has no verified file restart contract")
+        if any(any(character.isspace() for character in token) or "{" in token or "}" in token or "#" in token
+               for token in tokens):
+            raise ValueError("PLUMED file restart requires simple whitespace-free keyword values")
+        options = {}
+        for token in tokens[head + 1:]:
+            key, separator, value = token.partition("=")
+            if not re.fullmatch(r"[A-Z][A-Z_0-9]*", key) or key in options:
+                raise ValueError("invalid or repeated PLUMED restart keyword")
+            options[key] = value if separator else None
+            if key == "RESTART" and value != "AUTO":
+                raise ValueError("PLUMED restart overrides are controlled by the workflow")
+            if ("FILE" in key and not (action in {"METAD", "PRINT"} and key == "FILE")) or key == "PDB":
+                raise ValueError("external PLUMED input/state files are unsupported by file restart")
+            if value and ("@" in value or "\\" in value):
+                raise ValueError("external/escaped PLUMED references are unsupported by file restart")
+        if action == "METAD" and set(options) - metad_keywords:
+            raise ValueError("PLUMED file restart supports only fixed-width ordinary/WT METAD without grids or walkers")
+        if action == "METAD":
+            try:
+                if any(not options.get(key) for key in ("ARG", "SIGMA", "HEIGHT", "PACE")):
+                    raise ValueError("missing fixed-hill parameter")
+                sigma = [float(value) for value in options["SIGMA"].split(",")]
+                height = float(options["HEIGHT"])
+                if (not all(math.isfinite(value) and value > 0 for value in sigma)
+                        or not math.isfinite(height) or height < 0
+                        or not options["PACE"].isdigit() or int(options["PACE"]) < 1):
+                    raise ValueError("invalid fixed-hill parameter")
+                for key in ("BIASFACTOR", "TEMP"):
+                    if key in options:
+                        value = float(options[key])
+                        if not math.isfinite(value) or value <= (1 if key == "BIASFACTOR" else 0):
+                            raise ValueError("invalid tempering parameter")
+            except (ValueError, TypeError, AttributeError) as error:
+                raise ValueError("PLUMED file restart requires finite fixed SIGMA/HEIGHT, positive integer PACE, BIASFACTOR>1 and TEMP>0") from error
+        if action == "PRINT" and set(options) - print_keywords:
+            raise ValueError("unsupported PRINT option in PLUMED file restart")
+        if action == "FLUSH":
+            if set(options) - {"STRIDE", "LABEL"}:
+                raise ValueError("unsupported FLUSH option in PLUMED file restart")
+            # One final FLUSH is sufficient and is always executed after outputs.
+            continue
+        if action in {"METAD", "PRINT"}:
+            name = options.get("FILE", "HILLS" if action == "METAD" else "COLVAR")
+            path = Path(name) if isinstance(name, str) else None
+            if (path is None or not name or path.is_absolute() or ".." in path.parts
+                    or ":" in name or not path.parts or str(path) != name
+                    or any(ord(char) < 32 for char in name)):
+                raise ValueError("PLUMED restart FILE must be a normalized relative path below RUN/plumed")
+            if name in files:
+                raise ValueError("PLUMED restart output FILE paths must be distinct")
+            files.append(name)
+            if "FILE" not in options:
+                tokens.append("FILE=" + name)
+            if "FMT" in options and options["FMT"] not in {"%.17g", "%.17e"}:
+                raise ValueError("PLUMED file restart requires round-trip FMT=%.17g or FMT=%.17e")
+            if "FMT" not in options:
+                tokens.append("FMT=%.17g")
+        normalized.append(" ".join(tokens))
+    if not normalized:
+        raise ValueError("PLUMED restart input contains no actions")
+    normalized.append("FLUSH STRIDE=1")
+    return PlumedFileRestartPlan("\n".join(normalized) + "\n", tuple(files))
 
 
 @dataclass(frozen=True)
@@ -109,6 +246,8 @@ class PlumedBias:
                 raise ValueError("charges must be finite")
         if not isinstance(restart, (bool, np.bool_)):
             raise ValueError("restart must be boolean")
+        self._restart = bool(restart)
+        self._restart_primed = False
         if isinstance(input_lines, str):
             script = input_lines
         else:
@@ -253,6 +392,34 @@ class PlumedBias:
             if self._busy:
                 raise RuntimeError("cannot run PLUMED diagnostics during a propagation step")
             return self._calculate(q, self._completed_step)
+
+    def _prime_file_restart(self, q):
+        """Initialize the restored update clock for the audited file profile.
+
+        PLUMED 2.9 METAD skips the first update of every newly constructed
+        kernel, including a restarted one. Replaying the saved endpoint primes
+        that flag without propagating MD or adding a hill. The workflow removes
+        the replayed PRINT row after checking the files kept their saved prefix.
+        Newer duplicate-hill-aware kernels also leave this endpoint unchanged.
+        """
+        with self._lock:
+            self._check_open()
+            if not self._restart or self._completed_step == 0 or self._restart_primed or self._busy:
+                raise RuntimeError("PLUMED file restart clock can only be primed once at a restored positive step")
+            file_restart_plan(self.input_lines)
+            before = self._calculate(q, self._completed_step)
+            try:
+                self._kernel.cmd("update")
+                after = self._calculate(q, self._completed_step)
+                if (before.physical_energy != after.physical_energy
+                        or not np.array_equal(before.centroid_forces, after.centroid_forces)
+                        or not np.array_equal(before.plumed_virial, after.plumed_virial)):
+                    raise RuntimeError("PLUMED restart clock replay changed its bias; this kernel/action is not restart-compatible")
+                self._restart_primed = True
+                self._bound_q = np.array(q, dtype=np.float64, copy=True)
+            except BaseException:
+                self._failed = True
+                raise
 
     def energy_force(self, q):
         raise RuntimeError(

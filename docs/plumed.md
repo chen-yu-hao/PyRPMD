@@ -96,9 +96,103 @@ PLUMED parsing are checked when the run starts. The saved
 `checkpoints/plumed-md-state.npz` contains the accepted MD state, RNG and sampled
 geometry/bias prefix, explicitly marked `kernel_state_saved=false`. On a kernel
 failure, `results/plumed-failure.json` records the last accepted MD step and
-error. These files do not capture opaque PLUMED action history; automatic
-`pyrpmd resume` is rejected. The deliberate Python restart contract below
-remains available when the user supplies mutually consistent action files.
+error. By default these files do not capture PLUMED action history and
+`pyrpmd resume` is rejected. Opt into the verified file-based profile below
+when automatic continuation is needed. The deliberate Python restart contract
+also remains available when the user supplies mutually consistent action files.
+
+## Verified file-based continuation
+
+Add `restart = "files"` to `[plumed]` **before the initial run**:
+
+```toml
+[plumed]
+file = "plumed.dat"
+restart = "files"
+```
+
+For a complete standalone input, run:
+
+```bash
+pyrpmd run examples/plumed/restart_metadynamics.inp --output runs/plumed-restart
+# After an interruption, use the same run directory:
+pyrpmd resume runs/plumed-restart
+```
+
+This profile uses PLUMED's own
+[RESTART](https://www.plumed.org/doc-v2.10/user-doc/html/_r_e_s_t_a_r_t.html)
+mechanism: METAD reconstructs its bias from HILLS and PRINT appends to COLVAR.
+It does not attempt to pickle an opaque kernel. A checkpoint contains, in one
+integrity-checked atomic NPZ replacement:
+
+- The last checkpointed coordinates, momenta, absolute step/time and NumPy RNG.
+- All sampled geometry/bias records up to that step.
+- The complete bytes and path inventory of every declared METAD/PRINT output.
+- A scientific fingerprint including the resolved input, system, PLUMED program,
+  explicit input/kernel file hashes, and the versioned restart profile.
+
+Resume validates the entire checkpoint before restoring files or initializing a
+kernel. It restores the saved HILLS/COLVAR prefixes, including removal of partial
+or additional writes made after the checkpoint. It then enables `setRestart`
+and continues at the saved absolute clock. A restore-only update at the saved
+endpoint initializes PLUMED's first-update flag (required by METAD in PLUMED 2.9).
+The bridge verifies that this replay leaves the bias energy/forces/virial
+unchanged, verifies the saved output prefixes, and truncates the duplicate PRINT
+row before propagation resumes. The next accepted MD endpoint is updated exactly
+once. This replay is restricted to the audited actions below; it is not used by
+the unrestricted Python API.
+Missing live history files can be recovered from the checkpoint. The checkpoint
+itself must exist and pass integrity verification. Use the same PLUMED build and
+numerical environment for continuation; the API version is also checked.
+
+The profile appends `FLUSH STRIDE=1`, as documented by
+[FLUSH](https://www.plumed.org/doc-v2.10/user-doc/html/_f_l_u_s_h.html), so no
+buffered HILLS/COLVAR prefix is omitted. It sets `FMT=%.17g` on METAD and PRINT
+unless `FMT=%.17g` or `FMT=%.17e` is already specified. Lower precision is
+rejected because rounded hill centers or heights would change the reconstructed
+bias. These explicit profile semantics are recorded in the checkpoint identity.
+Old inputs receive no new defaults and retain their previous identity.
+
+### Supported restart profile
+
+The allowed coordinate actions are `DISTANCE`, `ANGLE`, `TORSION`, `POSITION`,
+`COM`, `CENTER`, `COORDINATION`, `GROUP`, `FIXEDATOM`, `COMBINE`, `CUSTOM`,
+`MATHEVAL`, `CONSTANT`, `RESTRAINT`, `UPPER_WALLS` and `LOWER_WALLS`, with `UNITS`
+and `FLUSH` setup. Expressions and keyword values must be whitespace-free;
+standard `ACTION ...` / `... ACTION` multiline input is supported. All `FILE`
+paths must be distinct, normalized relative paths below `RUN/plumed`, without
+symlinks. External reference/index files and included input are rejected.
+
+The only history-dependent action in this profile is ordinary or well-tempered
+`METAD` with fixed widths and a fixed deposition pace. Its accepted keywords are
+`ARG`, `SIGMA`, `HEIGHT`, `PACE`, `FILE`, `BIASFACTOR`, `TEMP`, `FMT`, `LABEL`, and
+`RESTART=AUTO`. `PRINT` additionally supports `STRIDE`, `UPDATE_FROM` and
+`UPDATE_UNTIL`. Other actions and METAD options fail during input preflight.
+In particular, adaptive widths or pace, grids, neighbor lists, multiple walkers,
+acceleration/work accumulators, OPES and custom plugin actions are not certified
+by this profile. These have additional state or numerical conventions beyond a
+fixed HILLS prefix; see the
+[METAD manual](https://www.plumed.org/doc-v2.10/user-doc/html/_m_e_t_a_d.html).
+Standalone `RESTART` and per-action `RESTART=YES/NO` are rejected because the
+workflow owns the restart flag for both fresh runs and continuations.
+
+If a kernel call fails, the last complete atomic checkpoint is retained. The
+failure report distinguishes `last_accepted_step` from `checkpoint_step`;
+continuation replays any accepted but uncheckpointed steps. The output keeps
+`kernel_state_saved=false` and adds `plumed_file_state_saved=true` to distinguish
+file reconstruction from serialization of arbitrary internal kernel state.
+Every checkpoint copies the complete declared history, so checkpoint I/O and
+storage grow with HILLS/COLVAR length. Select `output.checkpoint_steps` with that
+cost in mind; only the most recent checkpoint is needed for recovery.
+
+The independent mock-kernel tests require bitwise agreement of coordinates,
+momenta, RNG, samples, and file bytes between uninterrupted and interrupted runs,
+including failures after a hill was written. The optional real-kernel tests
+check numerical agreement of HILLS/COLVAR and MD state for ordinary and WT-METAD.
+Decimal round trips and WT height rescaling can differ at the last floating-point
+bit, so the live checks use an explicit tolerance. A skipped live test is not a
+claim that the installed PLUMED runtime was verified. None of these restart
+checks establishes a physically converged free-energy surface.
 
 ## Run a centroid bias
 
@@ -222,14 +316,16 @@ unchanged. PLUMED does not expose a generic transaction or rollback for
 arbitrary internal actions and files. If a PLUMED command fails, the bridge
 is marked unusable and requires a new kernel; even a failed `update` may
 already have written part of an external file. This is not advertised as an
-atomic MD-plus-PLUMED checkpoint.
+atomic MD-plus-PLUMED checkpoint for the unrestricted Python API. The restricted
+input-file profile above instead retains a complete earlier MD/file checkpoint
+and reconstructs a new kernel from it.
 
 For a deliberate restart, restore mutually consistent MD state, Dynamics
 RNG, PLUMED history/state files, and input first. Then construct a new
 bridge with `restart=True` and `start_step=state.step`. The bridge forwards
 PLUMED's restart flag but does not infer or validate the contents of all
-action-specific restart files. The existing generic `pyrpmd resume` workflow
-does not serialize the opaque kernel. For PLUMED metadynamics, consult the
+action-specific restart files. The generic `pyrpmd resume` workflow requires the
+explicit `restart="files"` profile described above. For PLUMED metadynamics, consult the
 [METAD restart documentation](https://www.plumed.org/doc-v2.9/user-doc/html/_m_e_t_a_d.html).
 Use a context manager or `close()` to flush/finalize resources.
 
