@@ -734,9 +734,13 @@ class ActiveLearningLoop:
             reason = "reference_failed"
         else:
             old = self._load_models(meta["versions"][-1]["members"])
-            trained = ()
+            trained = []
             try:
-                trained = tuple(self.trainer(dataset.successful(), old))
+                # Retain ownership as members are yielded: if a generator
+                # raises while producing a later member, earlier providers
+                # still need to be closed before retrying this transaction.
+                for model in self.trainer(dataset.successful(), old):
+                    trained.append(model)
                 if self._encode_models(old)[0] != meta["versions"][-1]["members"]:
                     raise ValueError("trainer mutated previous models; return independent fitted providers")
                 hashes, payloads = self._encode_models(trained)

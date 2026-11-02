@@ -314,6 +314,26 @@ def test_mutating_train_or_lossy_codec_cannot_install_a_model(tmp_path):
         loop.step()
 
 
+def test_generator_trainer_failure_closes_every_yielded_model(tmp_path):
+    closed = []
+
+    class Owned(Harmonic):
+        def close(self):
+            closed.append(self.k)
+
+    def incomplete(dataset, old):
+        yield Owned(.9)
+        raise RuntimeError("second member failed")
+
+    loop = make_loop(tmp_path, trainer=incomplete)
+    loop.run(max_steps=4)
+    before = loop.result
+    with pytest.raises(RuntimeError, match="second member failed"):
+        loop.step()
+    assert closed == [.9]
+    assert loop.result == before
+
+
 @pytest.mark.parametrize("identity", [{1: "invalid"}, {"nested": {1: "invalid"}}, {"x": float("nan")}])
 def test_identity_cannot_alias_nonstring_keys_or_nonfinite_values(tmp_path, identity):
     with pytest.raises(ValueError, match="keys|JSON"):
