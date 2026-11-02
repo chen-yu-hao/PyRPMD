@@ -150,6 +150,7 @@ Replica exchange <replica-exchange>
 OPES <opes>
 PLUMED bridge <plumed>
 Transition-interface sampling <transition-interface-sampling>
+Fixed-ring committor analysis <committor>
 Adaptive constant-potential NRPMD paths <manual/adaptive-nrpmd>
 Extended CVs and sampling methods <tier2-sampling>
 ```
