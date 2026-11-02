@@ -1,0 +1,265 @@
+{
+  "schema": "PyRPMD.t14-validation.v1",
+  "date": "2026-11-02",
+  "repository": "chen-yu-hao/PyRPMD",
+  "branch": "feat/t14-active-learning-loop",
+  "baseline_commit": "8cc402fb12391e4fb644d3e186e5e58d1699759a",
+  "implementation_commit": "1336ec0c682266615227cd0f005eb060535df317",
+  "environment": {
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "visible_logical_cpus": 9,
+    "affinity_cpus": 9,
+    "python": "3.12.14",
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "shared_host": true,
+    "timings_are_single_run_measurements_not_speedup_claims": true
+  },
+  "tests": {
+    "pre_edit_baseline": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 python -m pytest -q tests/test_ml_lifecycle.py tests/test_checkpoint.py",
+      "summary": "57 passed in 3.21s"
+    },
+    "final_targeted": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv-t14/bin/python -m pytest -q tests/test_active_learning.py tests/test_active_learning_audit.py tests/test_active_learning_example.py tests/test_active_learning_labeling.py tests/test_active_learning_mace.py tests/test_ml_lifecycle.py tests/test_checkpoint.py",
+      "summary": "177 passed, 8 skipped in 30.61s",
+      "skip_reason": "Base environment lacks PySCF, tblite and Torch/MACE; actual optional integrations were tested separately."
+    },
+    "actual_references": {
+      "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../reference-env/bin/python -m pytest -q tests/test_active_learning_labeling.py",
+      "summary": "47 passed in 5.37s",
+      "versions": {
+        "pyscf": "2.14.0",
+        "tblite": "0.8.0"
+      },
+      "ipi_test": "Real local harmonic i-PI protocol driver"
+    },
+    "actual_mace": {
+      "command": "PYTHONPATH=src OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 ../mace-env/bin/python -m pytest -q tests/test_active_learning_mace.py",
+      "summary": "20 passed, 349 warnings in 74.72s (0:01:14)",
+      "warnings": "Upstream Torch/e3nn TorchScript deprecations and bundled constants loading"
+    },
+    "docs": {
+      "command": ".venv-t14/bin/python -m sphinx -W --keep-going -b html docs docs/_build/html",
+      "summary": "build succeeded."
+    },
+    "full_regression": {
+      "command": "OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 .venv-t14/bin/python -m pytest -q",
+      "summary": "1 failed, 8219 passed, 233 skipped, 51 warnings, 486 subtests passed in 2322.60s (0:38:42)",
+      "failed_tests": [
+        "tests/test_h3_p256_parent_campaign.py::test_worker_failure_stops_admissions_and_drains_all_owned_processes"
+      ],
+      "exit_code": 1,
+      "coverage_note": "The full suite was collected before four final numeric-validation/resource-cleanup cases were added. The final targeted run includes all final T14 tests plus the existing lifecycle/checkpoint tests.",
+      "failure_assertion": "assert [1, 2, 3] == [1, 2]",
+      "failure_classification": "The same unchanged H3 scheduling-sensitive test failure was empirically reproduced on baseline 8cc402f; no T14 test failed."
+    }
+  },
+  "baseline_scheduler_failure": {
+    "test": "tests/test_h3_p256_parent_campaign.py::test_worker_failure_stops_admissions_and_drains_all_owned_processes",
+    "baseline_isolated_pytest": "1 passed in 3.69s",
+    "t14_isolated_pytest": "1 passed in 2.93s",
+    "baseline_30_invocations": {
+      "passed": 29,
+      "failed": 1
+    },
+    "t14_30_invocations": {
+      "passed": 29,
+      "failed": 1
+    },
+    "failure": "Seed 2 finishes before seed 1 fails, permitting admission of seed 3; assertion launched_seeds == [1, 2] fails. All owned workers are drained.",
+    "identical_baseline_and_t14_source_sha256": {
+      "tests/test_h3_p256_parent_campaign.py": "57e78795ecda9fa754fef5a6ca2180e7b4f262ada7b763b76c8f8281506d7634",
+      "benchmarks/h3/p256_parent_campaign.py": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    },
+    "related_source_modified": false
+  },
+  "measurements": {
+    "analytic_pilot": {
+      "measurements": {
+        "independent_reference_boltzmann_quantiles": {
+          "before": {
+            "frames": 1024,
+            "energy_rmse_hartree": 0.34811094284097815,
+            "energy_disagreement_rms_hartree": 0.2594633966324935,
+            "force_vector_rmse_hartree_per_bohr": 0.07628032301519236,
+            "force_disagreement_rms_hartree_per_bohr": 0.3889548555576267,
+            "max_force_disagreement_hartree_per_bohr": 1.721471507518774,
+            "force_rmse_over_disagreement": 0.196116135138184,
+            "fraction_force_error_above_one_disagreement": 0
+          },
+          "after": {
+            "frames": 1024,
+            "energy_rmse_hartree": 0.003126980920425124,
+            "energy_disagreement_rms_hartree": 0.010224996608856845,
+            "force_vector_rmse_hartree_per_bohr": 0.0005234564171460594,
+            "force_disagreement_rms_hartree_per_bohr": 0.013655568486008194,
+            "max_force_disagreement_hartree_per_bohr": 0.017787106637276298,
+            "force_rmse_over_disagreement": 0.038332817684038914,
+            "fraction_force_error_above_one_disagreement": 0.009765625
+          }
+        },
+        "final_sampled_configurations": {
+          "before": {
+            "frames": 128,
+            "energy_rmse_hartree": 0.3455310235376403,
+            "energy_disagreement_rms_hartree": 0.26103046078118497,
+            "force_vector_rmse_hartree_per_bohr": 0.0786316359871012,
+            "force_disagreement_rms_hartree_per_bohr": 0.40094424628395325,
+            "max_force_disagreement_hartree_per_bohr": 1.3313411020777293,
+            "force_rmse_over_disagreement": 0.19611613513818424,
+            "fraction_force_error_above_one_disagreement": 0
+          },
+          "after": {
+            "frames": 128,
+            "energy_rmse_hartree": 0.0031023153347775707,
+            "energy_disagreement_rms_hartree": 0.010627354733535576,
+            "force_vector_rmse_hartree_per_bohr": 0.0005313562293547526,
+            "force_disagreement_rms_hartree_per_bohr": 0.013067156174448709,
+            "max_force_disagreement_hartree_per_bohr": 0.017725077977148413,
+            "force_rmse_over_disagreement": 0.04066349420341033,
+            "fraction_force_error_above_one_disagreement": 0.0078125
+          }
+        }
+      },
+      "learning": {
+        "stop_reason": "uncertainty_below_threshold",
+        "rounds_completed": 6,
+        "label_attempts": 17,
+        "successful_labels": 17,
+        "failed_labels": 0,
+        "dataset_sha256": "9225a6f87c10527d15c7382f62471bb63b93e3299a0d0ce8e85834ef2f776a26",
+        "uncertainty_converged": true,
+        "physical_converged": false
+      },
+      "runtime": {
+        "this_invocation_seconds": 1.284971195003891,
+        "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+        "processor": "x86_64",
+        "logical_cpus": 9,
+        "affinity_cpus": 9,
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "diagnostic_labels_enter_training": false,
+      "diagnostic_reference_frames": 2304
+    },
+    "mace": {
+      "python": "3.12.14",
+      "platform": "x86_64",
+      "logical_cpus": 9,
+      "threads": 1,
+      "torch": "2.15.0+cpu",
+      "frames": 7,
+      "atoms": 2,
+      "members": 2,
+      "epochs": 24,
+      "model_initialization_seconds": 26.912886432997766,
+      "training_seconds": 8.01972571099759,
+      "batched_evaluation_milliseconds": 124.33532802002446,
+      "before": {
+        "energy_rmse_hartree": 0.10445311995613044,
+        "force_rmse_hartree_per_bohr": 0.25613979485793864,
+        "mean_max_force_std": 0.37719089899702213
+      },
+      "after": {
+        "energy_rmse_hartree": 0.003856305769759129,
+        "force_rmse_hartree_per_bohr": 0.023799574431965564,
+        "mean_max_force_std": 0.023545872171491643
+      },
+      "versions": {
+        "mace-torch": "0.3.17",
+        "torch": "2.15.0+cpu",
+        "e3nn": "0.4.4",
+        "ase": "3.29.0",
+        "numpy": "2.3.5"
+      },
+      "trainer_options": {
+        "symbols": [
+          "H",
+          "H"
+        ],
+        "epochs": 24,
+        "learning_rate": 0.003,
+        "channels": 4,
+        "max_ell": 1,
+        "radial_channels": 8,
+        "seeds": [
+          37,
+          53
+        ],
+        "cutoff": 6,
+        "correlation": 2,
+        "interactions": 2,
+        "num_bessel": 4,
+        "atomic_energies": [
+          0
+        ],
+        "energy_weight": 1,
+        "force_weight": 1,
+        "fine_tune": true,
+        "device": "cpu",
+        "dtype": "float64",
+        "num_threads": 1
+      },
+      "inference_procedure": {
+        "member_index": 0,
+        "batch_frames": 7,
+        "warmup_calls": 5,
+        "timed_calls": 100
+      },
+      "measurement_scope": "Seven analytic harmonic-bond training configurations; these fit errors are not a held-out generalization measurement. Initialization includes first MACE/e3nn imports and both models; Torch was imported beforehand."
+    }
+  },
+  "limitations": [
+    "Committee disagreement is not a calibrated prediction error; physical_converged and converged remain false.",
+    "Generic callbacks must be deterministic under pinned numerical/software versions. The sampler must return all evolving state; its supplied NumPy RNG is checkpointed.",
+    "Uncommitted callbacks are replayed from the previous stage. There is no automatic mid-epoch optimizer or remote-reference-job checkpoint.",
+    "References must be independent and stateless; hidden electronic warm starts are rejected. i-PI requires a pinned driver identity/hash and explicit independent_frames declaration.",
+    "The MACE reference hook supports fixed-composition, nonperiodic molecules on CPU float64; it fine-tunes compatible preceding weights with a fresh Adam optimizer.",
+    "Every label batch retains a complete cumulative dataset snapshot, giving approximately quadratic retained data storage at fixed batch size.",
+    "Model reconstruction and hashing at stage boundaries can dominate very short sampling segments.",
+    "The analytic pilot is a one-dimensional fixed-box classical Metropolis validation, not molecular RPMD rate or physical convergence validation."
+  ],
+  "integration_notes": {
+    "readme_en": "Restartable active-learning loops connect batched reference labelling, callback training and resampling, with hashed datasets/model versions and an optional CPU MACE training/fine-tuning hook; committee disagreement remains an uncalibrated diagnostic.",
+    "readme_zh": "支持可续算的主动学习闭环：批量参考标注 → 训练回调 → 再采样，保存带哈希的数据集和模型版本，并提供可选的 CPU MACE 训练／微调钩子；委员会分歧不视为经过校准的误差。",
+    "new_reference": {
+      "key": "novikov2018_rpmd_active_learning",
+      "authors": [
+        "I. S. Novikov",
+        "Y. V. Suleimanov",
+        "A. V. Shapeev"
+      ],
+      "title": "Automated calculation of thermal rate coefficients using ring polymer molecular dynamics and machine-learning interatomic potentials with active learning",
+      "journal": "Physical Chemistry Chemical Physics",
+      "year": 2018,
+      "volume": 20,
+      "issue": 46,
+      "pages": "29503-29512",
+      "doi": "10.1039/C8CP06037A",
+      "url": "https://pubs.rsc.org/en/content/articlelanding/2018/cp/c8cp06037a"
+    },
+    "mace_reference": "Reuse existing bibliography key mace2022; no duplicate entry was added.",
+    "protected_readme_and_bibliography_files_modified": false
+  },
+  "source_package": {
+    "coverage": "All implementation, tests and example files are included by existing package discovery/MANIFEST.in rules. This JSON is covered by recursive-include examples *.json.",
+    "existing_files_modified": [
+      "src/pyrpmd/potentials/lifecycle.py",
+      "docs/tier2-ml-lifecycle.md"
+    ],
+    "new_files": [
+      "src/pyrpmd/active_learning.py",
+      "src/pyrpmd/active_learning_mace.py",
+      "examples/ml_lifecycle/closed_loop.py",
+      "examples/ml_lifecycle/t14_validation.json",
+      "tests/test_active_learning.py",
+      "tests/test_active_learning_audit.py",
+      "tests/test_active_learning_example.py",
+      "tests/test_active_learning_labeling.py",
+      "tests/test_active_learning_mace.py"
+    ]
+  }
+}
