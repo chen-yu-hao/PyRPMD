@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/package_saved_archive.py",
+    "--root",
+    "/workspace/scratch/a5e4820daedd/PyRPMD",
+    "--data",
+    "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1",
+    "--destination",
+    "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive"
+  ],
+  "packager_sha256": "1c607fb28b7f58d4abeca1fd2b276ab1906aff4fbfaf81d03ce22cd8b0f59fe4",
+  "PES_calls": 0,
+  "RNG_draws": 0
+}

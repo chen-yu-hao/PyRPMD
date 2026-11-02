@@ -1,0 +1,180 @@
+{
+  "adopted_new_campaign": false,
+  "created_utc": "2026-11-01T21:39:51.289702+00:00",
+  "file_count": 33,
+  "files": [
+    {
+      "bytes": 9150,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/README.md",
+      "sha256": "fa8b325f956ad1ca45a879c9d3978abc1b27ea6a8be4e620849705d1b184e0de"
+    },
+    {
+      "bytes": 106689,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/analysis/curves.npz",
+      "sha256": "5b66d8e9e3dc4c964044b390bc743d7d3121fd492777dd37241d52d1b072eedb"
+    },
+    {
+      "bytes": 10600,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/analysis/report.json",
+      "sha256": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370"
+    },
+    {
+      "bytes": 23485,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/archive_and_replay.py",
+      "sha256": "bdd4af495563cc73f3d4b1b1a2d91fef821ae5ba8b006e7690ebcdac46900d69"
+    },
+    {
+      "bytes": 23476,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/attempt-1/archive_and_replay.py",
+      "sha256": "f9a76bf27e61af61fa6ec1f606b26008072efa5cd1796a6ffc16882c624857bb"
+    },
+    {
+      "bytes": 1421,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/attempt-1-failure.json",
+      "sha256": "af09d2b95c4a69307585b3d4e32b592bbaa2d7413b9a3821dc1cb697bd229bfe"
+    },
+    {
+      "bytes": 15572,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/control-registration.json",
+      "sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365"
+    },
+    {
+      "bytes": 2620,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/execution-v2.log",
+      "sha256": "487eed5a60c84fc33d83b79b5d6cf0d88655d5037008c20b6e4ed9d2ad96507b"
+    },
+    {
+      "bytes": 2206,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/execution.log",
+      "sha256": "7235a48b120c225785fe6b231b59c5fc8521b55440924b5d73afe109c6b2af7f"
+    },
+    {
+      "bytes": 450,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/observed-exit-v2.json",
+      "sha256": "0ad13e7da9675a9c865c0f4577c21383f12947b860ad5a17f70c8dc83c824077"
+    },
+    {
+      "bytes": 2093,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/offline-protocol-v2.json",
+      "sha256": "be308f929291d491f0e831e19a0ac25770cf8eec9007883d0a37ba4e93286a2f"
+    },
+    {
+      "bytes": 1762,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/offline-protocol.json",
+      "sha256": "df6b2b840fc70fd297c1490f98d1e996247c4f2cf4c4dd826cdf835bb233d65b"
+    },
+    {
+      "bytes": 1164,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/paired-chain-estimates.csv",
+      "sha256": "84fad18e50ef24a80c2ecc1a300274b43e8c50443cfd4cc5565183edc41e4dd2"
+    },
+    {
+      "bytes": 1381,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/raw-data-index.json",
+      "sha256": "94d4b10a80ce559fb53b889fbf3f1c21d617c01de2e0d6cd67c6a553a9bd9333"
+    },
+    {
+      "bytes": 67853,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/archive-members.json",
+      "sha256": "765c20ee2feda48139328b481a295d567edc0e8d969d6dcc09f367c5bc30ebcf"
+    },
+    {
+      "bytes": 4080,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/independent-checks.json",
+      "sha256": "753debf470b936f06c5f55e75a006a76dddd16f3b9a7dfef3570473622e1d522"
+    },
+    {
+      "bytes": 1637,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/lease-proof.json",
+      "sha256": "c8200b3032c2e6d3ccd60e63dd7a61ee109a0026438a1b9b9c26583adda7a2ad"
+    },
+    {
+      "bytes": 5326,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/read-audit.json",
+      "sha256": "a74062bee7555adf0d32cd74690e9cf3607f7444ba94f22f764c9c7665230724"
+    },
+    {
+      "bytes": 423,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/relocation.json",
+      "sha256": "968d8672d88b88fa1d51027109e73ce195fa8b5d50e642e20370d50e531a60af"
+    },
+    {
+      "bytes": 2620,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/replay/replay-report.json",
+      "sha256": "487eed5a60c84fc33d83b79b5d6cf0d88655d5037008c20b6e4ed9d2ad96507b"
+    },
+    {
+      "bytes": 232,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/RUN_ONCE.json",
+      "sha256": "ac0817ac53fae9a103167c478c088da3a18cb3676d7e0a4918a3c9c70d4a565c"
+    },
+    {
+      "bytes": 792,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/complete-analysis.json",
+      "sha256": "f12ea32dc6555f6f561245a2ecdafce58e42b553fc4133caecf6888f83f161fd"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/complete-analysis.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 10600,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/complete-analysis.stdout.log",
+      "sha256": "678504ed0020e1e9f6005994ab1171e8ab3476ff8e55f53b0aec00e6fcf2c0e5"
+    },
+    {
+      "bytes": 3573,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/completion.json",
+      "sha256": "172f7a312bd0a0d25a17e8403bbfeb72c16f9ae9984b25cdbed142d0b7e9e86b"
+    },
+    {
+      "bytes": 1243,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/registration.json",
+      "sha256": "01a4cd6fe3f393d6e599cb520998ee989b07ccc43f3dacf7a71e3cda4adea581"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/registration.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 91,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/registration.stdout.log",
+      "sha256": "fa4c6abc18dffddcfe132b9e795eddfb4f0b86ba0541f9413242f83c599cb5fb"
+    },
+    {
+      "bytes": 523,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/root-exec-observation.json",
+      "sha256": "ecf9be6d574c79159fc3a0af4c5b450e5f864c49244312ffdc287a43bcc44978"
+    },
+    {
+      "bytes": 705,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/run-1.json",
+      "sha256": "a20ea9fd4b42ba9b2d6c4d84473e3092e5c4ea1731f425694145eb9d6a484ed8"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/run-1.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 89,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/root-execution/run-1.stdout.log",
+      "sha256": "9521218d2fa44963d54f5cc9fd8f1fc1926f789b87afdc9ce7dc4bbcf32c463e"
+    },
+    {
+      "bytes": 2742,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/source-identities.json",
+      "sha256": "8a964772c7c2391794b5b4af26b918edaf4a9febd566ab762d68d304439535e4"
+    }
+  ],
+  "integration_tree_modified": false,
+  "new_method_tests_run": 0,
+  "new_physical_steps": 0,
+  "raw_trajectory_chunks_included": false,
+  "schema": "pyrpmd.water-completed-paired-timestep-publication-inventory.v1",
+  "scope": "Complete fixed16-branch control, failed diffusion equivalence, normal exit and read-only data archive/extraction replay. Includes initial interpreter-launch failure without altering history.",
+  "source_edits_to_frozen_methods": false,
+  "total_bytes": 304598
+}

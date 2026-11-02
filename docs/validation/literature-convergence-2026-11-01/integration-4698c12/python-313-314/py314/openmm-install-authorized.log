@@ -1,0 +1,6 @@
+Collecting openmm==8.6.1 (from -r docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/openmm-requirements.txt (line 1))
+  Downloading openmm-8.6.1-cp314-cp314-manylinux_2_34_x86_64.whl (14.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.4/14.4 MB 63.9 MB/s  0:00:00
+Installing collected packages: openmm
+Successfully installed openmm-8.6.1
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.

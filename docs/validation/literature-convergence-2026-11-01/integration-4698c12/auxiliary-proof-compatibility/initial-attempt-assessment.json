@@ -1,0 +1,50 @@
+{
+  "actual_junit_counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 1,
+    "tests": 42
+  },
+  "assessed_utc": "2026-11-01T20:33:33.072004+00:00",
+  "complete_compatibility_gate_passed": false,
+  "driver_failure": "The session-finish audit assumed a sys.modules test-module key that pytest did not use.",
+  "later_interpreters_started": false,
+  "next_attempt_policy": "Use collected item.module/path to identify the actually imported archive auditor; run the short synthetic gate on CPU 6. Retain this complete first attempt.",
+  "passed_case_count": 41,
+  "physical_evaluations": 0,
+  "schema": "pyrpmd.initial-auxiliary-audit-failure.v1",
+  "skip_reason": "The resource-cap fixture requires CPU 6 in current affinity; this first wrapper was pinned to CPU 8.",
+  "skipped": [
+    {
+      "case": {
+        "classname": "tests.test_h3_p256_native_calibration",
+        "name": "test_resource_caps_installed_in_isolated_process_before_scientific_imports",
+        "time": "0.000"
+      },
+      "detail": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_h3_p256_native_calibration.py:79: fixed adopted CPU6 is unavailable on this machine",
+      "reason": {
+        "message": "fixed adopted CPU6 is unavailable on this machine",
+        "type": "pytest.skip"
+      }
+    }
+  ],
+  "unchanged_sources": {
+    "all_unchanged": true,
+    "external_files": {
+      "changed": [],
+      "files_checked": 15
+    },
+    "integrated": {
+      "changed": [],
+      "files_checked": 1061
+    },
+    "original": {
+      "changed": [],
+      "files_checked": 825
+    },
+    "owned_ABI_links": {
+      "changed": [],
+      "files_checked": 6
+    }
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "branches": [
+    {
+      "checkpoint_fs": 1000.0,
+      "dt_fs": 0.25,
+      "duration_fs": 4000.0,
+      "label": "dt025",
+      "record_fs": 5.0
+    },
+    {
+      "checkpoint_fs": 1000.0,
+      "dt_fs": 0.125,
+      "duration_fs": 4000.0,
+      "label": "dt0125",
+      "record_fs": 5.0
+    }
+  ],
+  "commands": {
+    "analyze_after_every_pair_complete": [
+      "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+      "analyze",
+      "--registration",
+      "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+      "--output",
+      "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/analysis"
+    ],
+    "bounded_run_after_registration": [
+      "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+      "run",
+      "--registration",
+      "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+      "--wall-seconds",
+      "1800"
+    ],
+    "register_after_adoption": [
+      "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+      "register",
+      "--original-root",
+      "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+      "--output",
+      "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01",
+      "--protocol",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+      "--assessment",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+      "--exit-proof",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json"
+    ]
+  },
+  "continuation_and_failure": "Complete the same fixed16 branches through normal bounded resumptions. Any failure latch stops admissions and retains data; no new seed, state, interval, tolerance or physical duration is chosen from D. No extension beyond the declared control budget without separate review.",
+  "created_utc": "2026-11-01T20:53:19.622977+00:00",
+  "decision": "pending_root_review_not_adopted",
+  "exclusion": "Runner holds all11 original leases plus its own control lease; preparation continuation cannot overlap.",
+  "fixed_decision_rule": "For each endpoint, fine minus coarse gives eight paired chain differences; the complete95% Student-t CI(df7) must lie inside[-0.01,+0.01]angstrom^2/ps, with all16 fixed energy checks passing. A numerical pass cannot repair preparation failure or certify physical diffusion.",
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "frozen_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "initial_momenta": "Restore each exact100ps checkpoint RNG and draw COM-projected Maxwell once; both timesteps share that saved canonical state, no additional draw on restart.",
+  "live_output_directory_created": false,
+  "original_U_gate_failed_seeds": [
+    1102,
+    1105,
+    1106
+  ],
+  "original_complete_assessment": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+    "sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8"
+  },
+  "original_normal_exit": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json",
+    "sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744"
+  },
+  "physical_map_steps_executed_by_preparation_of_this_draft": 0,
+  "preparation_failures_retained": {
+    "MSD_VACF_compatibility": true,
+    "MSD_window_compatibility": false,
+    "VACF_cutoff_compatibility": true,
+    "energy_envelope": true,
+    "energy_linear_drift": true,
+    "fixed_stage_complete": true,
+    "paired_equivalence": false,
+    "precision": true,
+    "sampling_mean_HOH_degrees": true,
+    "sampling_mean_OH_angstrom": true,
+    "sampling_potential_per_molecule_hartree": false,
+    "sampling_temperature_momenta_K": true
+  },
+  "protocol": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+    "sha256": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747"
+  },
+  "raw_archive": {
+    "all_members_stream_verified_against_SHA256": true,
+    "bytes": 1476697324,
+    "members": 1685,
+    "name": "pyrpmd-water-classical-eight-chain-2026-11-01-raw.tar.gz",
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-water-classical-eight-chain-2026-11-01-raw.tar.gz",
+    "raw_data_only": true,
+    "sha256": "b3dc0faf5ddb84d06182ebf788edc73dfa1a0ec674069f01e61eaa62918d21af",
+    "top_level_directory": "pyrpmd-water-classical-eight-chain-2026-11-01",
+    "uploaded": false
+  },
+  "raw_archive_index": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/raw-data-index.json",
+    "sha256": "355e72b3fb035940693c685ef6d12dda01a7557851c5415be4fc5243fb176472"
+  },
+  "registration_executed": false,
+  "resources_proposed": {
+    "CPU_equivalents_max": 1,
+    "CPU_forecast_seconds_from_preregistered_timing": 1959.6035820895522,
+    "actual_CPU_affinity": "Root assigns at admission; no new process has been launched.",
+    "bounded_invocation_wall_seconds": 1800,
+    "integration_workers": 1,
+    "maximum_proposed_invocations": 4,
+    "threads": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OPENMM_CPU_THREADS": "1"
+    },
+    "wall_bound_semantics": "The frozen runner checks budget at committed1ps boundaries; checkpoint/finalization overhead can exceed the requested wall budget slightly. No OS kill is introduced."
+  },
+  "root_resource_decision_pending": true,
+  "sampling": "Both branches retain801 frames at0,0.005,...,4ps; every seed and all16 branches are required.",
+  "schema": "pyrpmd.water-paired-timestep-adoption-proposal.v1",
+  "scope": "The already preregistered numerical timestep control only; no preparation extension, sample replacement, reference-value selection or quantum campaign.",
+  "selected_inputs": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption-draft/selected-inputs.json",
+    "sha256": "7218d5d0bf79b71210c29a729d7ea2a05cca4fc410da14969c13ca772511f56a"
+  },
+  "total_NVE_ps": 64,
+  "total_physical_steps": 384000
+}

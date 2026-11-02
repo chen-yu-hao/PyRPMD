@@ -1,0 +1,3275 @@
+{
+  "category_counts": {
+    "analysis_reference": 4,
+    "archive_prerequisite_metadata": 1,
+    "archive_scope_and_replay_instructions": 1,
+    "base_analysis_log": 1,
+    "base_child_raw_NPZ": 400,
+    "base_protocol_and_schedule": 3,
+    "base_seed_settings_reports_curves": 48,
+    "completed_base_analysis_and_continuation_metadata": 5,
+    "independent_review_input_identities": 1,
+    "partial_truncated_base_terminal_receipt": 1
+  },
+  "files": [
+    {
+      "bytes": 6946,
+      "category": "archive_scope_and_replay_instructions",
+      "member": "ARCHIVE-SCOPE.md",
+      "sha256": "bbffdbc6c7093d55034249dc73e92982c0397e0dcd9d3ff8968f5533d9634246",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/archive-scope.md"
+    },
+    {
+      "bytes": 676,
+      "category": "base_analysis_log",
+      "member": "recrossing-analysis-200.log",
+      "sha256": "e80edfcac986aa885f35bc7d9858ef472f8076957fec0eb2256810aa7dc7004d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200.log"
+    },
+    {
+      "bytes": 1422,
+      "category": "completed_base_analysis_and_continuation_metadata",
+      "member": "recrossing-analysis-200/execution.json",
+      "sha256": "404decdcf5bdb387cc83b9b91f4bb5e01060afcbec41dc3e4391ba6d1c1fdfd3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/execution.json"
+    },
+    {
+      "bytes": 20063,
+      "category": "completed_base_analysis_and_continuation_metadata",
+      "member": "recrossing-analysis-200/kappa-curve.csv",
+      "sha256": "51ddeb1abea2e511979e1b83b9706380044ce4cd29d40361700703801f48ab2a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/kappa-curve.csv"
+    },
+    {
+      "bytes": 2583,
+      "category": "completed_base_analysis_and_continuation_metadata",
+      "member": "recrossing-analysis-200/precision-extension-decision.json",
+      "sha256": "dcbeaaa2338e2eb9f1d45f6c7ff2275cabbe9c3cbe9302c5f6529d4a2c5939b2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/precision-extension-decision.json"
+    },
+    {
+      "bytes": 2246,
+      "category": "completed_base_analysis_and_continuation_metadata",
+      "member": "recrossing-analysis-200/precision-extension-launch-receipt.json",
+      "sha256": "50464b3404ce920584d93784a7888237ee17ce4d60a0c52f89ba7b6fb8755c48",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/precision-extension-launch-receipt.json"
+    },
+    {
+      "bytes": 200594,
+      "category": "completed_base_analysis_and_continuation_metadata",
+      "member": "recrossing-analysis-200/quantum-rate-comparison.json",
+      "sha256": "a8ed2999ab575e4c60141a416909cc1bd46e206601265933c431e3a0f31ae084",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200/quantum-rate-comparison.json"
+    },
+    {
+      "bytes": 26805,
+      "category": "partial_truncated_base_terminal_receipt",
+      "member": "recrossing-base-final-tool-output.json",
+      "sha256": "24ec000d0e6999f650be767af558e69243ea1c21bb6883a40e280ba1a9132927",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-base-final-tool-output.json"
+    },
+    {
+      "bytes": 6691,
+      "category": "base_protocol_and_schedule",
+      "member": "recrossing-primary/protocol.json",
+      "sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/protocol.json"
+    },
+    {
+      "bytes": 1541,
+      "category": "base_protocol_and_schedule",
+      "member": "recrossing-primary/schedule-200-pairs-0-completed.json",
+      "sha256": "f67f95b810c38db2f5aeef2e78e3faae3922d20aa017afabe64b421747c38d5b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/schedule-200-pairs-0-completed.json"
+    },
+    {
+      "bytes": 542,
+      "category": "base_protocol_and_schedule",
+      "member": "recrossing-primary/schedule-200-pairs-0.json",
+      "sha256": "c56a62c09569dec72cd688d1f407fab323a6e16c1464eda43872c53673db1e89",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/schedule-200-pairs-0.json"
+    },
+    {
+      "bytes": 812332,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "ffe7bfc7a37647f921e1f05e45c7ef7726bea622aae195a468a4f3b076384419",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812611,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "6939762ee1e65619364df02f5383521493d02f275e6e893a66b03cb4d1511a80",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812878,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "0a9cd29d74ba5ecec72565d6560d52a7812f06a86b109252b78b05e1e2502a91",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812606,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "b9010cbaa849a9b7577142a0f895fb6329b9aa6b0da9a8a45d599baa922f16a4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812503,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "0039d15970a26f4f4a355dbad4c56232525bbaf41a62b03a63dd426d40835b23",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 813105,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "6b561301e9a154985ca04b6bb378cf5dee8399fc6a940258709ed2f6206698e0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812574,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "cfbdc632bb2485249fd6c01c7e2ab544df4b60afc614e7ca1ddf5bd4bb63a1eb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812915,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "0553d05303b8e6038ad23f2e1469414a36cea4176434ef464e49a1290050ed27",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812364,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "f7a43c0b990da1d59459aa2f6bced7ba37b9652751dbce9e2707f2bc8532bf19",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812413,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "169c8628dcb61a1161b8269b479c150c5f9d317b6e298e7ea716dafcb0942a92",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 811827,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "1a08fed986d8fefb410891f219318ecee640cb3c9ca63dc9777dd12b9b60fbdb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812759,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "d5886401ccb9aa0e0f22bae03a04f58164e3b8b8dfbd2147d928023f5443001c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812989,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "7b8125d9a7475b61c1ef88ee2b2718dd862d275577a7cc179e6a0d538d30ddd5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 813036,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "b11d02a299be88c6d9f6ad9e0763cbad20e42e9e246bf15e89b9674f4326ce31",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812543,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "7c2226deb0d8d69822276071833355e96641580a86231769523acc76258fcbfd",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812666,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "793454bbdb6b10a96ef317ebd670afcd789537bbc6a8a93e37bb5697c3b929af",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812599,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "5f98da8d5e6202f8a0e7f25827dab619bc89a82c6f0b11ddc2f8c135534a4e87",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812619,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "d1e65ff50a0eb1a559b5cb8a0af66cbe643fddad6a8560be885cc8b12de5f2f3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812086,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "85b2a264a86d647c9376be7d3e79693028e136d643f02dc98d59ed48dd630b5f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812638,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "7e41a500cea8d2d4a6d7c64f95897c4083a973e6faa7987afc07c2a0d301406c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812730,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "221c6a404f5732a77c195768f3cdff6892370395a69c2e43b1e76f7a00c0d957",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812893,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "316d488a603660708291cba31398ad47a545ad720daa42537023897ede5d7bd7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 811822,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "814cd6a3687fd87dca52557663b2df7cd32fdff9f4eed78c98037a1f31247b45",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812755,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "5a94c5da6ae14a1f6aec2174434f7823f0dede18969949ab8bb5de40837dddc6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812150,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "e1b7fbcb071aaf5a266d0726a4a04545663ca584191c18a82b98cf586e34c788",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "8fa350ef2ba2ea9d89d8d03cac26adf7e8ecdcc6248458a72fd9b7c81c96c0fe",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4896,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/report.json",
+      "sha256": "0ecaaeb10c5498aecb7776e1dbd9a2c2812ee760cd229185a178b5fe3fd71a31",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1815,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721301/dt-0.05/horizon-200/settings.json",
+      "sha256": "03382be4759a32b5e57ae72e63444408dd4a632d659d78514d6172cc245177ae",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812350,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "43f3779c58d83bda2232b9efa053bdb29cc238ba7e7dc480a881be7455dde9e7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812696,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "a23a9acf53d8d5c2382e8de066a0ec2ca2a93ba2f085a1bab8e4348ce9826012",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812672,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "8a298c1f6aefa2ed3d4c26513772bb1cba585214666796c039e83f667a952b12",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812490,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "48bd8c39d18e15084956db2d3e1cb5f44b900dc8827e118eb4dfcdf6a26b7cf2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812390,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "583b1b8824fe238141274d7115521fda535b6bd95a3a2ff0c02d1fb54d5bd018",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 813044,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "e5bb5b0c44db09be77aa3814a46f2b19d4bcdaf49b3503d868cbf9a63ab95618",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812582,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "22ef25a8d75630f40ab0d10ffb86968415ef3481e88ae1068716704fa1c95e6e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812881,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "2e04964b3b0615038c560035a86260e40070587d8bbd205ae604eaad817365af",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812356,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "ff765ce90c09d0e6f7acccb61be6351f9fb382b3798db29966dc6d76d3a152fc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812624,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "240d833f003c282a6b7b1960b3a37631d1580930d3e4fd5b408b2a5121d19fe5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 811810,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "5019f719d76848dfa784af851c0dd5f3a374f90aa9f9e6780f6cfe518217da97",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812700,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "e96913aa5cfb76845881cc8959ff958f3c183f570443b09f1df14a4691216991",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812860,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "6f489a721e85eb539b82bb0b9f9b5e19304103bc896c823a35f92ef0d4630a96",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812882,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "4da6002ce39bdfd822c6977db11783040403a18ab898c4580511933c6d439d00",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812520,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "e0fcb18c6eb0402afc22ba82c5a0245fa4e5eb9f43b4b9c847567f8399fa8ff7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812660,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "7edad148194fc79937a87a6597eda92a9f551338f3ab823103f736f74e5f6260",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812601,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "e0f02dced1e7e047351fa274e07ec1a151deca362277f7598701af86e34b4734",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812782,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "a14fe7d6f6fbf418b5611e5018a531ef78ba9c071c65094ba2bab05fcd56d3f0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812195,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "07b090b03712b2c577217ff8b17beae44dc190a4fd64b6d0b752d83c773902fc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812650,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "dbbe5a7f3aa19127dd04946a04defe19f34aa94978eece6a1da62a0eaf1d18b6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812651,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "72782695db945f4eca4cd20ed6e0d67c5a59f2b2527c3475fcbbd2af0e865e7a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 813024,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "9f428a94feacd68e799eccf48a6f94cf58d1a208d4333ed4d43e49903be3c203",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 811757,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "04c7bfb89f06cac12fa58b13e1ac013deadeefcb538e74a1d6105c42069d7b29",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812630,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "3f990b41cc8b93f65d4bfe7950be2ddede844133d0a21ad9f960ce797b835b5c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812215,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "d92a4bab3e1714329079843b6b55f6d9e7afcaa6f707541e5ea6fefe1a3c2927",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "f5635b0ad9d362de4b86adf7c161dc0f0d84bd3e2fb42cb74b3f046b262ecb18",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4890,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/report.json",
+      "sha256": "e05fac8acb087610e9964446fc60aa540f2f5b2eebca4c8e3eaa65bb4ba2d1b3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1814,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721301/dt-0.1/horizon-200/settings.json",
+      "sha256": "c935c5e1fda27c8f83afb25f0a0f22689805231d1e7f18a25d05cbed3a6ecd4b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721301/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812722,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "1926d853df196dc81e69521bfd96c45a7af7206cbe8538921e126e63b1146a0c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812407,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "610beffcbd6f9b51510882e4d8b03470cf67b2b7dbead6e4702d799379dc496a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812868,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "eae8f2cfc4b70c8f7a0c00d1ccebb24ffa246591f15c0a0bea8ad32d0d1e69ba",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812923,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "f90872c007102ddf39ee9553f1e9590bc4fee8a54872dfb30159991ee6add765",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812908,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "2c2ee6db39db3e341304ae5a3dfec8f60f62ef69c7aa8066cdfb3a78a5879a5f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812924,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "a2e28e22223042c99d0c36f9d307af4a6a8e6ba7b2a263454c538711c1547a06",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 811850,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "bcb345dd52629752cc5f2813038905416b6cb7046d088833c8f4b947e69dbff2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 813163,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "eb7b69797695326ec8a12cf5908747c74aac83290383da19bf030a53f3f0eba6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812820,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "e9e5c6457f9bb43169162044d2117e8ded819f1eb2f71e833586ff5bea0adba9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812389,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "c3feec2f677dfbe8deb23e79593484c76421658ef79de849602ebaa287d074af",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812590,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "a0e0fb41d819032b02f2133d5463bff39f49884bf5672483eb33208d72b72604",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812403,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "b811cd08d015631daf714adf6abf7c935e6938c38294a2bc3315c8cfec88a06e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812063,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "d435d2fcdf1e44889a7220598c13fdd686e1656fbffff01ff4e5e38efe404df9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812708,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "753fb19c8f571049001e0fe5e70c0493a5f73411ea525b3899fc6db6b31be1a2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812706,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "8af9a5dc8a4fad9ee848b2ff5a82171042c90df117fd544fe2bce71d6eb93002",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 813013,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "a50023a7a8fca3d433ac394a531edc59c2c39fc916e6b99cf9e5f196b68a1feb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812198,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "f52ecf38ecece029cb2a9c1288d5e7f848ef243d1d6a66cc33cbad079c6b4740",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812493,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "0754f35f26edcf0e496efbada9e0708246daa2d5f96371dc0fb8f0b3f1793e2a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812705,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "421ae09ce9914cbe4d30dd35be691f344343c4511c896b260dc2e0ce4737f518",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812110,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "08cdcf7343b90ecd639071d86b268a6bc931ff1e08cb52caf8b98cb18d45de65",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812827,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "d4c6fc23db72a33fda0a228d03ad116cbf039729b837156e696815bdcc740379",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812179,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "2b1fdf29b4e3fd056c53928ed3b70e285785c65f98d808429cf2320abbfa5867",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812352,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "6a2e3740f1d1976a29d0c9116d18ebce01b91650b67388b716bea23a247d4236",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812256,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "45abbdc4f2fbf5f91727e91804c4919fc59259aab272c399d3a48984a1b7d73f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812087,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "e393f7b7e3cd462718ac129b753932bdc0af661a0047975423ddae4bf0619baf",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "1dced88c469f1a6c7ccce38ceabcbc5d5c284af7862315232e3dcd7c3435fc76",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4898,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/report.json",
+      "sha256": "6a484d7e22e6f8ef374ec96b77e164f73ece9b0d4d2669169d65d6a79d23c2f8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1818,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721303/dt-0.05/horizon-200/settings.json",
+      "sha256": "5ade75465bb7b037cb7c1f62f0375e7390523e838855408481fb51c53777368d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812738,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "00ce541837f13759a66b5c8ac1ed5f485bfe12371c29676eee47fdfe509b926f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812566,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "c102f7f16fd61935334db5b32f17182130d0ba6f4f591f87e850859b8d14e5a7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812831,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "03f47cf930db0aaaed83b6be8bc3db33d899165ebe0d77f00c663574a0657eb1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812961,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "018aaad69dec7c48fb957fc6072302ab2aa4879a0e0a5eef744333e6ef31a8a7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812974,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "4cf517180625be50d092852eb89796ac33ad26648f4233ed9e54c0885fcacd30",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 813021,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "f1e447f6652e5fff053f1ec60c768d6c275eeba2a18b1e8f39849d748dc797ba",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 811897,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "8f0c854f3d7f03be7417ce69598a59842da77b0e7899c6ff138fd2e2d4ed55bf",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 813151,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "46c3b6164f073fedcca2fe253f36d50cd4b810582ddd07abe79c5dfeaac2f18c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812678,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "0e438b05b953e2a8c7b24ab80f6ce821c921dccb0f773edeb4a6f5182a555414",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812322,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "464971f07af7cdf5854c1722f8b0db006eafc07041247fa46d1b46593ff5397b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812541,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "4d5fe409ca2a10a6e6dd56b35a2c61a008ee36b24267f208a8617031f982e52c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812472,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "1a1d45811b13cd0e92c67ec89f9ab57ac8f7449958d97b8a69df0963661159c1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812092,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "228bc9767a1ff2332ea88fe66531e09cc2db607c90e7aeee0c84503a1f336aec",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812835,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "eee6e248dbe243206769ff2e1efd541c71be5f06e6a0353b535c539017978fef",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812782,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "1dfae827144bb93c7a76635b793529b798f71104857072fed7f3588e40a94ea1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 813043,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "7928a28bca39a2a9013c59bf18f1308c10be00f94b1d974e551c9495277c5123",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812350,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "bfd88cb591a4f7b608da999abd052883e361a397545b3354b65626e4b26b0b0b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812778,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "62056a79ec7e2defa1592728145d4f072665ad629840d90719b786729da0baed",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812699,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "baa027ba4339b8aba5d0a721511d3fd30a2b60c3a16d97c62072e3ce692daf8a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812075,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "54993b50d3cb295465fdc119388f553193c8584eb97aee2bab6028d5334aee88",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812902,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "c2b754ae1ff030384410e07e0d5b44c6c6478d360f4fc29f2e52bd41563ddcc8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812028,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "ff292a27bd7b2ecf235907cad0bdf773a616e33d0a6f1b6507b460803a71c84f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812181,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "f9d51643765b12525181974e6fddcad054d70e13949e26ad3c7cb1c8fd1b8196",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812241,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "308582925f44a0e7ec5fb2c240971ce514f7f265a57cd862c96a7fa3d0e2421f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812165,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "dd08323d21fc5b022742eccb1ba858fc993b62251f7cca211423a0071d64cf65",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "8d68b02407dc6551b672c421dd1422cd5ce2bad900906b798658034c9f126c80",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4897,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/report.json",
+      "sha256": "cd98552706a22a36ec2a6e87453ae4e33077938e7c058fb85803dae29e7e4ffd",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1817,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721303/dt-0.1/horizon-200/settings.json",
+      "sha256": "a6f348c2dcacb0a32eea9b418bf1e3a058d49dc34a054201f16847c512390d18",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721303/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812150,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "e166f15693058c0ba01973296e9b79aa6eb8293522261e162a690a99116a3674",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812287,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "b5db82afdc6b9ef084542d8d0838ef88378bf56bca42be560e9337d174d07ee5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 813302,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "574b3378e260f40b253c9288200e59ba9777b42018d435b5fcfea676a7e7d6cc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812954,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "107523fdbf764a1c285e4c3f7354f83e9ec1213e9325b2e31a0420d246e1125c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812554,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "228bda50ce777e266df01a1ce418357ae056eefa5b5cdfd1aa8ea0db9313d07d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812576,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "7b1c7c129468fb90863b567bf6ee6c333cc14be67469823a321870cc15496bdc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812659,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "2f52ed07f3ea7f84f01f1436b1b37e23e5ec92db49dfae684acdfa3a29af7667",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812696,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "572c150c84f570d6944d5b8948e494a602df6665c78325be4eba8184141c3896",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812403,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "3622dc487c8662e61132b3951ae6cf2de5daa929b23ad105d66f56c89331d209",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 811984,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "d131e837bef0508becca725dc522d1e019a51794d4478393bbd9615ce6a2e1be",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812876,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "fbd5275c6d00a3828354351d404802a759943d3cb4ff52c5fc01f0103798064e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812873,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "ef5bfaaf380d99236d2d3a88f3f22827988aa5bb01a602e85b593be3dc4300eb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 813120,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "57930055406c6874787c0e1d03fbc96ae57d4df68efe54373220c5160e11b972",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812717,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "64c12b18a6d5fac896fb5a5e54ce1d078acc7a9879335656a89417e11577ad1e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812700,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "4188997ef0df3432f3fcbd2f547585feccc5d83f8b21f327b47623ea5e283d79",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812345,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "7ffc9ee0a7bce5cd8f2a01f0f9327a287e857576ef0d17eebad8b6743ed89722",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812374,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "3f1218457cfcfe752c62793ded6d5b3164f2996e79bdc64f720ef3f4ea72c979",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812735,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "aa7ca0abf62d1c2b495fb074446aeb7a28ba7fda3240ad4cc0857ca40ac03467",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812452,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "c8702141c7c6ff7b94e25a5f08472e579fda8b564b6f1c750783c905ccccc1dd",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812756,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "96f923e758439e6a6d12782e6d034e87da48e6444afaf7d45e21f1748de91d31",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 813165,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "bdb19fe7995d77e07177a52e97686db440fbf0011a1801f78ebd77e8c3872ed6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812156,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "95c3f08c4b4930d34d6ea587d72bb28271cf83474d2a9e88fffdde8f83e3edb2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 811965,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "530113d7cdd543efad1996849e0d40102a985250f964b69871da2d290af55fb4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812304,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "0a3019d82eb3113fb5fca0151ed5e079a3c6936409603db6de8724e97a2690ce",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812616,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "4e02f74d9b0728f8e4d9823f4276a623327b751f89e20a14ea193a23bfbdaeb2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "584525f8b0921377ae6dc14b91ce3664c45765da4b83bdfdb011dde272c84aab",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4895,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/report.json",
+      "sha256": "2dfbe7505be07650188d6ea02d4011a2db9673c554b9cdb214df94a3b2f28cea",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1817,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721307/dt-0.05/horizon-200/settings.json",
+      "sha256": "8d450a8922a0494db0d3b74f79cb5127407379d9ce239b1fcb934a7f6f91e7bb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812187,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "267f80c0f61abfd5bda1211d9a64d3ee2e4648f4cd0de5d11dd155ef3142cefc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812249,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "92f79fccbf07b5757fb72579c16138bcc610a38504425f02a2b17e56c9d6c314",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 813313,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "ae9a48bc885861bc0b950011f21271b33579da9431ddbce58b1e974ecd6f4b3d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 813049,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "70c63bda9426e49e161941ba81690b1eb22bc9f1b558d5828d6207fd19012417",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812579,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "f960893dabfa6d6a2099dd6bcacb549e4068d1370e0e4650a05495bd59c52f45",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812578,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "5e43b3df87b99d49192b64f5e764cd8a83d85d86d0d3d29ee731166a329f6cf8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812672,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "d1f3d351aef05f67fdfff26cf4613113d490038286daf13d163c6a49274a4e0c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812592,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "2548a9022204420d832428dd2bf040ed68cf70692d2b1d4c34b1d3b161528880",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812372,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "08a8ae74d60ee71cdde9655405409b778193a5d35ac87d4d11167d22ab1922c6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 811966,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "0ad3fd1e8080ab0b63b9dccf8b65a6c5912f3f19624654624a7ab51cc9307908",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812800,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "b4278ef9e93ad5d1af9e5f9256bd3c2da6027cf5f8eea7c068d678bf75209720",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812906,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "a38cf91104380e3116ae0f5efb32c66143bbc6449ff62738205b00f1f6735ef5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 813021,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "ec654f6fccec38475f31fc38d966007c3bba9dd907305ddc185ed7ae7a6fe773",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812696,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "b80e2f5459e8be562acdbee6f456e0af53e60c2ef9e02066e353b63a82e89971",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812902,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "f2b160aa64218cde68aa1ee39823859ff61cad7482af86cab0cab383106ae5d6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812543,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "29c73769b94e7dea448fe3f36e6fc06ab3323ccdfbb0c57c58824abc3b23884f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812424,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "310b4fed91e60fb76f6af9e43ee7193162f87c90b01ee62b98a495f3e47c09c4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812831,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "eb7d1c4446dcb3babdc917255de2902af0c5d92e6fc17e25955b30448f3fefb8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812462,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "dc6e8d911383c3b81e20c1b1bd6ab46e1a52568211f25f97d5612508aafeab4b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812525,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "cc114da4fc8d31d0ee20d170b82a951c6c80f71cb38476201a2fde12fd6b89fb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812975,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "ff342cbaa2a16aa8a76b6a443e37d5638f3f476c7416375c882e92592a63cd1e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812012,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "fec31efd372da2f355653f25a7322da0b32532759bdd60cba19141884f436b7b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 811913,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "3ec19acb54b0b79ac0fc1b1a4fbfff40c36e1b68e937172c278fc921b768380f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812169,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "d6e0c21c70bc3db3f0a67063ca286452646959617095f4a7de971a81af3de4f1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812490,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "8ae711672df3ba19d1a68e06d990ef77fefb3c83688ec406ac27e7f7581e200e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "7b1460dd4cb7b00a835445e72aeed83c2237002a8e43e077db9b01b97bd43be1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4893,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/report.json",
+      "sha256": "44f24689a0487f64771e150c61b7d10179972da509b422178ed22742d09c21a7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1816,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721307/dt-0.1/horizon-200/settings.json",
+      "sha256": "608c11a9ef42891e80bf9a79123438d6d7b3568b42f381099fedbf06030677ec",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721307/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812592,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "b0ae6ceefdef081fed392f4d1d826997d3713eff2a490f1df40627a681ef10cc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812903,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "6805f8d32a56a9bb369044df1330065c2dfb43001bd1b7021d640fa417aba6ed",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812899,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "3dd1ec54185e5dae4c1243b382ad5d1608a5b8c013028318729519e5d04314f0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812467,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "b8fe00b0c812179ee5ee965aaaf3378dae2f7e061f43dc1d49064f8ad51051e5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812382,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "f16095da6c0e43a89e79bc475e0befba732dbea0b75db158297ec7cd98bf0260",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812254,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "062a933a3f42ceaaa70fa3108dade0161e3d357393dd57265abd4ba1df3a5d35",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812947,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "14c64a5f0a5c3989f37558f90756160c804a08aad6628515846e2ccb4222ee1f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812205,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "2b50812e4d18b8f36aa764e926871ee09b7f3011f4c37088229bb543b9d5c419",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812628,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "94967ca74e0509492340cd38667de0fca5262ebc17d5f5c9a180795043b83c5d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 811970,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "6e0fcedcc6476dee4a6122358f3bb41a623ad9d1d572513977fff97850e8270e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812065,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "5f504537377f713c0a0eb8daba825969f91227fecaed1eb3ce34199ae6d7e3ca",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 811931,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "172ff96b0cd3900135347c9faa73a7c4043599685da3e73698e1561bdcf432a9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812407,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "e64d46755fc2fca7720cbf1fda6902818ff8f801f1f67a41c11b72b434a8f2d9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812574,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "8451151fd630be21126365f7a428db2184b2566c04a340c20b92bd186ecb8192",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 813011,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "9b1af66dd77f8a7218bbcc75e87356deeff04c297299e06af1c4e2aa1c832c59",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812600,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "fa5adc2694be0cfbbe70a84a7464a209f2e3588a86199606def41295aa24bedd",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812960,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "0f17c3727fd0e04408242cafaf74613119d1accd52bbcae7015be3614dff3b76",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812113,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "bf1f3953d3c73f02f303ac440bfe025db6d99e0b2977331cb954af2bedc66ab6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812758,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "4eef23f77655507f8402a58e78d8be8986b107da716a20acd3cd6102c86b8dad",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812780,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "547370948c58feb923dd92c86973dcdbe3d59c8a3f3b9207ff846535495623ce",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812902,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "7239416588f9d49c66fd601532ce488d6b6745d3725dadeeb0042b527be2f117",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 811961,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "9df8b395c3a3080fcbd76a666e93a8fbf6c0aa98459e3455bab853a63647b345",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812688,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "e43631093d58c9e133014cc6086792d5e735f58851f927dbc169e24ce64217e7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 813128,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "6258109c978690fd598c9425277ac85bf82b1e4a102517761b43e7550d08d609",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812302,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "57815633ffc3bf2e790c55657ae0c88e164bf4e4ce03b27c68989a30d7c630a4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "3b689da29159c97f6a1f68918e5b99dc9f34874e93b6a844aa64b1e40bbb8f6d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4901,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/report.json",
+      "sha256": "76828c1a881cf690f666de00b9b1b776d15f9ae1faa9696ef6ac888e8174af4e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1817,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721309/dt-0.05/horizon-200/settings.json",
+      "sha256": "a452c6692d75d3bbf73eaaa229fd43597782a2e04c21a82318c1c8f41f1b47f6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812638,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "8dd0559002128b0f40d4a8b7c409d092ed2f7efe6b17b9f94588e040c892443f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812807,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "b4ef5fec4a8d836470645447b836751e9e6457bb85b7f094df81619b97e2872a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 813107,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "b99b9b5c95fb4112c128a784f773ea81e9a7ee8c8130b3f7ece47ade14334121",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812399,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "0b391ecca24529007bd5a339647a271231d02ec0f784cb4a33f8c9bb050aa64f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812475,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "dd5b6f4eaab2f22e569cfe30947ad5a626d583124ddeafcadd74889ac7ac5a29",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812369,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "af67060b2786b7fcff4652936cc970d389dbde840b9c27a6b1f5b7de97a8cd20",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812912,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "399e0e7aa68a61a2d7b7ac795bd49cc561a933bdf4cd346b08d656400a4437d8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812232,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "319f2d8bb9a5869dda09cd58c62f8e084bf9f2350230e533cc9e6dd3deffb771",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812794,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "18a24e24ea61b233a8bc621fb9f77d0ee375cdf20a43afc109e7f070a16a71e9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 811966,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "8718e149b2c6419b3a29b400e72a14bae2ccfb1f12370945ba2f56513b71b05d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812048,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "f1b553fd364677d3ddf1396c2cdaf1c77e95853da468fe6ca9cf39fba49d52c5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 811895,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "27ed5d19c622ded65f3d5e7316088bad5c2cb88d6c14dc8d3cfd1ff298851e8a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812406,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "c3514c03e0980fa4ba6abd939e2d8d0bfc0941515b00dfc0fb93d55ba01891ec",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812444,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "61227f28c4f0578c519f0c2117a92b7a857e0136dc8fb2d5bb7433c6a7053033",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812902,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "f4f7e7df0c8d747dbd93814385918e4e9d019bbddaa11020db154c6ecf39e1c9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812482,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "5d4c20a488d352839d1c8e947da55652e82b827dfca26ec46b56e3161fc53bce",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812985,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "0b31b7311498c0c038a125f6857a5f813db89becde4c113f422ee6cb2943c75c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812103,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "54ebdbd2254461eaf4ca71461f5f0b96fcd28f6273f361bf6e977b9b06a979b2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812633,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "be0eb0cf6604d8865db2ecbdd0e0114f5ade6f97571de739b60af9d6b1932965",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812870,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "4270a441ec14891507deb780ee77efe1632d2747f83911f036fd67147d7282ac",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812892,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "69f10815a576afb4fa5ca84410f24dd31676105e85fc27a62b87086c41d376cf",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 811933,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "422dc72576fa6e81b316b19ae0e73119b47f906fa8bf1e7df635907e47180cfd",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812742,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "7ec4e08af90d8dbb44fa464da8c57e860214e5bcf9275c7bd15e59fa1a3fa9eb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 813308,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "4c5aa4fdc7063bd54734143937fb91f155010e0ec288269beb4a67515e6f9ea4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812247,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "962f8914960d856c9d46eefbcd8665281595d69be38dbfdf74bdf940b67dfdce",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "ed8dd82f5985c4812e0f6380018be104bb4b992baa163d4e0f7e4b8f204eface",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4894,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/report.json",
+      "sha256": "141e22d765ab3d71a4047f0050f39583c1fbc4bb40d0adb53a8ea09db12eb963",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1816,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721309/dt-0.1/horizon-200/settings.json",
+      "sha256": "ee8e6e71dffa12aae70d7b8a100c7d255f8970f218401b3a40dc63247b4e1e01",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721309/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812415,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "191195c3b2c387878c29e22e25082528cf0a21f4f34d25bb452b9d7afbe0b356",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812882,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "8f85bc9da32504e89eac5030b28acc103494d00fa0ee5711b52b3f3f62224711",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812734,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "9abf7028cf2229feb20fce3b83844a7fbcec39ab399f584382dd0018136ec902",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812136,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "89d2c4395ff8733711cea7546138775f75394ad659291f06d93e288a67ecd3e8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812564,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "87d7be727fbd39f6c9cc4b781c3434489add2c6468926af13c709457cb665072",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 813029,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "2dd7c7a1567d21a19054c8500e15f3e335488a71c2bcfca1a0c68416ac27f3a6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812457,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "7aac80e19de9d83ef27f33396465bd09538ddc82531684208c198754950c144c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812724,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "7119fb7564c23fe7be7a9defcc9de8bcb6b25629d30e20c4722934910eb8e227",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812871,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "acebd3f880f52e6c5656684a8ff9680cf96a320cfe5a4b1e91205bb6932b6e39",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812276,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "360bc6451e5bffdeadfe712b6327c897e901620651e816001d4f72650bcda7fe",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812498,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "ac2397a0f69798d79990d12799d6561a86509b7f932b7262d8afbdec3ed218b7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812450,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "4e4c2e771c0759cb7180dbe17a78b69ca7e207e833fac93a2515eb4887b23cc0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812720,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "d35be37d290594c8a7444f7d0d97eec73f214588464b763aa8d711d566160b77",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812672,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "ef7316680e2ae5f7115e9a3f53aa78e92caa8d9747ccd1fe5a164f68e07d74f7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812045,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "261d3b2bf22d3f708a193d7a0e2ee30f253be73dbb3bde7ed3e4833d45a841f1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812936,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "8c417c3691e73a123ddaf3e656ed4ede61fcfd51976734105eea516734c97607",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812409,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "bc4f0379d1b10efa6d2c8c7e70b81e980dc50f9176728e54606529bc60a91f09",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812424,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "ec9400bcf5835dfbf03fdd2f924abffcf924fd2ec1b6c671b171fa2adcad5ed0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812492,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "ad014e29175f8f18a8b1435026bdd40eb9706e39b90f8cb866eee62fbb8add71",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 811877,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "79bb3525dad09c3cbcb4b1cb88aac354c4476c242768059c71d0dea9afc9d3bc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812872,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "241b5c4442413009d35dbb9486fdd997bfa7d57b987f31af8ea3cacba8a1b778",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812829,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "04b7a88810054f62acf3b843a24c53d18335554f1d082a66b3836ed859d15972",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812356,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "c6d2b6ad12e916784e5dc689c9d9f83bbe49f47657846314387a313ecce21d07",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812529,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "70ed15b23fccb99a8747c6641c8336cef0ebfe2beb82185a1ffb7b6ef1c57018",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812687,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "a63a0542ff7fe6372aa9c5b057c75c6a6504650b82327307370e710633f92416",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "8e14e155c21812b29df4cd68ba306a298bf2033d463657dd4250f6c7daec6678",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4898,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/report.json",
+      "sha256": "ad8584cc4736061c2e277bd527877673808004616ed6089dbc738c9f5978b7b9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1817,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721313/dt-0.05/horizon-200/settings.json",
+      "sha256": "8159b959a3d13b23c25e1c02c492b21ae70b0cb50903b8749754e12cceede0ed",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812361,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "a6c83dfc941f4faf65f85b1927178a31f9145b29231aa2d602865fd9a7bbd9a7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812974,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "486c799fcb4404a8b7b0dc26c295cf3477af9f8d4e4610b36587b2620631f9aa",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812706,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "fafdb442bf433a47f442f3c78fe5c6b4d70348dae9e368b5f03c28e9359976c1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 811989,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "0b7d0e838dc3599659db1f0fec1be067ab2ee0729498ce160f0128b0082e9c1d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812542,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "5ba5f29b230d28312d8b45a049daad59b68462440e276a7d371b92bb78449079",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 813114,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "f0a7534e2cb7363fdff30a04ceab1aba5b217cb48754b9e6b88e3a49d106e3b5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812478,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "6adb31d3d658b37f0989f5a051204574d2dfb08903a5cc9ef157087ffc4b8db2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812640,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "385e8dbd46c38042f1756e9ea024a3664b9d4f2c5e386239f4ae7e4f2aca3b4c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812730,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "53d2ab60461aba6e28ecc4e1761dc9b6dc769f347d61c02460de88c77ae3f499",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812417,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "f28738b0c6a8e51043aac234f4693374836b6802b07a8b93d85eecccd2235f6e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812434,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "6b79a201de5d937b45d47db1c33c6e5692b83c8feb86d69f90a1e50e041adb61",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812345,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "77507f343e0391e36f81c4b3d178d572f4f31038fa1a9a0cfd132e8bd142bb09",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812547,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "def341937feb0f377a834e102771d6e1d723848cc50f441020b078d7814b3eec",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812751,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "8e8588d1cf1fe950227247ada7be9288b05cb89ac52e670e4df2096f6cccf74c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812203,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "33e42985d31bdda7246c430b335de576047f29cf54c0708ad065e92d71affe11",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812859,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "22a538b755e187e7216a4c3efc6a1fe6d47abf66e61daaa334227c53eac1c17d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812407,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "82875feb57a0b3e1db93724e67bf1ffd8dc0d3b96f563114ed57f64cc0df2135",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812350,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "d8635604dda704f1d18b79cf8e62ab85647654fe93f0291624eb0ac1f23bc576",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812532,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "5f5a1eff0749771ce801679404ae19001c36d191fb259162dadcb7a7d691ae91",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 811913,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "4c2b00e19ed7a96db11c3583a413fba827fd37147bbe75bcf28171abc72e50b9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812827,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "a7f0d21c12cacbdea6afcec344471cc955bd90a227747cc6edb1206a4fd5a41c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812666,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "d75ca4b33089eee033484545074fb50652520417ae397f05aaa247dbfc2530a1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812379,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "a49b8f81a4cd0d007f40c7aa1aca4e98f2419d72327cf4c64921fef18e52145c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812535,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "6045faeb188a0d9f3ec25bb082e690e45c7d4d4a197d8d8e0d07d11b0ce9c168",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812654,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "98488014ccdb41200e4e0e3ce671322213982308529542be16146cf860a734ac",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "9b2d922fb61a890406a91b836b99bfae2905c5b26d30c115cf70e47e24116ba8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4890,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/report.json",
+      "sha256": "b00b6498e9b4f0327822d9d4d53e7622f8085b780bfa2146d27a7895e9e5b8be",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1816,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721313/dt-0.1/horizon-200/settings.json",
+      "sha256": "11742d8efc11aefa0aa4813b98ccc4ab9fc7cda0b393befffe59dc60d43832ef",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721313/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812752,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "67eb0e00db9c04b53decb278499df46112ea04f4af8526443c3041e0e931270e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812802,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "3a203e3eb028cca253aee9ed81beb9f8b3270bcdc2001ece3672a8e32972dc56",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812280,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "06b0dac649e25fc4cb0ea4c6431e34be194b90590ff4ba76803703cf9441702f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812513,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "944766635e73bd1497c601224d133ec4404b14becee8122fadfd897516e0d680",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812754,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "e03d78a39f3349716ec305865427ddb366d00ef17db6ea4f906075dc9f232b93",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812243,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "d2c06d3849ee96dbc5de4a294081fcfd11b34f53011abffa4446d39fe3bb428b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812402,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "0a949d22c1a248947d85c01328c638e1892a6ad9122e6709427efc4508762039",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 811985,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "7087024f6a0e8058d290096b2cbdfa1b70ad0fecce694d504e9800a883890a0a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812650,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "f06c719eaa3a410ded86025c078e5ca236934f436623a099567ff1f1c30c27fc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 811876,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "da6a02c4d23c2314380b8aa2fb439928633a2ba52a4fe6c26eac8450257d3a4e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812847,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "2888027dc8f18cf1daf1328d05ae9911ad6b2e9a187cf8262f90a2b8bb68584b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812659,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "b2737e8987e574f3aabb5aeded3532b86beeefec682ac35785da4aa3f06bc914",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812305,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "eadf7a3e16e85413d9ee44083a1ed57984ec02ab4cf25cc58a3c801b3a3227cb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812689,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "d338251830d0b1080f961a630b38adc86c10a633e0df99810eba3817cf362759",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812087,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "74287d995981303d57d29ffbc30ba42b357a8386dcf134b58b87038138fb93a8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812300,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "cfc0dcf2e9987495fdb67ca50822f8f7a8660abe7c83b140212878805f806c17",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812355,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "e9f8fddde119394b66600dca61d5519e08feb4388eb4b84ac8e3a33eb0b6b330",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812877,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "1344dc5b4a8676038399c8c0a22a4429e4e69dfa9b911709768c30d2d190af4b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812895,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "ea7f484c8f69b77d018ccea02a8d34be148bf458cec3f9cc54e837cf7bdf1851",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812802,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "95aeac5d0f4f22314725bdd224c9862effbc51584b4cbdbd90dcc12d4fa6689d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812767,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "3a8d565d114363e09c124ee97d50c526e951277da5819cfd86c27facec15ae95",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812769,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "c62d60c2d0396b7fc28c9a516fd00e7454fdcec63efe429b5729c8af1ff9b010",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812649,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "a4370bdb7f5472ab24f8a803c02529bf53dc2291fc755ef82196b5cdc88d5d4d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812957,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "4cbc57fba761b9fb4817c80bd7150be2fc4e9f8b5175e3352df7e2aa97d4e152",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812266,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "725268b75a5895ec3976a8426225bee16ff4b8f3acbdb02b9a77290bfe9b39ee",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "ae7b6ccb8fbb3b85c272e6da7f6450603df99a932d35f93b9b0b45a2ddaeb059",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4899,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/report.json",
+      "sha256": "f6962dfea9ffe2e108e51aa55a64b8876c6a42efb9f6bcff837a7dc156551c03",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1817,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721317/dt-0.05/horizon-200/settings.json",
+      "sha256": "510de101a6843fbc5d480450ef0da4ab334d27d258b2e2fb412a64569087179c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812825,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "dc0898495d1f72244ad656f2c68f073b217bab83b73d31a99ed7bb4b53afd726",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812749,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "8a4307076ab6f1ef1c285f5de911f659dcce8f68ca52aa0a15f7aeda337715ee",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812208,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "e14a6f0948ea1d53a81f41badf6fa88aaeaa7d05f340dc42d97996f3405d1996",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812528,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "ef7fddc81fb8096ae6f356825b1b8586607b0a673fef49f8478ad32dc555e7d8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812661,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "5a0c9bb3fab2658936ae95f8f812809b48af768acd4d6040e0cdbcdb53fc8247",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812140,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "50dd8321d7b386996e2037bee117826b053f941a5783226d7cced538518bdeb4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812506,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "8eb99296039a696d259bc28cd5ae3c77175d9a73e4d66b6c63acd35cc4fb42e6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 811991,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "02ffbda8838559550626f00015f70e25fa3e98659c2c7d83778b080fc7b67610",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812646,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "bcbd7df66f4b2bd4ff1d6f5c5461c0c361e992b3cb5f82801c68bf141dbbe2b0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 811849,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "8640a3e56a250055c1b8e2424cf5709e4217bade20004143aec26b091f3a69de",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812895,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "7661338e1b69303af12ed38bc2846f7e7b102880b1db0deca9e0ccd4d3b5d3ef",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812574,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "a73ba5a8a793a2d4fa4670d6e2ec5e2636f2eadabdbfcc82f825adfb9e0683ef",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812402,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "9d934e006df18bb23ca0fea2ec1b123032f3c891dc5a9f4f13492ac6cde7fac1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812598,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "272ce6ddd338143dbefd81aa0963eab2b594f7cf5900b150091450df2e5d5542",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812107,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "5260e979c336ae22cf3bc0c5152e6d0a550955b2ea9f66b8d3d6d5c459d1da2b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812331,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "9b98dfb2aaa04aa33db7a53f97fd644d176b813f30792c62dd477cc23dd5dd87",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812215,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "5dbbb3c3471cc45583695f88df927c21d0866982b1e9429f24a1c0dace34c547",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812898,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "c4943d72b6c9ba992b7d2086f00fa6294a1d524c3731cb889c065f9295b0543a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812735,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "3fe12d99dfc6281c728696189fcf79e31d8ae85ad86e0a29ed788c2d04ffe395",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812839,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "1985128396ac49a0341492bae684836c0f1f2b2229bc63a15c06c4b35d91a4df",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812770,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "cb0ba3d449f2ffc9d8be2c704fcdd3ad8d661a16819b9c76408456989404567c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812914,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "c9512bdd77893924c07f919b5723e1fbe981026905f7d02053c154a31815ac28",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812590,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "986d897dd9f7868c4ff02228f4281d4c0e04bc7bd7303a425229bec6bdf0a982",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812975,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "f2e55e3427beb3b6c2752daa31a2c84e36296bd198e33e1b7541e6ed8954da0d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812312,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "7540df714c67dea26329c747ede98c540011d06a9b12833ec0891462b3668a0f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "2fb99ea55776f3ca3a51bca97fc39c915a8291cfd6014f18445d5a7acb9693cc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4892,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/report.json",
+      "sha256": "5b25a6e5ba1edb483a8c64f184d4cc254aae28c37048f0da8826f1e3c96fb2e8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1816,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721317/dt-0.1/horizon-200/settings.json",
+      "sha256": "dac5db06b8584a2802f7b95615a6e099d30fe9c9a9e277d16841f31fe840dc79",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721317/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812386,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "95a0b9d0593710889ff9447fb8858a61e6e226f921afe55b04d2f7605d6b68b4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 813101,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "6c12e8412dfb22697296d7ebe467ebf59d03434e39fc15b36c7b96489a0c1f54",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812546,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "57e4eae041987f6faf403223b2afa40eb201ada4f967a9f2d3381b68ac9c430d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812467,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "a8042064359bcb67792105a79bd4f928c444a334301a5b13ab5760123a3b82f7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812703,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "939ef079a90380bd0d322620f3c8f12e7e8c7473d91ddaf2fdaac6aba34a3010",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812757,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "90f42cd5c49359463f8bdf5e50312d48d728387ce48ed91d221638d9d0d908e1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812037,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "4cc5b125604bf6cd7cbc66c339410a97456f2c33b8cc6b194964f3393caa41ff",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812328,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "61996a57ab4b27332899ec11e1c4c1f27d611fe40aeb31fd0eb47da7750dd25d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812485,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "6e450249df34aff6886821d06466da24d2fccedb55e2d1eeebccd85fae88ebad",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812869,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "034cff4d8f7ecd3efc7a1d196763da72f3ce726e04316f96597738cc94a0d305",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812419,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "be6d879e069ac3e1074e45bb441c002684a5d119a27f86a2c40eee1d84640675",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812450,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "7c88c919e9ed6e6d14324547d9ed8b9bf7c6c7cedd0d0f2f05dbb762f0a5cb0f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812607,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "b95ce2a5a1fb3d5a046038a9fb516a3c385d5677305cb55fd508a519e4a7ff75",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812006,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "958c280c69d015e9b13087c5d5728fc57de31389b2a762b8787c9a56616aad2a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812797,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "1310c4144afaa851740926a012205d246f2c47295a9ab36cdf3dffce0f7cc31b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812055,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "28ee2e33da2e343bfb8a59b60a15ed3c8a457086849845cd0ad7b9f9a22f7e93",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812845,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "ce51a118d0c1254fcd88b56fd8ca34454226c8538510d4f4c51f447f2fe0b024",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812835,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "954439f6455380e2938b3c85dfff5861dd9f3658fa0ac6b5576cdeb72f52c81f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812666,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "8b775bf61f32e6f000b8ec5de5fbd2db66856a2ac34cc66fc00464c23237e0c7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812355,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "b299d72eb2390691bb9a83ad65a78158dfb16f07b1971a52a5b94bb793ac49a8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812426,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "0b27cdd6ca1fb729bae16684537ccde176cfa2308de3ace4ed7c1456675fa5fa",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812441,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "825274997750ca9cd0036ef0a95c08ca6fe6612d5f6a7ab9d1ee222308f52ecf",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812679,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "7dc18ef97bfa4c110c52ca3f965f842419a48408b8b8e8d3bacf989c4fff8b34",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812560,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "093b1eb04d2817f7adfcad7361d1b06cdc530c38c417a0d7bced9e7827a55b9d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812010,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "d133d031d779991a063317fd6716b30ad196049530bad0114ed2244a182a5a04",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "3fd54305cad24841fe08b0450cf3e76b27f47f1b71aaa61ebbc7fbb9ff754dbd",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4896,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/report.json",
+      "sha256": "0ac9ce50fd0122f97fd5c8883f35d2138fe10b3260a2edd904624f792b71a678",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1817,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721321/dt-0.05/horizon-200/settings.json",
+      "sha256": "5ea78fb207959fa380d60fd14b59e153d3a6cb16e7b1ba5c6d3044c2ac5135e2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812350,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "8cc17003070d727e31f4bb97d9cc75e0f67485afee7e96f3f19cc8fee3768322",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 813039,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "e0f4315cf0f2d73a3b2ffa94c9a097e248e4ac10413a50723239aa6bf030b9cf",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 812564,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "57b42721c0278c0a45bd1d1829d84285f8f1763388185f68f8661d2a3b92d31b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812437,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "e8938f729673c8c2376583733235cd142ee9ace1f0dff87bd21d8d886961180e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812891,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "07ca114903a90e3207815d20bed0180c9595ab73d2ccf8456672c3256850fb5b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812755,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "7bb87b3a18c364e86a0b925953e95c21fd3893c545ae50e861e0d2f4a4b71b95",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812291,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "106a6d661ebeef359f02c07375ef3c084f9b9767dbf401a34375f9ef5c66dac3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812189,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "7c411ff9aba1ab85f195a83c51112e4f1cbe6fb6e745abcbb0f43c747fb62392",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812390,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "4eec110f805ea0d5c46de252167cde865a3665afca5423fa874748f6f4d6c7c8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812907,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "84731181565e0b8aeeb559645155424889b80dc1810949eee2100ccd0be5c455",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812408,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "25a099707a14fe6cd4bff67f77a37041577c5d97d4e15cd459b384d59d0a3638",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812447,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "9559a5b2eae639b3d569cc92d7f2340662c5d85fe05b068e1a7dc98d01d25505",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 812702,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "9ce564c45055ae5079223a6348bf467f05da52ffecc4060e89f62411c386e33a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812155,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "f0c7bd39a7b7635bdc1c3f295ca39f82798292eeb9f2c7a51e6aa217e3e2d94e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812697,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "5e68f554935e12104d3c159c1deb14463acf25cd827d774adf3a86564274f8dc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812028,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "4522f116584f76aa1e2dd342da78e88010ea0d1bcc4d792cab8190c48b91036b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812941,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "1f91b280b636b47313c0c035b904c40e03f8d7b8e99ae8e74bb025e5a90a0c70",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812773,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "1b777e81af9e19c3ee58406c74456c07eb0556c0395e8327a0ed2e598bab18c1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812780,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "6c4cb181860bfc90312d5643e7545a64c965de933a2fadb145643fac4a76a489",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812423,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "e90872713e9cb87185bf6efd83197199b4319b984b5aa86f3282a9924ae6d359",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812359,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "f6d815c4a3929053247fd706a839618c16d7a8c763f8d75661533b1e026edfbf",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812318,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "febde51d999f6503b8125654e6223e377b2668f6c235402250e36efa696fbc18",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812642,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "ec5194777a8fecbfbd045bc88a5b61e6b308472a789123f88438de7b6b6217d8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812787,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "daa690d54125be843e79e40c297892764b7378083797ed0d72202cb3a14b3c41",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812076,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "f177114d13d263923b13dd03c70d2d4b66421da4ada5bac38a7cc5864b79992e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "fefe5f2cbcb6a5846d7c4cfded1fc0feaa718309dbda5788abd76de4c43e3e8b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4891,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/report.json",
+      "sha256": "f821a580abe8870104371d72088f8920685a1a80b22ad7a2627e2fb13f6e12e3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1816,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721321/dt-0.1/horizon-200/settings.json",
+      "sha256": "ab1c1245b369df349fc15bc398e6e9ba54be2209689dd283ebd052bc00fa06d0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721321/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 813077,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0000.npz",
+      "sha256": "b81fe7b172c8933477117b796a54841ae85c003cb95e8f87cee717698c76bd67",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812828,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0008.npz",
+      "sha256": "ed2712269e5ce8052eb5154aaae99d46642d2908024ff34aeb4f70ee1bc47758",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 811682,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0016.npz",
+      "sha256": "8b1238f9d0eac92b493caf21392f9a09369e2b52a8bb3171c399720b136a0a8b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812523,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0024.npz",
+      "sha256": "ef991086c6f490d0a97ebacecc62881b54f1217cca2993b95f9b44cc0e2a6f84",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812680,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0032.npz",
+      "sha256": "e0ba65468a4db1fbd7cf6ce9642b5ba4db9a3621747c2e46224acb165506ae28",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 812930,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0040.npz",
+      "sha256": "5b9a6d2fc37fba3086083ab106b7419eea1ebc32b98815c6e998892c9400d2b0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812610,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0048.npz",
+      "sha256": "cda8a27e8e9a34695db127dbe490ed010a65d7bef69a5c119dd44229ca8eb284",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812848,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0056.npz",
+      "sha256": "bac5861529afa423ff97a769e02e1e9ec9d660c400624773a8ca68c7e3ab6e61",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812568,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0064.npz",
+      "sha256": "a573e2e90072f98e37afb691b4301106265710123c738c02665ef1c062f84927",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812553,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0072.npz",
+      "sha256": "c3ececec9726e63e49d7b71803b6f4dbb51c0d273534c6b09a61b5233fe94afb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812459,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0080.npz",
+      "sha256": "f956278ad99c7626619dd182762d6ecd77981c56b9198e214d284bae03f4bf46",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812324,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0088.npz",
+      "sha256": "b89c3164a191fbbd649c00a4e0fdf0987b9afe29fe22502892d7e596480f836d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 813068,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0096.npz",
+      "sha256": "eac4c2e5a9a7e546f09ddadc2e39daadca2a4bfec072c5bc7da3a537f7c8b327",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 811948,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0104.npz",
+      "sha256": "b6803a20f753191165032e1fddd06369eb5b01a2c9c5e37631dbf8e38fd34337",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812499,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0112.npz",
+      "sha256": "f70197f27d21563935274a38ca5b91ca007b5413018ed203d148f0a8bacfdd3a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812782,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0120.npz",
+      "sha256": "0b20e89790203ee2b4b0dc138b72888fecf7e1d432574612d7ded4d5b1bdc347",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812377,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0128.npz",
+      "sha256": "86198abacf7dc069fd6f6c88238c996196110ae8d386c1129b2f8441fdf380d9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 811966,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0136.npz",
+      "sha256": "a3beaa11fa12e35c962a1e04783e6c302477b4a9c229490831f7b87e131f891f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812345,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0144.npz",
+      "sha256": "ed56f3d7cad05bcb2d1b0194148bb82eab58f0fdab98dc90611cc0e0987b9900",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812508,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0152.npz",
+      "sha256": "73750abdecd0e486b6f3043f623cb24c3da28e3511b32512743e387f4ee8d4f4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812380,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0160.npz",
+      "sha256": "870b28908e2d01445887661dcd64b15b4ef2d54b926d48ff671d59c3eef067c3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812588,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0168.npz",
+      "sha256": "684edf77cf03078bd64f834895af5b2fdeac3357d3b999ffe335087cfc47a599",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812410,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0176.npz",
+      "sha256": "0676f3e7b50dc3f2e3aa51a27088daa18fbf92dc1a92e5d408b2ca3d4363d87b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812789,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0184.npz",
+      "sha256": "e706ccb4318b3d3e9b768a9a25ec7b9416bd7a2b8c1830433df06ef2c9a04e63",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812476,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0192.npz",
+      "sha256": "ffbfa7c76f193d8e7005fd69f1f6cf3c9e1268b137ec40432501e83f268186e1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/kappa.csv",
+      "sha256": "5e68001b07b3ec5e2a13942c848e099fad8c86219666f92383d6d6bb53a6add3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4895,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/report.json",
+      "sha256": "d13f65cbad4c7f8e5e67ea8d70624a98c34764a6aeb6f1143719a5719e59e4fb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/report.json"
+    },
+    {
+      "bytes": 1817,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721323/dt-0.05/horizon-200/settings.json",
+      "sha256": "967284f40f7fc2c048259be43de1e6bd0c6fe5f251b1594d7d6844da38c30812",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.05/horizon-200/settings.json"
+    },
+    {
+      "bytes": 812971,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0000.npz",
+      "sha256": "a133251d5cb964300c9050921c820890ee6ef4cf486e3186afcbccce1f366e18",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0000.npz"
+    },
+    {
+      "bytes": 812861,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0008.npz",
+      "sha256": "9039678cd29c089fb1c980edb9e326bccb6999a6f1f47cb19d69ce2f26c99a7b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0008.npz"
+    },
+    {
+      "bytes": 811737,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0016.npz",
+      "sha256": "11773886f768773af113a95c49d24b78c1f0c5a522dfedfdfcc2a9ccf8cda4ee",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0016.npz"
+    },
+    {
+      "bytes": 812573,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0024.npz",
+      "sha256": "b8206ccf444044803ef7ac7a45fed87352fb068dee80de87c731072e1ca69ec3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0024.npz"
+    },
+    {
+      "bytes": 812559,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0032.npz",
+      "sha256": "d4eb2ad4ec2bea3e269bc1b312937c69d18be280a494fae8dffec724e7619bf1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0032.npz"
+    },
+    {
+      "bytes": 813089,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0040.npz",
+      "sha256": "ab08a81e71d2ac6ffa520b857370125f7f06170ac9658643b00cc663d6f00f61",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0040.npz"
+    },
+    {
+      "bytes": 812653,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0048.npz",
+      "sha256": "d49e9284680132ee73deeddf9dfe4bebefd84e26cba154af0359ecfc1e453019",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0048.npz"
+    },
+    {
+      "bytes": 812796,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0056.npz",
+      "sha256": "0b438748222bd0e5e65ed16d9095bcc288bfe2ac428e4aa4f67b8049c1e2963b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0056.npz"
+    },
+    {
+      "bytes": 812657,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0064.npz",
+      "sha256": "814ea8405f62124f42742da1033edfd0c4d90b881d22aea72c45a5a1b2c69955",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0064.npz"
+    },
+    {
+      "bytes": 812500,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0072.npz",
+      "sha256": "0fca527a6c306c680c583fe0094cd9a68c767fe046f89edc86e857c801e66c96",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0072.npz"
+    },
+    {
+      "bytes": 812311,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0080.npz",
+      "sha256": "88d01546df9a6298187a026b779e060885ff69e6aadb007eb82be241f7a27e36",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0080.npz"
+    },
+    {
+      "bytes": 812339,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0088.npz",
+      "sha256": "fe4c0b5af4194689e71add930a93b6c340176c8f08be1980d060672e0f424223",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0088.npz"
+    },
+    {
+      "bytes": 813008,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0096.npz",
+      "sha256": "2d69a90139190979a7c6082ac2f1fa881f63e3927b367eac4e31148303cb6475",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0096.npz"
+    },
+    {
+      "bytes": 812030,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0104.npz",
+      "sha256": "4a5354c980d86e602095aebc2d23ad88ea7de3fa83b3c00ac91a56a8a085048c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0104.npz"
+    },
+    {
+      "bytes": 812331,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0112.npz",
+      "sha256": "71eaf64eb5c4cfbae546ae4cdd59060eb4570d32680bf9cfda5d1f3d51765b9e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0112.npz"
+    },
+    {
+      "bytes": 812930,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0120.npz",
+      "sha256": "9deb63fec8ac730f94aab317dae9b223837c5ea23d7e12290374d0577e9d697c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0120.npz"
+    },
+    {
+      "bytes": 812614,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0128.npz",
+      "sha256": "8923bca7aaa938c569c8f4623dc804b30142c9d49234d1d438050b9f80c7ecce",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0128.npz"
+    },
+    {
+      "bytes": 812066,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0136.npz",
+      "sha256": "804e2fd5b8375efe3a163d1af6427c1be92c81c47f4ae0b1460ee9e07ee32d2f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0136.npz"
+    },
+    {
+      "bytes": 812437,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0144.npz",
+      "sha256": "ad92734ab3d4ee85c8afb4e6532a9b0c4183aef25e549607266ce33451109be4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0144.npz"
+    },
+    {
+      "bytes": 812374,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0152.npz",
+      "sha256": "8cf3433625798351b1300111d8ec422151427ff58581bf4c248bc64615e2e5c3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0152.npz"
+    },
+    {
+      "bytes": 812426,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0160.npz",
+      "sha256": "499dfa7bdee98d2596a311b3437aec1750ef8350fc7503a802bbe17fb0250c55",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0160.npz"
+    },
+    {
+      "bytes": 812519,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0168.npz",
+      "sha256": "93762632d45f4bedf15e9c18dae4e1c1f9bb3e457736165ab6555fbae19c2e5f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0168.npz"
+    },
+    {
+      "bytes": 812415,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0176.npz",
+      "sha256": "f1d252bc581760fe17eb29b9317d5f23624504811d762d1de8ecaac79bccf0c0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0176.npz"
+    },
+    {
+      "bytes": 812808,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0184.npz",
+      "sha256": "9fd5235a5a6fb205c590229a4e6890fbccf9c2cf647753f6b62a43f6c43edab5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0184.npz"
+    },
+    {
+      "bytes": 812327,
+      "category": "base_child_raw_NPZ",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0192.npz",
+      "sha256": "43e4bf6994dc2215464801e12d90af8d5d97229d7424a113ca773a00f044dc5c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/chunk-0192.npz"
+    },
+    {
+      "bytes": 10014,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/kappa.csv",
+      "sha256": "05d4a415d1a15d93fae3a57b4b881dacfdaf56ac2bc8445da4a36092df11b1c2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/kappa.csv"
+    },
+    {
+      "bytes": 4893,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/report.json",
+      "sha256": "214dcad1f2597fb94f0e92811b3bd20cd8a51a65ce957192b69b4c7be354a5a8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/report.json"
+    },
+    {
+      "bytes": 1816,
+      "category": "base_seed_settings_reports_curves",
+      "member": "recrossing-primary/seed-721323/dt-0.1/horizon-200/settings.json",
+      "sha256": "8ea3078ded1c1dda4b037349183d923b35389c1597008cf8146de4b7a56ac70d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/seed-721323/dt-0.1/horizon-200/settings.json"
+    },
+    {
+      "bytes": 1609,
+      "category": "analysis_reference",
+      "member": "reference/analysis-prespecification.json",
+      "sha256": "fe176907beb4c3f0c70cb920fd180779d8b5a65092eef2aed6f6d921eb2d3f6e",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-analysis-prespecification.json"
+    },
+    {
+      "bytes": 3682,
+      "category": "analysis_reference",
+      "member": "reference/classical-transmission-reference.json",
+      "sha256": "61d00d64a235a9b3a11ebb06540c32cfcc40b2652b94fbd80f969be2eb3de7e5",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-classical/transmission/transmission-comparison.json"
+    },
+    {
+      "bytes": 18140,
+      "category": "archive_prerequisite_metadata",
+      "member": "reference/external-prerequisites.json",
+      "sha256": "f3e7e5f2e4964f88a54be23c1c5b2d832b4b8b37594c18b05f628e2b7413b997",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/raw-archive/external-prerequisites.json"
+    },
+    {
+      "bytes": 30017,
+      "category": "analysis_reference",
+      "member": "reference/finite-P-reactant-reference.json",
+      "sha256": "ac5402749115c8fecb43220b2afed2bd0b69d558eb3779d72364ff29d9dffdbc",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/diatom-transfer.json"
+    },
+    {
+      "bytes": 97097,
+      "category": "independent_review_input_identities",
+      "member": "reference/independent-review-input-file-hashes.json",
+      "sha256": "d41cf619ef748005614cafbccf9b34b85e12a83c117f91dd3360744da05c5800",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/input-file-hashes.json"
+    },
+    {
+      "bytes": 6528,
+      "category": "analysis_reference",
+      "member": "reference/parent-protocol.json",
+      "sha256": "4657032eb8e10d59061a52a45adba6cac9d4d0d87213461af11e5589de49c99c",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary-protocol.json"
+    }
+  ],
+  "member_count": 465,
+  "schema": "pyrpmd.h3.quantum-child-archive-members.v1",
+  "scope": "Complete base pair_batch0 at horizon200 only; 8 seeds, two paired timesteps; all400 chunks.",
+  "uncompressed_bytes": 325713873
+}

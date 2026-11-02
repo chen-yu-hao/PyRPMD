@@ -1,0 +1,7 @@
+{
+  "schema": "pyrpmd.hch4.source-before-native.v1",
+  "path": "benchmarks/hch4/pes.py",
+  "snapshot": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/source-before-native/pes.py",
+  "sha256": "c564017f6c60fb47f44e964c966c4f8f9f15050d9170eba0e24ca383101b19a4",
+  "note": "Exact adapter bytes used for original PES validation; subsequent addition only exports existing compiled batch through the public native interface."
+}

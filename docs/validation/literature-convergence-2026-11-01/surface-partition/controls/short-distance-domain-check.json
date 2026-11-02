@@ -1,0 +1,233 @@
+{
+  "schema": "pyrpmd.h3.finite-grid-short-distance-diagnostic.v1",
+  "created_utc": "2026-11-01T17:00:42.183832+00:00",
+  "reason": "Known unphysical deep BKMP2 extrapolation around 0.3 bohr; document the separately registered cutoff stress variants.",
+  "grid": {
+    "r01_bohr": [
+      0.25,
+      0.8,
+      23
+    ],
+    "r12_bohr": [
+      0.25,
+      3.0,
+      45
+    ],
+    "cos_angle": [
+      -1.0,
+      1.0,
+      49
+    ],
+    "minimum_retained_pair_bohr": 0.25,
+    "pair_order": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        0,
+        2
+      ]
+    ],
+    "retained_geometries": 50238
+  },
+  "cutoff_summaries": [
+    {
+      "minimum_pair_bohr": 0.25,
+      "retained_grid_geometries": 50238,
+      "minimum_energy_hartree": -207.69802184258577,
+      "minimum_energy_pair_distances_bohr": [
+        0.25,
+        0.25,
+        0.3818813079129867
+      ],
+      "boundary_band_bohr": [
+        0.25,
+        0.275
+      ],
+      "boundary_band_geometries": 5427,
+      "boundary_band_minimum_energy_hartree": -207.69802184258577,
+      "boundary_band_minimum_energy_pair_distances_bohr": [
+        0.25,
+        0.25,
+        0.3818813079129867
+      ]
+    },
+    {
+      "minimum_pair_bohr": 0.3,
+      "retained_grid_geometries": 44711,
+      "minimum_energy_hartree": -4.0402025951715075,
+      "minimum_energy_pair_distances_bohr": [
+        0.3,
+        0.4375,
+        0.3089801773577069
+      ],
+      "boundary_band_bohr": [
+        0.3,
+        0.325
+      ],
+      "boundary_band_geometries": 5220,
+      "boundary_band_minimum_energy_hartree": -4.0402025951715075,
+      "boundary_band_minimum_energy_pair_distances_bohr": [
+        0.3,
+        0.4375,
+        0.3089801773577069
+      ]
+    },
+    {
+      "minimum_pair_bohr": 0.4,
+      "retained_grid_geometries": 34310,
+      "minimum_energy_hartree": -0.011926101873788522,
+      "minimum_energy_pair_distances_bohr": [
+        0.8,
+        3.0,
+        3.8
+      ],
+      "boundary_band_bohr": [
+        0.4,
+        0.42500000000000004
+      ],
+      "boundary_band_geometries": 4137,
+      "boundary_band_minimum_energy_hartree": 0.7614475136005884,
+      "boundary_band_minimum_energy_pair_distances_bohr": [
+        0.42500000000000004,
+        2.9999999999999996,
+        3.298579239612109
+      ]
+    },
+    {
+      "minimum_pair_bohr": 0.5,
+      "retained_grid_geometries": 25370,
+      "minimum_energy_hartree": -0.011926101873788522,
+      "minimum_energy_pair_distances_bohr": [
+        0.8,
+        3.0,
+        3.8
+      ],
+      "boundary_band_bohr": [
+        0.5,
+        0.525
+      ],
+      "boundary_band_geometries": 4417,
+      "boundary_band_minimum_energy_hartree": 0.40982028457903863,
+      "boundary_band_minimum_energy_pair_distances_bohr": [
+        0.525,
+        3.0,
+        3.4686993239541533
+      ]
+    },
+    {
+      "minimum_pair_bohr": 0.6,
+      "retained_grid_geometries": 16614,
+      "minimum_energy_hartree": -0.011926101873788522,
+      "minimum_energy_pair_distances_bohr": [
+        0.8,
+        3.0,
+        3.8
+      ],
+      "boundary_band_bohr": [
+        0.6,
+        0.625
+      ],
+      "boundary_band_geometries": 4017,
+      "boundary_band_minimum_energy_hartree": 0.19423528548175806,
+      "boundary_band_minimum_energy_pair_distances_bohr": [
+        0.625,
+        3.0,
+        3.625
+      ]
+    }
+  ],
+  "explicit_radial_anchors": [
+    {
+      "pair_distances_bohr": [
+        0.3,
+        0.3,
+        0.45
+      ],
+      "energy_hartree": -7.171656406102983,
+      "radial_gradient_hartree_per_bohr": [
+        384.2274166554585,
+        384.2274166554585,
+        33.74153443757723
+      ]
+    },
+    {
+      "pair_distances_bohr": [
+        0.4,
+        0.4,
+        0.4
+      ],
+      "energy_hartree": 1.5478393289025405,
+      "radial_gradient_hartree_per_bohr": [
+        -2.5021806879645965,
+        -2.5021806879645965,
+        -2.5021806879645965
+      ]
+    },
+    {
+      "pair_distances_bohr": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "energy_hartree": 1.5357465514855733,
+      "radial_gradient_hartree_per_bohr": [
+        -0.2195620693238709,
+        -0.2195620693238709,
+        -0.2195620693238709
+      ]
+    },
+    {
+      "pair_distances_bohr": [
+        0.6,
+        0.6,
+        0.6
+      ],
+      "energy_hartree": 1.2111072652446992,
+      "radial_gradient_hartree_per_bohr": [
+        -1.5147089278934516,
+        -1.5147089278934516,
+        -1.5147089278934516
+      ]
+    }
+  ],
+  "source_sha256": "6fab7a602be9a73064f4525ee99c7860162c9176c3458baadef811ec98b22ea9",
+  "PES": {
+    "provider": "BKMP2",
+    "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+    "execution_device": "cpu",
+    "thread_safety": "process_serial",
+    "native_batch": true,
+    "dtype": "float64",
+    "trajectory_batch_safe": true,
+    "atomic_numbers": [
+      1,
+      1,
+      1
+    ],
+    "charge": 0,
+    "multiplicity": 2,
+    "energy_zero": "three separated H atoms",
+    "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+    "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+    "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+  },
+  "controls_protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "raw": {
+    "file": "short-distance-grid.npz",
+    "sha256": "90c3e11fd3dbf053af7c439a77883fdefb44cce4c9428aa14f5564cc6a549f8a",
+    "bytes": 763337
+  },
+  "sampling_settings_changed": false,
+  "acceptance_gates_changed": false,
+  "limitations": [
+    "A finite geometry grid is not an exhaustive lower bound on the PES.",
+    "These energies do not establish the equilibrium probability of an omitted domain.",
+    "The registered .4/.5/.6-bohr stochastic controls remain the statistical domain comparison."
+  ]
+}

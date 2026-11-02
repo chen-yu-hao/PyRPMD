@@ -1,0 +1,39 @@
+{
+  "schema": "pyrpmd.ci-heartbeat-import-fixture-supersession.v1",
+  "created_utc": "2026-11-01T23:13:56Z",
+  "parent_commit": "bbb950528db2f43f59cb24acea5097568cd393a3",
+  "current_path": "tests/test_h3_quantum_isolated_continuation.py",
+  "before": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/before-test_h3_quantum_isolated_continuation.py",
+    "bytes": 24455,
+    "sha256": "da0b38029eb88ee273dfba2de708f759ca079b36ef981620f1238e6796a1d980"
+  },
+  "after": {
+    "path": "tests/test_h3_quantum_isolated_continuation.py",
+    "bytes": 24889,
+    "sha256": "fa2c3efe7cb60ea55af86bc2f1b5cc3f43b0d2895a58e637adbee5a624be90c5"
+  },
+  "original_active_scientific_checkout_test_sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05",
+  "unchanged_production_owner_sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7",
+  "independent_review": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/independent-static-review.json",
+    "bytes": 1512,
+    "sha256": "f2331bd25114e662cd86771b55421e9b3647b200fde215fe99e0171af9cbc1ff"
+  },
+  "failed_ci_evidence": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-bbb9505-heartbeat-import/failed-ci-evidence.json",
+    "bytes": 5336,
+    "sha256": "3512760f280036387633974f6d137cea8b002b70b4a1796d274f25a08efcc8e9"
+  },
+  "new_distinct_test_identities": 0,
+  "change": "Only the real inert self-heartbeat fixture: explicit checkout import, removal of inherited PYTHONPATH, and child-log assertion diagnostics.",
+  "scientific_source_or_runtime_changed": false,
+  "acceptance_criteria_changed": false,
+  "original_checkout_modified": false,
+  "validation": {
+    "text_outside_one_function_identical": true,
+    "local_python_execution": false,
+    "remote_after_patch_execution": "pending"
+  },
+  "previous_publication_audits_remain_historical": true
+}

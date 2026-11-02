@@ -1,0 +1,91 @@
+{
+  "PES_evaluations": 0,
+  "file_count": 16,
+  "files": [
+    {
+      "bytes": 15775,
+      "path": "benchmarks/water/vacf_msd_identity.py",
+      "sha256": "65186a8cf9f4476f025f949446f64de310ebc0f9c5f85a804e9db2d1e7f0996e"
+    },
+    {
+      "bytes": 2356,
+      "path": "tests/test_water_vacf_msd_identity.py",
+      "sha256": "01dda60688a4981be9d9638986bbb6490cce01ad8bf5efc93060ac2fa2976243"
+    },
+    {
+      "bytes": 8509,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/README.md",
+      "sha256": "afcd6007941d4cef3d87de06dc93b61366ca42a2f931e09eb382cc1f7c9ad1b5"
+    },
+    {
+      "bytes": 299491,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/analysis/chain-curves.csv",
+      "sha256": "6a9b1fd575aa1e40749561e60402215fe7bfee29a78b9c5747aeb51b040456bc"
+    },
+    {
+      "bytes": 14723,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/analysis/report.json",
+      "sha256": "4628c0bde8b433d3908efda4e44e85d0183b60d654409970189f3c16736ec9b0"
+    },
+    {
+      "bytes": 22727,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/analysis/segment-identity.csv",
+      "sha256": "4005ad068babb5340a873702f83251729ee302bf7004db09d3f7b616c9c2ff51"
+    },
+    {
+      "bytes": 297233,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/analysis/vacf-msd-identity.png",
+      "sha256": "f305bb5125b53acb291477bf7dce239fa2ab669416ea961600d9c28c2c51a00e"
+    },
+    {
+      "bytes": 181242,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/analysis/vacf-msd-identity.svg",
+      "sha256": "3604da4940199d06524d86714ebecf2be922ddc58f242adbffaf5710fcce284e"
+    },
+    {
+      "bytes": 992,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/execution.json",
+      "sha256": "8a75c9ac8bd36d169168b89743aaa41608ef9b47d70ea67875d00109e7fe6f01"
+    },
+    {
+      "bytes": 2128,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/execution.log",
+      "sha256": "b481784f09a934420a36d52229c45f0f8c5695063bb1b02fd36c69673f8aa6fc"
+    },
+    {
+      "bytes": 4162,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/independent-method-review.json",
+      "sha256": "e5789ae8281d521c7ba7ef799117f20ab51982480ac537f5c764bddf12ae6d02"
+    },
+    {
+      "bytes": 642,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/observed-exit.json",
+      "sha256": "26fd958139e4f98be6a24b2ca8acc9d6c64c29e726486101b39867d5f6230a99"
+    },
+    {
+      "bytes": 1941,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/run-diagnostic.py",
+      "sha256": "8ee8f790e6a1fe467c9b594261fa04775547e68d6e6a03128375e68b53ccc55a"
+    },
+    {
+      "bytes": 1528,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/synthetic-gate/gate.json",
+      "sha256": "3d261d483ed54e4e2bfd8bc71466d195cdd0a6bfb44fa3983097c4cc162b2251"
+    },
+    {
+      "bytes": 98,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/synthetic-gate/pytest.log",
+      "sha256": "63aef428b6b6cdf5d5276d6deb64de6d8cbc4b0909961118f54dc0b91dd2df15"
+    },
+    {
+      "bytes": 1264,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/vacf-msd-identity/synthetic-gate/pytest.xml",
+      "sha256": "432a5a36764a0c02b9ca468eb4dc70e36a9baf49214d2cc90c30b276db4ee024"
+    }
+  ],
+  "physical_steps": 0,
+  "raw_trajectory_chunks_included": false,
+  "schema": "pyrpmd.water-vacf-msd-identity-publication-inventory.v1",
+  "scope": "Additive post hoc descriptive complete-cohort identity diagnostic. Original scientific sources, data, eligibility and paper comparison remain unchanged.",
+  "total_bytes": 854811
+}

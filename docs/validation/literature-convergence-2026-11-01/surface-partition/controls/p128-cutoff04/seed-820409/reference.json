@@ -1,0 +1,20 @@
+{
+  "surface": "ts",
+  "radial_order": 192,
+  "angular_order": 96,
+  "centroid_domain_bohr": [
+    0.0,
+    8.0
+  ],
+  "classical_radial_domain_bohr": [
+    0.4,
+    8.0
+  ],
+  "log_reference_shape_integral": 165.82338788326732,
+  "log_classical_shape_integral": 165.82338788326732,
+  "log_reference_over_classical": 0.0,
+  "log_plateau_shape_integral": -1624.4443644789806,
+  "log_plateau_probability": -1790.2677523622478,
+  "plateau_radial_integration": "analytic r^5/5",
+  "reference_distribution_approximation": "Gauss-Legendre centroid quadrature; domain probability needs quadrature refinement"
+}

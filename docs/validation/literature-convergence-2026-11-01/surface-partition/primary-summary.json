@@ -1,0 +1,304 @@
+{
+  "schema": "pyrpmd.h3.surface-partition-primary.v1",
+  "complete": true,
+  "surfaces": {
+    "ts": {
+      "complete": true,
+      "seeds": [
+        {
+          "seed": 721301,
+          "log_ratio": -2.1729527596143,
+          "half_log_difference": -0.0753573641617784,
+          "endpoint_radius_half_difference_bohr": -0.007335869181891885,
+          "endpoint_energy_half_difference_hartree": 0.00014652266710815653,
+          "minimum_BAR_overlap": 0.9004906633718747,
+          "minimum_energy_ESS": 778.2149987501851,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "eebd1809b4a0a5011ed6298ab44973cd89bb576f8d7091019f6bfb3555ca3dbf"
+        },
+        {
+          "seed": 721303,
+          "log_ratio": -2.1710019263607525,
+          "half_log_difference": 0.03535238743348357,
+          "endpoint_radius_half_difference_bohr": -0.005099064272353404,
+          "endpoint_energy_half_difference_hartree": -0.00024421053207482335,
+          "minimum_BAR_overlap": 0.8983366462129612,
+          "minimum_energy_ESS": 987.3858211104337,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "aaf11b6ea143c7166456d46d2f4b767481eb0319d7e46816783ad57baacc0c14"
+        },
+        {
+          "seed": 721307,
+          "log_ratio": -2.195497923928297,
+          "half_log_difference": 0.0032015981593720433,
+          "endpoint_radius_half_difference_bohr": -0.0014087319087885408,
+          "endpoint_energy_half_difference_hartree": 2.4802372580567944e-05,
+          "minimum_BAR_overlap": 0.9127954678078611,
+          "minimum_energy_ESS": 1140.0108287231346,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "d1cf4de76ade549ab74391e12eb4b42e3e06be44dab3cbd3037f470a044b8519"
+        },
+        {
+          "seed": 721309,
+          "log_ratio": -2.185363628497235,
+          "half_log_difference": -0.005960685793982012,
+          "endpoint_radius_half_difference_bohr": -0.003951904744589285,
+          "endpoint_energy_half_difference_hartree": 3.650703024030144e-05,
+          "minimum_BAR_overlap": 0.908317915979771,
+          "minimum_energy_ESS": 1138.347660251568,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "d7c9c82121fed1fa75adef7b2c49cb97d0d5d410f6eee485ae4e2ca46d31b469"
+        },
+        {
+          "seed": 721313,
+          "log_ratio": -2.147205314435375,
+          "half_log_difference": -0.024738241932159344,
+          "endpoint_radius_half_difference_bohr": -0.0038866052193942124,
+          "endpoint_energy_half_difference_hartree": 0.00011053215223094659,
+          "minimum_BAR_overlap": 0.905781973478166,
+          "minimum_energy_ESS": 1259.6724348877196,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "a91a6dba5428a1b9b1e2f08a19f6a6388965b0d5039a45d07e55a00cbad0c86f"
+        },
+        {
+          "seed": 721317,
+          "log_ratio": -2.171850721050559,
+          "half_log_difference": 0.05129984259041809,
+          "endpoint_radius_half_difference_bohr": 0.0021746558559079254,
+          "endpoint_energy_half_difference_hartree": -0.00022644922776388077,
+          "minimum_BAR_overlap": 0.9062001270309488,
+          "minimum_energy_ESS": 955.7589331168948,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "d6d0d0c2b063523ad549e00ddda311b1f5dd60040f6317842c7da1851421bea9"
+        },
+        {
+          "seed": 721321,
+          "log_ratio": -2.146750611890244,
+          "half_log_difference": -0.008506620825260214,
+          "endpoint_radius_half_difference_bohr": -0.004372683788598675,
+          "endpoint_energy_half_difference_hartree": -8.70946243325399e-06,
+          "minimum_BAR_overlap": 0.8937872298983799,
+          "minimum_energy_ESS": 992.7440235581242,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "fe74abf796ebb757c887f30afdb864d388cd1ce8e3b520445dc9653d96dfea64"
+        },
+        {
+          "seed": 721323,
+          "log_ratio": -2.175657058766744,
+          "half_log_difference": 0.06270441159098006,
+          "endpoint_radius_half_difference_bohr": 0.0027464180697907015,
+          "endpoint_energy_half_difference_hartree": -0.0001276307797224152,
+          "minimum_BAR_overlap": 0.900195721795657,
+          "minimum_energy_ESS": 1119.6268021592882,
+          "endpoint_snapshot_count": 200,
+          "checkpoint_sha256": "207d8801820a18b928fc84d54227798a01a5c7f53e84c93943edde524469adfa"
+        }
+      ],
+      "log_quantum_classical_ratio": {
+        "seed_count": 8,
+        "mean": -2.1707849930679384,
+        "standard_error": 0.005955995415573079,
+        "CI95": [
+          -2.184868684269978,
+          -2.156701301865899
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -2.1729527596143,
+          -2.1710019263607525,
+          -2.195497923928297,
+          -2.185363628497235,
+          -2.147205314435375,
+          -2.171850721050559,
+          -2.146750611890244,
+          -2.175657058766744
+        ]
+      },
+      "paired_seed_half_log_difference": {
+        "seed_count": 8,
+        "mean": 0.0047494158826342225,
+        "standard_error": 0.015834923159004574,
+        "CI95": [
+          -0.03269422744125621,
+          0.042193059206524657
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -0.0753573641617784,
+          0.03535238743348357,
+          0.0032015981593720433,
+          -0.005960685793982012,
+          -0.024738241932159344,
+          0.05129984259041809,
+          -0.008506620825260214,
+          0.06270441159098006
+        ]
+      },
+      "paired_seed_radius_half_difference_bohr": {
+        "seed_count": 8,
+        "mean": -0.002641723148739672,
+        "standard_error": 0.0012541780475964234,
+        "CI95": [
+          -0.005607382975901464,
+          0.00032393667842212006
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -0.007335869181891885,
+          -0.005099064272353404,
+          -0.0014087319087885408,
+          -0.003951904744589285,
+          -0.0038866052193942124,
+          0.0021746558559079254,
+          -0.004372683788598675,
+          0.0027464180697907015
+        ]
+      },
+      "paired_seed_energy_half_difference_hartree": {
+        "seed_count": 8,
+        "mean": -3.60794724793001e-05,
+        "standard_error": 5.21850844728169e-05,
+        "CI95": [
+          -0.00015947758879514097,
+          8.731864383654077e-05
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          0.00014652266710815653,
+          -0.00024421053207482335,
+          2.4802372580567944e-05,
+          3.650703024030144e-05,
+          0.00011053215223094659,
+          -0.00022644922776388077,
+          -8.70946243325399e-06,
+          -0.0001276307797224152
+        ]
+      }
+    },
+    "reactant": {
+      "complete": true,
+      "seeds": [
+        {
+          "seed": 721401,
+          "log_ratio": -7.29131567002231,
+          "half_log_difference": -0.01611863390821444,
+          "endpoint_radius_half_difference_bohr": -0.00881265277745702,
+          "endpoint_energy_half_difference_hartree": -0.00013692279601013047,
+          "minimum_BAR_overlap": 0.953703401120494,
+          "minimum_energy_ESS": 2607.1226182775836,
+          "endpoint_snapshot_count": 0,
+          "checkpoint_sha256": "b768d34eb29e9ffe2014c6e6c3dba3f67e86df1b1414a4c29d27c1c823bd5d49"
+        },
+        {
+          "seed": 721403,
+          "log_ratio": -7.273656158677191,
+          "half_log_difference": 0.047899335757844774,
+          "endpoint_radius_half_difference_bohr": -0.0045222667311479725,
+          "endpoint_energy_half_difference_hartree": -2.313657242100642e-05,
+          "minimum_BAR_overlap": 0.9540805783528625,
+          "minimum_energy_ESS": 1541.0538798228836,
+          "endpoint_snapshot_count": 0,
+          "checkpoint_sha256": "d6fb33969c7d2baf8544d962aa3a92c9434b42042ac0d9ec60f0ba9fd452eabd"
+        },
+        {
+          "seed": 721407,
+          "log_ratio": -7.285161160865671,
+          "half_log_difference": -0.02031536566915726,
+          "endpoint_radius_half_difference_bohr": 0.0008283185494055711,
+          "endpoint_energy_half_difference_hartree": -1.621415290140038e-05,
+          "minimum_BAR_overlap": 0.9540075454027407,
+          "minimum_energy_ESS": 2730.9283664192835,
+          "endpoint_snapshot_count": 0,
+          "checkpoint_sha256": "7b566b9503e880dc9609eb1489601b56bace6783700aa2a1d14d371b6fca7bbe"
+        },
+        {
+          "seed": 721409,
+          "log_ratio": -7.276913906440721,
+          "half_log_difference": -0.005655765579689387,
+          "endpoint_radius_half_difference_bohr": 0.0010832548760000282,
+          "endpoint_energy_half_difference_hartree": -2.633124305256862e-05,
+          "minimum_BAR_overlap": 0.954272645790585,
+          "minimum_energy_ESS": 1950.3122240099212,
+          "endpoint_snapshot_count": 0,
+          "checkpoint_sha256": "8d2224fc1474ec951142961228ad0c8216c85762f5a42af5d2ca5ee61bd58cc6"
+        }
+      ],
+      "log_quantum_classical_ratio": {
+        "seed_count": 4,
+        "mean": -7.281761724001473,
+        "standard_error": 0.004000370606698603,
+        "CI95": [
+          -7.294492688658527,
+          -7.26903075934442
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -7.29131567002231,
+          -7.273656158677191,
+          -7.285161160865671,
+          -7.276913906440721
+        ]
+      },
+      "paired_seed_half_log_difference": {
+        "seed_count": 4,
+        "mean": 0.0014523926501959217,
+        "standard_error": 0.01578612448225864,
+        "CI95": [
+          -0.04878610088311677,
+          0.051690886183508616
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -0.01611863390821444,
+          0.047899335757844774,
+          -0.02031536566915726,
+          -0.005655765579689387
+        ]
+      },
+      "paired_seed_radius_half_difference_bohr": {
+        "seed_count": 4,
+        "mean": -0.002855836520799848,
+        "standard_error": 0.002369073116488091,
+        "CI95": [
+          -0.010395284507314332,
+          0.004683611465714636
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -0.00881265277745702,
+          -0.0045222667311479725,
+          0.0008283185494055711,
+          0.0010832548760000282
+        ]
+      },
+      "paired_seed_energy_half_difference_hartree": {
+        "seed_count": 4,
+        "mean": -5.065119109627647e-05,
+        "standard_error": 2.8834605262516368e-05,
+        "CI95": [
+          -0.00014241577407828586,
+          4.11133918857329e-05
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -0.00013692279601013047,
+          -2.313657242100642e-05,
+          -1.621415290140038e-05,
+          -2.633124305256862e-05
+        ]
+      },
+      "finite_P_reference_log_ratio": -7.27275868577072,
+      "difference_from_finite_P_reference": -0.009003038230753546,
+      "CI95_contains_finite_P_reference": true
+    }
+  },
+  "protocol_sha256": "4657032eb8e10d59061a52a45adba6cac9d4d0d87213461af11e5589de49c99c",
+  "finite_P_reactant_reference_sha256": "ac5402749115c8fecb43220b2afed2bd0b69d558eb3779d72364ff29d9dffdbc",
+  "physical_converged": false,
+  "literature_reproduced": false,
+  "limitations": [
+    "Fixed-surface equilibrium partition only; recrossing and bead/domain refinement remain separate.",
+    "Temporal difference CIs are mixing diagnostics, not tests of exact equivalence.",
+    "A partially completed campaign must not be treated as the registered final estimate."
+  ]
+}

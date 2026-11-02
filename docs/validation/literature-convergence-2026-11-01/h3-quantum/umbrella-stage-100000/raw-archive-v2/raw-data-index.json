@@ -1,0 +1,81 @@
+{
+  "Git_mutated": false,
+  "archive": {
+    "bytes": 474212366,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.tar.gz",
+    "sha256": "f02c799907993143533a570e1862bbb2772f9b8994344c50982b102b02d5603d"
+  },
+  "closed_root_stdout": {
+    "original": {
+      "bytes": 296,
+      "path": "/workspace/scratch/a5e4820daedd/umbrella-100000-archive-v2.log",
+      "sha256": "3ba2cb95efbaeb97a5d34e00872d64dcf2f6c037aac9a5fc253ec79628b0ee17"
+    },
+    "preserved": {
+      "bytes": 296,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/root-stdout.log",
+      "sha256": "3ba2cb95efbaeb97a5d34e00872d64dcf2f6c037aac9a5fc253ec79628b0ee17"
+    },
+    "scope": "Full retained redirected stdout/stderr of the root-adopted single archive invocation; closed after actual session46558 exit0."
+  },
+  "compact_member_inventory": {
+    "bytes": 47244,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/member-inventory.json",
+    "sha256": "295d48f75c8ac35ac25baedd8ad32f641efeaf9f7a12d2779cb3d494188ee8ae"
+  },
+  "compact_stage_snapshot_is_scheduler_snapshot": false,
+  "created_utc": "2026-11-01T21:41:51.524191+00:00",
+  "exact_replay_execution": {
+    "bytes": 16019,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/execution.json",
+    "sha256": "536d555498a54219b78aa200ff593b52622e6ca06ad9ac0729f122c1dd89d331"
+  },
+  "executed_root_driver_original": {
+    "bytes": 4288,
+    "path": "/workspace/scratch/a5e4820daedd/adopt_umbrella_100000_archive_v2.py",
+    "sha256": "8975679d173f425a8dc240bdf34c1c65793c7b694a657ddbc431326fcaa0bf36"
+  },
+  "executed_root_driver_preserved": {
+    "bytes": 4288,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/executed-root-driver.py",
+    "sha256": "8975679d173f425a8dc240bdf34c1c65793c7b694a657ddbc431326fcaa0bf36"
+  },
+  "external_code_and_model": "Git-backed scientific/tool sources and exact external BKMP2 library are prerequisites identified by the preserved protocol/source hashes; none is included in this raw archive.",
+  "future_continuation_prior_snapshot_member": "data/campaign-run/stage-100000.json",
+  "independent_outer_archive_SHA_rechecked_in_this_packaging": true,
+  "lease_anomaly_cause": "unexplained",
+  "member_count": 116,
+  "member_inventory": {
+    "bytes": 47244,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.members.json",
+    "sha256": "295d48f75c8ac35ac25baedd8ad32f641efeaf9f7a12d2779cb3d494188ee8ae"
+  },
+  "new_physical_steps": 0,
+  "new_sampling_or_continuation_authorized": false,
+  "original_lease_absence_claimed": false,
+  "raw_NPZ_count": 33,
+  "replay_command_receipt": {
+    "bytes": 884,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/replay-launch.json",
+    "sha256": "8aea1a2579180252e6cf3bc8ab449e644a7e3cfbe3ec63d6c983d6af4d8c731f"
+  },
+  "restored_campaign_contains_original_lease": false,
+  "root_actual_exit": {
+    "bytes": 401,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-exec-observation.json",
+    "sha256": "b71acd9a6b3d472d28d8fb5bd6b39500d74cc16c12fab5df681659e269827145"
+  },
+  "root_adoption": {
+    "bytes": 5464,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-adoption.json",
+    "sha256": "39c27db548b74e21a6351d70d117a328bcbc2fccdeb3e66af6593eec855c9d57"
+  },
+  "schema": "pyrpmd.h3.umbrella100000-raw-data-index.v2",
+  "scientific_precision_failure_retained": true,
+  "scientific_validation_gates_all_pass": false,
+  "scope": "Eight complete100000-sweep umbrella ladders, all30k/100k state and RNG prefixes, final metadata and original analysis; explicit read-only lease-anomaly evidence.",
+  "uncompressed_member_bytes": 474508661,
+  "upload": false,
+  "validated_extraction": "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2",
+  "validated_replay_output": "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-replay-v2"
+}

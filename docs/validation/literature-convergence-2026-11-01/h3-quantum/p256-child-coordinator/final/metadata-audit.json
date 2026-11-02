@@ -1,0 +1,73 @@
+{
+  "JSON_documents_parsed": 11,
+  "JSON_schema_limitation": "The optional jsonschema package is absent; JSON syntax, schema reference structure and bound source/runtime constants were checked without installing dependencies. Runtime preflight remains the authoritative contract.",
+  "JSON_schema_metaschema_validation_performed": false,
+  "PES_evaluations": 0,
+  "README": {
+    "bytes": 10753,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/README.md",
+    "sha256": "55903aa79f90aca031c3bc51231dac85a3dc0f7a00f45ca182bcb27a42b93936"
+  },
+  "actual_source_native_hashes_reverified": 18,
+  "all_local_link_targets_exist": true,
+  "created_utc": "2026-11-01T20:15:21.765354+00:00",
+  "frozen_physical_sources_modified": false,
+  "independent_review": {
+    "bytes": 5980,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/independent-review.json",
+    "sha256": "06aaa12cd2302c078a6969cf95ef9d9b928a9ffceff7f92f3edf7de0a247f67d"
+  },
+  "local_links": [
+    {
+      "link": "../p256-child-tool/README.md",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/README.md"
+    },
+    {
+      "link": "../p256-fixed-eight-chain-design/README.md",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/README.md"
+    },
+    {
+      "link": "output-contract.json",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/output-contract.json"
+    },
+    {
+      "link": "execution-authorization.schema.json",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/execution-authorization.schema.json"
+    },
+    {
+      "link": "resource-decision.schema.json",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/resource-decision.schema.json"
+    },
+    {
+      "link": "final/synthetic-gate.json",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/synthetic-gate.json"
+    },
+    {
+      "link": "final/pytest.log",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/pytest.log"
+    },
+    {
+      "link": "final/pytest.xml",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/pytest.xml"
+    },
+    {
+      "link": "independent-review.json",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/independent-review.json"
+    },
+    {
+      "link": "final/actual-source-inventory.json",
+      "target": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/actual-source-inventory.json"
+    }
+  ],
+  "new_test_execution_in_this_audit": false,
+  "output_contract_driver_hash_matches": true,
+  "physical_steps": 0,
+  "producer_registration_or_live_preflight_performed": false,
+  "schema": "pyrpmd.h3.p256-child-coordinator-metadata-audit.v1",
+  "schema_source_runtime_constants_match": true,
+  "source_and_tests": {
+    "benchmarks/h3/p256_child_campaign.py": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb",
+    "tests/test_h3_p256_child_campaign.py": "74fa8be60a287ec4a8a604e07de8a7407c854daf47f63e853a990adead75682d"
+  },
+  "unique_final_JUnit_cases": 73
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py",
+    "--completion-receipt",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/root-exec-exit.json"
+  ],
+  "created_utc": "2026-11-01T20:10:44.718608+00:00",
+  "log_sha256": "746f8d10ebc33aa4acc44081832839db64aa8aba8627367888627b7a02fcbd0d",
+  "new_physical_runs": 0,
+  "returncode": 0,
+  "root_observed_completion_sha256": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4",
+  "schema": "pyrpmd.h3.p256-parent-archive-execution.v1",
+  "source_sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb",
+  "source_unchanged": true,
+  "upload_attempted": false,
+  "wall_seconds": 3.703084205997584
+}

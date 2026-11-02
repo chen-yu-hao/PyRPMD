@@ -1,0 +1,40 @@
+{
+  "schema": "pyrpmd.h3.complete-quantum-analysis-execution.v1",
+  "started_utc": "2026-11-01T18:14:55.417241+00:00",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_analyze.py",
+    "--data",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200",
+    "--horizon",
+    "200"
+  ],
+  "independent_seeds": [
+    721301,
+    721303,
+    721307,
+    721309,
+    721313,
+    721317,
+    721321,
+    721323
+  ],
+  "horizon_fs": 200,
+  "pair_batches": [
+    0
+  ],
+  "complete_cohort_required": true,
+  "available_only_used": false,
+  "source_sha256": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_analyze.py": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/protocol.json": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589",
+    "/workspace/scratch/a5e4820daedd/run_complete_quantum_analysis.py": "afbbc142710aceb4a4c9a2f30cbad34e66a35f712ae6134503636a212f4bb7bd"
+  },
+  "sources_unchanged": true,
+  "elapsed_seconds": 4.118540937000944,
+  "CPU_seconds": 4.08128,
+  "returncode": 0,
+  "no_continuation_launched": true
+}

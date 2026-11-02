@@ -1,0 +1,289 @@
+{
+  "NPZ_or_live_campaign_files_included": false,
+  "created_utc": "2026-11-01T19:40:28.308385+00:00",
+  "earlier_frozen_inventories_unchanged": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/publication-inventory.json",
+      "sha256": "19932ab92f282c632227fbb473797963e221d785531127836ee55d75c21d27d3"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/publication-inventory.json",
+      "sha256": "d8d403e91b8928f4b9cc09933cc3f9dd282c1630dff99a05faa37f086a41e533"
+    }
+  ],
+  "external_PES_library_or_coefficients_included": false,
+  "file_count": 53,
+  "files": [
+    {
+      "bytes": 36870,
+      "path": "benchmarks/hch4/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    },
+    {
+      "bytes": 9404,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/README.md",
+      "sha256": "b87f56958d108a62a8057760ae8cabdc6a5bcb06af63de39376c31b3ebe6e834"
+    },
+    {
+      "bytes": 3745,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/failure.json",
+      "sha256": "8fc3682582988397d6090bf1d96a8548b20ab7c56a92c23a0184079003a4cd2e"
+    },
+    {
+      "bytes": 35579,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/reference_pilot.py",
+      "sha256": "6d93f69e185015a507c10d4159ed650c8bc6571f0c6215fdf282589deeee8ef3"
+    },
+    {
+      "bytes": 449,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/run/CPU-budget.json",
+      "sha256": "6c65596f8f8c03dcc632ba7f790289f1492d25cfcbb325c92df8611b6f23fc7b"
+    },
+    {
+      "bytes": 263,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/run/RUN_ONCE.json",
+      "sha256": "1a8615ff73740eb1a2b998123b7b48bb1719d7f0926c7a63954b939257e1de2a"
+    },
+    {
+      "bytes": 1368358,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/run/ledger.json",
+      "sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7"
+    },
+    {
+      "bytes": 23097,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/run/registration.json",
+      "sha256": "7e88f729e5e61fc0096bf0aaf6f546b85d52d61edb9f6a9678b152701a8765a4"
+    },
+    {
+      "bytes": 20744,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/test_hch4_reference_pilot.py",
+      "sha256": "41af569b6f97d6c8d59be063fcd4b59872f4dc19060dd58e43172eb02ec3c540"
+    },
+    {
+      "bytes": 516,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/CPU-budget.json",
+      "sha256": "a65cc5623f11d92c490872b70eac3720c0f13654df6e7f554f753cfff06b2526"
+    },
+    {
+      "bytes": 329,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/RUN_ONCE.json",
+      "sha256": "02702fe92b24a268214b0c10168c129db475e9125f19444bee34acd777da765f"
+    },
+    {
+      "bytes": 304,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/WORKER_ONCE.json",
+      "sha256": "a4572d67af6fc63f863ee688461732f58960de1d7bfdbd4e83449560a00eb92e"
+    },
+    {
+      "bytes": 222464,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/calls.jsonl",
+      "sha256": "7187e77cf04616c3692997d663b962ec02d7a6484005e207153450b962d1ca15"
+    },
+    {
+      "bytes": 1368358,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/ledger.json",
+      "sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7"
+    },
+    {
+      "bytes": 24747,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/registration.json",
+      "sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6"
+    },
+    {
+      "bytes": 49573,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/report.json",
+      "sha256": "0b957112d970fc2eaeda735c1c29dcb8ebf5357d3c5cfeb0a4f471d11f62cc92"
+    },
+    {
+      "bytes": 1513,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/runtime.json",
+      "sha256": "fbdd87322d31752b01dcb5868ec7da4142b7cec25ff62eb3c0f492f3abd6115f"
+    },
+    {
+      "bytes": 1261,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/supervisor.json",
+      "sha256": "d9e8303a3f1aa0e64a588ab78d87fd0b192b94697156514dbde008922ed36d91"
+    },
+    {
+      "bytes": 1856,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/worker.log",
+      "sha256": "28d0243d700ed2bdc9959263e1db0c5a3d7c9777c6bd624c682b116829049bf7"
+    },
+    {
+      "bytes": 1261,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/execute-namespace-v2.log",
+      "sha256": "76fd0c646ceb3673fdf9909bba02bd79a7c6cbb220172d02bbf6d3599cb41020"
+    },
+    {
+      "bytes": 777,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/execute.log",
+      "sha256": "04768e8af50484287a3b21c9d63ac5f837fd16804601aeaacf52766af1308ab9"
+    },
+    {
+      "bytes": 36870,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/executed-source/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    },
+    {
+      "bytes": 23126,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/executed-source/test_hch4_reference_pilot.py",
+      "sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e"
+    },
+    {
+      "bytes": 28719,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/execution-plan-namespace-v2.json",
+      "sha256": "13d0194e931fa2c3b9e1e4268b45d81630d6fc9eafaef5b75aa5081de3d0a194"
+    },
+    {
+      "bytes": 26008,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/execution-plan.json",
+      "sha256": "1e4d8d6074fc00cdaf0b330295bdaf5a26590ca57e20a710991fe5d797e9382d"
+    },
+    {
+      "bytes": 6329,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/execution-summary.json",
+      "sha256": "761e2c034a967b019bfbadb09e505688d479b52dfe265cc7df991b7f101ada1d"
+    },
+    {
+      "bytes": 5756,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/implementation-review.json",
+      "sha256": "be2114d8b811d0f2c228b9bee9ec1db612578b7094236d68a29511e7b6f0c131"
+    },
+    {
+      "bytes": 7045,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/independent-output-replay.json",
+      "sha256": "c6ef00fc44adb2d70aea63dc3657cddb75f3589083cffc547890d38ec6794763"
+    },
+    {
+      "bytes": 29496,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/initial-source/reference_pilot.py",
+      "sha256": "7680aeb68843af1204ad87b2b2d58433559403c0baefa8bf486b2f50ef0e7f44"
+    },
+    {
+      "bytes": 15341,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/initial-source/test_hch4_reference_pilot.py",
+      "sha256": "879d4810bbecb4dc728c572e287b46fac0753c5a3891c997069e5c962e6490e1"
+    },
+    {
+      "bytes": 100,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/initial-synthetic-pytest.log",
+      "sha256": "1181a24cc081427ad3b0fdcb610ca29cf601241f2fd425cdfe35302069c156ed"
+    },
+    {
+      "bytes": 3073,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/initial-synthetic-pytest.xml",
+      "sha256": "94017d38549133785f4e7a77ba535e27d441eeb0e7d34bfedd38bf77458e2c99"
+    },
+    {
+      "bytes": 763,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/initial-synthetic-source.json",
+      "sha256": "c9238cd9e2e05f31699555b3bcd2daefc5c880114589dc36bc628d00386f1bef"
+    },
+    {
+      "bytes": 1028,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/launch-receipt-before-PES.json",
+      "sha256": "20213e15a2e0dcbc203ab4f85fbd7345f9854c906cd5bacf8d8069cae5677f71"
+    },
+    {
+      "bytes": 1212,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/launch-receipt-namespace-v2-before-PES.json",
+      "sha256": "86f2f7b26a31b5fa4367d681ae4ed704571e35c03ba2adbd769168948389b378"
+    },
+    {
+      "bytes": 2941,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-focused-gate.json",
+      "sha256": "8e25945b6941748a8720f68ebd5c3767e6a6186adfbbfe54bd56e158cb274d34"
+    },
+    {
+      "bytes": 113,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-focused-pytest.log",
+      "sha256": "d2acc6ff0044b60d07b93ec5678b6a5fca56d4bf4ef73d48f24fa56e13a3a363"
+    },
+    {
+      "bytes": 1386,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-focused-pytest.xml",
+      "sha256": "bb1be783d94c71362ce6137206311b411bd3dda2d8e6e51b9dd0bb5f42be4683"
+    },
+    {
+      "bytes": 5093,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-implementation-review.json",
+      "sha256": "06444a3890fe3494843cf1c9623cf3392db3a0d905dc35f61711f5b681bdbc80"
+    },
+    {
+      "bytes": 113,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-independent-pytest.log",
+      "sha256": "1911abc7809aa7106466b57b747eef8c8141c1f74e15609c8a4f3bf9b5134241"
+    },
+    {
+      "bytes": 682,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/namespace-v2-independent-pytest.xml",
+      "sha256": "26dd7e4f84f716a28093f1ec7642c5aac26eec5a78969791fa6b1617fd55f5f0"
+    },
+    {
+      "bytes": 111,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/prepare-namespace-v2.log",
+      "sha256": "84dccbb75ae37c506631eaf32b1f6f3311f711b25c6a916a4ebce00fb532b03f"
+    },
+    {
+      "bytes": 98,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/prepare.log",
+      "sha256": "d3c01083ec441248d17a7c76b4773349af51ca8b1bcd56c9e411a05a4ce3c1f4"
+    },
+    {
+      "bytes": 8664,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/replay.py",
+      "sha256": "82323926c8d5473d7505fee49f3f7f196b14d189d169cfc5859eac9089f53c5c"
+    },
+    {
+      "bytes": 1779,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/resource-accounting-initial/observation.json",
+      "sha256": "818ef67a9b545714eef999ce29c644e74a9e142c4cad79e4d848e82df864f8bc"
+    },
+    {
+      "bytes": 30217,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/resource-accounting-initial/reference_pilot.py",
+      "sha256": "9b9562e3a9b07626c81d24df88a95d8082354ef52f15d51bfdaab75ac52bb4df"
+    },
+    {
+      "bytes": 100,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/resource-accounting-initial/synthetic-pytest.log",
+      "sha256": "ca9dc3e93fa69006af03cc0986c047f8f578b4f759bd6e475fc1967fbef7415e"
+    },
+    {
+      "bytes": 4082,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/resource-accounting-initial/synthetic-pytest.xml",
+      "sha256": "f09d45e372ee27aa4095e6b3d9e5ac22ec4fc6e63f83b6ab65c29273fd907b2e"
+    },
+    {
+      "bytes": 17605,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/resource-accounting-initial/test_hch4_reference_pilot.py",
+      "sha256": "9465068683afbcfba3843f46881fe26ffbbef781b2aee88170dd386fb581a5e5"
+    },
+    {
+      "bytes": 1931,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/synthetic-gate.json",
+      "sha256": "b9d3a591029e8d883019bdfaaa692976b5a06272a669a132c8dd6543bd46918d"
+    },
+    {
+      "bytes": 100,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/synthetic-pytest.log",
+      "sha256": "3da0915204cfa9d09dc26d58b028304301027ec4461d3da90a6ccde1ed13fb5a"
+    },
+    {
+      "bytes": 4369,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/synthetic-pytest.xml",
+      "sha256": "8fc7df6b51be480261da1d0a9cec974fed2287aa18855713736f48e309ec5ec5"
+    },
+    {
+      "bytes": 23126,
+      "path": "tests/test_hch4_reference_pilot.py",
+      "sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e"
+    }
+  ],
+  "no_further_PES_calls_or_budget_extension_authorized_by_this_inventory": true,
+  "schema": "pyrpmd.hch4-reference-pilot-publication-inventory.v1",
+  "scientific_source_guards_unchanged": 157,
+  "scope": "Implementation/tests, synthetic gates, independent reviews, original failed zero-PES attempt, namespace repair, complete fixed ledger/PES events and independent saved-output replay. No physical rate or validated precision reference.",
+  "status": "frozen_complete_excluded_pilot_and_preserved_zero_PES_failure",
+  "total_bytes": 3458844
+}

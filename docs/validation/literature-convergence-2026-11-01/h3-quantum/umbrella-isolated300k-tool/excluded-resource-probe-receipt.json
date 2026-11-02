@@ -1,0 +1,45 @@
+{
+  "PES_calls": 0,
+  "actual_archive_restores": 0,
+  "commands_environment": {
+    "CPU_affinity": [
+      5
+    ],
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONPATH": "src:.",
+    "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+    "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+  },
+  "not_measurements_of_production_physical_convergence": true,
+  "owned_only_observability": {
+    "actual_exit_code": 0,
+    "meaning": "Only this probe PID4 and its directly spawned inert child PID5 were queried. /proc was absent for both; no third-party PID lookup. Own getrusage and known-child pidfd liveness worked.",
+    "result": {
+      "bytes": 557,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/owned-resource-observability-probe.json",
+      "sha256": "b61b1b98737ade12743a4155c383376cbb0786fbe70ce9bfeed008e214693bd8"
+    },
+    "tool_chunk_id": "9adeae",
+    "tool_wall_time_seconds": 0.166507547
+  },
+  "raw_checkpoint_reads": 0,
+  "recorded_utc_after_executions": "2026-11-01T22:22:33.523519+00:00",
+  "schema": "pyrpmd.h3.isolated300k-excluded-resource-probe-receipt.v1",
+  "scientific_sampler_calls": 0,
+  "scope": "Tool-return and resulting-file identities transcribed after the bounded excluded probes; not a pre-execution source guard or exact start-time assertion.",
+  "synthetic_address_space": {
+    "actual_exit_code": 0,
+    "meaning": "Installed1GiB RLIMIT_AS,30CPU-s RLIMIT_CPU and30s alarm before NumPy/SciPy/frozen-module imports; allocated/touched synthetic observation arrays plus201MB surrogate and ran frozen array_description copies/hashes; no source changes or actual raw/PES use.",
+    "result": {
+      "bytes": 1993,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/synthetic-AS-layout-probe.json",
+      "sha256": "b0fba866f8ff531d0bbbdecb9c5a9ff0971915a6ecd6cb9f8b09c2c423773351"
+    },
+    "tool_chunk_id": "4e1abc",
+    "tool_wall_time_seconds": 0.92757147
+  }
+}

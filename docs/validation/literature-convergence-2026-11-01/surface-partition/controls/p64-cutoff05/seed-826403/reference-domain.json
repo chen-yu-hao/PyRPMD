@@ -1,0 +1,15 @@
+{
+  "method": "independent quadrature-centroid and exact normalized free-ring draws",
+  "draws": 131072,
+  "accepted": 131010,
+  "probability": 0.9995269775390625,
+  "log_probability": -0.00047313437135392754,
+  "standard_error": 6.0059702777422366e-05,
+  "binomial_CI95": [
+    0.9993936469935206,
+    0.9996373177605232
+  ],
+  "seed": 826403,
+  "independent_from_chain": true,
+  "uncertainty_note": "Binomial interval only; reference quadrature is a separate deterministic convergence check."
+}

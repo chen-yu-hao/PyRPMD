@@ -1,0 +1,20 @@
+{
+  "MD_steps": 0,
+  "actual_pilot_registration_or_launch": false,
+  "cases_passed": 30,
+  "real_PES_evaluations": 0,
+  "reported_seconds": 7.52,
+  "source": [
+    {
+      "bytes": 63126,
+      "path": "benchmarks/hch4/efficiency_pilot.py",
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    {
+      "bytes": 14129,
+      "path": "tests/test_hch4_efficiency_pilot.py",
+      "sha256": "40af14645189a1b384b0fc6f3b2bd6a9f82b5caa5831420e8363037fdf7b8181"
+    }
+  ],
+  "synthetic_random_draws_used": true
+}

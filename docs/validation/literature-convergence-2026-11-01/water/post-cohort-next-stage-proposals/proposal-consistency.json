@@ -1,0 +1,38 @@
+{
+  "PES_evaluations": 0,
+  "RNG_draws": 0,
+  "actual_original_checkpoint_files_reloaded": false,
+  "adoption_created": false,
+  "all8_config_previews_preserve_exact400ps_0p25fs_budget": true,
+  "all8_source_states_match_the_sealed_selection_and_original_complete_assessment": true,
+  "all_checks_passed": true,
+  "all_frozen_sources_and_evidence_hashes_rechecked_unchanged": true,
+  "contexts_created": 0,
+  "created_utc": "2026-11-01T21:22:55.547095+00:00",
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "future_root_adoption_template_remains_invalid": true,
+  "historical_input_binding_only_until_lease_safe_adoption": true,
+  "integration_tree_modified": false,
+  "live_registration_created": false,
+  "new_longlag_counts_and_sampling_grid_consistent": true,
+  "new_method_tests_run": 0,
+  "paired_outcome_or_current_lease_release_asserted": false,
+  "paired_registration_only_was_read": {
+    "bytes": 15572,
+    "path": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01/registration.json",
+    "sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365"
+  },
+  "physical_steps": 0,
+  "proposed_output_directories_created": false,
+  "schema": "pyrpmd.water-next-stage-metadata-consistency.v1",
+  "unchanged_scalar_thresholds_and_fixed_late_windows": true
+}

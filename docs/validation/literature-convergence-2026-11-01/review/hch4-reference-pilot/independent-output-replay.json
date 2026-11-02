@@ -1,0 +1,172 @@
+{
+  "PES_evaluations_by_replay": 0,
+  "created_utc": "2026-11-01T19:38:20.485322+00:00",
+  "dynamics_steps": 0,
+  "independent_seeds": 8,
+  "inputs": {
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/CPU-budget.json": {
+      "bytes": 516,
+      "sha256": "a65cc5623f11d92c490872b70eac3720c0f13654df6e7f554f753cfff06b2526"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/RUN_ONCE.json": {
+      "bytes": 329,
+      "sha256": "02702fe92b24a268214b0c10168c129db475e9125f19444bee34acd777da765f"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/WORKER_ONCE.json": {
+      "bytes": 304,
+      "sha256": "a4572d67af6fc63f863ee688461732f58960de1d7bfdbd4e83449560a00eb92e"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/calls.jsonl": {
+      "bytes": 222464,
+      "sha256": "7187e77cf04616c3692997d663b962ec02d7a6484005e207153450b962d1ca15"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/ledger.json": {
+      "bytes": 1368358,
+      "sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/registration.json": {
+      "bytes": 24747,
+      "sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/report.json": {
+      "bytes": 49573,
+      "sha256": "0b957112d970fc2eaeda735c1c29dcb8ebf5357d3c5cfeb0a4f471d11f62cc92"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/runtime.json": {
+      "bytes": 1513,
+      "sha256": "fbdd87322d31752b01dcb5868ec7da4142b7cec25ff62eb3c0f492f3abd6115f"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/supervisor.json": {
+      "bytes": 1261,
+      "sha256": "d9e8303a3f1aa0e64a588ab78d87fd0b192b94697156514dbde008922ed36d91"
+    },
+    "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768-namespace-v2/worker.log": {
+      "bytes": 1856,
+      "sha256": "28d0243d700ed2bdc9959263e1db0c5a3d7c9777c6bd624c682b116829049bf7"
+    }
+  },
+  "limitations": [
+    "Finite-domain/PES reliability and missing tails are unvalidated.",
+    "Empirical ESS is not a bound on unseen importance tails.",
+    "A completed cost pilot is not a scientific accuracy or equivalence pass.",
+    "Eight independent diagnostic seed vectors; channels/paired surfaces are not extra replications."
+  ],
+  "maximum_absolute_replay_difference": 1.0658141036401503e-14,
+  "paired_log_surface_difference": -2.8407497708884826,
+  "pooled_log_flux_ratios": {
+    "alpha_0.999": -30.896679541362857,
+    "alpha_1.007": -33.737429312251344
+  },
+  "resources": {
+    "measured_supervisor_CPU_seconds_before_receipt": 0.67336529,
+    "measured_worker_entire_process_CPU_seconds": 1.040043,
+    "prepare_CPU_seconds_before_registration_write": 0.715043672,
+    "three_enforced_caps": {
+      "created_utc": "2026-11-01T19:38:12.290134+00:00",
+      "hard_caps_requested": true,
+      "measured_supervisor_CPU_seconds_at_allocation": 0.660938033,
+      "preparation_hard_CPU_seconds": 2,
+      "registration_sha256": "c74d63139ff3badf13812f26b29ea2fd920da071a0975b557ff5ce9366b123c6",
+      "soft_total_CPU_admission_seconds": 55,
+      "sum_hard_CPU_caps_seconds": 60,
+      "supervisor_PID": 4,
+      "supervisor_hard_CPU_seconds": 3,
+      "supervisor_process_token": "5bbd8d0381174988a234ebd1a9817a0b",
+      "worker_hard_CPU_seconds": 55
+    },
+    "unmeasured_finalization_bounded_by_allocated_reserves": true
+  },
+  "saved_PES_success_records_replayed": 641,
+  "scalar_comparisons": 992,
+  "schema": "pyrpmd.hch4-reference-pilot-independent-output-replay.v1",
+  "scope": "Bookkeeping and independent standard-library reweighting only; no physical rate or accuracy validation.",
+  "source_guards_unchanged": 157,
+  "statistical_summaries": {
+    "alpha_0.999": {
+      "channel_means": {
+        "0": {
+          "draws": 64,
+          "empirical_ESS": 1.8080029073538313,
+          "log_mean": -34.02874858915953,
+          "maximum_normalized_weight": 0.7227591614483289,
+          "positive_weights": 54
+        },
+        "2": {
+          "draws": 64,
+          "empirical_ESS": 1.2193591132566604,
+          "log_mean": -30.348440608040015,
+          "maximum_normalized_weight": 0.9025557162812925,
+          "positive_weights": 56
+        },
+        "3": {
+          "draws": 64,
+          "empirical_ESS": 1.952443077964067,
+          "log_mean": -29.961998919335837,
+          "maximum_normalized_weight": 0.6308734179501649,
+          "positive_weights": 51
+        },
+        "4": {
+          "draws": 64,
+          "empirical_ESS": 1.125538886961289,
+          "log_mean": -30.31216209101828,
+          "maximum_normalized_weight": 0.9422162037612627,
+          "positive_weights": 53
+        }
+      },
+      "draws": 256,
+      "empirical_ESS": 4.32849939548344,
+      "log_mean": -30.472334477812304,
+      "log_surface_integral_without_common_rotation": -29.086040116692413,
+      "maximum_normalized_weight": 0.27647289565297006,
+      "positive_weights": 214
+    },
+    "alpha_1.007": {
+      "channel_means": {
+        "0": {
+          "draws": 64,
+          "empirical_ESS": 1.2310327566756216,
+          "log_mean": -33.47090048533775,
+          "maximum_normalized_weight": 0.8996661150997215,
+          "positive_weights": 54
+        },
+        "2": {
+          "draws": 64,
+          "empirical_ESS": 2.2009834014172305,
+          "log_mean": -33.66988994432465,
+          "maximum_normalized_weight": 0.6186605067496599,
+          "positive_weights": 56
+        },
+        "3": {
+          "draws": 64,
+          "empirical_ESS": 1.9792164905264638,
+          "log_mean": -35.65258904148805,
+          "maximum_normalized_weight": 0.6796544047338816,
+          "positive_weights": 51
+        },
+        "4": {
+          "draws": 64,
+          "empirical_ESS": 3.9219317438811743,
+          "log_mean": -32.458792559967456,
+          "maximum_normalized_weight": 0.37464738844930023,
+          "positive_weights": 53
+        }
+      },
+      "draws": 256,
+      "empirical_ESS": 7.183027316175012,
+      "log_mean": -33.31308424870079,
+      "log_surface_integral_without_common_rotation": -31.926789887580895,
+      "maximum_normalized_weight": 0.22007812869897006,
+      "positive_weights": 214
+    },
+    "entry": {
+      "draws": 256,
+      "empirical_ESS": 6.1429293786934265,
+      "log_mean": 1.8106394246704465,
+      "log_surface_integral_without_common_rotation": 1.8106394246704465,
+      "maximum_normalized_weight": 0.32999415545663674,
+      "positive_weights": 213
+    }
+  },
+  "status": "passed_saved_output_replay",
+  "target_draws": 768
+}

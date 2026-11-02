@@ -1,0 +1,54 @@
+{
+  "schema": "pyrpmd.h3.P256-parent-root-resource-decision.v1",
+  "created_utc": "2026-11-01T19:48:59.577064+00:00",
+  "safe_to_launch_parent_workers": true,
+  "parent_workers": 2,
+  "declared_project_active_workers": 8,
+  "prerequisite_queues_drained": true,
+  "evidence": [
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-queue-a-completion.json",
+      "sha256": "593fac495245a38d4ef51f82b1315911d9b40020e256cfb6fb184203c0e40e1f",
+      "bytes": 2678
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-queue-b-completion.json",
+      "sha256": "0de7503098f9952cf54b9d1b3d6ec1b2f02d3ce731170856bbb4444be5a8f239",
+      "bytes": 2678
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-boundary-20261101T1944Z.json",
+      "sha256": "3c8db033aa727341a39b02e7e788fc878ee60f18e64880c728be74629e29d963",
+      "bytes": 4080
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-continuation-20261101T1945Z.json",
+      "sha256": "412b2e66d687caf9d0bb055f5dbb6e4e35c14e03f2aadfa804b3f0374b73d0c2",
+      "bytes": 1945
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/extra-pairs-stage-completion-exec.json",
+      "sha256": "d9fbcab8a9c944052923f2e3d12fb6d419174c3ab3de0e104d22c11506d0d287",
+      "bytes": 402
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-admission-2-to-4.json",
+      "sha256": "94d0a3d49450db0571e59391cc78a9d84dfb016da257f7732c859d97a888ddd0",
+      "bytes": 1509
+    }
+  ],
+  "allocation": {
+    "quantum_umbrella_worker_ceiling": 4,
+    "original_water_remaining_integration_workers": 2,
+    "new_P256_parent_workers": 2
+  },
+  "CPU_affinity": [
+    6,
+    7
+  ],
+  "whole_campaign_wall_seconds": 7200,
+  "reason": "The completed H3 extra pool and completed water queues a/b have no pending integration work. Water continuation admits only1107/1108; umbrella control permits4. The two now-free slots fund the complete fixed P256 parent cohort.",
+  "water_all_global_leases_release_is_not_required_for_unrelated_parent_output": true,
+  "no_child_dynamics_adopted_by_this_decision": true,
+  "user_task_basis": "Continue PyRPMD testing and paper comparisons until the intended convergence checks are complete."
+}

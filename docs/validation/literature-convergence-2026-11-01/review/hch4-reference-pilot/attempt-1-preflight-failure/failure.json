@@ -1,0 +1,68 @@
+{
+  "PES_evaluations": 0,
+  "allowed_recovery_proposal": "Use an OS-entropy interpreter token independent of scientific RNG; focused regression and independent review; new directory with bit-identical old ledger, no proposal/budget change and no deletion of the failed attempt.",
+  "budget_receipt_qualification": "The oldCPU-budget hard_caps_enforced=true recorded intended allocation before the failing guard. No supervisor/worker cap was installed; only the completed preparation process installed its2secondcap. No child existed.",
+  "command_exit_code": 1,
+  "executed_source_snapshot": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/reference_pilot.py",
+    "sha256": "6d93f69e185015a507c10d4159ed650c8bc6571f0c6215fdf282589deeee8ef3"
+  },
+  "failure": "Separate managed exec invocations both received namespacePID4; PID inequality alone cannot identify distinct interpreter lifetimes.",
+  "geometrically_eligible": 641,
+  "inputs_and_outputs": [
+    {
+      "bytes": 449,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768/CPU-budget.json",
+      "sha256": "6c65596f8f8c03dcc632ba7f790289f1492d25cfcbb325c92df8611b6f23fc7b"
+    },
+    {
+      "bytes": 263,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768/RUN_ONCE.json",
+      "sha256": "1a8615ff73740eb1a2b998123b7b48bb1719d7f0926c7a63954b939257e1de2a"
+    },
+    {
+      "bytes": 1368358,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768/ledger.json",
+      "sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7"
+    },
+    {
+      "bytes": 23097,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/reference-pilot-768/registration.json",
+      "sha256": "7e88f729e5e61fc0096bf0aaf6f546b85d52d61edb9f6a9678b152701a8765a4"
+    },
+    {
+      "bytes": 98,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/prepare.log",
+      "sha256": "d3c01083ec441248d17a7c76b4773349af51ca8b1bcd56c9e411a05a4ce3c1f4"
+    },
+    {
+      "bytes": 777,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/execute.log",
+      "sha256": "04768e8af50484287a3b21c9d63ac5f837fd16804601aeaacf52766af1308ab9"
+    },
+    {
+      "bytes": 26008,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/execution-plan.json",
+      "sha256": "1e4d8d6074fc00cdaf0b330295bdaf5a26590ca57e20a710991fe5d797e9382d"
+    },
+    {
+      "bytes": 1028,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/launch-receipt-before-PES.json",
+      "sha256": "20213e15a2e0dcbc203ab4f85fbd7345f9854c906cd5bacf8d8069cae5677f71"
+    }
+  ],
+  "ledger_draws": 768,
+  "original_RUN_ONCE_preserved": true,
+  "prepare_created_utc": "2026-11-01T19:28:53.895335+00:00",
+  "prepare_process_PID": 4,
+  "recorded_utc": "2026-11-01T19:30:55.131815+00:00",
+  "schema": "pyrpmd.hch4-reference-pilot-pre-PES-failure.v1",
+  "status": "supervisor_preflight_rejected_namespace_PID_reuse",
+  "supervisor_created_utc": "2026-11-01T19:29:11.968688+00:00",
+  "supervisor_process_PID": 4,
+  "test_source_snapshot": {
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/attempt-1-preflight-failure/test_hch4_reference_pilot.py",
+    "sha256": "41af569b6f97d6c8d59be063fcd4b59872f4dc19060dd58e43172eb02ec3c540"
+  },
+  "worker_created": false
+}

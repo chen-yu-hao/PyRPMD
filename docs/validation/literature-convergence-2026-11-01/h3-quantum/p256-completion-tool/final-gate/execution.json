@@ -1,0 +1,55 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "PES_evaluations": 0,
+  "active_raw_files_read": 0,
+  "child_CPU_seconds": 3.0622949999999998,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_p256_complete_analysis.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T20:51:16.022472+00:00",
+  "exit_code": 0,
+  "inert_processes_only": true,
+  "junit": {
+    "bytes": 5711,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/pytest.xml",
+    "sha256": "cb7f060898bfdfbd55b1dd630c817da7993ce92efa59fd712ff756aac8ae4796"
+  },
+  "log": {
+    "bytes": 99,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/pytest.log",
+    "sha256": "1a6c447a16595ea7f8d60ba115a73bea0a0076a14e77dfa07bc4f69dac80c9c1"
+  },
+  "real_analyzer_invocations": 0,
+  "schema": "pyrpmd.h3.p256-completion-wrapper.synthetic-gate.v1",
+  "source": {
+    "bytes": 25228,
+    "path": "benchmarks/h3/p256_complete_analysis.py",
+    "sha256": "c1ec5e8db041a048ae6316d065a3c462e0bff3bdc72801d038515a4e1eb2c19e"
+  },
+  "source_snapshot": {
+    "bytes": 25228,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/p256_complete_analysis.py",
+    "sha256": "c1ec5e8db041a048ae6316d065a3c462e0bff3bdc72801d038515a4e1eb2c19e"
+  },
+  "source_unchanged": true,
+  "test_snapshot": {
+    "bytes": 25131,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/test_h3_p256_complete_analysis.py",
+    "sha256": "8e41fbcb0fd0ba2b9f6362837ee0b6f75f6f8702c94eef8646e16097cb86a6fb"
+  },
+  "tests": {
+    "bytes": 25131,
+    "path": "tests/test_h3_p256_complete_analysis.py",
+    "sha256": "8e41fbcb0fd0ba2b9f6362837ee0b6f75f6f8702c94eef8646e16097cb86a6fb"
+  },
+  "tests_unchanged": true,
+  "threads": 1,
+  "wall_seconds": 3.904470212000888
+}

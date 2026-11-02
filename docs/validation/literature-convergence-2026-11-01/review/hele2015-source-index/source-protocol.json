@@ -1,0 +1,185 @@
+{
+  "schema": "pyrpmd.hele2015.source-protocol-extraction.v1",
+  "status": "source audit only; no physical execution authorized or reference pass asserted",
+  "title": "Should thermostatted ring polymer molecular dynamics be used to calculate thermal reaction rates?",
+  "authors": [
+    "Timothy J. H. Hele",
+    "Yury V. Suleimanov"
+  ],
+  "journal": "Journal of Chemical Physics 143, 074107 (2015)",
+  "doi": "10.1063/1.4928599",
+  "publication_date": "2015-08-19",
+  "arxiv_version": "1506.07460v2",
+  "primary_urls": [
+    "https://www.tjhh.uk/pubs.html",
+    "https://www.tjhh.uk/pubs/hel15trpmd.pdf",
+    "https://arxiv.org/abs/1506.07460v2",
+    "https://arxiv.org/src/1506.07460v2"
+  ],
+  "source_bytes": {
+    "hel15trpmd.pdf": "3a3b1c2d257d7af0f56ffb8ec195e4e6db9e8d729d57390a4bcdb62623e3ace9",
+    "arxiv-1506.07460v2-source.tar.gz": "f24cd312ced5125a8f67137314b1db7d0e1c9be381d16ec0cf7ef24fd4977546",
+    "t.tex": "35f742da39e3747c6cb792b2eb856ed705db0f2cd9d2e0034dfafa4a0bb69fdf",
+    "fhh.pdf": "f5953a36abf65ddb6ca3d2965a6bde62c26113d8e2a76357d5598d6c43d15347",
+    "dmuh.pdf": "e38db2b3844f694e9801d4110284167917952a84ba193e56dc32d7c6aebfeddf",
+    "hhh.pdf": "91ef2ee5dc824cacfa7022adad9672e1e1f617b8c30408acc74f2754b9787b94",
+    "ch4h.pdf": "485ae36a16a1a46b12410fdc24f796beb4af158d2c9ba8b994a1b433a1a15a95"
+  },
+  "source_locations": {
+    "zero_friction_is_RPMD": "printed page 074107-4, Section II B",
+    "potential_models": "printed page 074107-6, Section III B",
+    "input_parameters": "printed page 074107-7, Table II",
+    "H3_DMuH_HCH4_graphs": "printed page 074107-8, Figures 4-6",
+    "FH2_graph": "printed page 074107-9, Figure 7"
+  },
+  "shared_table_II_parameters": {
+    "Rinf_bohr": 30,
+    "forming_breaking_bond_pairs": 1,
+    "QTST_sampling_thermostat_as_printed": "GLE/Andersen",
+    "recrossing_lambda_values": [
+      0,
+      0.25,
+      0.5,
+      0.75,
+      1,
+      1.5
+    ],
+    "umbrella_windows": 111,
+    "first_window_xi": -0.05,
+    "last_window_xi": 1.05,
+    "window_spacing": 0.01,
+    "umbrella_dt_ps": 0.0001,
+    "umbrella_force_constant_value_as_printed": 2.72,
+    "umbrella_force_constant_unit_as_printed": "(T/K) eV",
+    "umbrella_trajectories_per_window": 200,
+    "equilibration_ps_per_trajectory": 20,
+    "sampling_ps_per_trajectory": 100,
+    "sampling_points_per_window": 200000000,
+    "PMF_integration_start_xi": -0.02,
+    "PMF_bins": 5000,
+    "constrained_parent_equilibration_ps": 20,
+    "parent_sampling_increment_ps": 20,
+    "children_per_parent_configuration": 100
+  },
+  "reactions": [
+    {
+      "reaction": "H + H2",
+      "PES_as_named": "BKMP2",
+      "PES_reference": "Boothroyd et al., JCP 104, 7139 (1996)",
+      "temperatures_K": [
+        200,
+        300,
+        500
+      ],
+      "beads": [
+        128,
+        128,
+        128
+      ],
+      "product_channels": 2,
+      "PMF_xi_dagger": [
+        1,
+        1,
+        1
+      ],
+      "child_dt_ps": 0.0001,
+      "child_duration_ps": 0.05,
+      "total_children": 100000,
+      "figure": 4
+    },
+    {
+      "reaction": "D + MuH",
+      "PES_as_named": "BKMP2",
+      "PES_reference": "Boothroyd et al., JCP 104, 7139 (1996)",
+      "temperatures_K": [
+        200,
+        300,
+        500
+      ],
+      "beads": [
+        512,
+        512,
+        512
+      ],
+      "product_channels": 1,
+      "PMF_xi_dagger": [
+        0.9912,
+        0.9904,
+        0.9837
+      ],
+      "child_dt_ps": 3e-05,
+      "child_duration_ps": 0.2,
+      "total_children": 100000,
+      "figure": 5
+    },
+    {
+      "reaction": "F + H2",
+      "PES_as_named": "Stark-Werner (SW)",
+      "PES_reference": "Stark and Werner, JCP 104, 6515 (1996)",
+      "temperatures_K": [
+        200,
+        300,
+        500
+      ],
+      "beads": [
+        384,
+        256,
+        64
+      ],
+      "product_channels": 2,
+      "PMF_xi_dagger": [
+        0.9671,
+        0.9885,
+        0.9947
+      ],
+      "child_dt_ps": 0.0001,
+      "child_duration_ps": 0.2,
+      "total_children": 500000,
+      "figure": 7
+    },
+    {
+      "reaction": "H + CH4",
+      "PES_as_named": "PES-2008",
+      "PES_reference": "Corchado et al., JCP 130, 184314 (2009)",
+      "temperatures_K": [
+        250,
+        300,
+        500
+      ],
+      "beads": [
+        192,
+        128,
+        64
+      ],
+      "product_channels": 4,
+      "PMF_xi_dagger": [
+        1.0093,
+        1.0074,
+        1.0026
+      ],
+      "child_dt_ps": 0.0001,
+      "child_duration_ps": 0.1,
+      "total_children": 500000,
+      "figure": 6
+    }
+  ],
+  "unresolved_for_exact_reproduction": [
+    "Exact masses and constants used in the 2015 run are not identified by the article/Table II or its TeX source.",
+    "The paper names the SW PES but does not pin the author's distributed source/parameter byte variant, electronic-state factor, or any external postprocessing factor.",
+    "The graph reports plotted rates without statistical error bars or raw numerical rate tables; coordinate sensitivity is not their unknown statistical uncertainty.",
+    "The associated original run inputs, seeds and full trajectories have not been located in these eight arXiv source members."
+  ],
+  "scope_limits": [
+    "D + MuH is the Mu-transfer reaction in this paper; it must not be relabeled as Mu + H2.",
+    "The H3 and HCH4 graph coordinates do not create a second independent PyRPMD experiment and do not replace the already registered CPC targets.",
+    "The FH2 2015 graph is a distinct source and does not resolve or supersede the 2010 erratum.",
+    "No physical agreement margin, source-matching claim, or calculation adoption is supplied by this source audit."
+  ],
+  "digitization": {
+    "path": "attempt-1/digitization.json",
+    "sha256": "2c26402ef22418c4c00d8c8708d770ead9e591e6b78c535acb8a9ff5e2151d8f"
+  },
+  "physical_comparison_eligible": false,
+  "literature_reproduced": false,
+  "created_utc": "2026-11-01T22:08:14.271994+00:00"
+}

@@ -1,0 +1,69 @@
+{
+  "schema": "pyrpmd.abi-import-link-retained-status.v1",
+  "observed_utc": "2026-11-01T18:17:34.949442+00:00",
+  "links": [
+    {
+      "label": "py313",
+      "module": "_electronic",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+      "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9",
+      "currently_present": true,
+      "git_ignored": true
+    },
+    {
+      "label": "py313",
+      "module": "_native",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+      "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505",
+      "currently_present": true,
+      "git_ignored": true
+    },
+    {
+      "label": "py313",
+      "module": "_thermal",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+      "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a",
+      "currently_present": true,
+      "git_ignored": true
+    },
+    {
+      "label": "py314",
+      "module": "_electronic",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8",
+      "currently_present": true,
+      "git_ignored": true
+    },
+    {
+      "label": "py314",
+      "module": "_native",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe",
+      "currently_present": true,
+      "git_ignored": true
+    },
+    {
+      "label": "py314",
+      "module": "_thermal",
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "target": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb",
+      "currently_present": true,
+      "git_ignored": true
+    }
+  ],
+  "present_count": 6,
+  "authoritative_status": "Six exact owned, Git-ignored extra ABI links may remain. No further cleanup attempts; root explicitly authorized retention if removal is not persistent. Build products remain outside the checkout.",
+  "prior_observations": [
+    "abi-link-cleanup.json",
+    "abi-link-final-cleanup.json"
+  ],
+  "discrepancy": "Both default and reviewed unlink calls observed absence; a later tool process again exposed the unchanged links. Mechanism not established. This final receipt supersedes any global-cleanup interpretation of the driver run-local flag.",
+  "scientific_sources_changed": false,
+  "tests_rerun_for_cleanup": false
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "pyrpmd.hch4.standard-test-integration.v1",
+  "created_utc": "2026-11-01T17:30:27.468611+00:00",
+  "collection_strategy": "Explicit re-export of original test functions and library fixture through tests/test_hch4_native.py, under the repository default testpaths=tests. Original source and marks are unchanged.",
+  "source_files": {
+    "tests/test_hch4_native.py": "88705a75346a48d091ddbe1d6fa48b2a4f7fb041753fddfd882a71f61f8c1eeb",
+    "benchmarks/hch4/test_native.py": "d4e63c50678eb03e469f7c3ac7f74b3a56f555e6955500acb03e13bc7d9b7a27",
+    "tests/test_hch4_pes.py": "fdabafc7c99a3f6093754c8a925b482390925865f32ccbeb684f26d8f0c268cd",
+    "pyproject.toml": "86eb53f365054b1e4a80e1e940fdf07abc2b3392d355d4fa6ff17e8e2e953dbf"
+  },
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_hch4_native.py",
+        "tests/test_hch4_pes.py",
+        "-q",
+        "--junitxml=docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/standard-tests.xml"
+      ],
+      "environment": {
+        "PYRPMD_CBE2008_LIBRARY": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "exit_code": 0,
+      "passed": 11
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "--collect-only",
+        "-q",
+        "tests/test_hch4_native.py"
+      ],
+      "exit_code": 0,
+      "collected": 7
+    }
+  ],
+  "files": {
+    "standard-tests.log": {
+      "sha256": "f9925b9fc8e03ec978c3cedbadb588ca4b8aeeec2a6ee0b230a43bb3092b1346",
+      "bytes": 1955
+    },
+    "standard-tests.xml": {
+      "sha256": "261596c6e27204aa945f403fe2202db8f7ae5a2679332746c5dcd1ed8113e339",
+      "bytes": 1586
+    },
+    "standard-collection.log": {
+      "sha256": "cbbbcff26d3fea4af0ef4f7d3546b2fcd289370331066692008e94f4b5b22126",
+      "bytes": 616
+    }
+  },
+  "raw_checkpoint_dependency": false,
+  "original_verified_sources_modified": false
+}

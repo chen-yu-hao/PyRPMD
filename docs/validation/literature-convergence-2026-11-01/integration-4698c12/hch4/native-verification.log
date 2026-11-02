@@ -1,0 +1,108 @@
+{
+  "passed": false,
+  "gates": {
+    "static_equations_and_channels": true,
+    "P1_short_NVE": true,
+    "P128_short_NVE": false,
+    "native_python_all_paths": true,
+    "CPU_budget": true
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "native_binary_sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f",
+    "PES_library_sha256": "aa33e4f55246d5b99839cd3b08702f1d091a6b3dddac1d6c97d34bb542d95aaf",
+    "CPU_seconds": 4.906196887,
+    "wall_seconds": 4.907100625001476
+  },
+  "cost": {
+    "reference_umbrella_steps": 26640000000,
+    "reference_production_samples": 22200000000,
+    "reference_unconstrained_child_steps": 50000000,
+    "pilot_four_seed_umbrella_steps": 4440000,
+    "not_a_forecast_confidence_interval": true,
+    "by_beads": {
+      "1": {
+        "reference_umbrella_CPU_hours_range_of_three_centers": [
+          180.1662390624998,
+          183.39697499999858
+        ],
+        "pilot_four_seed_umbrella_CPU_hours_range_of_three_centers": [
+          0.030027706510416637,
+          0.03056616249999976
+        ],
+        "caveat": "Short local-block extrapolation, excludes warmup failures, thermostat, restart I/O, full ensemble geometry variation and analysis. Wall time depends on available workers."
+      },
+      "128": {
+        "reference_umbrella_CPU_hours_range_of_three_centers": [
+          6911.402165625003,
+          7802.837297656258
+        ],
+        "pilot_four_seed_umbrella_CPU_hours_range_of_three_centers": [
+          1.1519003609375005,
+          1.3004728829427097
+        ],
+        "caveat": "Short local-block extrapolation, excludes warmup failures, thermostat, restart I/O, full ensemble geometry variation and analysis. Wall time depends on available workers."
+      }
+    }
+  }
+}
+
+
+  J. Espinosa-Garcia and J. C. Corchado                                      
+  Unpublished results, 1999.                                                 
+                                                                             
+                                                                             
+                                                                             
+
+
+   MAX. AND ACTUAL NO. OF EXCITED SURFACES:   0       0
+   MAX. AND ACTUAL ORDER OF DERIVATIVES:      1       1
+
+  The potential routine in POTLIB assumes a
+  default labeling of the atoms.  The user has
+  made the following selection of atomic labels:
+
+               DEFAULT                         USER-SELECTED
+
+  Atom  1 is       H                                   H 
+  Atom  2 is       C                                   C 
+  Atom  3 is       H                                   H 
+  Atom  4 is       H                                   H 
+  Atom  5 is       H                                   H 
+  Atom  6 is       H                                   H 
+
+
+  Atom  1  H  is a member of Reactant #1
+  Atom  2  C  is a member of Reactant #1
+  Atom  3  H  is a member of Reactant #1
+  Atom  4  H  is a member of Reactant #1
+  Atom  5  H  is a member of Reactant #1
+  Atom  6  H  is a member of Reactant #2
+
+  The Potential Energy is Zero for the following
+  geometric arrangement:  The reactants are at
+  their equilibrium geometries, widely separated.
+
+
+  Reactant #1
+  H C H H H 
+
+  Reactant #2
+  H 
+
+  The default units are:
+     BOHR FOR DISTANCE
+     HARTREE FOR ENERGY
+
+
+  The user has chosen units :
+     BOHR                 FOR DISTANCE
+     HARTREE              FOR ENERGY
+
+
+  To reset the zero-of-energy, assign a
+  non-zero value to the variable ANUZERO.
+  The value of ANUZERO will be SUBTRACTED from
+  the energy calculated by this routine.
+

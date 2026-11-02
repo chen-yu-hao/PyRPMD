@@ -1,0 +1,29 @@
+{
+  "command": [
+    "nice",
+    "-n",
+    "5",
+    "taskset",
+    "-c",
+    "4",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/paired_timestep.py",
+    "register",
+    "--original-root",
+    "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01",
+    "--protocol",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+    "--assessment",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+    "--exit-proof",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json"
+  ],
+  "completed_utc": "2026-11-01T20:57:24.833826+00:00",
+  "elapsed_seconds": 2.8761264229979133,
+  "exit_code": 0,
+  "label": "registration",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "fa4c6abc18dffddcfe132b9e795eddfb4f0b86ba0541f9413242f83c599cb5fb"
+}

@@ -1,0 +1,48 @@
+{
+  "PES_source_or_library_included": false,
+  "created_utc": "2026-11-01T22:01:45.235502+00:00",
+  "entrypoint": "FINAL_STATUS.md",
+  "file_count": 7,
+  "files": [
+    {
+      "bytes": 2652,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/FINAL_STATUS.md",
+      "sha256": "3b19e9efbd7c6fe999c9fb579d99b05ccdca7e89e6ee5d061aa34d9b77b1425c"
+    },
+    {
+      "bytes": 16122,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/README.md",
+      "sha256": "67380eaea915b4a3dc765a7d4e607506139d03011fe428b212b98f80ce1dcf71"
+    },
+    {
+      "bytes": 8581,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/check_normalization.py",
+      "sha256": "0824630ba3bdfa9cc1dc9ab288660161ed9a199953093e5bf76504fb25c4375f"
+    },
+    {
+      "bytes": 10794,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/algebra-checks.json",
+      "sha256": "ff0530394466c19bc97ee0a3ea2bb5207f59b541066f09588597e4de44b67fba"
+    },
+    {
+      "bytes": 2140,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/sources.json",
+      "sha256": "8390bdfcaef1db1af66035fa80b9e634fb1b6ff712cd9ba22d1f3bf798f71dac"
+    },
+    {
+      "bytes": 3579,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/review-note.json",
+      "sha256": "a8469ed1175b259a443937f0ff0f0f89d8842d5dcef2d5be5c65065452e40c00"
+    },
+    {
+      "bytes": 9066,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/independent-review.json",
+      "sha256": "48f070bb9ddca9f9a1e77a1d0ff5e1ffe19938d5a9de31b4daa254ce6a9ef612"
+    }
+  ],
+  "frozen_previous_sources_modified": false,
+  "raw_NPZ_included": false,
+  "schema": "pyrpmd.review.publication-inventory.v1",
+  "scope": "Complete independently read-reviewed absolute HCH4 normalization algebra only; no physical rate, pilot conversion or execution authorization.",
+  "total_bytes": 52934
+}

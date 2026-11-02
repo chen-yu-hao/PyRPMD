@@ -1,0 +1,42 @@
+{
+  "schema": "pyrpmd.github-complete-decoded-job-logs.v1",
+  "head_sha": "0c5fec22ce590634c45b8c46619cebf3e665eb85",
+  "source_tool": "GitHub.fetch_workflow_job_logs",
+  "logs": [
+    {
+      "job_id": 124990501230,
+      "path": "job-124990501230.log",
+      "bytes": 104956,
+      "sha256": "846c242495d708aca7ffdd934b84c1f9a2fe95bddeff8395cb9c9fe34d3c6677",
+      "complete_decoded_log": true
+    },
+    {
+      "job_id": 124990870037,
+      "path": "job-124990870037.log",
+      "bytes": 112112,
+      "sha256": "82b228981afcd426c6aad42fd2162f6a128167209bddbccd5e0f714f5fde3f11",
+      "complete_decoded_log": true
+    },
+    {
+      "job_id": 124990870117,
+      "path": "job-124990870117.log",
+      "bytes": 113341,
+      "sha256": "9959db7536c9c2a8685c56456d649b0a26d359bdcefbea1509a4b6f5ac46bdf5",
+      "complete_decoded_log": true
+    },
+    {
+      "job_id": 124990870176,
+      "path": "job-124990870176.log",
+      "bytes": 112110,
+      "sha256": "3a632d5b3e160082bb2f7135c298a8f5266f3f89cf7be15a31ed2a179c6f6383",
+      "complete_decoded_log": true
+    },
+    {
+      "job_id": 124990870215,
+      "path": "job-124990870215.log",
+      "bytes": 108236,
+      "sha256": "656072da6068948e1a297f44bf05647aeead31b57fa3c8ec702b0bb9d94801ae",
+      "complete_decoded_log": true
+    }
+  ]
+}

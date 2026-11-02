@@ -1,0 +1,58 @@
+{
+  "created_utc": "2026-11-01T22:23:34.313619+00:00",
+  "files": [
+    {
+      "bytes": 600,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/driver-provenance.json",
+      "sha256": "1967448a827def1ba5012566115141d28333a2f82fe977fc1cd989a648314b85"
+    },
+    {
+      "bytes": 1719,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/execution.json",
+      "sha256": "33d291cceb00779840ad1092f7c8865b0337e6b3b867540b90362c582e52dffd"
+    },
+    {
+      "bytes": 301600,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/guard-before.json",
+      "sha256": "a4967ed068c06fcb156add8c2ed4945249bd21aa25ee430ee16e015ddbfbff59"
+    },
+    {
+      "bytes": 351,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/preflight-guard-failure.json",
+      "sha256": "3fc26b9b1ce17a1774148687cd08e55e0397c8d961897734257d4863701b2c3a"
+    },
+    {
+      "bytes": 3713,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/prepare_ci_fixture_gate.py",
+      "sha256": "a66d02ae5b931eb25b4fc96be46448643c9d356705a15a7053b8d357d8905129"
+    },
+    {
+      "bytes": 1237,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/py312/launch-receipt.json",
+      "sha256": "e2f642fb09a5855e50d439b793d92b5b5a35b6286bc8c44f1fe406c77ba562de"
+    },
+    {
+      "bytes": 597,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/py312/pytest.log",
+      "sha256": "2dcbcaaa11cdac198f3c8108ef0fa939f76a065cae06b7101f9fbef40d584f6a"
+    },
+    {
+      "bytes": 9632,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/run_checks.py",
+      "sha256": "13e9d264b2a4b809900464203bcd365cf792418d4a5dcf5cb0b4902f6bb9969a"
+    },
+    {
+      "bytes": 3615,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/run_ci_fixture_gate.py",
+      "sha256": "61e349fad4a642adc37dda182fb28a9c33956d2757fd6fae21d73973887e5112"
+    },
+    {
+      "bytes": 4564,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec/selection.json",
+      "sha256": "179b42943c980edf4810c2f784907ce688f0437d5cc0ac1da9529c7e3941632e"
+    }
+  ],
+  "listed_bytes": 327628,
+  "schema": "pyrpmd.compact-sixth-publication-inventory.v1",
+  "scope": "Retained initial local preflight failure; no pytest cases were collected."
+}

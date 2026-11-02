@@ -1,0 +1,71 @@
+{
+  "schema": "pyrpmd.h3.quantum-scheduler-validation.v1",
+  "commands": [
+    {
+      "name": "tests",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_h3_quantum_sampling_scheduler.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/workspace/scratch/a5e4820daedd/quantum-scheduler-validation-fakes",
+        "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-scheduler/tests.xml"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 15.651107738995051,
+      "CPU_seconds": 15.37207
+    },
+    {
+      "name": "check-only",
+      "command": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "-m",
+        "benchmarks.h3.quantum_sampling_scheduler",
+        "--campaign",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+        "--protocol",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json",
+        "--prior-snapshot",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/stage-snapshot.json",
+        "--prior-snapshot-sha256",
+        "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4",
+        "--decision",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/continuation-decision.json",
+        "--decision-sha256",
+        "c96255a6eea63023f4eefe9450daa8fc4d67399d55a3143769bd83aa41169c16",
+        "--stage",
+        "100000",
+        "--workers",
+        "2",
+        "--check-only"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 2.121258397004567,
+      "CPU_seconds": 2.114605999999999
+    }
+  ],
+  "source_sha256": {
+    "benchmarks/h3/quantum_sampling_scheduler.py": "f429904e2b8eb7b7c35b29f51d0f28a63c55ec84be5caf50719eec0e94c1122e",
+    "tests/test_h3_quantum_sampling_scheduler.py": "54c4eb94acc49fbe4a873da2e96c98e56290d2535a896dc9a8d34d84757d6c58",
+    "benchmarks/h3/quantum_sampling_campaign.py": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50",
+    "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json": "5834471583ae8e513050dc1c22e065459e1cfa6f139cc5490fcb4eded9fe711a",
+    "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/continuation-decision.json": "c96255a6eea63023f4eefe9450daa8fc4d67399d55a3143769bd83aa41169c16"
+  },
+  "sources_unchanged": true,
+  "environment": {
+    "PYTHONPATH": "src:.",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "real_sampling_launched": false,
+  "fake_worker_tests_only": true,
+  "actual_campaign_preflight_only": true
+}

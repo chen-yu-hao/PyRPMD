@@ -1,0 +1,167 @@
+{
+  "changed_functions_since_first_reviewed_candidate": [
+    "dispatch_jobs"
+  ],
+  "created_utc": "2026-11-01T19:46:40.585823+00:00",
+  "design_sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d",
+  "external_PES_evaluations_by_reviewer": 0,
+  "independent_focused_gate": {
+    "CPU_affinity": [
+      8
+    ],
+    "all_thread_environment_values": 1,
+    "deselected": 57,
+    "failures": 0,
+    "passed": 4,
+    "reported_wall_seconds": 1.05,
+    "scope": "Only signal-first-admission, known-exited-failure admission, repeated-signal/journal drain, and unconfirmed-drain exclusion fixtures; inert subprocesses, no sampler fixture execution.",
+    "skipped": 0
+  },
+  "input_identities": [
+    {
+      "bytes": 35515,
+      "path": "benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    },
+    {
+      "bytes": 23981,
+      "path": "tests/test_h3_p256_parent_campaign.py",
+      "sha256": "57e78795ecda9fa754fef5a6ca2180e7b4f262ada7b763b76c8f8281506d7634"
+    },
+    {
+      "bytes": 70005,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/proposal.json",
+      "sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d"
+    },
+    {
+      "bytes": 34562,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/p256_parent_campaign.py",
+      "sha256": "a84b3a77ad86e7bec2285ce592ee096410fe202b9c4f04804733fb0cd1520923"
+    },
+    {
+      "bytes": 19942,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/admission-review/initial-source/test_h3_p256_parent_campaign.py",
+      "sha256": "aa8266bfb11fa7e836e3cf27c726be0cb6325b254c8116e042bd93944aa66183"
+    },
+    {
+      "bytes": 1991,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-gate.json",
+      "sha256": "9a770e711313f9c1faad56316aa58cc68ad6ce19e4e45d0d46cee2629ce47e4b"
+    },
+    {
+      "bytes": 9565,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-pytest.xml",
+      "sha256": "cdca8189b74c97785711c8e36d599597543c21c7bf16d16cf0faad7d2b081a37"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-pytest.log",
+      "sha256": "2b65c3c81c90661773382c286653c9db0ee6accae3531a0df7d111c173b488d3"
+    },
+    {
+      "bytes": 1369,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/preflight-receipt.json",
+      "sha256": "1d67c0c2532885719eb5d49471b84d8e5ba6fe3aa3755283558e54f51d4210a7"
+    },
+    {
+      "bytes": 327,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/preflight.log",
+      "sha256": "626c3d92e3720d4b11459e59dedc18a896973be2035cbf8a010cab2b62818573"
+    },
+    {
+      "bytes": 1279,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/revision.json",
+      "sha256": "3422cd7b3317f275c545e9f7815d261f811bddcc8203d8646c7b24920e34a73d"
+    },
+    {
+      "bytes": 2119,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/freeze.json",
+      "sha256": "5aff098f0e3b540d7fcdb84f616fd5ea60bf803612677400a67c4d60b6f25dab"
+    },
+    {
+      "bytes": 1837,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/README.md",
+      "sha256": "2ce82773d7f9b941cd89b8aabca56ddbdf885c37d638b06e2e853dc5e992f3f4"
+    },
+    {
+      "bytes": 2867,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/execution-authorization.schema.json",
+      "sha256": "4733de78846487147ccd4a66db965c25cd2a77812b321beb06d1db51077d8f28"
+    },
+    {
+      "bytes": 5339,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/parent-output-contract.json",
+      "sha256": "19f5c764134632f3bccdfa0dba579636946368bf145cab7713ebb1f0a41b23a5"
+    },
+    {
+      "bytes": 2544,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/initial-findings.json",
+      "sha256": "6030907a2a8f120a858b6a94a280eb64a8b374be0e650aed649b09182835647b"
+    },
+    {
+      "bytes": 824,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/focused-pytest.xml",
+      "sha256": "32a235cbefb319b2b5417a356ca30fa8b6b85b155672d0ade26d646f4ec877be"
+    },
+    {
+      "bytes": 113,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/focused-pytest.log",
+      "sha256": "ef73a72f1265620c1d3cd44bec9a8619547dafd295908033398f55c9ce6bb01d"
+    }
+  ],
+  "limits_and_conditions": [
+    "The tool generates static flux-weighted equilibrium parents only. It does not draw Maxwell momenta, propagate recrossing children or demonstrate dynamical bead convergence.",
+    "Eight independent equilibrium chains are the uncertainty units; 1600 stored configurations are correlated observations, not 1600 independent units.",
+    "Overlap>=0.2, diagnostic energy ESS>=200 and absolute temporal-half log difference<=0.2 are registered screens, not mathematical convergence or accuracy bounds.",
+    "No automatic new seed, draw-count, horizon or budget extension is authorized by a failed or incomplete result. Separate explicit root authorization is needed for any resume.",
+    "The unchanged scientific producer does not acquire the new coordinator lease. Root must ensure no direct producer or other dispatcher writes these new output directories concurrently.",
+    "On deadline/failure the coordinator may terminate and reap only its own process groups; latest atomic checkpoints and all partial/error artifacts remain. This is bounded shutdown, not a promise of natural completion of unfinished chains.",
+    "The 15 second finalization reserve sits within the 7200 second campaign budget. Failure or unconfirmed cleanup cannot publish eligible parents.",
+    "Root must separately confirm prerequisite queues actually drained and current project worker allocation; this read-only review is not that operational authorization."
+  ],
+  "parent_simulations_launched": 0,
+  "physical_dynamics_steps_by_reviewer": 0,
+  "positive_checks": [
+    "All four historical replays bind exact original settings, model/runtime and source bytes; only snapshot_interval changes from 0 to 100.",
+    "All 16 non-observation payload arrays require key, dtype, shape and exact C-order byte equality, including the RNG string. No float tolerance substitutes for replay identity.",
+    "Only fingerprint, endpoint_q and endpoint_completed_sweeps may differ; reference and domain files require byte equality, scientific report fields equality.",
+    "The unchanged producer snapshot path constructs new arrays without RNG draws or writes into sampler state. Existing analytic interrupted replay and valid-envelope tampering tests exercise this contract.",
+    "Every final chain requires 22000 sweeps, 20000 energy observations, 2000 diagnostic observations and 200 fixed endpoint frames; full endpoint geometry, bead domain and zero-COM conventions are checked.",
+    "All eight fixed chains and all original sampling flags are required for the single atomic child-eligible manifest. Four completed chains or one failed flag cannot enable children.",
+    "Completed producer state on explicit resume is verified and reused without recompression or resampling; incomplete state uses the frozen checkpoint/RNG resume path.",
+    "A sibling directory lease excludes other invocations; hard-crash locks persist, deferred signals stay installed through drainage, and unconfirmed drainage retains exclusion.",
+    "The authorization binds exact source/design/gates/independent review and actual queue-drain/resource evidence; one or two distinct worker CPUs and one thread per worker are enforced.",
+    "Parent rows preserve the BAR log correction alongside complete checkpoint/report/settings/domain identities for later covariance-aware child analysis."
+  ],
+  "protocol_mutations_by_reviewer": 0,
+  "read_only_actual_preflight": {
+    "guards_verified": 39,
+    "output_root_exists": false,
+    "passed": true,
+    "source_runtime_and_whole_original_state_identities_match": true,
+    "workers_launched": 0
+  },
+  "recorded_owner_gate": {
+    "errors": 0,
+    "failures": 0,
+    "passed": 61,
+    "scope": "Tiny analytic P4 sampler fixtures plus inert subprocesses; no BKMP2 or physical dynamics.",
+    "skipped": 0
+  },
+  "resolved_findings": [
+    {
+      "id": "admission-stop-and-deadline",
+      "resolution": "Both inner admission checks now run immediately before selecting work and before Popen after command construction. Signals/deadlines stop further admissions and full fixed-cohort unstarted identity is retained."
+    },
+    {
+      "id": "admission-known-worker-failure",
+      "resolution": "The same checks poll every still-owned active process for an already available nonzero status. Failed processes remain owned for drain/reap. The deterministic test observes exit 3 with waitid(WNOWAIT) before the next free slot and verifies that only the first seed launched."
+    }
+  ],
+  "reviewer": "distribution agent",
+  "schema": "pyrpmd.h3.p256-parent-independent-source-review.v1",
+  "source_mutations_by_reviewer": 0,
+  "source_sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3",
+  "tests_sha256": "57e78795ecda9fa754fef5a6ca2180e7b4f262ada7b763b76c8f8281506d7634",
+  "verdict": "No remaining blocker found for the fixed eight-chain parent-only tool at the bound final source. Actual parent execution requires separate root resource/adoption authorization."
+}

@@ -1,0 +1,27 @@
+{
+  "CPU_affinity": [
+    5
+  ],
+  "RNG_constructed_or_drawn": false,
+  "created_utc": "2026-11-01T22:16:50.142786+00:00",
+  "numerical_engine_or_PES_imported": false,
+  "observed_exit_code": 0,
+  "producer_extractor_imported_or_executed": false,
+  "reader": "pdfplumber0.11.9; standard-library regression/interpolation",
+  "reader_script": {
+    "bytes": 7591,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/check_fh2.py",
+    "sha256": "dd7bc398af88a2263abd605a75dc9c68eff3d9e51964830f0afc69d5a31caa5c"
+  },
+  "result": {
+    "bytes": 5665,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/checks.json",
+    "sha256": "c0452ad39a1161a6ae33670b4238bc7fc49a748e21f9089d129f06ec3047b31d"
+  },
+  "schema": "pyrpmd.hele2015.independent-source-check-execution.v1",
+  "source_files_unchanged_before_after": true,
+  "source_rendering": "Read-only visual inspection of existing source figure and published TableII PNGs; PDFs/TeX/images stay external.",
+  "threads_per_math_library": 1,
+  "tool_chunk_id": "820fc8",
+  "tool_wall_seconds": 0.122916256
+}

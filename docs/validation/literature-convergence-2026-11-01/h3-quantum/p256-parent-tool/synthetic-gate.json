@@ -1,0 +1,50 @@
+{
+  "CPU_affinity": [
+    0
+  ],
+  "child_system_CPU_seconds": 0.738722,
+  "child_user_CPU_seconds": 3.577461,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_p256_parent_campaign.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.xml"
+  ],
+  "created_utc": "2026-11-01T19:38:52.921518+00:00",
+  "errors": 0,
+  "evidence": [
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.log",
+      "sha256": "aa33b1d22a81311a7d85e9aff8bc9b7bfe4c69ee31d8d28a5490f2ee22fd0a00"
+    },
+    {
+      "bytes": 8872,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/synthetic-pytest.xml",
+      "sha256": "e0384473b0123c075d6cee469f823a31f3b10407ad42768c87fdb48bce701c96"
+    }
+  ],
+  "external_PES_evaluations": 0,
+  "failures": 0,
+  "passed": 56,
+  "real_dynamics_steps": 0,
+  "sampler_fixture": "Small P4 analytic harmonic-bond fixture only; no BKMP2 model is constructed. Exact original producer observer/restart path is exercised.",
+  "schema": "pyrpmd.h3.p256-parent-tool-synthetic-gate.v1",
+  "skipped": 0,
+  "source_sha256": {
+    "benchmarks/h3/p256_parent_campaign.py": "ff41236e1dcfcb0ed2de36b885ae09b3ca70d3a06cd8bc54c267b710f9310714",
+    "tests/test_h3_p256_parent_campaign.py": "67a77b73cbc40e8dc2f8cafc47ef310766a9dad8cdc67a4b5766a2417ba0c6e9"
+  },
+  "source_unchanged": true,
+  "status": "passed",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "wall_seconds": 5.637877519999165,
+  "worker_fixture": "Inert short Python subprocesses only; signal/deadline/journal/lock failures injected."
+}

@@ -1,0 +1,297 @@
+{
+  "schema": "pyrpmd.read-only-integration-publication-audit.v1",
+  "created_utc": "2026-11-01T17:51:26.423282+00:00",
+  "audited_checkout": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration",
+  "scope": "Read-only audit of eight frozen publication inventories, the documented fixture-only water test exception, sealed four-worker handoff and existing integrated19-test receipt, the scoped quantum equilibrium archive metadata, local Markdown target existence, raw/PES exclusion, and control/HCH4/water scientific-status wording. No live trajectory/rate data read, no simulations or test reruns, no Git mutation, and no frozen-source/manifest changes.",
+  "inventory_checks": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/controls/publishable-files.json",
+      "sha256": "f68456bddc3e340911ae91590507a2769ae0a17d67eba983325870b15ba87b68",
+      "listed_file_count": 243,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/stable-publication-manifest.json",
+      "sha256": "edf79cc6f90fe8cb9e90e53d37f0b0df8ea437ef13b288326f3a10d2ca6b286f",
+      "listed_file_count": 69,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/publish-files.json",
+      "sha256": "8ef61b3790dbb17a230dc1b031c6b3d626adc32265ef04127862936bd6326e02",
+      "listed_file_count": 51,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/evidence-manifest.json",
+      "sha256": "cfdc0100feeeedca0289acd5c65fc379f69eda0eb585a0f35dcd68079c294537",
+      "listed_file_count": 13,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/software-and-source-review-files.json",
+      "sha256": "5f6f2abfccfa77068f81293dd753ca728ee4c352146d768a902b38e01c18bdec",
+      "listed_file_count": 6,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review-files.json",
+      "sha256": "8331e2ab1d529527d7c10c6fcd684b10a5348ad2d715ebc56378125a7cff5466",
+      "listed_file_count": 5,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/publication-inventory.json",
+      "sha256": "13681353f6fdfd23857accd2eb269619e2e161ce7073a683250a04700284c3dc",
+      "listed_file_count": 13,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/publishable-files.json",
+      "sha256": "4f06465a8e4cb69b0b7abdc19b3561e3843918b97af23d43958dbc0e3d6c134e",
+      "listed_file_count": 7,
+      "all_hashes_and_sizes_match": true,
+      "errors": []
+    }
+  ],
+  "unique_listed_publication_files": 407,
+  "unique_listed_files_plus_water_source_freeze": 428,
+  "water_code_freeze": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/code-freeze.json",
+    "sha256": "1a28a9b3d76856fa3840c80bbb611831e6083a4ef1addeb8928920805aa80e2d",
+    "listed": 21,
+    "exact_matches": 20,
+    "exceptions": [
+      {
+        "path": "tests/test_water_native_schedule.py",
+        "frozen_sha256": "60c58ca08da35a4c20539d8f831a7c5d15ad15966ecd9b503222c323ea7f55c2",
+        "integrated_sha256": "aa86db798b491d74b96601767d39d4511a8920c73aa16bd70d8c2ffdddfb021f",
+        "documented_fixture_only_replacement": true
+      }
+    ],
+    "exception_receipt": "docs/validation/literature-convergence-2026-11-01/water/scheduler-tests-portability.json",
+    "exception_receipt_sha256": "b6d95ef94f087825b22a77298c2d9df764c23779e4b688fb2bbb22361d9c6f46"
+  },
+  "markdown_local_links": {
+    "files_checked": 21,
+    "inline_local_targets_checked": 195,
+    "missing_targets": [],
+    "files": [
+      {
+        "path": "benchmarks/hch4/README.md",
+        "sha256": "9eadefaeef85163eb36fc62963898ef45ffe707732a13fc32e7132784576cc81",
+        "inline_local_targets": 1
+      },
+      {
+        "path": "docs/literature-validation.md",
+        "sha256": "4c64b26b368861ff2dbe8f5d6703ba0ef35c9a95be41a86e53391c84f8edf965",
+        "inline_local_targets": 2
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/README.md",
+        "sha256": "16a326d2943ed7d1a105ca60f128d86677d7cc4584180bf5a7c0c13d33ffd1df",
+        "inline_local_targets": 20
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/h3-classical/README.md",
+        "sha256": "cd668b86ceb22f4938590490b2b7748366fd7d80975b913c1b54c44814cf1388",
+        "inline_local_targets": 19
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/README.md",
+        "sha256": "48cb2445cc928b359878eb6423bbeb7cf4c6e0c5a6834102725d3e556c1fbf89",
+        "inline_local_targets": 20
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/README.md",
+        "sha256": "67deb3e280a7ad8ccef4845066973358e3e826c37c288d8b1e493c8b6ccaa748",
+        "inline_local_targets": 21
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/README.md",
+        "sha256": "eea9a7e520fad529fb9e243d5e7df72e5b71b8a5321e4d8e6190b174fa6aa686",
+        "inline_local_targets": 8
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/README.md",
+        "sha256": "c56812729401d83788c7357f0000cb0f2e7d6dbecf1800bedafd7ea4e21900ef",
+        "inline_local_targets": 4
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/README.md",
+        "sha256": "1cf36241ec81e0f89d294e727feb1619a46ac1220fd4c696a834db184a13fd63",
+        "inline_local_targets": 5
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/README.md",
+        "sha256": "31b093796c7d378b2af3687f2325ab7aa2e8175898dfbcb97ed587868f44cec3",
+        "inline_local_targets": 13
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/reproduction-plan.md",
+        "sha256": "13b2bfef2c75f2488238c9dfbc76b1a7a567f47691ff62c693fca21e37c9812e",
+        "inline_local_targets": 6
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/publish-notes.md",
+        "sha256": "0a723d42b8f6ce86089c2759635c402b22eae750f040edcde80935798015f71a",
+        "inline_local_targets": 3
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/README.md",
+        "sha256": "260e37fa8fa726fa6a6f060baec8df4cfc88c9b798ab8b16e7535c353d5a5fd5",
+        "inline_local_targets": 14
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/isotopologues-source-index/README.md",
+        "sha256": "8277fd991455774c8249a5d1e8bd57a79bb58de3c247475a4d759b953907bd95",
+        "inline_local_targets": 0
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/README.md",
+        "sha256": "440b220ee77942c22702af983c878e25642aa10d6ce5fb4b4762d951740e986d",
+        "inline_local_targets": 0
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review.md",
+        "sha256": "7d838e69249accfeeaf467e91c5b51a89a153b9de0423871bbccb69d17f7e3f3",
+        "inline_local_targets": 0
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/README.md",
+        "sha256": "07b40acaa6636d39b25e4e133176e3e2ee98c81474c12951b1f527b6b79bac55",
+        "inline_local_targets": 2
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/README.md",
+        "sha256": "8e0ba68532e61b128bcce7a1a48b3ed77f17e66c35601088217ca0c236afa49b",
+        "inline_local_targets": 5
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/water/README.md",
+        "sha256": "a4457b6103fc73998ac5d865cf83def605765c3af98e7ad2065e5a56ffa9ce17",
+        "inline_local_targets": 35
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/water/quantum-template/README.md",
+        "sha256": "be1c038eb08393902440d0f72c0be0fcab2d14771e11fed5af1bbe65689734fe",
+        "inline_local_targets": 7
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/README.md",
+        "sha256": "ab9500894cce7b1dd78cc81004eebc590d4e20caffb2a00b2517f688718b36af",
+        "inline_local_targets": 10
+      }
+    ],
+    "limitations": [
+      "Checks inline Markdown links/images and target-file existence only. Does not validate external URLs, heading fragment IDs, reference-style links, or Sphinx/MyST directives.",
+      "Historical timestamped CI and stable water snapshots are not reinterpreted as current live results."
+    ]
+  },
+  "raw_and_external_PES_screen": {
+    "listed_npz": [
+      "docs/validation/literature-convergence-2026-11-01/water/velocity-cadence/curves.npz"
+    ],
+    "derived_npz_is_explicitly_authorized": true,
+    "listed_compiled_libraries_archives_or_upstream_Fortran": [],
+    "other_Fortran_files": [
+      "benchmarks/hch4/wrapper.f90"
+    ],
+    "wrapper_scope": "benchmarks/hch4/wrapper.f90 is the PyRPMD C binding; the fetched upstream .f potential files and built libraries are excluded.",
+    "local_markdown_raw_or_binary_targets": [
+      {
+        "source": "docs/validation/literature-convergence-2026-11-01/water/README.md",
+        "target": "velocity-cadence/curves.npz"
+      }
+    ]
+  },
+  "status_review": {
+    "all_16_equilibrium_controls_complete": true,
+    "P64_failure_and_aggregate_false_retained": true,
+    "P128_to_P256_and_both_cutoff_passes_separate": true,
+    "equilibrium_controls_not_claimed_to_validate_quantum_kappa_or_full_rate": true,
+    "HCH4_model_native_workflow_and_integrated_tests_complete": true,
+    "HCH4_thermal_rate_not_run_explicit": true,
+    "complete_quantum_rate_and_water_transport_not_claimed_complete": true,
+    "quantum_method_review_limits_in_aggregate_H3_page": "Geometric-mean finite-chain bias, nominal/approximate intervals after conditional extension, and point-plus-precision versus whole-interval equivalence are explicitly distinguished in h3-quantum/README.md.",
+    "stale_pending_claims_found": [],
+    "HCH4_0p1fs_short_NVE_failure_retained": true,
+    "water_OpenMM_reference_distinguished_from_PyRPMD_transport": true,
+    "water_seed1102_stationarity_failure_preserved_in_frozen_handoff_text": true,
+    "water_stationarity_statistic_recomputed_in_this_audit": false,
+    "sealed_scheduler_inventory_checked": true,
+    "live_quantum_rate_or_water_progress_read_in_this_audit": false
+  },
+  "frozen_publication_files_edited": false,
+  "receipt_is_outside_all_audited_frozen_inventories": true,
+  "additional_integrated_scheduler_test_evidence": {
+    "files": [
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/water-scheduling-v2-check.json",
+        "sha256": "e709fd1832cb1bc74f705c9d51b2a2a9b870b52c2d79a74fead33001fe666881",
+        "bytes": 1187
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/water-scheduling-v2-tests.xml",
+        "sha256": "0433472f367537fdb5bbcee1bb01a916d9ab563c55b83cada8e5beb2fcfff657",
+        "bytes": 3138
+      },
+      {
+        "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/water-scheduling-v2-tests.log",
+        "sha256": "2144f7019c31e31876d19f74b069ea36a2ce9d79ef2160a1ec8494a59d6d1e1f",
+        "bytes": 99
+      }
+    ],
+    "JUnit_counts": {
+      "tests": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "source_JUnit_and_log_identity_checks_passed": true,
+    "scope": "Read existing gate receipts only; this audit did not rerun tests."
+  },
+  "open_documentation_corrections": [],
+  "resolved_documentation_corrections": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/README.md",
+      "resolution": "The aggregate now states that completed raw datasets are local checksummed archives, not publicly hosted, and records the earlier automatic-approval upload block."
+    },
+    {
+      "path": "docs/literature-validation.md",
+      "resolution": "Eight-seed OpenMM reference campaign running distinguishes the registered cohort from the four concurrent workers."
+    }
+  ],
+  "frozen": true,
+  "quantum_archive_metadata_review": {
+    "archive_metadata_inventory": "docs/validation/literature-convergence-2026-11-01/surface-partition/raw-archive/publishable-files.json",
+    "archive_metadata_inventory_sha256": "4f06465a8e4cb69b0b7abdc19b3561e3843918b97af23d43958dbc0e3d6c134e",
+    "metadata_files": 7,
+    "archive_identity_recorded_in_provenance": {
+      "bytes": 83259073,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+    },
+    "archive_availability_explicitly_local_only": true,
+    "archive_full_payload_rehashed_or_extracted_by_this_audit": false,
+    "scope_set_independently_verified": "Member inventory is exactly the243 authorized files plus their original inventory plus the35 indexed NPZ files; all279 names, sizes and SHA identities agree, with no extra members.",
+    "archive_member_count": 279,
+    "raw_NPZ_count": 35,
+    "raw_NPZ_bytes": 82902442,
+    "existing_packaging_receipt_claims": {
+      "checkpoint_integrity_envelopes": 32,
+      "primary_manifest_file_identities": 72,
+      "control_manifest_file_identities": 96,
+      "registered_TS_parents": 1600,
+      "all_originals_rehashed": 279
+    },
+    "logical_replay_review": "Static flux-weighted primary configurations, absent Maxwell momenta, independent-chain uncertainty, exact whole-file identity requirements, calibration-v1 distinction, seven external Git source dependencies, external PES/runtime and deterministic reactant/oracle prerequisites are explicitly documented. No recrossing/umbrella data or external PES is claimed included."
+  }
+}

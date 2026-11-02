@@ -1,0 +1,118 @@
+{
+  "all_three_complete": true,
+  "driver_sha256": "026b177bead452ce9f3105ce93b578906f1c97e6d4b2d71c20bf16b5230642dc",
+  "passed": true,
+  "records": [
+    {
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "taskset",
+        "-c",
+        "0,6",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/run_checks.py",
+        "--label",
+        "py312"
+      ],
+      "compatibility_sha256": "99bea94fd98f81d078c79feb3723149307774e50d4b5a4844e577d6693594810",
+      "declared_wall_timeout_seconds": 180,
+      "exit_code": 0,
+      "finished_utc": "2026-11-01T22:22:16.281516+00:00",
+      "label": "py312",
+      "log_sha256": "f409e94c5e742d7f0243d4a2bee1842d5e1753dcb101ff7c1dfac1f71cd22ea5",
+      "owned_test_group_reaped": true,
+      "passed": true,
+      "selected_environment": {
+        "MKL_NUM_THREADS": "1",
+        "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec-v2/py312/matplotlib",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OPENMM_CPU_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src:.",
+        "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec-v2/py312"
+      },
+      "started_utc": "2026-11-01T22:22:05.285641+00:00",
+      "timed_out": false,
+      "wall_seconds": 10.995878993999213
+    },
+    {
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "taskset",
+        "-c",
+        "0,6",
+        "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+        "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/run_checks.py",
+        "--label",
+        "py313"
+      ],
+      "compatibility_sha256": "fa3cfcde75bdf6a08e53b216d65d4edd8fed2910742c71d92870d039e96565de",
+      "declared_wall_timeout_seconds": 180,
+      "exit_code": 0,
+      "finished_utc": "2026-11-01T22:22:27.380817+00:00",
+      "label": "py313",
+      "log_sha256": "020932429705a1b45442f95d42adf1ebe1aed209193b999a638fa227aefca92d",
+      "owned_test_group_reaped": true,
+      "passed": true,
+      "selected_environment": {
+        "MKL_NUM_THREADS": "1",
+        "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec-v2/py313/matplotlib",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OPENMM_CPU_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src:.",
+        "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec-v2/py313"
+      },
+      "started_utc": "2026-11-01T22:22:16.281959+00:00",
+      "timed_out": false,
+      "wall_seconds": 11.098864708008477
+    },
+    {
+      "command": [
+        "nice",
+        "-n",
+        "10",
+        "taskset",
+        "-c",
+        "0,6",
+        "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python",
+        "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/ci-fixture-repair-0c5fec-v2/run_checks.py",
+        "--label",
+        "py314"
+      ],
+      "compatibility_sha256": "a4710b0d409d884a9162fc44a363aba7e1213373b6e9bddd7b92aec8c4bc1a05",
+      "declared_wall_timeout_seconds": 180,
+      "exit_code": 0,
+      "finished_utc": "2026-11-01T22:22:37.724552+00:00",
+      "label": "py314",
+      "log_sha256": "4cda4a2b2b44fa41a84298f51d5648202dc2e0594b67341b234ba153f5228c68",
+      "owned_test_group_reaped": true,
+      "passed": true,
+      "selected_environment": {
+        "MKL_NUM_THREADS": "1",
+        "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec-v2/py314/matplotlib",
+        "NUMEXPR_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OPENMM_CPU_THREADS": "1",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "src:.",
+        "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/ci-fixture-repair-0c5fec-v2/py314"
+      },
+      "started_utc": "2026-11-01T22:22:27.381195+00:00",
+      "timed_out": false,
+      "wall_seconds": 10.343366978995618
+    }
+  ],
+  "schema": "pyrpmd.three-interpreter-bounded-gate-execution.v2",
+  "selection_sha256": "60a19eca2d9cac472c060676c319fa41a4628292617cf8275120f9ec675bf6db",
+  "sequential": true
+}

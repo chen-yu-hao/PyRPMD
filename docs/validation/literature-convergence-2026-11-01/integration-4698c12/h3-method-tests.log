@@ -1,0 +1,11 @@
+.........................sssssss.............s.......................s.. [ 58%]
+...................................................                      [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_h3_classical_sampling_v2.py:27: optional pinned BKMP2 library is not built
+SKIPPED [2] tests/test_h3_classical_sampling_v2.py:40: optional pinned BKMP2 library is not built
+SKIPPED [1] tests/test_h3_classical_sampling_v2.py:52: optional pinned BKMP2 library is not built
+SKIPPED [2] tests/test_h3_classical_sampling_v2.py:63: optional pinned BKMP2 library is not built
+SKIPPED [1] tests/test_h3_classical_sampling_v2.py:78: optional pinned BKMP2 library is not built
+SKIPPED [1] tests/test_h3_mixing_sampling.py:139: optional built BKMP2 library unavailable
+SKIPPED [1] tests/test_h3_surface_partition.py:86: optional real BKMP2 library unavailable
+114 passed, 9 skipped in 13.09s

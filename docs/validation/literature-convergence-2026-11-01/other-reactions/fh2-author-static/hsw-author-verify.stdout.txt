@@ -1,0 +1,7 @@
+ first test point:
+ your calculated value:    3.4126339949292234E-002
+ true value:               3.4126341342926025E-002
+
+ second test point:
+ your calculated value:    1.8391609005588814E-003
+ true value:               1.8391609191894531E-003

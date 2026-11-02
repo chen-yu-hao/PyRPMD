@@ -1,0 +1,25 @@
+{
+  "PES_calls": 0,
+  "created_utc": "2026-11-01T21:16:33.185670+00:00",
+  "driver": {
+    "bytes": 7184,
+    "path": "/workspace/scratch/a5e4820daedd/adopt_hch4_efficiency_pilot.py",
+    "sha256": "5157fea0ea72bb98be392c0dc3ac2912bb5a8fb3a645e73b359002325fd26f81"
+  },
+  "execution_plan": {
+    "bytes": 22380,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/execution-plan.json",
+    "sha256": "4683552dfd812570e492bed3aa99df8fd6467362baa454a6e5773d0637de4df5"
+  },
+  "pilot_output_created": false,
+  "resource_adoption": {
+    "bytes": 2900,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-execution/root-resource-adoption.json",
+    "sha256": "a3dcce50903a5d6bc91e877c6ecbc1f8457f77ca22675b4d594c6a949cfd0b77"
+  },
+  "scientific_RNG_draws": 0,
+  "scientific_imports": 0,
+  "source_guard_count": 129,
+  "this_metadata_adoption_is_outside_three_invocation_CPU_accounting": true,
+  "verified_implementation_members": 36
+}

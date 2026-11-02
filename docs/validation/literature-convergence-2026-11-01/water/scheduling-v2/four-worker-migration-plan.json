@@ -1,0 +1,100 @@
+{
+  "schema": "water-four-worker-migration-v1",
+  "created_utc": "2026-11-01T17:23:13.697833+00:00",
+  "authorization": "parent approved four integration workers after natural completion of current native child calls; no physical or seed changes",
+  "state": "old dispatchers to be paused while current children finish naturally",
+  "frozen_legacy_scheduler_sha256": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+  "protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "old_dispatchers": [
+    {
+      "queue": "odd",
+      "dispatcher_pid": 202795,
+      "dispatcher_start_ticks": "5007437",
+      "dispatcher_argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_campaign_schedule.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+        "--protocol",
+        "docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+        "--queue",
+        "odd",
+        "--wall-seconds",
+        "7200",
+        "--invocation-seconds",
+        "1800"
+      ],
+      "native_child_pid": 242960,
+      "native_child_start_ticks": "5273126",
+      "native_child_argv": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+        "--wall-seconds",
+        "1800.0",
+        "--resume"
+      ],
+      "seed": 1101
+    },
+    {
+      "queue": "even",
+      "dispatcher_pid": 201552,
+      "dispatcher_start_ticks": "5001193",
+      "dispatcher_argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_campaign_schedule.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+        "--protocol",
+        "docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+        "--queue",
+        "even",
+        "--wall-seconds",
+        "7200",
+        "--invocation-seconds",
+        "1800"
+      ],
+      "native_child_pid": 240341,
+      "native_child_start_ticks": "5184542",
+      "native_child_argv": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102",
+        "--wall-seconds",
+        "1800.0",
+        "--resume"
+      ],
+      "seed": 1102
+    }
+  ],
+  "proposed_queues": {
+    "a": [
+      1101,
+      1105
+    ],
+    "b": [
+      1102,
+      1106
+    ],
+    "c": [
+      1103,
+      1107
+    ],
+    "d": [
+      1104,
+      1108
+    ]
+  },
+  "requirements": [
+    "Never signal an integration child",
+    "Verify child normal exit status zero and immutable committed trajectory prefix before retirement",
+    "Retire only verified paused dispatcher after its sole native child exits",
+    "Acquire both original queue locks and new global lock before new workers",
+    "Each seed has an exclusive lease; disjoint fixed queue ownership; no replacement after error",
+    "Preserve native source, config, initial checkpoint and full committed chunk prefix",
+    "All new workers stop dispatching after any failure; let already-running children complete naturally"
+  ],
+  "new_source_identity_pending": true
+}

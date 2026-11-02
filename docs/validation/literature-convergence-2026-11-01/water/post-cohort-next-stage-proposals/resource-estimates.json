@@ -1,0 +1,77 @@
+{
+  "adopted": false,
+  "created_utc": "2026-11-01T21:22:55.547095+00:00",
+  "executed": false,
+  "finite_preparation_admission_budget": {
+    "affinity_assignment": "Pending explicit root resource decision; no CPU has been reserved by this proposal.",
+    "allowed_worker_counts": [
+      1,
+      2,
+      4
+    ],
+    "budget_unit": "32 single-CPU worker-admission hours; retain cumulative charge across all invocations and charge an invoked outer allocation in full, even if it finishes early.",
+    "equivalent_full_two_hour_outer_invocations": {
+      "1_worker": 16,
+      "2_workers": 8,
+      "4_workers": 4
+    },
+    "maximum_child_invocation_seconds": 1800,
+    "maximum_outer_invocation_seconds": 7200,
+    "maximum_sum_workers_times_outer_admission_seconds": 115200,
+    "maximum_workers": 4,
+    "on_budget_exhaustion": "No new invocation; retain every unfinished prefix and report incomplete. No automatic budget extension or shortened physical stage.",
+    "threads_per_worker": 1,
+    "wall_semantics": "The frozen child stops after committed1ps boundaries. Startup, hashing, checkpoint publication and natural drain can exceed nominal admission durations. This is an admission budget, not an OS hard-kill guarantee."
+  },
+  "fixed_steps_per_stage_all8": 12800000,
+  "memory_allocation_proposed": {
+    "integration_total_GiB": 2,
+    "interpretation": "Planning allowances to be checked against observed headroom before adoption; no cgroup limit or active process was changed. Analyze one segment at a time.",
+    "offline_analysis_GiB": 2
+  },
+  "paid_resources_or_GPU_authorized": false,
+  "per_stage_measured_timing_extrapolation": {
+    "CPU_hours": 18.1444776119403,
+    "CPU_seconds_per_step": 0.005103134328358209,
+    "ideal_wall_hours_at4_fully_available_CPUs": 4.536119402985075,
+    "logged_wall_seconds_per_step": 0.006748859881906858,
+    "qualification": "Extrapolation from one retained 67ps original NVE invocation, including startup/restart CPU. It is neither a guaranteed runtime nor an equivalence of preparation/production overhead.",
+    "timing_receipt": {
+      "bytes": 2196,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/migration-odd-natural-exit.json",
+      "sha256": "b5ff57961aa30ae1894db7ebfc6507ab960ad59b2db7d5d2be7598aaacdf7044"
+    },
+    "wall_hours_at2_with_observed_allocation": 11.99797312338997,
+    "wall_hours_at4_with_observed_allocation": 5.998986561694985
+  },
+  "raw_chunk_size_evidence": {
+    "preparation": {
+      "maximum_observed_chunk_bytes": 195134,
+      "mean_bytes_per_1ps_chunk": 188509.78,
+      "observed_chunks": 800,
+      "projected_3200ps_raw_chunk_bytes": 603231296.0
+    },
+    "production": {
+      "maximum_observed_chunk_bytes": 1569579,
+      "mean_bytes_per_1ps_chunk": 1558489.08125,
+      "observed_chunks": 800,
+      "projected_3200ps_raw_chunk_bytes": 4987165060.0
+    }
+  },
+  "resource_based_stopping_uses_D": false,
+  "schema": "pyrpmd.water-next-stage-proposed-resource-envelope.v1",
+  "separate_future_production_budget_proposed": {
+    "additional_worker_admission_hours": 32,
+    "maximum_workers": 4,
+    "no_overlap_with_preparation_or_paired_control": true,
+    "offline_analysis_one_process_CPU_seconds_cap": 1800,
+    "offline_analysis_wall_seconds_cap": 3600,
+    "requires_new_runner_coordinator_resource_review": true,
+    "threads_per_worker": 1
+  },
+  "storage_before_adoption": {
+    "basis": "Retain raw chunks plus a separate raw-only archive and a fresh replay extraction; estimates use the original stored NPZ sizes. Actual compression and metadata overhead can differ.",
+    "combined_preparation_and_future_production_free_GiB_proposed": 20,
+    "preparation_only_free_GiB_proposed": 3
+  }
+}

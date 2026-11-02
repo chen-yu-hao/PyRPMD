@@ -1,0 +1,94 @@
+{
+  "schema": "pyrpmd.p256-child-launch.publication-inventory.v1",
+  "created_utc": "2026-11-01T20:26:54.602397+00:00",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/README.md",
+      "sha256": "b9cef2f023b84f0e5d96987e840f474a036d3a0edd58687ac202e45860e066f5",
+      "bytes": 2145
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/authorization.json",
+      "sha256": "3cefa11143fbcd2868f84b7d4ebf034ca48c0412cd55a6c119e70fecbf9ff384",
+      "bytes": 8085
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/convergence-fourth-p256-coordinator-copy.json",
+      "sha256": "5109ab7a22f88de7b764cb961f4e08e99fd1a5a2a05145714cce29b5d75bbdb4",
+      "bytes": 5326
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/convergence-fourth-p256-parent-stage-copy.json",
+      "sha256": "38fd45f9f3a0f5213ab1325e8063a1a5769b24f2a1d3eb7cce817bc7a4c34ef0",
+      "bytes": 3697
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/convergence-parent-complete-aggregate-update.json",
+      "sha256": "8aeb7901a310d352c63bcb542fbd8b8c31766ca0ac55a849bebe5a594f1f5a13",
+      "bytes": 1204
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/coordinator-registration.json",
+      "sha256": "c73c60ffd009fa75eac87e3b19bb743bf815baae3f145f154d0e8a0fae817977",
+      "bytes": 1191
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/curate_launch.py",
+      "sha256": "c38e1a6eaec26ae34e2f351a619e28e1b0adfec89a491a5f32791bf73d065492",
+      "bytes": 6239
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/launch.json",
+      "sha256": "deffbadd968e9f61b42c83452af9f07d70a97ea66069ba2f6f0bdc85ad138981",
+      "bytes": 1512
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/launch_p256_children.py",
+      "sha256": "201f93a71cccecd2b486d4653cc8666b2e08a7765ca449554844869f6c80de1b",
+      "bytes": 3165
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/parent-root-exec-exit.json",
+      "sha256": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4",
+      "bytes": 1053
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/parents-complete.json",
+      "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120",
+      "bytes": 32761
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/preflight.json",
+      "sha256": "ca6491e3e862fe4bab377f8cd7da636a3f06f2bb80796ccc825a57a66f4d8ca8",
+      "bytes": 15880
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/prepare_p256_child_adoption.py",
+      "sha256": "cb492d3c47ea714b02db8001443cd5d21d9f88ad473d04ef4aa5e2615bbf0f38",
+      "bytes": 8817
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/protocol.json",
+      "sha256": "c96429270787bda5404959648d66cfbc76575f94fd5903a64cadc482cae08d6f",
+      "bytes": 6988
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/resource-decision.json",
+      "sha256": "34d03a69f5fa1b5e344e05e50735183e4ab646caf863746d0911acb53fe8298a",
+      "bytes": 2686
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/start-observation.json",
+      "sha256": "f85289b778e5adfeddf09cd7294ae27fc4da0509d53c5efb9266de67958ce255",
+      "bytes": 1136
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-launch/umbrella-control-at-adoption.json",
+      "sha256": "2240b30838ae0e5e47e7006a4a319c322893911baf27da6229b9328478e26974",
+      "bytes": 26
+    }
+  ],
+  "complete_scientific_result": false,
+  "raw_arrays_included": false,
+  "active_logs_included": false
+}

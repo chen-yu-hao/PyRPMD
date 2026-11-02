@@ -1,0 +1,25 @@
+{
+  "created_utc": "2026-11-01T21:25:07.483177+00:00",
+  "file_count": 3,
+  "files": [
+    {
+      "bytes": 8334,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/independent-review.json",
+      "sha256": "8147f3f39ddb126cf290a9c6c2699c03d7ba81486b2deaba1303b9c165c94672"
+    },
+    {
+      "bytes": 68,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/owner-observed.json",
+      "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+    },
+    {
+      "bytes": 1644,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/retirement-proposal.json",
+      "sha256": "a787c0282c59dbb81603b4b9027dde374d4c427dee7f94b03325660401f78537"
+    }
+  ],
+  "inventory_excludes_itself": true,
+  "schema": "pyrpmd.publication-inventory.v1",
+  "scope": "Read-only exact-owned-lease review and unexecuted retirement proposal; original68-byte owner snapshot only. No primary raw data or source changes.",
+  "total_bytes": 10046
+}

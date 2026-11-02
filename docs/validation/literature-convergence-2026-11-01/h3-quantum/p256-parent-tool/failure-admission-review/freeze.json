@@ -1,0 +1,47 @@
+{
+  "authorization_schema": {
+    "bytes": 2867,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/execution-authorization.schema.json",
+    "sha256": "4733de78846487147ccd4a66db965c25cd2a77812b321beb06d1db51077d8f28"
+  },
+  "changed_function_bodies_from_prior_candidate": [
+    "dispatch_jobs"
+  ],
+  "consumer_contract": {
+    "bytes": 5339,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/parent-output-contract.json",
+    "sha256": "19f5c764134632f3bccdfa0dba579636946368bf145cab7713ebb1f0a41b23a5"
+  },
+  "created_utc": "2026-11-01T19:45:09.442110+00:00",
+  "execution_status": "not_launched_pending_review_and_root_resource_authorization",
+  "external_PES_calls": 0,
+  "gate": {
+    "bytes": 1991,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/synthetic-gate.json",
+    "sha256": "9a770e711313f9c1faad56316aa58cc68ad6ce19e4e45d0d46cee2629ce47e4b"
+  },
+  "independent_review_status": "pending_distribution_receipt",
+  "preflight": {
+    "bytes": 1369,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/failure-admission-review/preflight-receipt.json",
+    "sha256": "1d67c0c2532885719eb5d49471b84d8e5ba6fe3aa3755283558e54f51d4210a7"
+  },
+  "prior_inventory": {
+    "bytes": 9157,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-tool/publishable-files-v2.json",
+    "sha256": "d8636ad103e5e6b2e3ab73fd0553d2db495db568e8cf00bb590c51afc9db1f73"
+  },
+  "sampling_launched": false,
+  "schema": "pyrpmd.h3.p256-parent-tool-final-freeze.v3",
+  "scientific_source_or_settings_changed": false,
+  "source": {
+    "bytes": 35515,
+    "path": "benchmarks/h3/p256_parent_campaign.py",
+    "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+  },
+  "tests": {
+    "bytes": 23981,
+    "path": "tests/test_h3_p256_parent_campaign.py",
+    "sha256": "57e78795ecda9fa754fef5a6ca2180e7b4f262ada7b763b76c8f8281506d7634"
+  }
+}

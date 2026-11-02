@@ -1,0 +1,74 @@
+{
+  "created_utc": "2026-11-01T19:27:37.364151+00:00",
+  "inputs": [
+    {
+      "bytes": 35579,
+      "path": "benchmarks/hch4/reference_pilot.py",
+      "sha256": "6d93f69e185015a507c10d4159ed650c8bc6571f0c6215fdf282589deeee8ef3"
+    },
+    {
+      "bytes": 20744,
+      "path": "tests/test_hch4_reference_pilot.py",
+      "sha256": "41af569b6f97d6c8d59be063fcd4b59872f4dc19060dd58e43172eb02ec3c540"
+    },
+    {
+      "bytes": 1931,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/synthetic-gate.json",
+      "sha256": "b9d3a591029e8d883019bdfaaa692976b5a06272a669a132c8dd6543bd46918d"
+    },
+    {
+      "bytes": 4369,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/synthetic-pytest.xml",
+      "sha256": "8fc7df6b51be480261da1d0a9cec974fed2287aa18855713736f48e309ec5ec5"
+    },
+    {
+      "bytes": 100,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/synthetic-pytest.log",
+      "sha256": "3da0915204cfa9d09dc26d58b028304301027ec4461d3da90a6ccde1ed13fb5a"
+    }
+  ],
+  "limitations": [
+    "The finite molecular/PES domain and its omitted tails are unvalidated. Full proposal support and synthetic checks do not establish adequate sampling in256points per target.",
+    "Only eight excluded diagnostic seed vectors; empirical ESS or maximum observed weight does not certify precision or bound unseen tails.",
+    "Even complete output establishes cost/weight diagnostics only, not asymptotic Rinf convergence, a thermal rate, paper agreement, quantum correction or recrossing.",
+    "Resource preflight failures, partial output and all numerical failures must remain recorded; there is no automatic retry or selected seed replacement."
+  ],
+  "math_and_data_path": [
+    "to_chart/from_chart use a proper rotation gauge and retain r^2*s^2; reflected means change proposal coverage without adding physical symmetry factors.",
+    "Shape and full-sphere direction densities evaluate the full normalized mixtures. Uniform-box support covers every declared finite-domain shape.",
+    "Positive root, analytic inverse-mass metric, radial derivative, active max channel and connected-component tests implement the reviewed coarea surface. Invalid geometric draws stay zero in the unconditional sample counts.",
+    "The four separately sampled transition-channel means are summed exactly once. Entry uses one chart/full sphere. The aggregate diagnostic ratio divides pooled integral means; it does not average noisy seed ratios.",
+    "The two alpha surfaces share latent shape/direction draws, while each whole seed retains its own entry denominator. No converted rate or paper-agreement field is produced.",
+    "All768 target records and their geometric zero reasons are materialized and hashed before PES evaluation, then deterministically reconstructed and verified by registration loading.",
+    "PES failure/nonfinite values stop the attempt and remain explicit failure records, without replacement or interpretation as zero. All-zero integrals are unresolved without epsilon substitution."
+  ],
+  "provenance_requirements_before_actual_call": [
+    "The separate execution plan must bind these exact source/test/synthetic/review hashes, fixed proposal bytes, library/build inputs and actual imported modules.",
+    "One CPU affinity and all numerical thread environment variables equal1 are checked before creating the potential.",
+    "The frozen original scientific sources, model coefficients, units and known gradient-conversion caveat remain unchanged; energy alone defines this pilot weight.",
+    "Root adoption/resource authorization and the exact launch receipt remain separate from this code-review receipt."
+  ],
+  "resource_review": {
+    "actual_vs_conservative_cost": "Reports distinguish measured process CPU from conservative charged caps and bounded finalization reserves. Synthetic fixtures verify distinct parent/worker limits.",
+    "one_attempt": "Persistent RUN_ONCE and WORKER_ONCE markers, registration hashes and actual supervisor-parent PID bind the only worker and reject a second/direct attempt.",
+    "previous_gap": "The prior candidate omitted supervisor preflight and preparation import/finalization CPU from its combined budget.",
+    "resolution": "Dedicated preparation process records cumulative process_time and installs a charged integer hard cap. The supervisor includes cumulative preflight/import CPU plus a finalization reserve. Worker receives the remaining integer cap; all three charged caps sum to60seconds.",
+    "resource_and_draw_constraints_changed_after_PES": false,
+    "wall_scope": "Supervisor wall timer begins before registration revalidation and uses the remaining120seconds when waiting for its only worker; timeout kills and waits for that worker.",
+    "worker_cap_timing": "Worker allocation is installed before NumPy/SciPy imports and counts its full process lifetime. The55second admission test charges both prior process caps plus the worker current CPU."
+  },
+  "review_execution": {
+    "PES_calls": 0,
+    "dynamics_steps": 0,
+    "old_protocol_or_inventory_modifications": 0,
+    "source_modifications": 0
+  },
+  "reviewed_synthetic_test_count": 28,
+  "reviewer": "independent benchmarks agent",
+  "schema": "pyrpmd.hch4-reference-pilot-independent-implementation-review.v1",
+  "synthetic_report_errors": 0,
+  "synthetic_report_failures": 0,
+  "synthetic_report_skips": 0,
+  "tests_rerun_by_this_review": false,
+  "verdict": "No remaining blocker found for the adopted excluded finite-domain cost/weight pilot. This review is of the frozen implementation and recorded synthetic gate; it is not a PES evaluation or physical-rate validation."
+}

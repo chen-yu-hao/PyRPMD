@@ -1,0 +1,18 @@
+{
+  "PES_calls": 0,
+  "actual_original_report_status": "complete_cost_pilot",
+  "error": "ValueError: expected the complete one-attempt pilot, not a selected subset",
+  "incorrect_new_script_expected_status": "complete",
+  "input_membership_checks": {
+    "attempts": 641,
+    "distinct_attempts": 641,
+    "indices_match": true,
+    "ledger": 768,
+    "success": 641
+  },
+  "new_random_draws": 0,
+  "original_input_changes": false,
+  "output_written": false,
+  "schema": "pyrpmd.hch4-saved-pilot-diagnosis-preflight-failure.v1",
+  "source_sha256": "f2d7b95975e17078f30b9af3d320803186d83053a8aecdc10ffd7886d037fdf6"
+}

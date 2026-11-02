@@ -1,0 +1,33 @@
+{
+  "schema": "pyrpmd.p256-child-start-observation.v1",
+  "observed_utc": "2026-11-01T20:26:54.600179+00:00",
+  "exec_session_id": 30588,
+  "launch_before_subprocess_utc": "2026-11-01T20:25:26.775457+00:00",
+  "attempt": "abc9e44ad7c24313b23f64741046d2c1",
+  "actual_first_worker_start_events": [
+    {
+      "cpu": 6,
+      "event": "worker_started",
+      "pid": 6,
+      "seed": 825601,
+      "utc": "2026-11-01T20:25:27.376451+00:00"
+    },
+    {
+      "cpu": 7,
+      "event": "worker_started",
+      "pid": 7,
+      "seed": 825603,
+      "utc": "2026-11-01T20:25:27.379311+00:00"
+    }
+  ],
+  "committed_event_prefix": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-attempts/abc9e44ad7c24313b23f64741046d2c1/events.jsonl",
+    "bytes": 214,
+    "sha256": "cd47d3a1bf0b24a903b6e4e218dbd4c4810e9ac4531e4693792a326a5b29329b"
+  },
+  "status": "initial two workers running; no complete scientific result",
+  "cohort_complete_claimed": false,
+  "rate_or_kappa_inspected": false,
+  "active_full_log_copied": false,
+  "live_process_token_published": false
+}

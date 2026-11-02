@@ -1,0 +1,23 @@
+{
+  "schema": "pyrpmd.umbrella.worker-admission-change.v1",
+  "decided_utc": "2026-11-01T19:38:18.500181+00:00",
+  "reason": "The complete registered two-worker extra-child cohort exited normally; its two CPU slots are reassigned to unchanged umbrella seed workers.",
+  "previous_active_worker_ceiling": 2,
+  "new_active_worker_ceiling": 4,
+  "previous_control_sha256": "ec6d3935ab657a76836dd4b92e3b258b7ac93e7485f964cb9e15a0894f58f03e",
+  "new_control_sha256": "2240b30838ae0e5e47e7006a4a319c322893911baf27da6229b9328478e26974",
+  "extra_cohort_completion": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary/schedule-200-pairs-1-completed.json",
+    "sha256": "edc07bd7d18f6413711713e11a9d944f62dc53ab078397bd4ca99920ef68e119"
+  },
+  "exec_exit_receipt": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/extra-pairs-stage-completion-exec.json",
+    "sha256": "d9fbcab8a9c944052923f2e3d12fb6d419174c3ab3de0e104d22c11506d0d287"
+  },
+  "scheduler_sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98",
+  "driver_sha256": "e14d2d64945b5752d1a0d2bcea2d9c5a322aaba25e741f410cbaf10ac811dd82",
+  "campaign_attempt": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2",
+  "production_sweeps": 100000,
+  "no_sampler_protocol_RNG_or_scientific_gate_changes": true,
+  "new_workers_may_be_admitted_at_next_coordinator_poll": true
+}

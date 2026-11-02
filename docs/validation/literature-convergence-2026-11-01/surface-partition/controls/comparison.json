@@ -1,0 +1,440 @@
+{
+  "schema": "pyrpmd.h3.equilibrium-bead-domain-controls.v1",
+  "complete": true,
+  "controls": [
+    {
+      "name": "p64-cutoff05",
+      "beads": 64,
+      "minimum": 0.5,
+      "seeds": [
+        826401,
+        826403,
+        826407,
+        826409
+      ],
+      "completed_seed_results": [
+        {
+          "seed": 826401,
+          "log_TS_quantum_classical_ratio": -2.170915040678788,
+          "minimum_BAR_overlap": 0.8981188514144617,
+          "minimum_energy_ESS": 957.0788246533376,
+          "half_log_difference": 0.02772125949128368,
+          "checkpoint_sha256": "a1573fd366d8c9130d1fe3673c1a3d28c1ccbbe4347bf8ce4c145de951e89170",
+          "report_sha256": "3daf6091caf7b49e5f1bc86b96a95d496271d1e56ad521e64dc9afb08d77f81e"
+        },
+        {
+          "seed": 826403,
+          "log_TS_quantum_classical_ratio": -2.150086649072805,
+          "minimum_BAR_overlap": 0.9034544566538422,
+          "minimum_energy_ESS": 1076.5866310587307,
+          "half_log_difference": -0.017912593100621876,
+          "checkpoint_sha256": "48b71e05f5b088913efa77ea568fb525cf67340e80473eb8cadf0b44d2070f29",
+          "report_sha256": "f1882fefae0a61837c0b609616633f788f5a2feeacf81d9c8b557720ff180322"
+        },
+        {
+          "seed": 826407,
+          "log_TS_quantum_classical_ratio": -2.171452937576797,
+          "minimum_BAR_overlap": 0.8976226604381967,
+          "minimum_energy_ESS": 870.4311883850498,
+          "half_log_difference": 0.046766823911964295,
+          "checkpoint_sha256": "63c3be4afa48c0bf3aab3531268a53688febe8b9c21088c0c183f8e9e863dac4",
+          "report_sha256": "33e3d6c9e4fd94dc7cd223fda8f57c7b94647bd514551ff356421f9f20e9d7e1"
+        },
+        {
+          "seed": 826409,
+          "log_TS_quantum_classical_ratio": -2.1947978302202267,
+          "minimum_BAR_overlap": 0.9089412631370516,
+          "minimum_energy_ESS": 1012.6291148965508,
+          "half_log_difference": -0.012678629094045046,
+          "checkpoint_sha256": "c067e160530b9e199bb33af900e63c5948e8dda9aa4515bfc941ed6b91b6e7d0",
+          "report_sha256": "f90083d41eb9d20ef1cf3cc518e19d41e3604f7ec1afbbca7ee74029c1837c8e"
+        }
+      ],
+      "complete": true,
+      "independent_seed_statistics": {
+        "seed_count": 4,
+        "mean": -11.406518824776812,
+        "standard_error": 0.009134516593226205,
+        "CI95": [
+          -11.435588933359478,
+          -11.377448716194147
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -11.405620751068446,
+          -11.384792359462462,
+          -11.406158647966455,
+          -11.429503540609884
+        ]
+      },
+      "relative_QTST_comparison": {
+        "mean_log_difference": -0.038325455018677346,
+        "standard_error": 0.010904736346297076,
+        "Welch_degrees_of_freedom": 5.655057186906123,
+        "CI95_log_difference": [
+          -0.06540792503683267,
+          -0.011242985000522024
+        ],
+        "relative_point_difference": -0.037600327886746006,
+        "CI95_relative_difference": [
+          -0.06331471194736818,
+          -0.011180018841445276
+        ],
+        "equivalence_log_margin": 0.04879016416943204,
+        "CI95_wholly_within_margin": false,
+        "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+      },
+      "paired_seed_half_log_difference": {
+        "seed_count": 4,
+        "mean": 0.010974215302145263,
+        "standard_error": 0.015693626805960693,
+        "CI95": [
+          -0.0389699093429857,
+          0.060918339947276225
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          0.02772125949128368,
+          -0.017912593100621876,
+          0.046766823911964295,
+          -0.012678629094045046
+        ]
+      },
+      "classical_and_exact_reactant_log_offset": -9.234705710389658,
+      "seed_sampling_flags_passed": true
+    },
+    {
+      "name": "p256-cutoff05",
+      "beads": 256,
+      "minimum": 0.5,
+      "seeds": [
+        825601,
+        825603,
+        825607,
+        825609
+      ],
+      "completed_seed_results": [
+        {
+          "seed": 825601,
+          "log_TS_quantum_classical_ratio": -2.188673115015974,
+          "minimum_BAR_overlap": 0.9037728807213181,
+          "minimum_energy_ESS": 898.2230897070262,
+          "half_log_difference": -0.03443139884751689,
+          "checkpoint_sha256": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803",
+          "report_sha256": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca"
+        },
+        {
+          "seed": 825603,
+          "log_TS_quantum_classical_ratio": -2.195883329549739,
+          "minimum_BAR_overlap": 0.8981879635739524,
+          "minimum_energy_ESS": 728.5939845679276,
+          "half_log_difference": 0.02528009419746624,
+          "checkpoint_sha256": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290",
+          "report_sha256": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85"
+        },
+        {
+          "seed": 825607,
+          "log_TS_quantum_classical_ratio": -2.195188786817124,
+          "minimum_BAR_overlap": 0.9040290095783151,
+          "minimum_energy_ESS": 1025.2456074966778,
+          "half_log_difference": -0.010783448037796184,
+          "checkpoint_sha256": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664",
+          "report_sha256": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513"
+        },
+        {
+          "seed": 825609,
+          "log_TS_quantum_classical_ratio": -2.1639505226659623,
+          "minimum_BAR_overlap": 0.9020695069255699,
+          "minimum_energy_ESS": 734.4193607277025,
+          "half_log_difference": 0.02112995661235395,
+          "checkpoint_sha256": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0",
+          "report_sha256": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c"
+        }
+      ],
+      "complete": true,
+      "independent_seed_statistics": {
+        "seed_count": 4,
+        "mean": -11.37383876775398,
+        "standard_error": 0.00750230997400394,
+        "CI95": [
+          -11.397714466411843,
+          -11.349963069096118
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -11.376587944257757,
+          -11.383798158791521,
+          -11.383103616058905,
+          -11.351865351907744
+        ]
+      },
+      "relative_QTST_comparison": {
+        "mean_log_difference": -0.005645397995845514,
+        "standard_error": 0.00957906761310132,
+        "Welch_degrees_of_freedom": 6.813329608561902,
+        "CI95_log_difference": [
+          -0.02842270664508069,
+          0.017131910653389662
+        ],
+        "relative_point_difference": -0.005629492681265665,
+        "CI95_relative_difference": [
+          -0.028022581361620492,
+          0.01727950347906818
+        ],
+        "equivalence_log_margin": 0.04879016416943204,
+        "CI95_wholly_within_margin": true,
+        "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+      },
+      "paired_seed_half_log_difference": {
+        "seed_count": 4,
+        "mean": 0.0002988009811267789,
+        "standard_error": 0.014103797003963376,
+        "CI95": [
+          -0.04458577568460789,
+          0.04518337764686145
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -0.03443139884751689,
+          0.02528009419746624,
+          -0.010783448037796184,
+          0.02112995661235395
+        ]
+      },
+      "classical_and_exact_reactant_log_offset": -9.187914829241782,
+      "seed_sampling_flags_passed": true
+    },
+    {
+      "name": "p128-cutoff04",
+      "beads": 128,
+      "minimum": 0.4,
+      "seeds": [
+        820401,
+        820403,
+        820407,
+        820409
+      ],
+      "completed_seed_results": [
+        {
+          "seed": 820401,
+          "log_TS_quantum_classical_ratio": -2.1704712690450862,
+          "minimum_BAR_overlap": 0.9028882430356407,
+          "minimum_energy_ESS": 929.5475806685208,
+          "half_log_difference": 0.000426151789302498,
+          "checkpoint_sha256": "397f1868f0d3863d1ecf6fe47b536261fc9066a189cc2cf5cf7e6f02f9fe0735",
+          "report_sha256": "7f4a9f5fc0900d83d3971264b9148513710a19cefa0c207fc351e8839c7839cb"
+        },
+        {
+          "seed": 820403,
+          "log_TS_quantum_classical_ratio": -2.175106692901319,
+          "minimum_BAR_overlap": 0.9024942230964396,
+          "minimum_energy_ESS": 893.2003589726245,
+          "half_log_difference": 0.051015968316684646,
+          "checkpoint_sha256": "a9c77ec87d7b96a020a0dd6904bc2bd48d8b52e5e012a4a86c866ab8dfde9732",
+          "report_sha256": "8ee52c74c318971639a49c8023fa005d61cecb254cb7b5b8db0469ff76350c93"
+        },
+        {
+          "seed": 820407,
+          "log_TS_quantum_classical_ratio": -2.2141026671926602,
+          "minimum_BAR_overlap": 0.9124885291988539,
+          "minimum_energy_ESS": 1132.4662675294678,
+          "half_log_difference": -0.019135735036968526,
+          "checkpoint_sha256": "6e660959d2009f6977821dbd44d1a4a2ab10cd23e4919afa683b8c3c925cd5db",
+          "report_sha256": "3c85d2c8c8e706c7a5c32cced6c243a72e8c371e5ec34c540c2d9b85e1a629b4"
+        },
+        {
+          "seed": 820409,
+          "log_TS_quantum_classical_ratio": -2.153610520559096,
+          "minimum_BAR_overlap": 0.8953455427793251,
+          "minimum_energy_ESS": 907.2657538520295,
+          "half_log_difference": 0.009495675267332526,
+          "checkpoint_sha256": "920546d48719eeaf74d97619e9997d5d1b7c6118e93a1ee66c397c8b078d9098",
+          "report_sha256": "468febe97db0eaf4ca6c6ea04872c41989b5799cf080e453677ce331219fbccb"
+        }
+      ],
+      "complete": true,
+      "independent_seed_statistics": {
+        "seed_count": 4,
+        "mean": -11.37573116406766,
+        "standard_error": 0.012789597122581497,
+        "CI95": [
+          -11.416433370176488,
+          -11.335028957958833
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -11.367879645688207,
+          -11.372515069544441,
+          -11.411511043835782,
+          -11.351018897202216
+        ]
+      },
+      "relative_QTST_comparison": {
+        "mean_log_difference": -0.007537794309525836,
+        "standard_error": 0.014108425707649756,
+        "Welch_degrees_of_freedom": 4.354529705280277,
+        "CI95_log_difference": [
+          -0.045482809433427376,
+          0.030407220814375704
+        ],
+        "relative_point_difference": -0.007509456384518994,
+        "CI95_relative_difference": [
+          -0.0444639713635198,
+          0.03087424193912442
+        ],
+        "equivalence_log_margin": 0.04879016416943204,
+        "CI95_wholly_within_margin": true,
+        "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+      },
+      "paired_seed_half_log_difference": {
+        "seed_count": 4,
+        "mean": 0.010450515084087786,
+        "standard_error": 0.014782596103563833,
+        "CI95": [
+          -0.03659430326820027,
+          0.05749533343637584
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          0.000426151789302498,
+          0.051015968316684646,
+          -0.019135735036968526,
+          0.009495675267332526
+        ]
+      },
+      "classical_and_exact_reactant_log_offset": -9.197408376643121,
+      "seed_sampling_flags_passed": true
+    },
+    {
+      "name": "p128-cutoff06",
+      "beads": 128,
+      "minimum": 0.6,
+      "seeds": [
+        820601,
+        820603,
+        820607,
+        820609
+      ],
+      "completed_seed_results": [
+        {
+          "seed": 820601,
+          "log_TS_quantum_classical_ratio": -2.1844120057333347,
+          "minimum_BAR_overlap": 0.8985420182618195,
+          "minimum_energy_ESS": 1053.3806536991092,
+          "half_log_difference": 0.02101404730019052,
+          "checkpoint_sha256": "cbc1592d74c38e2518087b8f9d74d96de53b4216a65f438004c13dad51a81610",
+          "report_sha256": "8189636590b4f09868e834cc9c238524c931573badab799a0dd6ba75f8a88b0e"
+        },
+        {
+          "seed": 820603,
+          "log_TS_quantum_classical_ratio": -2.185434972420886,
+          "minimum_BAR_overlap": 0.9024090232554641,
+          "minimum_energy_ESS": 1142.8987479732784,
+          "half_log_difference": -0.0032407330628747566,
+          "checkpoint_sha256": "8d7ccdbe6ca01247854cc333cf42027bbacdb90dbc0bf1fd977726e0aa519e1f",
+          "report_sha256": "b864285e920eea2da376774ed639af2a8791afb6f954688934549bcfb3d06727"
+        },
+        {
+          "seed": 820607,
+          "log_TS_quantum_classical_ratio": -2.1948855645950998,
+          "minimum_BAR_overlap": 0.9043018301061886,
+          "minimum_energy_ESS": 993.496365253601,
+          "half_log_difference": 0.04937706355637106,
+          "checkpoint_sha256": "e724c0eea7e6fc5c7e1af6dbbb8122d760c3f053a186db6b03464a7e4f5bd35b",
+          "report_sha256": "76424096a75cf672dc69bbcd7d922ee5fb323be60eb4ddb8ae940d181167862b"
+        },
+        {
+          "seed": 820609,
+          "log_TS_quantum_classical_ratio": -2.1787410118600334,
+          "minimum_BAR_overlap": 0.9047681505684432,
+          "minimum_energy_ESS": 1174.79002100264,
+          "half_log_difference": 0.011230011265105144,
+          "checkpoint_sha256": "a405067505dc4b7c94b26ea9dfaf231376ccab14859537f6dde9e9a9451df6a6",
+          "report_sha256": "9aa170ce75602c8f8900f0e40d4a3dab6e2b1348a5277358545dcb84e71525c8"
+        }
+      ],
+      "complete": true,
+      "independent_seed_statistics": {
+        "seed_count": 4,
+        "mean": -11.383276740336061,
+        "standard_error": 0.003346862495416007,
+        "CI95": [
+          -11.39392795051889,
+          -11.372625530153233
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          -11.381820357417059,
+          -11.38284332410461,
+          -11.392293916278824,
+          -11.376149363543757
+        ]
+      },
+      "relative_QTST_comparison": {
+        "mean_log_difference": -0.015083370577926303,
+        "standard_error": 0.006831937496314634,
+        "Welch_degrees_of_freedom": 9.83138963983997,
+        "CI95_log_difference": [
+          -0.03034133779069465,
+          0.0001745966348420478
+        ],
+        "relative_point_difference": -0.014970186325173529,
+        "CI95_relative_difference": [
+          -0.029885659658308358,
+          0.00017461187772160248
+        ],
+        "equivalence_log_margin": 0.04879016416943204,
+        "CI95_wholly_within_margin": true,
+        "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+      },
+      "paired_seed_half_log_difference": {
+        "seed_count": 4,
+        "mean": 0.01959509726469799,
+        "standard_error": 0.011107162651234903,
+        "CI95": [
+          -0.01575285147690972,
+          0.0549430460063057
+        ],
+        "uncertainty_unit": "independent seed chain",
+        "individual_seed_values": [
+          0.02101404730019052,
+          -0.0032407330628747566,
+          0.04937706355637106,
+          0.011230011265105144
+        ]
+      },
+      "classical_and_exact_reactant_log_offset": -9.197408351683723,
+      "seed_sampling_flags_passed": true
+    }
+  ],
+  "baseline_seeds": [
+    721301,
+    721303,
+    721307,
+    721309,
+    721313,
+    721317,
+    721321,
+    721323
+  ],
+  "baseline_log_QTST_without_common_prefactor": [
+    -11.370361136304496,
+    -11.368410303050949,
+    -11.392906300618494,
+    -11.382772005187432,
+    -11.344613691125572,
+    -11.369259097740755,
+    -11.34415898858044,
+    -11.37306543545694
+  ],
+  "maximum_classical_quadrature_log_change": 7.622702469234355e-11,
+  "equilibrium_control_equivalence_gates_passed": false,
+  "protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "physical_converged": false,
+  "literature_reproduced": false,
+  "limitations": [
+    "Only equilibrium QTST factors are compared; no recrossing children are generated for these controls.",
+    "Failure of a 5% equivalence interval may mean a resolved change or insufficient statistical power.",
+    "All comparisons share the same frozen eight-seed baseline; they are not independent of one another."
+  ]
+}

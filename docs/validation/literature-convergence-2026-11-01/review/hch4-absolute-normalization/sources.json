@@ -1,0 +1,39 @@
+{
+  "checked_utc": "2026-11-01T21:59:35.340432+00:00",
+  "full_article_copied_or_redistributed": false,
+  "independent_derivation": "The long phase-space/coarea derivation is the reviewer's calculation from canonical Gaussian momenta and the frozen code-defined geometry; it is not an extended paraphrase of the paper.",
+  "quotation_words": 0,
+  "schema": "pyrpmd.hch4.absolute-normalization-primary-sources.v1",
+  "sources": [
+    {
+      "access": "Full author manuscript text readable.",
+      "authors": [
+        "Yu. V. Suleimanov",
+        "J. W. Allen",
+        "W. H. Green"
+      ],
+      "doi": "10.1016/j.cpc.2012.10.017",
+      "locators": [
+        "Equations4-10: entry, maximum equivalent channels and interpolating coordinate.",
+        "Equation12: entry-sphere thermal prefactor times PMF ratio.",
+        "Equations15-16: flux-metric-weighted canonical sampling.",
+        "Equation19: S_alpha=(1-alpha)s0+alpha*s1.",
+        "Table1: H+CH4 Rinf30bohr and four channels.",
+        "Table2: P1 xi=.999 and P128 xi=1.007."
+      ],
+      "primary_status": "Author-uploaded manuscript; text identifies an October9,2012 preprint. Not represented as a retrieved final publisher PDF.",
+      "title": "RPMDrate: Bimolecular chemical reaction rates from ring polymer molecular dynamics",
+      "url": "https://www.researchgate.net/publication/279840192_RPMDrate_Bimolecular_chemical_reaction_rates_from_ring_polymer_molecular_dynamics",
+      "use_limit": "Method conventions only. No paper rate value was used in the calculator or to choose a normalization."
+    },
+    {
+      "bibliography": "Computer Physics Communications184(3),833-840,March2013",
+      "pdf_access_result": "HTTP429 during this review; no claim to have retrieved the PDF.",
+      "pdf_endpoint": "https://dspace.mit.edu/bitstreams/3ca0d362-fd8b-4bb5-8699-0bbaa6645d16/download",
+      "primary_status": "Author institutional repository",
+      "title": "MIT original-manuscript repository record",
+      "url": "https://dspace.mit.edu/entities/publication/a4555c62-26a0-4500-8953-5dd1905583cc",
+      "version_label": "Original manuscript"
+    }
+  ]
+}

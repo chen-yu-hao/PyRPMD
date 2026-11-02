@@ -1,0 +1,63 @@
+{
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "all_checks_passed": true,
+  "exact_initial_tag_displacements_checked": 711,
+  "exact_ordered_followup_labels_checked": 89,
+  "inputs": [
+    {
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/calibration-initial-ledger.json",
+      "sha256": "f6028dad40fa17a12120a8fb1666c703db9096da7e1d2d6cb5267dc64f5ed920"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/calibration-followup-ledger.json",
+      "sha256": "b6a797c6cf5c7efb399c1574863e1016b76e47162109d78a7bd00b0fc0978970"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/registration.json",
+      "sha256": "5f4cd5b26632759a77ebbfb0a1e879fc9f32900534fdf186373a3f5c0635ae31"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/geometries.json",
+      "sha256": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+      "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+      "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/audit_calibration_inputs.py",
+      "sha256": "af21de340a1b25dc17f220c7e6e978b85a0f1fc67c0c3d4602400d6a4a486e8a"
+    }
+  ],
+  "maximum_absolute_errors": {
+    "actual_stencil_coordinate": 2.4424906541753444e-15,
+    "mass_units": 0.0,
+    "reference_bond_difference": 0.0,
+    "registered_reference_shape": 2.4424906541753444e-15,
+    "registered_scales": 0.0,
+    "temperature_units": 0.0
+  },
+  "original_inputs_unchanged": true,
+  "pinned_physics_and_geometry_match_actual_registration": {
+    "/benchmarks/hch4/geometries.json": {
+      "adopted_source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/geometries.json",
+      "sha256": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609"
+    },
+    "/review/hch4-reference-feasibility/pilot-design/proposal.json": {
+      "adopted_source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+      "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+    }
+  },
+  "reference_shape_and_scales_reconstructed_from_pinned_metadata": true,
+  "schema": "pyrpmd.hch4-calibration-reference-and-stencil-audit.v1",
+  "scope": "Additive input audit, preserving the already executed standalone replay and raw archive bytes. No physical or efficiency threshold change.",
+  "tolerances": {
+    "atol": 2e-12,
+    "rtol": 2e-14
+  }
+}

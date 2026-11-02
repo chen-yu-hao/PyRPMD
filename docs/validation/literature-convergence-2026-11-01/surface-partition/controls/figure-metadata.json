@@ -1,0 +1,22 @@
+{
+  "schema": "pyrpmd.h3.equilibrium-control-figure.v1",
+  "created_utc": "2026-11-01T17:19:00.708412+00:00",
+  "comparison_sha256": "059d38bda91ce7d17429ae3fe93009ba31013f1532eab2bb8e8baaa574ef987b",
+  "protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "plot_source_sha256": "b07375ef1d8b0f410b5b1d47c787ad29b7b18db119d469f190f6a6ed715ab7bc",
+  "statistical_analysis_changed": false,
+  "outputs": {
+    "comparison-plot-data.csv": {
+      "sha256": "53c26b6264cf0170daf0e14eb64d4422fb5c3324062dab1f3ad9d48cd769e509",
+      "bytes": 536
+    },
+    "comparison.png": {
+      "sha256": "a4864f8e2bd797c92290d22021d40229bbefe979fb9961b492ca0264e0f4aaa9",
+      "bytes": 139504
+    },
+    "comparison.svg": {
+      "sha256": "7bdbde139f7d79bcd2573de77ec033bac17a45f6da471851b6d55adb24064b68",
+      "bytes": 18048
+    }
+  }
+}

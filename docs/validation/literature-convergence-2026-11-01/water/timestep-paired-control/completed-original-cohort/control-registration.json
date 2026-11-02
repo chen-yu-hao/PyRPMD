@@ -1,0 +1,418 @@
+{
+  "assessment": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+    "sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8"
+  },
+  "branches": [
+    {
+      "checkpoint_fs": 1000.0,
+      "dt_fs": 0.25,
+      "duration_fs": 4000.0,
+      "label": "dt025",
+      "record_fs": 5.0
+    },
+    {
+      "checkpoint_fs": 1000.0,
+      "dt_fs": 0.125,
+      "duration_fs": 4000.0,
+      "label": "dt0125",
+      "record_fs": 5.0
+    }
+  ],
+  "created_utc": "2026-11-01T20:57:24.684178+00:00",
+  "environment": {
+    "dependencies": {
+      "numpy": "2.5.4",
+      "openmm": "8.6.1",
+      "scipy": "1.18.1"
+    },
+    "machine": "x86_64",
+    "python": "3.12.14"
+  },
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "literature_comparison": null,
+  "only_numerical_control": true,
+  "original_coordinator_exit_proof": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json",
+    "sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744"
+  },
+  "original_root": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+  "output_root": "/workspace/scratch/a5e4820daedd/water-paired-timestep-control-2026-11-01",
+  "preparation_failure_repaired": false,
+  "protocol_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/protocol.json",
+  "protocol_sha256": "d7a34a9f92604b38ef0a4ab2bc6271b20bd14b09e92b95b4312bd2efe0543747",
+  "schema": "pyrpmd.water-paired-timestep-registration.v1",
+  "selection": {
+    "1101": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "manifest.before-checkpoint-contract-v2.json": {
+          "sha256": "cdf07967c7a7419d7ee331da71d7d8132c2abe7f1728f44a235d9159e5e60bbb"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "0b9ed7afffa6286b5f89d2a994f0f8747ac09b622e44900ed576b63aafcbd071",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1101,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+      "manifest_sha256": "5d32b200e8073dc9818696fe2c77611c0539379fd494418bfc8fc191bbb777bd"
+    },
+    "1102": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "manifest.before-checkpoint-contract-v2.json": {
+          "sha256": "65fd89597579a268c9682a012605d031bff017eafebe1a6d45c45ead95f0a662"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "0b151153c8223824b5188e1635c00afa5a2c783f051ead4f862029a18a061a60",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1102,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102",
+      "manifest_sha256": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5"
+    },
+    "1103": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "b7df140f0bbee88db6bbfc4bb4f91a6180f83cc8971f6d9db6986d9ba54ee124",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1103,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103",
+      "manifest_sha256": "dcd638e3052964747fc6d22ebc40ab6eafd33519e2c6caf790d7a686435a45b3"
+    },
+    "1104": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "ca9c20aed155f396441544d6cf55501a15ff347998ef7170da8b6e9b8e619ede",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1104,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104",
+      "manifest_sha256": "02d5eaa6bf6aff7cc4a56459279087efcf07b1ca36d589379c33b5aae0107ebf"
+    },
+    "1105": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "e900bfcaec5455ee3c5397aabbb9d1881a4c517c6f3fc6e110c1e20bd1570cbe",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1105,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105",
+      "manifest_sha256": "3dfdf5dff6f8d03c65e29f9b87d0d4b14ef8c40cb592a38577a363a8bfee64ac"
+    },
+    "1106": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "58fdb04cd5c44c351f00f82ec773050175a660568845367199be1faecac2fe66",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1106,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106",
+      "manifest_sha256": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52"
+    },
+    "1107": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "e1ed293fba1612583a92a3e117afc0065c318977a39cf2b1c154ce043830940f",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1107,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107",
+      "manifest_sha256": "12ebe411009ce33f0e7a5aba12128dc1bb9b73d6ebf5b5c573eddaf242bd7cb0"
+    },
+    "1108": {
+      "artifacts": {
+        "integrator.xml": {
+          "sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332"
+        },
+        "model.xml": {
+          "sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322"
+        }
+      },
+      "box_angstrom": 18.642822871774577,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "86e63aa2de12c48d5fa780a8b2aa38964bff009cde41ff4b6be55611eef6ab89",
+        "step": 400000
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1108,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108",
+      "manifest_sha256": "affbd97b119bbcceb0dc2f0b865b21876417ab0f13424d80ae9f065d769a2f2a"
+    }
+  },
+  "source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  }
+}

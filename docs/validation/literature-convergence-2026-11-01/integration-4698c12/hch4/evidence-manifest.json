@@ -1,0 +1,78 @@
+{
+  "schema": "pyrpmd.hch4.integration-evidence-manifest.v1",
+  "path_base": "integration repository root",
+  "git_head_at_execution": "3ff0b674fc9b28e60da9261e08a08ca1ecf75335",
+  "native_sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/README.md",
+      "sha256": "eea9a7e520fad529fb9e243d5e7df72e5b71b8a5321e4d8e6190b174fa6aa686",
+      "bytes": 3445
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/native-verification.json",
+      "sha256": "50d70ee7eedfe5ee8b575a75d26e49d25463f96949fe553476a1bdad3f631a1a",
+      "bytes": 24107
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/native-verification.log",
+      "sha256": "d14a0b208560fa5c9271e3692805715da2301f735e2d8238af33019ac99f8280",
+      "bytes": 3643
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/raw-data-index.json",
+      "sha256": "df7f76fc75ac659fce730a291b7ec48f83efb4308c4c4e34a6a39c0ade4150dc",
+      "bytes": 2616
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/receipt.json",
+      "sha256": "67aa3e6ed686f4910a30389838dd0053d70ef36430c70ff5af4a86d33eec3ce8",
+      "bytes": 26680
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/run-checks.log",
+      "sha256": "d481d7e6466031720f51992f6bb39d131cd53e21137a452614b3d7575538c147",
+      "bytes": 1344
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/run_checks.py",
+      "sha256": "884df28c5cf15ab668b510afaa0b0274188d9e0d5459374b6de010cec11bd502",
+      "bytes": 6675
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/standard-tests.log",
+      "sha256": "5bb8afa5367b0a403ea643bb99c62614030a0de6c0a9e947fbac5cbadb523ba8",
+      "bytes": 1955
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/standard-tests.xml",
+      "sha256": "a8e196fa3eedb0f197e0a1c0202dbd0c6e45c3e57ef8d3a62f8ad73850ef5f7f",
+      "bytes": 1586
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P1-preparation/preparation.json",
+      "sha256": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+      "bytes": 752
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/P128-preparation/preparation.json",
+      "sha256": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+      "bytes": 752
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow/report.json",
+      "sha256": "ed8d3c10883f06d54ca04242297bf77bea126d009766c795500119e85cd1208f",
+      "bytes": 4937
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/workflow.log",
+      "sha256": "fb95459e640cdaaafbd34750b37ccc265a88404e75945eae364b7dce7074ff97",
+      "bytes": 4331
+    }
+  ],
+  "file_count": 13,
+  "total_bytes": 82823,
+  "raw_checkpoints_excluded": true,
+  "raw_index": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4/raw-data-index.json",
+  "manifest_self_note": "Add this manifest separately; it is not listed in its own checksum entries."
+}

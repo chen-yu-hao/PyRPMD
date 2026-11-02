@@ -1,0 +1,72 @@
+{
+  "CPU_affinity": null,
+  "adopted": false,
+  "analysis_execution": {
+    "bytes": 2074,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/execution.json",
+    "sha256": "a84f0a0434199c7897e99c9f4e55fbe40a641fe78f8cdea27bd08d194bbd54cb"
+  },
+  "analysis_exit": {
+    "actual_tool_observation": {
+      "bytes": 367,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-analysis-100000-root-observation.json",
+      "sha256": "dd83c17b1dfbca5246cdf4103d03fd396098b9f9f61bdb559d1243e49744f5a3"
+    },
+    "all_owned_workers_drained": true,
+    "exec_session_id": 1094,
+    "exit_code": 0,
+    "observed_utc": "2026-11-01 21:28:28 UTC"
+  },
+  "analysis_report": {
+    "bytes": 12059,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/full-cohort-stage-100000/campaign-comparison.json",
+    "sha256": "db76aa53b848e9b24ee32c6e4ad7b199c151c3547f28d7954c9f49388d8bb16a"
+  },
+  "analysis_stdout": {
+    "bytes": 844,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-analysis-100000.log",
+    "sha256": "7350f25ec077d7f89f59cd57f4510b7b1dfe7a02a5f8e7827a2b48aa67f6549d"
+  },
+  "analysis_stdout_scope": "Complete retained redirected stdout/stderr of the original complete-cohort analysis waiter.",
+  "global_completion": {
+    "bytes": 46138,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/stage-100000.json",
+    "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317"
+  },
+  "independent_review": null,
+  "lease_absence_claimed": false,
+  "no_pending_or_running_300000": false,
+  "policy_sha256": "e73a940695fdfe86460c76b1d3ade84555867d85f4ca115fe103b44c233dbfe0",
+  "prior_plan_sha256": "d06a07fed6d6e69f2ddd09c614d9fc17b336c669c5f4013d3cf65ac45e7d2fa4",
+  "read_only_lease_anomaly_exception_adopted": false,
+  "root_no_writer_attestation": {
+    "all_owned_sampling_workers_drained": false,
+    "complete_sampling_and_analysis_exits_observed": false,
+    "future_300000_only_new_isolated_restore_from_verified100000_archive": false,
+    "lease_anomaly_cause_not_assumed": false,
+    "no_300000_admitted": false,
+    "no_existing_or_pending_new_legacy_or_direct_sampler": false,
+    "no_writers_admitted_until_archive_attempt_finishes": false,
+    "original_campaign_remains_unchanged": false
+  },
+  "sampling_exit": {
+    "actual_tool_observation": {
+      "bytes": 401,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000-root-observation.json",
+      "sha256": "66082b68f9e6240677c93b1bf86ab6bd28c0defa8434bed05ccd13fa6d5939d3"
+    },
+    "all_owned_workers_drained": true,
+    "exec_session_id": 57942,
+    "exit_code": 0,
+    "observed_utc": "2026-11-01 21:17:10 UTC"
+  },
+  "sampling_stdout": {
+    "bytes": 1083,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000.log",
+    "sha256": "7c18e9bc31960d0fe15bdcca723b1e457bf2430dddfa28d2ceb42d345b09627e"
+  },
+  "schema": "pyrpmd.h3.umbrella100000-readonly-archive-adoption.v2",
+  "source_sha256": "d7004587d6643f8a36f3b40d9d591b0d048a6d53b2233092c2e03c1c373166ad",
+  "template_status": "INVALID pending independent review and separate root adoption. Preserve this template; create a new adopted file, supply the exact historical2-to4 control-change record, choose actual CPU and affirm every no-writer field.",
+  "worker_control_change": null
+}

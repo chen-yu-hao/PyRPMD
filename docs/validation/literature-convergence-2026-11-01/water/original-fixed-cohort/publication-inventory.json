@@ -1,0 +1,167 @@
+{
+  "all_original_seeds_and_failures_retained": true,
+  "contains_raw_trajectory_chunks": false,
+  "created_utc": "2026-11-01T20:55:40.895145+00:00",
+  "file_count": 31,
+  "files": [
+    {
+      "bytes": 11809,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/README.md",
+      "sha256": "edeb6eaf650954ca65be5f5843fb01e4608e360b281c562d9dbe9145b0babfae"
+    },
+    {
+      "bytes": 2385767,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/curves.npz",
+      "sha256": "1555714decf9bf34b73463d05283ada6a8c5aa875798ca8834e18eb65f2e17f2"
+    },
+    {
+      "bytes": 247521,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+      "sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8"
+    },
+    {
+      "bytes": 3874,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis-execution.json",
+      "sha256": "5b2a5e1b651ba62692fb688cf86c229c4587813f2bbc67e2e2578bcd4c605e2f"
+    },
+    {
+      "bytes": 110,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis.log",
+      "sha256": "6f22e7eb0d3bdd3070ad70d67229e2293ef3e0f2b218315406b1263093f8a2bf"
+    },
+    {
+      "bytes": 7877,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/assessment-summary.json",
+      "sha256": "6228519d8ba373f0e30c8fed9121940fed2fe5f64cbea14e2998df75e766d115"
+    },
+    {
+      "bytes": 808,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/chain-summary.csv",
+      "sha256": "fb32aaa8734983588b3c5ba062d8b5c5eca30d3c576f32ade8e3f7a4a49af715"
+    },
+    {
+      "bytes": 2051,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/figure-provenance.json",
+      "sha256": "67878143fd15b56799b39110b608e13a48bd522eeb9c661ffd8240fdf6a044c7"
+    },
+    {
+      "bytes": 354421,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/fixed-cohort-transport.png",
+      "sha256": "1e4df044b2587c8dff459f4d132571919bdde4c98033ed405551ad283f072d19"
+    },
+    {
+      "bytes": 240449,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/fixed-cohort-transport.svg",
+      "sha256": "a95e9fa391cfed15bc48ee789394e3f2b8fbb4d9f294c2998baa7c5d222a2a62"
+    },
+    {
+      "bytes": 2031,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/preparation-figure-provenance.json",
+      "sha256": "c7073fc2525d15474c298abe452164c086a87100e48726078674cb0021da66cf"
+    },
+    {
+      "bytes": 179472,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/preparation-rdf.csv",
+      "sha256": "95448d3d05d9b3269db18743607791a03eff4260623cc3c1b181401b9bd9fa62"
+    },
+    {
+      "bytes": 317693,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/preparation-rdf.png",
+      "sha256": "f7aad44a780e4d2c2d1afc8ef3f47c828daad0ff768d4daa47d71d15cf5ca44a"
+    },
+    {
+      "bytes": 353875,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/preparation-rdf.svg",
+      "sha256": "085d0ed2f7fc799fdf334efc6c938cbc915cf5f4f4c9272cac43e5e5ad710db4"
+    },
+    {
+      "bytes": 4065,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/preparation-scalars.csv",
+      "sha256": "3074492b9eb594f0922e3a33374d481a0c216734337112ed0ca5d3d915cfa8ed"
+    },
+    {
+      "bytes": 183653,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/preparation-scalars.png",
+      "sha256": "aea6792796d23cf3592fc19c5d824639189569d989cdb2fa82ac1b39cd77a942"
+    },
+    {
+      "bytes": 138892,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/preparation-scalars.svg",
+      "sha256": "9dffca9e652277e16469423e6cf9030e2da8d494a33b9b9006ce637bacf1cc25"
+    },
+    {
+      "bytes": 1551,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/production-half-chain-means.csv",
+      "sha256": "cfe99091d9efe0d7674b7a10247baa6378007e19091a8cbf51bec34a8de941da"
+    },
+    {
+      "bytes": 17378,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/production-segment-means.csv",
+      "sha256": "48e86f5fb2e5772fc7d8bb7d16b6ffb845c4cf20ea5a9012f9c2ebe7ccf09954"
+    },
+    {
+      "bytes": 5205,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/production-stability.json",
+      "sha256": "de670bab0413d0adfa7ffcb5c45a16820bbd87dcae9fe5fbe63135d679fc9357"
+    },
+    {
+      "bytes": 623736,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/production-stability.png",
+      "sha256": "e40851438d3986a7af7ffb9e074a7b8d0b0924d320cafd89c08cf77610f69ff0"
+    },
+    {
+      "bytes": 111498,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/figures/production-stability.svg",
+      "sha256": "f70e03c6849b5915b069d2ead692b72f8c478f0b2520696d404c275b4b28f196"
+    },
+    {
+      "bytes": 10085,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json",
+      "sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744"
+    },
+    {
+      "bytes": 3811,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/plot-execution.json",
+      "sha256": "bc635b1ad8db8d7d8db82ba63e08ac8d69e3b8ab7bf52e284aa3311179f9201c"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/preparation-plot.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 0,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/production_stability-plot.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2496,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/raw-data-index.json",
+      "sha256": "355e72b3fb035940693c685ef6d12dda01a7557851c5415be4fc5243fb176472"
+    },
+    {
+      "bytes": 402156,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/raw-file-manifest.json",
+      "sha256": "b867b097369759f09e71a4d073b88cb3a07f095d1f328e9495e9c314099cd3b0"
+    },
+    {
+      "bytes": 3876,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/source-provenance.json",
+      "sha256": "122f25e6a488d86676d88b9c5b198bf178f9a8ef85de9f79156e950147a3f9c5"
+    },
+    {
+      "bytes": 1353,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/summary.csv",
+      "sha256": "d3c825ab9c85964779248021e07b30bb3c10feb954e48893ef6457b0aa043eea"
+    },
+    {
+      "bytes": 2051,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/transport-plot.log",
+      "sha256": "27d55a8876faab4704452a04c678587f657935840af9c11be864a8fa44c9de10"
+    }
+  ],
+  "formal_literature_comparison": null,
+  "frozen": true,
+  "schema": "pyrpmd.water-complete-original-cohort-publication-inventory.v1",
+  "total_bytes": 5619564
+}

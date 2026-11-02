@@ -1,0 +1,13 @@
+{
+  "created_utc": "2026-11-01T21:36:57.415656+00:00",
+  "exec_session_id": 51778,
+  "execution_log_sha256": "487eed5a60c84fc33d83b79b5d6cf0d88655d5037008c20b6e4ed9d2ad96507b",
+  "schema": "pyrpmd.agent-actual-exec-observation.v1",
+  "scope": "Actual write_stdin terminal response for offline archive/extraction/replay only.",
+  "tool_result": {
+    "chunk_id": "5f275b",
+    "exit_code": 0,
+    "output": "",
+    "wall_time_seconds": 1.94e-05
+  }
+}

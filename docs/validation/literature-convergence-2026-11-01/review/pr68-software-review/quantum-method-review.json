@@ -1,0 +1,132 @@
+{
+  "schema": "pyrpmd.quantum-recrossing-independent-method-review.v1",
+  "reviewed_utc": "2026-11-01T17:41:33.600511+00:00",
+  "scope": "Read-only independent statistical and method review; no partial primary rate data inspected; no source, protocol, Git or prior review-inventory mutation.",
+  "conclusion": "No mathematical normalization/sign/bead/channel/unit or covariance blocker identified. Conditional extension authorization remains an external registered-procedure requirement, acknowledged by the study owner.",
+  "protocol_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-protocol.json",
+  "protocol_sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589",
+  "analysis_prespecification_path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-analysis-prespecification.json",
+  "analysis_prespecification_sha256": "fe176907beb4c3f0c70cb920fd180779d8b5a65092eef2aed6f6d921eb2d3f6e",
+  "analysis_matches_prespecified_source": true,
+  "cohort": {
+    "seeds": [
+      721301,
+      721303,
+      721307,
+      721309,
+      721313,
+      721317,
+      721321,
+      721323
+    ],
+    "parents_per_seed": 200,
+    "independent_uncertainty_units": 8,
+    "partial_cohort_cannot_pass": true
+  },
+  "normalization": {
+    "momentum_bead_variance": "m*P/beta",
+    "centroid_velocity_variance": "g/beta",
+    "positive_flux_metric": "sqrt(g/(2*pi*beta))",
+    "expected_pair_denominator": 2.0,
+    "expected_pair_numerator": "2*kappa",
+    "bead_factor_error_found": false,
+    "channel_factor_error_found": false,
+    "rate_units": "cm^3 molecule^-1 s^-1"
+  },
+  "paired_comparisons": {
+    "timestep_initial_momentum_and_channel_hashes_checked": true,
+    "time_and_timestep_intervals_use_seedwise_differences": true,
+    "same_chain_BAR_log_correction_and_log_kappa_covariance_retained": true,
+    "central_rate_estimator": "geometric mean of independent-chain rate estimates"
+  },
+  "extension_guard": {
+    "enforced_parameter_choices": [
+      {
+        "horizon_fs": 200,
+        "pair_batches": [
+          0
+        ]
+      },
+      {
+        "horizon_fs": 400,
+        "pair_batches": [
+          0
+        ]
+      },
+      {
+        "horizon_fs": 200,
+        "pair_batches": [
+          0,
+          1
+        ]
+      },
+      {
+        "horizon_fs": 400,
+        "pair_batches": [
+          0,
+          1
+        ]
+      }
+    ],
+    "prior_all_seed_gate_checked_inside_driver_or_analyzer": false,
+    "owner_confirmed_no_extension_launched_at_review": true,
+    "owner_committed_safeguard": "Retain complete all-eight-seed primary report and source/raw hashes; write immutable trigger/decision receipt identifying exact failed registered plateau/precision gate and next all-seed/timestep horizon or batch before continuation. No partial diagnostic can trigger it.",
+    "final_receipt_required_if_extended": true,
+    "registered_trigger_rules": {
+      "horizon": "extend every registered child to 400 fs if 200-fs time plateau gate fails; no selective extension",
+      "additional_pairs": "If all-chain time/timestep equivalence passes but kappa relative 95% halfwidth exceeds 3%, append the same pair indices 2 and 3 to every parent, seed and timestep in a separately retained batch. Reevaluate gates on all four pairs; no extension based on closeness to a paper point."
+    }
+  },
+  "bounded_existing_tests": {
+    "test_count": 21,
+    "passed": 21,
+    "failures": 0,
+    "errors": 0,
+    "pytest_reported_seconds": 1.31,
+    "junit_attributes": {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "21",
+      "time": "1.302",
+      "timestamp": "2026-11-01T12:38:34.350345-05:00",
+      "hostname": "13d968332fed"
+    },
+    "source_unchanged_during_test": true,
+    "source_identity_matches_child_registration": true,
+    "primary_data_read": false
+  },
+  "remaining_interpretation_limits": [
+    "Nominal eight-chain Student-t intervals; no sequential-coverage correction after conditional extensions.",
+    "Finite-chain ratio and log-transform bias not separately corrected.",
+    "Point-agreement/precision gates differ from the separately reported full-CI-inside-paper-band diagnostic.",
+    "1-fs pair observations cannot exclude between-frame domain crossings; energy screen is not a rate-bias bound.",
+    "No dynamic bead/domain convergence or production umbrella validation follows from this fixed-P child analysis.",
+    "Keep the independently audited classical scalar reference immutable; its full physical metadata are not revalidated by this analyzer."
+  ],
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review.md",
+      "sha256": "7d838e69249accfeeaf467e91c5b51a89a153b9de0423871bbccb69d17f7e3f3",
+      "bytes": 6855
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review-test-receipt.json",
+      "sha256": "ce7544613866943a375100c56cc5cd3670aa49c977adebd4f9ffa4e4de13dfac",
+      "bytes": 1404
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review-tests.xml",
+      "sha256": "f0e53c2c0e018a3f642788760b8c324450c8d8b689f89cbd24fcceff77c78a1a",
+      "bytes": 3272
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review-tests.log",
+      "sha256": "e91ba8b0e4ab4b5c24098b049af1e5d1b2183b4b64dc5c1a754f89957c2450c6",
+      "bytes": 99
+    }
+  ],
+  "prior_six_file_inventory_sha256_unchanged": "5f6f2abfccfa77068f81293dd753ca728ee4c352146d768a902b38e01c18bdec",
+  "scientific_source_changes": []
+}

@@ -1,0 +1,10 @@
+--- a/tests/test_water_production_stability.py
++++ b/tests/test_water_production_stability.py
+@@ -99,6 +99,7 @@
+ 
+ 
+ def test_plot_retains_every_segment_without_adding_a_gate(cohort, tmp_path):
++    pytest.importorskip("matplotlib")
+     output = tmp_path / "figures"
+     result = plotter.plot(*cohort, output)
+     assert result["synthetic_data"] is True

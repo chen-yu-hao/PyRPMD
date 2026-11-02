@@ -1,0 +1,60 @@
+{
+  "schema": "pyrpmd.hch4.execution.v1",
+  "created_utc": "2026-11-01T16:58:23.274657+00:00",
+  "source_files": {
+    "benchmarks/hch4/pes.py": "c564017f6c60fb47f44e964c966c4f8f9f15050d9170eba0e24ca383101b19a4",
+    "benchmarks/hch4/verify.py": "774d9c287d1e6e24f2fedee7cbf37874d8d83733a4a3ba5ccdf96493aebf595f",
+    "benchmarks/hch4/build_pes.py": "d9d7c4d851b7e2aa38d5483aee9c33bbd427f21889587efcdbe38447db540ced",
+    "benchmarks/hch4/wrapper.f90": "4bac40255ef99380e011d1c3e231673feaf4a09974f569c8a60b004f9075b4da",
+    "benchmarks/hch4/source.json": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+    "benchmarks/hch4/geometries.json": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+    "tests/test_hch4_pes.py": "fdabafc7c99a3f6093754c8a925b482390925865f32ccbeb684f26d8f0c268cd"
+  },
+  "source_retrieval": "Exact GitHub connector base64 bytes, independently checked against git blob SHA1 and SHA256 in source manifest",
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/hch4/build_pes.py",
+        "--source-dir",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/assets",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--fc",
+        "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran"
+      ]
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "benchmarks.hch4.verify",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/verification.json"
+      ]
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_hch4_pes.py",
+        "-q",
+        "--junitxml=/workspace/scratch/a5e4820daedd/literature-convergence-hch4/pytest.xml"
+      ],
+      "extra_environment": {
+        "PYRPMD_CBE2008_LIBRARY": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so"
+      }
+    }
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "source_binary_redistributed": false,
+  "rates_computed": false,
+  "tests_passed": 4
+}

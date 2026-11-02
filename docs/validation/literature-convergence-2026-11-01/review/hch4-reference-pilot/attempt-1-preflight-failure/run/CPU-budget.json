@@ -1,0 +1,12 @@
+{
+  "created_utc": "2026-11-01T19:29:11.969732+00:00",
+  "hard_caps_enforced": true,
+  "measured_supervisor_CPU_seconds_at_allocation": 0.737246968,
+  "preparation_hard_CPU_seconds": 2,
+  "registration_sha256": "7e88f729e5e61fc0096bf0aaf6f546b85d52d61edb9f6a9678b152701a8765a4",
+  "soft_total_CPU_admission_seconds": 55,
+  "sum_hard_CPU_caps_seconds": 60,
+  "supervisor_PID": 4,
+  "supervisor_hard_CPU_seconds": 3,
+  "worker_hard_CPU_seconds": 55
+}

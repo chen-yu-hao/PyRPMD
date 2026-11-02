@@ -1,0 +1,17 @@
+{
+  "preflight_passed": true,
+  "output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents",
+  "seeds": [
+    825601,
+    825603,
+    825607,
+    825609,
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "source_guard_count": 39,
+  "workers_launched": 0,
+  "PES_calls": 0
+}

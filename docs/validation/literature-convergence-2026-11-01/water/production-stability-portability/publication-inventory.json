@@ -1,0 +1,32 @@
+{
+  "created_utc": "2026-11-01T20:33:29.094421+00:00",
+  "file_count": 4,
+  "files": [
+    {
+      "bytes": 987,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/README.md",
+      "sha256": "1407a402dec98fd63d626b4924a44325758aeed02e68900b60a0cf06ea165fa0"
+    },
+    {
+      "bytes": 357,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/rendering-portability.patch",
+      "sha256": "f74c8e6574de3568a5d761ae25d3363defb0787886d4d76d4991dd2401ac3848"
+    },
+    {
+      "bytes": 2105,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/supersession.json",
+      "sha256": "fcef77c2a0813451e53ba8b890b01e2e434c8a137519b427f2e360e67892b82e"
+    },
+    {
+      "bytes": 5242,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/test_water_production_stability.original.py",
+      "sha256": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef"
+    }
+  ],
+  "schema": "pyrpmd.water-production-stability-portability-inventory.v1",
+  "source_frozen": true,
+  "supersedes_only": [
+    "tests/test_water_production_stability.py"
+  ],
+  "total_bytes": 8691
+}

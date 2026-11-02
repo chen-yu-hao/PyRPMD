@@ -1,0 +1,9 @@
+tests/test_hch4_native.py::test_native_binding_does_not_bypass_overridden_evaluate
+tests/test_hch4_native.py::test_native_binding_shares_lock_and_retains_owner
+tests/test_hch4_native.py::test_paper_mapping_is_explicit_and_uses_all_four_paths[1]
+tests/test_hch4_native.py::test_paper_mapping_is_explicit_and_uses_all_four_paths[64]
+tests/test_hch4_native.py::test_paper_mapping_is_explicit_and_uses_all_four_paths[128]
+tests/test_hch4_native.py::test_paper_mapping_is_explicit_and_uses_all_four_paths[256]
+tests/test_hch4_native.py::test_reference_numbers_have_separate_units_and_rounding
+
+7 tests collected in 0.61s

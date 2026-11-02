@@ -1,0 +1,10 @@
+{
+  "changes": [
+    "Separate evidence and temporary directories.",
+    "Expose CPU6 to the existing isolated resource contract test; retain one scientific-library thread.",
+    "Select only the two repaired test modules with all cases and retain exact runtime/source/native-product guards."
+  ],
+  "new_sha256": "7b8459ea607fb75e73a618b7c8032b1eb38a2cc07e9bfdd122b9c9e8b7a8a9a9",
+  "parent_path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/fifth-stage-compatibility/run_checks.py",
+  "parent_sha256": "210bc1d6cc77bd7e46a4bc0ab9ae2f2e64356e0f079f7bce39300a3309403c8f"
+}

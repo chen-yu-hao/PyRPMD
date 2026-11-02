@@ -1,0 +1,118 @@
+{
+  "schema": "pyrpmd.pr68-ci-observation.v1",
+  "observed_utc": "2026-11-01 17:24:00 UTC",
+  "repository": "chen-yu-hao/PyRPMD",
+  "pull_request_url": "https://github.com/chen-yu-hao/PyRPMD/pull/68",
+  "pull_request_number": 68,
+  "draft": true,
+  "head_sha": "3ff0b674fc9b28e60da9261e08a08ca1ecf75335",
+  "base_sha": "4698c1202d0726bce7d63742e7cd31a6f137a847",
+  "workflow_runs": [
+    {
+      "id": 41330590606,
+      "name": "PyRPMD tests",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 372,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590606/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590606/logs",
+      "workflow_id": 400755056
+    },
+    {
+      "id": 41330590628,
+      "name": "Documentation",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 327,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590628/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590628/logs",
+      "workflow_id": 401699578
+    },
+    {
+      "id": 41330590600,
+      "name": "Sampling / real PLUMED",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 80,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590600/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590600/logs",
+      "workflow_id": 402600630
+    },
+    {
+      "id": 41330590607,
+      "name": "Real H3 BKMP2 validation",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 262,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590607/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590607/logs",
+      "workflow_id": 400844593
+    },
+    {
+      "id": 41330590626,
+      "name": "Installed source and platform wheel",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 234,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590626/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590626/logs",
+      "workflow_id": 401533628
+    },
+    {
+      "id": 41330590633,
+      "name": "Fused native propagation",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 174,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590633/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590633/logs",
+      "workflow_id": 401377173
+    },
+    {
+      "id": 41330590656,
+      "name": "Ecosystem interoperability",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 18,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590656/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590656/logs",
+      "workflow_id": 403571773
+    },
+    {
+      "id": 41330590485,
+      "name": "PyRPMD real BKMP2 loop-language benchmark",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 70,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590485/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590485/logs",
+      "workflow_id": 401367367
+    },
+    {
+      "id": 41330590608,
+      "name": "H3 PMF independent-seed study",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 260,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590608/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590608/logs",
+      "workflow_id": 400900586
+    },
+    {
+      "id": 41330590495,
+      "name": "Analysis reports",
+      "status": "queued",
+      "conclusion": null,
+      "run_number": 172,
+      "jobs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590495/jobs",
+      "logs_url": "https://api.github.com/repos/chen-yu-hao/PyRPMD/actions/runs/41330590495/logs",
+      "workflow_id": 402668807
+    }
+  ],
+  "individual_commit_statuses": [],
+  "conclusion": "All 10 returned pull-request-triggered workflow runs are queued, with no conclusion. No remote pass or failure is established by this observation.",
+  "limitations": [
+    "The connector returns only the first page of pull-request-triggered workflow runs; push-triggered runs are outside this query.",
+    "No queued job was rerun, cancelled, or modified."
+  ]
+}

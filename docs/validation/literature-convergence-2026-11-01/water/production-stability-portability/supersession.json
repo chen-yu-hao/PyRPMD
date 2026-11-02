@@ -1,0 +1,31 @@
+{
+  "created_utc": "2026-11-01T20:33:29.093476+00:00",
+  "frozen_plot_helper_sha256": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+  "old_inventory": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-helper/publication-inventory.json",
+    "sha256": "ac2c4283de357a1c06845f333702aa4bc870a474b52f235c5b44f9248796bc10",
+    "unchanged": true
+  },
+  "original_running_checkout_test_unchanged": true,
+  "schema": "pyrpmd.water-production-stability-test-supersession.v1",
+  "scope": "Optional plotting-test dependency only; original physics, benchmark and analysis source are unchanged.",
+  "supersessions": [
+    {
+      "change": "Add pytest.importorskip(\"matplotlib\") only at the figure-rendering test entry.",
+      "current_integration_path": "tests/test_water_production_stability.py",
+      "current_integration_sha256": "bb41175285ee0d4b5771a9dde7d89ce3c749468b66cede9cae6af4cb52c957f8",
+      "original_inventory_entry": "tests/test_water_production_stability.py",
+      "original_sha256": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef",
+      "patch_path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/rendering-portability.patch",
+      "patch_sha256": "f74c8e6574de3568a5d761ae25d3363defb0787886d4d76d4991dd2401ac3848",
+      "preserved_snapshot_path": "docs/validation/literature-convergence-2026-11-01/water/production-stability-portability/test_water_production_stability.original.py",
+      "preserved_snapshot_sha256": "97623195208cef6b5c553a774812c2faa6abaf7e84369b537ba73c15834b8aef"
+    }
+  ],
+  "validation_scope": {
+    "earlier_synthetic_gate": "Six passed with plotting installed; preserved unmodified in old inventory.",
+    "new_synthetic_execution": "Assigned to root additive auxiliary v2 compatibility gate; not executed by this patch operation.",
+    "with_plotting_extra": "All six cases execute, with unchanged calculation and assertions.",
+    "without_plotting_extra": "Five numerical/provenance cases run, the one rendering case skips."
+  }
+}

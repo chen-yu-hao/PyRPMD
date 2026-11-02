@@ -1,0 +1,19 @@
+{
+  "schema": "pyrpmd.h3.analysis-stdout-only-fix.v1",
+  "problem": "Both per-seed analyses and final JSON/NPZ were already saved successfully; console json.dumps then rejected a numpy.bool_.",
+  "change": "Convert only the console-summary gate values to builtin bool; estimators, saved reports and protocol gates are unchanged.",
+  "old_source_sha256": "7585fc3e732eef8f0fb5d621a160c3b84a94fe2d9a80701965a4be46bde04c44",
+  "new_source_sha256": "4a3476d0ccf12cea1bd9791c4a8ccd7ebcf482b8801e61c87738cd3970e72ea4",
+  "compared_seeds": [
+    211017,
+    211019
+  ],
+  "all_numerical_and_scientific_report_fields_equal": true,
+  "excluded_metadata_fields": [
+    "created_utc",
+    "elapsed_seconds",
+    "source_sha256"
+  ],
+  "after_fix_process_exit_code": 0,
+  "full_registered_cohort_complete": false
+}

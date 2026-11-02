@@ -1,0 +1,59 @@
+{
+  "schema": "pyrpmd.p256-child.root-resource-decision.v1",
+  "created_utc": "2026-11-01T20:25:11.842630+00:00",
+  "safe_to_launch_child_workers": true,
+  "child_workers": 2,
+  "declared_project_active_workers": 8,
+  "prerequisite_queues_drained": true,
+  "prerequisite_scope": "Completed P256 parent workers; their two released slots are reused. Water and umbrella remain active under their unchanged ceilings.",
+  "allocation": {
+    "quantum_umbrella_worker_ceiling": 4,
+    "original_water_remaining_integration_workers": 2,
+    "P256_children": 2
+  },
+  "CPU_affinity": [
+    6,
+    7
+  ],
+  "whole_campaign_wall_seconds": 36000,
+  "finalization_reserve_seconds": 120,
+  "evidence": [
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/root-exec-exit.json",
+      "sha256": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4",
+      "bytes": 1053
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/complete-audit.json",
+      "sha256": "71e811ed90e866c19f7b90668e65bc0c3332925090f4bed2f09447497576d4f1",
+      "bytes": 48513
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-admission-2-to-4.json",
+      "sha256": "94d0a3d49450db0571e59391cc78a9d84dfb016da257f7732c859d97a888ddd0",
+      "bytes": 1509
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/umbrella-control-at-adoption.json",
+      "sha256": "2240b30838ae0e5e47e7006a4a319c322893911baf27da6229b9328478e26974",
+      "bytes": 26
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-continuation-20261101T1945Z.json",
+      "sha256": "412b2e66d687caf9d0bb055f5dbb6e4e35c14e03f2aadfa804b3f0374b73d0c2",
+      "bytes": 1945
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/four-pair-p256-compatibility/summary.json",
+      "sha256": "01d1a8bc281247b38dda90a35a39c0f8480e8774fd1f58e7621378c044879dfc",
+      "bytes": 7104
+    },
+    {
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/report.json",
+      "sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53",
+      "bytes": 19478
+    }
+  ],
+  "active_logs_or_mutable_checkpoints_bound_as_resource_guards": false,
+  "no_water_extension_or_new_umbrella_stage_adopted": true
+}

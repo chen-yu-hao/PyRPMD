@@ -1,0 +1,37 @@
+{
+  "created_utc": "2026-11-01T19:47:09.182839+00:00",
+  "external_PES_evaluations": 0,
+  "file_count": 5,
+  "files": [
+    {
+      "bytes": 2725,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/README.md",
+      "sha256": "4fe403ea4d152ccaa6db0d03a788836514f0f16cdc9282f9a178e1ae798c1609"
+    },
+    {
+      "bytes": 113,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/focused-pytest.log",
+      "sha256": "ef73a72f1265620c1d3cd44bec9a8619547dafd295908033398f55c9ce6bb01d"
+    },
+    {
+      "bytes": 824,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/focused-pytest.xml",
+      "sha256": "32a235cbefb319b2b5417a356ca30fa8b6b85b155672d0ade26d646f4ec877be"
+    },
+    {
+      "bytes": 10179,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/independent-review.json",
+      "sha256": "b0512985ac3312d58d3048e9d56071205cb416af2be54341b3ab0669cfdd3d68"
+    },
+    {
+      "bytes": 2544,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/p256-parent-tool-independent-review/initial-findings.json",
+      "sha256": "6030907a2a8f120a858b6a94a280eb64a8b374be0e650aed649b09182835647b"
+    }
+  ],
+  "parent_simulations": 0,
+  "schema": "pyrpmd.h3.p256-parent-independent-review-publication.v1",
+  "source_or_protocol_changes": 0,
+  "status": "frozen",
+  "total_bytes": 16385
+}

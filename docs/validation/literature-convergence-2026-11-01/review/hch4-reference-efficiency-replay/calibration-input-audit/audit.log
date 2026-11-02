@@ -1,0 +1,12 @@
+{
+  "all_checks_passed": true,
+  "tag_displacements": 711,
+  "maximum_absolute_errors": {
+    "mass_units": 0.0,
+    "temperature_units": 0.0,
+    "reference_bond_difference": 0.0,
+    "registered_reference_shape": 2.4424906541753444e-15,
+    "registered_scales": 0.0,
+    "actual_stencil_coordinate": 2.4424906541753444e-15
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "action": "initial bounded build launcher",
+  "returncode": 127,
+  "error": "env: /usr/bin/time: No such file or directory",
+  "scientific_or_compile_process_started": false,
+  "recovery": "Use Python resource.getrusage and monotonic timing; unchanged build/source/protocol."
+}

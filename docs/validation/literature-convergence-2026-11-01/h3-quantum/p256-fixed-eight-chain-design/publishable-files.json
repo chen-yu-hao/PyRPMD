@@ -1,0 +1,20 @@
+{
+  "created_utc": "2026-11-01T19:18:22.734897+00:00",
+  "excluded_raw_files": [],
+  "file_count": 2,
+  "files": [
+    {
+      "bytes": 11794,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/README.md",
+      "sha256": "61fd22de122748e22b5d2b741d0a4891724aa515f7191450fc476fff01ce656e"
+    },
+    {
+      "bytes": 70005,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/proposal.json",
+      "sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d"
+    }
+  ],
+  "schema": "pyrpmd.publication-inventory.v1",
+  "scope": "Fixed8-chain P256 parent/history-replay and dynamic-bead-control proposal only; no implementation, new sampling, dynamics, rawdata, models or binaries. Previous4-chain feasibility and all historical controls remain immutable.",
+  "total_bytes": 81799
+}

@@ -1,0 +1,31 @@
+{
+  "CPU_affinity": [
+    5
+  ],
+  "Git_helper_CPU_hard_seconds": 1,
+  "Git_helpers_max": 20,
+  "created_utc": "2026-11-01T21:35:31.715094+00:00",
+  "data_root_new": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01",
+  "exclusion": "Acquire original11 plus control.lock nonblocking only after bound actual root exit0. Read-only flock FDs; release all before extracted-data replay.",
+  "integration_tree_modified": false,
+  "main_CPU_hard_seconds": 280,
+  "new_PES_calls": 0,
+  "new_RNG_draws": 0,
+  "new_dynamics_steps": 0,
+  "nice_increment": 10,
+  "original_access_prohibition": "Audit hook rejects all original control/raw/execution reads during replay; all96 numerical NPZ reads must resolve under actual extracted payloads.",
+  "original_registration_sha256": "0d73545ac4751b84bdf64a99d693dee23a7f683bb3cd38e2cff5b7d8055e8365",
+  "original_report_sha256": "6d657d7dc11d98dd78ac8a2659a9907c8b94eedba0aa013dcd2d3d5db54aa370",
+  "prior_failures_preserved": true,
+  "root_actual_exit_observation_sha256": "ecf9be6d574c79159fc3a0af4c5b450e5f864c49244312ffdc287a43bcc44978",
+  "schema": "pyrpmd.water-complete-paired-control-offline-archive-plan.v1",
+  "scientific_comparison": "Every report field and curve bit pattern must agree after substituting only the path-relocated registration SHA. Paired eight-chain statistics are also recomputed with math.fsum and df7 Student t.",
+  "source": {
+    "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/archive_and_replay.py",
+    "sha256": "f9a76bf27e61af61fa6ec1f606b26008072efa5cd1796a6ffc16882c624857bb"
+  },
+  "source_code_in_raw_archive": false,
+  "source_edits": false,
+  "threads": 1,
+  "wall_limit_seconds": 600
+}

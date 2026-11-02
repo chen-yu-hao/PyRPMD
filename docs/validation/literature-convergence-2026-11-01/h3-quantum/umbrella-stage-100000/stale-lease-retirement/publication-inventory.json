@@ -1,0 +1,58 @@
+{
+  "created_utc": "2026-11-01T21:41:31.323383+00:00",
+  "files": [
+    {
+      "bytes": 1705,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/README.md",
+      "sha256": "90611057e2c41a1623c201ddfa14e009a18ff3eaf8e04575f0b4adc058d5bb8c"
+    },
+    {
+      "bytes": 68,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/owner-before.json",
+      "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+    },
+    {
+      "bytes": 6893,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/retire_completed_umbrella_lease.py",
+      "sha256": "166b27797b15e1d9c43b2eda68a9d916271085d3a8f584f745f1aa4ee01a9a24"
+    },
+    {
+      "bytes": 1667,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/retirement.json",
+      "sha256": "a60007a053b4d0dc2e649f3dabeba189d090653630870e0bd58926813799c6cb"
+    },
+    {
+      "bytes": 2497,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/root-adoption.json",
+      "sha256": "3b14ff43e39e91776d1f400a5c74d5f114ac6ce840dab00a0088ceb7a4f1702a"
+    },
+    {
+      "bytes": 40,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/synthetic-probe/moved-directory/owner.json",
+      "sha256": "ed4b6d8880e40b906e64c1866dbcf7832ab4f87ed119f2c26eb5f2f0b1430f92"
+    },
+    {
+      "bytes": 2500,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/synthetic-probe/observations.jsonl",
+      "sha256": "551660d772d69b7d4979a5360be79f3e69124629944018231c31fef146c72178"
+    },
+    {
+      "bytes": 1046,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/synthetic-probe/probe_owned_lease_visibility.py",
+      "sha256": "0c28951dff5706ae1c1568d390cd51586e5c51b7605bf4d33a38395850d97a36"
+    },
+    {
+      "bytes": 176,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/synthetic-probe/rename-result.json",
+      "sha256": "608d4a59932934fae399f7a7a0c6065b4988412fe8f94193423e61b90ac79e62"
+    },
+    {
+      "bytes": 474,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-retirement/synthetic-probe/root-exec-observation.json",
+      "sha256": "c172a246afa53b4c9bf57f9fa8321800a1a6ebbf7f76b5f5be0235f04215a67e"
+    }
+  ],
+  "inventory_excludes_itself": true,
+  "schema": "pyrpmd.root-operational-evidence-inventory.v1",
+  "scope": "One historical retirement, the failed durable-absence postcondition and an inconclusive owned-directory probe. No campaign sampler or repeated cleanup."
+}

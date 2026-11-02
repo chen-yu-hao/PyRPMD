@@ -1,0 +1,19 @@
+{
+  "CPU_force_bounds": {
+    "component_atol_kj_mol_nm": 0.005,
+    "component_rtol": 2e-06,
+    "relative_RMS": 1e-06
+  },
+  "canonical_p_delta_force_conversion_residual_max_au": 2e-13,
+  "change_scope": "Checkpoint validation and redundant raw-state storage only; existing propagator, model, protocol and RNG unchanged.",
+  "from_source_sha256": "592ca5eed2e0234bf936f8808fe4877281c3b762720e68fcd4eb9caab30482f2",
+  "legacy_exception": "Only the exact original source hash and unchanged model/constants/campaign hashes; original manifest and chunks retained, source migration recorded.",
+  "patch_sha256": "81f1f008131a07cebda1796d7c1cbcca930b7923d31c4cbecb7827d360c8d365",
+  "pytest_junit_sha256": "03285c405c4bf0026ed75d4d767b3f55aa1d8d5d70de0f2f0a1f4fabe2923f44",
+  "raw_engine_position_and_half_step_velocity_equality": "bitwise",
+  "reproducibility": "CPU force-cache rebuilding can change force last bits. Continuation preserves engine q/v, but is not bitwise trajectory replay.",
+  "roundtrip_audit_sha256": "d1775389ce54c617f215220d7fe0564bf1c74edc1d12dd781bac812fce620a09",
+  "schema": "pyrpmd.water-checkpoint-contract-revision.v2",
+  "tests_passed": 13,
+  "to_source_sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2"
+}

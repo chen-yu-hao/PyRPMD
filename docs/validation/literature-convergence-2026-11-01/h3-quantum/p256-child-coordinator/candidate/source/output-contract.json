@@ -1,0 +1,84 @@
+{
+  "analysis_policy": "Coordinator never imports/calls the rate analyzer. Root may separately invoke the frozen analyzer after complete global verification; scientific acceptance is not a scheduling-completion result.",
+  "branch_order": [
+    [
+      0,
+      0.1
+    ],
+    [
+      0,
+      0.05
+    ],
+    [
+      1,
+      0.1
+    ],
+    [
+      1,
+      0.05
+    ]
+  ],
+  "branches": 32,
+  "driver_path": "benchmarks/h3/p256_child_campaign.py",
+  "driver_sha256": "5fc72acef298678e5449059bb57c40e22254cc5ca4aa5540081df480381e7e2b",
+  "failure_records": "coordinator-pre-dispatch-failure.json or coordinator-attempts/<uuid>/result.json and exact worker/log/chunk prefixes; no automatic resume or retries",
+  "fixed_parent_completed_sweeps": {
+    "count": 200,
+    "first": 2100,
+    "last": 22000,
+    "step": 100
+  },
+  "global_manifest": "children-complete.json",
+  "global_schema": "pyrpmd.h3.p256-child-cohort-completion.v1",
+  "horizon_fs": 200,
+  "integrity_bound_chunks": 800,
+  "model_or_native_binaries_included_in_documentation": false,
+  "momentum_pair_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "native_steps": 76800000,
+  "native_steps_each_coarse_branch": 1600000,
+  "native_steps_each_fine_branch": 3200000,
+  "native_steps_per_seed": 9600000,
+  "parent_configurations_per_seed": 200,
+  "parent_input_routes": "Use the fixed design cohort.relative_directory and bound manifest files. Historical rows are under history-replay/; new rows under new-independent/.",
+  "primary_pair_batch0_route": "seed-{seed}/dt-{timestep:g}/horizon-200",
+  "primary_pair_batch1_route": "extra-pair-batch-1/seed-{seed}/dt-{timestep:g}/horizon-200",
+  "raw_integrity_required": true,
+  "raw_kind": "h3.quantum-surface-children",
+  "reports": 32,
+  "required_false": [
+    "rate_analysis_performed",
+    "automatic_resume",
+    "scientific_convergence_claimed"
+  ],
+  "required_true": [
+    "complete_registered_cohort",
+    "eligible_for_separate_full_cohort_analysis",
+    "all_owned_workers_drained"
+  ],
+  "resource_receipt_limit": "An externally killed/unresponsive worker may not finish its own receipt. Global failure records mark it unavailable and cannot publish complete eligibility; aggregate reaped-child CPU remains recorded when the coordinator survives.",
+  "schema": "pyrpmd.h3.p256-child-coordinator-output-contract.v1",
+  "seed_order": [
+    825601,
+    825603,
+    825607,
+    825609,
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "settings_files": 32,
+  "signs": [
+    1,
+    -1
+  ],
+  "timesteps_fs": [
+    0.1,
+    0.05
+  ]
+}

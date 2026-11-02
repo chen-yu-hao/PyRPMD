@@ -1,0 +1,11 @@
+{
+  "exec_session_id": 41035,
+  "recorded_after_observation_utc": "2026-11-01T22:39:18.838200+00:00",
+  "schema": "pyrpmd.root-actual-exec-observation.v1",
+  "tool_result": {
+    "chunk_id": "e669ae",
+    "exit_code": 0,
+    "output": "{\"files\": 1949, \"inventories\": 89, \"counts\": {\"json\": 1168, \"python\": 238, \"xml\": 109, \"markdown\": 112, \"local_targets\": 735}, \"historical_links\": 10, \"strict_sphinx_exit\": 0, \"wall_seconds\": 7.9808537349890685}\n",
+    "wall_time_seconds": 2.3221e-05
+  }
+}

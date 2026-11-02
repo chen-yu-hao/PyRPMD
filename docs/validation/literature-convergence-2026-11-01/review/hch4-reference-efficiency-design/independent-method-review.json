@@ -1,0 +1,154 @@
+{
+  "checks": [
+    {
+      "finding": "The sphere pullback metric is 4/(1+|t|^2)^2 times the two-dimensional identity, hence its area Jacobian is Jomega=4/(1+|t|^2)^2. A joint Lebesgue density g(z,t) becomes g/Jomega in dz dOmega. The target W contains -log(Jomega) only for calibration in dt; final importance weighting in dOmega must not multiply it again.",
+      "topic": "Stereographic measure"
+    },
+    {
+      "finding": "The Gaussian and the df5,d11 Student joint densities divided by Jomega tend to zero at the omitted south pole for each fixed finite shape. The uniform sphere/expanded-box component stays positive. Every outer-domain CH vector has Cartesian components within[-5,5], while r,s are in[1.2,5] and v in[-1,1], so the proposed box covers the target/audit shape domain. Invalid untruncated Gaussian/Student draws remain zero observations, without redraw.",
+      "topic": "Pole and full support"
+    },
+    {
+      "finding": "Reflection of ay,by,ty exactly reflects physical y. Transform the mean and covariance by the same diagonal sign matrix. The final explicit scaled-coordinate map mean_x=x0+S delta, Cx=S Hy^-1 S.T is correct. Use the explicit eigenaxis_order field for transformed unit-Mahalanobis probes, rather than interpreting loose covariance-eigenaxis wording as unscaled Cartesian principal axes.",
+      "topic": "Reflection and covariance"
+    },
+    {
+      "finding": "For nu=5, covariance=nu/(nu-2)*Sigma. Sigma=(12/5)C gives covariance4C. Normalized full joint densities and exact covariance determinants are required for all component terms.",
+      "topic": "Student normalization"
+    },
+    {
+      "finding": "The unchanged canonical methane Jacobian r^2*s^2, positive radial root, rho^2/abs(Srho) coarea and sqrt(G/(2*pi*beta)) metric are consistent with the previously reviewed measure. For alpha=.999 and1.007, abs(Srho) is bounded below by alpha-abs(1-alpha), i.e. .998 and1. The active-max indicator partitions the four labeled branch charts. Sum four unconditional chart means once and divide by one entry-chart mean; do not add a symmetry factor or normalize accepted points.",
+      "topic": "Coarea and four channels"
+    },
+    {
+      "finding": "TS counts4uniform+4*6Gaussian+4*1Student=32 yield exactly1/8,3/4,1/8 total family weights and equal within-family weights. Entry counts16uniform+2*48Gaussian+2*8Student=128 yield the same families. With the full mixture q=sum(nj/n)qj, the unconditional stratum-weighted expectation of f/q is the integral. Paired alpha evaluations remain one coupled seed vector.",
+      "topic": "Fixed stratification"
+    },
+    {
+      "finding": "The649 full-Hessian points+62 refinement points form the initial711 ledger;3 shifted centers+62 axis probes+24 mirror checks form89 further points. The resulting800 deterministic calibration points must finish/fail before fresh draws. Freeze proposal matrices and then the entire3072+128 diagnostic ledger. No old low-ESS covariance, diagnostic refit, clipped Hessian, displacement clipping or post-result stopping choice is adopted.",
+      "topic": "Calibration and fresh diagnostics"
+    },
+    {
+      "finding": "The updated design explicitly uses the same16 selected draws per seed at both30 and60bohr and removes each L^2. Their2uniform+2*6Gaussian+2*1Student counts reproduce the entry mixture. The main original-domain denominator independently retains all128 entry draws per seed. This isolates an entry-potential diagnostic, not full surface or rate Rinf convergence.",
+      "topic": "Entry separation control"
+    },
+    {
+      "finding": "Use A_i=sum of the four per-channel seed means and B_i=the single entry seed mean. Central Abar/Bbar is the ratio of pooled means. The delta-method log-ratio influence A_i/Abar-B_i/Bbar has the stated conditional seed-vector standard error sd/sqrt(8); nominal t7 intervals preserve all pairing. This approximation is neither a tail bound nor a physical-rate coverage claim. Exact zero integral remains unresolved, without epsilon substitution.",
+      "topic": "Estimator and uncertainty"
+    },
+    {
+      "finding": "800+3072+128=4000 maximum geometries, with geometric zeros retained. Fixed efficiency/weight-concentration screens have no automatic extension, rate flag or paper target. The physical domain, unseen tails, full finite-Rinf behavior, absolute normalization and quantum/transmission convergence remain explicitly unresolved.",
+      "topic": "Cost and decision scope"
+    }
+  ],
+  "complete_old_data_identity_checks": [
+    {
+      "bytes": 14088,
+      "observed_sha256": "10ce01b004b9870e283a79e746781543edcafa5d7598e6539a21c2bfd008528e",
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/publication-inventory.json",
+      "sha256": "10ce01b004b9870e283a79e746781543edcafa5d7598e6539a21c2bfd008528e"
+    },
+    {
+      "bytes": 1368358,
+      "observed_sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7",
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/ledger.json",
+      "sha256": "8c1018119828753931319f08bf10304ee3f089af7f1f79cf8449ab81c47f8eb7"
+    },
+    {
+      "bytes": 222464,
+      "observed_sha256": "7187e77cf04616c3692997d663b962ec02d7a6484005e207153450b962d1ca15",
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/calls.jsonl",
+      "sha256": "7187e77cf04616c3692997d663b962ec02d7a6484005e207153450b962d1ca15"
+    },
+    {
+      "bytes": 49573,
+      "observed_sha256": "0b957112d970fc2eaeda735c1c29dcb8ebf5357d3c5cfeb0a4f471d11f62cc92",
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-pilot/completed-run/report.json",
+      "sha256": "0b957112d970fc2eaeda735c1c29dcb8ebf5357d3c5cfeb0a4f471d11f62cc92"
+    }
+  ],
+  "created_utc": "2026-11-01T20:33:28.222581+00:00",
+  "execution_authorized": false,
+  "implementation_reviewed": false,
+  "method_design_no_blocker": true,
+  "new_PES_evaluations": 0,
+  "new_dynamics_steps": 0,
+  "new_random_draws": 0,
+  "protected_original_sources_unchanged": {
+    "benchmarks/hch4/geometries.json": {
+      "expected": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+      "observed": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609"
+    },
+    "benchmarks/hch4/pes.py": {
+      "expected": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+      "observed": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c"
+    },
+    "benchmarks/hch4/reproduction_input.py": {
+      "expected": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+      "observed": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4"
+    },
+    "benchmarks/hch4/reproduction_protocol.json": {
+      "expected": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+      "observed": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5"
+    },
+    "benchmarks/hch4/source.json": {
+      "expected": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+      "observed": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad"
+    },
+    "src/pyrpmd/bias.py": {
+      "expected": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+      "observed": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6"
+    },
+    "src/pyrpmd/constants.py": {
+      "expected": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "observed": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "src/pyrpmd/cv.py": {
+      "expected": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+      "observed": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    "src/pyrpmd/workflows/rate.py": {
+      "expected": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587",
+      "observed": "44acdf9c2b0ab54551de9b5362f8c4e958c03b61450760474096feef54a6a587"
+    }
+  },
+  "remaining_pre_execution_gates": [
+    "Implement and independently test normalized full Gaussian/Student mixture densities, stereographic Jacobian, zero retention and exact channel/stratum counts.",
+    "Require all calibration stencil/shift/probe points to satisfy the declared domain/chart checks; retain any invalid-Hessian, failed-PES or budget outcome without a different proposal.",
+    "Preserve exact staged ledgers and proposal freeze before fresh diagnostics; enforce root-adopted aggregate whole-process CPU caps, the reviewed invocation-token lifecycle and a persistent one-attempt marker.",
+    "Freeze exact source/runtime/PES identities and obtain separate root operational adoption. This receipt reviews the mathematical design only."
+  ],
+  "resolved_pre_freeze_clarifications": [
+    "Explicit scaled-coordinate covariance/mean back-transform and transformed probe ordering added.",
+    "Matched16-versus16 entry separation comparison and unchanged128-draw primary denominator added."
+  ],
+  "reviewed_files": [
+    {
+      "bytes": 15380,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+      "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+    },
+    {
+      "bytes": 18135,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/README.md",
+      "sha256": "b63021ff910f0731173446c25dc1faf454a4aca5e0c4dca3185ab46b28e0d782"
+    },
+    {
+      "bytes": 46583,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/saved-pilot-diagnosis.json",
+      "sha256": "5e05fa4c6c169d26acc7b9ff1ab4815e55b0d5f229635fe3e28adefea9e21df8"
+    },
+    {
+      "bytes": 13485,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/initial-design-review/proposal.json",
+      "sha256": "c00682a02126b18a408be53fafb4de007d2b67439c2396c2f163d6dd67e2dbe9"
+    },
+    {
+      "bytes": 36870,
+      "path": "benchmarks/hch4/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    }
+  ],
+  "reviewer": "benchmarks agent, separate from design author",
+  "schema": "pyrpmd.hch4-reference-efficiency-independent-method-review.v1"
+}

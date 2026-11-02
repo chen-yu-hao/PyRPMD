@@ -1,0 +1,17 @@
+{
+  "cause": "driver opened a log in the new run directory before sampler freshness guard",
+  "exception": "ValueError: use a new output directory, or --resume for identical settings",
+  "sampling_steps_completed": 0,
+  "inspected_seed_directories": [
+    "seed-211023",
+    "seed-211017",
+    "seed-211033",
+    "seed-211027",
+    "seed-211019",
+    "seed-211039",
+    "seed-211031",
+    "seed-211021"
+  ],
+  "driver_sha256": "6987fe3292203eec9e07e25f3eb43213a643cc480e7d19395bff21ff39d3cfe4",
+  "repair": "place per-seed log beside run directory; preserve existing diagnostics; no sampler or protocol change"
+}

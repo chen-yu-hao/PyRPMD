@@ -1,0 +1,10 @@
+........................................................ssss.ss.......s. [ 94%]
+....                                                                     [100%]
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_h3_quantum_isolated_continuation.py:297: real owned-process checks require os.pidfd_open and signal.pidfd_send_signal
+SKIPPED [1] tests/test_h3_quantum_isolated_continuation.py:311: real owned-process checks require os.pidfd_open and signal.pidfd_send_signal
+SKIPPED [2] tests/test_h3_quantum_isolated_continuation.py:320: real owned-process checks require os.pidfd_open and signal.pidfd_send_signal
+SKIPPED [1] tests/test_h3_quantum_isolated_continuation.py:334: real owned-process checks require os.pidfd_open and signal.pidfd_send_signal
+SKIPPED [1] tests/test_h3_quantum_isolated_continuation.py:350: real owned-process checks require os.pidfd_open and signal.pidfd_send_signal
+SKIPPED [1] tests/test_h3_quantum_isolated_continuation.py:414: real owned-process checks require os.pidfd_open and signal.pidfd_send_signal
+69 passed, 7 skipped in 1.85s

@@ -1,0 +1,35 @@
+Verified seed 721301, dt=0.1: both batches, 50 complete chunks
+Verified seed 721301, dt=0.05: both batches, 50 complete chunks
+Verified seed 721303, dt=0.1: both batches, 50 complete chunks
+Verified seed 721303, dt=0.05: both batches, 50 complete chunks
+Verified seed 721307, dt=0.1: both batches, 50 complete chunks
+Verified seed 721307, dt=0.05: both batches, 50 complete chunks
+Verified seed 721309, dt=0.1: both batches, 50 complete chunks
+Verified seed 721309, dt=0.05: both batches, 50 complete chunks
+Verified seed 721313, dt=0.1: both batches, 50 complete chunks
+Verified seed 721313, dt=0.05: both batches, 50 complete chunks
+Verified seed 721317, dt=0.1: both batches, 50 complete chunks
+Verified seed 721317, dt=0.05: both batches, 50 complete chunks
+Verified seed 721321, dt=0.1: both batches, 50 complete chunks
+Verified seed 721321, dt=0.05: both batches, 50 complete chunks
+Verified seed 721323, dt=0.1: both batches, 50 complete chunks
+Verified seed 721323, dt=0.05: both batches, 50 complete chunks
+{
+  "chunks": 800,
+  "rate": 1.9678563652801757e-16,
+  "relative_kappa_95_halfwidth": 0.02317248898483773,
+  "primary_gates": {
+    "complete_registered_cohort": true,
+    "parent_sampling_flags": true,
+    "time_plateau_equivalence": true,
+    "timestep_equivalence": true,
+    "kappa_statistical_precision": true,
+    "no_sampled_static_domain_crossings": true,
+    "primary_maximum_energy_error_at_most_01_kbt_per_bead": true,
+    "full_rate_95_log_halfwidth_at_most_5_percent": true,
+    "paper_full_rate_point_within_reported_5_percent": true,
+    "paper_qtst_point_within_reported_5_percent": true,
+    "paper_kappa_point_within_reported_5_percent": true
+  },
+  "supplementary_parent_half_pass": false
+}

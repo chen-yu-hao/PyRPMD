@@ -1,0 +1,50 @@
+{
+  "checkpoint_revision_sha256": "3e05f3ecb1207673ea1cc3c375ac341fc47ac806a2ccbc0f8936ce1dacdbff16",
+  "created_utc": "2026-11-01T17:43:45.405967+00:00",
+  "environment_preflight": {
+    "dependencies": {
+      "numpy": "2.5.4",
+      "openmm": "8.6.1",
+      "scipy": "1.18.1"
+    },
+    "machine": "x86_64",
+    "python": "3.12.14"
+  },
+  "failure_action": "Stop all future dispatch, drain in-flight native calls normally, preserve a durable failure latch; never replace a seed.",
+  "invocation_seconds_max": 1800,
+  "legacy_registration_sha256": "e7e3d569f06fb436b9cb86b43cf3fbc8733d570b422dd72293e83f8169f50e63",
+  "legacy_scheduler_sha256": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+  "max_concurrent_workers": 4,
+  "migration_receipt": "four-worker-migration-receipt.json",
+  "migration_receipt_sha256": "7b3540fcce73e2add09cf6c819546dac5dc8dea36a01085d0a743f63158ed6b4",
+  "native_source_sha256": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "outer_seconds_max": 7200,
+  "propagator_protocol_changes": false,
+  "protocol_path": "docs/validation/literature-convergence-2026-11-01/water/protocol.json",
+  "protocol_sha256": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+  "queues": {
+    "a": [
+      1101,
+      1105
+    ],
+    "b": [
+      1102,
+      1106
+    ],
+    "c": [
+      1103,
+      1107
+    ],
+    "d": [
+      1104,
+      1108
+    ]
+  },
+  "scheduler_source_sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+  "schema": "pyrpmd.water-four-queue-registration.v1"
+}

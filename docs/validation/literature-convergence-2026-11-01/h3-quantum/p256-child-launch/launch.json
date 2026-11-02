@@ -1,0 +1,34 @@
+{
+  "schema": "pyrpmd.p256-child.root-launch.v1",
+  "before_subprocess_call_utc": "2026-11-01T20:25:26.775457+00:00",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py",
+    "run",
+    "--authorization",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/authorization.json"
+  ],
+  "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "selected_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "PYTHONPATH": "/workspace/scratch/a5e4820daedd/PyRPMD/src:/workspace/scratch/a5e4820daedd/PyRPMD",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "source_sha256": {
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/authorization.json": "3cefa11143fbcd2868f84b7d4ebf034ca48c0412cd55a6c119e70fecbf9ff384",
+    "/workspace/scratch/a5e4820daedd/launch_p256_children.py": "201f93a71cccecd2b486d4653cc8666b2e08a7765ca449554844869f6c80de1b"
+  },
+  "workers": 2,
+  "CPU_affinity": [
+    6,
+    7
+  ],
+  "whole_campaign_wall_seconds": 36000,
+  "finalization_reserve_seconds": 120,
+  "all_eight_seeds_required": true,
+  "automatic_analysis": false
+}

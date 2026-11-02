@@ -1,0 +1,153 @@
+{
+  "cgroup_path": "/sys/fs/cgroup",
+  "exec_session": 59615,
+  "failure_latch_exists": false,
+  "host_pids_obtained_only_from_campaign_coordinator_lock": true,
+  "integration_children": 4,
+  "observed_utc": "2026-11-01T17:45:26.806904+00:00",
+  "pid_namespace_warning": "Scheduler journal PIDs are namespace-local. Host PIDs here were independently resolved from this specific lock and verified by cwd/argv; never signal a numeric journal PID from another namespace.",
+  "processes": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "benchmarks/water/native_campaign_schedule_v2.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+        "--registration",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/four-worker-registration.json",
+        "--workers",
+        "4",
+        "--wall-seconds",
+        "7200",
+        "--invocation-seconds",
+        "1800"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+      "host_pid": 249384,
+      "resource_status": {
+        "NSpid": "249384\t4",
+        "RssAnon": "34704 kB",
+        "RssFile": "13956 kB",
+        "RssShmem": "0 kB",
+        "Threads": "5",
+        "VmRSS": "48660 kB"
+      },
+      "start_ticks": "5470077",
+      "state": "S"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+        "--wall-seconds",
+        "1800.0",
+        "--resume"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+      "host_pid": 249389,
+      "resource_status": {
+        "NSpid": "249389\t9",
+        "RssAnon": "53908 kB",
+        "RssFile": "34520 kB",
+        "RssShmem": "0 kB",
+        "Threads": "13",
+        "VmRSS": "88428 kB"
+      },
+      "start_ticks": "5470135",
+      "state": "S"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102",
+        "--wall-seconds",
+        "1800.0",
+        "--resume"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+      "host_pid": 249390,
+      "resource_status": {
+        "NSpid": "249390\t10",
+        "RssAnon": "53124 kB",
+        "RssFile": "34504 kB",
+        "RssShmem": "0 kB",
+        "Threads": "13",
+        "VmRSS": "87628 kB"
+      },
+      "start_ticks": "5470147",
+      "state": "R"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103",
+        "--wall-seconds",
+        "1800.0",
+        "--config",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1103.json"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+      "host_pid": 249391,
+      "resource_status": {
+        "NSpid": "249391\t11",
+        "RssAnon": "48136 kB",
+        "RssFile": "34340 kB",
+        "RssShmem": "0 kB",
+        "Threads": "13",
+        "VmRSS": "82476 kB"
+      },
+      "start_ticks": "5470148",
+      "state": "S"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/water/native_reference.py",
+        "--output",
+        "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104",
+        "--wall-seconds",
+        "1800.0",
+        "--config",
+        "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/configs/classical-seed-1104.json"
+      ],
+      "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+      "host_pid": 249392,
+      "resource_status": {
+        "NSpid": "249392\t12",
+        "RssAnon": "48128 kB",
+        "RssFile": "34240 kB",
+        "RssShmem": "0 kB",
+        "Threads": "13",
+        "VmRSS": "82368 kB"
+      },
+      "start_ticks": "5470150",
+      "state": "R"
+    }
+  ],
+  "registration_sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326",
+  "resource_counters": {
+    "cpu.max": "800000 100000",
+    "memory.current": "8555745280",
+    "memory.events": "low 0\nhigh 0\nmax 261287\noom 7\noom_kill 3\noom_group_kill 0",
+    "memory.max": "8589934592",
+    "memory.stat": {
+      "active_file": 4304920576,
+      "anon": 678526976,
+      "file": 6491164672,
+      "file_dirty": 1363968,
+      "file_writeback": 0,
+      "inactive_file": 2185486336,
+      "kernel": 1384656896,
+      "shmem": 757760,
+      "slab_reclaimable": 1370314080,
+      "slab_unreclaimable": 3414448
+    }
+  },
+  "schema": "pyrpmd.water-four-worker-startup-receipt.v1"
+}

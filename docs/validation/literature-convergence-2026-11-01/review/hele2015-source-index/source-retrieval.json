@@ -1,0 +1,54 @@
+{
+  "url": "https://arxiv.org/src/1506.07460v2",
+  "final_url": "https://arxiv.org/src/1506.07460v2",
+  "http_status": 200,
+  "read_utc": "2026-11-01T22:02:24.638587+00:00",
+  "bytes": 317249,
+  "sha256": "f24cd312ced5125a8f67137314b1db7d0e1c9be381d16ec0cf7ef24fd4977546",
+  "elapsed_seconds": 0.6813734919996932,
+  "content_type": "application/gzip",
+  "members": [
+    {
+      "name": "asymlam.pdf",
+      "bytes": 37419,
+      "regular_file": true
+    },
+    {
+      "name": "ch4h.pdf",
+      "bytes": 38487,
+      "regular_file": true
+    },
+    {
+      "name": "dmuh.pdf",
+      "bytes": 37304,
+      "regular_file": true
+    },
+    {
+      "name": "ds.pdf",
+      "bytes": 94323,
+      "regular_file": true
+    },
+    {
+      "name": "fhh.pdf",
+      "bytes": 37981,
+      "regular_file": true
+    },
+    {
+      "name": "hhh.pdf",
+      "bytes": 37759,
+      "regular_file": true
+    },
+    {
+      "name": "symlam.pdf",
+      "bytes": 37389,
+      "regular_file": true
+    },
+    {
+      "name": "t.tex",
+      "bytes": 74832,
+      "regular_file": true
+    }
+  ],
+  "no_tex_or_embedded_code_executed": true,
+  "source_only_not_redistributed_in_git": true
+}

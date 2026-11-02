@@ -1,0 +1,73 @@
+{
+  "captured_utc": "2026-11-01T19:40:41.977943+00:00",
+  "failure_latch_present_at_capture": false,
+  "final_chain_manifests": [
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest": "runs/classical-1102/manifest.json",
+      "manifest_sha256": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5",
+      "seed": 1102
+    },
+    {
+      "chunk_count": 200,
+      "committed_steps": 800000,
+      "complete": true,
+      "manifest": "runs/classical-1106/manifest.json",
+      "manifest_sha256": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52",
+      "seed": 1106
+    }
+  ],
+  "final_native_child_exit_event": {
+    "committed": {
+      "chunk_count": 200,
+      "chunk_prefix_sha256": "c125c4c70acacd0cbdca82cfd2386036454f20c08cad1203c7c6eca86379e578",
+      "committed_steps": 800000,
+      "complete": true,
+      "completed_NVE_segments": 25,
+      "last_chunk": {
+        "file": "chunk-000199.npz",
+        "observations": 200,
+        "sha256": "6ed6c084352a09e0a80bd50873b02abbdb2bb3054adec3ad96deda6cd23412aa",
+        "step": 800000
+      },
+      "manifest_sha256": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52"
+    },
+    "coordinator_pid": 4,
+    "event": "invocation_finished",
+    "exit_code": 0,
+    "native_child_pid": 262,
+    "queue": "b",
+    "run_id": "9966d757466b472580aca7ad4da3ef51",
+    "seed": 1106,
+    "utc": "2026-11-01T19:39:52.364645+00:00"
+  },
+  "fixed_seeds": [
+    1102,
+    1106
+  ],
+  "integration_children_remaining_for_this_queue": 0,
+  "journal_prefix": {
+    "byte_count": 39962,
+    "file": "four-worker-control/events.jsonl",
+    "last_event_included": "queue_complete",
+    "sha256": "79519654b6e8a327984f905eafd488c5deabf0bf10bd90d7c529384d06c9cdd8"
+  },
+  "pending_seeds": [],
+  "queue": "b",
+  "queue_complete_event": {
+    "coordinator_pid": 4,
+    "event": "queue_complete",
+    "queue": "b",
+    "run_id": "9966d757466b472580aca7ad4da3ef51",
+    "utc": "2026-11-01T19:39:52.500883+00:00"
+  },
+  "raw_root": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01",
+  "registration": "four-worker-registration.json",
+  "registration_sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326",
+  "scheduler_source": "benchmarks/water/native_campaign_schedule_v2.py",
+  "scheduler_source_sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+  "schema": "pyrpmd-water-original-queue-completion-v1",
+  "scope": "Per-queue normal native-child exit and no pending work. This does not assert whole coordinator exit or global/seed lease release while the other queues are active."
+}

@@ -1,0 +1,131 @@
+{
+  "PES_calls": 0,
+  "agreement": {
+    "all_seven_major_ticks_used": true,
+    "independent_endpoint_and_nearest_tick_formula_retained": true,
+    "maximum_difference_ppm": 0.1806666189985151,
+    "maximum_relative_difference_between_independent_PDF_readers": 1.806666189985151e-07,
+    "one_original_PDF_point_sensitivity_is_physical_tolerance": false,
+    "one_original_PDF_point_sensitivity_is_statistical_CI": false,
+    "paper_statistical_CI_known": false
+  },
+  "approved_for_source_audit_only": true,
+  "bounded_scope": [
+    "Exact2015 nuclear masses/constants, specific SW implementation bytes and possible electronic-state/postprocessing factors remain unpinned by the reviewed text/TableII. This review does not infer them from the plotted numbers.",
+    "The2015 figure is a separate source and does not resolve the earlier2010 F+H2 erratum or replace any registered CPC target.",
+    "Root separately performed a published-typeset/original-figure vector comparison with differences below3ppm. This review read that receipt but did not rerun the root extractor or present its result as a second independent molecular calculation.",
+    "No simulation input deck,seeds,rate numerical table or reported statistical uncertainty was recovered here. No source PDF/TeX/figure or external PES is copied into the publication bundle."
+  ],
+  "conclusion": "No remaining blocker in the reviewed F+H2 source-only transcription and its stated uncertainty/model limitations.",
+  "created_utc": "2026-11-01T22:16:50.143049+00:00",
+  "execution": {
+    "bytes": 1213,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/execution.json",
+    "sha256": "802b0a5e56876151fa1acbf8957b96371ae15a0e9c52d9b4f4cd752e00eadcd4"
+  },
+  "independent_checks": {
+    "bytes": 5665,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-review/checks.json",
+    "sha256": "c0452ad39a1161a6ae33670b4238bc7fc49a748e21f9089d129f06ec3047b31d"
+  },
+  "literature_reproduced": false,
+  "new_dynamics_steps": 0,
+  "physical_comparison_eligible": false,
+  "prior_registered_reference_changed": false,
+  "random_draws": 0,
+  "remaining_blockers_for_physical_use": [
+    "Pin exact masses/constants, potential source/parameter identity and state-factor convention before adopting a reproduction protocol.",
+    "Declare any physical comparison margin separately; a graph sensitivity band cannot serve as paper sampling error or simulator equivalence.",
+    "Keep source-only points separate from actual PyRPMD validation and preserve existing incomplete/failed gates."
+  ],
+  "reviewer": "/root/distribution",
+  "root_bundle_inputs": [
+    {
+      "bytes": 5238,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/README.md",
+      "sha256": "78e67e16608e8eeb3b1371d7de7a9b92059b3b793799fc9847ee9ba73597a187"
+    },
+    {
+      "bytes": 5950,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/source-protocol.json",
+      "sha256": "53af3b2481075ae0036af8afd3c37112cbdcda6578c314fab3394fd7a39bd79d"
+    },
+    {
+      "bytes": 12886,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/literature/hele2015_digitization.py",
+      "sha256": "6ab81f9de930197bd2ea73ec6993297beb618de55bea67e295f7149885cb9c11"
+    },
+    {
+      "bytes": 52188,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/digitization.json",
+      "sha256": "2c26402ef22418c4c00d8c8708d770ead9e591e6b78c535acb8a9ff5e2151d8f"
+    }
+  ],
+  "schema": "pyrpmd.hele2015.fh2-independent-source-review.v1",
+  "scope": "Independent PDFMiner/pdfplumber vector extraction and standard-library natural-log regression/interpolation for the three F+H2 lambda0 points; visual Figure7/TableII check; read-only primary TeX/PDF identity and source-condition review. This is a literature source audit, not new dynamics or an independent-author molecular result.",
+  "source_checks": [
+    "The original figure visibly has a logarithmic rate axis despite linearly incrementing labels2..8 times10^-11; unequal tick distances and the seven-point log fit agree. Red crosses identify the TRPMD series, and the primary article identifies zero friction with RPMD. Black quantum curves and the green fit are not substituted for red markers.",
+    "The200K zero-friction cross lies below the lowest labeled2e-11 major tick, within the displayed axis extent. Its extracted value uses a modest log-axis extrapolation, also checked with the two nearest major ticks; this is explicit rather than described as bracketed interpolation.",
+    "The visible temperature order is200,300,500K from bottom to top. TableII gives384,256,64 beads,2 product channels,Rinf30bohr,xi_dagger.9671/.9885/.9947,childdt.0001ps and duration.2ps,500000 children. These match the source-protocol record.",
+    "The primary text names Stark-Werner for F+H2 and cites Stark/Werner JCP104,6515(1996). That identifies a potential family, not the exact executable/source/parameter variant.",
+    "D+MuH is a different reactant arrangement from Mu+H2. Its source index must remain labeled as published.",
+    "The TeX uses a dynamic date macro. A modern rendered arXiv HTML date is not the original publication date; the journal source identifies2015."
+  ],
+  "source_or_protocol_mutations": false,
+  "zero_friction_rows": [
+    {
+      "below_lowest_printed_major_tick": true,
+      "independent_graph_rate_cm3_s": 1.9301814925974116e-11,
+      "lambda": 0,
+      "one_original_point_sensitivity_including_tick_fit_residual": [
+        1.9245446240293153e-11,
+        1.9358348711943514e-11
+      ],
+      "pdf_center_points": [
+        151.5,
+        595.38
+      ],
+      "producer_graph_rate_cm3_s": 1.9301814424289e-11,
+      "relative_reader_difference": 2.599160398020217e-08,
+      "temperature_K": 200,
+      "two_endpoint_log_interpolation_cm3_s": 1.930173654445132e-11,
+      "two_nearest_tick_log_interpolation_cm3_s": 1.930179866253119e-11
+    },
+    {
+      "below_lowest_printed_major_tick": false,
+      "independent_graph_rate_cm3_s": 2.860820398829366e-11,
+      "lambda": 0,
+      "one_original_point_sensitivity_including_tick_fit_residual": [
+        2.8524657085336736e-11,
+        2.8691995594805582e-11
+      ],
+      "pdf_center_points": [
+        151.5,
+        457.86
+      ],
+      "producer_graph_rate_cm3_s": 2.8608206737597767e-11,
+      "relative_reader_difference": -9.610193785203336e-08,
+      "temperature_K": 300,
+      "two_endpoint_log_interpolation_cm3_s": 2.8607802242455226e-11,
+      "two_nearest_tick_log_interpolation_cm3_s": 2.860617191164959e-11
+    },
+    {
+      "below_lowest_printed_major_tick": false,
+      "independent_graph_rate_cm3_s": 5.3562365761670986e-11,
+      "lambda": 0,
+      "one_original_point_sensitivity_including_tick_fit_residual": [
+        5.3405943157292714e-11,
+        5.371924651788993e-11
+      ],
+      "pdf_center_points": [
+        151.5,
+        238.68
+      ],
+      "producer_graph_rate_cm3_s": 5.356237543860426e-11,
+      "relative_reader_difference": -1.806666189985151e-07,
+      "temperature_K": 500,
+      "two_endpoint_log_interpolation_cm3_s": 5.356076143565659e-11,
+      "two_nearest_tick_log_interpolation_cm3_s": 5.3563384116724014e-11
+    }
+  ]
+}

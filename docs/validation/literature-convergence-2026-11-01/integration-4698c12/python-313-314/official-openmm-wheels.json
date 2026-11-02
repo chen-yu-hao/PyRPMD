@@ -1,0 +1,15 @@
+{
+  "source_url": "https://pypi.org/project/OpenMM/8.6.1/#files",
+  "verified_utc": "2026-11-01T18:04:27.296949+00:00",
+  "version": "8.6.1",
+  "platform": "manylinux_2_34_x86_64",
+  "cp313": {
+    "filename": "openmm-8.6.1-cp313-cp313-manylinux_2_34_x86_64.whl",
+    "sha256": "b6295b1cfe63eac11c013cda90b9988fd74a1ec863522a1480affdaed3f20d7a"
+  },
+  "cp314": {
+    "filename": "openmm-8.6.1-cp314-cp314-manylinux_2_34_x86_64.whl",
+    "sha256": "85fa5b75a16f57b3a6d98341653071f0fce1ae7b0864d99e4b0b6daf36aa1ae2"
+  },
+  "dependency_policy": "Only pinned OpenMM; --no-deps --only-binary=:all: --require-hashes. Existing distributions must remain unchanged."
+}

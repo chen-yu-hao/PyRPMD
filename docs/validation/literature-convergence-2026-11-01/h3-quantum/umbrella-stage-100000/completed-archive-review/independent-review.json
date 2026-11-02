@@ -1,0 +1,103 @@
+{
+  "changes_performed": "Only new review files in this directory; no original data, frozen sources, protocols, inventories, leases, Git or integration changes.",
+  "checks": {
+    "NPZ_files_decoded_by_reviewer": 0,
+    "RNG_calls": 0,
+    "all_eight_seeds": [
+      211017,
+      211019,
+      211021,
+      211023,
+      211027,
+      211031,
+      211033,
+      211039
+    ],
+    "archive": {
+      "bytes": 474212366,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.tar.gz",
+      "sha256": "f02c799907993143533a570e1862bbb2772f9b8994344c50982b102b02d5603d"
+    },
+    "assertions": 1127,
+    "completed_sweeps_per_seed": 105000,
+    "diagnostics_shape": [
+      10000,
+      48,
+      7
+    ],
+    "new_PES_or_dynamics_calls": 0,
+    "new_analyzer_invocations": 0,
+    "observed_file_identities": 205,
+    "passed": true,
+    "review_CPU_seconds": 0.34023355899999996,
+    "samples_shape": [
+      100000,
+      48
+    ]
+  },
+  "continuation_routing_correction": {
+    "not_scheduler_input": "raw-archive-v2/stage-snapshot.json",
+    "reason": "The former has the scheduler completion schema and full embedded snapshot. The latter is an archive-specific wrapper with only global_completion/prior_snapshot/seeds. Keep old metadata bytes unchanged; record the new working route separately.",
+    "sha256": "c102f002d674e347020ecf5003b1a5e4de4bfc7b22d4691b28a5a768727ad317",
+    "use_archived_scheduler_input": "data/campaign-run/stage-100000.json"
+  },
+  "created_utc": "2026-11-01T21:45:35.583475+00:00",
+  "decision": "No remaining archive/metadata identity blocker found in the bounded read-only review. This is not approval of new sampling or a claim of scientific convergence.",
+  "inputs": {
+    "bounded_check_program": {
+      "bytes": 14364,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/check_small_files.py",
+      "sha256": "e51017c330e3a04d13d4463ed3f4e4961d08bef3c7874be85255e1bff887b3bf"
+    },
+    "bounded_check_result": {
+      "bytes": 196322,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/completed-archive-review/checks.json",
+      "sha256": "2ba5400a9807207722d058bf8d6106baa8f10de90c43f67ea8c1a29f92189968"
+    },
+    "execution": {
+      "bytes": 16019,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/execution.json",
+      "sha256": "536d555498a54219b78aa200ff593b52622e6ca06ad9ac0729f122c1dd89d331"
+    },
+    "member_inventory": {
+      "bytes": 47244,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/member-inventory.json",
+      "sha256": "295d48f75c8ac35ac25baedd8ad32f641efeaf9f7a12d2779cb3d494188ee8ae"
+    },
+    "root_actual_exit": {
+      "bytes": 401,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-root-adoption-v2/root-exec-observation.json",
+      "sha256": "b71acd9a6b3d472d28d8fb5bd6b39500d74cc16c12fab5df681659e269827145"
+    },
+    "stage_wrapper": {
+      "bytes": 40876,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/raw-archive-v2/stage-snapshot.json",
+      "sha256": "728a90a9b7eb214752e76b87b70020e24e3284329055bdbdb2b360a07dec44ca"
+    }
+  },
+  "remaining_limits": [
+    "The previously reviewed executor reports exact bytes for all nine NPZ replay outputs and checkpoint/RNG/prefix comparisons; this reviewer did not independently decode or numerically recompute those arrays.",
+    "Root actual-exit observations and the no-writer attestation remain the operational trust boundary. Present lease records and their unexplained reappearance are preserved; no PID-liveness or lease-absence claim is made.",
+    "CPU/RSS values in the executor receipt are observed/cooperatively monitored quantities; the reviewer does not reinterpret them as a kernel-enforced aggregate resource guarantee.",
+    "This local archive receipt does not establish remote durable availability or authorize distribution of external PES code/binaries.",
+    "Continuation requires separate reviewed owner/resource policy and root adoption, on a distinct ordinary-file working copy only."
+  ],
+  "review_scope": [
+    "Independent SHA256 streaming of the exact 474212366-byte archive without extracting or decoding arrays.",
+    "Exact 116-member inventory and 33-NPZ whitelist; safe paths and regular-file sizes in the already verified extraction.",
+    "Original/extracted equality for all 83 non-NPZ members and current identity checks for 40 small external source/metadata files.",
+    "All eight global/per-seed stage, settings, source, checkpoint, retained 30k state/prefix, 100k state/prefix and recorded RNG-array identities.",
+    "Independent comparison of all nine saved scientific JSON replay outputs, ignoring only the two registered top-level timing fields.",
+    "Root actual session 46558 exit receipt, adoption/one-attempt/source/policy binding, fixed-eight drain record and retained scientific criteria."
+  ],
+  "reviewer": "/root/distribution",
+  "schema": "pyrpmd.h3.umbrella100k-completed-archive-independent-review.v1",
+  "scientific_interpretation": {
+    "archive_replay_success_does_not_change_the_scientific_gate": true,
+    "full_RPMD_rate_validated": false,
+    "only_failed_registered_criterion": "statistical_precision",
+    "precision_log_standard_error": 0.050873748737126245,
+    "registered_precision_limit": 0.03,
+    "registered_primary_qtst_gates_passed": false
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "created_utc": "2026-11-01T16:18:32.779001+00:00",
+  "native_binary_name": "_native.cpython-312-x86_64-linux-gnu.so",
+  "native_binary_sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220",
+  "purpose": "Focused new-water source gate; freeze these files for the following recorded test invocation.",
+  "source_sha256": {
+    "benchmarks/water/analyze_campaign.py": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e",
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/checkpoint_validation.py": "1fe0d08d779671e27c4da0a7c2918e0d3397d3bbfe32d38587bba20a6bb04a06",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_optimizations.py": "59cc10baf566c79e3bb8769f9851d45b1b954e224fd5e3f9d103ca810c13e4df",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/native_validation.py": "3a85a0c5ed5cfbac76225db15c1a74436e30552c8acc10e144e04a9e65e6e759",
+    "benchmarks/water/numerics.py": "132d3cfae297582dbba88eacb228c5150bd443a3031f66fa3c2c5613830512b7",
+    "benchmarks/water/pilot.py": "3f8be34b3f442b281f3bcc38c21693bfbb28194cb9141cf7ccb71f585bc2cc80",
+    "benchmarks/water/plot_native_progress.py": "8cc0148b1d3dbc1c0f0546ed810be37675a249c62f038c4669aabda5c2024981",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "benchmarks/water/replay.py": "0a095dfd35b1e57af4def3c9b76253806f2ede9a5d5d9994e33eeb1eb8db05ff",
+    "benchmarks/water/split_reference.py": "b60a908b479421ba07e5da9ced92e8cc25374007eca19428bbaba1799cf6c94f",
+    "benchmarks/water/validate_native_optimizations.py": "7532a0bf2449c9a861fc9817f75d8f21c766795eb36eb23163453c284512bdcb",
+    "benchmarks/water/validate_split.py": "b3026ff4725ccf88ae358ca333e3b3bdb3f0979c60682bbbfc5106353987ef83",
+    "tests/test_water_campaign.py": "86207baadcc35737b4c7f3726bffa908a3cc16ad1e61fcc26986b489d9f9710b",
+    "tests/test_water_chain_statistics.py": "98fb3037d417e359ef13fb737b0c3ac5993a635ec42b81f92d9d7bec6ecfd0f9",
+    "tests/test_water_native_optimizations.py": "ad72e3b91552df66dcda45b073217461a2767f3158a4996641bcc59417472390",
+    "tests/test_water_native_reference.py": "6ed99f89b56953f02c02948091a971e9df52e907b27b8fbb053450e92ed7cd3b",
+    "tests/test_water_native_schedule.py": "60c58ca08da35a4c20539d8f831a7c5d15ad15966ecd9b503222c323ea7f55c2",
+    "tests/test_water_split_reference.py": "9df1e11aa408fc295f128501977431367ec8adde35354329d769f01f88caeacb"
+  },
+  "versions": {
+    "numpy": "2.5.4",
+    "openmm": "8.6.1",
+    "pytest": "9.2.0",
+    "scipy": "1.18.1"
+  }
+}

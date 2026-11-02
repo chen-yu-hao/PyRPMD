@@ -1,0 +1,85 @@
+{
+  "active_original_source": {
+    "bytes": 59669,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_isolated_continuation.py",
+    "sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7"
+  },
+  "active_original_test": {
+    "bytes": 24058,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/tests/test_h3_quantum_isolated_continuation.py",
+    "sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05"
+  },
+  "active_original_test_changed": false,
+  "additionally_marked_parameter_cases": [
+    "test_stop_or_event_error_never_admits_remaining_workers[signal]",
+    "test_stop_or_event_error_never_admits_remaining_workers[journal]"
+  ],
+  "approved_scoped_test_marker_change": true,
+  "attribute_probe": {
+    "bytes": 1280,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/pidfd-availability.json",
+    "sha256": "1ace6ee807cce57b43cea880dee05880b3958b7ea9f16e917f8120aff0c792ce"
+  },
+  "compatibility_execution_performed_by_reviewer": false,
+  "created_utc": "2026-11-01T22:30:17.840462+00:00",
+  "exact_guard": "hasattr(os,pidfd_open) and hasattr(signal,pidfd_send_signal); test-specific skip when absent. No version-wide skip, syscall/API fallback or capability substitution.",
+  "expected_capability_specific_coverage": {
+    "current_original_Python312": {
+      "cases": 76,
+      "expected_skips": 0,
+      "reason": "Both pidfd APIs exposed; actual reviewed campaign remains bound to this runtime."
+    },
+    "local_conda_forge_Python313": {
+      "cases": 76,
+      "expected_passes": 69,
+      "expected_skips": 7,
+      "real_pidfd_ownership_coverage_available": false
+    },
+    "local_conda_forge_Python314": {
+      "cases": 76,
+      "expected_passes": 69,
+      "expected_skips": 7,
+      "real_pidfd_ownership_coverage_available": false
+    },
+    "official_Linux_CI_with_both_APIs": "All76 remain executable. A skip report must be tied to observed API capability, not assumed from Python version."
+  },
+  "independent_AST_check": "All existing function and class bodies are identical; only the capability marker definition, five decorators and two parameter-level marks were added.",
+  "integration_only_after": {
+    "bytes": 24455,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/tests/test_h3_quantum_isolated_continuation.py",
+    "sha256": "da0b38029eb88ee273dfba2de708f759ca079b36ef981620f1238e6796a1d980"
+  },
+  "integration_only_before": {
+    "bytes": 24058,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/before-test_h3_quantum_isolated_continuation.py",
+    "sha256": "69df0a97c06992db5c24e074abee9866474ae4f02a90b8e9f6fe73d1d073ef05"
+  },
+  "limits": [
+    "Expected counts are a review of marker scope, not a claim that the corrected gate has executed or passed. Root will preserve exact per-case IDs, skip reasons and raw results.",
+    "This concerns a Linux-specific campaign-owner helper, not general PyRPMD scientific support on newer Python. Module parser/math/synthetic checks remain covered; actual process-ownership behavior is unavailable on the two local conda-forge builds.",
+    "The active original source/test/policy/review and ongoing MC science are unchanged. No new PES,RNG,dynamics,adoption,source fallback or integration Git mutation by this reviewer."
+  ],
+  "marked_test_functions": [
+    "test_full_inert_cohort_preserves_order_once_and_two_worker_ceiling",
+    "test_alarm_between_Popen_and_active_capture_drains_registered_child",
+    "test_unconfirmed_drain_retains_exclusion_and_attempt",
+    "test_alarm_during_frozen_exceptional_drain_is_independently_reaped",
+    "test_real_capped_worker_self_heartbeat_is_accepted_before_next_admission"
+  ],
+  "production_source_changed": false,
+  "retained_initial_py313_failure_log": {
+    "bytes": 17978,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/mc300k-owner-compatibility/py313/pytest.log",
+    "sha256": "6f9dc4559654df5a447f24bed4d0a3ee8edaa7cf372dd542a3a8bd099e5c08a0"
+  },
+  "retained_parameter_case": "test_stop_or_event_error_never_admits_remaining_workers[guard]",
+  "reviewer": "/root/distribution",
+  "schema": "pyrpmd.mc300k-pidfd-capability-test-only-review.v1",
+  "tests_that_must_remain_runnable": [
+    "All archive/member/hash/source/receipt/cohort/membership/runtime claim checks.",
+    "Both independent worker wall/CPU kernel-limit cases, inherited CPU limit rejection and the actual address-space allocation refusal.",
+    "Mock-owned-resource identity/staleness and root disk/shared-memory reservation checks.",
+    "The pre-Popen guard-error parameter case."
+  ],
+  "why_seven_not_only_five": "The initial3.13 run failed five real ownership cases. Its signal/journal parameter cases also require pidfd, but had passed for the wrong reason: missing pidfd_open failed before the intended event injection and still satisfied their broad error/launched-count assertions. Explicitly marking these two prevents false coverage. The guard variant fails before Popen and remains meaningful without pidfd."
+}

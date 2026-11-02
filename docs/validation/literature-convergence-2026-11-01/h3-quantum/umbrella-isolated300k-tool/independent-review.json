@@ -1,0 +1,75 @@
+{
+  "approved_for_fixed_isolated300000": true,
+  "bounded_limits": [
+    "This is a source/lifecycle review and observed inert-test audit, not an actual restore or sampling proof. Future actual source/runtime/archive/prefix guards still execute and can fail.",
+    "Unknown resource observations fail safely; AS allocation failures or ten-second heartbeat staleness may stop a scientifically valid calculation. They do not permit changing physics, dropping seeds or substituting state.",
+    "Software deadlines, filesystem free-space observations and external memory forecasts are not hard realtime guarantees against uninterruptible kernel I/O or unrelated writers. The independently installed worker kernel caps and retained exclusion provide bounded ownership safeguards in the tested Linux environment.",
+    "If pidfd capture or independent cleanup cannot be confirmed, the lease is retained and no complete result is authorized. Hard-kill failures can leave no final JSON; permanent claims and already committed data remain."
+  ],
+  "created_utc": "2026-11-01T22:23:16.278230+00:00",
+  "final_static_checks": {
+    "bytes": 11572,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/independent-final-checks.json",
+    "sha256": "c971fe7ef558d65aa61a9b8d0013181de529bb9e444f67e676d7c6180d2b1b8a"
+  },
+  "fixed_scientific_proposal_sha256": "65568f44ab61a40207c4b7bb3f72ba9e228eade37ca152fc753cb5612aa67e7a",
+  "observed_distinct_inert_tests": 76,
+  "observed_inert_gate": {
+    "bytes": 4329,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/inert-gate-v2/gate.json",
+    "sha256": "48da0165fc94a8237b2a20f69a8a0be5666b2e1034ddb1c882bd425e849bf64c"
+  },
+  "original_findings": {
+    "bytes": 3802,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-isolated300k-tool/initial-review/findings.json",
+    "sha256": "98b0a2a073ae86884baff1bd4fe41401757623d9a9ccf7dca939a4a71c2503cd"
+  },
+  "physical_execution_authorized_by_review": false,
+  "policy_sha256": "a8cbef299f4bda18fbdab495fdabcae26982ea08aca25aca257f83866366c5da",
+  "remaining_root_actions": [
+    "Supply a separate exact adoption binding this review, final source/tests/gate/policy and fresh CPU/shared-memory/shared-storage availability. The review does not provide those real-time facts.",
+    "Use the declared new restore root only; never retire or reuse the old anomalous lease/campaign through this tool. Keep original and verified evidence immutable.",
+    "Retain actual root execution observation, complete/failure owner receipt and per-seed logs/claims/resource/final-state identities. Missing/abnormal exit cannot authorize analysis or another attempt.",
+    "After all8 complete normally and all owned processes are confirmed drained, separately review/adopt complete-cohort analysis. Neither a matching point nor an intermediate precision estimate may alter this fixed stage."
+  ],
+  "resolved_findings": [
+    {
+      "id": "alarm_during_exceptional_drain",
+      "qualification": "Exceptional handling terminates the owned worker, with SIGKILL fallback when needed. It does not claim the current MC branch naturally completes. Last committed atomic prefixes and permanent once claims remain, and any abnormal run is ineligible for global success.",
+      "resolution": "OwnedChildren captures a pidfd for each direct Popen event before releasing the admission SIGALRM mask. Its independent finally blocks the owner alarm, retains deferred stop handlers, signals only exact pidfd children and confirms exit/reaping with waitpid after a frozen-dispatch drain exception. Cleanup is bounded by the earlier of30s from cleanup entry and work_deadline+120s. Only confirmed cleanup can release the lease; unknown capture/drain retains it. The new inert regression raises SIGALRM during an injected exceptional drain and verifies the child is reaped before exclusion disappears."
+    },
+    {
+      "id": "unknown_RSS_reported_as_zero",
+      "qualification": "The observed3GiB sum of per-live-process peak RSS is a conservative planning screen, not a kernel aggregate quota or instantaneous total. RLIMIT_AS is virtual-address space, not measured RSS. The synthetic569126912B peak probe is a no-PES layout check, not a measurement of production sampling peak.",
+      "resolution": "The environment-specific probe confirms self/owned /proc stat is unavailable. The implementation no longer reads /proc. Each process installs an independently enforced1GiB RLIMIT_AS before scientific imports. The owner observes positive RUSAGE_SELF peak RSS; workers atomically publish their own source/registration/owner-token/PID/CPU-bound positive peak-RSS heartbeats. The next launch waits for the first valid report. Missing/stale/zero/wrong-identity live-worker data fails; only pidfd-proven exited children can be excluded. Unknown observations remain explicit rather than zero."
+    }
+  ],
+  "review_operations": {
+    "Git_mutations": false,
+    "PES_calls": 0,
+    "actual_archive_restores": 0,
+    "hash_JSON_JUnit_AST_checks": 48,
+    "observed_file_identities": 28,
+    "raw_checkpoint_decodes": 0,
+    "sampling_calls": 0,
+    "scientific_RNG_draws": 0,
+    "source_or_protocol_edits": false,
+    "source_reads": true
+  },
+  "reviewer": "/root/distribution",
+  "reviewer_test_reruns": 0,
+  "schema": "pyrpmd.h3.isolated300k-independent-implementation-review.v1",
+  "scope": "Approval of the reviewed isolated scheduling/restore/identity/resource implementation only, conditional on a separate exact root adoption. No adoption, resource assignment, restore or scientific execution is supplied by this review.",
+  "source_sha256": "a7ec140dbe953a3e068cb491b24f0769e395cd4d2c449e9d2daf20aa45b4a2b7",
+  "tests_sha256": "6230db68a84e780fe7933bdb3a50760c3dd2764ec339fc2d7944718e67ff24f1",
+  "verified_contract": [
+    "The new source binds exact root adoption, approving current-source/current-test review, successful same-source inert gate, fixed policy and prior scientific proposal before output or sampling.",
+    "Exact successful100k archive/member inventory/one replay/all8 prefix identity and actual root session46558 exit0 are bound. The archive is copied only into the declared new working tree as independent regular files, with every member byte hash checked and old lease files rejected. Original campaign and verified evidence extraction cannot become working destinations.",
+    "The initial inspector requires every relocated100k checkpoint/settings/RNG/observation prefix and stage state to equal the immutable snapshot. Existing stage30k/100k bytes stay guarded; only each private worker own current checkpoint/new300k stage may change.",
+    "The frozen one_seed call and its job arguments remain unchanged. Static AST checks confirm19 existing provenance/restore/count methods/classes unchanged and the one scientific entrypoint invocation identical. No core, sampler, model, CV, bias, analyzer or scientific protocol is edited.",
+    "All8 fixed seeds receive only the next registered300000 production prefix, retaining5000 warmup plus300000 production each. No subset numerical analysis occurs. Global completion requires all eight305000 counts, samples[300000,48], diagnostics[30000,48,7], matching stage30k/100k/300k receipts, unchanged sources/prefixes, exact final inspector results and confirmed owned-worker drain.",
+    "Each worker pins one of the fixed2or4 CPUs, uses single-thread math libraries, checks parent/token/once identity, and installs6h RLIMIT_CPU plus an independent wall timer bounded by the earlier worker6h and owner work deadline before science imports. A persistent directory lease and once claims prevent automatic duplicate/retry after owner failure; worker timers survive owner death.",
+    "Owner work stops before the12h whole-owner deadline with120s reserved for drain/finalization. Owner CPU is explicitly a cooperative600s process-CPU screen. Preparation is separately limited to observed300CPU/900wall seconds. No mid-run resize, automatic scientific extension or silent retry is permitted.",
+    "Disk admission requires5GB own remaining growth plus the one4GiB global free floor and root-explicit remaining water/P256 reservations. The historical15.3GB water estimate is not used as an adoption override. Memory admission requires own(workers+1)*1GiB plus three explicit external reservations to fit8GiB; external planning estimates are labeled as such."
+  ]
+}

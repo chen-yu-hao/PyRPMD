@@ -1,0 +1,1116 @@
+{
+  "actual_document_auditor_import": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py",
+    "sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb"
+  },
+  "actual_loaded_project_modules": {
+    "benchmarks.h3.analyze_preparation_study": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/analyze_preparation_study.py",
+      "sha256": "aa556423d828695a41c30fd340fb51ea5e7e4187679581c7a1f07c8d90f71a15"
+    },
+    "benchmarks.h3.audit_ui": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/audit_ui.py",
+      "sha256": "52188ad02e3a4c910c112e973a2df1bb5a661bf493b9d955b0085e218e6c2fe0"
+    },
+    "benchmarks.h3.classical_sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/classical_sampling.py",
+      "sha256": "b33e4cdd7875a1bfeedd0d2cd353c0d88234c9694802df45db880cb8aa332f69"
+    },
+    "benchmarks.h3.classical_sampling_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/classical_sampling_campaign.py",
+      "sha256": "174f97197304e600acea9b9ad3d8a4d41f4678333e790224572db691c071900e"
+    },
+    "benchmarks.h3.classical_sampling_surface": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/classical_sampling_surface.py",
+      "sha256": "891a14a32b6394933179510d59aab02297af91e2f37b1bb6ec2101e9fecab9a1"
+    },
+    "benchmarks.h3.classical_sampling_v2": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/classical_sampling_v2.py",
+      "sha256": "75c3c5da43612d4f30f5f7f23aa2bd7fb7b303cceba71cc7c24ca2132cb92eed"
+    },
+    "benchmarks.h3.classical_sampling_xi_proposal": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/classical_sampling_xi_proposal.py",
+      "sha256": "a79f3cd117c6f1f652f788c8430f61ef18bfde294545fbe23bb090b330d731f2"
+    },
+    "benchmarks.h3.classical_tst": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    "benchmarks.h3.diatom_partition": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/diatom_partition.py",
+      "sha256": "3316cb0ae68dbf739d178fc16b8cf064aff4d031d486e20f1079808c42899d36"
+    },
+    "benchmarks.h3.diatom_transfer": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/diatom_transfer.py",
+      "sha256": "c095557a90aa85e4dd659e3820ba61a43c165a4ac807d78d4dcd868984a6d9e0"
+    },
+    "benchmarks.h3.diatomic_action": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/diatomic_action.py",
+      "sha256": "dffe729e1d1de7e612080b7f3f313cacb3f70f64d3fe67cfbdb09a26859baf6b"
+    },
+    "benchmarks.h3.diatomic_switch": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/diatomic_switch.py",
+      "sha256": "8f77ea0c75d40e6853f5e0e446e16e7516c87bd1f246c82b84f4ebfbb2474e62"
+    },
+    "benchmarks.h3.drpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/drpmd.py",
+      "sha256": "e6c0525e9936a4cb99a55692ad4532b6b54a0c852d25c0c197629ee679b19af4"
+    },
+    "benchmarks.h3.mixing_analysis": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/mixing_analysis.py",
+      "sha256": "47bd4c33043dee36196c4c4828fb3993e174d735a80e22df4112ae93f20878dc"
+    },
+    "benchmarks.h3.mixing_sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/mixing_sampling.py",
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    "benchmarks.h3.p256_child_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/p256_child_campaign.py",
+      "sha256": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb"
+    },
+    "benchmarks.h3.p256_native_calibration": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/p256_native_calibration.py",
+      "sha256": "9eb0bfc88b210d6abf432b91f8ee54274ec3f0d94de8c573433d76400b5220c8"
+    },
+    "benchmarks.h3.p256_parent_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    },
+    "benchmarks.h3.p256_recrossing_analyze": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/p256_recrossing_analyze.py",
+      "sha256": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6"
+    },
+    "benchmarks.h3.p256_surface_recrossing": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/p256_surface_recrossing.py",
+      "sha256": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692"
+    },
+    "benchmarks.h3.package_preparation_study": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/package_preparation_study.py",
+      "sha256": "556e4e2d011e3e9a671faaa05477f9816d67e6a1e0497f6b63050dcad737e4d5"
+    },
+    "benchmarks.h3.pes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    "benchmarks.h3.preparation_audit": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/preparation_audit.py",
+      "sha256": "dfbf6288c6d6f6df13e9e2d3812d06ee1663154b07a80a2c2370d5472a351c3c"
+    },
+    "benchmarks.h3.quantum_recrossing_analyze": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/quantum_recrossing_analyze.py",
+      "sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+    },
+    "benchmarks.h3.quantum_sampling_analyze": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/quantum_sampling_analyze.py",
+      "sha256": "4a3476d0ccf12cea1bd9791c4a8ccd7ebcf482b8801e61c87738cd3970e72ea4"
+    },
+    "benchmarks.h3.quantum_sampling_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/quantum_sampling_campaign.py",
+      "sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50"
+    },
+    "benchmarks.h3.quantum_sampling_scheduler": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/quantum_sampling_scheduler.py",
+      "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+    },
+    "benchmarks.h3.quantum_surface_recrossing": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/quantum_surface_recrossing.py",
+      "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+    },
+    "benchmarks.h3.run_preparation_study": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/run_preparation_study.py",
+      "sha256": "7f4f5df25a4c880f041b9c378df8e7af027419434b145be87bc5697ca9975e3b"
+    },
+    "benchmarks.h3.sampling_control": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/sampling_control.py",
+      "sha256": "33f026beb253018e3b130ceff0bf6e438abf031f462ac80dfb08e738cdc22bcc"
+    },
+    "benchmarks.h3.state_preparation_study": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/state_preparation_study.py",
+      "sha256": "706524bc6c921ae5e73fdbfb0aa84adccf43abecfe1dc2ae3b80a934f2e1305b"
+    },
+    "benchmarks.h3.state_selected_reproduction": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/state_selected_reproduction.py",
+      "sha256": "97b1ed0e6611aec7159c579fe3aca84c390294b6ad0be2f622d80e1a7567ac10"
+    },
+    "benchmarks.h3.state_selected_sensitivity": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/state_selected_sensitivity.py",
+      "sha256": "8bf2c9f64c3068133071d50eaf57d5502abcd3e431bd310f96450048de470aef"
+    },
+    "benchmarks.h3.surface_partition": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/surface_partition.py",
+      "sha256": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+    },
+    "benchmarks.h3.surface_partition_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/surface_partition_campaign.py",
+      "sha256": "4fd14ce2ca9b1044758b787107717a91334f3c9f6024d5c99dc8c4dcde72ac0d"
+    },
+    "benchmarks.h3.surface_partition_controls": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/surface_partition_controls.py",
+      "sha256": "4440394a6358221bca6c304afa9aa10571abdc23d1c692980ffd37cbc56c9d76"
+    },
+    "benchmarks.hch4.build_pes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/build_pes.py",
+      "sha256": "d9d7c4d851b7e2aa38d5483aee9c33bbd427f21889587efcdbe38447db540ced"
+    },
+    "benchmarks.hch4.pes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/pes.py",
+      "sha256": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c"
+    },
+    "benchmarks.hch4.reference_pilot": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/reference_pilot.py",
+      "sha256": "a164ff9ab148e24b5175d7087224efd95a95435665b90f4a353b2ddf0778a65a"
+    },
+    "benchmarks.hch4.reproduction_input": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/reproduction_input.py",
+      "sha256": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4"
+    },
+    "benchmarks.hch4.test_native": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/test_native.py",
+      "sha256": "d4e63c50678eb03e469f7c3ac7f74b3a56f555e6955500acb03e13bc7d9b7a27"
+    },
+    "benchmarks.hch4.verify": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/hch4/verify.py",
+      "sha256": "774d9c287d1e6e24f2fedee7cbf37874d8d83733a4a3ba5ccdf96493aebf595f"
+    },
+    "benchmarks.materials_reference": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/materials_reference/__init__.py",
+      "sha256": "d849db13e54a96270d4a0a1839d57a24c51d337d4fa18d3432a05cc90a8d505a"
+    },
+    "benchmarks.materials_reference.build_eam4": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/materials_reference/build_eam4.py",
+      "sha256": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853"
+    },
+    "benchmarks.materials_reference.eam4": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/materials_reference/eam4.py",
+      "sha256": "87b46d4b5c3fe08016c7d081d9cded352d7a808cad9706fea8761ebf1a64978e"
+    },
+    "benchmarks.materials_reference.verify_eam4": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/materials_reference/verify_eam4.py",
+      "sha256": "a1bb2c3c89061e145ec4e4d40fd4b05a55a8b11837397e12e8b48d5804660711"
+    },
+    "benchmarks.water.analyze_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/analyze_campaign.py",
+      "sha256": "c6d0c1047653c2dea961053287572fccdbcd3e7074c75a6266031e691bae304e"
+    },
+    "benchmarks.water.analyze_native": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/analyze_native.py",
+      "sha256": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718"
+    },
+    "benchmarks.water.analyze_rdf_sampling_noise": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/analyze_rdf_sampling_noise.py",
+      "sha256": "57f5489bb84755489cf88bab312b430b19a5fb9f6bdd06a5223fa4a54fc42819"
+    },
+    "benchmarks.water.campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/campaign.py",
+      "sha256": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639"
+    },
+    "benchmarks.water.compact_split": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/compact_split.py",
+      "sha256": "7fbb62470381ea35706d41e077f22fef9751ae7db81092fb6a38e2099bc7abb4"
+    },
+    "benchmarks.water.native_campaign_schedule": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_campaign_schedule.py",
+      "sha256": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239"
+    },
+    "benchmarks.water.native_campaign_schedule_v2": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_campaign_schedule_v2.py",
+      "sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e"
+    },
+    "benchmarks.water.native_optimizations": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_optimizations.py",
+      "sha256": "59cc10baf566c79e3bb8769f9851d45b1b954e224fd5e3f9d103ca810c13e4df"
+    },
+    "benchmarks.water.native_preparation_coordinator": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_preparation_coordinator.py",
+      "sha256": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02"
+    },
+    "benchmarks.water.native_preparation_extension": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_preparation_extension.py",
+      "sha256": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c"
+    },
+    "benchmarks.water.native_quantum": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_quantum.py",
+      "sha256": "6ffe98313abfc0b74e4e63531a41e5dcbb830766537b45b934b1c0d614950715"
+    },
+    "benchmarks.water.native_reference": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_reference.py",
+      "sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2"
+    },
+    "benchmarks.water.native_validation": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_validation.py",
+      "sha256": "3a85a0c5ed5cfbac76225db15c1a74436e30552c8acc10e144e04a9e65e6e759"
+    },
+    "benchmarks.water.paired_timestep": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/paired_timestep.py",
+      "sha256": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d"
+    },
+    "benchmarks.water.plot_native_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/plot_native_campaign.py",
+      "sha256": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362"
+    },
+    "benchmarks.water.plot_preparation_diagnostics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/plot_preparation_diagnostics.py",
+      "sha256": "1505c570c41bf67b7f51a767ee2a5e1dfb610d9562872ee303c6dbb3bbc34b15"
+    },
+    "benchmarks.water.plot_production_stability": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/plot_production_stability.py",
+      "sha256": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56"
+    },
+    "benchmarks.water.qtip4pf": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/qtip4pf.py",
+      "sha256": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61"
+    },
+    "benchmarks.water.replay": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/replay.py",
+      "sha256": "0a095dfd35b1e57af4def3c9b76253806f2ede9a5d5d9994e33eeb1eb8db05ff"
+    },
+    "benchmarks.water.split_reference": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/split_reference.py",
+      "sha256": "b60a908b479421ba07e5da9ced92e8cc25374007eca19428bbaba1799cf6c94f"
+    },
+    "benchmarks.water.validate_native_optimizations": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/validate_native_optimizations.py",
+      "sha256": "7532a0bf2449c9a861fc9817f75d8f21c766795eb36eb23163453c284512bdcb"
+    },
+    "benchmarks.water.velocity_cadence": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/velocity_cadence.py",
+      "sha256": "bac1e70a6e16e9bfb3164379b800086d82abdb6a509d4a5e9fee7c6c1556888d"
+    },
+    "pyrpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/__init__.py",
+      "sha256": "67033c7a2c98e71eddda09bc5c86834efe23c7c973dc72948df3a93f984a3b24"
+    },
+    "pyrpmd._electronic": {
+      "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+    },
+    "pyrpmd._matrix_path": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_matrix_path.py",
+      "sha256": "0a30c8ffd432c333ba5d3dee298c226ef403607e87b8242910a59d5e2d3b5777"
+    },
+    "pyrpmd._native": {
+      "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+    },
+    "pyrpmd._thermal": {
+      "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+    },
+    "pyrpmd.adaptive_nrpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/adaptive_nrpmd.py",
+      "sha256": "facf20d510b05b8e8f206a178e4433101cda490610005fd8b1bd83ce6f8db8fb"
+    },
+    "pyrpmd.adaptive_string": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/adaptive_string.py",
+      "sha256": "67c6bebb4c7a8df5ac95fb5e4ece090e63eb6d38d5b4c9f53840c6e31171e598"
+    },
+    "pyrpmd.adiabatic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/adiabatic.py",
+      "sha256": "c0e8df840173416c3af3b71de100e718903df5905a27d45190850b02f09379d2"
+    },
+    "pyrpmd.advanced_cv": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/advanced_cv.py",
+      "sha256": "e8f61b91916c832a40e4aee6d01e6471a6a913b5ae72ac5b1e94cc392f0a36a0"
+    },
+    "pyrpmd.advanced_surface_hopping": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/advanced_surface_hopping.py",
+      "sha256": "4905732d56d469241fc195f6ff4d430e3175ddc8fe45440d07066643dfa0df2f"
+    },
+    "pyrpmd.analysis": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/__init__.py",
+      "sha256": "a133fc41807e52b9bf708911434127c16f8c2439f4998eacbdce5b188baa7819"
+    },
+    "pyrpmd.analysis.bond_flux": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/bond_flux.py",
+      "sha256": "27dd1dff9e6e74cc4da93f998c3624cc4b5b4fada34c413de52f4c9c7b0f00c3"
+    },
+    "pyrpmd.analysis.bond_rate": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/bond_rate.py",
+      "sha256": "cb9e7fed948fbd3554f16f54bb7e8dc43c53b83a25bbda02c06f3e8a546e9896"
+    },
+    "pyrpmd.analysis.diagnostics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/diagnostics.py",
+      "sha256": "e5c414154a8886ed5405c3f0fccdf047301a3297f157108902cfe2dc193f9a24"
+    },
+    "pyrpmd.analysis.diffusion": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/diffusion.py",
+      "sha256": "92ca98ff236bf0a3547ae3cfda795dc6a4a997a8f4254c3d028d8a4615b09e72"
+    },
+    "pyrpmd.analysis.entrance": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/entrance.py",
+      "sha256": "e54044a43b2af62e56b0978c5fb05daf0ec1f1bb720d2fb1cb6faa5be5b5269e"
+    },
+    "pyrpmd.analysis.fes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/fes.py",
+      "sha256": "6c2cb1f30d6a64dbcd0ea65a740dacaa1924e4a6ec8b95d20f04e9cc848a5d55"
+    },
+    "pyrpmd.analysis.fes_result": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/fes_result.py",
+      "sha256": "ea4b56439e3ea025b48f21e90a9502b842b8ae9652136fc4581181c52897617c"
+    },
+    "pyrpmd.analysis.fes_statistics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/fes_statistics.py",
+      "sha256": "5af387f6fb972a5528a3a56c82f793e8c8f6df5d27e4b3450773a00ed6466013"
+    },
+    "pyrpmd.analysis.mbar": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/mbar.py",
+      "sha256": "4cc85883422dd1003b1132477603d3c796a426c60b206f62882451b92a4a8683"
+    },
+    "pyrpmd.analysis.metadynamics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/metadynamics.py",
+      "sha256": "f2a8aeeb1ecf3d7135abe9f0b830f7bb3cbef21277ccadc137109b8d47e80330"
+    },
+    "pyrpmd.analysis.projection": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/projection.py",
+      "sha256": "c3921aa541ae95f7907fffa5c7fd62bce7b3cf7a84191af5aba6e65ace840dd0"
+    },
+    "pyrpmd.analysis.quantum_reference": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/quantum_reference.py",
+      "sha256": "d7c86e586840158d64e4d319ae4a10949263f5e11b3d6075bdfdee766430a773"
+    },
+    "pyrpmd.analysis.rate_io": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/rate_io.py",
+      "sha256": "9e7815d3abd088205ce82bf02fe6bdc88893335928364fc1bb46e13be119765c"
+    },
+    "pyrpmd.analysis.rate_pmf": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/rate_pmf.py",
+      "sha256": "22253c7efec7f756e9477771a3681096633f23436ae10e3d237df4f90631d224"
+    },
+    "pyrpmd.analysis.rate_postprocess": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/rate_postprocess.py",
+      "sha256": "a6170350a155f14e2d7286c2a3f55684b2ad2ff6cd91cda220155baf405e58d2"
+    },
+    "pyrpmd.analysis.recrossing": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/recrossing.py",
+      "sha256": "078e61febd4f7e17fef0b9d7ee2f9240e07bf6bbb8ab78b1f27e87f335a93f45"
+    },
+    "pyrpmd.analysis.report_compare": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/report_compare.py",
+      "sha256": "a94bc716696d05ad5f02b10cf7bfcd9920420f179bcf907ab61b633d37473b29"
+    },
+    "pyrpmd.analysis.report_observables": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/report_observables.py",
+      "sha256": "f661556737582551f64b2906b5c715518a32aae1ee4ffc6d85ea0a9afb77e98b"
+    },
+    "pyrpmd.analysis.report_render": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/report_render.py",
+      "sha256": "e9d8c0a26f5d74de4d2f97fd791bc2050f9b0e1a39f6d3e21d87fb58a0f8c656"
+    },
+    "pyrpmd.analysis.report_sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/report_sampling.py",
+      "sha256": "3f36babc468e7cbca1eeb5b95956427d8132b10907ab47d8fee6df6138767006"
+    },
+    "pyrpmd.analysis.reporting": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/reporting.py",
+      "sha256": "9254a5821e253cf34bafff12dc2395a528879a967d083e5b7ad2dec78a565833"
+    },
+    "pyrpmd.analysis.scattering": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/scattering.py",
+      "sha256": "d39596c5e0281b05e1101464f50e9173d10a25a9d30682c2f6ea7afa02363953"
+    },
+    "pyrpmd.analysis.spectroscopy": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/spectroscopy.py",
+      "sha256": "7763753bc680487b488fee90854a609985ba06c7ae610bb1e6dcab9e48d14b71"
+    },
+    "pyrpmd.analysis.surface": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/surface.py",
+      "sha256": "03483e081055a6afa4d1481b03f08d8f4b8b06b4f06e6033f6c3c7824c532bd2"
+    },
+    "pyrpmd.analysis.umbrella": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/analysis/umbrella.py",
+      "sha256": "2c3f493b391399e422a7074f238a1eba95b2a09ec59bc6a58b3ecfa475f78901"
+    },
+    "pyrpmd.barostat": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/barostat.py",
+      "sha256": "ccb56efeb97cb0901aa2674df98c692a2592314b20796cbb990c8a5a8ad2ffb8"
+    },
+    "pyrpmd.batched": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/batched.py",
+      "sha256": "adea6a48c57559ea522a7476d6b5950fd4bc93c656a2deeb883c8e55b30bdafc"
+    },
+    "pyrpmd.batched_nonadiabatic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/batched_nonadiabatic.py",
+      "sha256": "8c652eb56462c43ec457cc19a8cf26a5b33991d246fb226e1a3bf78b03b0083f"
+    },
+    "pyrpmd.bias": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/bias.py",
+      "sha256": "0a0ab4a074da0be7626c1519142ab5216999f54cc21f91a50b55e58145a38cb1"
+    },
+    "pyrpmd.biased_kinetics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/biased_kinetics.py",
+      "sha256": "6fa5d89555a90816714696d1d5d614b019c87747441035a8312e9003d8bfe6a9"
+    },
+    "pyrpmd.block_propagation": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/block_propagation.py",
+      "sha256": "740daa76e6606605f8cd241b85c05d7300147201399d39080096c9bbbf313432"
+    },
+    "pyrpmd.bond_constraints": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/bond_constraints.py",
+      "sha256": "3a09282f3e6b90f10664a1bb69aad1d2c504d7753f4d880775c39193215445cc"
+    },
+    "pyrpmd.checkpoint": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/checkpoint.py",
+      "sha256": "058a4be46de68b812a27ab37960b3dcf57fcf18b5bd89d55e3e9472268100aec"
+    },
+    "pyrpmd.cli": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/cli.py",
+      "sha256": "199b0935beb7ffd110a1ebb1ac022562336ac9120eea78661fd5050bde70f9c0"
+    },
+    "pyrpmd.cmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/cmd.py",
+      "sha256": "7600dbb204b585bfe205ea4b8cd90b8083a621f248c289e5f675509d98f2db90"
+    },
+    "pyrpmd.constants": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "pyrpmd.covalent": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/covalent.py",
+      "sha256": "6c344bed774688b863bb77d46458b615704321dfdaed8eaf67b99acfcef391fe"
+    },
+    "pyrpmd.cv": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/cv.py",
+      "sha256": "640d9ee61d76f847e0260acb2456723ff76c1b9fd11dd61dcdf16de3fc58a114"
+    },
+    "pyrpmd.cv_periodic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/cv_periodic.py",
+      "sha256": "6f43a669405102325e4f2bfad9da8000b2e59813669f9428eb99f737cdc678d2"
+    },
+    "pyrpmd.dynamics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/dynamics.py",
+      "sha256": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db"
+    },
+    "pyrpmd.electrochemistry": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electrochemistry/__init__.py",
+      "sha256": "67ee2eda1961f275f13054b6a946a7d22fe94f03f537eb065ef749204c19ac20"
+    },
+    "pyrpmd.electrochemistry.diabatic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electrochemistry/diabatic.py",
+      "sha256": "e3370a235a65794148ad80bbfe7603a862b0978e088384c46c641ec1110cbb72"
+    },
+    "pyrpmd.electrochemistry.kinetics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electrochemistry/kinetics.py",
+      "sha256": "825d4daccfab9d1b7effed67f8f0adebb431bf0fb300cf5ebcc8cd50f47c1af5"
+    },
+    "pyrpmd.electrochemistry.nonadiabatic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electrochemistry/nonadiabatic.py",
+      "sha256": "5b4656c36b861cdec7fc94e39dcc315f0b0ec8d76b0cd6555cc5f83f00f5a7b8"
+    },
+    "pyrpmd.electrochemistry.potentials": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electrochemistry/potentials.py",
+      "sha256": "52acf0af9263b95bec48c4d0ca8392ac4339fab92fca83312c5eeb0cd5566dbe"
+    },
+    "pyrpmd.electrochemistry.reservoir": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electrochemistry/reservoir.py",
+      "sha256": "56f435652a4ee1a7e01a1b15b001d635067f8ced13b31dd9ecdfd33dfd7cc2e9"
+    },
+    "pyrpmd.electrochemistry.sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electrochemistry/sampling.py",
+      "sha256": "f332ace96f59e9b7d4eda80a52e4285b1db3d1310390ad2245cc4fe238049128"
+    },
+    "pyrpmd.electronic_backends": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electronic_backends.py",
+      "sha256": "98d6d10d7d4de85f4747bdfc5077f007885fe05d5ec20479054c6e502e518c8f"
+    },
+    "pyrpmd.electronic_friction": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/electronic_friction.py",
+      "sha256": "c399ab13ea786db88c8ccdd2007140516de4e431f81464ac870efc8da1675005"
+    },
+    "pyrpmd.engine": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/engine.py",
+      "sha256": "09fa42490c62d5e63c576f7769211e5f4283434b924903b633416e013a29b7bc"
+    },
+    "pyrpmd.geometry": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/geometry.py",
+      "sha256": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa"
+    },
+    "pyrpmd.initial_states": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/initial_states.py",
+      "sha256": "3b2ee6e1b119312e225895cc5b09893e3f3a509c6e5514906304f56b48bd230a"
+    },
+    "pyrpmd.input": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input.py",
+      "sha256": "e6828805abc42818064d9808a85a741eea1f369cbb1db2de7cfd5c3b4bc57a8d"
+    },
+    "pyrpmd.input_fes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input_fes.py",
+      "sha256": "7776a5740b9077b6b3ae1fc9efcfed40c634842c909a46fc3157c5ed130bb77f"
+    },
+    "pyrpmd.input_options": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input_options.py",
+      "sha256": "03d94c9b788e618c71abc376b6776ab511eaba61b355a861fad984cc3e301681"
+    },
+    "pyrpmd.input_paths": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input_paths.py",
+      "sha256": "0da1a22fa1ed040339c7c8f160ebf60731300b2bf73c932978878d50c4d8e1fc"
+    },
+    "pyrpmd.input_runtime": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input_runtime.py",
+      "sha256": "7aa55f1605339b9392827d84a431fe6f1feda2cbc41cf0092487dbc8d1cfddac"
+    },
+    "pyrpmd.input_schema": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input_schema.py",
+      "sha256": "063523c4f775f5a755e501473c0bcd2b1580bf1a79930e5f852cd10775d2ee85"
+    },
+    "pyrpmd.input_system": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input_system.py",
+      "sha256": "d9b24d265f83f6878ade2cd0f9453cb5a622c60e7fa51af35be1ae25d9c803f5"
+    },
+    "pyrpmd.input_tasks": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/input_tasks.py",
+      "sha256": "2beaf7ad350f1c0b79cc3bd53518e866b01a021e9c4d51f59460e0ee1b647f74"
+    },
+    "pyrpmd.instanton": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/instanton.py",
+      "sha256": "b849eb38e03b6b2b144c59b8c9043bc415bf7b09ccda0ea1289389d28348b9da"
+    },
+    "pyrpmd.io": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/io.py",
+      "sha256": "e1e8f3e62f1c87bdf20dc28119b46f85a1c0fe6c8e3312cc2e5c82555c4ef07f"
+    },
+    "pyrpmd.isomorphic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/isomorphic.py",
+      "sha256": "ec6f1343f015a3cb7d3ee220dd24c4b88260e2daf974f57ebc5619891437aea5"
+    },
+    "pyrpmd.kc_rpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/kc_rpmd.py",
+      "sha256": "5609609de754dff79005d8634811bb42373d1e95ed79c8a8b78c8a5554835ed2"
+    },
+    "pyrpmd.low_temperature": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/low_temperature.py",
+      "sha256": "c82241b5bde9f87fe0ed5982962e1708115270ef48efeaf5948a73391389e4c1"
+    },
+    "pyrpmd.mash": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/mash.py",
+      "sha256": "40092556c6cbfe4c6929a780ddd601302b93fc112c43766bff3b922142bcd1d1"
+    },
+    "pyrpmd.multitime": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/multitime.py",
+      "sha256": "7ffaaeac84bf4f641974a279da3c1e4566af23096c24e01261f8634287c0e85b"
+    },
+    "pyrpmd.mv_rpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/mv_rpmd.py",
+      "sha256": "c8e3f1264cf4dded599a1af966a7d2e119ff7d66bb17beb3c096f5a3fbe0902f"
+    },
+    "pyrpmd.native_ensemble": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/native_ensemble.py",
+      "sha256": "b908298a18d1027e80e3679915c7197d77616bdc15a53fa9dbfe29b94c16946c"
+    },
+    "pyrpmd.nonadiabatic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/nonadiabatic.py",
+      "sha256": "d8cf4212bfc65ea306ee9f50f70a6d5fef1bdf70d8d107fdb70a7dabd5a90e1e"
+    },
+    "pyrpmd.nonadiabatic_ensemble": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/nonadiabatic_ensemble.py",
+      "sha256": "86f88128376fec1c6bcfef20fe9d176b90d3423f9e0dd1a508dad11a0918a14c"
+    },
+    "pyrpmd.nonadiabatic_input": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/nonadiabatic_input.py",
+      "sha256": "72fb5a53deb41a86c945d1a8c94f4ae7d77741f0839c0b6694272a544592cfdc"
+    },
+    "pyrpmd.nonadiabatic_registry": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/nonadiabatic_registry.py",
+      "sha256": "529e69b8b74d6185446a4fc9d75990ad76ee52d241b99f4e24a10dc71e0816b6"
+    },
+    "pyrpmd.nonadiabatic_sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/nonadiabatic_sampling.py",
+      "sha256": "eaa7bde6f936232b4315b416c67d73141aedb88d2b898328102e8306080f7085"
+    },
+    "pyrpmd.opes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/opes.py",
+      "sha256": "1db8fc7207296b480a69ec925829c2e9fd6a6b7d4c8d4dd02478f6b1354a9b8d"
+    },
+    "pyrpmd.parallel": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/parallel/__init__.py",
+      "sha256": "e821466b2fbd4481e5279717f4369d0236e3ff09a86cce134d0b33e004fbecf5"
+    },
+    "pyrpmd.parallel.execution": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/parallel/execution.py",
+      "sha256": "a402f73180eea4fd6b638334ef591b1f2787c65e27270612b56f493bfe97b48b"
+    },
+    "pyrpmd.path_integral": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/path_integral.py",
+      "sha256": "a998d7d0c163e26663616db456789bc115538132a11308bc4909596df18829e5"
+    },
+    "pyrpmd.pcet": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pcet.py",
+      "sha256": "e9b42d25210c91042dc82858f85854833cefa27a8d7c7c82388ef68a7ac01379"
+    },
+    "pyrpmd.pcet_input": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pcet_input.py",
+      "sha256": "4ad51710ec9370e360ab1841ed4488ca8b75d3a4e47bfc5994f7d523834a2755"
+    },
+    "pyrpmd.pesgen": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/__init__.py",
+      "sha256": "aecf8efceb06a458bde426e34c182fdece689168ccdbc9fa325645448396c907"
+    },
+    "pyrpmd.pesgen.build": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/build.py",
+      "sha256": "6494bbf9e53c2792b8469965095cda4d77281253c7078baa031fff9a50f43d06"
+    },
+    "pyrpmd.pesgen.formats": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/formats.py",
+      "sha256": "4112a9e7cae57d4674f0e4e7e180e9dfd93c74832e5f0642d96f066d75362ff7"
+    },
+    "pyrpmd.pesgen.jaxpip_data": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/jaxpip_data.py",
+      "sha256": "7efb523ff37418bc433ba7b66165d06fcbece752c230b8b770861de14ff3ff3f"
+    },
+    "pyrpmd.pesgen.jaxpip_export": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/jaxpip_export.py",
+      "sha256": "f6435ce61ddb52a654f9c7a93e75674bf1c4a943fdac20ad51c05171f05c1c75"
+    },
+    "pyrpmd.pesgen.jaxpip_fit": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/jaxpip_fit.py",
+      "sha256": "a2e791e566381239435181dfd61a6b2b5b7aec91fd9d198dc21ca05667ed1654"
+    },
+    "pyrpmd.pesgen.reference": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/reference.py",
+      "sha256": "1ac169c5194d9f2fc58c1b50d6a54c714f2c412f5fa5ca1c177d56c6bedd125b"
+    },
+    "pyrpmd.pesgen.workflow": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pesgen/workflow.py",
+      "sha256": "e52775d627de60be0a2155538f72b2a4f3d6768dbf1e10a8d5af450b4373210a"
+    },
+    "pyrpmd.pimd_methods": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/pimd_methods.py",
+      "sha256": "9b83444dc878ca918f9d0cda36f5f87db1fc20b3d4b28a60d6f4e627ec6448bc"
+    },
+    "pyrpmd.plumed": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/plumed.py",
+      "sha256": "4cbd2c6a52a7fc4f05b742730412b3b0ebd2a165d5632972e8beaec275ebb897"
+    },
+    "pyrpmd.potentials": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/__init__.py",
+      "sha256": "c14c53758d3218270dcdce8bcf4c35ccd215969adeba90904bc5c45cd8ac33ae"
+    },
+    "pyrpmd.potentials.adapters": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/adapters.py",
+      "sha256": "3f2dbc00a809fa4f88e584814266be127d227603f82400847d8cd4b3ab388b42"
+    },
+    "pyrpmd.potentials.base": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/base.py",
+      "sha256": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3"
+    },
+    "pyrpmd.potentials.builtin": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/builtin.py",
+      "sha256": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46"
+    },
+    "pyrpmd.potentials.cabi": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/cabi.py",
+      "sha256": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a"
+    },
+    "pyrpmd.potentials.cache": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/cache.py",
+      "sha256": "b1e328b62f722381ab19f6d9444b457552f23afca6fc520faa3dcbcbc7dad1f8"
+    },
+    "pyrpmd.potentials.contraction": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/contraction.py",
+      "sha256": "fc62923c0ac89ba649a1af46effd38c1809e0cc75b246b441fa7e90af2d07797"
+    },
+    "pyrpmd.potentials.diabatic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/diabatic.py",
+      "sha256": "3103030dc78d5a84687261178d1938ada5705cdc2c17ffed00c8f9555afe3bec"
+    },
+    "pyrpmd.potentials.lammps": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/lammps.py",
+      "sha256": "c7bd00faf6a2d5eaad31be0b4fb0b85ef99ed3f8dd2e29ceb29e98bf86c45fba"
+    },
+    "pyrpmd.potentials.lifecycle": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/lifecycle.py",
+      "sha256": "cc57022369b6c04cac6a2a1474ddfd7075dcd2d2caa30c2a2c12d70580f60cf2"
+    },
+    "pyrpmd.potentials.multistate_external": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/multistate_external.py",
+      "sha256": "b57027795d2a5b0f37f6aec871586cde8b60d352d9768a7f589ff9d4994c9846"
+    },
+    "pyrpmd.potentials.nah2_leps": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/nah2_leps.py",
+      "sha256": "402b2e8c431a1966b7afe76fe1fd250d75ce3ae5966e1c8576f3ec9db7653835"
+    },
+    "pyrpmd.potentials.native": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/native.py",
+      "sha256": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b"
+    },
+    "pyrpmd.potentials.nonadiabatic_models": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/nonadiabatic_models.py",
+      "sha256": "fd7dbcc94d311a0571df2f65905b3215d2f6f70d371ea3d13693e14b17c29012"
+    },
+    "pyrpmd.potentials.openmm": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/openmm.py",
+      "sha256": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82"
+    },
+    "pyrpmd.potentials.optional": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/optional.py",
+      "sha256": "e83a0544d32dd9d58ebecedff9fd1bc0d6ccd624ab9797e97e3e71e702107fd4"
+    },
+    "pyrpmd.potentials.python": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/python.py",
+      "sha256": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9"
+    },
+    "pyrpmd.potentials.socket": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/socket.py",
+      "sha256": "64297c0356c5e66cf83b723c7b6f2c94a741107d6c0ae88d7c0634c0b21c1c08"
+    },
+    "pyrpmd.propagation": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/propagation.py",
+      "sha256": "d2955376772d7351390b4f0ab8ed52db50989f3b92ff7a240d1db822c8b62b2e"
+    },
+    "pyrpmd.properties": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/properties.py",
+      "sha256": "0a8088e858f3ef6f5aef03aab7bb9abf0a664189630f96991796229b4e793fd3"
+    },
+    "pyrpmd.quantum_statistics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/quantum_statistics.py",
+      "sha256": "5d504d8d35233c1905cff50476bf62a6b3a814c9985d6c04d107bed85e748515"
+    },
+    "pyrpmd.rate_artifacts": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/rate_artifacts.py",
+      "sha256": "6a900310cf7ff79217375c6c964329ab79aa04f58c1d4e317752bfebc48c914f"
+    },
+    "pyrpmd.reactions": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/reactions.py",
+      "sha256": "d1c992821aac44e441b72661aca661112a2ccfea87dbf83b4ce9f0ae026103f1"
+    },
+    "pyrpmd.replica_exchange": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/replica_exchange.py",
+      "sha256": "5290c931d6264c3179a6b791aba44e6f5a7da155e5a2a471b3675b44d0de0153"
+    },
+    "pyrpmd.retis": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/retis.py",
+      "sha256": "c5c819633563720863e373024881949729e923ef51e3971b3a022615bb96aa4a"
+    },
+    "pyrpmd.rp_mash": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/rp_mash.py",
+      "sha256": "d80bf44021bae96b33ec3d696ca5977180f6daa21e0899c3c6412bccf4ca8017"
+    },
+    "pyrpmd.runner": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/runner.py",
+      "sha256": "719995b30ebd0d6ff92f398345b70c2907b3e074994de235411ba7a45256006c"
+    },
+    "pyrpmd.scaffold": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/scaffold.py",
+      "sha256": "60c937e0b1aa0e54b78fb4ef0a4ef5e481e410a08eece5908e9d15ee49dc9c27"
+    },
+    "pyrpmd.shared_metadynamics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/shared_metadynamics.py",
+      "sha256": "9bccc0e5ff415cadda36f1742f102e7df90a8a958aaccc22dbf1cc5e75886fa6"
+    },
+    "pyrpmd.spectroscopy_input": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/spectroscopy_input.py",
+      "sha256": "4a53388579596df6734c61656d2bbd79ec7b49c96e4b371395e69ed2c136af38"
+    },
+    "pyrpmd.spin_mapping": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/spin_mapping.py",
+      "sha256": "b502ed10411a80087c1593da917c2015d83c8a0dc4ec08bfd1bd1b60d8cc27dd"
+    },
+    "pyrpmd.studies": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/studies.py",
+      "sha256": "b646542a2fdecf133ea91783bde151e97e8495c6b138e0cb2083d6a1bbd4c0b9"
+    },
+    "pyrpmd.surface_hopping": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/surface_hopping.py",
+      "sha256": "3018d533a897092e24ea4530b56aadacd004177be07bdebe6cb3c7de349d5eeb"
+    },
+    "pyrpmd.system": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/system.py",
+      "sha256": "0a26f036da0215cc6f3f1bc5925f28fc3fb05b0fe677f01796f68dddddd5e2ce"
+    },
+    "pyrpmd.thermal_nrpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/thermal_nrpmd.py",
+      "sha256": "36e64008f84ff296d43b28b599ae4248b4c3a609cf2521ffbbb15f910cb46dc2"
+    },
+    "pyrpmd.thermostats": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/thermostats.py",
+      "sha256": "c28be43ec2f16e0b427f891db8c0d8fc5be81a5a999fd2a386256d41a1f96bf7"
+    },
+    "pyrpmd.trajectory": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/trajectory.py",
+      "sha256": "73d1442bc1b5fb4857717751c279dfd08be30cf881c89f65fb93f3002fe72552"
+    },
+    "pyrpmd.trajectory_batch": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/trajectory_batch.py",
+      "sha256": "6bb6cdcb9b95c7682027e0112987c1be7d5da33fc9132b81a9d502b89b3fe80e"
+    },
+    "pyrpmd.trajectory_export": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/trajectory_export.py",
+      "sha256": "aa9a2b58fdbe95bc7c3c8e2d4b05388685d537c478b520fadcaeae94ce9ffc3d"
+    },
+    "pyrpmd.transition_interface": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/transition_interface.py",
+      "sha256": "da1375ba7ed3a4257c8bac5e1c571d5f0738801806ff2f6923ddeb21ee081584"
+    },
+    "pyrpmd.tunnelling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/tunnelling.py",
+      "sha256": "c6ce46c625ef1a7db06c2d4796127f04ee61949b096fa2fdf9d33ea8580a35e1"
+    },
+    "pyrpmd.units": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/units.py",
+      "sha256": "5623c2700b3efb4d1f3fbc656569cfd4ea847d0bfe805abbaeae48a419853eb2"
+    },
+    "pyrpmd.validation": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/validation.py",
+      "sha256": "6bd219b3761c2afb4309b1e7a1564062927287a734beb8dec6012e10c1c64d12"
+    },
+    "pyrpmd.workflows": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/__init__.py",
+      "sha256": "0dfda51b1d63474796b42bd9be6bf4464ec77964d419840642bff86e5c7cdd49"
+    },
+    "pyrpmd.workflows.adaptive_umbrella": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/adaptive_umbrella.py",
+      "sha256": "4e150e535c9caae7ce52a2e1f37386b641b643a370b1acafceeba827ff4351d2"
+    },
+    "pyrpmd.workflows.batched_recrossing": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/batched_recrossing.py",
+      "sha256": "564e6d6cb7bd195785cd4fa0fc5caaf28a66fe5ef8db428e48ac4414951428fa"
+    },
+    "pyrpmd.workflows.biased_sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/biased_sampling.py",
+      "sha256": "ee035e5c51578e5d300b394051dc6315e62d1631fa6b6b337f87319d64d2bdeb"
+    },
+    "pyrpmd.workflows.common": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/common.py",
+      "sha256": "a2682076b262e97852e7392f54b7fd5d2103188908ebc39e0ff3603ca7a20e12"
+    },
+    "pyrpmd.workflows.drpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/drpmd.py",
+      "sha256": "0bdfbdfe7c8f20f04bd4fddf1f8b32764303f9fedef9ccf758a4971cdf1e1e69"
+    },
+    "pyrpmd.workflows.drpmd_analysis": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/drpmd_analysis.py",
+      "sha256": "fce6c3e2a57986abd450a08e89abb70ee5297a1c3bd6949965014a53a35be236"
+    },
+    "pyrpmd.workflows.drpmd_classification": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/drpmd_classification.py",
+      "sha256": "a0eb4b59c8d6ab3473b61408fe5e79e130c17f55cc237f9e9f1fd881f4c71910"
+    },
+    "pyrpmd.workflows.drpmd_persistence": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/drpmd_persistence.py",
+      "sha256": "9401af68451b3a5f5096559ddc668d5d6f965072b662e3dbabdcb35fb221b7b0"
+    },
+    "pyrpmd.workflows.drpmd_sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/drpmd_sampling.py",
+      "sha256": "0c07aefca072e4f7821f7ad6b5e877c887e92d961b4cb46cb22ef73a64a38baa"
+    },
+    "pyrpmd.workflows.drpmd_trajectory": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/drpmd_trajectory.py",
+      "sha256": "45a7e53576c56a56cd1cc0a63940b0c84d5007f157357e383460611cc4fa1ff2"
+    },
+    "pyrpmd.workflows.extend": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/extend.py",
+      "sha256": "60c3fd645fc21e570249dcf60b9c162461e995ea4b5a22d1c3a6663863af1f6a"
+    },
+    "pyrpmd.workflows.fes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/fes.py",
+      "sha256": "eabbbda8c7ddfa4060ef2e17b84fea60c90208deeb4eab1cb03af0d7bca9be6f"
+    },
+    "pyrpmd.workflows.fes_dispatch": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/fes_dispatch.py",
+      "sha256": "06f4b38ef2f4317cae08f0b12c203d126158ce5a54f3bf0c96fd0ca839d2d12b"
+    },
+    "pyrpmd.workflows.materials": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/materials.py",
+      "sha256": "2e4707f8f428630673880cfcc78d4f82798ed9e6fb1ab339deb71eb7ddf01f0d"
+    },
+    "pyrpmd.workflows.metadynamics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/metadynamics.py",
+      "sha256": "0aff440ad6557262c0d3f6e50c92287dc1f6ae3b2f1650dc6efed565864d93ec"
+    },
+    "pyrpmd.workflows.native_pimd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/native_pimd.py",
+      "sha256": "336c1a25c84ac35cc25776ab62a57e6cda4233f49f395aa7838eafe9b242d279"
+    },
+    "pyrpmd.workflows.neb": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/neb.py",
+      "sha256": "08b0fddf59c01a1d4854b426a39e2b3ae046e33ee8bb14ef9bc371db46f7e823"
+    },
+    "pyrpmd.workflows.network": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/network.py",
+      "sha256": "b47152432d6fe21d8afebfd2382db573acfca08263416c51b721bbdcbfc8dca7"
+    },
+    "pyrpmd.workflows.nonadiabatic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/nonadiabatic.py",
+      "sha256": "659d29b1a04c53782598c36f6ac705d86d2e713e48ed6bd2c888b9e4e281f673"
+    },
+    "pyrpmd.workflows.nonadiabatic_extensions": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/nonadiabatic_extensions.py",
+      "sha256": "1d352bd301a95f3263e482d07087cc050eb0a395ca1aa0c475835a6c9e6bca93"
+    },
+    "pyrpmd.workflows.nonadiabatic_rate": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/nonadiabatic_rate.py",
+      "sha256": "a87ffae6af82c9105b7fc11e06d574190d0a87991c4e90227b8d2e9c0cfc7a53"
+    },
+    "pyrpmd.workflows.opes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/opes.py",
+      "sha256": "3a3e539bb91b6a4abafa31d3378da2b71e1a72e2e2f71e43c6d2efb5ad289bb6"
+    },
+    "pyrpmd.workflows.path_integral": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/path_integral.py",
+      "sha256": "09002b07b3e009da9d3ac8a5a94f55f3d8e5bfda1cb53783bb43e6b37185d17b"
+    },
+    "pyrpmd.workflows.pcet": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/pcet.py",
+      "sha256": "7d27c54156e5f9db1b06128bbe23102d502485ce777d68a53a247d037177d4c6"
+    },
+    "pyrpmd.workflows.plumed": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/plumed.py",
+      "sha256": "d312d211df8761bc5aff14d09513d2bbe660fc3d544c92ba80ae8ea43e410949"
+    },
+    "pyrpmd.workflows.prepare": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/prepare.py",
+      "sha256": "e2f342baa97bb62df735e1ec25433d28175d5e5e2077fda591d71c1031fd81b9"
+    },
+    "pyrpmd.workflows.rate": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate.py",
+      "sha256": "d057b814fcee94e141d517b2a384e1090511ddd0fdff432c553933309107edf8"
+    },
+    "pyrpmd.workflows.rate_analysis": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate_analysis.py",
+      "sha256": "3e914821fbcfa16db9891e393bb9801abcb95c524a6e0eae42f7ee9dfe1b3ef1"
+    },
+    "pyrpmd.workflows.rate_constraints": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate_constraints.py",
+      "sha256": "a31b8e5860d1f05f6a8ba5fb92b52528ad370a814f5d767952a2c6f29250b1fe"
+    },
+    "pyrpmd.workflows.rate_extend": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate_extend.py",
+      "sha256": "7bafa4ecc1fb2b3f901576f90da68e86a6d96ee5664f70859d65b3beb1c72279"
+    },
+    "pyrpmd.workflows.rate_options": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate_options.py",
+      "sha256": "1558854cbdc90e51acaab6c0f571668767da199e2fe60961cd3bedfd5c7960f4"
+    },
+    "pyrpmd.workflows.rate_pmf": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate_pmf.py",
+      "sha256": "bc73f5c5c6abed5ae67e3e43840684f803fd3573849bda03bc790d8bd21ae485"
+    },
+    "pyrpmd.workflows.rate_recrossing": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate_recrossing.py",
+      "sha256": "69c428ec7120ffa432235444825717ec26d09008ae1d47114b37dc244bca0a6c"
+    },
+    "pyrpmd.workflows.rate_source": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/rate_source.py",
+      "sha256": "bef4ec53f077b0fd1ccdf9b1f86bbe91e477e18607944a8267b72509b7d37471"
+    },
+    "pyrpmd.workflows.replica_exchange": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/replica_exchange.py",
+      "sha256": "cca45d4d9c93a8c17b09334b72c653faa74136e6cd7736f48a16e357a5d60a05"
+    },
+    "pyrpmd.workflows.saddle": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/saddle.py",
+      "sha256": "58147ea231368606f809aac0e9aac2f9ff59b85c60534987198b81dfdae23c37"
+    },
+    "pyrpmd.workflows.sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/sampling.py",
+      "sha256": "86c999da0f9f4ab9747ee2b32588c37ba58eb34f970aa5bc8a1f2caf228ff988"
+    },
+    "pyrpmd.workflows.shared_metadynamics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/shared_metadynamics.py",
+      "sha256": "1f3930c37d6332b08cf102a8b8396e5e93f4fbd5a567e8ae83b9c6f53602a9c0"
+    },
+    "pyrpmd.workflows.site_rate": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/site_rate.py",
+      "sha256": "f1c107f25f3885f21a500673eda73734fb28a2ce0c5af4d10398a612732b4bdf"
+    },
+    "pyrpmd.workflows.spectroscopy": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/spectroscopy.py",
+      "sha256": "0fc25b2307c862c9ce3e7cbbc820866f74c1d7172da75613c0687765e41b12d0"
+    },
+    "pyrpmd.workflows.state_selected": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/state_selected.py",
+      "sha256": "f8adaad6375a2990e2216a94780c3885b1817f54d42aae6ad1fa9c05232aaaf9"
+    },
+    "pyrpmd.workflows.surface": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/surface.py",
+      "sha256": "2362bfab31ecec863b6cfa64cea91653560278d49fbcf962c29ce5c899abe248"
+    },
+    "pyrpmd.workflows.surface_source": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/workflows/surface_source.py",
+      "sha256": "3dcf50df6ca510e4a97b3cebe52d9f3cf4bf63301e3f15e8dadf0bb7bbc19bc8"
+    },
+    "pyrpmd_spectroscopy_literature": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/tier2_literature/spectroscopy.py",
+      "sha256": "8f45e09fa4ce6897bcb3ba1c7518d0a612cc1413de8dc682cfc2216bd8a152de"
+    },
+    "pyrpmd_spectroscopy_static_reference": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/tier2_literature/spectroscopy_static.py",
+      "sha256": "59ebea5b30749589b8876b822bb73ce6a204ff2bd396a8b4159e23fb5a8bd2d2"
+    }
+  },
+  "environment": {
+    "abi": "cpython-314-x86_64-linux-gnu",
+    "affinity": [
+      6,
+      8
+    ],
+    "distributions": {
+      "OpenMM": "8.6.1",
+      "PyRPMD": "0.2.0",
+      "Pygments": "2.21.0",
+      "ase": "3.29.0",
+      "contourpy": "1.4.0",
+      "cycler": "0.12.1",
+      "fonttools": "4.68.0",
+      "h5py": "3.16.0",
+      "iniconfig": "2.3.1",
+      "kiwisolver": "1.5.1",
+      "matplotlib": "3.11.2",
+      "numpy": "2.5.4",
+      "packaging": "26.3",
+      "pillow": "13.0.0",
+      "pip": "26.2.2",
+      "pluggy": "1.7.0",
+      "pyparsing": "3.3.3",
+      "pytest": "9.2.0",
+      "python-dateutil": "4.0.0",
+      "scipy": "1.18.1",
+      "setuptools": "84.2.1",
+      "threadpoolctl": "3.7.0",
+      "typing_extensions": "4.16.0",
+      "tzdata": "2026.6",
+      "wheel": "0.48.0"
+    },
+    "executable": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "prefix": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314",
+    "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]",
+    "variables": {
+      "MKL_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314/matplotlib",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OPENMM_CPU_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "src:.",
+      "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/full-suite-36ec289-py314"
+    }
+  },
+  "native": {
+    "_electronic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+    },
+    "_native": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+    },
+    "_thermal": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+    }
+  },
+  "openmm": {
+    "path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/openmm/__init__.py",
+    "platforms": [
+      "Reference",
+      "CPU"
+    ],
+    "version": "8.6.1"
+  },
+  "pyrpmd_import": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/__init__.py",
+  "pytest_exitstatus": 1
+}

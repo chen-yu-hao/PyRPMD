@@ -1,0 +1,11 @@
+{
+  "correction": "Store radius.copy() per seed in the excluded synthetic fixture. No real trajectory, runtime sampler or original cohort data changed.",
+  "junit_sha256": "84c60802f79b085c721a46eb45e6c8c9cf0055a0ff50be6d95dae11f68829bdc",
+  "reason": "The fixture reused the same radius ndarray for every seed, so mutating one seed changed all eight grids. The intended mismatched-grid fixture therefore did not contain a mismatch.",
+  "result": "3 passed, 1 failed",
+  "schema": "pyrpmd-water-preparation-plot-initial-fixture-failure.v1",
+  "source_sha256": {
+    "benchmarks/water/plot_preparation_diagnostics.py": "8f164941d869110d894f20a64a32760b0cafc5ee6428ca1ddba9334d21763ba6",
+    "tests/test_water_preparation_plot.py": "e1bcccb4c0956c1339534f4641bbdfebc7f8f592b0977bfff3452dbf95c658e7"
+  }
+}

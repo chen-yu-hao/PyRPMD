@@ -1,0 +1,112 @@
+{
+  "schema": "pyrpmd.h3.completed-control-case-assessment.v1",
+  "created_utc": "2026-11-01T17:03:26.069450+00:00",
+  "phase": "complete predeclared P256 case; fixed-count domain controls continue",
+  "case": {
+    "name": "p256-cutoff05",
+    "beads": 256,
+    "minimum": 0.5,
+    "seeds": [
+      825601,
+      825603,
+      825607,
+      825609
+    ],
+    "completed_seed_results": [
+      {
+        "seed": 825601,
+        "log_TS_quantum_classical_ratio": -2.188673115015974,
+        "minimum_BAR_overlap": 0.9037728807213181,
+        "minimum_energy_ESS": 898.2230897070262,
+        "half_log_difference": -0.03443139884751689,
+        "checkpoint_sha256": "50537e53bd1e5923c2b5ad8660f880fc51327f21e5b2a29868bacd9507658803",
+        "report_sha256": "b7f133d2748e1c50162b9df9bd3b69e95e1ce7e7b867de7f350384affccdc9ca"
+      },
+      {
+        "seed": 825603,
+        "log_TS_quantum_classical_ratio": -2.195883329549739,
+        "minimum_BAR_overlap": 0.8981879635739524,
+        "minimum_energy_ESS": 728.5939845679276,
+        "half_log_difference": 0.02528009419746624,
+        "checkpoint_sha256": "3af1cc602a14455d816e524e341841aa29a5974fc2f3d99b742b7a3ab499b290",
+        "report_sha256": "d341d6f77ace62f1df89530e60014874c2ec48f10935996dda0b39034e127a85"
+      },
+      {
+        "seed": 825607,
+        "log_TS_quantum_classical_ratio": -2.195188786817124,
+        "minimum_BAR_overlap": 0.9040290095783151,
+        "minimum_energy_ESS": 1025.2456074966778,
+        "half_log_difference": -0.010783448037796184,
+        "checkpoint_sha256": "0c4387eeace08fe35f24a10109c03a7d3b4a6e72d2473363e6e90a69b9b2b664",
+        "report_sha256": "f9ce9de57eb0ecd3e9b11ea9ddc6bf304356eb15ca0b4ab87f0fcea9fd938513"
+      },
+      {
+        "seed": 825609,
+        "log_TS_quantum_classical_ratio": -2.1639505226659623,
+        "minimum_BAR_overlap": 0.9020695069255699,
+        "minimum_energy_ESS": 734.4193607277025,
+        "half_log_difference": 0.02112995661235395,
+        "checkpoint_sha256": "7edb555fc86f3395936fbabd42d4705bd8654b865bb9ed00758b62e40dbfe6c0",
+        "report_sha256": "176eea850477ea511f7b9b5f88e8947d13047535776e50060dd0d98237b7b62c"
+      }
+    ],
+    "complete": true,
+    "independent_seed_statistics": {
+      "seed_count": 4,
+      "mean": -11.37383876775398,
+      "standard_error": 0.00750230997400394,
+      "CI95": [
+        -11.397714466411843,
+        -11.349963069096118
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        -11.376587944257757,
+        -11.383798158791521,
+        -11.383103616058905,
+        -11.351865351907744
+      ]
+    },
+    "relative_QTST_comparison": {
+      "mean_log_difference": -0.005645397995845514,
+      "standard_error": 0.00957906761310132,
+      "Welch_degrees_of_freedom": 6.813329608561902,
+      "CI95_log_difference": [
+        -0.02842270664508069,
+        0.017131910653389662
+      ],
+      "relative_point_difference": -0.005629492681265665,
+      "CI95_relative_difference": [
+        -0.028022581361620492,
+        0.01727950347906818
+      ],
+      "equivalence_log_margin": 0.04879016416943204,
+      "CI95_wholly_within_margin": true,
+      "uncertainty_unit": "independent seed chain in each group; shared baseline is not a new independent sample per control"
+    },
+    "paired_seed_half_log_difference": {
+      "seed_count": 4,
+      "mean": 0.0002988009811267789,
+      "standard_error": 0.014103797003963376,
+      "CI95": [
+        -0.04458577568460789,
+        0.04518337764686145
+      ],
+      "uncertainty_unit": "independent seed chain",
+      "individual_seed_values": [
+        -0.03443139884751689,
+        0.02528009419746624,
+        -0.010783448037796184,
+        0.02112995661235395
+      ]
+    },
+    "classical_and_exact_reactant_log_offset": -9.187914829241782,
+    "seed_sampling_flags_passed": true
+  },
+  "exact_reactant_log_shift": -0.009493547448414574,
+  "TS_log_correction_shift": -0.015138945444260088,
+  "protocol_sha256": "0b3cbbff1aa90f8ec0f9c77d0d5c68786f0f368e26d8b93bc6c35604b736eb56",
+  "primary_parent_files_modified": false,
+  "algorithm_or_counts_changed_after_observation": false,
+  "interpretation": "This is the individual predeclared P128-to-P256 equilibrium equivalence test. The aggregate protocol still retains the failed coarse-P64 equivalence result, and full-rate bead convergence is not inferred."
+}

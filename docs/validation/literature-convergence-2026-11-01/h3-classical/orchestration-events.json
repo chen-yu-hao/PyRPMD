@@ -1,0 +1,15 @@
+[
+  {
+    "event": "campaign-stage JSON serialization failure after successful sampling",
+    "exception": "TypeError: Object of type ndarray is not JSON serializable",
+    "affected_seeds": [
+      2026110101,
+      2026110102,
+      2026110103,
+      2026110104
+    ],
+    "sampler_state": "All four sampler checkpoints contain22000completed sweeps,including20000production; no sampling was lost or repeated.",
+    "original_campaign_source_sha256": "e6ceda1e1f3c2b8c10e802a6fa537e3c054565b3f84d2d9ac4d0d79532073f63",
+    "recovery": "Serialize canonical saved run reports; regenerate stage metadata from existing checkpoints with zero new sweeps."
+  }
+]

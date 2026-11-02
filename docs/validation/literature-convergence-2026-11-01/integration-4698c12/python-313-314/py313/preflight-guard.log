@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/run_method_checks.py", line 204, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/python-313-314/run_method_checks.py", line 122, in main
+    assert source_guards(before, repo)["all_unchanged"]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError

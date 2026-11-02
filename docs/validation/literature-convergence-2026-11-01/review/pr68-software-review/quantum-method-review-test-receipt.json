@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_quantum_recrossing_analysis.py",
+    "tests/test_h3_quantum_surface_recrossing.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/quantum-method-review-tests.xml"
+  ],
+  "exit_code": 0,
+  "files_sha256": {
+    "benchmarks/h3/quantum_recrossing_analyze.py": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1",
+    "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+    "tests/test_h3_quantum_recrossing_analysis.py": "baa8663d7aff6d6f16920c7eca89e1cfc737a740ffb2a1b0627bbf6fad6eaa4d",
+    "tests/test_h3_quantum_surface_recrossing.py": "2f5974034d1dda0db1542d6b11d79cb2ef2f669809dafb593d6ca99ed9a2b8ea"
+  },
+  "protocol_sha256": "53203aeca4fdf66d9fbf1a23fe7a430ab99e24d18c351e85bd2eb383a87d3589",
+  "parent_protocol_sha256": "4657032eb8e10d59061a52a45adba6cac9d4d0d87213461af11e5589de49c99c",
+  "complete_registered_source_identity_matches": true,
+  "source_unchanged_during_check": true,
+  "live_primary_data_read": false,
+  "tests_log_sha256": "e91ba8b0e4ab4b5c24098b049af1e5d1b2183b4b64dc5c1a754f89957c2450c6",
+  "tests_xml_sha256": "f0e53c2c0e018a3f642788760b8c324450c8d8b689f89cbd24fcceff77c78a1a"
+}

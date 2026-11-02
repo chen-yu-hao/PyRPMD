@@ -1,0 +1,80 @@
+{
+  "phase": "excluded calibration; no primary inference",
+  "summaries": {
+    "ts": {
+      "bar_log_ratio": -2.0933865697552343,
+      "TI_simpson_log_ratio": -2.094589105517253,
+      "first_half_log_ratio": -2.148759992242491,
+      "second_half_log_ratio": -2.037610703940323,
+      "minimum_BAR_overlap": 0.9805380467185576,
+      "minimum_energy_ESS": 156.37349232011923,
+      "importance": {
+        "log_quantum_classical_ratio": -2.2491598112483384,
+        "effective_importance_samples": 52.20863144214783,
+        "largest_normalized_weight": 0.10830855959245299
+      },
+      "total_endpoint_traversals": 42,
+      "minimum_exchange_acceptance": 0.8427876823338736,
+      "elapsed_chain_seconds": 183.02393846000632
+    },
+    "reactant": {
+      "bar_log_ratio": -7.322936574892083,
+      "TI_simpson_log_ratio": -7.322214552529187,
+      "first_half_log_ratio": -7.301607239843786,
+      "second_half_log_ratio": -7.344302583183804,
+      "minimum_BAR_overlap": 0.9924537695297099,
+      "minimum_energy_ESS": 323.7625186060638,
+      "importance": {
+        "log_quantum_classical_ratio": -7.108495323347878,
+        "effective_importance_samples": 93.56521935336258,
+        "largest_normalized_weight": 0.06376011077950787
+      },
+      "total_endpoint_traversals": 44,
+      "minimum_exchange_acceptance": 0.9033333333333333,
+      "elapsed_chain_seconds": 70.81520344399905
+    }
+  },
+  "elapsed_seconds": 263.5530545769943,
+  "peak_RSS_KiB": 104704,
+  "source_unchanged": true,
+  "source_identity": {
+    "source_sha256": {
+      "benchmarks/h3/surface_partition.py": "64b0f0cd6b2382db139afd69e1308f01628b6761a9a8f9561d9bf088ff67cf6f",
+      "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+      "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+      "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+      "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+      "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    "model": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    "runtime": {
+      "python": "3.12.14",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+    }
+  },
+  "physical_converged": false,
+  "literature_reproduced": false
+}

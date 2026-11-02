@@ -1,0 +1,43 @@
+{
+  "Git_mutated": false,
+  "archive": {
+    "bytes": 145968199,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-30000-2026-11-01.tar.gz",
+    "sha256": "24c1390e11791c9ed2092f98eeba30776bbbb5d46bb8f9a7801b09d62a027c07"
+  },
+  "builder_sha256": "ce6ecef585434c1b0796f0825b2dd12fbdeb10fbefb8b94ec4abca2f2f88fa48",
+  "checks": {
+    "all_eight_complete_analysis_inputs_matched": true,
+    "all_inputs_rehashed_after_pack": true,
+    "all_member_bytes_verified": true,
+    "eight_checkpoint_state_RNG_and_prefixes_verified_from_archive": true
+  },
+  "created_utc": "2026-11-01T18:15:22.619736+00:00",
+  "git_HEAD": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "local_only": true,
+  "member_inventory": {
+    "bytes": 30370,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-30000-2026-11-01.members.json",
+    "sha256": "9c73b0d8ab8e2db20c64e933e798993337f7cd287e19e3f09d81f7a782f47f69"
+  },
+  "paper_point_used_for_continuation": false,
+  "precision_passed": false,
+  "registered_standard_error_limit": 0.03,
+  "schema": "pyrpmd.h3.quantum-umbrella-stage-archive-provenance.v1",
+  "simulation_or_analysis_recomputed": false,
+  "source_dependencies": {
+    "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "benchmarks/h3/mixing_analysis.py": "47bd4c33043dee36196c4c4828fb3993e174d735a80e22df4112ae93f20878dc",
+    "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/quantum_sampling_analyze.py": "4a3476d0ccf12cea1bd9791c4a8ccd7ebcf482b8801e61c87738cd3970e72ea4",
+    "benchmarks/h3/quantum_sampling_campaign.py": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "src/pyrpmd/bias.py": "3a2ee4fc125aaa8a9f0103e140b4f8b325c4561327604506b3f47dd5ce3a0df6",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+  },
+  "stage_QTST_cm3_molecule_s": 2.8007250268823905e-16,
+  "stage_primary_log_standard_error": 0.07689760467310561,
+  "upload_performed": false
+}

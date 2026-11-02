@@ -1,0 +1,12 @@
+{
+  "all_reconstruction_checks_passed": true,
+  "PES_evaluations": 0,
+  "random_draws": 0,
+  "actual_saved_PES_calls": 3672,
+  "maximum_absolute_reconstruction_errors": {
+    "geometry": 3.552713678800501e-15,
+    "calibration": 1.0808243189330824e-11,
+    "density": 5.684341886080802e-14,
+    "analysis": 1.7053025658242404e-12
+  }
+}

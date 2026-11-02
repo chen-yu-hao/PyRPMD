@@ -1,0 +1,26 @@
+{
+  "expected_effect": "Release the existing authorized metadata waiter1094 only after the exact old lease is proven absent; launch no second analyzer and no sampling.",
+  "expected_sole_member": {
+    "bytes": 68,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock/owner.json",
+    "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+  },
+  "no_blind_retry_if_absence_not_confirmed": true,
+  "no_general_filesystem_failure_claim": true,
+  "preserved_owner_bytes": {
+    "bytes": 68,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/owner-observed.json",
+    "sha256": "6e0835f4f471796640551c601603e7886a906fff20dbb18afd37f661b8893dff"
+  },
+  "requires_fresh_root_no_writer_attestation": true,
+  "review": {
+    "bytes": 8334,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/independent-review.json",
+    "sha256": "8147f3f39ddb126cf290a9c6c2699c03d7ba81486b2deaba1303b9c165c94672"
+  },
+  "sampler_or_primary_data_change_authorized": false,
+  "schema": "pyrpmd.h3.umbrella100000-stale-lease-retirement-proposal.v1",
+  "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run/.quantum-scheduler-lock",
+  "status": "proposed for root only; not executed",
+  "suggested_exclusive_quarantine": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/retired-leases/umbrella-stage100000-owner-6e0835f4f471"
+}

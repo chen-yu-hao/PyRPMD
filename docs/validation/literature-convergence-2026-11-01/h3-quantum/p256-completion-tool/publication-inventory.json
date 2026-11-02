@@ -1,0 +1,115 @@
+{
+  "created_utc": "2026-11-01T21:00:33.607300+00:00",
+  "file_count": 20,
+  "files": [
+    {
+      "bytes": 28609,
+      "path": "benchmarks/h3/p256_complete_analysis.py",
+      "sha256": "67e4e3eb1b7a7cc875fd14c74829c71be265a8171c516b7b10af5dca461d7b7e"
+    },
+    {
+      "bytes": 29968,
+      "path": "tests/test_h3_p256_complete_analysis.py",
+      "sha256": "749761e01e3d4e347611d289a360977cca4e2c7a854f36625888922a6099934e"
+    },
+    {
+      "bytes": 9680,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/README.md",
+      "sha256": "9463462fb9653e99f0d9ac9eb1c15cdf4baccd59d347ab59e174a06f67369def"
+    },
+    {
+      "bytes": 2118,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/execution.json",
+      "sha256": "d7993c0bce824fcebb14c6107579c64c248145cc94e745e2204e28d559043d29"
+    },
+    {
+      "bytes": 25228,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/p256_complete_analysis.py",
+      "sha256": "c1ec5e8db041a048ae6316d065a3c462e0bff3bdc72801d038515a4e1eb2c19e"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/pytest.log",
+      "sha256": "1a6c447a16595ea7f8d60ba115a73bea0a0076a14e77dfa07bc4f69dac80c9c1"
+    },
+    {
+      "bytes": 5711,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/pytest.xml",
+      "sha256": "cb7f060898bfdfbd55b1dd630c817da7993ce92efa59fd712ff756aac8ae4796"
+    },
+    {
+      "bytes": 25131,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/final-gate/test_h3_p256_complete_analysis.py",
+      "sha256": "8e41fbcb0fd0ba2b9f6362837ee0b6f75f6f8702c94eef8646e16097cb86a6fb"
+    },
+    {
+      "bytes": 5637,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/independent-review.json",
+      "sha256": "d9e16de758b1c0fbfbcb78b11b08416a7923e365640ad52ec85f1130abfd6862"
+    },
+    {
+      "bytes": 25228,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/initial-gate/p256_complete_analysis.py",
+      "sha256": "c1ec5e8db041a048ae6316d065a3c462e0bff3bdc72801d038515a4e1eb2c19e"
+    },
+    {
+      "bytes": 4560,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/initial-gate/pytest.xml",
+      "sha256": "61c1c93d450df3a588420c78b3c4115d946f6f870f8917f9b9f429d7b633fd98"
+    },
+    {
+      "bytes": 1604,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/initial-gate/synthetic-gate.json",
+      "sha256": "2b6fb8d16890f8fca174633e03ef4f1edb3a98f8e96f73f51e01a3f79deaa9fd"
+    },
+    {
+      "bytes": 20078,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/initial-gate/test_h3_p256_complete_analysis.py",
+      "sha256": "c7eeec22ab9758a5cb7cb4af4d4330cf0a173b66e19e4d2d76d5b20f5657b968"
+    },
+    {
+      "bytes": 36234,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/policy.json",
+      "sha256": "ff5be96fe6412a4d98f03019d5c7107bf7bbd7a7dfcb2426455412562bb30858"
+    },
+    {
+      "bytes": 8554,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/raw-archive-plan.json",
+      "sha256": "e6ef5c30f107624372cf10c98a570186f1b66749d9a64c8f8ef3de2a0b88bc11"
+    },
+    {
+      "bytes": 2134,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/resource-gate/execution.json",
+      "sha256": "314434e5dc2ea51bf128f23916902b53fdf38fdb511b5adb164bd4129d3c14f7"
+    },
+    {
+      "bytes": 28609,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/resource-gate/p256_complete_analysis.py",
+      "sha256": "67e4e3eb1b7a7cc875fd14c74829c71be265a8171c516b7b10af5dca461d7b7e"
+    },
+    {
+      "bytes": 99,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/resource-gate/pytest.log",
+      "sha256": "68efabdda684c540365b0c5290c4a4b2e1648de2281da983d5ba971bd602986b"
+    },
+    {
+      "bytes": 6411,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/resource-gate/pytest.xml",
+      "sha256": "0cf20520f5b97b3002be080c35cba7d433a57d66460815d3f119f41472f8b0f7"
+    },
+    {
+      "bytes": 29968,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/resource-gate/test_h3_p256_complete_analysis.py",
+      "sha256": "749761e01e3d4e347611d289a360977cca4e2c7a854f36625888922a6099934e"
+    }
+  ],
+  "inventory_excludes_itself": true,
+  "no_Git_mutation": true,
+  "old_frozen_scientific_sources_modified": false,
+  "preparation_state": "reviewed; root adoption and launch remain separate",
+  "raw_NPZ_files_included": 0,
+  "schema": "pyrpmd.publication-inventory.v1",
+  "scope": "Additive P256 complete-cohort waiter/once-only analyzer wrapper, inert gates, resolved independent review and proposed future raw archive only. No actual waiter launch, active raw reads, real analyzer invocation or physics evaluation.",
+  "source_root": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "total_bytes": 295660
+}

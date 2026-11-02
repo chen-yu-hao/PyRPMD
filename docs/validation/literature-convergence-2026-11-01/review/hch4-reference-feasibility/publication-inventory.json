@@ -1,0 +1,39 @@
+{
+  "excluded": [
+    "external PES source and binary",
+    "all live campaign data",
+    "later pilot proposals, registrations or outputs"
+  ],
+  "file_count": 5,
+  "files": [
+    {
+      "bytes": 21682,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/README.md",
+      "sha256": "f1906030514d5162aba7072704f511a8a08761de6aff30f5130b36e089a3b85f"
+    },
+    {
+      "bytes": 4362,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/geometry-checks.json",
+      "sha256": "840466550738ae7ea59d38d7880d4acd93994aa91adeff383b12158c88a7977a"
+    },
+    {
+      "bytes": 11130,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/geometry_checks.py",
+      "sha256": "332737e4a00a92b064566aa11c2a1b25d914331868c9b38ac71043ed2dc6766f"
+    },
+    {
+      "bytes": 593,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/initial-diagnostic-observation.json",
+      "sha256": "b81ede1ed1755687d5eb07ad090b509547fd1285ed4ac4e79c6aaf93cc9a3288"
+    },
+    {
+      "bytes": 6517,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/review.json",
+      "sha256": "e00df79c0b7a2545d9271edd9b0f58ac6278969dd122fec96008b0e70b23ea0e"
+    }
+  ],
+  "frozen_utc": "2026-11-01T19:02:22.222556+00:00",
+  "schema": "pyrpmd.hch4-reference-feasibility-publication-inventory.v1",
+  "scope": "Unimplemented mathematical design, geometry-only diagnostic, retained initial coverage failure, source/model provenance; no rate or PES data",
+  "total_bytes": 44284
+}

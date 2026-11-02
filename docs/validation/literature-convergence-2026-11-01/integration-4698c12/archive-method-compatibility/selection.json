@@ -1,0 +1,117 @@
+{
+  "builds": 0,
+  "created_before_execution_utc": "2026-11-01T21:40:24.666072+00:00",
+  "frozen_inventories": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation/publication-inventory.json",
+      "sha256": "6fff89937fa5e11ef58c4fb70ed3e676a03b6fffd9fce784a000970c20e0f79c"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/archive-preparation-v2/publication-inventory.json",
+      "sha256": "b69ac4725a8ada021d33b51f9e82e58b0fe59bdcd61d5cb5aee103d207b667a1"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/complete-cohort-analysis/publication-inventory.json",
+      "sha256": "e4e7da7f08e53f7e6f1e70e4439a80eb84cc67a7b25c839ddef19884d5d43e24"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-review/publication-inventory.json",
+      "sha256": "0dc728a61b04fcc6d72098a7dab562d5eb1df305000f49ba420f962a710cb334"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-100000/stale-lease-postcondition-review/publication-inventory.json",
+      "sha256": "606c225a96c35f5e2c5f8259770a46317e5718f8ef75a257d0aee3c3985d264e"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/publication-inventory.json",
+      "sha256": "0662473b33f03494d58cde0c8a4a8b2dd66d600bf66b89bfd8647d5449490f73"
+    }
+  ],
+  "installs": 0,
+  "native_products": {
+    "py312": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+        "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+      }
+    },
+    "py313": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_electronic.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "1e54ae8815f04a711c89422053bdd98deb623ad56f4488c91ab1078470ddb8d9"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_native.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "d557c5b066523d7a63487a6cd67b48ca69e4a3db2b67a4a623a9611560e9a505"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py313/lib/pyrpmd/_thermal.cpython-313-x86_64-linux-gnu.so",
+        "sha256": "fde3702d5e4912dd14ad6b4ba5af9723b120ccf83cd096ead6fb939b438aa86a"
+      }
+    },
+    "py314": {
+      "_electronic": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+      },
+      "_native": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+      },
+      "_thermal": {
+        "path": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+      }
+    }
+  },
+  "new_case_families": {
+    "archive_v1_lifecycle_and_exact_replay": 28,
+    "archive_v2_specific_readonly_lease_admission": 37
+  },
+  "per_interpreter": {
+    "py312": {
+      "expected": 65,
+      "files": [
+        "tests/test_h3_quantum_umbrella_archive.py",
+        "tests/test_h3_quantum_umbrella_archive_v2.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python"
+    },
+    "py313": {
+      "expected": 65,
+      "files": [
+        "tests/test_h3_quantum_umbrella_archive.py",
+        "tests/test_h3_quantum_umbrella_archive_v2.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python"
+    },
+    "py314": {
+      "expected": 65,
+      "files": [
+        "tests/test_h3_quantum_umbrella_archive.py",
+        "tests/test_h3_quantum_umbrella_archive_v2.py"
+      ],
+      "python": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python"
+    }
+  },
+  "previous_731_cases_rerun": false,
+  "prior_coverage": {
+    "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/fifth-stage-compatibility/case-coverage.json",
+    "sha256": "7293ff051d2e05a6c775f4c179bd6183b38be6f3889629e4a1976a0e7f1b2a24"
+  },
+  "required_cpu_affinity": [
+    8
+  ],
+  "schema": "pyrpmd.archive-method-integration-selection.v1",
+  "source_head": "36ec289981639bbeb8feecf3b30400b4cbda9afe",
+  "source_state_note": "Published head plus exact frozen additive sources and the previously validated HCH4 wall-fixture correction. Full-project gate and previous135-case gate completed before this copy.",
+  "test_scope": "65 inert lifecycle, exact replay, checkpoint and explicit anomaly-admission fixtures; no actual campaign archive, PES or analysis execution."
+}

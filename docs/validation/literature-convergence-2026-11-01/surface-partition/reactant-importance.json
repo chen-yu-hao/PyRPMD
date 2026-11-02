@@ -1,0 +1,71 @@
+{
+  "schema": "pyrpmd.h3.surface-importance-pilot.v1",
+  "phase": "excluded calibration",
+  "surface": "reactant",
+  "beads": 128,
+  "seed": 319039,
+  "samples": 8192,
+  "accepted_domain": 8006,
+  "log_quantum_classical_ratio": -7.108495323347878,
+  "quantum_classical_ratio": 0.0008181250801371736,
+  "effective_importance_samples": 93.56521935336258,
+  "effective_fraction": 0.011421535565596018,
+  "largest_normalized_weight": 0.06376011077950787,
+  "top_one_percent_weight_fraction": 0.5245906092366504,
+  "first_second_half_log_ratios": [
+    -7.252675527186497,
+    -6.9825075726717465
+  ],
+  "observation_columns": [
+    "centroid_radius_bohr",
+    "angle_ratio",
+    "minimum_bead_pair_bohr",
+    "delta_energy_hartree_nan_outside_domain"
+  ],
+  "physical_converged": false,
+  "literature_reproduced": false,
+  "limitations": [
+    "Excluded from primary inference; used only for overlap and tail assessment.",
+    "Empirical importance ESS cannot exclude unsampled rare high-weight paths.",
+    "Reference centroid quadrature requires an independent refinement check."
+  ],
+  "raw_sha256": "9bd6ba5d386c588d7c74175d69193c5e0e7ed6a379702505269032c5a0f6e252",
+  "source_identity": {
+    "source_sha256": {
+      "benchmarks/h3/surface_partition.py": "64b0f0cd6b2382db139afd69e1308f01628b6761a9a8f9561d9bf088ff67cf6f",
+      "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+      "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+      "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+      "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+      "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    "model": {
+      "provider": "BKMP2",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "execution_device": "cpu",
+      "thread_safety": "process_serial",
+      "native_batch": true,
+      "dtype": "float64",
+      "trajectory_batch_safe": true,
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "multiplicity": 2,
+      "energy_zero": "three separated H atoms",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    "runtime": {
+      "python": "3.12.14",
+      "numpy": "2.5.4",
+      "scipy": "1.18.1",
+      "platform": "Linux-6.18.57-x86_64-with-glibc2.39"
+    }
+  }
+}

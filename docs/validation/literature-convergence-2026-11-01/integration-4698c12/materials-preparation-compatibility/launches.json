@@ -1,0 +1,50 @@
+[
+  {
+    "label": "py312",
+    "command": [
+      "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+      "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/run_checks.py",
+      "--label",
+      "py312"
+    ],
+    "started_utc": "2026-11-01T19:04:21.287844+00:00",
+    "elapsed_seconds": 5.397080639995693,
+    "returncode": 0,
+    "CPU_affinity": [
+      0
+    ],
+    "thread_limits": 1
+  },
+  {
+    "label": "py313",
+    "command": [
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py313/bin/python",
+      "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/run_checks.py",
+      "--label",
+      "py313"
+    ],
+    "started_utc": "2026-11-01T19:04:26.695384+00:00",
+    "elapsed_seconds": 5.371962566998263,
+    "returncode": 0,
+    "CPU_affinity": [
+      0
+    ],
+    "thread_limits": 1
+  },
+  {
+    "label": "py314",
+    "command": [
+      "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python",
+      "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/materials-preparation-compatibility/run_checks.py",
+      "--label",
+      "py314"
+    ],
+    "started_utc": "2026-11-01T19:04:32.067916+00:00",
+    "elapsed_seconds": 5.372238001000369,
+    "returncode": 0,
+    "CPU_affinity": [
+      0
+    ],
+    "thread_limits": 1
+  }
+]

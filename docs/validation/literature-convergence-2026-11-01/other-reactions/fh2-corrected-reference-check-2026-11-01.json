@@ -1,0 +1,103 @@
+{
+  "schema": "pyrpmd.fh2.corrected-reference-source-check.v1",
+  "checked_utc": "2026-11-01T17:51:42.299816+00:00",
+  "scope": "One focused read-only check of author-linked uploads, Oxford author/repository records, official publisher routing, and official PES catalog. No simulation, registry edit, PDF/text redistribution, author contact, paid access, access-control bypass, or Git mutation.",
+  "target": {
+    "original_doi": "10.1063/1.3127145",
+    "scientific_erratum_doi": "10.1063/1.3464477",
+    "erratum_journal": "J. Chem. Phys. 133, 049902 (2010)",
+    "separate_publisher_note_doi": "10.1063/1.3147536"
+  },
+  "outcome": {
+    "full_corrected_table_or_figure_retrieved": false,
+    "corrected_rate_values": [],
+    "corrected_PES_variant_match": null,
+    "corrected_spin_orbit_and_electronic_population_convention": null,
+    "status": "unresolved; existing no-corrected-numbers conclusion retained",
+    "scope_limit": "This is a result of the listed retrieval attempts, not a claim that no accessible copy exists elsewhere."
+  },
+  "verified_catalog_mapping": {
+    "source_id": "werner_catalog",
+    "SW1": "without spin-orbit correction",
+    "HSW": "with spin-orbit correction",
+    "archive_contents_downloaded_or_verified": false,
+    "match_to_erratum_proven": false
+  },
+  "new_identity_warning": {
+    "source_id": "suleimanov_linked_article",
+    "profile_label": "Bimolecular reaction rates from ring polymer molecular dynamics; 2009",
+    "actual_document": "Bimolecular reaction rates from ring polymer molecular dynamics: Application to H + CH4 to H2 + CH3",
+    "actual_journal": "J. Chem. Phys. 134, 044131 (2011)",
+    "actual_doi": "10.1063/1.3533275",
+    "PES_in_actual_document": "modified/recalibrated Jordan-Gilbert (PJEG)",
+    "consequence": "Do not use this linked upload as the 2009 F+H2 article or its 2010 corrected numerical reference. No existing benchmark/reference was modified."
+  },
+  "sources": [
+    {
+      "id": "suleimanov_profile",
+      "url": "https://cyi.academia.edu/YurySuleimanov",
+      "role": "primary author upload index",
+      "access": "readable public page",
+      "observation": "Lists the 2010 erratum, but the retrieved page exposes no article/full-text link for that entry. The linked 2009-titled article resolves to the different 2011 H+CH4 document identified below."
+    },
+    {
+      "id": "suleimanov_linked_article",
+      "url": "https://www.academia.edu/14618588/Bimolecular_reaction_rates_from_ring_polymer_molecular_dynamics",
+      "discovered_from": "suleimanov_profile",
+      "role": "primary author-linked document",
+      "access": "public parsed document readable",
+      "observation": "First-page journal/year/title and printed DOI identify 2011 H+CH4, 10.1063/1.3533275. Not the requested F+H2 original or erratum."
+    },
+    {
+      "id": "manolopoulos_index",
+      "url": "https://manolopoulos.chem.ox.ac.uk/publications.html",
+      "role": "primary author publication index",
+      "access": "readable",
+      "observation": "Entry64 pairs the 2009 article with JCP133049902(2010), two pages, using the scientific erratum DOI link. No separate open erratum PDF/repository link is listed in that entry."
+    },
+    {
+      "id": "official_erratum",
+      "url": "https://dx.doi.org/10.1063/1.3464477",
+      "redirected_url": "https://pubs.aip.org/jcp/article/133/4/049902/190454/Erratum-Bimolecular-reaction-rates-from-ring",
+      "discovered_from": "manolopoulos_index",
+      "role": "official publisher",
+      "access": "tool failure; no body retrieved; not retried",
+      "reported_error": "(500) Redirected to https://pubs.aip.org/jcp/article/133/4/049902/190454/Erratum-Bimolecular-reaction-rates-from-ring which is not accessible via this tool. (non-retryable error)",
+      "interpretation": "Tool access failure does not establish whether a user with separate legitimate access could read the paper."
+    },
+    {
+      "id": "oxford_original_record",
+      "url": "https://ora.ox.ac.uk/objects/uuid%3Abc277089-db5a-40ec-ba1b-98d9f502cbad",
+      "role": "primary institutional repository record",
+      "access": "indexed original-paper metadata found; direct open403Forbidden; not retried",
+      "observation": "Indexed record describes the 2009 original and DOI10.1063/1.3127145. No corrected numerical content retrieved."
+    },
+    {
+      "id": "collepardo_profile",
+      "url": "https://nyu.academia.edu/RosanaCollepardoGuevara",
+      "role": "primary coauthor upload index",
+      "access": "search index lists erratum; direct open denied by robots.txt; not retried",
+      "observation": "No erratum body or corrected values retrieved from this route."
+    },
+    {
+      "id": "werner_catalog",
+      "url": "https://www.itheoc.uni-stuttgart.de/research/werner/research/h2f/potential/",
+      "role": "official PES-author distribution catalog",
+      "access": "readable",
+      "observation": "Explicit SW1/no-spin-orbit and HSW/with-spin-orbit labels verified. Catalog alone does not identify which corrected rate data used which surface/population convention."
+    },
+    {
+      "id": "researchgate_prior_route",
+      "url": "https://www.researchgate.net/publication/45507097_Erratum_Bimolecular_reaction_rates_from_ring_polymer_molecular_dynamics_J_Chem_Phys_130_174713_2009",
+      "role": "prior author-host metadata route",
+      "access": "not reopened; fresh search result still reports no full text",
+      "observation": "Prior unsuccessful endpoint retained; no request-full-text or person-directed message sent."
+    }
+  ],
+  "remaining_required_inputs": [
+    "Readable scientific erratum body with the corrected table/figure and units.",
+    "Exact model variant, spin-orbit treatment and electronic statistical factor for that corrected reference.",
+    "If only a figure is obtainable, declared digitization uncertainty rather than invented exact numbers."
+  ],
+  "stored_content": "Short metadata/findings only; no full copyrighted paper, PDF, page dump or simulated output retained."
+}

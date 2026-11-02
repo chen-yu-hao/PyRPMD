@@ -1,0 +1,638 @@
+{
+  "files": [
+    {
+      "bytes": 5526,
+      "category": "archive_audit_metadata",
+      "member": "metadata/archive-plan.json",
+      "sha256": "df9a5583f3600cf19e01469dc4d768b5b19e244324ffbc5553e055d7049b5149",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive-plan.json"
+    },
+    {
+      "bytes": 48513,
+      "category": "archive_audit_metadata",
+      "member": "metadata/complete-audit.json",
+      "sha256": "71e811ed90e866c19f7b90668e65bc0c3332925090f4bed2f09447497576d4f1",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/complete-audit.json"
+    },
+    {
+      "bytes": 1387,
+      "category": "execution_adoption",
+      "member": "metadata/execution-authorization.json",
+      "sha256": "ad0c4140ddb6cce7bf0eb0a8d499ab1a4a8ecdfa4d25656c1170dbf2bf83ba3e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/authorization.json"
+    },
+    {
+      "bytes": 18362,
+      "category": "external_identity_metadata",
+      "member": "metadata/external-prerequisites.json",
+      "sha256": "015abba3ccf8815eb1812f24e51f7149d2dc357f55fe052762bfb663f6442db3",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/external-prerequisites.json"
+    },
+    {
+      "bytes": 70005,
+      "category": "fixed_design_metadata",
+      "member": "metadata/fixed-eight-chain-design.json",
+      "sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/proposal.json"
+    },
+    {
+      "bytes": 1662,
+      "category": "archive_audit_metadata",
+      "member": "metadata/manifest-path-correction.json",
+      "sha256": "3e80f83731f68b10c160ba77f5f9f361c14cdfaec52c58b7e4f42f789462f55d",
+      "source_path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/manifest-path-correction.json"
+    },
+    {
+      "bytes": 2542,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/events.jsonl",
+      "sha256": "dba0ac9a5601d843e77530cd20cc3ed8ad58e9dd7fe18dc68f65baea01baf367",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/events.jsonl"
+    },
+    {
+      "bytes": 11146,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/plan.json",
+      "sha256": "589a04492fb95071b088b1d64b02d47801b1409c57a8a1fc5ac7e2220e99dfc7",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/plan.json"
+    },
+    {
+      "bytes": 32761,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/result.json",
+      "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/result.json"
+    },
+    {
+      "bytes": 5624,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825601-execution.json",
+      "sha256": "b9c31d237178367ab6003f7520db748bf59f9bdd79ee42cb308fd7ca75f77fb8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825601-execution.json"
+    },
+    {
+      "bytes": 105,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825601-worker-claim.json",
+      "sha256": "83d018e6f70af02803a992d7c33263b8f8c798fcdf5cda6d1059fd1b0d39c2e1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825601-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825601.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825601.log"
+    },
+    {
+      "bytes": 5623,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825603-execution.json",
+      "sha256": "da0819dd784d10e0b62a7a7668b07ab1bb6a686dd257bf24095a910b2dd119c3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825603-execution.json"
+    },
+    {
+      "bytes": 105,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825603-worker-claim.json",
+      "sha256": "abe55cfbd4943e08bc6767781bc9439096f109f786cf69b9fa111b1806f20122",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825603-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825603.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825603.log"
+    },
+    {
+      "bytes": 5618,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825607-execution.json",
+      "sha256": "f92a25f0a34f101548bcccb9cff5d9d8062b74093d54f5e44f251bcb6782da22",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825607-execution.json"
+    },
+    {
+      "bytes": 106,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825607-worker-claim.json",
+      "sha256": "8c321e98e4707e9edc3ba2fcb349686fbe6097c533fac8e737f0035961a9b41d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825607-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825607.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825607.log"
+    },
+    {
+      "bytes": 5635,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825609-execution.json",
+      "sha256": "46b600b129f20df74f1923d4e66f02a0f18827cca60081bfeb5169767fd2c123",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825609-execution.json"
+    },
+    {
+      "bytes": 106,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825609-worker-claim.json",
+      "sha256": "21a963f08ba39325c2f77c9bf0a949ff638f76af0dd3dcb9592a5cff5349ca4e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825609-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825609.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825609.log"
+    },
+    {
+      "bytes": 3226,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825613-execution.json",
+      "sha256": "52eab7f36f7e7fd3c9d543ce48fa89b2bc1334c05582ef5caea7d54ce42d93fc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825613-execution.json"
+    },
+    {
+      "bytes": 106,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825613-worker-claim.json",
+      "sha256": "aae4e6771dabdd40a933101fc507201fbaa7be7d64c4ebe255a2244bd5177abb",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825613-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825613.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825613.log"
+    },
+    {
+      "bytes": 3247,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825617-execution.json",
+      "sha256": "bef66559b8f8af55c5d6ebe8b13a312cbf8cb6d45ff9f472f8a109bcdf4ad80f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825617-execution.json"
+    },
+    {
+      "bytes": 106,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825617-worker-claim.json",
+      "sha256": "ff39073017daf5413b89ec3168a42b8c0591ef00dd044006e3d9e8f4facb46e0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825617-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825617.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825617.log"
+    },
+    {
+      "bytes": 3247,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825621-execution.json",
+      "sha256": "ad8deba0503457c4ef7a3ed6a59beb6c26db9dddd97358516548be4639c0aef4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825621-execution.json"
+    },
+    {
+      "bytes": 106,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825621-worker-claim.json",
+      "sha256": "05b26f764264912d385cafcb485c418cc50d8464d4529c0c86761031210ac7d9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825621-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825621.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825621.log"
+    },
+    {
+      "bytes": 3228,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825623-execution.json",
+      "sha256": "61410be0ecdf312648f8ff5fe539495227d52e5556150c771a2f145ae9b53992",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825623-execution.json"
+    },
+    {
+      "bytes": 106,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825623-worker-claim.json",
+      "sha256": "4e06f66c88a724cfe0c9da76708189ec0382b52ef894db24fcec04b11020cca0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825623-worker-claim.json"
+    },
+    {
+      "bytes": 0,
+      "category": "all_attempt_lifecycle_metadata",
+      "member": "parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825623.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/attempts/d0a9a300fe6c40378ab10237714132fa/seed-825623.log"
+    },
+    {
+      "bytes": 5932283,
+      "category": "current_parent_checkpoint",
+      "member": "parents/history-replay/seed-825601/checkpoint.npz",
+      "sha256": "8ee6608c545e52cbf82eb5dbddcc0de0eb9ed01d981fc7c16e3650166bd0b185",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/checkpoint.npz"
+    },
+    {
+      "bytes": 303,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825601/progress.json",
+      "sha256": "e5e47175c5d2a96a723d187df5e23a053cb00528342badab6ed0819d4865700c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/progress.json"
+    },
+    {
+      "bytes": 495,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825601/reference-domain.json",
+      "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825601/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference.json"
+    },
+    {
+      "bytes": 8708,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825601/report.json",
+      "sha256": "3767c31ec46d4828127934bdc33e5f14cde3f6cbcceecb6ce6b735fbfd5a694a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825601/settings.json",
+      "sha256": "e518706d08ad3bc9e6a97f9401e7f50e04c0bd7afd104d92349a129790afcac8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/settings.json"
+    },
+    {
+      "bytes": 5931931,
+      "category": "current_parent_checkpoint",
+      "member": "parents/history-replay/seed-825603/checkpoint.npz",
+      "sha256": "f9d00d0031468aacdc7d21da0bdc59166e17a445bbb2c44fa3d49d722a510126",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/checkpoint.npz"
+    },
+    {
+      "bytes": 305,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825603/progress.json",
+      "sha256": "81940c4a860ecb8083fa2044b367b0725d892bdadd894e0a77905d0ea468d5db",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/progress.json"
+    },
+    {
+      "bytes": 495,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825603/reference-domain.json",
+      "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825603/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/reference.json"
+    },
+    {
+      "bytes": 8710,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825603/report.json",
+      "sha256": "cc9a8dfeaf4eea37cef98b0f14f4387da97122f25e7d45c4f0e4313bd9d198da",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825603/settings.json",
+      "sha256": "68c81549056dc4f8d096fbc694457fd5e6a34e6b409bd3a1428fdd46c913fbfc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/settings.json"
+    },
+    {
+      "bytes": 5932271,
+      "category": "current_parent_checkpoint",
+      "member": "parents/history-replay/seed-825607/checkpoint.npz",
+      "sha256": "66e0bbc585040285f6be6b11e50156f0fbf73fd7315f8d65b27ad09ed7ad672f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/checkpoint.npz"
+    },
+    {
+      "bytes": 305,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825607/progress.json",
+      "sha256": "3fd252c7cc287251ba67eb4e94957763f20e7452f8810c8771306d1584081cdc",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/progress.json"
+    },
+    {
+      "bytes": 495,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825607/reference-domain.json",
+      "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825607/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/reference.json"
+    },
+    {
+      "bytes": 8693,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825607/report.json",
+      "sha256": "c0561d215048cab083a03763502983f8ec5b4ae450d7f98315dafecc249f54f2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825607/settings.json",
+      "sha256": "a541e4a80a6fdcd2180b3f3543555bb12c6a65eb2bcb9152ff1572d0bd5a66a4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/settings.json"
+    },
+    {
+      "bytes": 5932301,
+      "category": "current_parent_checkpoint",
+      "member": "parents/history-replay/seed-825609/checkpoint.npz",
+      "sha256": "74f16372a30bcbc3fb2fe08d79210997377fbdbe4e9b4e37a4d020d223a6335c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/checkpoint.npz"
+    },
+    {
+      "bytes": 304,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825609/progress.json",
+      "sha256": "c5b7f49654dbc161b45992c86334dab88fa08af234e896ac6c99ca34debf0add",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/progress.json"
+    },
+    {
+      "bytes": 494,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825609/reference-domain.json",
+      "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825609/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/reference.json"
+    },
+    {
+      "bytes": 8716,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825609/report.json",
+      "sha256": "1bcb2e299881f4e2a0e82077cb9103c1b0e27a94fada19fe9f6c7f03c28860f9",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/history-replay/seed-825609/settings.json",
+      "sha256": "9b52dd5e89c7fe87fe6049a79ec104d85aeaffa14f31aec44c4d05be4abe7d23",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/settings.json"
+    },
+    {
+      "bytes": 5932064,
+      "category": "current_parent_checkpoint",
+      "member": "parents/new-independent/seed-825613/checkpoint.npz",
+      "sha256": "e8f1f0a78940f317681684fab1fa264d550117ac7781def0d728c43accf693b3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/checkpoint.npz"
+    },
+    {
+      "bytes": 305,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825613/progress.json",
+      "sha256": "a5d8d9f5fadf8556eda27c5afdedeab8c4ad866de0be4c91d469f74785a38fb4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/progress.json"
+    },
+    {
+      "bytes": 495,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825613/reference-domain.json",
+      "sha256": "017523525c264342d935f40360eb62897dd82f3213e43461f6315898fcd33db5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825613/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/reference.json"
+    },
+    {
+      "bytes": 8666,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825613/report.json",
+      "sha256": "7df5d25828c624a031f11763b03bf9c0ae2557eff718789cf17ebf400e23e260",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825613/settings.json",
+      "sha256": "e9032275c34de6e608c92ceb04a11190cc3c030c37ac426ad2d548b99ccb1bf0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/settings.json"
+    },
+    {
+      "bytes": 5932064,
+      "category": "current_parent_checkpoint",
+      "member": "parents/new-independent/seed-825617/checkpoint.npz",
+      "sha256": "13e9ea6693cc0adc51ae612229d4cdddae7474d54de6158fbe5480a4839d5c1f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/checkpoint.npz"
+    },
+    {
+      "bytes": 304,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825617/progress.json",
+      "sha256": "90107a49ee2838d3304db3f3ce604b1907be355697126b2575a3678d4caab5e8",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/progress.json"
+    },
+    {
+      "bytes": 494,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825617/reference-domain.json",
+      "sha256": "e3d5b683b4c77b7c7138bea21ade2af48354a247b8696fd0f2e8ca5f2573b8a6",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825617/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/reference.json"
+    },
+    {
+      "bytes": 8638,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825617/report.json",
+      "sha256": "798b5cfcb8ee3f92ead9d7406e171b33543c231cb7f2d975149180f012d84576",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825617/settings.json",
+      "sha256": "32c39f2f7cc88a45c1c2f4bffdcddd6bf28203b1e288899f431b8c2305a75fa5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/settings.json"
+    },
+    {
+      "bytes": 5932227,
+      "category": "current_parent_checkpoint",
+      "member": "parents/new-independent/seed-825621/checkpoint.npz",
+      "sha256": "97b695412105b246747a059e46ec1cb2d4b59ea21f2eb79868781bf10e5be56c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/checkpoint.npz"
+    },
+    {
+      "bytes": 305,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825621/progress.json",
+      "sha256": "35d91f667501b05bed078df6f86a5f792d881638872e4ceb36c1970b0f3ba60a",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/progress.json"
+    },
+    {
+      "bytes": 493,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825621/reference-domain.json",
+      "sha256": "cb1f928e7624096af2dc0b043096210415005ed7f0f580b693c674f6e80ef719",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825621/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/reference.json"
+    },
+    {
+      "bytes": 8702,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825621/report.json",
+      "sha256": "888dcc27fd58354dc6c3efead91f85d850e63066366a152f0474ee0af4dbb27c",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825621/settings.json",
+      "sha256": "6ed6423e5f15534be03ccb91ee300435a803278475b756b998ef7cd10eb83233",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/settings.json"
+    },
+    {
+      "bytes": 5931408,
+      "category": "current_parent_checkpoint",
+      "member": "parents/new-independent/seed-825623/checkpoint.npz",
+      "sha256": "dd93dea375895f19a0c317b2d49d4bc9ed9f004dd182c29c4b7711e77ebf5b9f",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/checkpoint.npz"
+    },
+    {
+      "bytes": 304,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825623/progress.json",
+      "sha256": "ca8921eb9e5563f087fde0db3a7986fa945130276cf5e0aff530f1af820ec4f3",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/progress.json"
+    },
+    {
+      "bytes": 495,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825623/reference-domain.json",
+      "sha256": "e5b1a3b0ffb4e04b67cfa7e81986281ee44eb506d58f7d05deb32a57bb53f6b5",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/reference-domain.json"
+    },
+    {
+      "bytes": 603,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825623/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/reference.json"
+    },
+    {
+      "bytes": 8668,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825623/report.json",
+      "sha256": "73d2c2a1f03faeee1e8375ff75f8946c4e7611408bc9ca8a6b73dd687c440ea1",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/report.json"
+    },
+    {
+      "bytes": 2893,
+      "category": "current_parent_metadata",
+      "member": "parents/new-independent/seed-825623/settings.json",
+      "sha256": "23a001bd5fb6f4fb6dce73d3613abdacaee6eea9047288c793c785c6bae84284",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/settings.json"
+    },
+    {
+      "bytes": 32761,
+      "category": "campaign_registration_and_completion",
+      "member": "parents/parents-complete.json",
+      "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/parents-complete.json"
+    },
+    {
+      "bytes": 775,
+      "category": "campaign_registration_and_completion",
+      "member": "parents/registration.json",
+      "sha256": "7775d890c3e75a063bf56b50d55c13da9e0b8d5f977276b5e28b4636ffe85c84",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/registration.json"
+    },
+    {
+      "bytes": 1387,
+      "category": "observed_root_execution_metadata",
+      "member": "root-execution/authorization.json",
+      "sha256": "ad0c4140ddb6cce7bf0eb0a8d499ab1a4a8ecdfa4d25656c1170dbf2bf83ba3e",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/authorization.json"
+    },
+    {
+      "bytes": 246,
+      "category": "observed_root_execution_metadata",
+      "member": "root-execution/campaign.log",
+      "sha256": "dd656c2183028d460f564390e1273902a0671b7dcb5f6b992a03ec5c73bcefd2",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/campaign.log"
+    },
+    {
+      "bytes": 1758,
+      "category": "observed_root_execution_metadata",
+      "member": "root-execution/completion.json",
+      "sha256": "8bdb1ee1e4450a31ad179654809940012e286aa3edb56f8f16d827dc80f9b9b0",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/completion.json"
+    },
+    {
+      "bytes": 362,
+      "category": "observed_root_execution_metadata",
+      "member": "root-execution/exec-observation.json",
+      "sha256": "bc6e51b42c2426c914f40e306f767d16839e6f9b342414926a44df5e49ff4f0d",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/exec-observation.json"
+    },
+    {
+      "bytes": 1443,
+      "category": "observed_root_execution_metadata",
+      "member": "root-execution/launch.json",
+      "sha256": "cc83899f5625013045034526827197489089591c465401d515e502cfb834df46",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/launch.json"
+    },
+    {
+      "bytes": 2586,
+      "category": "observed_root_execution_metadata",
+      "member": "root-execution/resource-decision.json",
+      "sha256": "861921045c499776109ff99c650028dab7b89a3500f05a90e7926fc700db43ba",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/resource-decision.json"
+    },
+    {
+      "bytes": 1053,
+      "category": "observed_root_execution_metadata",
+      "member": "root-execution/root-exec-exit.json",
+      "sha256": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4",
+      "source_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/root-exec-exit.json"
+    }
+  ],
+  "member_count": 90,
+  "raw_checkpoint_count": 8,
+  "schema": "pyrpmd.h3.p256-parent-archive-members.v1",
+  "uncompressed_bytes": 47830978
+}

@@ -1,0 +1,76 @@
+{
+  "environment": {
+    "abi": "cpython-314-x86_64-linux-gnu",
+    "affinity": [
+      0
+    ],
+    "distributions": {
+      "OpenMM": "8.6.1",
+      "PyRPMD": "0.2.0",
+      "Pygments": "2.21.0",
+      "ase": "3.29.0",
+      "contourpy": "1.4.0",
+      "cycler": "0.12.1",
+      "fonttools": "4.68.0",
+      "h5py": "3.16.0",
+      "iniconfig": "2.3.1",
+      "kiwisolver": "1.5.1",
+      "matplotlib": "3.11.2",
+      "numpy": "2.5.4",
+      "packaging": "26.3",
+      "pillow": "13.0.0",
+      "pip": "26.2.2",
+      "pluggy": "1.7.0",
+      "pyparsing": "3.3.3",
+      "pytest": "9.2.0",
+      "python-dateutil": "4.0.0",
+      "scipy": "1.18.1",
+      "setuptools": "84.2.1",
+      "threadpoolctl": "3.7.0",
+      "typing_extensions": "4.16.0",
+      "tzdata": "2026.6",
+      "wheel": "0.48.0"
+    },
+    "executable": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "prefix": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314",
+    "python": "3.14.10 | packaged by conda-forge | (main, Oct 26 2026, 11:35:38) [GCC 15.3.0]",
+    "variables": {
+      "MKL_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/materials-preparation-compatibility/py314/matplotlib",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OPENMM_CPU_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "src:.",
+      "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/materials-preparation-compatibility/py314"
+    }
+  },
+  "native": {
+    "_electronic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_electronic.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "70267d8da8ba617873734ca5c6bc4cf43980a2c65f8df49f06f7acdbe85909d8"
+    },
+    "_native": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "a1ccae3e79e01e26a743654ffd9badb20fc6f35ab3723f4824738a0289615fbe"
+    },
+    "_thermal": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/distribution-check/integrated-c2c5ae2-abi-methods/py314/lib/pyrpmd/_thermal.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "b1c9ec2db1a0df599f1a3206000b243bab39679d9bcb942167391d104b3e28fb"
+    }
+  },
+  "openmm": {
+    "path": "/workspace/scratch/a5e4820daedd/distribution-check/unit-py314/lib/python3.14/site-packages/openmm/__init__.py",
+    "platforms": [
+      "Reference",
+      "CPU"
+    ],
+    "version": "8.6.1"
+  },
+  "pyrpmd_import": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/__init__.py"
+}

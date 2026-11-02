@@ -1,0 +1,28 @@
+{
+  "passed": 34,
+  "failed": 0,
+  "skipped": 0,
+  "seconds": 2.18,
+  "source_sha256": {
+    "benchmarks/h3/surface_partition.py": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db",
+    "benchmarks/h3/mixing_sampling.py": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0",
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/analysis/fes.py": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c",
+    "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+  },
+  "test_sha256": "109c9bd6412122cbba57e3174ba133d54316f91402f9488e508ef57437aeb228",
+  "protocol_sha256": "4657032eb8e10d59061a52a45adba6cac9d4d0d87213461af11e5589de49c99c",
+  "coverage": [
+    "P1 exact correction including reference plateau",
+    "Cartesian TS coarea metric and independent real BKMP2 classical integral",
+    "pCN spring cancellation and harmonic finite-P partition",
+    "BAR sign and unequal sample counts",
+    "full reference support below bead cutoff",
+    "exact interrupted prefix/restart including endpoint parents",
+    "endpoint recording leaves sampler RNG and states bitwise unchanged",
+    "analysis without NumPy2 trapezoid"
+  ]
+}

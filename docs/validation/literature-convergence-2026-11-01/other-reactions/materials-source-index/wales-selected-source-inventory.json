@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "archive_sha256": "8463fbbbab3f613c1daa021df99cf89791be3ca61c7f3b9c2f5307e484bf8029",
+  "selection_rule": "(nimet|niheam|eam[4567]|pdh|pallad|pd_h)",
+  "members_scanned": 21037,
+  "selected_members": [
+    {
+      "archive_member": "./wales/OPTIM/source/nihEAM6pot.f90",
+      "bytes": 94100,
+      "sha256": "c8e9323206340001fd647018c895f2a80623b73410ec2fcdef99da213b95fe27",
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/.__wales__OPTIM__source__nihEAM6pot.f90"
+    },
+    {
+      "archive_member": "./wales/OPTIM/source/nimetpot.f90",
+      "bytes": 43812,
+      "sha256": "b294b106cac20038eb941037b63f35dcce374ed40559d68217f5751b90d514a6",
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/.__wales__OPTIM__source__nimetpot.f90"
+    }
+  ],
+  "elapsed_seconds": 16.235979370001587,
+  "target_paper_equivalence": "not_established",
+  "scope": "Read-only source identification; extracted exact small text candidates outside Git; no build or simulation."
+}

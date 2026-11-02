@@ -1,0 +1,114 @@
+{
+  "Git_mutation_authorized": false,
+  "archive": {
+    "excluded": [
+      "Original four historical raw checkpoints already in the immutable equilibrium archive",
+      "PES source/library and native binaries",
+      "Git-backed source code",
+      "Child trajectories",
+      "Umbrella and water data",
+      "Live or partial raw data"
+    ],
+    "external_historical_archive": {
+      "bytes": 83259073,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+    },
+    "immutability": "Exclusive creation, no overwrite, frozen SHA/member identities. Durable filesystem write protection is not asserted.",
+    "metadata_selection": [
+      "All eight producer settings/report/reference/domain/progress JSON files.",
+      "Global manifest, registration, and every completed campaign attempt plan/journal/claim/execution/log/result.",
+      "Actual root completion, launch, tool observation, adoption and resource metadata with exact bytes and source identities.",
+      "Per-member SHA/size inventory, fixed design, path correction, and source/model/external historical provenance."
+    ],
+    "proposed_path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-p256-parents-2026-11-01.tar.gz",
+    "raw_NPZ_count": 8,
+    "raw_selection": "Exactly the eight current final checkpoint.npz files, including full state/RNG, diagnostics, energies and 200 endpoint observations each.",
+    "roundtrip": "Actually extract to a fresh directory, verify all member bytes, and rerun complete-parent verification against the eight extracted current checkpoints plus unchanged external historical prerequisites."
+  },
+  "authoritative_design": {
+    "bytes": 70005,
+    "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/proposal.json",
+    "sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d"
+  },
+  "child_eligibility_adoption_and_launch": "Root-owned and separate from this read-only audit/archive.",
+  "complete_verification": [
+    "Use the frozen source-guarded parent verifier, then rehash exact input bytes. Never invoke a sampler or propagator.",
+    "Check every current checkpoint integrity envelope and settings fingerprint; exactly 200 snapshots, 256 beads, expected sweep indices, finite geometry, COM, surface relation and pair/bond domain.",
+    "For all four historical chains, compare all 16 non-observation payload dtypes, shapes and bytes; verify reference/domain bytes and permitted report differences.",
+    "Match every worker claim, execution, PID, CPU, seed and result to the global manifest; require exactly eight successful journal starts/reaps and a final owned-drain event.",
+    "Report every registered sampling flag and its observed metric. No subset or replacement seed, BAR re-estimation or rate calculation."
+  ],
+  "correct_relative_directories": {
+    "825601": "history-replay/seed-825601",
+    "825603": "history-replay/seed-825603",
+    "825607": "history-replay/seed-825607",
+    "825609": "history-replay/seed-825609",
+    "825613": "new-independent/seed-825613",
+    "825617": "new-independent/seed-825617",
+    "825621": "new-independent/seed-825621",
+    "825623": "new-independent/seed-825623"
+  },
+  "created_utc": "2026-11-01T20:04:55.418930+00:00",
+  "expected_driver": {
+    "bytes": 35515,
+    "path": "benchmarks/h3/p256_parent_campaign.py",
+    "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+  },
+  "expected_parent_counts": {
+    "atom_coordinates_per_bead": [
+      3,
+      3
+    ],
+    "beads": 256,
+    "chains": 8,
+    "production_sweeps": 20000,
+    "snapshot_completed_sweeps": [
+      2100,
+      22000,
+      100
+    ],
+    "snapshots_each": 200,
+    "total_snapshots": 1600,
+    "warmup_sweeps": 2000
+  },
+  "failure_policy": "Missing root exit or global proof blocks numerical assessment. Invalid identities or failed gates stop archive acceptance and retain logs/data without editing them. An ineligible producer requires an explicit complete-failure review; no eligible manifest is fabricated.",
+  "fixed_seeds": [
+    825601,
+    825603,
+    825607,
+    825609,
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "historical_seeds": [
+    825601,
+    825603,
+    825607,
+    825609
+  ],
+  "new_independent_seeds": [
+    825613,
+    825617,
+    825621,
+    825623
+  ],
+  "parent_root": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents",
+  "readiness_required_before_numerical_data_reads": [
+    "Root completion observation with actual exit_code 0, exec_session_id 97158, observed_utc, parents_complete_sha256, registration_sha256 and all_workers_drained=true.",
+    "The global parents-complete.json has the exact eight-seed order, complete/eligible/drained flags true, no errors, and no unstarted seeds.",
+    "Registration, attempt plan and authorization whole-file identities match; independent source review and actual resource receipts are bound."
+  ],
+  "resource_ceiling": {
+    "CPUs": 1,
+    "no_physical_runs": true,
+    "priority": "lower process priority",
+    "scope": "Metadata, checkpoint reloading, hashing, compression and extraction only."
+  },
+  "schema": "pyrpmd.h3.p256-complete-parent-verification-and-archive-plan.v1",
+  "source_or_data_modification": false,
+  "status": "prepared_not_executed_waiting_for_root_normal_completion",
+  "upload_authorized": false
+}

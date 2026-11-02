@@ -1,0 +1,21 @@
+{
+  "all_unchanged": false,
+  "external_files": {
+    "changed": [],
+    "files_checked": 15
+  },
+  "integrated": {
+    "changed": [
+      "benchmarks/literature/campaign.json"
+    ],
+    "files_checked": 1194
+  },
+  "original": {
+    "changed": [],
+    "files_checked": 958
+  },
+  "owned_ABI_links": {
+    "changed": [],
+    "files_checked": 6
+  }
+}

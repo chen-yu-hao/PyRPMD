@@ -1,0 +1,74 @@
+--- before/efficiency_pilot.py
++++ after/efficiency_pilot.py
+@@ -64,6 +64,7 @@
+ sys.path.insert(0, str(ROOT/"src"))
+ sys.dont_write_bytecode = True
+ SELF = ROOT/"benchmarks/hch4/efficiency_pilot.py"
++TESTS = ROOT/"tests/test_hch4_efficiency_pilot.py"
+ DESIGN = ROOT/"docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json"
+ DESIGN_SHA = "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+ METHOD_REVIEW = DESIGN.parent/"independent-method-review.json"
+@@ -775,13 +776,17 @@
+ def required_sources(design):
+     """Pure file inventory; no scientific package import or PES loading."""
+     values = {str((ROOT/name).resolve()): digest for name, digest in design["protected_source_sha256"].items()}
+-    for path in (SELF, LEGACY, DESIGN, METHOD_REVIEW,
+-                 ROOT/"benchmarks/hch4/wrapper.f90", ROOT/design["unchanged_measure_source"]["proposal"]):
+-        values[str(path.resolve())] = sha(path)
+     # Bind the complete Python package imported by the potential adapter; this
+-    # avoids an unrecorded transitive helper while keeping all sources read-only.
+-    for path in sorted((ROOT/"src/pyrpmd").rglob("*.py")):
+-        values[str(path.resolve())] = sha(path)
++    # avoids an unrecorded transitive helper. A current-file inventory must
++    # never overwrite the frozen design's protected identities.
++    paths = [SELF, TESTS, LEGACY, DESIGN, METHOD_REVIEW,
++             ROOT/"benchmarks/hch4/wrapper.f90", ROOT/design["unchanged_measure_source"]["proposal"],
++             *sorted((ROOT/"src/pyrpmd").rglob("*.py"))]
++    for path in paths:
++        name, observed = str(path.resolve()), sha(path)
++        require(name not in values or values[name] == observed,
++                f"reviewed protected source changed; cannot rebaseline: {name}")
++        values.setdefault(name, observed)
+     return values
+ 
+ 
+@@ -797,6 +802,31 @@
+     require(path.is_file() and sha(path) == row["sha256"] and path.stat().st_size == row["bytes"],
+             "bound receipt identity differs")
+     return path
++
++
++def validate_implementation_receipts(plan):
++    """A file hash binds bytes; explicit semantics also bind their approval."""
++    expected = {str(path.relative_to(ROOT)): {"sha256": sha(path), "bytes": path.stat().st_size}
++                for path in (SELF, TESTS)}
++    review = read_json(plan["implementation_review"]["path"])
++    require(review.get("approved_for_single_excluded_efficiency_pilot") is True
++            and review.get("remaining_blockers") == []
++            and review.get("design_sha256") == DESIGN_SHA
++            and review.get("source_sha256") == sha(SELF)
++            and review.get("tests_sha256") == sha(TESTS),
++            "an approving implementation review for the exact source/test/design is required")
++    gate = read_json(plan["synthetic_gate"]["path"])
++    require(gate.get("schema") == "pyrpmd.hch4.efficiency-pilot.synthetic-gate.v1"
++            and type(gate.get("exit_code")) is int and gate["exit_code"] == 0
++            and gate.get("source_unchanged") is True and gate.get("source_files") == expected
++            and gate.get("real_PES_evaluations") == 0 and gate.get("real_dynamics_steps") == 0
++            and gate.get("actual_pilot_registration_or_execution") is False,
++            "a successful current-source synthetic gate is required")
++    suites = gate.get("testsuites")
++    require(isinstance(suites, list) and suites and all(isinstance(row, dict) for row in suites),
++            "complete synthetic test-suite counts are required")
++    require(all(int(row["tests"]) > 0 and all(int(row[key]) == 0 for key in ("errors", "failures", "skipped"))
++                for row in suites), "the required synthetic gate may contain no failures, errors or skips")
+ 
+ 
+ def load_plan(path):
+@@ -829,6 +859,7 @@
+     required[str(library)] = plan["library"]["sha256"]; required[str(build)] = plan["library_build_receipt"]["sha256"]
+     for key in ("synthetic_gate", "implementation_review", "resource_adoption"):
+         item = receipt_identity(plan[key]); required[str(item)] = plan[key]["sha256"]
++    validate_implementation_receipts(plan)
+     require(plan.get("source_sha256") == required, "complete source/model/receipt inventory differs")
+     check_hashes(required)
+     resource_adoption = read_json(plan["resource_adoption"]["path"])

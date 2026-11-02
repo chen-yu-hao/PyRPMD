@@ -1,0 +1,17 @@
+{
+  "child_PID": 5,
+  "child_initial": {
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/5/stat'",
+    "observed": false
+  },
+  "child_returncode": 0,
+  "pidfd_after_wait_exited": true,
+  "pidfd_initial_exited": false,
+  "scope": "Only this probe and its directly started inert child; no other PID access, PES, sampling or archive restore.",
+  "self": {
+    "error": "FileNotFoundError: [Errno 2] No such file or directory: '/proc/4/stat'",
+    "observed": false
+  },
+  "self_PID": 4,
+  "self_RUSAGE_peak_RSS_bytes": 10485760
+}

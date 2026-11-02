@@ -1,0 +1,149 @@
+{
+  "actual_data_files": [
+    {
+      "bytes": 123,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/PREPARATION_ONCE.json",
+      "sha256": "2eb2978f98139432a249842e81fb71de1b507dc137b31e243760f07ef0d70c27"
+    },
+    {
+      "bytes": 500,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/RUN_ONCE.json",
+      "sha256": "b6bc6a4c89bf2e7f9be1669749eee2859548d236677bbb89476dc410f5cf4569"
+    },
+    {
+      "bytes": 305,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/WORKER_ONCE.json",
+      "sha256": "5bbede7af78e936dfdd03e54f3f541eafd0b38c917ab133e1663cd48eb124c07"
+    },
+    {
+      "bytes": 168266,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/calibration-followup-ledger.json",
+      "sha256": "b6a797c6cf5c7efb399c1574863e1016b76e47162109d78a7bd00b0fc0978970"
+    },
+    {
+      "bytes": 1147455,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/calibration-initial-ledger.json",
+      "sha256": "f6028dad40fa17a12120a8fb1666c703db9096da7e1d2d6cb5267dc64f5ed920"
+    },
+    {
+      "bytes": 1473819,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/calls.jsonl",
+      "sha256": "730cb5aa38aa39e8edbb5d582d70409e7d1b4c2b8b885c7288131600c31eea01"
+    },
+    {
+      "bytes": 428,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/child-started.json",
+      "sha256": "da0c65d1617c032081dbae0ed72ef431c64287ade8f7c17e25c23b801498c13e"
+    },
+    {
+      "bytes": 27560,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/control-results.json",
+      "sha256": "f6eb7b11a65e9ee6e5b20b0a25ef14263bdb054ef7cda46e2a7b1e38a956f9ca"
+    },
+    {
+      "bytes": 5288603,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/diagnostic-ledger.json",
+      "sha256": "d4c5a5736f6178829e8ae17e9125690c13ee89aa5a121e89155695268bd7f52e"
+    },
+    {
+      "bytes": 38944,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/frozen-proposal.json",
+      "sha256": "e7870ec5cccf4a6aab89fdd934be08f52a53e9b41230d9cf0c4b0452a61200b3"
+    },
+    {
+      "bytes": 663086,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/main-results.json",
+      "sha256": "bb82c57309091aff845556bc6495388d3983770656e8c81ac6221cd2e5979abd"
+    },
+    {
+      "bytes": 20399,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/registration.json",
+      "sha256": "5f4cd5b26632759a77ebbfb0a1e879fc9f32900534fdf186373a3f5c0635ae31"
+    },
+    {
+      "bytes": 25288,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/report.json",
+      "sha256": "5162a97ad5e2fd981a039898020c3798e6b0ab957cd56e5ff3153c18aa0d58fc"
+    },
+    {
+      "bytes": 1536,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/runtime.json",
+      "sha256": "ec003996336eae09aa99b99219c2ff27fc33ebb0a43461098322dc3b9773534a"
+    },
+    {
+      "bytes": 869,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/supervisor.json",
+      "sha256": "75ec32d6050b52d689b559a3a09e3f94c767f21a8030ac5b089c098d9f107049"
+    },
+    {
+      "bytes": 1856,
+      "path": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1/worker.log",
+      "sha256": "28d0243d700ed2bdc9959263e1db0c5a3d7c9777c6bd624c682b116829049bf7"
+    }
+  ],
+  "author_independent_of_producer": false,
+  "checks": [
+    "all saved-file and original source identities before/after",
+    "3672 ordered successful journal calls and all4000 staged target geometries, including zeros",
+    "independent Cartesian gradient measure and positive root",
+    "full Gaussian/Student/uniform density in the correct sphere measure",
+    "all800 calibration objectives/Hessian/shift/probe/reflection checks from saved energies",
+    "all3072 main plus128 paired entry control weights",
+    "eight complete seed vectors, ratio of pooled integrals and paired delta/t uncertainty",
+    "all original gate booleans remain exact; no physical rate conversion"
+  ],
+  "created_utc": "2026-11-01T21:27:30.986272+00:00",
+  "failure_policy": "Retain each failed candidate/gate/replay receipt and all original input bytes; no physical sampling, refit, added draw, parameter or criterion adjustment.",
+  "fixed_design": {
+    "bytes": 15380,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-design/proposal.json",
+    "sha256": "8c9c576f37714cead7beb6a788a1262f88b7a1f34914029f041643774b78d962"
+  },
+  "fixed_physics": {
+    "bytes": 10459,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-feasibility/pilot-design/proposal.json",
+    "sha256": "85de4292058f9ac4fce9b8c5327d3aba0bea0204e02ede17fb629fa20ee23029"
+  },
+  "numerical_reconstruction_tolerances": {
+    "analysis": {
+      "atol": 5e-12,
+      "rtol": 2e-10
+    },
+    "calibration": {
+      "atol": 2e-07,
+      "rtol": 2e-09
+    },
+    "density": {
+      "atol": 2e-10,
+      "rtol": 2e-12
+    },
+    "geometry": {
+      "atol": 2e-11,
+      "rtol": 2e-12
+    }
+  },
+  "original_report_sha256": "5162a97ad5e2fd981a039898020c3798e6b0ab957cd56e5ff3153c18aa0d58fc",
+  "purpose": "Independent calculation from saved coordinate/energy/density inputs only; separate reviewer requested. No new PES, RNG draws, MD or producer analyzer calls.",
+  "schema": "pyrpmd.hch4-saved-calculation-replay-protocol.v1",
+  "source": {
+    "bytes": 33919,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/replay_saved.py",
+    "sha256": "1bb77ef43718a57c160d477cac206bf851ee71425cdd93090a4578299666825d"
+  },
+  "tests": {
+    "bytes": 5338,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/test_replay_saved.py",
+    "sha256": "433411bb2319a6b8b716e3abb25af5c25c9b9717cd9cdd490627e64622205d24"
+  },
+  "tolerance_scope": "Cross-implementation floating-point reconstruction only, declared before the actual replay. Geometry uses a different root solver and explicit Cartesian gradients; finite-difference second derivatives amplify roundoff. Every original physical/proposal-efficiency predicate remains exact and unchanged. Actual maximum errors are reported.",
+  "work_bound": {
+    "CPU_affinity": [
+      8
+    ],
+    "new_PES_evaluations": 0,
+    "new_dynamics_steps": 0,
+    "new_random_draws": 0,
+    "per_command_wall_seconds": 120,
+    "threads": 1
+  }
+}

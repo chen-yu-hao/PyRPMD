@@ -1,0 +1,88 @@
+{
+  "actual_PES_evaluations": 0,
+  "actual_dynamics_steps": 0,
+  "actual_execution_adoption_or_registration_created": false,
+  "added_function_ASTs": [
+    "validate_implementation_receipts"
+  ],
+  "all25_independently_reviewed_scientific_function_ASTs_identical": true,
+  "all9_frozen_design_protected_source_identities_match": {
+    "benchmarks/hch4/geometries.json": true,
+    "benchmarks/hch4/pes.py": true,
+    "benchmarks/hch4/reproduction_input.py": true,
+    "benchmarks/hch4/reproduction_protocol.json": true,
+    "benchmarks/hch4/source.json": true,
+    "src/pyrpmd/bias.py": true,
+    "src/pyrpmd/constants.py": true,
+    "src/pyrpmd/cv.py": true,
+    "src/pyrpmd/workflows/rate.py": true
+  },
+  "changed_existing_function_ASTs": [
+    "required_sources",
+    "load_plan"
+  ],
+  "created_utc": "2026-11-01T21:07:52.784890+00:00",
+  "new_synthetic_gate": {
+    "bytes": 1696,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-gate/gate.json",
+    "sha256": "7d084215e7cb4b83cfda6f2c0b8e44d227107c529bcbfcbba03eec5f7c77ed6a"
+  },
+  "patch": {
+    "bytes": 4388,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/admission-guard-only.patch",
+    "sha256": "777ce372614385232c831aefeea2f4e93f451c836334755077af0fa8d3652f8f"
+  },
+  "prior_source": {
+    "bytes": 63126,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/before-receipt-semantics/efficiency_pilot.py",
+    "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+  },
+  "retained_prior_method_review": {
+    "bytes": 11778,
+    "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/independent-method-review.json",
+    "sha256": "efbbc8ba95aa1715a0e9b262d1aacaf15dc170764b6d734e2affb11a8af48ce5"
+  },
+  "schema": "pyrpmd.hch4.efficiency.admission-guard-supersession.v1",
+  "scientific_function_AST_sha256": {
+    "analyze": "dc5015688d63ab2fb5ebd5fefda9f3ae0a12850a2977ac277d1b061af539e342",
+    "calibration_point": "f5628b200b759b03d342c5ce08adfb831db084fa379a741c5c1c75983fc49edc",
+    "check_followup": "35a37e4b8439726c1f40ba125e9ff0261e0064334c84ca1df53095b0ab899338",
+    "components": "164aa007485fc0fb428264654c15b63f1099b678c917f8f28558093d8848a50b",
+    "concentration": "d0c21ca70487f862d6e3ccd3d57901337baba39312e7e6b7fd1b3763fb420ccd",
+    "diagnostic_ledger": "8624d7951c098efe97e2040b24e9856a6872b2dc1576b1833c0b3659a7c0d8fe",
+    "draw_component": "9ddd79ee26765439aec2ae84805a325cf8fd07fb3f3a9abc64b03d1966718fe9",
+    "evaluate_calibration": "aaec7bb25227667f9d2ba608345dc0776a33d0699e1a9279efba737b65d4a2ff",
+    "evaluate_diagnostics": "0146b002970782d8e0469f1f0d70b233fb59a4b1f341c98e18801652fdce7605",
+    "fit_quadratic": "fb614a881823b0a35dc0d1a1d7f469a8e632cffe2e0c2ff3b423e13b23b274ae",
+    "followup_calibration_ledger": "a9a979711e85271f16350c302c9ca5c5a22116777bd7db3538fba9f65679e95b",
+    "geometry": "b98f116d43156a3bc4258ef4e4f4e38aa8e32f54826f8c1c01c4dad44465e5c1",
+    "initial_calibration_ledger": "436471ebc376286f86cdeed16ffdac4d427a63f80e7ffff236de6b30802ab10c",
+    "integral_logs": "b24bf89f0dabad7608429a018efbd267f5868ced27aae53000232758823ae62f",
+    "inverse_sphere": "5b261837501d0ad899e866879f12a92376cc8c9925687d4fccf7a1356719c5e7",
+    "log_density": "4642364472218a8b27b138db603e84b772d7f9a7e825dae7e4e371f21897a248",
+    "logmean": "e095186c6b02ea3a5ecab919ea5388f6c927dfa9246da62d4fe51ad351f8f1bc",
+    "mixture_log_density": "8ae9334d7c4544c90dd5525b9d7afc06adf3800133d57a616d6f26379e82ca24",
+    "paired_log_ratio": "69d53027bfb72a5cf1baaf7be6bfa8878232bdd54c9d6ac1ac13c772d5be3863",
+    "reflection": "e597a598287cedbf57cab3dde59dd1756b38d1058600395fdf46b9493350d78c",
+    "run_stages": "825f8e257ea859a6fea2aff924fa6a67bec72509b27ab812d216a57986628cb5",
+    "sphere": "69cb19e6a22853f51b8be38836f1d6610285bcd3c00b8b0b8a3396efd4c929fa",
+    "stencil": "ee23e5c55a6bf9993761cf1c9e12ef08af8ee1155a55a3960ecfa49fbe1500a7",
+    "training_specs": "12182b985734c355be846df85c745ed5cfbfc4f0e48950c05c411f876cb47782",
+    "validate_fresh_membership": "19bccac6f22028cfe02921b4a703525b9173495e150c9bb2ac51c7728782521e"
+  },
+  "scoped_fixes": [
+    "A hash-bound rejected or stale implementation/gate receipt can no longer authorize the current source; approval/current-source/current-test/design and successful non-skipped test semantics are required.",
+    "The transitive package inventory cannot replace a frozen protected source hash with changed current bytes; duplicate disagreement is rejected."
+  ],
+  "source": {
+    "bytes": 65143,
+    "path": "benchmarks/hch4/efficiency_pilot.py",
+    "sha256": "8630f0ac4106d826beb4ccb471eb57ab0382443cd9a6bca1fb474400877d91fb"
+  },
+  "tests": {
+    "bytes": 47526,
+    "path": "tests/test_hch4_efficiency_pilot.py",
+    "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+  },
+  "unchanged_existing_function_AST_count": 46
+}

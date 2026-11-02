@@ -1,0 +1,264 @@
+{
+  "created_utc": "2026-11-01T20:16:54.426003+00:00",
+  "execution_gate": "Root adoption of this exact proposal plus reviewed additive runner/tests and actual resource allocation. No physical run has been started by preparing this proposal.",
+  "gates": {
+    "clock": "Integer step count exact; native continuous/restart time bitwise exact; Python/native time difference recorded and assessed using rtol 2e-8, atol 2e-10au.",
+    "energy_drift": "Record short NVE energy variation as a diagnostic only; no newly fitted physical energy-drift threshold or timestep convergence claim.",
+    "finite": "All recorded q,p,CV,energy and clocks finite; all map steps complete.",
+    "map_comparison": {
+      "absolute_tolerance_energy_hartree": 2e-10,
+      "absolute_tolerance_p_au": 5e-09,
+      "absolute_tolerance_q_bohr": 5e-10,
+      "absolute_tolerance_surface_bohr": 2e-10,
+      "basis": "Unchanged tolerances in the existing real-BKMP2 native_propagation.core_study; inherited before evaluating this parent.",
+      "relative_tolerance": 2e-08
+    },
+    "provenance": "Every registered parent, source, native, model and build identity matches before and after; actual imported paths are recorded.",
+    "restart": "All registered restart comparisons bitwise exact; zero Python fallback in fused native paths."
+  },
+  "momentum": {
+    "draws": 1,
+    "entropy": [
+      20261101,
+      256,
+      902731
+    ],
+    "excluded_from_primary": true,
+    "generator": "numpy.random.default_rng(numpy.random.SeedSequence(entropy))",
+    "law": "standard_normal(shape) * sqrt(MASS[:,None] * 256 / BETA); MASS and BETA from frozen quantum_surface_recrossing module",
+    "primary_rng_namespace": "Primary momenta use [seed,173017,parent_index,pair]; this calibration uses a distinct fixed three-integer key and never calls the primary key generator.",
+    "projections": [],
+    "same_initial_state_for_both_timesteps": true,
+    "shape": [
+      256,
+      3,
+      3
+    ],
+    "sign": 1
+  },
+  "once_and_failure_policy": {
+    "new_output_directory": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1",
+    "no_overwrite": true,
+    "on_failure": "Preserve selected state, raw outputs, error/resource/source receipts; do not substitute another parent, momentum, tolerance, timestep or longer budget.",
+    "persistent_exclusive_marker": true,
+    "pre_PES_state_ledger": true,
+    "source_change": "No edits to frozen sources, checkpoints, primary streams or producer/analyzer/coordinator."
+  },
+  "parent": {
+    "array": "endpoint_q",
+    "atom_permutation": [
+      0,
+      1,
+      2
+    ],
+    "channel": 0,
+    "complete_audit": {
+      "bytes": 48513,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/complete-audit.json",
+      "sha256": "71e811ed90e866c19f7b90668e65bc0c3332925090f4bed2f09447497576d4f1"
+    },
+    "completed_sweep": 2100,
+    "contiguous_array_sha256": "cd330a7f385148115c5e7f3fa43fb68aee9f4f93e26ff96bd15007580ec4bf96",
+    "dtype": "<f8",
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 5932283,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/checkpoint.npz",
+        "sha256": "8ee6608c545e52cbf82eb5dbddcc0de0eb9ed01d981fc7c16e3650166bd0b185"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference-domain.json",
+        "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8708,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/report.json",
+        "sha256": "3767c31ec46d4828127934bdc33e5f14cde3f6cbcceecb6ce6b735fbfd5a694a"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/settings.json",
+        "sha256": "e518706d08ad3bc9e6a97f9401e7f50e04c0bd7afd104d92349a129790afcac8"
+      }
+    },
+    "global_complete_manifest": {
+      "bytes": 32761,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/parents-complete.json",
+      "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120"
+    },
+    "index": 0,
+    "registration": {
+      "bytes": 775,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/registration.json",
+      "sha256": "7775d890c3e75a063bf56b50d55c13da9e0b8d5f977276b5e28b4636ffe85c84"
+    },
+    "root_exit_receipt": {
+      "bytes": 1053,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/root-exec-exit.json",
+      "sha256": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4"
+    },
+    "seed": 825601,
+    "selection_rule": "First saved parent of the predetermined first historical chain; retain this choice on any failure.",
+    "settings_fingerprint": "dc38239f77167d197559b91c81da257403fd83230089c42f23c6fdf779077dab",
+    "shape": [
+      256,
+      3,
+      3
+    ]
+  },
+  "physical_parameters": {
+    "beads": 256,
+    "beta": "1/(KB_AU*300) from frozen constants",
+    "bias": null,
+    "build": {
+      "bytes": 2976,
+      "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.build.json",
+      "sha256": "5c1c6d092f667caaddc814f5f671b61d12c254a6abe83dc2ee939a5e3872622e"
+    },
+    "constraints": null,
+    "fixed_atoms": [],
+    "integrator": "cayley-bcb",
+    "library": {
+      "bytes": 45704,
+      "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+      "sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    "masses_electron_mass": [
+      1837.1526474396187,
+      1837.1526474396187,
+      1837.1526474396187
+    ],
+    "surface": "unchanged quantum_surface_recrossing.surface_coordinate(): xi=1 stable RateSurface, Rinf=30bohr, two equivalent channels",
+    "temperature_K": 300.0,
+    "thermostat": null
+  },
+  "prior_gate_sources": [
+    {
+      "bytes": 16870,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/native_propagation.py",
+      "sha256": "d04341d925951ac5d40e234b59d1db8390630260693db0225ed2ab8e95f4e004"
+    },
+    {
+      "bytes": 3083,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-native-replay/native-restart-validation.json",
+      "sha256": "2ff9ecd7f1c43889ecf0d5ca0b9227979650f6ac1c7c1f010ae9a64bb5dfba11"
+    }
+  ],
+  "purpose": "Verify the actual P=256 fused native map and exact state save/recreate/reload path using one predetermined parent and one excluded calibration momentum. No transmission, rate, plateau or bead-convergence estimate.",
+  "resources": {
+    "CPU_affinity_count": 1,
+    "admission_CPU_seconds": 55,
+    "count_CPU": "getrusage RUSAGE_SELF including scientific imports, preparation, propagation and finalization; no spawned numerical worker.",
+    "forecast": "Expected seconds, not measured at P256. Prior excluded P128 continuous/restart validation used 24000 native steps in 13.6486 wall seconds; this proposal has 360 total map steps but Python orchestration differs.",
+    "hard_limit_installed_before_scientific_imports": true,
+    "peak_RSS_recorded": true,
+    "threads": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1"
+    },
+    "whole_process_hard_CPU_seconds": 60,
+    "whole_process_wall_seconds": 120,
+    "workers": 1
+  },
+  "runs": {
+    "all_initial_states_copied": true,
+    "checkpoint_payload": [
+      "q",
+      "p",
+      "state_step",
+      "state_time_au",
+      "initial_state identity",
+      "proposal fingerprint",
+      "earlier observations"
+    ],
+    "horizon_fs": 4.0,
+    "maximum_total_physical_map_steps": 360,
+    "native_calls": "Dynamics(native=required,loop_backend=native).propagate in 1fs blocks, observe=frozen surface, sample_interval=block_steps, record_centroids=False; this is the actual primary child propagation entry point.",
+    "observation_interval_fs": 1.0,
+    "observations": [
+      "q and p at 1fs boundaries",
+      "stable dividing-surface value at 1fs boundaries",
+      "energy at 1fs boundaries",
+      "step/time",
+      "native/Python dispatch counters"
+    ],
+    "paths": [
+      "fused native continuous 4fs",
+      "public Dynamics.step loop 4fs with the same native free-ring map and PES, loop_backend=python",
+      "fused native 2fs, integrity checkpoint, destroy/recreate Dynamics and PES context, reload state, fused native 2fs"
+    ],
+    "python_calls": "Dynamics(native=required,loop_backend=python).step once per physical step. This is a public Python loop equivalence check, not an independent all-NumPy implementation or independent PES.",
+    "restart_comparison": "Native continuous and saved/recreated/reloaded paths must have bitwise-equal final q/p, all boundary q/p/CV/energy observations, step and time.",
+    "split_fs": 2.0,
+    "steps_per_timestep": [
+      40,
+      80
+    ],
+    "timesteps_fs": [
+      0.1,
+      0.05
+    ]
+  },
+  "schema": "pyrpmd.h3.p256-excluded-native-calibration-proposal.v1",
+  "source_bindings": [
+    {
+      "bytes": 30072,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_surface_recrossing.py",
+      "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+    },
+    {
+      "bytes": 9908,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    {
+      "bytes": 7765,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    {
+      "bytes": 40171,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py",
+      "sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+    },
+    {
+      "bytes": 16478,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py",
+      "sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa"
+    },
+    {
+      "bytes": 34870,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    {
+      "bytes": 940,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 9555,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py",
+      "sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+    },
+    {
+      "bytes": 5865,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py",
+      "sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    {
+      "bytes": 2407952,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    }
+  ],
+  "status": "proposed; unimplemented and unexecuted; requires root adoption before physical evaluation"
+}

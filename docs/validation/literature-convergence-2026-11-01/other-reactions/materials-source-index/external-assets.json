@@ -1,0 +1,114 @@
+{
+  "schema": "pyrpmd.materials-reference.external-assets.v1",
+  "scope": "Exact local third-party archive/source/license and isolated compiler outputs, excluded from publication inventory. No trajectories or paper reference data.",
+  "asset_directory": "/workspace/scratch/a5e4820daedd/materials-source-index-assets",
+  "assets": [
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/build.json",
+      "relative_to_asset_directory": "eam4-build-v1/build.json",
+      "bytes": 3003,
+      "sha256": "c32f10a589875869bf1f8814dd25bf8470a2925711d8f762035174247759023c",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/compile.stderr.txt",
+      "relative_to_asset_directory": "eam4-build-v1/compile.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/compile.stdout.txt",
+      "relative_to_asset_directory": "eam4-build-v1/compile.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/eam4.original-suffix.f90",
+      "relative_to_asset_directory": "eam4-build-v1/eam4.original-suffix.f90",
+      "bytes": 37662,
+      "sha256": "07abd148d739f60a065791f1459bd20ac6434264ffd69af39334937011036384",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/eam4_bridge.f90",
+      "relative_to_asset_directory": "eam4-build-v1/eam4_bridge.f90",
+      "bytes": 2534,
+      "sha256": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/libeam4_static.so",
+      "relative_to_asset_directory": "eam4-build-v1/libeam4_static.so",
+      "bytes": 54048,
+      "sha256": "b1673de4eb3d0673a49d22a9a6521095d0f2848338857ae10ee7adc9a97ab2f1",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1/nimetpot.original.f90",
+      "relative_to_asset_directory": "eam4-build-v1/nimetpot.original.f90",
+      "bytes": 43812,
+      "sha256": "b294b106cac20038eb941037b63f35dcce374ed40559d68217f5751b90d514a6",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-public-svn.tar.bz2",
+      "relative_to_asset_directory": "wales-public-svn.tar.bz2",
+      "bytes": 122758544,
+      "sha256": "8463fbbbab3f613c1daa021df99cf89791be3ca61c7f3b9c2f5307e484bf8029",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/.__wales__OPTIM__source__nihEAM6pot.f90",
+      "relative_to_asset_directory": "wales-selected-files/.__wales__OPTIM__source__nihEAM6pot.f90",
+      "bytes": 94100,
+      "sha256": "c8e9323206340001fd647018c895f2a80623b73410ec2fcdef99da213b95fe27",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/.__wales__OPTIM__source__nimetpot.f90",
+      "relative_to_asset_directory": "wales-selected-files/.__wales__OPTIM__source__nimetpot.f90",
+      "bytes": 43812,
+      "sha256": "b294b106cac20038eb941037b63f35dcce374ed40559d68217f5751b90d514a6",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__COPYING",
+      "relative_to_asset_directory": "wales-selected-files/license-.__wales__COPYING",
+      "bytes": 35148,
+      "sha256": "f51a732c36a182d9489bc3f074b24aff519214acd72207a70aa24ca171e022f2",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__CONNECT__LICENSE",
+      "relative_to_asset_directory": "wales-selected-files/license-.__wales__OPTIM__source__CONNECT__LICENSE",
+      "bytes": 18064,
+      "sha256": "c0188a9a9c89ea08a194f1f1b1c92513322dfb8d2fd2aef50febebbd468facfb",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__DLFWrapper__COPYING",
+      "relative_to_asset_directory": "wales-selected-files/license-.__wales__OPTIM__source__DLFWrapper__COPYING",
+      "bytes": 36198,
+      "sha256": "9c712e9f923bbea7d149c33013f7c5c1ed99cbde2892f17b39470de242f5f0b7",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__DLFWrapper__COPYING.LESSER",
+      "relative_to_asset_directory": "wales-selected-files/license-.__wales__OPTIM__source__DLFWrapper__COPYING.LESSER",
+      "bytes": 7639,
+      "sha256": "a853c2ffec17057872340eee242ae4d96cbf2b520ae27d903e1b2fef1a5f9d1c",
+      "publish_to_Git": false
+    },
+    {
+      "local_path": "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/license-.__wales__OPTIM__source__NEB__LICENSE",
+      "relative_to_asset_directory": "wales-selected-files/license-.__wales__OPTIM__source__NEB__LICENSE",
+      "bytes": 18064,
+      "sha256": "c0188a9a9c89ea08a194f1f1b1c92513322dfb8d2fd2aef50febebbd468facfb",
+      "publish_to_Git": false
+    }
+  ],
+  "upload_performed": false,
+  "source_redistributed_in_repository": false
+}

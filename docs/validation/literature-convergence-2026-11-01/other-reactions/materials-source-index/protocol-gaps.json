@@ -1,0 +1,106 @@
+{
+  "schema": "pyrpmd.materials-literature-protocol-gaps.v1",
+  "meaning_of_null": "Not established from the accessible original paper. Null is not a default or zero.",
+  "cases": [
+    {
+      "id": "pd-calvo-costa-2010",
+      "doi": "10.1021/ct900554r",
+      "status": "model_protocol_and_numerical_targets_missing",
+      "confirmed_from_original_abstract": {
+        "method": "RPMD",
+        "systems": [
+          "bulk palladium",
+          "Pd nanoclusters up to 512 Pd atoms"
+        ],
+        "hydrogen_loading_reported_percent": 3,
+        "diffusion_estimator": "integral of velocity autocorrelation"
+      },
+      "unresolved": {
+        "temperature_grid_K": null,
+        "mass_H_u": null,
+        "mass_host_u": null,
+        "beads_H_by_temperature": null,
+        "beads_host_by_temperature": null,
+        "thermostat_equilibration": null,
+        "production_thermostat_or_ensemble": null,
+        "equilibration_duration": null,
+        "production_duration": null,
+        "time_step_fs": null,
+        "independent_replica_count": null,
+        "diffusion_units_in_original_table": null,
+        "reference_uncertainty_convention": null,
+        "loading_denominator_definition": null,
+        "individual_N_Pd_and_N_H": null,
+        "geometry_files": null,
+        "boundary_conditions": null,
+        "exact_potential_name_and_version": null,
+        "potential_source_sha256": null,
+        "cutoff_and_smoothing": null,
+        "host_lattice_and_cluster_preparation": null
+      },
+      "numeric_targets": [],
+      "matched_case_ready": false,
+      "literature_reproduced": false
+    },
+    {
+      "id": "ni-suleimanov-2012",
+      "doi": "10.1021/jp302453z",
+      "status": "author_attributed_model_statically_checked_original_protocol_and_targets_missing",
+      "confirmed_from_original_abstract": {
+        "method": "RPMD",
+        "surface": "Ni(100)",
+        "interaction_family": "EAM",
+        "low_temperature_estimator": "hopping/random-walk treatment",
+        "high_temperature_estimators": [
+          "Einstein",
+          "Green–Kubo"
+        ],
+        "crossover_approximate_K": 70
+      },
+      "implementation_evidence": {
+        "name_in_primary_code": "EAM4 Ni(100)/H",
+        "author_credit": "Yury Suleimanov; added to OPTIM by Judith Rommel",
+        "source_member": "./wales/OPTIM/source/nimetpot.f90",
+        "source_sha256": "b294b106cac20038eb941037b63f35dcce374ed40559d68217f5751b90d514a6",
+        "explicitly_cites_requested_paper": true,
+        "original_2012_executable_byte_identity_established": false,
+        "current_release_units": {
+          "position": "angstrom",
+          "energy": "eV",
+          "gradient": "eV/angstrom"
+        },
+        "nb1_static_checks_passed": true,
+        "mixed_bead_dynamics_checked": false
+      },
+      "unresolved": {
+        "temperature_grid_K": null,
+        "mass_H_u": null,
+        "mass_host_u": null,
+        "beads_H_by_temperature": null,
+        "beads_host_by_temperature": null,
+        "thermostat_equilibration": null,
+        "production_thermostat_or_ensemble": null,
+        "equilibration_duration": null,
+        "production_duration": null,
+        "time_step_fs": null,
+        "independent_replica_count": null,
+        "diffusion_units_in_original_table": null,
+        "reference_uncertainty_convention": null,
+        "paper_N_Ni_and_layers": null,
+        "paper_lateral_cell_and_lattice_constant": null,
+        "paper_H_coverage": null,
+        "paper_geometry_files": null,
+        "paper_fixed_mobile_and_quantized_Ni_indices": null,
+        "paper_bead_mass_and_bath_coupling_convention": null,
+        "paper_boundary_conditions": null,
+        "paper_hop_length_and_channel_multiplicity": null,
+        "paper_reaction_coordinate_and_dividing_surface": null,
+        "paper_recrossing_child_protocol": null
+      },
+      "numeric_targets": [],
+      "matched_case_ready": false,
+      "literature_reproduced": false
+    }
+  ],
+  "next_gate": "Obtain original model/protocol sections and reference table/figure before registering any matched diffusion simulation. The present static geometry is excluded from such a campaign."
+}

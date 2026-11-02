@@ -1,0 +1,9 @@
+{
+  "complete_archive": true,
+  "archive": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-umbrella-stage-100000-2026-11-01.tar.gz",
+    "bytes": 474212366,
+    "sha256": "f02c799907993143533a570e1862bbb2772f9b8994344c50982b102b02d5603d"
+  },
+  "exact_scientific_replay": true
+}

@@ -1,0 +1,21 @@
+{
+  "schema": "pyrpmd.water-preparation-only-adoption.v1",
+  "decision": "pending_review_not_adopted",
+  "fixed_seeds": [1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108],
+  "proposal_sha256": "e17bd58c303e7f14f1023a458cd59a004c83185a6864f1587ec93d2787737b12",
+  "additional_preparation_ps": 400.0,
+  "production_authorized": false,
+  "RDF_and_coordination_hard_gates_adopted": false,
+  "original_scalar_thresholds_changed": false,
+  "diffusion_used_to_select_budget_or_chains": false,
+  "reviewed_at_utc": null,
+  "review_record": "PENDING: complete original cohort assessment and preparation-only scientific decision",
+  "original_cohort_assessment": {
+    "path": "PENDING_ABSOLUTE_PATH_TO_COMPLETE_ORIGINAL_REPORT",
+    "sha256": "PENDING"
+  },
+  "original_coordinator_exit_proof": {
+    "path": "PENDING_ABSOLUTE_PATH_TO_OBSERVED_NORMAL_EXIT_PROOF",
+    "sha256": "PENDING"
+  }
+}

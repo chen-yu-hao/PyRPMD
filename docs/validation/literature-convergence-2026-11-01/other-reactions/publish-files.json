@@ -1,0 +1,278 @@
+{
+  "schema": "pyrpmd.other-reactions.publish-files.v1",
+  "created_utc": "2026-11-01T17:30:27.475292+00:00",
+  "path_base": "repository root",
+  "scope": [
+    "benchmarks/hch4",
+    "tests/test_hch4_pes.py",
+    "tests/test_hch4_native.py",
+    "docs/validation/literature-convergence-2026-11-01/other-reactions"
+  ],
+  "raw_checkpoints_excluded": true,
+  "raw_index": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/raw-data-index.json",
+  "not_included": [
+    "eight raw workflow checkpoint NPZ files",
+    "Python bytecode/cache files",
+    "external third-party PES source and compiled library"
+  ],
+  "manifest_self_note": "This manifest is staged separately and excluded from its own entries; its SHA256 and byte length are provided in the parent handoff.",
+  "files": [
+    {
+      "path": "benchmarks/hch4/README.md",
+      "sha256": "9eadefaeef85163eb36fc62963898ef45ffe707732a13fc32e7132784576cc81",
+      "bytes": 4733
+    },
+    {
+      "path": "benchmarks/hch4/build_pes.py",
+      "sha256": "d9d7c4d851b7e2aa38d5483aee9c33bbd427f21889587efcdbe38447db540ced",
+      "bytes": 5487
+    },
+    {
+      "path": "benchmarks/hch4/geometries.json",
+      "sha256": "8e54d6bb16e21f3c34c7ef92bf0ca0863d1ec55f2c029a57289c23ff73363609",
+      "bytes": 1629
+    },
+    {
+      "path": "benchmarks/hch4/pes.py",
+      "sha256": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+      "bytes": 4295
+    },
+    {
+      "path": "benchmarks/hch4/reproduction_input.py",
+      "sha256": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+      "bytes": 6173
+    },
+    {
+      "path": "benchmarks/hch4/reproduction_protocol.json",
+      "sha256": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+      "bytes": 9776
+    },
+    {
+      "path": "benchmarks/hch4/source.json",
+      "sha256": "2ba8ba6b918ba7a26363ce441d4671874b1fed61ede278dc904ae42eb87600ad",
+      "bytes": 3406
+    },
+    {
+      "path": "benchmarks/hch4/test_native.py",
+      "sha256": "d4e63c50678eb03e469f7c3ac7f74b3a56f555e6955500acb03e13bc7d9b7a27",
+      "bytes": 2890
+    },
+    {
+      "path": "benchmarks/hch4/timestep_control.py",
+      "sha256": "3689c0b4ea24f539a3ca1ceeb66a2f7c79ed30de96deb5ad10d066708931a880",
+      "bytes": 3206
+    },
+    {
+      "path": "benchmarks/hch4/verify.py",
+      "sha256": "774d9c287d1e6e24f2fedee7cbf37874d8d83733a4a3ba5ccdf96493aebf595f",
+      "bytes": 9806
+    },
+    {
+      "path": "benchmarks/hch4/verify_native.py",
+      "sha256": "13b2ddba84f15bacc06ef22cf456b8e001128fd56b8d907078d2a88e197d203c",
+      "bytes": 14899
+    },
+    {
+      "path": "benchmarks/hch4/verify_workflow.py",
+      "sha256": "a3185fb13de5298ddceb06907f695eade66c235f7f6bfede76315959d9df8148",
+      "bytes": 4673
+    },
+    {
+      "path": "benchmarks/hch4/wrapper.f90",
+      "sha256": "4bac40255ef99380e011d1c3e231673feaf4a09974f569c8a60b004f9075b4da",
+      "bytes": 1802
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/README.md",
+      "sha256": "c56812729401d83788c7357f0000cb0f2e7d6dbecf1800bedafd7ea4e21900ef",
+      "bytes": 5181
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/README.md",
+      "sha256": "1cf36241ec81e0f89d294e727feb1619a46ac1220fd4c696a834db184a13fd63",
+      "bytes": 6194
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/build.json",
+      "sha256": "e0f083d451df13d8fa46ead08f0859e2ea852b1bb7fa58fb1d50e60e1af2c84c",
+      "bytes": 5631
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/execution.json",
+      "sha256": "ecd2e998ffd03e7dd81bbff3e0111fe245480a8219f4df45a3ca2fc7361f1386",
+      "bytes": 2338
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/initial-failure.json",
+      "sha256": "f40847c94e481c5e21dfedd19dcc7d9d439a8d1c4a77fdac4030a0a17283d8f4",
+      "bytes": 1038
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/README.md",
+      "sha256": "31b093796c7d378b2af3687f2325ab7aa2e8175898dfbcb97ed587868f44cec3",
+      "bytes": 6628
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/execution.json",
+      "sha256": "dc7cf82b8fa487d034a639ac9aef83318cda7b9f42051a8524644f018468dc7f",
+      "bytes": 10733
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/generated-pilot-P1.py",
+      "sha256": "da284c5effb3d6d138ef843c6c0aaa1aa1da9b1852a0a763607bb3289ccb6b71",
+      "bytes": 3505
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/generated-pilot-P128.py",
+      "sha256": "1bf7b44bdc553f4eba80034fdb238c35decbf2634c85593637589df45a8fbc02",
+      "bytes": 3509
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/pes-verification.json",
+      "sha256": "6d5faece16e8752992302ccfc00646326487bc297365b1ae92bcc86d375c0740",
+      "bytes": 37542
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/pes-verification.log",
+      "sha256": "28f42817d98528b7871c7965f0364480149705a8dfbe09cd9b884772ac6f0307",
+      "bytes": 4749
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/pytest.log",
+      "sha256": "8c390368df2d5eef34a2b014b9d184e96f80cdb20c9aa095df6617094271dc48",
+      "bytes": 1955
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/pytest.xml",
+      "sha256": "76a85612dcd02012d2cfb293c81745e80af675bdd260e4cfe8c54893b8d1f963",
+      "bytes": 1621
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/source-before-native/pes.py",
+      "sha256": "c564017f6c60fb47f44e964c966c4f8f9f15050d9170eba0e24ca383101b19a4",
+      "bytes": 3674
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/source-before-native.json",
+      "sha256": "9864573d146e2ada20068daf62d258c16610a53841b7514d009337b170f08722",
+      "bytes": 454
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/standard-collection.log",
+      "sha256": "cbbbcff26d3fea4af0ef4f7d3546b2fcd289370331066692008e94f4b5b22126",
+      "bytes": 616
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/standard-test-integration.json",
+      "sha256": "657e880dfa1a2e88caafa3175f92ef4a378dd11ba31d8deb032fced7bf624b11",
+      "bytes": 2098
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/standard-tests.log",
+      "sha256": "f9925b9fc8e03ec978c3cedbadb588ca4b8aeeec2a6ee0b230a43bb3092b1346",
+      "bytes": 1955
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/standard-tests.xml",
+      "sha256": "261596c6e27204aa945f403fe2202db8f7ae5a2679332746c5dcd1ed8113e339",
+      "bytes": 1586
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/timestep-control.json",
+      "sha256": "4c52d11ee6e55de0a33f202b358157417df6631f8c1822d48b3a241fc46faa08",
+      "bytes": 1599
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/timestep-control.log",
+      "sha256": "c2a8c3fe1a7e23d715fe807a6d3130fb0dfad539348dccfb812b38ffbc777571",
+      "bytes": 3455
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/verification.json",
+      "sha256": "fae2e07d2ef7a4660bd9b0d2c95e955968226a296ef4179934905ab5ff97b786",
+      "bytes": 24063
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/verification.log",
+      "sha256": "2858acd12b2d003c06c74893783b4f7fe9be4ee51a7715d1112c8183e9281dd7",
+      "bytes": 3644
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/workflow/P1-preparation/preparation.json",
+      "sha256": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+      "bytes": 752
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/workflow/P128-preparation/preparation.json",
+      "sha256": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+      "bytes": 752
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/workflow/report.json",
+      "sha256": "17c42765a22a6394a0e18c2c19040978dc7340936b9b54db7653530683cb8e1c",
+      "bytes": 4937
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/workflow.log",
+      "sha256": "6b3f478b05453db4de094a42919e2379cf7d7b736845ff1f2e213e5e9c5b5808",
+      "bytes": 4331
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/pytest.log",
+      "sha256": "2f2b3757357231ce5f9d9441100e06be10fbfd6574ca4ab7bd7e220c71354eb3",
+      "bytes": 1954
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/pytest.xml",
+      "sha256": "29444715840caffaac0a8adea6ef8287b72d26570a5bce5065372bbbe18b3f95",
+      "bytes": 717
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/raw-data-index.json",
+      "sha256": "05efbff33c24827820965c345ee76ef9dd4bd8b035891c99709e4f91687449a1",
+      "bytes": 2737
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/reproduction-plan.md",
+      "sha256": "13b2bfef2c75f2488238c9dfbc76b1a7a567f47691ff62c693fca21e37c9812e",
+      "bytes": 13112
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/reproduction-sources.json",
+      "sha256": "eb2334d3a4731059898b837db3826666800e746a38a8b8f19abde072bf8f880a",
+      "bytes": 4240
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/verification.json",
+      "sha256": "ea21f30d717b4d5fb1addb2f51ddba47b1868be3a933cf8ecf535b02b9c4a7b8",
+      "bytes": 37542
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/verification.log",
+      "sha256": "28f42817d98528b7871c7965f0364480149705a8dfbe09cd9b884772ac6f0307",
+      "bytes": 4749
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/publish-notes.md",
+      "sha256": "0a723d42b8f6ce86089c2759635c402b22eae750f040edcde80935798015f71a",
+      "bytes": 2987
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/source-inventory.json",
+      "sha256": "5705d90198b22759a7cf352ee087f0ba4a076123ef7ac51011de9f8364888e45",
+      "bytes": 10329
+    },
+    {
+      "path": "tests/test_hch4_native.py",
+      "sha256": "88705a75346a48d091ddbe1d6fa48b2a4f7fb041753fddfd882a71f61f8c1eeb",
+      "bytes": 863
+    },
+    {
+      "path": "tests/test_hch4_pes.py",
+      "sha256": "fdabafc7c99a3f6093754c8a925b482390925865f32ccbeb684f26d8f0c268cd",
+      "bytes": 2930
+    }
+  ],
+  "file_count": 51,
+  "total_bytes": 299475
+}

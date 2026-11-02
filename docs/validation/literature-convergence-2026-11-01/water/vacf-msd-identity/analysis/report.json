@@ -1,0 +1,442 @@
+{
+  "PES_evaluations": 0,
+  "all_chains": [
+    {
+      "observed_short_minus_late": 0.01486343902028564,
+      "reconstructed_short_minus_late": 0.013076136447375597,
+      "seed": 1101,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.1856624643524678,
+          "reconstructed": 0.18516364771352825
+        },
+        "1-1.5": {
+          "observed": 0.1701865005609984,
+          "reconstructed": 0.17109442477055234
+        },
+        "1-2": {
+          "observed": 0.17079902533218216,
+          "reconstructed": 0.17208751126615265
+        },
+        "1.5-2": {
+          "observed": 0.17156896577358674,
+          "reconstructed": 0.17300411372965907
+        }
+      }
+    },
+    {
+      "observed_short_minus_late": 0.01748646890775496,
+      "reconstructed_short_minus_late": 0.017341016276834487,
+      "seed": 1102,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.2167701704639388,
+          "reconstructed": 0.21505721965835264
+        },
+        "1-1.5": {
+          "observed": 0.2014444705898979,
+          "reconstructed": 0.20019905368550697
+        },
+        "1-2": {
+          "observed": 0.19928370155618383,
+          "reconstructed": 0.19771620338151816
+        },
+        "1.5-2": {
+          "observed": 0.19871540662869194,
+          "reconstructed": 0.1976795810194724
+        }
+      }
+    },
+    {
+      "observed_short_minus_late": 0.011979830425620674,
+      "reconstructed_short_minus_late": 0.012306877499698582,
+      "seed": 1103,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.2077177980780751,
+          "reconstructed": 0.20997418778439492
+        },
+        "1-1.5": {
+          "observed": 0.19551312275329447,
+          "reconstructed": 0.19781190019330241
+        },
+        "1-2": {
+          "observed": 0.19573796765245444,
+          "reconstructed": 0.19766731028469633
+        },
+        "1.5-2": {
+          "observed": 0.19611099195954673,
+          "reconstructed": 0.19691439775599995
+        }
+      }
+    },
+    {
+      "observed_short_minus_late": 0.013604042333353383,
+      "reconstructed_short_minus_late": 0.017583313117854743,
+      "seed": 1104,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.22333034104354108,
+          "reconstructed": 0.22640861778166477
+        },
+        "1-1.5": {
+          "observed": 0.21313821300035204,
+          "reconstructed": 0.21182286572666986
+        },
+        "1-2": {
+          "observed": 0.2097262987101877,
+          "reconstructed": 0.20882530466381002
+        },
+        "1.5-2": {
+          "observed": 0.2048557025937717,
+          "reconstructed": 0.20548937354393726
+        }
+      }
+    },
+    {
+      "observed_short_minus_late": 0.022357716997948113,
+      "reconstructed_short_minus_late": 0.017238366454013276,
+      "seed": 1105,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.21475292883774744,
+          "reconstructed": 0.2139779127901296
+        },
+        "1-1.5": {
+          "observed": 0.1918971550224928,
+          "reconstructed": 0.19420532172094448
+        },
+        "1-2": {
+          "observed": 0.19239521183979932,
+          "reconstructed": 0.19673954633611632
+        },
+        "1.5-2": {
+          "observed": 0.19380455193582005,
+          "reconstructed": 0.19963673787936895
+        }
+      }
+    },
+    {
+      "observed_short_minus_late": 0.01468601341670836,
+      "reconstructed_short_minus_late": 0.017785275873016898,
+      "seed": 1106,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.20919521651491377,
+          "reconstructed": 0.20932378550816266
+        },
+        "1-1.5": {
+          "observed": 0.1989286915363453,
+          "reconstructed": 0.19386836700479446
+        },
+        "1-2": {
+          "observed": 0.1945092030982054,
+          "reconstructed": 0.19153850963514576
+        },
+        "1.5-2": {
+          "observed": 0.19094130567855092,
+          "reconstructed": 0.18974768804263353
+        }
+      }
+    },
+    {
+      "observed_short_minus_late": 0.02987003589508011,
+      "reconstructed_short_minus_late": 0.02416339299093631,
+      "seed": 1107,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.24296072443287112,
+          "reconstructed": 0.24467069043018555
+        },
+        "1-1.5": {
+          "observed": 0.21572612901992852,
+          "reconstructed": 0.2225271640768253
+        },
+        "1-2": {
+          "observed": 0.213090688537791,
+          "reconstructed": 0.22050729743924924
+        },
+        "1.5-2": {
+          "observed": 0.2135640777462544,
+          "reconstructed": 0.2200278862460607
+        }
+      }
+    },
+    {
+      "observed_short_minus_late": 0.012098067167860549,
+      "reconstructed_short_minus_late": 0.015474370222698985,
+      "seed": 1108,
+      "segments_retained": 25,
+      "windows": {
+        "0.5-1": {
+          "observed": 0.21992867275779446,
+          "reconstructed": 0.21528801668429728
+        },
+        "1-1.5": {
+          "observed": 0.20704443875700593,
+          "reconstructed": 0.19843398061803294
+        },
+        "1-2": {
+          "observed": 0.2078306055899339,
+          "reconstructed": 0.1998136464615983
+        },
+        "1.5-2": {
+          "observed": 0.20469190029110718,
+          "reconstructed": 0.19698868009266302
+        }
+      }
+    }
+  ],
+  "artifacts": {
+    "chain-curves.csv": "6a9b1fd575aa1e40749561e60402215fe7bfee29a78b9c5747aeb51b040456bc",
+    "segment-identity.csv": "4005ad068babb5340a873702f83251729ee302bf7004db09d3f7b616c9c2ff51",
+    "vacf-msd-identity.png": "f305bb5125b53acb291477bf7dce239fa2ab669416ea961600d9c28c2c51a00e",
+    "vacf-msd-identity.svg": "3604da4940199d06524d86714ebecf2be922ddc58f242adbffaf5710fcce284e"
+  },
+  "external_OpenMM_reference": true,
+  "identity": "MSD(t) = 2 integral_0^t (t-tau) <v(0) dot v(tau)> d tau; D_GK(t) = integral_0^t Cvv(tau) d tau / 3",
+  "input_sha256": {
+    "curves.npz": "1555714decf9bf34b73463d05283ada6a8c5aa875798ca8834e18eb65f2e17f2",
+    "exit_proof": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744",
+    "protocol.json": "288059c14c1b0467c322806fcf41765b69df0ed50af436941e7f0cad3fbcf631",
+    "report.json": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8",
+    "supplement": "ac930daf5280da0bb1fb79fc17d51a4d2d0a83fa5db5bd8c139758ab885d1065"
+  },
+  "interval_scope": "Descriptive marginal/pointwise intervals; no simultaneous coverage or equilibrium/equivalence claim.",
+  "limitations": [
+    "The ensemble identity assumes a stationary velocity correlation; this cohort retains failed potential-energy preparation checks.",
+    "Finite trajectories use different time-origin subsets for each lag; their empirical MSD and lag-wise VACF need not obey the ensemble identity exactly.",
+    "Interpolating the saved 5fs VACF cannot recover unrecorded high-frequency details; the separate dense cadence control remains independent evidence.",
+    "A transient running diffusion integral and a nonzero long-time MSD intercept can produce lag-window dependence and log-MSD slopes below one.",
+    "Longer preparation cannot be assumed to eliminate preasymptotic MSD curvature; any longer-lag production study requires a separate protocol and new data."
+  ],
+  "literature_reproduced": false,
+  "maximum_segment_MSD_difference_from_double_trapezoid_angstrom2": 0.0001976956186433565,
+  "new_hard_gate": false,
+  "original_eligibility_checks": {
+    "MSD_VACF_compatibility": true,
+    "MSD_window_compatibility": false,
+    "VACF_cutoff_compatibility": true,
+    "energy_envelope": true,
+    "energy_linear_drift": true,
+    "fixed_stage_complete": true,
+    "paired_equivalence": false,
+    "precision": true,
+    "sampling_mean_HOH_degrees": true,
+    "sampling_mean_OH_angstrom": true,
+    "sampling_potential_per_molecule_hartree": false,
+    "sampling_temperature_momenta_K": true
+  },
+  "original_literature_comparison": null,
+  "physical_steps": 0,
+  "post_hoc_descriptive_diagnostic": true,
+  "quadrature": "exact integration of the saved piecewise linear VACF; a double-trapezoid alternative is retained only as a numerical diagnostic",
+  "schema": "pyrpmd.water-stationary-vacf-msd-identity.v1",
+  "short_minus_late_contrast": {
+    "observed": {
+      "CI95": [
+        0.011972855260414816,
+        0.02226354828073813
+      ],
+      "CI95_halfwidth": 0.005145346510161657,
+      "chains": 8,
+      "degrees_of_freedom": 7,
+      "mean": 0.017118201770576474,
+      "standard_deviation": 0.006154566682531689,
+      "standard_error": 0.0021759679182414755
+    },
+    "observed_minus_reconstructed": {
+      "CI95": [
+        -0.0028881221532962215,
+        0.003382338473841949
+      ],
+      "CI95_halfwidth": 0.0031352303135690853,
+      "chains": 8,
+      "degrees_of_freedom": 7,
+      "mean": 0.0002471081602728638,
+      "standard_deviation": 0.0037501816431308593,
+      "standard_error": 0.0013258894352695698
+    },
+    "reconstructed": {
+      "CI95": [
+        0.013839256792586888,
+        0.01990293042802033
+      ],
+      "CI95_halfwidth": 0.0030318368177167216,
+      "chains": 8,
+      "degrees_of_freedom": 7,
+      "mean": 0.01687109361030361,
+      "standard_deviation": 0.003626508307718616,
+      "standard_error": 0.001282164308208592
+    }
+  },
+  "source_sha256": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+    "benchmarks/water/vacf_msd_identity.py": "65186a8cf9f4476f025f949446f64de310ebc0f9c5f85a804e9db2d1e7f0996e"
+  },
+  "uncertainty_unit": "Eight equally weighted seed-chain means, nominal Student-t df7; adjacent segments and time origins are not independent replicas.",
+  "window_summaries": {
+    "0.5-1": {
+      "observed": {
+        "CI95": [
+          0.20153683203581366,
+          0.22854274708452374
+        ],
+        "CI95_halfwidth": 0.013502957524355054,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.2150397895601687,
+        "standard_deviation": 0.016151458863054337,
+        "standard_error": 0.005710403044060643
+      },
+      "observed_minus_reconstructed": {
+        "CI95": [
+          -0.002010484050635581,
+          0.002124043583294053
+        ],
+        "CI95_halfwidth": 0.002067263816964817,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 5.677976632923604e-05,
+        "standard_deviation": 0.0024727417262895316,
+        "standard_error": 0.0008742462213911288
+      },
+      "reconstructed": {
+        "CI95": [
+          0.20099612696475444,
+          0.22896989262292444
+        ],
+        "CI95_halfwidth": 0.013986882829085006,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.21498300979383944,
+        "standard_deviation": 0.016730302397001556,
+        "standard_error": 0.005915055138110675
+      }
+    },
+    "1-1.5": {
+      "observed": {
+        "CI95": [
+          0.18723264056285102,
+          0.21123703974722782
+        ],
+        "CI95_halfwidth": 0.012002199592188402,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.19923484015503942,
+        "standard_deviation": 0.014356338796870918,
+        "standard_error": 0.005075732258139473
+      },
+      "observed_minus_reconstructed": {
+        "CI95": [
+          -0.003492496860108182,
+          0.004471407721029828
+        ],
+        "CI95_halfwidth": 0.003981952290569005,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.000489455430460823,
+        "standard_deviation": 0.004762981628266815,
+        "standard_error": 0.001683968304007204
+      },
+      "reconstructed": {
+        "CI95": [
+          0.1863104216361976,
+          0.21118034781295958
+        ],
+        "CI95_halfwidth": 0.012434963088380992,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.1987453847245786,
+        "standard_deviation": 0.014873985526750564,
+        "standard_error": 0.005258748014617943
+      }
+    },
+    "1-2": {
+      "observed": {
+        "CI95": [
+          0.1867404811676961,
+          0.20910269441148838
+        ],
+        "CI95_halfwidth": 0.011181106621896147,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.19792158778959223,
+        "standard_deviation": 0.013374194751131434,
+        "standard_error": 0.004728491900717283
+      },
+      "observed_minus_reconstructed": {
+        "CI95": [
+          -0.004128606659061611,
+          0.0037479498711743553
+        ],
+        "CI95_halfwidth": 0.003938278265117983,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": -0.00019032839394362774,
+        "standard_deviation": 0.004710741278389104,
+        "standard_error": 0.0016654985511821607
+      },
+      "reconstructed": {
+        "CI95": [
+          0.18653654019212468,
+          0.20968729217494703
+        ],
+        "CI95_halfwidth": 0.011575375991411162,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.19811191618353585,
+        "standard_deviation": 0.013845797027240075,
+        "standard_error": 0.004895228484446999
+      }
+    },
+    "1.5-2": {
+      "observed": {
+        "CI95": [
+          0.18633850223990067,
+          0.20722472341193177
+        ],
+        "CI95_halfwidth": 0.010443110586015561,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.19678161282591622,
+        "standard_deviation": 0.012491446464830223,
+        "standard_error": 0.004416393251055088
+      },
+      "observed_minus_reconstructed": {
+        "CI95": [
+          -0.0043571872505906275,
+          0.0030482983249743275
+        ],
+        "CI95_halfwidth": 0.0037027427877824775,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": -0.00065444446280815,
+        "standard_deviation": 0.004429007327429647,
+        "standard_error": 0.0015658905575752055
+      },
+      "reconstructed": {
+        "CI95": [
+          0.18632406591589457,
+          0.2085480486615542
+        ],
+        "CI95_halfwidth": 0.011111991372829796,
+        "chains": 8,
+        "degrees_of_freedom": 7,
+        "mean": 0.19743605728872438,
+        "standard_deviation": 0.013291523077159901,
+        "standard_error": 0.0046992630500786265
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "RDF_and_coordination_hard_gates_adopted": false,
+  "additional_preparation_ps": 400.0,
+  "concrete_preparation_proposal": {
+    "bytes": 15956,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/preparation-proposal.json",
+    "sha256": "3521b5c25ee27466d95f750dae421e8d74566b5ddf3f927ce7d426fc69e9bce1"
+  },
+  "decision": "pending_review_not_adopted",
+  "diffusion_used_to_select_budget_or_chains": false,
+  "fixed_seeds": [
+    1101,
+    1102,
+    1103,
+    1104,
+    1105,
+    1106,
+    1107,
+    1108
+  ],
+  "original_cohort_assessment": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/analysis/report.json",
+    "sha256": "f544d5de9202a73f7013ee5191fed4e53e330a9eeb41c87770bfaaa3f7d4d1f8"
+  },
+  "original_coordinator_exit_proof": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json",
+    "sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744"
+  },
+  "original_scalar_thresholds_changed": false,
+  "paired_control_complete_analysis": null,
+  "paired_control_lease_release": null,
+  "paired_control_normal_exit_proof": null,
+  "production_authorized": false,
+  "proposal_sha256": "e17bd58c303e7f14f1023a458cd59a004c83185a6864f1587ec93d2787737b12",
+  "proposed_output_root": "/workspace/scratch/a5e4820daedd/water-preparation-extension-400ps-2026-11-01",
+  "review_record": null,
+  "reviewed_at_utc": null,
+  "root_resources_adopted": false,
+  "schema": "pyrpmd.water-preparation-only-adoption.v1",
+  "starting_states": {
+    "bytes": 35929,
+    "path": "docs/validation/literature-convergence-2026-11-01/water/post-cohort-next-stage-proposals/starting-state-bindings.json",
+    "sha256": "4e14a86f6c533409fbf90fdc1949faf1ee65db75a24f8b42f255a856833c0cfc"
+  }
+}

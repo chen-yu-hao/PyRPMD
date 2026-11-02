@@ -1,0 +1,82 @@
+{
+  "excludes": [
+    "mutable progress reports",
+    "continuing runtime event journal",
+    "raw trajectory and checkpoint arrays",
+    "unadopted equilibration extension proposal"
+  ],
+  "file_count": 13,
+  "files": [
+    {
+      "bytes": 18167,
+      "path": "benchmarks/water/native_campaign_schedule_v2.py",
+      "sha256": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e"
+    },
+    {
+      "bytes": 15801,
+      "path": "tests/test_water_native_schedule_v2.py",
+      "sha256": "5611446ccb7d9b2ea520dd04c237c723b37f47cd1106c270a9effebe6ddfc11c"
+    },
+    {
+      "bytes": 8999,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/README.md",
+      "sha256": "ab9500894cce7b1dd78cc81004eebc590d4e20caffb2a00b2517f688718b36af"
+    },
+    {
+      "bytes": 3436,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/four-worker-migration-plan.json",
+      "sha256": "5b047f955235666f03a9a110e745da4b3975d7fff93c6a6367bc8d4081bd7c4b"
+    },
+    {
+      "bytes": 76641,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/four-worker-migration-receipt.json",
+      "sha256": "7b3540fcce73e2add09cf6c819546dac5dc8dea36a01085d0a743f63158ed6b4"
+    },
+    {
+      "bytes": 1940,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/four-worker-registration.json",
+      "sha256": "de42e00933f60b6a7b224ab206124cf2db22b2a79e82f7bfa80b5d3ad61a5326"
+    },
+    {
+      "bytes": 5109,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/four-worker-startup-receipt.json",
+      "sha256": "43f0b26e66a7f8fe068471e5277bdaef27f3542593fe9535d51e702d8b5f68cd"
+    },
+    {
+      "bytes": 1701,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/migration-even-natural-exit.json",
+      "sha256": "78847a64184dd4ad9f9ca1cbcc8124cef80ab6e5c52209088a8f99e245b070c7"
+    },
+    {
+      "bytes": 9646,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/migration-events-snapshot.jsonl",
+      "sha256": "379d569d4452e43099539159eafe0c2763cb939737cbdb2443d94065a4c1efea"
+    },
+    {
+      "bytes": 2196,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/migration-odd-natural-exit.json",
+      "sha256": "b5ff57961aa30ae1894db7ebfc6507ab960ad59b2db7d5d2be7598aaacdf7044"
+    },
+    {
+      "bytes": 3138,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/pytest.xml",
+      "sha256": "faac115802c3ceb54fbc24ef7eb2fbd9fbf3fa11df3859564dc7b5291e39a0ad"
+    },
+    {
+      "bytes": 5103,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/startup-events.jsonl",
+      "sha256": "b9f05f30026797d54d6be59f0fc940aff7b409ffb355c32ca2e478df2b2369e8"
+    },
+    {
+      "bytes": 1641,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/scheduling-v2/test-gate.json",
+      "sha256": "ce6512386766ea5611858bd2330aff1f65ca98643cb747abaf46d293aaf97b1e"
+    }
+  ],
+  "frozen_original_checkout_revision": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "original_stable_publication_manifest_unchanged_sha256": "edf79cc6f90fe8cb9e90e53d37f0b0df8ea437ef13b288326f3a10d2ca6b286f",
+  "schema": "pyrpmd.water-scheduling-v2-publication-inventory.v1",
+  "scientific_sources_changed": false,
+  "sealed_utc": "2026-11-01T17:47:06.490111+00:00",
+  "total_bytes": 153518
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "pyrpmd.post-gate-literature-inventory-change.v1",
+  "created_utc": "2026-11-01T19:21:50.929428+00:00",
+  "file": "benchmarks/literature/campaign.json",
+  "tested_state_sha256": "1b3f322f828d236d7915b3472b9dae1315e5b6741d9eb473d424b25d7859b2e1",
+  "current_sha256": "206fe4b27e9b350e1591c649a15fc10ba721bfe5d03a39ce69dde34aef4ff9de",
+  "change": "Adds source URLs and available static F+H2 evidence; retains not_reproduced and pending rate reference. No runtime, test code, physics or threshold changes.",
+  "previous_315_case_evidence_relabelled_as_full_suite": false
+}

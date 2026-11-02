@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_h3_p256_parent_archive.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/synthetic-pytest.xml"
+  ],
+  "created_utc": "2026-11-01T20:10:31.620504+00:00",
+  "errors": 0,
+  "evidence": {
+    "synthetic-pytest.log": {
+      "bytes": 99,
+      "sha256": "5a84374e2bf56ac6fe7000d91cc2e0abfa514170dff2262561fe2a60f4c4e4cb"
+    },
+    "synthetic-pytest.xml": {
+      "bytes": 3248,
+      "sha256": "71d6d89ddd8dfc2274ec7df6d748763af2469302c2d83dc84035242488f211e5"
+    }
+  },
+  "external_PES_calls": 0,
+  "failures": 0,
+  "numerical_parent_data_read": false,
+  "passed": 20,
+  "physical_runs": 0,
+  "schema": "pyrpmd.h3.p256-parent-archive-lifecycle-gate.v1",
+  "scope": "Synthetic lifecycle metadata only: early-inspection rejection, exact root receipts and full8worker-journal coverage.",
+  "skipped": 0,
+  "source_sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb",
+  "tests_sha256": "a5e19b2da14c72066ae8e6fc09614aa1cc87f5e0802f9cc259d5715c9f2a6c80",
+  "wall_seconds": 0.5266843979989062
+}

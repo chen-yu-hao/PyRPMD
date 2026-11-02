@@ -1,0 +1,63 @@
+{
+  "created_utc": "2026-11-01T22:23:34.319759+00:00",
+  "files": [
+    {
+      "bytes": 12886,
+      "path": "benchmarks/literature/hele2015_digitization.py",
+      "sha256": "6ab81f9de930197bd2ea73ec6993297beb618de55bea67e295f7149885cb9c11"
+    },
+    {
+      "bytes": 5238,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/README.md",
+      "sha256": "78e67e16608e8eeb3b1371d7de7a9b92059b3b793799fc9847ee9ba73597a187"
+    },
+    {
+      "bytes": 52188,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/digitization.json",
+      "sha256": "2c26402ef22418c4c00d8c8708d770ead9e591e6b78c535acb8a9ff5e2151d8f"
+    },
+    {
+      "bytes": 1086,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/execution.json",
+      "sha256": "cb97e0d57a092c18948fb5c93a61870257888dfdb35ecca76cef9b591a377b4a"
+    },
+    {
+      "bytes": 12886,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/hele2015_digitization.py",
+      "sha256": "6ab81f9de930197bd2ea73ec6993297beb618de55bea67e295f7149885cb9c11"
+    },
+    {
+      "bytes": 1363,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/attempt-1/stdout.log",
+      "sha256": "50a69c6706493e26cb907d472edbf6a02757d9395f821f40388bd0578475b211"
+    },
+    {
+      "bytes": 925,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/independent-check-binding.json",
+      "sha256": "ba19a97915b1198115f8262f8b999866cafb80b0876ff5eae2c4a5711946eff0"
+    },
+    {
+      "bytes": 410,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/retrieval.json",
+      "sha256": "d26a56b0c12c942a2219004c03f1dcfca3d67e8d87d276247cb3b201fb2404bf"
+    },
+    {
+      "bytes": 678,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/selected-source-members.json",
+      "sha256": "481492dfaf7db18e59a33c24e1288d08c6a21819085fb36c33c42a4dc6bb65ba"
+    },
+    {
+      "bytes": 5950,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/source-protocol.json",
+      "sha256": "53af3b2481075ae0036af8afd3c37112cbdcda6578c314fab3394fd7a39bd79d"
+    },
+    {
+      "bytes": 1166,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hele2015-source-index/source-retrieval.json",
+      "sha256": "28bbe2d1b110a2af73aa988cb13bb8f9b3f7d8acced109478b4102a3a914392a"
+    }
+  ],
+  "listed_bytes": 94776,
+  "schema": "pyrpmd.compact-sixth-publication-inventory.v1",
+  "scope": "Offline original-vector source digitization and conditions, with independent F+H2 extraction; no copyrighted source PDF/TeX, no new molecular result, no changed registered reference."
+}

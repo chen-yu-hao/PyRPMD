@@ -1,0 +1,28 @@
+{
+  "PID": 4,
+  "adoption": {
+    "bytes": 2532,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/root-adoption.json",
+    "sha256": "1c7cc69a70dd4a452f18725a64708f2808e4a9a8eef07bfb142fe76b80dc7bda"
+  },
+  "analysis_output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/analysis",
+  "analyzer_invocations_maximum": 1,
+  "automatic_retry_resume_extension": false,
+  "created_utc": "2026-11-01T21:13:13.636920+00:00",
+  "independent_review": {
+    "bytes": 5637,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/independent-review.json",
+    "sha256": "d9e16de758b1c0fbfbcb78b11b08416a7923e365640ad52ec85f1130abfd6862"
+  },
+  "policy": {
+    "bytes": 36234,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-completion-tool/policy.json",
+    "sha256": "ff5be96fe6412a4d98f03019d5c7107bf7bbd7a7dfcb2426455412562bb30858"
+  },
+  "schema": "pyrpmd.h3.p256-complete-analysis-registration.v1",
+  "source": {
+    "bytes": 28609,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_complete_analysis.py",
+    "sha256": "67e4e3eb1b7a7cc875fd14c74829c71be265a8171c516b7b10af5dca461d7b7e"
+  }
+}

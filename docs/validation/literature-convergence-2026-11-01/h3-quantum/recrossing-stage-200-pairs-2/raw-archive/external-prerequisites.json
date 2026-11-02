@@ -1,0 +1,369 @@
+{
+  "base_launch_command_reconstructed_from_schedule_not_a_launch_receipt": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "benchmarks/h3/quantum_recrossing_campaign.py",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary",
+    "--library",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+    "--horizon",
+    "200",
+    "--pair-batch",
+    "0",
+    "--workers",
+    "2"
+  ],
+  "base_launch_evidence": "Only the completed schedule and partial/truncated final tool output survive; no exact launch timestamp or full stdout is claimed.",
+  "external_model": {
+    "build_receipt": {
+      "bytes": 2976,
+      "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.build.json",
+      "sha256": "5c1c6d092f667caaddc814f5f671b61d12c254a6abe83dc2ee939a5e3872622e"
+    },
+    "bytes": 45704,
+    "included_in_archive": false,
+    "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+    "registered_model": {
+      "atomic_numbers": [
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "dtype": "float64",
+      "energy_zero": "three separated H atoms",
+      "execution_device": "cpu",
+      "library_sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609",
+      "model": "BKMP2 ground-state H3 Born-Oppenheimer PES",
+      "multiplicity": 2,
+      "native_batch": true,
+      "provider": "BKMP2",
+      "source_commit": "19ba2602bad5b2145b0d0ba0716d7ba3d90a1003",
+      "source_sha256": "6fa37803d0d1db4f43e5bc4bfccd5e26585f01116dae9dc4f6d0d28d5d71d237",
+      "thread_safety": "process_serial",
+      "trajectory_batch_safe": true
+    },
+    "sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+  },
+  "external_parent_files": [
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4113196,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/checkpoint.npz",
+          "sha256": "eebd1809b4a0a5011ed6298ab44973cd89bb576f8d7091019f6bfb3555ca3dbf"
+        },
+        "reference-domain.json": {
+          "bytes": 491,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/reference-domain.json",
+          "sha256": "2fce3b883b4ad0b509e1d044bff93cbe08065a93c4fbbe8e4bb2cfa42bb646e2"
+        },
+        "report.json": {
+          "bytes": 8654,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/report.json",
+          "sha256": "d0849e64cbeb5f1ba3c654c9999c57095c7645c227ef415fed6b69fe5fde4bfa"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/settings.json",
+          "sha256": "7ebb1dcefb2abdc3d91586fdd3a397573293bf425167f22ed2213e04b2e7798a"
+        }
+      },
+      "included_here": false,
+      "seed": 721301
+    },
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4113028,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/checkpoint.npz",
+          "sha256": "aaf11b6ea143c7166456d46d2f4b767481eb0319d7e46816783ad57baacc0c14"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/reference-domain.json",
+          "sha256": "04edc9c6b31084630b9595f44cbcc78070c5b167cec7c0999a1c0ddead443b71"
+        },
+        "report.json": {
+          "bytes": 8698,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/report.json",
+          "sha256": "e46d5420e9a5b1390fef7ad967aa87fe07976f40acf4d209f64b77edf20cff22"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/settings.json",
+          "sha256": "acb58ecb3dfba08f2188c958e88d259b6ff355bbf65e9b732aef9e544d0d5d3d"
+        }
+      },
+      "included_here": false,
+      "seed": 721303
+    },
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4112604,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/checkpoint.npz",
+          "sha256": "d1cf4de76ade549ab74391e12eb4b42e3e06be44dab3cbd3037f470a044b8519"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/reference-domain.json",
+          "sha256": "bfa317465c2b3e877fb98d9478ac57a55325fcf2c3e09a4aa000cb969233f45a"
+        },
+        "report.json": {
+          "bytes": 8695,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/report.json",
+          "sha256": "c2cebae072d51a03f0ce47b590775d8b3292373cfdac0de26142d16281c9a9e1"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/settings.json",
+          "sha256": "88c37c59cad156f1a395418ead315de50f25f4d32833ab83ccfa976529a24b71"
+        }
+      },
+      "included_here": false,
+      "seed": 721307
+    },
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4113120,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/checkpoint.npz",
+          "sha256": "d7c9c82121fed1fa75adef7b2c49cb97d0d5d410f6eee485ae4e2ca46d31b469"
+        },
+        "reference-domain.json": {
+          "bytes": 488,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/reference-domain.json",
+          "sha256": "afb5896ae911f831aa8b79f5eaf306b2e5793ada370f3a901d978b79ec7afb26"
+        },
+        "report.json": {
+          "bytes": 8665,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/report.json",
+          "sha256": "2a0e3c71cd6aca33cf33106695cac81cd44b316ce7fb9d3fcaca5c277892a07a"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/settings.json",
+          "sha256": "82dc90c8a3e1fbe716144718b8ce9e00e60118b3963056b1f10a1eb3064f4d76"
+        }
+      },
+      "included_here": false,
+      "seed": 721309
+    },
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4113109,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/checkpoint.npz",
+          "sha256": "a91a6dba5428a1b9b1e2f08a19f6a6388965b0d5039a45d07e55a00cbad0c86f"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/reference-domain.json",
+          "sha256": "73e25a0a5a4e9705efd12a6200ff4cd31bac4932a0cc5a5b7ffbf2fda1c2ac3f"
+        },
+        "report.json": {
+          "bytes": 8637,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/report.json",
+          "sha256": "af0569bf5e2ef86436c5d922aa9a44b6e22a5f38363841d7468e027c16ef619b"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/settings.json",
+          "sha256": "4ccb943c13734aebbcc48427b7a0d69747141850e3723eeffb7028a4ac998af7"
+        }
+      },
+      "included_here": false,
+      "seed": 721313
+    },
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4112792,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/checkpoint.npz",
+          "sha256": "d6d0d0c2b063523ad549e00ddda311b1f5dd60040f6317842c7da1851421bea9"
+        },
+        "reference-domain.json": {
+          "bytes": 494,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/reference-domain.json",
+          "sha256": "e7aaf0a8375fcff00d0c1a8b95d818e02075920c0c4f8037dbbe6ac4400026ed"
+        },
+        "report.json": {
+          "bytes": 8707,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/report.json",
+          "sha256": "b99e2996efdb6550d64a863cb1540f043819f41415ed2bc36662439a659bc45a"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/settings.json",
+          "sha256": "12f6497afe191cf971488cca9ba3eedf9e56f0ecde6e10461ca052e27c732d89"
+        }
+      },
+      "included_here": false,
+      "seed": 721317
+    },
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4113780,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/checkpoint.npz",
+          "sha256": "fe74abf796ebb757c887f30afdb864d388cd1ce8e3b520445dc9653d96dfea64"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/reference-domain.json",
+          "sha256": "cbdaeaa9ff70a1124e00fa1011e906b22945a5655ef0d31a6d0661526bc58429"
+        },
+        "report.json": {
+          "bytes": 8663,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/report.json",
+          "sha256": "8ca26884df01d061a56ab379dca4af20c2702bd7eea856d73aac96638a4ecb78"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/settings.json",
+          "sha256": "c2a92347474317ea0bc91ca38928caa2d1bba88299fc665742001f5ac5744dc4"
+        }
+      },
+      "included_here": false,
+      "seed": 721321
+    },
+    {
+      "available_from": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+      "files": {
+        "checkpoint.npz": {
+          "bytes": 4113187,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/checkpoint.npz",
+          "sha256": "207d8801820a18b928fc84d54227798a01a5c7f53e84c93943edde524469adfa"
+        },
+        "reference-domain.json": {
+          "bytes": 495,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/reference-domain.json",
+          "sha256": "f31e1ae01491e99c512760efb610a79b4481bd679ba8a4bb84aaa4bbe48e9478"
+        },
+        "report.json": {
+          "bytes": 8688,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/report.json",
+          "sha256": "ccd31b2149bbefe42d71495fd55933a190db43b4d4a6f75d5b7aef2ce43bda6f"
+        },
+        "settings.json": {
+          "bytes": 2893,
+          "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/settings.json",
+          "sha256": "22b3bf6a4a82116009351050e55266587b7b65ee4cb82d94851667d649055982"
+        }
+      },
+      "included_here": false,
+      "seed": 721323
+    }
+  ],
+  "independent_review_input_inventory": {
+    "bytes": 97097,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/complete-200fs-review/input-file-hashes.json",
+    "sha256": "d41cf619ef748005614cafbccf9b34b85e12a83c117f91dd3360744da05c5800"
+  },
+  "parent_archive": {
+    "bytes": 83259073,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-equilibrium-2026-11-01.tar.gz",
+    "sha256": "051ca8d016c722b740bc340f07387b72cf14c3379c21394a171dd34f083e944d"
+  },
+  "schema": "pyrpmd.h3.quantum-child-archive-prerequisites.v1",
+  "source_identity_authority": "exact per-file SHA256; no assertion that all executed working-tree files belonged to one commit",
+  "source_repository": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "sources_and_native_runtime": [
+    {
+      "bytes": 30072,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_surface_recrossing.py",
+      "registered_name": "benchmarks/h3/quantum_surface_recrossing.py",
+      "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+    },
+    {
+      "bytes": 9908,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+      "registered_name": "benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    {
+      "bytes": 7765,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+      "registered_name": "benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    {
+      "bytes": 40171,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py",
+      "registered_name": "src/pyrpmd/dynamics.py",
+      "sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+    },
+    {
+      "bytes": 16478,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py",
+      "registered_name": "src/pyrpmd/propagation.py",
+      "sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa"
+    },
+    {
+      "bytes": 34870,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+      "registered_name": "src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    {
+      "bytes": 940,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "registered_name": "src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 9555,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py",
+      "registered_name": "src/pyrpmd/checkpoint.py",
+      "sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+    },
+    {
+      "bytes": 5865,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py",
+      "registered_name": "src/pyrpmd/io.py",
+      "sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    {
+      "bytes": 2407952,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "registered_name": "loaded_native:_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    },
+    {
+      "bytes": 3470,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_campaign.py",
+      "sha256": "16bb6f9255bc284f955532955c11973bc4178f7403aea8cd3b96f6795fbe3de5"
+    },
+    {
+      "bytes": 21326,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_analyze.py",
+      "sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+    },
+    {
+      "bytes": 3205,
+      "included_in_archive": false,
+      "path": "/workspace/scratch/a5e4820daedd/run_complete_quantum_analysis.py",
+      "sha256": "afbbc142710aceb4a4c9a2f30cbad34e66a35f712ae6134503636a212f4bb7bd"
+    }
+  ]
+}

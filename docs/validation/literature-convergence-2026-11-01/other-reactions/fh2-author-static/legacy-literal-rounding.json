@@ -1,0 +1,22 @@
+{
+  "schema": "pyrpmd.fh2.legacy-literal-rounding-diagnostic.v1",
+  "created_after_fixed_static_check_utc": "2026-11-01T19:17:14.680600+00:00",
+  "source_modified": false,
+  "acceptance_limits_modified": false,
+  "default_real_offset_written": 0.0006,
+  "real32_promoted_to_real64": 0.0006000000284984708,
+  "offset_difference_hartree": 2.8498470835795764e-11,
+  "author_points": [
+    {
+      "id": "author-equilateral",
+      "measured_difference_hartree": 2.8498474413662933e-11,
+      "residual_after_accounting_for_literal_rounding_hartree": 3.577867169202165e-18
+    },
+    {
+      "id": "author-asymmetric",
+      "measured_difference_hartree": 2.849847137789685e-11,
+      "residual_after_accounting_for_literal_rounding_hartree": 5.421010862427522e-19
+    }
+  ],
+  "not_an_energy_correction": "This diagnoses unchanged legacy arithmetic; it is not subtracted from any potential result."
+}

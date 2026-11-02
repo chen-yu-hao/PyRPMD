@@ -1,0 +1,26 @@
+{
+  "schema": "pyrpmd.water-paired-root-adoption-inventory.v1",
+  "created_utc": "2026-11-01T21:47:15.112525+00:00",
+  "files": [
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption/README.md",
+      "bytes": 928,
+      "sha256": "8f5c1f6519df768e91ee20fa0086d5f3620002f55e849d8285aef9817a72261d"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption/adopt_water_paired_control.py",
+      "bytes": 6194,
+      "sha256": "5d141f3c5c5764d9073f7eab46838cc09a7a9b99ec0204d8bdf42be01991b562"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption/launch_water_paired_control.py",
+      "bytes": 5691,
+      "sha256": "bff5ab38b2efb6d6d33ab429793b62a24ef67057c814b945a3b2e26dfed0767f"
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/original-cohort-adoption/root-adoption.json",
+      "bytes": 9131,
+      "sha256": "caf55f255f0100818ffc94378b65b9fbe4a533d1df3718f4f6f550cf31f6086c"
+    }
+  ]
+}

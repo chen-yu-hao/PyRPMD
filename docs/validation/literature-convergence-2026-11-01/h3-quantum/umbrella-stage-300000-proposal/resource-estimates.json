@@ -1,0 +1,138 @@
+{
+  "actual_sampling_started": false,
+  "additional200k_all8_worker_wall_hours_forecast": 20.573138062698412,
+  "array_storage_arithmetic_per_worker": {
+    "both_ring_coordinate_arrays_float64_bytes": 294912,
+    "diagnostics_float64_bytes": 80640000,
+    "dominant_array_bytes": 196134912,
+    "not_included": "Restart/decompression/save buffers, provider/interpreter/NumPy memory and owned coordinator inspection buffers.",
+    "samples_float64_bytes": 115200000
+  },
+  "created_utc": "2026-11-01T21:47:28.981531+00:00",
+  "forecast_is_not_a_bound": true,
+  "ideal2worker_wall_hours_forecast": 10.286569031349206,
+  "ideal4worker_wall_hours_forecast": 5.143284515674603,
+  "inverse_sqrt_sample_precision_forecast": {
+    "assumption": "Stationary variance and unchanged effective variance per retained sweep; not a guarantee, and both MC nonlinearity and the conservative chain/jackknife maximum remain.",
+    "forecast300k_if_same_variance_per_sweep": 0.029371972528065223,
+    "observed100k_log_standard_error": 0.050873748737126245,
+    "point_reference_used": false,
+    "registered_limit": 0.03
+  },
+  "no_paid_or_GPU_resources": true,
+  "observed_timing_source": {
+    "bytes": 2042,
+    "path": "/workspace/scratch/a5e4820daedd/h3-quantum-umbrella-stage-100000-restored-v2/data/campaign-run/scheduler-attempts/stage-100000-abdba56327464ed99bbcc630d0843bd2/events.jsonl",
+    "sha256": "3a836dc6ad0fadd33129eef27db96e2e5eb6be2463cb87ff2d3d1e5c475c6053"
+  },
+  "observed_total_worker_wall_hours": 7.200598321944444,
+  "per_seed_timing": [
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9244.53332,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3235.586662,
+      "seed": 211017,
+      "wall_seconds_per_sweep": 0.046222666600000004
+    },
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9220.369437142857,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3227.129303,
+      "seed": 211019,
+      "wall_seconds_per_sweep": 0.046101847185714286
+    },
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9362.419102857142,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3276.846686,
+      "seed": 211021,
+      "wall_seconds_per_sweep": 0.04681209551428571
+    },
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9330.045688571428,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3265.515991,
+      "seed": 211023,
+      "wall_seconds_per_sweep": 0.04665022844285715
+    },
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9421.71938,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3297.601783,
+      "seed": 211027,
+      "wall_seconds_per_sweep": 0.0471085969
+    },
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9443.894951428572,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3305.363233,
+      "seed": 211031,
+      "wall_seconds_per_sweep": 0.04721947475714286
+    },
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9025.360531428572,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3158.876186,
+      "seed": 211033,
+      "wall_seconds_per_sweep": 0.045126802657142855
+    },
+    {
+      "linear200k_more_sweeps_wall_seconds_forecast": 9014.954614285714,
+      "measured_process_CPU_seconds": null,
+      "observed100k_stage_additional_sweeps": 70000,
+      "observed_submitted_to_complete_wall_seconds": 3155.234115,
+      "seed": 211039,
+      "wall_seconds_per_sweep": 0.04507477307142858
+    }
+  ],
+  "preparation_and_analysis_separate_envelopes": {
+    "exclusive_fresh_restore_and_prefix_verification": {
+      "CPUs": 1,
+      "observed_CPU_seconds_limit": 300,
+      "planned_RSS_bytes": 1073741824,
+      "wall_seconds_limit": 900
+    },
+    "post_all8_complete_analysis": {
+      "CPUs": 1,
+      "not_simultaneous_with_sampling": true,
+      "observed_CPU_seconds_limit": 300,
+      "planned_RSS_bytes": 1073741824,
+      "same_frozen_sequential_histogram_analyzer": true,
+      "wall_seconds_limit": 900
+    }
+  },
+  "proposed_finite_sampling_envelope": {
+    "CPU_assignment": "Root must choose2or4 distinct currently available CPU identities before adoption. No slots are reserved by this proposal.",
+    "allowed_fixed_worker_counts": [
+      2,
+      4
+    ],
+    "drain_reserve_seconds": 120,
+    "maximum_active_workers": 4,
+    "maximum_aggregate_child_CPU_hours": 48,
+    "maximum_aggregate_child_CPU_seconds": 172800,
+    "memory_scope": "Planned rather than a cgroup quota: 3GiB total for<=4sampling processes plus owner, verified against actual headroom before launch. Stop admission and bounded-drain on an observed breach; retain failure.",
+    "mid_run_resize": false,
+    "on_cap_or_signal": "Stop new admission, bound/drain/reap owned children only, retain incomplete prefixes and permanent attempt/failure evidence; no automatic replacement, retry or budget extension.",
+    "owner_CPU_seconds_limit": 600,
+    "per_seed_process_CPU_seconds_limit": 21600,
+    "per_seed_process_wall_seconds_limit": 21600,
+    "preferred_fixed_workers_if_resources_available": 4,
+    "required_enforcement": "New independently reviewed owner work alarm plus independent per-worker absolute SIGALRM deadline and RLIMIT_CPU before scientific imports; each worker is a separate single-seed process. Child wall alarm uses the earlier of6h after launch or the whole work deadline.120s remains for bounded TERM/KILL/reap and final receipts.",
+    "threads_per_worker": 1,
+    "whole_owner_call_wall_seconds": 43200
+  },
+  "schema": "pyrpmd.h3.isolated300k-resource-proposal.v1",
+  "storage_before_adoption": {
+    "planned_free_GiB": 10,
+    "scope": "New initialized working restore, growing checkpoints/temp files, preserved immutable100k archive/extraction, eventual separate300k archive and replay. The future300k raw archive has no implicit authorization here."
+  },
+  "timing_scope": "Submission-to-completion worker wall includes startup, checkpointing, inspector and shared-host scheduling. It is not measured process CPU."
+}

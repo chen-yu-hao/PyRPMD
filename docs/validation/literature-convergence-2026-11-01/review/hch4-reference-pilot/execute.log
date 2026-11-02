@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py", line 702, in <module>
+    main()
+  File "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py", line 695, in main
+    result = supervise(args.registration)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py", line 639, in supervise
+    require(reg["prepare_process_PID"] != os.getpid(), "preparation and supervisor must be separate dedicated processes")
+  File "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/hch4/reference_pilot.py", line 96, in require
+    raise ValueError(message)
+ValueError: preparation and supervisor must be separate dedicated processes

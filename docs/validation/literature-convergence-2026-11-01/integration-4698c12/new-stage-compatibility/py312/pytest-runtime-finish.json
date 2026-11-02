@@ -1,0 +1,252 @@
+{
+  "actual_loaded_project_modules": {
+    "benchmarks.h3.classical_tst": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    "benchmarks.h3.mixing_sampling": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/mixing_sampling.py",
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    "benchmarks.h3.pes": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    "benchmarks.h3.quantum_sampling_campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/quantum_sampling_campaign.py",
+      "sha256": "29a70de601253ba2262fd1be3a65e65d4bc7cef26652cbe2ff2d30ccccf9df50"
+    },
+    "benchmarks.h3.quantum_sampling_scheduler": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/h3/quantum_sampling_scheduler.py",
+      "sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98"
+    },
+    "benchmarks.water.analyze_rdf_sampling_noise": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/analyze_rdf_sampling_noise.py",
+      "sha256": "57f5489bb84755489cf88bab312b430b19a5fb9f6bdd06a5223fa4a54fc42819"
+    },
+    "benchmarks.water.campaign": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/campaign.py",
+      "sha256": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639"
+    },
+    "benchmarks.water.native_preparation_extension": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_preparation_extension.py",
+      "sha256": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c"
+    },
+    "benchmarks.water.native_reference": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/native_reference.py",
+      "sha256": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2"
+    },
+    "benchmarks.water.qtip4pf": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/benchmarks/water/qtip4pf.py",
+      "sha256": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61"
+    },
+    "pyrpmd": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/__init__.py",
+      "sha256": "67033c7a2c98e71eddda09bc5c86834efe23c7c973dc72948df3a93f984a3b24"
+    },
+    "pyrpmd._electronic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+    },
+    "pyrpmd._native": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+    },
+    "pyrpmd._thermal": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+    },
+    "pyrpmd.constants": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "pyrpmd.dynamics": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/dynamics.py",
+      "sha256": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db"
+    },
+    "pyrpmd.geometry": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/geometry.py",
+      "sha256": "b7d24a3dd828102bfe2683237569006945e63e32ddab1d0c8d26011e61e280aa"
+    },
+    "pyrpmd.io": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/io.py",
+      "sha256": "e1e8f3e62f1c87bdf20dc28119b46f85a1c0fe6c8e3312cc2e5c82555c4ef07f"
+    },
+    "pyrpmd.potentials": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/__init__.py",
+      "sha256": "c14c53758d3218270dcdce8bcf4c35ccd215969adeba90904bc5c45cd8ac33ae"
+    },
+    "pyrpmd.potentials.base": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/base.py",
+      "sha256": "5399de666b55975ee3ee801e8dc3c0ce598f684613a95ce0282b22c67362b7b3"
+    },
+    "pyrpmd.potentials.builtin": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/builtin.py",
+      "sha256": "d4a70399bd95738c8d284f11a41a267ca108e57887bf6019096272fdf064ae46"
+    },
+    "pyrpmd.potentials.cabi": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/cabi.py",
+      "sha256": "79c876b666967c678ebf5117e67236f47605d5bd54d47c9f387634c2c48ce02a"
+    },
+    "pyrpmd.potentials.openmm": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/openmm.py",
+      "sha256": "6fadd87629013ea734962dd99fe14f14b182da4d628d2f025b0e460294d13f82"
+    },
+    "pyrpmd.potentials.python": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/potentials/python.py",
+      "sha256": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9"
+    },
+    "pyrpmd.validation": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/validation.py",
+      "sha256": "6bd219b3761c2afb4309b1e7a1564062927287a734beb8dec6012e10c1c64d12"
+    }
+  },
+  "environment": {
+    "abi": "cpython-312-x86_64-linux-gnu",
+    "affinity": [
+      8
+    ],
+    "distributions": {
+      "GridDataFormats": "1.2.0",
+      "Jinja2": "3.1.6",
+      "MDAnalysis": "2.11.0",
+      "MarkupSafe": "3.0.4",
+      "OpenMM": "8.6.1",
+      "PyRPMD": "0.2.0",
+      "PyYAML": "6.0.3",
+      "Pygments": "2.21.0",
+      "SecretStorage": "3.5.0",
+      "Sphinx": "9.1.1",
+      "accessible-pygments": "0.0.5",
+      "alabaster": "1.0.0",
+      "ase": "3.29.0",
+      "attrs": "26.1.0",
+      "babel": "2.18.0",
+      "bashlex": "0.18",
+      "beautifulsoup4": "4.15.0",
+      "bracex": "3.2",
+      "build": "1.6.1",
+      "certifi": "2026.10.23",
+      "cffi": "2.1.1",
+      "charset-normalizer": "3.5.2",
+      "cibuildwheel": "3.4.0",
+      "cloudpickle": "3.1.2",
+      "contourpy": "1.4.0",
+      "cryptography": "50.0.2",
+      "cycler": "0.12.1",
+      "dependency-groups": "1.3.2",
+      "docutils": "0.21.2",
+      "filelock": "4.2.6",
+      "fonttools": "4.68.0",
+      "h5py": "3.16.0",
+      "humanize": "4.16.0",
+      "id": "1.6.1",
+      "idna": "3.20",
+      "imagesize": "2.0.1",
+      "iniconfig": "2.3.1",
+      "jaraco.classes": "3.4.0",
+      "jaraco.context": "6.1.2",
+      "jaraco.functools": "4.6.0",
+      "jeepney": "0.9.0",
+      "joblib": "1.6.0",
+      "keyring": "25.7.0",
+      "kiwisolver": "1.5.1",
+      "lammps": "2025.7.22.4.0",
+      "markdown-it-py": "3.0.0",
+      "matplotlib": "3.11.2",
+      "mda-xdrlib": "0.2.0",
+      "mdit-py-plugins": "0.6.1",
+      "mdurl": "0.1.2",
+      "mmtf-python": "1.1.3",
+      "more-itertools": "11.2.1",
+      "mpi4py": "4.1.2",
+      "mpich": "5.0.2",
+      "mrcfile": "1.5.4",
+      "msgpack": "1.2.4",
+      "myst-parser": "4.0.1",
+      "nh3": "0.3.7",
+      "numpy": "2.5.4",
+      "packaging": "26.3",
+      "patchelf": "0.19.1.0",
+      "pillow": "13.0.0",
+      "pip": "25.0.1",
+      "platformdirs": "4.14.2",
+      "pluggy": "1.7.0",
+      "pycparser": "3.12",
+      "pydata-sphinx-theme": "0.16.1",
+      "pyelftools": "0.33",
+      "pyparsing": "3.3.3",
+      "pyproject_hooks": "1.3.3",
+      "pytest": "9.2.0",
+      "pytest-subtests": "0.15.0",
+      "python-dateutil": "4.0.0",
+      "readme_renderer": "46.0",
+      "requests": "2.34.2",
+      "requests-toolbelt": "1.0.0",
+      "rfc3986": "2.0.0",
+      "rich": "15.0.0",
+      "roman-numerals": "4.1.0",
+      "roman-numerals-py": "4.1.0",
+      "scipy": "1.18.1",
+      "snowballstemmer": "3.1.1",
+      "soupsieve": "3.0.4",
+      "sphinx_rtd_theme": "3.1.0",
+      "sphinxcontrib-applehelp": "2.0.0",
+      "sphinxcontrib-devhelp": "2.0.0",
+      "sphinxcontrib-htmlhelp": "2.1.0",
+      "sphinxcontrib-jquery": "4.1",
+      "sphinxcontrib-jsmath": "2.0.0",
+      "sphinxcontrib-qthelp": "2.0.0",
+      "sphinxcontrib-serializinghtml": "2.0.0",
+      "threadpoolctl": "3.7.0",
+      "tqdm": "4.70.1",
+      "twine": "7.0.0",
+      "typing_extensions": "4.16.0",
+      "tzdata": "2026.6",
+      "urllib3": "2.8.0",
+      "wheel": "0.48.0"
+    },
+    "executable": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "prefix": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "variables": {
+      "MKL_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/new-stage-compatibility/py312/matplotlib",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OPENMM_CPU_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "src:.",
+      "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/new-stage-compatibility/py312/tmp"
+    }
+  },
+  "native": {
+    "_electronic": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_electronic.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "bd3828d6235883c375e0ad690a4e2c283b752ae96a16558504243938f339662a"
+    },
+    "_native": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f"
+    },
+    "_thermal": {
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+      "resolved": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/_thermal.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "430373fd797ef0919592fd636430fba8c98b010b33e83ee0b9e2ee36616d24b5"
+    }
+  },
+  "openmm": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/lib/python3.12/site-packages/openmm/__init__.py",
+    "platforms": [
+      "Reference",
+      "CPU"
+    ],
+    "version": "8.6.1"
+  },
+  "pyrpmd_import": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/src/pyrpmd/__init__.py",
+  "pytest_exitstatus": 0
+}

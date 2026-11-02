@@ -1,0 +1,885 @@
+{
+  "PES_evaluations": 0,
+  "RNG_draws": 0,
+  "all_eight_original_chains_complete": true,
+  "all_original_leases_acquired_together_then_released": true,
+  "contexts_created": 0,
+  "created_utc": "2026-11-01T20:53:19.621564+00:00",
+  "live_registration_created": false,
+  "original_normal_exit": {
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/original-fixed-cohort/original-normal-exit.json",
+    "sha256": "f6834a23019049903ed962dfd8b96ca210b9facecdb25917431e91bd8b807744"
+  },
+  "schema": "pyrpmd.water-paired-timestep-read-only-original-selection.v1",
+  "selected": [
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "0b9ed7afffa6286b5f89d2a994f0f8747ac09b622e44900ed576b63aafcbd071",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "c784e3374d6d5d661096ab566d51ad7b61bb8ebf38bcd82e0103cab1d81a8100",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "d398d211f343efdf22314cb72f0384b2f1efb92df9b12408ec98307117fc6fad",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "318081f07febbb4df725d301f95ee454bbd8ee2897a1367dd03bbd10a0b65167",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "4eac3bc75c36d8c873cbb3c39a219a59c22b565a066429c5e687f50d45f3af82",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "72d1d886b3193b860661d18c44c84e4426d93e7d4b08b6e615c9ad447d52f610",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "1f742a7ffa0933a2e6a61b8c61ec6be148794b31592249cd4c59eca404a3402c",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "e5748f06a78939e6fe2f934dc07e1e08e00e66da369cbe65e9b9b0042472e453",
+          "dtype": "<U166",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1101,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "5d32b200e8073dc9818696fe2c77611c0539379fd494418bfc8fc191bbb777bd",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1101",
+      "seed": 1101,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    },
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "0b151153c8223824b5188e1635c00afa5a2c783f051ead4f862029a18a061a60",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "3559fc2c758cbabfe8074628ef6a5d31acb3371501ae1fb0223f89faa026e74c",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "da5655198a4a30af0bbf223f27dfcab08fd08ae20ff1f23d2caebeaf95754bb1",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "41d2464c20616be68b25926f4fb5c80f95c52caa76a139523ab04abc746c9365",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "12733f5a0df1cd7605458709a6ab4698f8c73125eeb8f10782b3ec71d344dd9b",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "dd699d82a6ca65cdaa6029d63ef946ecc62f56bf24a02e1086f7c10b334e8eb4",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "22e84eb35e7b29373c3c057d499e8dfe393ffa976babe6c4a6893c76247e3354",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "8d21a0148b47d9ef0a076f2deb5ee50cec79a5d52b44938f8bbd6c9f4248ddb9",
+          "dtype": "<U167",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1102,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "cffd93df0a58c82388b1509822ec0bf31e4d6ccf37e76d3c6ffb44314d1e1bb5",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1102",
+      "seed": 1102,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    },
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "b7df140f0bbee88db6bbfc4bb4f91a6180f83cc8971f6d9db6986d9ba54ee124",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "418d735e2aa29d4feda9af3f50f4d99a1cb069f0914e0fa7b68ebc58d18e5860",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "365e6e59c50799359f3407c40aed226c8ebad4bd39195618894a042577c9c9fe",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "fb675585d839782e80ed8759ce6274d6b2be7500345868eb77511a7561ea9470",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "ca4af822077a43839f9b0e437eb45a0b8927c5da9513299a753a36800f5e92da",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "daddfa84534877df44c7d5f7dd343f8a4a610f91908352c0efdc66dd2aae9461",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "62b4f3a679ec93e2e70278290d15fbfac71bf3a3e75f8081aba7b24fe60a9808",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "acc5a93e2c08182d4583f0f2e60cafc79ec77b5f894841a715db8dcb2714ea3a",
+          "dtype": "<U167",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1103,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "dcd638e3052964747fc6d22ebc40ab6eafd33519e2c6caf790d7a686435a45b3",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1103",
+      "seed": 1103,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    },
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "ca9c20aed155f396441544d6cf55501a15ff347998ef7170da8b6e9b8e619ede",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "c8f90f462a16d6f70012393b2484723c21721ee7fd0078ca7bf7203cea72cbce",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "ee1ff2c2ab37cebc610bf996256017b4e8f4ac0e86a763141ab3938c11c87939",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "6efbe4a487c51fb152f81857bc954af7f58f504e188b12aa3775dc696fbe55d7",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "0727d359a97c89e1215f374ebf8e9ce3ed4f9c2028efa6ac228986f798767b08",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "5dbc1b9a52cae50d2dd752eb70b326b7cfb14544afbd069235b1b6e87c10b573",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "9c9e8359a3a9b5559b066ba38054277166674cac80bc1ce020a07735b37105db",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "802eeb518f65582573751fba5a8a5bbff7de421ef80a59c2d230aee72573e994",
+          "dtype": "<U167",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1104,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "02d5eaa6bf6aff7cc4a56459279087efcf07b1ca36d589379c33b5aae0107ebf",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1104",
+      "seed": 1104,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    },
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "e900bfcaec5455ee3c5397aabbb9d1881a4c517c6f3fc6e110c1e20bd1570cbe",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "55d4d5ce38d14e57c69f4d4db0ee36671c9a54c2ded9f2962a533ac0daf3ebd2",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "896a0b359be2cd3f5a015ee647cd6fb37e32b9e3cca918bbbc59ff607a17ee66",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "22094f846aeb66034b3f1d5ec48778fd0fdb532c87aa3732ccc4847a14f671d0",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "3b5ac167e3abbf47b28c66e6a32fd5c7618df88ca67680903690b3144724d00d",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "9add75136ae668531d241b872a294bfa2807932a802b0f250d36cbe4f8cf2535",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "27928334fc2ab5094c6bf58e90d829f872709ba96bbecb3f235f721d79c288f4",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "57c1b31ca013024b60b7c9207e1bc1a9a553cb6bc6dadca64348639ad7ddfac4",
+          "dtype": "<U167",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1105,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "3dfdf5dff6f8d03c65e29f9b87d0d4b14ef8c40cb592a38577a363a8bfee64ac",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1105",
+      "seed": 1105,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    },
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "58fdb04cd5c44c351f00f82ec773050175a660568845367199be1faecac2fe66",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "ae63f08020cdb5b4c6cecc6b2ca70a82d48291990cca9da2bd9f3bc2cdd3b9f8",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "c25947569b240ea9488f015988c0dc09b3832036906a3d84dcb89d2e6cb42bb7",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "da8c8890f09b9d4b932860a2a39a4b3a233991328eca1ad0234774c7860fbdf8",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "c2e95c1d9555dc4bd3a9ae80979435b016a7ebcfd3dc7c25e9c3236c272220d8",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "5d7ea04d0ff59a2b0442e7214f5b531d4d11e6d378261585a657e2370994640d",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "e136518b981aac7eb2162b54c92b88f9693c4a8ce5728c66c058a95d31b3f67d",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "0d3c43398d794cea4eb8013a472d60bbae8524cfcb258ace1c1e805c785925ec",
+          "dtype": "<U166",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1106,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "ad64b10ecf9d5cc906aac6cf99dd936e2256307b83146064e2197ff889b56c52",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1106",
+      "seed": 1106,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    },
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "e1ed293fba1612583a92a3e117afc0065c318977a39cf2b1c154ce043830940f",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "9542f938ba6d9003cbceb98f359cc01335669ea42dd3fbec6d04b82971483f73",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "b8d4d3d1168801777b10746390b504166b23ade97c3cb44a243f64d8aeef3695",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "3f900b259d98f9d513203a3709c298eda1f2de3c54a72ecaa9ea51838c07f3cd",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "9d74eed74ede53fbff51791680f0cf50613a9c3dfab018c81d76a01e963bf257",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "527ba92e45bd3c9217f91606eabf35b32e60bdba7cbbf8d527c03666eacb18f5",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "7636c32b84d45a0a4f659befa3d5852da1cc3b69b848f96c510941c2458f3425",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "7358473fc20cfec77f80f85e633abdb0f01f022be84e8f9bfb715995fb0c5a74",
+          "dtype": "<U167",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1107,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "12ebe411009ce33f0e7a5aba12128dc1bb9b73d6ebf5b5c573eddaf242bd7cb0",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1107",
+      "seed": 1107,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    },
+    {
+      "active_segment": -1,
+      "checkpoint": {
+        "file": "chunk-000099.npz",
+        "observations": 10,
+        "sha256": "86e63aa2de12c48d5fa780a8b2aa38964bff009cde41ff4b6be55611eef6ab89",
+        "step": 400000
+      },
+      "checkpoint_arrays": {
+        "engine_forces_kj_mol_nm": {
+          "contiguous_sha256": "59f1068cfc08949f0f3ef110d7aa0df5d7c5273f14c998467a56dad47d002d66",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_half_step_velocities_nm_ps": {
+          "contiguous_sha256": "aaaa4c392eaa65c0ac8cf0caf9f38384c2e6562f08f1ad093e83dae6f9f2a8f5",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "engine_positions_nm": {
+          "contiguous_sha256": "9da0fb3f5e8d1954cc78176153b23663fbe255e5a5af972ae5a8b946ab5b09a0",
+          "dtype": "<f8",
+          "shape": [
+            864,
+            3
+          ]
+        },
+        "openmm_checkpoint": {
+          "contiguous_sha256": "72e1f781e890d282a160a6b644dedf996a74e8e23d2685eb078e2c542c6c5ab9",
+          "dtype": "|u1",
+          "shape": [
+            41659
+          ]
+        },
+        "p": {
+          "contiguous_sha256": "3ee6ceacdf7c932f9d729e21f33fd75ce74b5393dce0ff06dc5ce62ecfeecceb",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "q": {
+          "contiguous_sha256": "36ec7f9da5ca1fdb1701b7d768c38d2d8fca3b498cfb2f8ea98803b8887c8451",
+          "dtype": "<f8",
+          "shape": [
+            1,
+            648,
+            3
+          ]
+        },
+        "rng_json": {
+          "contiguous_sha256": "d71a77c26e8d0d105b1a4e13f82622b34b8dfa3e527ca312fb9eafa0a03bb2ab",
+          "dtype": "<U167",
+          "shape": []
+        }
+      },
+      "config": {
+        "beads": 1,
+        "cells_per_axis": 6,
+        "checkpoint_steps": 4000,
+        "cutoff_angstrom": 9.0,
+        "density_g_cm3": 0.997,
+        "dispersion_correction": false,
+        "dt_fs": 0.25,
+        "equilibration_record_stride": 400,
+        "equilibration_steps": 400000,
+        "ewald_tolerance": 1e-05,
+        "initial_checkpoint": "docs/validation/literature-audit-2026-11-01/water/classical-pilot/endpoint.npz",
+        "integration": "velocity-verlet",
+        "isotope": "H2O",
+        "platform": "CPU",
+        "record_stride": 20,
+        "sampling_refresh_fs": 100.0,
+        "seed": 1108,
+        "segment_steps": 16000,
+        "segments": 25,
+        "temperature_K": 298.0,
+        "threads": 1,
+        "trajectory_precision": "float32"
+      },
+      "environment": {
+        "dependencies": {
+          "numpy": "2.5.4",
+          "openmm": "8.6.1",
+          "scipy": "1.18.1"
+        },
+        "machine": "x86_64",
+        "python": "3.12.14"
+      },
+      "integrator_xml_sha256": "01a279b552aad3facbb429640ef9d60fdc161b145bd2351d5b8d38e951f6d332",
+      "manifest_sha256": "affbd97b119bbcceb0dc2f0b865b21876417ab0f13424d80ae9f065d769a2f2a",
+      "model_xml_sha256": "181f85a8c41caf25f31a05d02d62b7ae7480e2a6ff65fbb33d832394e07a2322",
+      "pending_segment0_COM_Maxwell_draw_consumed_by_this_audit": false,
+      "preparation_ps": 100.0,
+      "raw_directory": "/workspace/scratch/a5e4820daedd/water-convergence-2026-11-01/runs/classical-1108",
+      "seed": 1108,
+      "state_step": 400000,
+      "time_au": 4134137.3335170154
+    }
+  ],
+  "source_identity": {
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/native_campaign_schedule.py": "4c17aaf4a9a26a6367dfbce6864a367883990a8e24f3e0ff290301b6a53e5239",
+    "benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "benchmarks/water/native_preparation_coordinator.py": "f51c63e1ba8edbca91ef6247bcd9e10fd9eb281c3e1cec986835e9d961d1bd02",
+    "benchmarks/water/native_preparation_extension.py": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c",
+    "benchmarks/water/native_reference.py": "92867b1d2ada3fb1ca789cb5a9859024ac68fee326f18a8fb910711bf3915da2",
+    "benchmarks/water/paired_timestep.py": "e51bfafb6a091087ac8eeda1f71fc323744c3a556e7118b02acf04028d850c0d",
+    "benchmarks/water/qtip4pf.py": "069637f680420a928b46934d080ce2d8b4ed37be4deb31f2dcb16cc6aba48e61",
+    "src/pyrpmd/analysis/diffusion.py": "bd3593fa4ad2b9e87ba1a4d2d612cb5875b98cba5b16d95187fd48cbe439926e",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+  },
+  "source_selection": "Exact fixed100ps pre-NVE checkpoint for every seed, never a production endpoint."
+}

@@ -1,0 +1,804 @@
+{
+  "schema": "pyrpmd.hch4.native-planning-probe.v1",
+  "created_utc": "2026-11-01T17:37:42.631503+00:00",
+  "rate_validated": false,
+  "equilibrium_sampled": false,
+  "scope": "Static input/CV verification and short deterministic dynamics; no umbrella campaign or rate estimate",
+  "seed_excluded_from_primary": 2026111199,
+  "limits": {
+    "maximum_total_process_CPU_seconds": 60,
+    "native_python_position_atol_bohr": 2e-10,
+    "native_python_momentum_atol_au": 2e-09,
+    "native_python_energy_per_bead_atol_hartree": 2e-10,
+    "nve_energy_span_per_bead_limit_hartree": 5e-05,
+    "half_dt_energy_span_ratio_limit": 1.1,
+    "nve_scope": "Short deterministic integrator consistency check from fixed non-equilibrium starts; no equilibrium or rate claim."
+  },
+  "comparisons": [
+    {
+      "beads": 1,
+      "mode": "unbiased",
+      "steps": 1,
+      "native_backend": "native",
+      "native_completed": 1,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 0.0,
+      "maximum_energy_per_bead_error_hartree": 1.1102230246251565e-16,
+      "maximum_observable_error": 0.0,
+      "passed": true
+    },
+    {
+      "beads": 1,
+      "mode": "unbiased",
+      "steps": 64,
+      "native_backend": "native",
+      "native_completed": 64,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 0.0,
+      "maximum_energy_per_bead_error_hartree": 3.3306690738754696e-16,
+      "maximum_observable_error": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "beads": 1,
+      "mode": "umbrella_flux",
+      "steps": 1,
+      "native_backend": "native",
+      "native_completed": 1,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 0.0,
+      "maximum_energy_per_bead_error_hartree": 1.1102230246251565e-16,
+      "maximum_observable_error": 0.0,
+      "passed": true
+    },
+    {
+      "beads": 1,
+      "mode": "umbrella_flux",
+      "steps": 64,
+      "native_backend": "native",
+      "native_completed": 64,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 4.440892098500626e-16,
+      "maximum_momentum_error_au": 3.219646771412954e-15,
+      "maximum_energy_per_bead_error_hartree": 4.440892098500626e-16,
+      "maximum_observable_error": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "beads": 1,
+      "mode": "constrained_parent",
+      "steps": 1,
+      "native_backend": "native",
+      "native_completed": 1,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 1.1102230246251565e-16,
+      "maximum_energy_per_bead_error_hartree": 0.0,
+      "maximum_observable_error": 4.440892098500626e-16,
+      "passed": true
+    },
+    {
+      "beads": 1,
+      "mode": "constrained_parent",
+      "steps": 64,
+      "native_backend": "native",
+      "native_completed": 64,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 2.220446049250313e-15,
+      "maximum_momentum_error_au": 1.2434497875801753e-14,
+      "maximum_energy_per_bead_error_hartree": 5.551115123125783e-16,
+      "maximum_observable_error": 1.3287981825982342e-15,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "mode": "unbiased",
+      "steps": 1,
+      "native_backend": "native",
+      "native_completed": 1,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 0.0,
+      "maximum_energy_per_bead_error_hartree": 2.7755575615628914e-16,
+      "maximum_observable_error": 0.0,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "mode": "unbiased",
+      "steps": 64,
+      "native_backend": "native",
+      "native_completed": 64,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 0.0,
+      "maximum_energy_per_bead_error_hartree": 1.7763568394002505e-15,
+      "maximum_observable_error": 0.0,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "mode": "umbrella_flux",
+      "steps": 1,
+      "native_backend": "native",
+      "native_completed": 1,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 0.0,
+      "maximum_energy_per_bead_error_hartree": 1.6653345369377348e-16,
+      "maximum_observable_error": 0.0,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "mode": "umbrella_flux",
+      "steps": 64,
+      "native_backend": "native",
+      "native_completed": 64,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 1.4210854715202004e-14,
+      "maximum_momentum_error_au": 8.327560863108374e-12,
+      "maximum_energy_per_bead_error_hartree": 3.2751579226442118e-15,
+      "maximum_observable_error": 2.220446049250313e-16,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "mode": "constrained_parent",
+      "steps": 1,
+      "native_backend": "native",
+      "native_completed": 1,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 0.0,
+      "maximum_momentum_error_au": 3.552713678800501e-15,
+      "maximum_energy_per_bead_error_hartree": 0.0,
+      "maximum_observable_error": 0.0,
+      "passed": true
+    },
+    {
+      "beads": 128,
+      "mode": "constrained_parent",
+      "steps": 64,
+      "native_backend": "native",
+      "native_completed": 64,
+      "python_backend": "python",
+      "maximum_position_error_bohr": 4.085620730620576e-14,
+      "maximum_momentum_error_au": 5.0043524879583856e-11,
+      "maximum_energy_per_bead_error_hartree": 7.438494264988549e-15,
+      "maximum_observable_error": 8.021361352916756e-15,
+      "passed": true
+    }
+  ],
+  "nve_checks": [
+    {
+      "beads": 1,
+      "dt_fs": 0.1,
+      "duration_fs": 20,
+      "energy_span_per_bead_hartree": 1.6778840150610819e-06,
+      "energy_end_minus_start_per_bead_hartree": 8.858504475517393e-07,
+      "scope": "Non-equilibrium but identical initial state at both time steps"
+    },
+    {
+      "beads": 1,
+      "dt_fs": 0.05,
+      "duration_fs": 20,
+      "energy_span_per_bead_hartree": 4.237716038080208e-07,
+      "energy_end_minus_start_per_bead_hartree": 2.2428128787499446e-07,
+      "scope": "Non-equilibrium but identical initial state at both time steps"
+    },
+    {
+      "beads": 128,
+      "dt_fs": 0.1,
+      "duration_fs": 20,
+      "energy_span_per_bead_hartree": 0.00018773813694206165,
+      "energy_end_minus_start_per_bead_hartree": 0.00015046332018375796,
+      "scope": "Non-equilibrium but identical initial state at both time steps"
+    },
+    {
+      "beads": 128,
+      "dt_fs": 0.05,
+      "duration_fs": 20,
+      "energy_span_per_bead_hartree": 4.6039519112250904e-05,
+      "energy_end_minus_start_per_bead_hartree": 3.221934837049911e-05,
+      "scope": "Non-equilibrium but identical initial state at both time steps"
+    }
+  ],
+  "timings": [
+    {
+      "beads": 1,
+      "center": 0.0,
+      "backend": "native",
+      "steps_per_repeat": 256,
+      "repeats": 3,
+      "CPU_seconds": [
+        0.0064741059999999795,
+        0.006344373999999986,
+        0.006344543999999952
+      ],
+      "wall_seconds": [
+        0.0064813650024007075,
+        0.006346112997562159,
+        0.0063452519971178845
+      ],
+      "median_CPU_microseconds_per_step": 24.78337499999981,
+      "median_wall_microseconds_per_step": 24.789503896727183,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 1,
+      "center": 0.0,
+      "backend": "python",
+      "steps_per_repeat": 64,
+      "repeats": 1,
+      "CPU_seconds": [
+        0.10105265200000002
+      ],
+      "wall_seconds": [
+        0.10105613299674587
+      ],
+      "median_CPU_microseconds_per_step": 1578.9476875000003,
+      "median_wall_microseconds_per_step": 1579.0020780741543,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 1,
+      "center": 0.9,
+      "backend": "native",
+      "steps_per_repeat": 256,
+      "repeats": 3,
+      "CPU_seconds": [
+        0.006232086999999997,
+        0.006309412000000014,
+        0.006253499000000051
+      ],
+      "wall_seconds": [
+        0.006232480998733081,
+        0.006310338998446241,
+        0.00625493500410812
+      ],
+      "median_CPU_microseconds_per_step": 24.4277304687502,
+      "median_wall_microseconds_per_step": 24.433339859797343,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 1,
+      "center": 0.9,
+      "backend": "python",
+      "steps_per_repeat": 64,
+      "repeats": 1,
+      "CPU_seconds": [
+        0.100376668
+      ],
+      "wall_seconds": [
+        0.10037944599753246
+      ],
+      "median_CPU_microseconds_per_step": 1568.3854375,
+      "median_wall_microseconds_per_step": 1568.4288437114446,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 1,
+      "center": 1.0,
+      "backend": "native",
+      "steps_per_repeat": 256,
+      "repeats": 3,
+      "CPU_seconds": [
+        0.006171116999999948,
+        0.006240379000000074,
+        0.006232777999999994
+      ],
+      "wall_seconds": [
+        0.006171488996187691,
+        0.006241355004021898,
+        0.006234034000954125
+      ],
+      "median_CPU_microseconds_per_step": 24.34678906249998,
+      "median_wall_microseconds_per_step": 24.35169531622705,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 1,
+      "center": 1.0,
+      "backend": "python",
+      "steps_per_repeat": 64,
+      "repeats": 1,
+      "CPU_seconds": [
+        0.09990412600000009
+      ],
+      "wall_seconds": [
+        0.09990744699462084
+      ],
+      "median_CPU_microseconds_per_step": 1561.0019687500014,
+      "median_wall_microseconds_per_step": 1561.0538592909506,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 128,
+      "center": 0.0,
+      "backend": "native",
+      "steps_per_repeat": 256,
+      "repeats": 3,
+      "CPU_seconds": [
+        0.26993599300000026,
+        0.27324848999999984,
+        0.25147205699999997
+      ],
+      "wall_seconds": [
+        0.26994704399839975,
+        0.27325547699729213,
+        0.25147868499334436
+      ],
+      "median_CPU_microseconds_per_step": 1054.437472656251,
+      "median_wall_microseconds_per_step": 1054.480640618749,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 128,
+      "center": 0.0,
+      "backend": "python",
+      "steps_per_repeat": 64,
+      "repeats": 1,
+      "CPU_seconds": [
+        0.17194009700000024
+      ],
+      "wall_seconds": [
+        0.17194492000271566
+      ],
+      "median_CPU_microseconds_per_step": 2686.564015625004,
+      "median_wall_microseconds_per_step": 2686.639375042432,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 128,
+      "center": 0.9,
+      "backend": "native",
+      "steps_per_repeat": 256,
+      "repeats": 3,
+      "CPU_seconds": [
+        0.21861957400000032,
+        0.23909715600000014,
+        0.24191704000000014
+      ],
+      "wall_seconds": [
+        0.21878143200592604,
+        0.23910946999967564,
+        0.24192326599586522
+      ],
+      "median_CPU_microseconds_per_step": 933.9732656250005,
+      "median_wall_microseconds_per_step": 934.021367186233,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 128,
+      "center": 0.9,
+      "backend": "python",
+      "steps_per_repeat": 64,
+      "repeats": 1,
+      "CPU_seconds": [
+        0.19324571399999968
+      ],
+      "wall_seconds": [
+        0.19325092699727975
+      ],
+      "median_CPU_microseconds_per_step": 3019.464281249995,
+      "median_wall_microseconds_per_step": 3019.545734332496,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 128,
+      "center": 1.0,
+      "backend": "native",
+      "steps_per_repeat": 256,
+      "repeats": 3,
+      "CPU_seconds": [
+        0.2392082059999998,
+        0.2356397450000003,
+        0.2773716790000007
+      ],
+      "wall_seconds": [
+        0.239359921994037,
+        0.23566077499708626,
+        0.2773794469976565
+      ],
+      "median_CPU_microseconds_per_step": 934.4070546874992,
+      "median_wall_microseconds_per_step": 934.999695289207,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    },
+    {
+      "beads": 128,
+      "center": 1.0,
+      "backend": "python",
+      "steps_per_repeat": 64,
+      "repeats": 1,
+      "CPU_seconds": [
+        0.24210559000000043
+      ],
+      "wall_seconds": [
+        0.2421117289995891
+      ],
+      "median_CPU_microseconds_per_step": 3782.8998437500068,
+      "median_wall_microseconds_per_step": 3782.9957656185798,
+      "included": "PES, normal modes, four-channel CV/Hessian, umbrella, flux metric, energy check and 2-fs observations; excludes thermostat/checkpoint/task scheduling"
+    }
+  ],
+  "gates": {
+    "static_equations_and_channels": true,
+    "P1_short_NVE": true,
+    "P128_short_NVE": false,
+    "native_python_all_paths": true,
+    "CPU_budget": true
+  },
+  "static": {
+    "natoms": 6,
+    "symbols": [
+      "H",
+      "C",
+      "H",
+      "H",
+      "H",
+      "H"
+    ],
+    "masses_amu": [
+      1.00782503207,
+      12.0,
+      1.00782503207,
+      1.00782503207,
+      1.00782503207,
+      1.00782503207
+    ],
+    "masses_au": [
+      1837.1526471479565,
+      21874.661835393123,
+      1837.1526471479565,
+      1837.1526471479565,
+      1837.1526471479565,
+      1837.1526471479565
+    ],
+    "beta_hartree_inverse": 1052.5834160132904,
+    "Rinf_bohr": 30.0,
+    "channels": 4,
+    "forming_breaking_paths_zero_based": [
+      [
+        [
+          [
+            3,
+            5
+          ]
+        ],
+        [
+          [
+            1,
+            3
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            4,
+            5
+          ]
+        ],
+        [
+          [
+            1,
+            4
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            2,
+            5
+          ]
+        ],
+        [
+          [
+            1,
+            2
+          ]
+        ]
+      ],
+      [
+        [
+          [
+            0,
+            5
+          ]
+        ],
+        [
+          [
+            1,
+            0
+          ]
+        ]
+      ]
+    ],
+    "xi_at_each_equivalent_reference": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "xi_entrance": 6.344242904558489e-14,
+    "xi_independent_scalar_error": 0.0,
+    "xi_gradient_independent_FD_max_error": 8.916686833337906e-12,
+    "prefactor_au": 3.3450362638130775,
+    "prefactor_cm3_molecule_s": 2.0492225575240845e-08,
+    "reduced_mass_au": 1728.4892968817187,
+    "resolved_pilot_sampling": {
+      "thermostat": "andersen",
+      "andersen_schedule": "geometric",
+      "andersen_interval": 500,
+      "replicas": 1,
+      "equilibration": "200 fs",
+      "production": "800 fs",
+      "interval": "2 fs",
+      "dt_au": 4.134137333517016,
+      "integrator": "cayley-bcb-andersen",
+      "equilibration_steps": 2000,
+      "production_steps": 8000,
+      "interval_steps": 20,
+      "sample_interval": 20
+    },
+    "native_binding_kind": "fortran-batch-v1",
+    "source_grid_actual_count": 110,
+    "source_grid_last_value": 1.0400000000000003,
+    "input": {
+      "schema_version": 1,
+      "task": "rate",
+      "preset": "production",
+      "description": "H+CH4 CPC-2013 short integration pilot; not a validated rate",
+      "temperature": "300 K",
+      "beads": 1,
+      "seed": 2026111101,
+      "system": {
+        "symbols": [
+          "H",
+          "C",
+          "H",
+          "H",
+          "H",
+          "H"
+        ],
+        "geometry": [
+          [
+            -4.68413503,
+            -0.4382546,
+            -0.07250839
+          ],
+          [
+            -5.04748906,
+            0.58950601,
+            -0.0725084
+          ],
+          [
+            -4.68411607,
+            1.10337961,
+            0.81755453
+          ],
+          [
+            -4.58404767,
+            1.24489401,
+            -1.20768359
+          ],
+          [
+            -6.13758906,
+            0.58951941,
+            -0.07250839
+          ],
+          [
+            -4.29480419,
+            1.6187615,
+            -1.94140095
+          ]
+        ],
+        "geometry_unit": "angstrom",
+        "masses_amu": [
+          1.00782503207,
+          12.0,
+          1.00782503207,
+          1.00782503207,
+          1.00782503207,
+          1.00782503207
+        ],
+        "charge": 0,
+        "multiplicity": 2
+      },
+      "potential": {
+        "provider": "python",
+        "factory": "benchmarks.hch4.pes:build",
+        "params": {
+          "library": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so"
+        },
+        "units": {
+          "positions": "bohr",
+          "energy": "hartree"
+        },
+        "derivative": "force"
+      },
+      "reaction": {
+        "fragments": [
+          [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            5
+          ]
+        ],
+        "forming_bonds": [
+          [
+            3,
+            5
+          ]
+        ],
+        "breaking_bonds": [
+          [
+            1,
+            3
+          ]
+        ],
+        "equivalent_paths": [
+          [
+            0,
+            1,
+            2,
+            4,
+            3,
+            5
+          ],
+          [
+            0,
+            1,
+            3,
+            2,
+            4,
+            5
+          ],
+          [
+            3,
+            1,
+            2,
+            0,
+            4,
+            5
+          ]
+        ],
+        "rinf": "30 bohr",
+        "electronic_weight": 1.0,
+        "symmetry_factor": 1.0
+      },
+      "dynamics": {
+        "timestep": "0.1 fs",
+        "integrator": "cayley-bcb",
+        "loop_backend": "native",
+        "block_steps": 256,
+        "native": "required"
+      },
+      "sampling": {
+        "thermostat": "andersen",
+        "andersen_schedule": "geometric",
+        "andersen_interval": 500,
+        "replicas": 1,
+        "equilibration": "200 fs",
+        "production": "800 fs",
+        "interval": "2 fs"
+      },
+      "umbrella": {
+        "start": -0.05,
+        "stop": 1.05,
+        "count": 111,
+        "kappa": 30.0
+      },
+      "analysis": {
+        "method": "mbar",
+        "measure": "rate_flux",
+        "bins": 5000,
+        "ranges": [
+          [
+            -0.02,
+            1.02
+          ]
+        ],
+        "bootstrap": 0
+      },
+      "rate": {
+        "pmf_method": "mbar",
+        "dividing_surface": 0.999,
+        "compare_ui": true,
+        "pmf_search_range": [
+          0.9,
+          1.02
+        ]
+      },
+      "recrossing": {
+        "parent_replicas": 4,
+        "parent_samples": 2,
+        "equilibration": "200 fs",
+        "parent_interval": "50 fs",
+        "child_pairs": 2,
+        "child_time": "50 fs",
+        "plateau_fraction": 0.4,
+        "plateau_tolerance": 0.02,
+        "bootstrap": 0,
+        "constraint_tolerance": 1e-10
+      },
+      "parallel": {
+        "backend": "serial",
+        "trajectory_workers": 1,
+        "threads_per_rank": 1
+      },
+      "output": {
+        "directory": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/hch4-pilot",
+        "checkpoint_steps": 1000
+      }
+    }
+  },
+  "cost_extrapolation": {
+    "reference_umbrella_steps": 26640000000,
+    "reference_production_samples": 22200000000,
+    "reference_unconstrained_child_steps": 50000000,
+    "pilot_four_seed_umbrella_steps": 4440000,
+    "not_a_forecast_confidence_interval": true,
+    "by_beads": {
+      "1": {
+        "reference_umbrella_CPU_hours_range_of_three_centers": [
+          180.1662390624998,
+          183.39697499999858
+        ],
+        "pilot_four_seed_umbrella_CPU_hours_range_of_three_centers": [
+          0.030027706510416637,
+          0.03056616249999976
+        ],
+        "caveat": "Short local-block extrapolation, excludes warmup failures, thermostat, restart I/O, full ensemble geometry variation and analysis. Wall time depends on available workers."
+      },
+      "128": {
+        "reference_umbrella_CPU_hours_range_of_three_centers": [
+          6911.402165625003,
+          7802.837297656258
+        ],
+        "pilot_four_seed_umbrella_CPU_hours_range_of_three_centers": [
+          1.1519003609375005,
+          1.3004728829427097
+        ],
+        "caveat": "Short local-block extrapolation, excludes warmup failures, thermostat, restart I/O, full ensemble geometry variation and analysis. Wall time depends on available workers."
+      }
+    }
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "native_binary_sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f",
+    "PES_library_sha256": "aa33e4f55246d5b99839cd3b08702f1d091a6b3dddac1d6c97d34bb542d95aaf",
+    "source_files": {
+      "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+      "benchmarks/hch4/wrapper.f90": "4bac40255ef99380e011d1c3e231673feaf4a09974f569c8a60b004f9075b4da",
+      "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+      "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+      "benchmarks/hch4/verify_native.py": "13b2ddba84f15bacc06ef22cf456b8e001128fd56b8d907078d2a88e197d203c",
+      "src/pyrpmd/input.py": "e6828805abc42818064d9808a85a741eea1f369cbb1db2de7cfd5c3b4bc57a8d",
+      "src/pyrpmd/system.py": "0a26f036da0215cc6f3f1bc5925f28fc3fb05b0fe677f01796f68dddddd5e2ce",
+      "src/pyrpmd/cv.py": "640d9ee61d76f847e0260acb2456723ff76c1b9fd11dd61dcdf16de3fc58a114",
+      "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+      "src/pyrpmd/bias.py": "0a0ab4a074da0be7626c1519142ab5216999f54cc21f91a50b55e58145a38cb1",
+      "src/pyrpmd/dynamics.py": "89b635e4748af845ec8e8898ae4e9576a4e37e29831641d0e50e438fcfb798db",
+      "src/pyrpmd/propagation.py": "d2955376772d7351390b4f0ab8ed52db50989f3b92ff7a240d1db822c8b62b2e",
+      "src/pyrpmd/block_propagation.py": "740daa76e6606605f8cd241b85c05d7300147201399d39080096c9bbbf313432",
+      "src/pyrpmd/potentials/native.py": "eb4e4dbe4230dd66152e0c33b1b5800080d22ccc574f067db3231dddfd5d873b",
+      "src/pyrpmd/potentials/python.py": "8b040203cedcc1cac4acc814e2004f78ba4a3ab180c027600d59699c9d5732c9",
+      "src/pyrpmd/workflows/fes.py": "eabbbda8c7ddfa4060ef2e17b84fea60c90208deeb4eab1cb03af0d7bca9be6f",
+      "src/pyrpmd/workflows/rate.py": "d057b814fcee94e141d517b2a384e1090511ddd0fdff432c553933309107edf8"
+    },
+    "CPU_seconds": 4.906196887,
+    "wall_seconds": 4.907100625001476
+  },
+  "passed": false
+}

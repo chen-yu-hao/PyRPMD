@@ -1,0 +1,98 @@
+{
+  "actual_long_extension_started": false,
+  "current_campaign_physics_or_protocol_changed": false,
+  "excludes": [
+    "live progress manifests and journals",
+    "raw trajectories/checkpoints",
+    "any long continuation result"
+  ],
+  "file_count": 16,
+  "files": [
+    {
+      "bytes": 18733,
+      "path": "benchmarks/water/native_preparation_extension.py",
+      "sha256": "7442d986efc6298f33cbe2b3e7c27eef6a27d3a4fa9861bc818bf70c763e8a4c"
+    },
+    {
+      "bytes": 9170,
+      "path": "tests/test_water_preparation_extension.py",
+      "sha256": "7d146730d2dd7b7a505328aa8e4344d450d2e696245f9d65639788800260f9ed"
+    },
+    {
+      "bytes": 10649,
+      "path": "benchmarks/water/analyze_rdf_sampling_noise.py",
+      "sha256": "57f5489bb84755489cf88bab312b430b19a5fb9f6bdd06a5223fa4a54fc42819"
+    },
+    {
+      "bytes": 3017,
+      "path": "tests/test_water_rdf_sampling_noise.py",
+      "sha256": "1ffd2a4219d84026b516239809c9c95acbe8640b70e54877e1dee7f6af976121"
+    },
+    {
+      "bytes": 8554,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/equilibration-extension-proposal.json",
+      "sha256": "a5a9c85a2e2093839f3fd688516d65adef825e162b21351708fe5fa547acb1d6"
+    },
+    {
+      "bytes": 7535,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/equilibration-extension-proposal.md",
+      "sha256": "6bed2bb46e1de2ba0cc084a2fe7a472f9504bb6e1f908177a7e11514dc3c974f"
+    },
+    {
+      "bytes": 10526,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/equilibration-extension-proposal-v2.json",
+      "sha256": "e17bd58c303e7f14f1023a458cd59a004c83185a6864f1587ec93d2787737b12"
+    },
+    {
+      "bytes": 5161,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/equilibration-extension-proposal-v2.md",
+      "sha256": "db4770b40e104266fa1b424e1f60a09834710d4898af074e89f518d7b2b78566"
+    },
+    {
+      "bytes": 5558,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/rdf-noise-audit/README.md",
+      "sha256": "aa3d1ba53e3678edc2e888a2105b0c06e2672fe6dcb1e6de37f62f3ca34ceb30"
+    },
+    {
+      "bytes": 4746,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/rdf-noise-audit/report.json",
+      "sha256": "f0c9b60ada5820b4949b73be280333c1130346bc32decb40350783ad7ebd8fb9"
+    },
+    {
+      "bytes": 79930,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/rdf-noise-audit/bin-noise.csv",
+      "sha256": "3a17e332ac115f8924f4abb6b5bcc7215e296324681ffeb5b1bb317fa0144212"
+    },
+    {
+      "bytes": 5444,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/README.md",
+      "sha256": "fcfaf5dc4f37755090e1e50d8693d467215fde87e5e2c38de741a9384ae24c2d"
+    },
+    {
+      "bytes": 5237,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/gate.json",
+      "sha256": "1cadb3d251d224c76ef497937da31266fdaa63d28c2e00cee850cb42db255f2f"
+    },
+    {
+      "bytes": 1555,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/initial-nine-tests.xml",
+      "sha256": "82978ac16c41af6040a8b941ebd6d4771c7ec0448320f3e5bb6daaab4237c5b3"
+    },
+    {
+      "bytes": 2618,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/continuation-and-rdf-pytest.xml",
+      "sha256": "28556110c13f83c700759dc1f32d360739b4ff40f0a2c98ee719de34809a8468"
+    },
+    {
+      "bytes": 1886,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/preparation-continuation-gate/independent-review.json",
+      "sha256": "edea395c0b8e712253da9cd7643eab8fc52b0ddb8abd54111e45e83fbb654f77"
+    }
+  ],
+  "frozen_utc": "2026-11-01T18:35:29.131005+00:00",
+  "immutable_review_bundle": true,
+  "original_checkout_revision": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "review_scope": "Seventeen focused tests, independent source/phase review, analytic excluded-fixture noise audit and a separately versioned unadopted proposal. No liquid convergence claim.",
+  "schema": "pyrpmd.water-preparation-review-publication-inventory.v1",
+  "total_bytes": 180319
+}

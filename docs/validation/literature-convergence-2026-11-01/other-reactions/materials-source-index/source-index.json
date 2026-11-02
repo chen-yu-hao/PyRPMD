@@ -1,0 +1,151 @@
+{
+  "schema": "pyrpmd.materials-literature-source-index.v1",
+  "created_utc": "2026-11-01T18:57:21.970937+00:00",
+  "scope": "Primary-source/protocol research, exact public-model identification and bounded nb=1 static checks; no diffusion simulation.",
+  "papers": [
+    {
+      "id": "pd-calvo-costa-2010",
+      "doi": "10.1021/ct900554r",
+      "citation": "F. Calvo and D. Costa, J. Chem. Theory Comput. 6(2), 508–516 (2010).",
+      "title": "Diffusion of Hydrides in Palladium Nanoclusters. A Ring-Polymer Molecular Dynamics Study of Quantum Finite Size Effects",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/ct900554r",
+      "access_observed": "publisher abstract only; full publisher request previously returned 403 and was not retried",
+      "numerical_reference_extracted": false
+    },
+    {
+      "id": "ni-suleimanov-2012",
+      "doi": "10.1021/jp302453z",
+      "citation": "Y. V. Suleimanov, J. Phys. Chem. C 116(20), 11141–11153 (2012).",
+      "title": "Surface Diffusion of Hydrogen on Ni(100) from Ring Polymer Molecular Dynamics",
+      "publisher_url": "https://pubs.acs.org/doi/10.1021/jp302453z",
+      "access_observed": "publisher abstract only; full publisher request previously returned 403 and was not retried",
+      "numerical_reference_extracted": false
+    }
+  ],
+  "primary_model_and_method_sources": [
+    {
+      "id": "cambridge-optim",
+      "url": "https://www-wales.ch.cam.ac.uk/OPTIM/",
+      "kind": "official implementing research-group distribution",
+      "finding": "Explicit public GPL source link; fetched release contains author-attributed EAM4 implementation and root GPL3 text.",
+      "receipt": "wales-source-fetch-receipt.json"
+    },
+    {
+      "id": "cambridge-nimet",
+      "url": "https://www-wales.ch.cam.ac.uk/OPTIM.doc/node36.html",
+      "kind": "official implementation documentation",
+      "finding": "EAM4 Ni(100) example: 392 Ni, four layers of 98, lateral periodicity, fixed bottom layer, 10 angstrom cutoff. These are implementation-documentation facts, not independently confirmed settings of the 2012 paper."
+    },
+    {
+      "id": "cambridge-niheam7",
+      "url": "https://www-wales.ch.cam.ac.uk/OPTIM.doc/node37.html",
+      "kind": "official implementation documentation",
+      "finding": "Describes later EAM4/5/6/7 family and differences between published formulas and original source. Current nihEAM6pot.f90 actually starts with an EAM7 wrapper and is not selected."
+    },
+    {
+      "id": "cambridge-references",
+      "url": "https://www-wales.ch.cam.ac.uk/OPTIM.doc/node67.html",
+      "kind": "official implementation bibliography",
+      "finding": "Names Truong/Truhlar/Garrett 1989, Truong/Truhlar 1990 and Wonchoba/Truhlar 1995–1998 model references."
+    },
+    {
+      "id": "qi-review-2012",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1155/2012/483504",
+      "doi": "10.1155/2012/483504",
+      "kind": "primary methods review by QI authors",
+      "finding": "Section 3.3 identifies EAM4 for Ni(100) surface diffusion; section 3.4 identifies EAM6 for subsurface/interior transport. Its 162-Ni surface model and path-integral settings are not assigned to Suleimanov 2012."
+    },
+    {
+      "id": "calvo-mba-2008",
+      "url": "https://www.researchgate.net/publication/233598801_Desorption_and_Absorption_Dynamics_of_Hydrogen_in_Palladium_Nanoclusters",
+      "kind": "author-uploaded earlier article; searchable indexed text",
+      "title": "Desorption and Absorption Dynamics of Hydrogen in Palladium Nanoclusters",
+      "citation": "F. Calvo, J. Comput. Theor. Nanosci. 5(3), 331–340 (2008).",
+      "finding": "Earlier work uses a many-body-alloy model derived from Zhong/Li/Tomanek PRB 44, 13053 (1991), with Pd–Pd parameters from Rey et al. PRB 48, 8253 (1993); does not establish the model used in the 2010 diffusion paper.",
+      "access_observed": "Search-indexed author-uploaded text includes methods/Table I; direct web-tool open returned DisabledError; no PDF or source bytes downloaded.",
+      "bibliographic_caution": "Indexed DOI metadata and the displayed proof footer differ; this earlier article is retained as a provenance lead, not a new numerical benchmark."
+    },
+    {
+      "id": "nist-pdh-zhou",
+      "url": "https://www.ctcms.nist.gov/potentials/entry/2008--Zhou-X-W-Zimmerman-J-A-Wong-B-M-Hoyt-J-J--Pd-H/",
+      "kind": "official model registry",
+      "doi": "10.1557/jmr.2008.0090",
+      "finding": "A publicly listed alternative Pd-H EAM model. No verified link to Calvo/Costa 2010. A bounded raw-table GET returned 403; no byte identity obtained.",
+      "receipt": "public-fetch-receipt.json"
+    },
+    {
+      "id": "nist-nialh-angelo",
+      "url": "https://www.ctcms.nist.gov/potentials/entry/1995--Angelo-J-E-Moody-N-R-Baskes-M-I--Ni-Al-H/",
+      "kind": "official model registry",
+      "doi": "10.1088/0965-0393/3/3/001",
+      "finding": "Model used in the existing PyRPMD NiAlH integration pilot; distinct from the identified EAM4 source."
+    },
+    {
+      "id": "potlib-2023",
+      "url": "https://comp.chem.umn.edu/potlib/",
+      "kind": "original potential-author distribution",
+      "finding": "Distribution and browse pages inspected; no matching Ni/Pd surface implementation identified through this route. No form submission or user contact details sent."
+    }
+  ],
+  "access_attempts": [
+    {
+      "route": "HAL public DOI API for both requested DOIs",
+      "outcome": "HTTP 200, zero results for each query",
+      "receipt": "public-fetch-receipt.json"
+    },
+    {
+      "route": "HAL title and author/year API",
+      "outcome": "Pd title query returned zero; author/year query returned four unrelated records",
+      "receipt": "hal-title-query-receipt.json"
+    },
+    {
+      "url": "https://www.univ-grenoble-alpes.fr/florent-calvo-537086.kjsp",
+      "outcome": "Official author directory; no target manuscript/model link found"
+    },
+    {
+      "url": "https://liphy.univ-grenoble-alpes.fr/en/research/teams/psm-statistical-physics-and-modeling/modeling-molecular-level",
+      "outcome": "Official group description; no target manuscript/model link found"
+    },
+    {
+      "url": "https://ilm.univ-lyon1.fr/index.php?option=com_hal&task=publications&ann=2010",
+      "outcome": "Web-tool route not accessible; no manuscript obtained; no repeat"
+    },
+    {
+      "url": "https://cyi.academia.edu/YurySuleimanov",
+      "outcome": "Accessible author profile had related uploads but no accessible Ni 2012 link"
+    },
+    {
+      "url": "https://greengroup.mit.edu/rpmd-publications/",
+      "outcome": "Search-indexed bibliography cites Ni 2012; direct open 502; no repeat"
+    },
+    {
+      "url": "https://www.researchgate.net/publication/224916234_Surface_Diffusion_of_Hydrogen_on_Ni100_from_Ring_Polymer_Molecular_Dynamics",
+      "outcome": "Original article record explicitly shows no full text; author request not sent"
+    },
+    {
+      "url": "https://www.researchgate.net/publication/231248457_Diffusion_of_Hydrides_in_Palladium_Nanoclusters_A_Ring-Polymer_Molecular_Dynamics_Study_of_Quantum_Finite_Size_Effects",
+      "outcome": "Indexed original article record shows no full text; author request not sent"
+    },
+    {
+      "route": "Bounded exact-DOI search of OxfordORA, MITDSpace, arXiv, ACSfigshare and HAL domains",
+      "outcome": "No target manuscript/supplement found; not proof of universal unavailability"
+    },
+    {
+      "route": "Cambridge source link through web tool",
+      "outcome": "Unsupported binary content type; normal bounded public GET subsequently succeeded without authentication",
+      "receipt": "wales-source-fetch-receipt.json"
+    }
+  ],
+  "rejected_inferences": [
+    "Do not transfer later citing papers' temperatures, bead counts, coverage or EAM6 label into the 2012 protocol.",
+    "Do not transfer the QI lattice/temperature/path-integral conventions into the RPMD experiment.",
+    "Do not substitute the public Zhou Pd-H EAM table for the unresolved Calvo/Costa many-body model.",
+    "Do not transfer earlier Calvo desorption/scattering settings or model modifications into the 2010 diffusion experiment.",
+    "Do not infer original paper lattice/masses/thermostat/sampling settings from current OPTIM wrapper defaults.",
+    "Static gradient/symmetry agreement validates implementation consistency only; it is not a diffusion or paper-reproduction result."
+  ],
+  "new_simulations": 0,
+  "external_messages_sent": 0,
+  "uploads": 0,
+  "registry_changes": false
+}

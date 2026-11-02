@@ -1,0 +1,13 @@
+{
+  "schema": "pyrpmd.root-actual-exec-observation.v1",
+  "exec_session_id": 94078,
+  "observed_utc": "2026-11-01 21:17:10 UTC",
+  "tool_result": {
+    "chunk_id": "a25957",
+    "wall_time_seconds": 0.000023069,
+    "exit_code": 0,
+    "original_token_count": 18,
+    "output": "{\"exit_code\": 0, \"timed_out\": false, \"wall_seconds\": 538.0479605419969}\n"
+  },
+  "observation_source": "Actual write_stdin terminal response retained by root; not inferred from a result file."
+}

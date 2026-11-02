@@ -1,0 +1,67 @@
+{
+  "CPU_affinity": [
+    5
+  ],
+  "actual_pilot_registration_or_execution": false,
+  "allowed_CPU_mask": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "command": [
+    "taskset",
+    "-c",
+    "5",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_hch4_efficiency_pilot.py",
+    "--basetemp=/workspace/scratch/a5e4820daedd/efficiency-synthetic-lifecycle-cpu5",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-implementation/initial-lifecycle-cpu5/pytest.xml"
+  ],
+  "exit_code": 0,
+  "pytest.log": {
+    "bytes": 99,
+    "sha256": "7990ea96ac8359e97bb2b3460a9b6e61d8a3538709a50bf3e051a04dd6316e1a"
+  },
+  "pytest.xml": {
+    "bytes": 9755,
+    "sha256": "c6dff81e27194dc8c59f710113fc1fe52dd5190830baa1b6f36a246da01d9c69"
+  },
+  "real_PES_evaluations": 0,
+  "real_dynamics_steps": 0,
+  "schema": "pyrpmd.hch4.efficiency-pilot.synthetic-gate.v1",
+  "source_files": {
+    "benchmarks/hch4/efficiency_pilot.py": {
+      "bytes": 63126,
+      "sha256": "89c42621af370d2eb1101d1d0ecc50cd75023e60d8c5854e27f6c9d001f82598"
+    },
+    "tests/test_hch4_efficiency_pilot.py": {
+      "bytes": 33379,
+      "sha256": "22a74bf76808140c9d1efc233af5ce03cfbd7cb84fa3bc2c3037f09539db9103"
+    }
+  },
+  "source_unchanged": true,
+  "synthetic_RNG_used": true,
+  "testsuites": [
+    {
+      "errors": "0",
+      "failures": "0",
+      "hostname": "13d968332fed",
+      "name": "pytest",
+      "skipped": "0",
+      "tests": "63",
+      "time": "9.970",
+      "timestamp": "2026-11-01T15:55:25.968225-05:00"
+    }
+  ],
+  "threads": 1,
+  "wall_seconds": 10.488391170991235
+}

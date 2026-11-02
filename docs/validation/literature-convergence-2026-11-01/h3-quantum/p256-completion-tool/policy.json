@@ -1,0 +1,758 @@
+{
+  "adoption_contract": {
+    "adopted": true,
+    "fields": [
+      "policy_sha256",
+      "source_sha256",
+      "independent_review",
+      "analysis_resources"
+    ],
+    "new_physical_evaluation_authorized": false,
+    "policy_and_source_require_exact_reviewed_hash": true,
+    "schema": "pyrpmd.h3.p256-complete-analysis-adoption.v1"
+  },
+  "analysis_resources": {
+    "CPU_affinity": [
+      6
+    ],
+    "CPUs": 1,
+    "complete_verification_analysis_and_finalization_wall_seconds": 600,
+    "forced_reap_seconds": 5,
+    "selected_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/workspace/scratch/a5e4820daedd/PyRPMD/src:/workspace/scratch/a5e4820daedd/PyRPMD"
+    },
+    "termination_grace_seconds": 5,
+    "threads": 1
+  },
+  "analyzer": {
+    "bytes": 16902,
+    "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_recrossing_analyze.py",
+    "sha256": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6"
+  },
+  "attempt_plan": {
+    "bytes": 16340,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-attempts/abc9e44ad7c24313b23f64741046d2c1/plan.json",
+    "sha256": "092cb00836243a55a61289c13da8d97ed8402109413d1c25d4f6b0209217b0ac"
+  },
+  "baseline": {
+    "bytes": 380711,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200-four-pairs/quantum-rate-comparison.json",
+    "sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720"
+  },
+  "child_authorization": {
+    "bytes": 8085,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/authorization.json",
+    "sha256": "3cefa11143fbcd2868f84b7d4ebf034ca48c0412cd55a6c119e70fecbf9ff384"
+  },
+  "child_launch": {
+    "bytes": 1512,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/launch.json",
+    "sha256": "deffbadd968e9f61b42c83452af9f07d70a97ea66069ba2f6f0bdc85ad138981"
+  },
+  "child_launch_value": {
+    "CPU_affinity": [
+      6,
+      7
+    ],
+    "all_eight_seeds_required": true,
+    "automatic_analysis": false,
+    "before_subprocess_call_utc": "2026-11-01T20:25:26.775457+00:00",
+    "command": [
+      "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+      "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py",
+      "run",
+      "--authorization",
+      "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/authorization.json"
+    ],
+    "finalization_reserve_seconds": 120,
+    "schema": "pyrpmd.p256-child.root-launch.v1",
+    "selected_environment": {
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "/workspace/scratch/a5e4820daedd/PyRPMD/src:/workspace/scratch/a5e4820daedd/PyRPMD"
+    },
+    "source_sha256": {
+      "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb",
+      "/workspace/scratch/a5e4820daedd/launch_p256_children.py": "201f93a71cccecd2b486d4653cc8666b2e08a7765ca449554844869f6c80de1b",
+      "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/authorization.json": "3cefa11143fbcd2868f84b7d4ebf034ca48c0412cd55a6c119e70fecbf9ff384"
+    },
+    "whole_campaign_wall_seconds": 36000,
+    "workers": 2,
+    "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD"
+  },
+  "child_protocol": {
+    "bytes": 6988,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/protocol.json",
+    "sha256": "c96429270787bda5404959648d66cfbc76575f94fd5903a64cadc482cae08d6f"
+  },
+  "cohort": {
+    "all_workers_drained_required": true,
+    "beads": 256,
+    "branch_order": [
+      [
+        0,
+        0.1
+      ],
+      [
+        0,
+        0.05
+      ],
+      [
+        1,
+        0.1
+      ],
+      [
+        1,
+        0.05
+      ]
+    ],
+    "branches": 32,
+    "chunks": 800,
+    "complete_schema": "pyrpmd.h3.p256-child-cohort-completion.v1",
+    "horizon_fs": 200,
+    "momentum_pair_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "native_steps": 76800000,
+    "pair_batches": [
+      0,
+      1
+    ],
+    "parents_per_seed": 200,
+    "seeds": [
+      825601,
+      825603,
+      825607,
+      825609,
+      825613,
+      825617,
+      825621,
+      825623
+    ],
+    "timesteps_fs": [
+      0.1,
+      0.05
+    ]
+  },
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_recrossing_analyze.py",
+    "--data",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/analysis"
+  ],
+  "created_utc": "2026-11-01T20:40:12.871541+00:00",
+  "once_and_failure_policy": {
+    "analysis_numerical_failure_retained": true,
+    "analysis_output_must_not_exist": true,
+    "analyzer_invocations_maximum": 1,
+    "child_campaign_lock_never_removed": true,
+    "confirmed_analyzer_drain_before_final_receipt": true,
+    "inputs_and_sources_rehashed_after_analysis": true,
+    "no_automatic_retry_resume_extension": true,
+    "own_process_group_only_on_interrupt_or_timeout": true,
+    "persistent_execution_directory_claim": true,
+    "scientific_gate_false_does_not_trigger_rerun": true
+  },
+  "parent_manifest": {
+    "bytes": 32761,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/parents-complete.json",
+    "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120"
+  },
+  "paths": {
+    "analysis_output": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/analysis",
+    "attempt": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-attempts/abc9e44ad7c24313b23f64741046d2c1",
+    "child_execution": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution",
+    "child_lock": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/.recrossing-p256-parent-lock",
+    "child_protocol": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/protocol.json",
+    "child_registration": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-registration.json",
+    "children_complete": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/children-complete.json",
+    "data": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing",
+    "execution": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/analysis-execution",
+    "root_completion": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/completion.json",
+    "root_log": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/campaign.log",
+    "root_observed_exit": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/root-exec-exit.json",
+    "root_tool_observation": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/exec-observation.json"
+  },
+  "pure_metadata_verifiers": {
+    "cohort_module": {
+      "bytes": 38810,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py",
+      "sha256": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb"
+    },
+    "journal_helper": {
+      "bytes": 22261,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py",
+      "sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb"
+    },
+    "parent_dispatcher": {
+      "bytes": 35515,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    }
+  },
+  "registration": {
+    "bytes": 1191,
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-registration.json",
+    "sha256": "c73c60ffd009fa75eac87e3b19bb743bf815baae3f145f154d0e8a0fae817977"
+  },
+  "root_exit_contract": {
+    "all_workers_drained": true,
+    "complete_registered_child_seeds": 8,
+    "driver_sha256": "201f93a71cccecd2b486d4653cc8666b2e08a7765ca449554844869f6c80de1b",
+    "exec_session_id": 30588,
+    "exit_code": 0,
+    "required_hashes": [
+      "children_complete_sha256",
+      "registration_sha256",
+      "root_completion_sha256",
+      "actual_tool_observation_sha256"
+    ],
+    "required_observed_timestamp": "observed_utc",
+    "schema": "pyrpmd.p256-child.root-observed-exec-exit.v1",
+    "tool_result_exit_code": 0
+  },
+  "schema": "pyrpmd.h3.p256-complete-analysis-policy.v1",
+  "scientific_runtime": {
+    "actual_native_module": {
+      "bytes": 2407952,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    },
+    "numpy": "2.5.4",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "python_executable": {
+      "bytes": 30894944,
+      "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+      "sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7"
+    },
+    "scipy": "1.18.1"
+  },
+  "scope": "Run the unchanged complete-cohort P256 analyzer once only after actual root-observed normal exit, complete final raw identity verification and worker drain. No partial scientific analysis, resampling, extension or fallback.",
+  "source_files": {
+    "benchmarks/h3/classical_tst.py": {
+      "bytes": 7765,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    "benchmarks/h3/mixing_sampling.py": {
+      "bytes": 17299,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py",
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    "benchmarks/h3/p256_child_campaign.py": {
+      "bytes": 38810,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py",
+      "sha256": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb"
+    },
+    "benchmarks/h3/p256_parent_campaign.py": {
+      "bytes": 35515,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    },
+    "benchmarks/h3/p256_recrossing_analyze.py": {
+      "bytes": 16902,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_recrossing_analyze.py",
+      "sha256": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6"
+    },
+    "benchmarks/h3/p256_surface_recrossing.py": {
+      "bytes": 31442,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_surface_recrossing.py",
+      "sha256": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692"
+    },
+    "benchmarks/h3/pes.py": {
+      "bytes": 9908,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    "benchmarks/h3/quantum_recrossing_analyze.py": {
+      "bytes": 21326,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_analyze.py",
+      "sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+    },
+    "benchmarks/h3/quantum_surface_recrossing.py": {
+      "bytes": 30072,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_surface_recrossing.py",
+      "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+    },
+    "benchmarks/h3/surface_partition.py": {
+      "bytes": 40251,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/surface_partition.py",
+      "sha256": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+    },
+    "loaded_native:_native.cpython-312-x86_64-linux-gnu.so": {
+      "bytes": 2407952,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    },
+    "src/pyrpmd/analysis/fes.py": {
+      "bytes": 62426,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+      "sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+    },
+    "src/pyrpmd/checkpoint.py": {
+      "bytes": 9555,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py",
+      "sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+    },
+    "src/pyrpmd/constants.py": {
+      "bytes": 940,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    "src/pyrpmd/cv.py": {
+      "bytes": 34870,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    "src/pyrpmd/dynamics.py": {
+      "bytes": 40171,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py",
+      "sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+    },
+    "src/pyrpmd/io.py": {
+      "bytes": 5865,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py",
+      "sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    "src/pyrpmd/propagation.py": {
+      "bytes": 16478,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py",
+      "sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa"
+    }
+  },
+  "static_guards": [
+    {
+      "bytes": 7765,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/classical_tst.py",
+      "sha256": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be"
+    },
+    {
+      "bytes": 17299,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/mixing_sampling.py",
+      "sha256": "81dc2a131feca673857acdd072a44d52747b400c30f42d30c88fcd462725f4d0"
+    },
+    {
+      "bytes": 38810,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_child_campaign.py",
+      "sha256": "0304915726116f062cee1cbb23a649d2c4e4086a787e4206d6dc7ec939ef89bb"
+    },
+    {
+      "bytes": 35515,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_parent_campaign.py",
+      "sha256": "7934c1d7f695ce43337d11171cbad8c46ff95311490b755bf4191a56e00c0da3"
+    },
+    {
+      "bytes": 16902,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_recrossing_analyze.py",
+      "sha256": "9e2fdacddcf2ef5b825e0eb0b65789e5f045a8505a8fbd09fe21b704ed4936b6"
+    },
+    {
+      "bytes": 31442,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/p256_surface_recrossing.py",
+      "sha256": "9c5c5106d8392ca577f8ea6b54f6e1828dcabb8f86a0e01b732c2e626aa15692"
+    },
+    {
+      "bytes": 9908,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/pes.py",
+      "sha256": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892"
+    },
+    {
+      "bytes": 21326,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_recrossing_analyze.py",
+      "sha256": "4d1925461219e87d85d4e1f4ac98263c4bb58ff0d7713075782145ba909649c1"
+    },
+    {
+      "bytes": 30072,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/quantum_surface_recrossing.py",
+      "sha256": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e"
+    },
+    {
+      "bytes": 40251,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/benchmarks/h3/surface_partition.py",
+      "sha256": "23d2805270a82c91eff7b9a70f89621a356d7625aeaf76246f00896147b7a5db"
+    },
+    {
+      "bytes": 4560,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/final/synthetic-gate.json",
+      "sha256": "76a5d5e64b23ba67a246e50b329e0a4eb1e58828dd30386800206d82bd87e4df"
+    },
+    {
+      "bytes": 5980,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-coordinator/independent-review.json",
+      "sha256": "06aaa12cd2302c078a6969cf95ef9d9b928a9ffceff7f92f3edf7de0a247f67d"
+    },
+    {
+      "bytes": 4150,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-child-tool/independent-analysis-review.json",
+      "sha256": "4bb9d6a68527f225d490ff5fedbd5ff7d7913da821dac39f6b5aa15efa43ce88"
+    },
+    {
+      "bytes": 70005,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-fixed-eight-chain-design/proposal.json",
+      "sha256": "c668c15fd89ca0a535afc4082521e3f42ba9e84f5736b5b481bc1d7c376d791d"
+    },
+    {
+      "bytes": 48513,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/complete-audit.json",
+      "sha256": "71e811ed90e866c19f7b90668e65bc0c3332925090f4bed2f09447497576d4f1"
+    },
+    {
+      "bytes": 1945,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/water/progress/original-continuation-20261101T1945Z.json",
+      "sha256": "412b2e66d687caf9d0bb055f5dbb6e4e35c14e03f2aadfa804b3f0374b73d0c2"
+    },
+    {
+      "bytes": 2407952,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/_native.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+    },
+    {
+      "bytes": 62426,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/analysis/fes.py",
+      "sha256": "bed6c19676c8e015c8cd234868c7d3f0c04699f90b765e89ce493489d808472c"
+    },
+    {
+      "bytes": 9555,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/checkpoint.py",
+      "sha256": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f"
+    },
+    {
+      "bytes": 940,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/constants.py",
+      "sha256": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3"
+    },
+    {
+      "bytes": 34870,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/cv.py",
+      "sha256": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52"
+    },
+    {
+      "bytes": 40171,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/dynamics.py",
+      "sha256": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02"
+    },
+    {
+      "bytes": 5865,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/io.py",
+      "sha256": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1"
+    },
+    {
+      "bytes": 16478,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/src/pyrpmd/propagation.py",
+      "sha256": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa"
+    },
+    {
+      "bytes": 2976,
+      "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.build.json",
+      "sha256": "5c1c6d092f667caaddc814f5f671b61d12c254a6abe83dc2ee939a5e3872622e"
+    },
+    {
+      "bytes": 45704,
+      "path": "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+      "sha256": "c7af84fb8a2caaec3ef56ee4225169fef7048e2fcc365ba6d16c605263049609"
+    },
+    {
+      "bytes": 8085,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/authorization.json",
+      "sha256": "3cefa11143fbcd2868f84b7d4ebf034ca48c0412cd55a6c119e70fecbf9ff384"
+    },
+    {
+      "bytes": 2686,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/resource-decision.json",
+      "sha256": "34d03a69f5fa1b5e344e05e50735183e4ab646caf863746d0911acb53fe8298a"
+    },
+    {
+      "bytes": 26,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/umbrella-control-at-adoption.json",
+      "sha256": "2240b30838ae0e5e47e7006a4a319c322893911baf27da6229b9328478e26974"
+    },
+    {
+      "bytes": 1053,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/execution/root-exec-exit.json",
+      "sha256": "b0b596e4bf513b6fe4251d28e75e8fa979da0e23545224a775bfae19301011a4"
+    },
+    {
+      "bytes": 5932283,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/checkpoint.npz",
+      "sha256": "8ee6608c545e52cbf82eb5dbddcc0de0eb9ed01d981fc7c16e3650166bd0b185"
+    },
+    {
+      "bytes": 495,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference-domain.json",
+      "sha256": "f9bad9ab1d3f83eb18f65f09cd8755fc9f138ba6ef5bfd379e54f075c4354449"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8708,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/report.json",
+      "sha256": "3767c31ec46d4828127934bdc33e5f14cde3f6cbcceecb6ce6b735fbfd5a694a"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825601/settings.json",
+      "sha256": "e518706d08ad3bc9e6a97f9401e7f50e04c0bd7afd104d92349a129790afcac8"
+    },
+    {
+      "bytes": 5931931,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/checkpoint.npz",
+      "sha256": "f9d00d0031468aacdc7d21da0bdc59166e17a445bbb2c44fa3d49d722a510126"
+    },
+    {
+      "bytes": 495,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/reference-domain.json",
+      "sha256": "1fdde72830859c42d49b14862a88c5ed2ec60774195fe1cd3ce6ec99acafc60b"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8710,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/report.json",
+      "sha256": "cc9a8dfeaf4eea37cef98b0f14f4387da97122f25e7d45c4f0e4313bd9d198da"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825603/settings.json",
+      "sha256": "68c81549056dc4f8d096fbc694457fd5e6a34e6b409bd3a1428fdd46c913fbfc"
+    },
+    {
+      "bytes": 5932271,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/checkpoint.npz",
+      "sha256": "66e0bbc585040285f6be6b11e50156f0fbf73fd7315f8d65b27ad09ed7ad672f"
+    },
+    {
+      "bytes": 495,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/reference-domain.json",
+      "sha256": "e536d350bf464890ff956ef295add3aede1a9e1760938e9ae7afc2b4f0610ead"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8693,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/report.json",
+      "sha256": "c0561d215048cab083a03763502983f8ec5b4ae450d7f98315dafecc249f54f2"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825607/settings.json",
+      "sha256": "a541e4a80a6fdcd2180b3f3543555bb12c6a65eb2bcb9152ff1572d0bd5a66a4"
+    },
+    {
+      "bytes": 5932301,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/checkpoint.npz",
+      "sha256": "74f16372a30bcbc3fb2fe08d79210997377fbdbe4e9b4e37a4d020d223a6335c"
+    },
+    {
+      "bytes": 494,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/reference-domain.json",
+      "sha256": "36c7dc9bd309797409c71c742f9bb862d9e634b264472201e25f9552f1f0d224"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8716,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/report.json",
+      "sha256": "1bcb2e299881f4e2a0e82077cb9103c1b0e27a94fada19fe9f6c7f03c28860f9"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/history-replay/seed-825609/settings.json",
+      "sha256": "9b52dd5e89c7fe87fe6049a79ec104d85aeaffa14f31aec44c4d05be4abe7d23"
+    },
+    {
+      "bytes": 5932064,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/checkpoint.npz",
+      "sha256": "e8f1f0a78940f317681684fab1fa264d550117ac7781def0d728c43accf693b3"
+    },
+    {
+      "bytes": 495,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/reference-domain.json",
+      "sha256": "017523525c264342d935f40360eb62897dd82f3213e43461f6315898fcd33db5"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8666,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/report.json",
+      "sha256": "7df5d25828c624a031f11763b03bf9c0ae2557eff718789cf17ebf400e23e260"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825613/settings.json",
+      "sha256": "e9032275c34de6e608c92ceb04a11190cc3c030c37ac426ad2d548b99ccb1bf0"
+    },
+    {
+      "bytes": 5932064,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/checkpoint.npz",
+      "sha256": "13e9ea6693cc0adc51ae612229d4cdddae7474d54de6158fbe5480a4839d5c1f"
+    },
+    {
+      "bytes": 494,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/reference-domain.json",
+      "sha256": "e3d5b683b4c77b7c7138bea21ade2af48354a247b8696fd0f2e8ca5f2573b8a6"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8638,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/report.json",
+      "sha256": "798b5cfcb8ee3f92ead9d7406e171b33543c231cb7f2d975149180f012d84576"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825617/settings.json",
+      "sha256": "32c39f2f7cc88a45c1c2f4bffdcddd6bf28203b1e288899f431b8c2305a75fa5"
+    },
+    {
+      "bytes": 5932227,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/checkpoint.npz",
+      "sha256": "97b695412105b246747a059e46ec1cb2d4b59ea21f2eb79868781bf10e5be56c"
+    },
+    {
+      "bytes": 493,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/reference-domain.json",
+      "sha256": "cb1f928e7624096af2dc0b043096210415005ed7f0f580b693c674f6e80ef719"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8702,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/report.json",
+      "sha256": "888dcc27fd58354dc6c3efead91f85d850e63066366a152f0474ee0af4dbb27c"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825621/settings.json",
+      "sha256": "6ed6423e5f15534be03ccb91ee300435a803278475b756b998ef7cd10eb83233"
+    },
+    {
+      "bytes": 5931408,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/checkpoint.npz",
+      "sha256": "dd93dea375895f19a0c317b2d49d4bc9ed9f004dd182c29c4b7711e77ebf5b9f"
+    },
+    {
+      "bytes": 495,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/reference-domain.json",
+      "sha256": "e5b1a3b0ffb4e04b67cfa7e81986281ee44eb506d58f7d05deb32a57bb53f6b5"
+    },
+    {
+      "bytes": 603,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/reference.json",
+      "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+    },
+    {
+      "bytes": 8668,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/report.json",
+      "sha256": "73d2c2a1f03faeee1e8375ff75f8946c4e7611408bc9ca8a6b73dd687c440ea1"
+    },
+    {
+      "bytes": 2893,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/new-independent/seed-825623/settings.json",
+      "sha256": "23a001bd5fb6f4fb6dce73d3613abdacaee6eea9047288c793c785c6bae84284"
+    },
+    {
+      "bytes": 32761,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/parents-complete.json",
+      "sha256": "b95668a72710809cd2b92a00fd5d6228988e8ee04f7229dc29b9f6bb91255120"
+    },
+    {
+      "bytes": 775,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/parents/registration.json",
+      "sha256": "7775d890c3e75a063bf56b50d55c13da9e0b8d5f977276b5e28b4636ffe85c84"
+    },
+    {
+      "bytes": 1191,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-registration.json",
+      "sha256": "c73c60ffd009fa75eac87e3b19bb743bf815baae3f145f154d0e8a0fae817977"
+    },
+    {
+      "bytes": 6988,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/protocol.json",
+      "sha256": "c96429270787bda5404959648d66cfbc76575f94fd5903a64cadc482cae08d6f"
+    },
+    {
+      "bytes": 19478,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-native-calibration-v1/report.json",
+      "sha256": "ea075cd029804fa4dbc691ad90db3ffc075deaa22471d51573d50b6b356abb53"
+    },
+    {
+      "bytes": 380711,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200-four-pairs/quantum-rate-comparison.json",
+      "sha256": "62ce4fea23a55955cf404ae8aa00a2c70204bf20dd48e74de520169a83724720"
+    },
+    {
+      "bytes": 1509,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-admission-2-to-4.json",
+      "sha256": "94d0a3d49450db0571e59391cc78a9d84dfb016da257f7732c859d97a888ddd0"
+    },
+    {
+      "bytes": 7104,
+      "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/four-pair-p256-compatibility/summary.json",
+      "sha256": "01d1a8bc281247b38dda90a35a39c0f8480e8774fd1f58e7621378c044879dfc"
+    },
+    {
+      "bytes": 1512,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/child-execution/launch.json",
+      "sha256": "deffbadd968e9f61b42c83452af9f07d70a97ea66069ba2f6f0bdc85ad138981"
+    },
+    {
+      "bytes": 3165,
+      "path": "/workspace/scratch/a5e4820daedd/launch_p256_children.py",
+      "sha256": "201f93a71cccecd2b486d4653cc8666b2e08a7765ca449554844869f6c80de1b"
+    },
+    {
+      "bytes": 16340,
+      "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/p256-fixed-eight-chain-v1/recrossing/coordinator-attempts/abc9e44ad7c24313b23f64741046d2c1/plan.json",
+      "sha256": "092cb00836243a55a61289c13da8d97ed8402109413d1c25d4f6b0209217b0ac"
+    },
+    {
+      "bytes": 22261,
+      "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/p256-parent-stage/archive_parents.py",
+      "sha256": "2a9d468330732f51f2be5128215b1f8de186f3594bc49ab371eff8fd75b6ebbb"
+    }
+  ],
+  "status": "registered preparation; wrapper not adopted or launched",
+  "waiting": {
+    "malformed_in_progress_completion_JSON": "Remain pending; a well-formed nonzero/unchanged-false completion fails immediately.",
+    "no_raw_branch_or_rate_reads_until_root_complete_gate": true,
+    "poll_seconds": 10,
+    "read_only_completion_metadata": true,
+    "wall_seconds": 43200
+  },
+  "working_directory": "/workspace/scratch/a5e4820daedd/PyRPMD"
+}

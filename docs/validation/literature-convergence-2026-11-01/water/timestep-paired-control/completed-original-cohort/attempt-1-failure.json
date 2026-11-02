@@ -1,0 +1,19 @@
+{
+  "actual_tool_chunk": "2a9600",
+  "corrected_launcher": "Execute the absolute .venv/bin/python path without resolving its symlink.",
+  "created_utc": "2026-11-01T21:36:30.643670+00:00",
+  "failure": "Launcher resolved the virtualenv python symlink before exec; system interpreter lacked openmm metadata. Frozen registration environment validation stopped before original trajectory loading or archive creation.",
+  "first_attempt_observed_exit_code": 1,
+  "first_scratch_members": [
+    "RUN_ONCE.json"
+  ],
+  "first_scratch_retained": "/workspace/scratch/a5e4820daedd/water-paired-timestep-archive-replay-2026-11-01",
+  "new_attempt_authorizes_physics": false,
+  "new_source_sha256": "bdd4af495563cc73f3d4b1b1a2d91fef821ae5ba8b006e7690ebcdac46900d69",
+  "observed_wall_seconds": 0.872460784,
+  "retained_log_sha256": "7235a48b120c225785fe6b231b59c5fc8521b55440924b5d73afe109c6b2af7f",
+  "retained_original_source_path": "docs/validation/literature-convergence-2026-11-01/water/timestep-paired-control/completed-original-cohort/attempt-1/archive_and_replay.py",
+  "retained_original_source_sha256": "f9a76bf27e61af61fa6ec1f606b26008072efa5cd1796a6ffc16882c624857bb",
+  "schema": "pyrpmd.water-dt-archive-interpreter-failure-supersession.v1",
+  "source_revision": "Only new attempt2 output directory and main CPU cap275 instead of280. No frozen scientific source, analyzer, input, gate, or numerical method changed."
+}

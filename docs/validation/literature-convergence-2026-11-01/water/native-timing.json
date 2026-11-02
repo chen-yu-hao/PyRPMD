@@ -1,0 +1,49 @@
+{
+  "openmm": "8.6.1",
+  "threads": 1,
+  "cases": [
+    {
+      "integrator": "custom_vv",
+      "beads": 1,
+      "reciprocal_contracted_to": null,
+      "steps": 1000,
+      "elapsed_seconds": 3.89236119799898,
+      "seconds_per_step": 0.00389236119799898,
+      "potential_kJ_mol": -9224.797821893708,
+      "positions_finite": true
+    },
+    {
+      "integrator": "rpmd",
+      "beads": 1,
+      "reciprocal_contracted_to": null,
+      "steps": 1000,
+      "elapsed_seconds": 16.630724179995013,
+      "seconds_per_step": 0.016630724179995015,
+      "potential_kJ_mol": -9238.325959759477,
+      "positions_finite": true
+    },
+    {
+      "integrator": "rpmd",
+      "beads": 32,
+      "reciprocal_contracted_to": null,
+      "steps": 20,
+      "elapsed_seconds": 3.04280980299518,
+      "seconds_per_step": 0.152140490149759,
+      "potential_kJ_mol": -3842.467692098812,
+      "positions_finite": true
+    },
+    {
+      "integrator": "rpmd",
+      "beads": 32,
+      "reciprocal_contracted_to": 1,
+      "steps": 20,
+      "elapsed_seconds": 2.338550533000671,
+      "seconds_per_step": 0.11692752665003354,
+      "potential_kJ_mol": -3839.289208733433,
+      "positions_finite": true
+    }
+  ],
+  "external_reference": true,
+  "status": "exploratory throughput only, not a correctness certificate",
+  "rejected_custom_integrator": "Reference/CPU intermediate virtual sites were stale during final-force evaluation; these CustomIntegrator trajectories are not production."
+}

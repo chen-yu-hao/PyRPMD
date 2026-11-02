@@ -1,0 +1,36 @@
+{
+  "at_test_gate_runtime_migration_pending": true,
+  "command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 .venv/bin/python -m pytest -q tests/test_water_native_schedule_v2.py --junitxml=pytest.xml",
+  "historical_raw_checkpoint_required_by_tests": false,
+  "internal_parallel_review": {
+    "agent": "distribution",
+    "findings_corrected_before_freeze": [
+      "register guaranteed child.wait immediately after successful Popen",
+      "latch preflight/logging errors while holding launch_lock",
+      "require exactly old odd/even with four unique positive PIDs"
+    ],
+    "review_did_not_execute_physics": true,
+    "scope": [
+      "inherited lease exclusion",
+      "post-spawn exception drain",
+      "atomic failure latch before release of dispatch lock",
+      "complete odd/even retirement receipt"
+    ]
+  },
+  "old_code_freeze_sha256": "1a28a9b3d76856fa3840c80bbb611831e6083a4ef1addeb8928920805aa80e2d",
+  "original_21_files_and_five_live_sources_and_two_binaries_unchanged": true,
+  "portable_fixtures": true,
+  "recorded_utc": "2026-11-01T17:34:45.189501+00:00",
+  "result": {
+    "exit_code": 0,
+    "junit_sha256": "faac115802c3ceb54fbc24ef7eb2fbd9fbf3fa11df3859564dc7b5291e39a0ad",
+    "passed": 19,
+    "pytest_seconds": 0.59
+  },
+  "schema": "pyrpmd.water-scheduling-v2-gate.v1",
+  "scientific_integration_performed_by_tests": false,
+  "source_sha256": {
+    "benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "tests/test_water_native_schedule_v2.py": "5611446ccb7d9b2ea520dd04c237c723b37f47cd1106c270a9effebe6ddfc11c"
+  }
+}

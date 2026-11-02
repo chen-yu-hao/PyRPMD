@@ -1,0 +1,22 @@
+{
+  "CPU_hard_limit_seconds": 60,
+  "CPU_seconds": 2.914052,
+  "PES_evaluations": 0,
+  "affinity": [
+    5
+  ],
+  "all_source_guards_unchanged": {
+    "benchmarks/water/analyze_native.py": "323b3e8506ffbd0c509150f3a6c7c137369c75e5775cdb4e338cdb2bd3c3c718",
+    "benchmarks/water/campaign.py": "58952fef1f80863096cf964de1c7409b408eac239c5c9cc2d3bb33fad8832639",
+    "benchmarks/water/plot_native_campaign.py": "f08bc32ec90ef1172a7032fb74ddab2de9e5185df4e075ab95b0b75ce64b6362",
+    "benchmarks/water/plot_production_stability.py": "0e5f56d0126bf86396ad34d5579349c7ad653802dc857f21025ab5ffa2be6e56",
+    "benchmarks/water/vacf_msd_identity.py": "65186a8cf9f4476f025f949446f64de310ebc0f9c5f85a804e9db2d1e7f0996e"
+  },
+  "nice": 10,
+  "peak_RSS_KiB": 149712,
+  "physical_steps": 0,
+  "report_sha256": "4628c0bde8b433d3908efda4e44e85d0183b60d654409970189f3c16736ec9b0",
+  "schema": "pyrpmd.water-vacf-msd-identity-execution.v1",
+  "wall_limit_seconds": 120,
+  "wall_seconds": 3.4251368080003886
+}

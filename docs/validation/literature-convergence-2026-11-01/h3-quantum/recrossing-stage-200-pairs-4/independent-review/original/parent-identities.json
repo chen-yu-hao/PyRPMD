@@ -1,0 +1,290 @@
+[
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4113196,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/checkpoint.npz",
+        "sha256": "eebd1809b4a0a5011ed6298ab44973cd89bb576f8d7091019f6bfb3555ca3dbf"
+      },
+      "reference-domain.json": {
+        "bytes": 491,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/reference-domain.json",
+        "sha256": "2fce3b883b4ad0b509e1d044bff93cbe08065a93c4fbbe8e4bb2cfa42bb646e2"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8654,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/report.json",
+        "sha256": "d0849e64cbeb5f1ba3c654c9999c57095c7645c227ef415fed6b69fe5fde4bfa"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721301/settings.json",
+        "sha256": "7ebb1dcefb2abdc3d91586fdd3a397573293bf425167f22ed2213e04b2e7798a"
+      }
+    },
+    "seed": 721301
+  },
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4113028,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/checkpoint.npz",
+        "sha256": "aaf11b6ea143c7166456d46d2f4b767481eb0319d7e46816783ad57baacc0c14"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/reference-domain.json",
+        "sha256": "04edc9c6b31084630b9595f44cbcc78070c5b167cec7c0999a1c0ddead443b71"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8698,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/report.json",
+        "sha256": "e46d5420e9a5b1390fef7ad967aa87fe07976f40acf4d209f64b77edf20cff22"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721303/settings.json",
+        "sha256": "acb58ecb3dfba08f2188c958e88d259b6ff355bbf65e9b732aef9e544d0d5d3d"
+      }
+    },
+    "seed": 721303
+  },
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4112604,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/checkpoint.npz",
+        "sha256": "d1cf4de76ade549ab74391e12eb4b42e3e06be44dab3cbd3037f470a044b8519"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/reference-domain.json",
+        "sha256": "bfa317465c2b3e877fb98d9478ac57a55325fcf2c3e09a4aa000cb969233f45a"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8695,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/report.json",
+        "sha256": "c2cebae072d51a03f0ce47b590775d8b3292373cfdac0de26142d16281c9a9e1"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721307/settings.json",
+        "sha256": "88c37c59cad156f1a395418ead315de50f25f4d32833ab83ccfa976529a24b71"
+      }
+    },
+    "seed": 721307
+  },
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4113120,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/checkpoint.npz",
+        "sha256": "d7c9c82121fed1fa75adef7b2c49cb97d0d5d410f6eee485ae4e2ca46d31b469"
+      },
+      "reference-domain.json": {
+        "bytes": 488,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/reference-domain.json",
+        "sha256": "afb5896ae911f831aa8b79f5eaf306b2e5793ada370f3a901d978b79ec7afb26"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8665,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/report.json",
+        "sha256": "2a0e3c71cd6aca33cf33106695cac81cd44b316ce7fb9d3fcaca5c277892a07a"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721309/settings.json",
+        "sha256": "82dc90c8a3e1fbe716144718b8ce9e00e60118b3963056b1f10a1eb3064f4d76"
+      }
+    },
+    "seed": 721309
+  },
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4113109,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/checkpoint.npz",
+        "sha256": "a91a6dba5428a1b9b1e2f08a19f6a6388965b0d5039a45d07e55a00cbad0c86f"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/reference-domain.json",
+        "sha256": "73e25a0a5a4e9705efd12a6200ff4cd31bac4932a0cc5a5b7ffbf2fda1c2ac3f"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8637,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/report.json",
+        "sha256": "af0569bf5e2ef86436c5d922aa9a44b6e22a5f38363841d7468e027c16ef619b"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721313/settings.json",
+        "sha256": "4ccb943c13734aebbcc48427b7a0d69747141850e3723eeffb7028a4ac998af7"
+      }
+    },
+    "seed": 721313
+  },
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4112792,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/checkpoint.npz",
+        "sha256": "d6d0d0c2b063523ad549e00ddda311b1f5dd60040f6317842c7da1851421bea9"
+      },
+      "reference-domain.json": {
+        "bytes": 494,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/reference-domain.json",
+        "sha256": "e7aaf0a8375fcff00d0c1a8b95d818e02075920c0c4f8037dbbe6ac4400026ed"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8707,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/report.json",
+        "sha256": "b99e2996efdb6550d64a863cb1540f043819f41415ed2bc36662439a659bc45a"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721317/settings.json",
+        "sha256": "12f6497afe191cf971488cca9ba3eedf9e56f0ecde6e10461ca052e27c732d89"
+      }
+    },
+    "seed": 721317
+  },
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4113780,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/checkpoint.npz",
+        "sha256": "fe74abf796ebb757c887f30afdb864d388cd1ce8e3b520445dc9653d96dfea64"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/reference-domain.json",
+        "sha256": "cbdaeaa9ff70a1124e00fa1011e906b22945a5655ef0d31a6d0661526bc58429"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8663,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/report.json",
+        "sha256": "8ca26884df01d061a56ab379dca4af20c2702bd7eea856d73aac96638a4ecb78"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721321/settings.json",
+        "sha256": "c2a92347474317ea0bc91ca38928caa2d1bba88299fc665742001f5ac5744dc4"
+      }
+    },
+    "seed": 721321
+  },
+  {
+    "endpoint_q_shape": [
+      200,
+      128,
+      3,
+      3
+    ],
+    "files": {
+      "checkpoint.npz": {
+        "bytes": 4113187,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/checkpoint.npz",
+        "sha256": "207d8801820a18b928fc84d54227798a01a5c7f53e84c93943edde524469adfa"
+      },
+      "reference-domain.json": {
+        "bytes": 495,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/reference-domain.json",
+        "sha256": "f31e1ae01491e99c512760efb610a79b4481bd679ba8a4bb84aaa4bbe48e9478"
+      },
+      "reference.json": {
+        "bytes": 603,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/reference.json",
+        "sha256": "a06a251bb5e856e1e3ba219999b3e0fe846c4008137cba3d0ede03e7fbb0fc49"
+      },
+      "report.json": {
+        "bytes": 8688,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/report.json",
+        "sha256": "ccd31b2149bbefe42d71495fd55933a190db43b4d4a6f75d5b7aef2ce43bda6f"
+      },
+      "settings.json": {
+        "bytes": 2893,
+        "path": "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/surface-partition/primary/ts/seed-721323/settings.json",
+        "sha256": "22b3bf6a4a82116009351050e55266587b7b65ee4cb82d94851667d649055982"
+      }
+    },
+    "seed": 721323
+  }
+]

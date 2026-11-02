@@ -1,0 +1,16 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "CPU_seconds_including_fresh_calculation": 3.115682,
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "created_utc": "2026-11-01T21:29:45.001647+00:00",
+  "destination": "/workspace/scratch/a5e4820daedd/hch4-efficiency-pilot-2026-11-01-v1-archive",
+  "packager_sha256": "1c607fb28b7f58d4abeca1fd2b276ab1906aff4fbfaf81d03ce22cd8b0f59fe4",
+  "returncode": 0,
+  "schema": "pyrpmd.hch4-independent-replay-archive-execution.v1",
+  "source_unchanged": true,
+  "threads": 1,
+  "wall_seconds": 3.2792762000026414
+}

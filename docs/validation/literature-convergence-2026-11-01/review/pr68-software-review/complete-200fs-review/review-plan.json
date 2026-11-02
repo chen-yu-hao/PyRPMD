@@ -1,0 +1,41 @@
+{
+  "schema": "pyrpmd.read-only-complete-child-review-plan.v1",
+  "registered_before_raw_replay_utc": "2026-11-01T18:25:33.405436+00:00",
+  "input": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-primary",
+  "analysis": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/recrossing-analysis-200",
+  "cohort": "All8 registered seeds,200 parents per seed,both0.1/0.05 fs timesteps,200 fs,original momentum-pair indices0/1 only. No partial extra-batch results.",
+  "core_checks": [
+    "All settings,source,parent,chunk identities and integrity envelopes",
+    "Independent replay of keyed channels and ordinary Maxwell momenta",
+    "Explicit distance-gradient metric/velocity versus stored values",
+    "Raw signed flux and denominator replay; all children retained",
+    "Independent eight-chain log rate,covariance,Student-t intervals and paired comparisons",
+    "Registered precision-trigger metadata and immutable input hashes"
+  ],
+  "supplementary_endpoint_diagnostics": {
+    "coordinate_convention": "Centroids of final bead positions and momenta; velocities=centroid momentum / physical atomic mass.",
+    "pair": "Nearest centroid pair, not an energy-based assertion of binding.",
+    "separation": "Third atom relative to nearest-pair center of mass.",
+    "radial_velocity": "Relative velocity projected along spectator separation; bohr/fs.",
+    "quantiles": [
+      0,
+      0.01,
+      0.05,
+      0.25,
+      0.5,
+      0.75,
+      0.95,
+      0.99,
+      1
+    ],
+    "fixed_separation_thresholds_bohr": [
+      5,
+      10,
+      20,
+      30
+    ],
+    "observed_late_sign_changes": "At least one sign change among the1-fs observations from80 through200 fs; no upper bound on rarer unobserved/later recrossings.",
+    "new_acceptance_gate": false
+  },
+  "resource_policy": "At most1 CPU; streaming raw files; no native propagation,PES evaluations,source or primary-data edits."
+}

@@ -1,0 +1,68 @@
+{
+  "created_utc": "2026-11-01T22:23:34.315685+00:00",
+  "files": [
+    {
+      "bytes": 1207,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/README.md",
+      "sha256": "e35982bddbf3e7e28dcd3165b48e12bc09e0d2e3f6ab708c4bf60e85eab3e4dd"
+    },
+    {
+      "bytes": 1220,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-fix-reproduction.json",
+      "sha256": "55797cde79058ae90f4e0d2095dcf29e929cd1d29b21a249f9d349d65e417b99"
+    },
+    {
+      "bytes": 6368,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-test_h3_p256_native_calibration.py",
+      "sha256": "0a51ca8b6407b5e0a5bb56e3c3f8d4ee3f8e0e083c2c9ed30d480ac7e12f5fa4"
+    },
+    {
+      "bytes": 47526,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/before-test_hch4_efficiency_pilot.py",
+      "sha256": "3f32570efcef28733db3ec961450cafdf836836bc213d1794d50436c24924dc6"
+    },
+    {
+      "bytes": 3858,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/fixture-supersession.json",
+      "sha256": "9380aed668414ff215f037dc16615350e1942b826678272c058e9e237467c126"
+    },
+    {
+      "bytes": 104956,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990501230.log",
+      "sha256": "846c242495d708aca7ffdd934b84c1f9a2fe95bddeff8395cb9c9fe34d3c6677"
+    },
+    {
+      "bytes": 112112,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870037.log",
+      "sha256": "82b228981afcd426c6aad42fd2162f6a128167209bddbccd5e0f714f5fde3f11"
+    },
+    {
+      "bytes": 113341,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870117.log",
+      "sha256": "9959db7536c9c2a8685c56456d649b0a26d359bdcefbea1509a4b6f5ac46bdf5"
+    },
+    {
+      "bytes": 112110,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870176.log",
+      "sha256": "3a632d5b3e160082bb2f7135c298a8f5266f3f89cf7be15a31ed2a179c6f6383"
+    },
+    {
+      "bytes": 108236,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/job-124990870215.log",
+      "sha256": "656072da6068948e1a297f44bf05647aeead31b57fa3c8ec702b0bb9d94801ae"
+    },
+    {
+      "bytes": 3555,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/reproduce_before_fix.py",
+      "sha256": "339813c4fc26d61448387b14253691f0836103a7adaafd012fe2d3c06694481e"
+    },
+    {
+      "bytes": 1301,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/pr68-software-review/ci-0c5fec-20261101T2214Z/retrieval.json",
+      "sha256": "91705147e236e6c937c87aa6f607ec207060ce7770600f868a34ebb7388c01a8"
+    }
+  ],
+  "listed_bytes": 615790,
+  "schema": "pyrpmd.compact-sixth-publication-inventory.v1",
+  "scope": "Complete five failed CI job logs, exact original tests, deterministic reproduction and test-only supersession; generated logs preserved verbatim."
+}

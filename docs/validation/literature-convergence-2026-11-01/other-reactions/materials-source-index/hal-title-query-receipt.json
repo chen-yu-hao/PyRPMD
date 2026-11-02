@@ -1,0 +1,106 @@
+{
+  "schema": "pyrpmd.materials-hal-metadata-query.v1",
+  "attempts": [
+    {
+      "id": "hal-pd-title",
+      "url": "https://api.archives-ouvertes.fr/search/?q=title_t%3A%22Diffusion+of+Hydrides%22&fl=title_s%2Curi_s%2CfileMain_s%2CdocType_s%2CauthFullName_s%2CdoiId_s&rows=100&wt=json",
+      "accessed_utc": "2026-11-01T18:42:42.095065+00:00",
+      "status": 200,
+      "bytes": 116,
+      "sha256": "316b596864c92e18c8f6688107ad49ecfc3fe632ebdc85efe82c65ed28ba8064",
+      "metadata": {
+        "response": {
+          "numFound": 0,
+          "start": 0,
+          "maxScore": 0.0,
+          "numFoundExact": true,
+          "docs": []
+        }
+      }
+    },
+    {
+      "id": "hal-calvo-2010",
+      "url": "https://api.archives-ouvertes.fr/search/?q=authFullName_t%3A%22Florent+Calvo%22+AND+producedDateY_i%3A2010&fl=title_s%2Curi_s%2CfileMain_s%2CdocType_s%2CauthFullName_s%2CdoiId_s&rows=100&wt=json",
+      "accessed_utc": "2026-11-01T18:42:43.264515+00:00",
+      "status": 200,
+      "bytes": 1742,
+      "sha256": "da6f2a2417e7b6d91527a4566da48c8efe838d29d8f1c16a0dd810b065a6b376",
+      "metadata": {
+        "response": {
+          "numFound": 4,
+          "start": 0,
+          "maxScore": 8.783749,
+          "numFoundExact": true,
+          "docs": [
+            {
+              "title_s": [
+                "Accurate evaporation rates of pure and doped water clusters in vacuum: A statistico-dynamical approach"
+              ],
+              "authFullName_s": [
+                "Florent Calvo",
+                "Julie Douady",
+                "Fernand Spiegelman"
+              ],
+              "uri_s": "https://hal.science/hal-00996889v1",
+              "docType_s": "ART",
+              "doiId_s": "10.1063/1.3280168"
+            },
+            {
+              "title_s": [
+                "Structure of sodiated octa-glycine: IRMPD spectroscopy and molecular modeling."
+              ],
+              "authFullName_s": [
+                "David Semrouni",
+                "O Petru Balaj",
+                "Florent Calvo",
+                "Catarina F Correia",
+                "Carine Clavagu\u00e9ra",
+                "Gilles Ohanessian"
+              ],
+              "uri_s": "https://hal.science/hal-00528518v1",
+              "docType_s": "ART",
+              "doiId_s": "10.1016/j.jasms.2010.01.029"
+            },
+            {
+              "title_s": [
+                "Conformation of Polyalanine and Polyglycine Dications in the Gas Phase: Insight from Ion Mobility Spectrometry and Replica-Exchange Molecular Dynamics"
+              ],
+              "authFullName_s": [
+                "Florian Albrieux",
+                "Florent Calvo",
+                "Fabien Chirot",
+                "Aleksey Vorobyev",
+                "Yury Tsybin",
+                "Val\u00e9ria Lep\u00e8re",
+                "Rodolphe Antoine",
+                "J\u00e9r\u00f4me Lemoine",
+                "Philippe Dugourd"
+              ],
+              "uri_s": "https://hal.science/hal-02979296v1",
+              "docType_s": "ART",
+              "doiId_s": "10.1021/jp102621m"
+            },
+            {
+              "title_s": [
+                "Probing the specific interactions and structures of gas-phase vancomycin antibiotics with cell-wall precursor through IRMPD spectroscopy"
+              ],
+              "authFullName_s": [
+                "Jean Christophe Poully",
+                "F. Lecomte",
+                "N. Nieuwjaer",
+                "Bruno Manil",
+                "Jean-Pierre Schermann",
+                "Charles Desfran\u00e7ois",
+                "Florent Calvo",
+                "Gilles Gr\u00e9goire"
+              ],
+              "uri_s": "https://hal.science/hal-00527073v1",
+              "docType_s": "ART",
+              "doiId_s": "10.1039/B923787A"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

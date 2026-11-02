@@ -1,0 +1,34 @@
+{
+  "label": "py312",
+  "command": [
+    "nice",
+    "-n",
+    "10",
+    "taskset",
+    "-c",
+    "8",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/integration-4698c12/four-pair-p256-compatibility/run_checks.py",
+    "--label",
+    "py312"
+  ],
+  "started_utc": "2026-11-01T20:15:44.312103+00:00",
+  "finished_utc": "2026-11-01T20:16:17.517251+00:00",
+  "exit_code": 0,
+  "wall_seconds": 33.205157152995525,
+  "declared_timeout_seconds": 120,
+  "selected_environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OPENMM_CPU_THREADS": "1",
+    "PYTHONPATH": "src:.",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/workspace/scratch/a5e4820daedd/distribution-check/four-pair-p256-compatibility/py312",
+    "MPLCONFIGDIR": "/workspace/scratch/a5e4820daedd/distribution-check/four-pair-p256-compatibility/py312/matplotlib"
+  },
+  "compatibility_sha256": "c167733fb264771e1c35ff1c0c022e1309f3e1560afd352e5af23507dcd6c099",
+  "log_sha256": "a3d034414fc438121c32e5a503ef1720357c879d72e33a7e9c4e2b3072bd31a9",
+  "passed": true
+}

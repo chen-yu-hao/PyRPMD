@@ -1,0 +1,10 @@
+{
+  "schema": "pyrpmd.new-stage-preflight-observation.v1",
+  "observed_utc": "2026-11-01T18:37:50.060663+00:00",
+  "preflight_stopped_before_any_test_or_import": true,
+  "reason": "An unrelated integrated plotting helper differs from the earlier 217-test guard; no source was changed by this compatibility task. Await root confirmation of provenance/scope before updating guard.",
+  "path": "benchmarks/h3/quantum_convergence_plot.py",
+  "prior_integrated_sha256": "d93544d8ecaeacc30c31a8e96ecafdf93dbb62af4eff0a1e2beae92838e7340a",
+  "current_integrated_sha256": "b2405ecfa25350b638facdfe6b90bf3641d1feb1c4cf34ba14cb59fc1c652563",
+  "current_original_exists": false
+}

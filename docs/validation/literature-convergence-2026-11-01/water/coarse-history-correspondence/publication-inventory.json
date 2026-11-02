@@ -1,0 +1,48 @@
+{
+  "actual_read_only_complete_cohort_check": true,
+  "coarse_reuse_condition_satisfied": false,
+  "created_utc": "2026-11-01T21:43:47.595049+00:00",
+  "file_count": 6,
+  "files": [
+    {
+      "bytes": 5808,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/README.md",
+      "sha256": "d7e166d384ab40de4a97f9426430037513113d64f1a3d12df6995c53a0f957dc"
+    },
+    {
+      "bytes": 646493,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/all-time-differences.csv",
+      "sha256": "67cd762ac7d1adb3fcf078f80afbcd5348cf3dc8ee399d5771731346d38d4ba0"
+    },
+    {
+      "bytes": 12470,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/check_saved.py",
+      "sha256": "e2d302e36c652a507fe91cbf69383202b3cf2457ca0d192c7cca3b09593606f7"
+    },
+    {
+      "bytes": 459,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/observed-exit.json",
+      "sha256": "f4285fdd9f12d3c67e00621358fe52225281224d1c920bb3370ca0b2fa2a9ae4"
+    },
+    {
+      "bytes": 1344,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/plan.json",
+      "sha256": "2ebfeef0b24b9a5b4269dbf432514cce1788149db2de99773847e4487209341c"
+    },
+    {
+      "bytes": 58493,
+      "path": "docs/validation/literature-convergence-2026-11-01/water/coarse-history-correspondence/report.json",
+      "sha256": "68f9a79f91a5e9f7dc282b03d1e7a403947f764d48c6ffd1bdbfe620c3acabda"
+    }
+  ],
+  "historical_sources_or_results_modified": false,
+  "integration_tree_modified": false,
+  "new_PES_calls": 0,
+  "new_RNG_draws": 0,
+  "new_all25_study_proposed_or_adopted": false,
+  "new_dynamics_steps": 0,
+  "new_method_tests_run": 0,
+  "raw_trajectory_chunks_included": false,
+  "schema": "pyrpmd.water-coarse-history-correspondence-publication-inventory.v1",
+  "total_bytes": 725067
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "pyrpmd.water.scheduler-integration-check.v1",
+  "created_utc": "2026-11-01T17:48:21.955722+00:00",
+  "execution_head": "3ff0b674fc9b28e60da9261e08a08ca1ecf75335",
+  "python": "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+  "import_root": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration",
+  "command": [
+    "python",
+    "-m",
+    "pytest",
+    "tests/test_water_native_schedule_v2.py",
+    "-q",
+    "--junitxml=docs/validation/literature-convergence-2026-11-01/integration-4698c12/water-scheduling-v2-tests.xml"
+  ],
+  "tests": 19,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "source_sha256": {
+    "benchmarks/water/native_campaign_schedule_v2.py": "af1258f9118c4de296c90edb18c57aceb07a007d564652b4f5db6e851cece75e",
+    "tests/test_water_native_schedule_v2.py": "5611446ccb7d9b2ea520dd04c237c723b37f47cd1106c270a9effebe6ddfc11c"
+  },
+  "junit_sha256": "0433472f367537fdb5bbcee1bb01a916d9ab563c55b83cada8e5beb2fcfff657",
+  "log_sha256": "2144f7019c31e31876d19f74b069ea36a2ce9d79ef2160a1ec8494a59d6d1e1f",
+  "scope": "Self-contained scheduling and inherited-lock tests; no physical simulation, GPU test or production-source change."
+}

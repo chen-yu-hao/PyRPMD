@@ -1,0 +1,70 @@
+{
+  "actual_tool_execution": {
+    "chunk_id": "6f1964",
+    "command": "env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 taskset -c5 .venv/bin/python docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/check_normalization.py",
+    "exit_code": 0,
+    "reported_wall_seconds": 0.436142399,
+    "stdout": "{\"PES_calls\": 0, \"RNG_draws\": 0, \"entry_prefactor_cm3_per_molecule_s\": 2.049222557524084e-08, \"metric_checks\": 12, \"passed\": true, \"pilot_data_files_read\": 0}\n",
+    "tool": "exec_command"
+  },
+  "author": "/root/distribution",
+  "author_is_also_pilot_helper_implementer": true,
+  "created_utc": "2026-11-01T21:59:35.341020+00:00",
+  "decision": "Existing FL prefactor is algebraically correct for the matched finite-entry flux-weighted ratio. No new correction factor or PES scale is justified. This does not validate an absolute physical HCH4 rate.",
+  "deterministic_checks": {
+    "Gaussian_one_sided_flux_oracle": true,
+    "Maxwell_capture_cross_section_oracle": true,
+    "independent_SI_vs_atomic_check": true,
+    "input_files_unchanged": true,
+    "metric_algebra_cases": 12,
+    "passed": true,
+    "source_or_definition_inputs": 11
+  },
+  "files": [
+    {
+      "bytes": 16122,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/README.md",
+      "sha256": "67380eaea915b4a3dc765a7d4e607506139d03011fe428b212b98f80ce1dcf71"
+    },
+    {
+      "bytes": 8581,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/check_normalization.py",
+      "sha256": "0824630ba3bdfa9cc1dc9ab288660161ed9a199953093e5bf76504fb25c4375f"
+    },
+    {
+      "bytes": 10794,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/algebra-checks.json",
+      "sha256": "ff0530394466c19bc97ee0a3ea2bb5207f59b541066f09588597e4de44b67fba"
+    },
+    {
+      "bytes": 2140,
+      "path": "docs/validation/literature-convergence-2026-11-01/review/hch4-absolute-normalization/sources.json",
+      "sha256": "8390bdfcaef1db1af66035fa80b9e634fb1b6ff712cd9ba22d1f3bf798f71dac"
+    }
+  ],
+  "independence_scope": "Independent first-principles derivation and nonproducer calculator; not independent authorship. A second-author read-review is separate.",
+  "known_prefactor_only": {
+    "SI_vs_atomic_relative_difference": -1.9484414082171497e-13,
+    "atomic_rate_unit_cm3_per_s": 6.12615946706698e-09,
+    "bohr3_per_atomic_time": 3.345036263813077,
+    "cm3_per_molecule_s": 2.049222557524084e-08,
+    "independent_SI_cm3_per_molecule_s": 2.0492225575236848e-08,
+    "positive_inward_speed_atomic_units": 0.00029576614233749806
+  },
+  "mutation_scope": "New own-folder note/calculator/receipts only; frozen source, pilot data, prior evidence, integration and Git unchanged.",
+  "no_physical_work": {
+    "PES_calls": 0,
+    "RNG_draws": 0,
+    "converted_pilot_rates": 0,
+    "dynamics_or_Context_calls": 0,
+    "molecular_geometries_evaluated": 0,
+    "pilot_observation_files_read": 0
+  },
+  "remaining_physical_prerequisites": [
+    "Controlled bound-methane/reactive domains and unseen-tail support.",
+    "Sufficient precision from complete independent samples, with the excluded pilots remaining excluded.",
+    "Finite-entry normalization/separation control with correct L-squared scaling.",
+    "Matched-surface quantum correction and transmission coefficient if later claiming quantum/full rate."
+  ],
+  "schema": "pyrpmd.hch4.absolute-normalization-note.v1"
+}

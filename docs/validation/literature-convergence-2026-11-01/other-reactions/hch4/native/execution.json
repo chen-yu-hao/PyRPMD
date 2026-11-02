@@ -1,0 +1,259 @@
+{
+  "schema": "pyrpmd.hch4.native-execution.v1",
+  "created_utc": "2026-11-01T17:25:10.231201+00:00",
+  "repository_head_at_receipt": "3d096d5cfc5709f14a1ad5e3d184b108eef9f20e",
+  "revision_note": "The HCH4 additions are uncommitted at execution; exact source hashes, not this HEAD alone, identify the executed source.",
+  "source_files": {
+    "benchmarks/hch4/pes.py": "4ba178e3cd8d4167b69e947a0c3dd8cacbe45498959a149c8c61a56752df232c",
+    "benchmarks/hch4/reproduction_protocol.json": "5a84e3923ca4fb087459872f465b85b07154068392f670798bbab5fb8ad316c5",
+    "benchmarks/hch4/reproduction_input.py": "31c72794a26266cf7fc128846b66f00a636331c8c35fb1e79bdfc4f4615ec4e4",
+    "benchmarks/hch4/verify_native.py": "13b2ddba84f15bacc06ef22cf456b8e001128fd56b8d907078d2a88e197d203c",
+    "benchmarks/hch4/timestep_control.py": "3689c0b4ea24f539a3ca1ceeb66a2f7c79ed30de96deb5ad10d066708931a880",
+    "benchmarks/hch4/verify_workflow.py": "a3185fb13de5298ddceb06907f695eade66c235f7f6bfede76315959d9df8148",
+    "benchmarks/hch4/test_native.py": "d4e63c50678eb03e469f7c3ac7f74b3a56f555e6955500acb03e13bc7d9b7a27",
+    "tests/test_hch4_pes.py": "fdabafc7c99a3f6093754c8a925b482390925865f32ccbeb684f26d8f0c268cd"
+  },
+  "unchanged_wrapper_sha256": "4bac40255ef99380e011d1c3e231673feaf4a09974f569c8a60b004f9075b4da",
+  "unchanged_external_PES_library_sha256": "aa33e4f55246d5b99839cd3b08702f1d091a6b3dddac1d6c97d34bb542d95aaf",
+  "original_adapter_snapshot": {
+    "schema": "pyrpmd.hch4.source-before-native.v1",
+    "path": "benchmarks/hch4/pes.py",
+    "snapshot": "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/source-before-native/pes.py",
+    "sha256": "c564017f6c60fb47f44e964c966c4f8f9f15050d9170eba0e24ca383101b19a4",
+    "note": "Exact adapter bytes used for original PES validation; subsequent addition only exports existing compiled batch through the public native interface."
+  },
+  "commands": [
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "benchmarks/hch4/test_native.py",
+        "tests/test_hch4_pes.py",
+        "-q",
+        "--junitxml=docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/pytest.xml"
+      ],
+      "environment_addition": {
+        "PYRPMD_CBE2008_LIBRARY": "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so"
+      },
+      "exit_code": 0,
+      "stdout_stderr": "pytest.log"
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "benchmarks.hch4.verify_native",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--output",
+        "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/verification.json"
+      ],
+      "exit_code": 1,
+      "reason": "Retained preregistered P128/dt0.1fs short-NVE absolute energy-span gate failure; native/Python parity passed.",
+      "stdout_stderr": "verification.log"
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "benchmarks.hch4.timestep_control",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--probe",
+        "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/verification.json",
+        "--output",
+        "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/timestep-control.json"
+      ],
+      "exit_code": 0,
+      "stdout_stderr": "timestep-control.log"
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "benchmarks.hch4.verify",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--output",
+        "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/pes-verification.json"
+      ],
+      "exit_code": 0,
+      "stdout_stderr": "pes-verification.log"
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "benchmarks.hch4.verify_workflow",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--output",
+        "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/workflow"
+      ],
+      "exit_code": 0,
+      "stdout_stderr": "workflow.log"
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "benchmarks.hch4.reproduction_input",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--beads",
+        "1",
+        "--output-directory",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/planned/p1-seed-2026111101",
+        "--write-input",
+        "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/generated-pilot-P1.py"
+      ],
+      "exit_code": 0,
+      "scope": "File generation and parser resolution only; not launched."
+    },
+    {
+      "argv": [
+        ".venv/bin/python",
+        "-m",
+        "benchmarks.hch4.reproduction_input",
+        "--library",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/build/libcbe2008.so",
+        "--beads",
+        "128",
+        "--output-directory",
+        "/workspace/scratch/a5e4820daedd/literature-convergence-hch4/planned/p128-seed-2026111101",
+        "--write-input",
+        "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/native/generated-pilot-P128.py"
+      ],
+      "exit_code": 0,
+      "scope": "File generation and parser resolution only; not launched."
+    }
+  ],
+  "environment": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "files": {
+    "README.md": {
+      "sha256": "31b093796c7d378b2af3687f2325ab7aa2e8175898dfbcb97ed587868f44cec3",
+      "bytes": 6628
+    },
+    "__pycache__/generated-pilot-P1.cpython-312.pyc": {
+      "sha256": "705a94147bace9bb21be5d42e2f68549f6bf2a64a9c7258f274d9951a147a3d7",
+      "bytes": 3183
+    },
+    "__pycache__/generated-pilot-P128.cpython-312.pyc": {
+      "sha256": "8b5c2508448eda34fc267b1c32f7737cab571bffe97185156bc53c35e729d0d2",
+      "bytes": 3192
+    },
+    "generated-pilot-P1.py": {
+      "sha256": "da284c5effb3d6d138ef843c6c0aaa1aa1da9b1852a0a763607bb3289ccb6b71",
+      "bytes": 3505
+    },
+    "generated-pilot-P128.py": {
+      "sha256": "1bf7b44bdc553f4eba80034fdb238c35decbf2634c85593637589df45a8fbc02",
+      "bytes": 3509
+    },
+    "pes-verification.json": {
+      "sha256": "6d5faece16e8752992302ccfc00646326487bc297365b1ae92bcc86d375c0740",
+      "bytes": 37542
+    },
+    "pes-verification.log": {
+      "sha256": "28f42817d98528b7871c7965f0364480149705a8dfbe09cd9b884772ac6f0307",
+      "bytes": 4749
+    },
+    "pytest.log": {
+      "sha256": "8c390368df2d5eef34a2b014b9d184e96f80cdb20c9aa095df6617094271dc48",
+      "bytes": 1955
+    },
+    "pytest.xml": {
+      "sha256": "76a85612dcd02012d2cfb293c81745e80af675bdd260e4cfe8c54893b8d1f963",
+      "bytes": 1621
+    },
+    "source-before-native/pes.py": {
+      "sha256": "c564017f6c60fb47f44e964c966c4f8f9f15050d9170eba0e24ca383101b19a4",
+      "bytes": 3674
+    },
+    "source-before-native.json": {
+      "sha256": "9864573d146e2ada20068daf62d258c16610a53841b7514d009337b170f08722",
+      "bytes": 454
+    },
+    "timestep-control.json": {
+      "sha256": "4c52d11ee6e55de0a33f202b358157417df6631f8c1822d48b3a241fc46faa08",
+      "bytes": 1599
+    },
+    "timestep-control.log": {
+      "sha256": "c2a8c3fe1a7e23d715fe807a6d3130fb0dfad539348dccfb812b38ffbc777571",
+      "bytes": 3455
+    },
+    "verification.json": {
+      "sha256": "fae2e07d2ef7a4660bd9b0d2c95e955968226a296ef4179934905ab5ff97b786",
+      "bytes": 24063
+    },
+    "verification.log": {
+      "sha256": "2858acd12b2d003c06c74893783b4f7fe9be4ee51a7715d1112c8183e9281dd7",
+      "bytes": 3644
+    },
+    "workflow/P1-preparation/preparation.json": {
+      "sha256": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+      "bytes": 752
+    },
+    "workflow/P1-window-105-native/checkpoints/window_00105_replica_0000.npz": {
+      "sha256": "d935adad31b3aab7979403b885291cbbbb4fc2cba2ade60348a07ecca052e4c1",
+      "bytes": 4370
+    },
+    "workflow/P1-window-105-python/checkpoints/window_00105_replica_0000.npz": {
+      "sha256": "ea4f83a30c4810a1717f6b8d33b19f70dabdc26ec274dc871b0fe02d9b866021",
+      "bytes": 4362
+    },
+    "workflow/P1-window-5-native/checkpoints/window_00005_replica_0000.npz": {
+      "sha256": "42bcb6ca2921ffad43d172a579c26c05227467ccd4f59afbb8984b0546c9d66f",
+      "bytes": 4361
+    },
+    "workflow/P1-window-5-python/checkpoints/window_00005_replica_0000.npz": {
+      "sha256": "a482af6af08acd5b6968a413c4a609c8f49a4d4ca3679f8baf7b732bb92b69ea",
+      "bytes": 4357
+    },
+    "workflow/P128-preparation/preparation.json": {
+      "sha256": "e0cd082e554c28eb671b5bcdffefe90dc60556138ad0d89830459f8b7d8d83eb",
+      "bytes": 752
+    },
+    "workflow/P128-window-105-native/checkpoints/window_00105_replica_0000.npz": {
+      "sha256": "5d958891fd8690e7f42516e27c23f303b2a2516ab2ae50fcf201cf8e1268ea97",
+      "bytes": 39572
+    },
+    "workflow/P128-window-105-python/checkpoints/window_00105_replica_0000.npz": {
+      "sha256": "6d6418a0c99d50e9ae4784032ceaba13ec1f55ad830e58bfbe9b7a71c13e57d3",
+      "bytes": 39581
+    },
+    "workflow/P128-window-5-native/checkpoints/window_00005_replica_0000.npz": {
+      "sha256": "d607d1b346b09fc14311009223c7b26224e51dff96d7e91d952908184387bcc2",
+      "bytes": 39502
+    },
+    "workflow/P128-window-5-python/checkpoints/window_00005_replica_0000.npz": {
+      "sha256": "c3c16171badbe2c26148f7b0a93a12bfa5d001613e6e8025df28af94918fa215",
+      "bytes": 39506
+    },
+    "workflow/report.json": {
+      "sha256": "17c42765a22a6394a0e18c2c19040978dc7340936b9b54db7653530683cb8e1c",
+      "bytes": 4937
+    },
+    "workflow.log": {
+      "sha256": "6b3f478b05453db4de094a42919e2379cf7d7b736845ff1f2e213e5e9c5b5808",
+      "bytes": 4331
+    }
+  },
+  "paper_extraction_files": {
+    "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/reproduction-sources.json": "eb2334d3a4731059898b837db3826666800e746a38a8b8f19abde072bf8f880a",
+    "docs/validation/literature-convergence-2026-11-01/other-reactions/hch4/reproduction-plan.md": "13b2bfef2c75f2488238c9dfbc76b1a7a567f47691ff62c693fca21e37c9812e"
+  },
+  "long_sampling_launched": false,
+  "rate_computed": false,
+  "passed_native_parity": true,
+  "aggregate_native_probe_passed": false,
+  "native_probe_failure_retained": true,
+  "pytest_passed": 11,
+  "workflow_three_step_cases_passed": 4,
+  "source_or_binary_redistributed": false
+}

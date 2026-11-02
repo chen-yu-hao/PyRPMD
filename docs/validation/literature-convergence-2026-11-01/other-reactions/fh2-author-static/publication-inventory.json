@@ -1,0 +1,154 @@
+{
+  "schema": "pyrpmd.fh2.author-static-publication-inventory.v1",
+  "frozen_utc": "2026-11-01T19:22:54.148788+00:00",
+  "files": [
+    {
+      "path": "benchmarks/fh2_reference/README.md",
+      "sha256": "4952c87b619bfc81413bfef1bed17fa397e9e345989ffeaf1acd280af152ebd5",
+      "bytes": 4528
+    },
+    {
+      "path": "benchmarks/fh2_reference/__init__.py",
+      "sha256": "f0cff5206b45aa4716da0a016b754f5d8fc057d6547ce6932158f4cfc820cbfb",
+      "bytes": 78
+    },
+    {
+      "path": "benchmarks/fh2_reference/run_static_check.py",
+      "sha256": "ca6ea27253cca9ef5e04f6a4c79703a5ba080879ff089d550a64c137e347aa43",
+      "bytes": 13670
+    },
+    {
+      "path": "benchmarks/fh2_reference/sources.json",
+      "sha256": "7f18522757459d80527b1f290ee04e317d0888323eb33608f81e481fa7f5d39c",
+      "bytes": 3693
+    },
+    {
+      "path": "benchmarks/fh2_reference/static_protocol.json",
+      "sha256": "f83b624bd6259bb9194f42071268f286848e60f2f86fae3e1a440e69f7422ea8",
+      "bytes": 2941
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/README.md",
+      "sha256": "cdbd633cec4dab2b2b58af294a9b414c318448702b2635ff5bbe2dd40f0815aa",
+      "bytes": 4342
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/compiler-observation.json",
+      "sha256": "35fc13474a008a6b0968b49488bca0f68a6163f61555d2f1ef5ec14b0252dc9d",
+      "bytes": 891
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/execution-inventory.json",
+      "sha256": "b137e41a669cdfdd51a6793f85225a85ffecfd9530e4e1f710cc8987b455b935",
+      "bytes": 6049
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/fetch-receipt.json",
+      "sha256": "805d0ac3a21a1212e1aed6601e3eb84327e668a49aedbc3e4454fe471ff515d5",
+      "bytes": 4194
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/fetch_public_archives.py",
+      "sha256": "26bbd5b5de58e97524d239bd1ea8306cfd9fff2a01a57cfb7c259c32ca7e1f0d",
+      "bytes": 2726
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-build.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-build.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-verify.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-author-verify.stdout.txt",
+      "sha256": "7e28cfd4100e658cd119cbc1203f4c5382970a17d8af0f6aaba2aaa9887d47ab",
+      "bytes": 244
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-build.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-build.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-checks.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-checks.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/hsw-results.json",
+      "sha256": "4cc956194d920677a7b7f0d56bf10a5725da9bce62be41b25d331dc02026fa6d",
+      "bytes": 4630
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/independent-review-inventory.json",
+      "sha256": "eea358540bad1e8fe4852852730112e2111f6d5a65c643e32f1b3faa1b946cd1",
+      "bytes": 909
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/independent-review.json",
+      "sha256": "6c29d043d013c6fbf7d731cc63bdfec8f47a15fac5c77fe6f0c556748145d214",
+      "bytes": 8261
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/legacy-literal-rounding.json",
+      "sha256": "375b491bebbc67db1a95e21dc209078930b528fd184dab41940e70d374d17f3c",
+      "bytes": 898
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/report.json",
+      "sha256": "5d2d235bb52e206d22b5a16a0daefb9284800d9f34d0f2e1d4efcf6f88e730f2",
+      "bytes": 8830
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/review_static_evidence.py",
+      "sha256": "100e29dbc9dae675ec6ef531c29a170fe05c4ae33e9f90eed8e7ce7e28904c75",
+      "bytes": 10454
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-build.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-build.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-checks.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-checks.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "docs/validation/literature-convergence-2026-11-01/other-reactions/fh2-author-static/sw1-results.json",
+      "sha256": "714064690701f3df02700c1e07599dd4b42eb19df31f6517dee54f67bb65f927",
+      "bytes": 13877
+    }
+  ],
+  "file_count": 29,
+  "total_bytes": 91215,
+  "scope": "Frozen original-Fortran static audit, exact source identities, independent arithmetic/interface review and compact logs. No third-party code, parameters, archive, library or executable. No dynamics or thermal rates."
+}

@@ -1,0 +1,18 @@
+Wrote increment archive: 324840270 bytes; now extracting immutable union
+{
+  "archive": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.tar.gz",
+    "sha256": "a1a7cd77362925d77bf6e6947c5bfc4c98d9bd518c14b6fda6fb0db5003c7b7a",
+    "bytes": 324840270
+  },
+  "sidecar": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.members.json",
+    "sha256": "501d1c13d2c81ec844d4c0b4e545a2a87a193bc1a95819ea69ce0c45df013e37",
+    "bytes": 205393
+  },
+  "combined_raw_checkpoints": 800,
+  "exact_extraction_replay": true,
+  "packager_CPU_seconds": 13.260332000000002,
+  "replay_CPU_seconds": 12.758753,
+  "wall_seconds": 42.770727479000925
+}

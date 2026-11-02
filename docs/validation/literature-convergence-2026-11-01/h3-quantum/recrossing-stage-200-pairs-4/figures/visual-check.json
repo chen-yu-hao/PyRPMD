@@ -1,0 +1,11 @@
+{
+  "schema": "pyrpmd.h3.quantum-figure-visual-check.v1",
+  "checked_utc": "2026-11-01T19:39:29.280948+00:00",
+  "PNG_sha256": "e1701819e1a31b77f440d10afca3df1f792e42ea2e6dd9925d0bca514740ed97",
+  "method": "Rendered PNG inspected through image viewer",
+  "numeric_annotation_matches_complete_report": true,
+  "axes_and_legend_readable": true,
+  "no_visible_clipping_or_overlap": true,
+  "unchanged_plot_helper_sha256": "b2405ecfa25350b638facdfe6b90bf3641d1feb1c4cf34ba14cb59fc1c652563",
+  "supplementary_parent_half_failure_remains_in_README_and_report": true
+}

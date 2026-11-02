@@ -1,0 +1,56 @@
+{
+  "created_utc": "2026-11-01T21:02:51.971947+00:00",
+  "files": [
+    {
+      "bytes": 23349,
+      "path": "tests/test_hch4_reference_pilot.py",
+      "sha256": "b19e275b7b6837584afeea8f17f8038ecf162be85f2bfa97447113ee1bd267e1"
+    },
+    {
+      "bytes": 1827,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/README.md",
+      "sha256": "0a0cdf974a1054f04b5729fac24f6baa1835676cca4173954a68c89ed6654b19"
+    },
+    {
+      "bytes": 1717,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/before.json",
+      "sha256": "cd2a6630d185d2985c461dddf39ba3237f1733fcde3dcba7b956310043773c78"
+    },
+    {
+      "bytes": 803,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/fixture-only.patch",
+      "sha256": "b7345b112acd60634524c80b097b41530a211915298eba9cd2a5093931eb7661"
+    },
+    {
+      "bytes": 98,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/pytest-py314.log",
+      "sha256": "acbadd455418fe405791d2d792bd1c63190d32c09dc2792bcd7909f7c0699441"
+    },
+    {
+      "bytes": 387,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/pytest-py314.xml",
+      "sha256": "60648ec59dbf2410a4a1caed754eb54473c44474c7a0b7ecedfc07419dff4d35"
+    },
+    {
+      "bytes": 3495,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/supersession.json",
+      "sha256": "42065fe6c3f8833f0c57929603e40c475317b07e5c27dce745db2f482ba1fead"
+    },
+    {
+      "bytes": 23349,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/test_hch4_reference_pilot.after.py",
+      "sha256": "b19e275b7b6837584afeea8f17f8038ecf162be85f2bfa97447113ee1bd267e1"
+    },
+    {
+      "bytes": 23126,
+      "path": "docs/validation/literature-convergence-2026-11-01/integration-4698c12/hch4-wall-fixture-supersession/test_hch4_reference_pilot.before.py",
+      "sha256": "296b1c4b97cbcdb1eb4132e4eee8f7d65e5aedbaf662f616a21bb856787ec78e"
+    }
+  ],
+  "inventory_self_excluded": true,
+  "listed_bytes": 78151,
+  "listed_file_count": 9,
+  "raw_PES_or_trajectory_files_included": false,
+  "schema": "pyrpmd.hch4.wall-fixture.publication-inventory.v1",
+  "scope": "Integration-only synthetic wall fixture correction plus preserved before/after/patch and one aged-process Python3.14 check. No production source, original runtime, PES, native binary or prior frozen inventory changed."
+}

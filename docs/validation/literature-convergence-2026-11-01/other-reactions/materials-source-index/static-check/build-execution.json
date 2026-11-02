@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "benchmarks.materials_reference.build_eam4",
+    "--source-file",
+    "/workspace/scratch/a5e4820daedd/materials-source-index-assets/wales-selected-files/.__wales__OPTIM__source__nimetpot.f90",
+    "--output",
+    "/workspace/scratch/a5e4820daedd/materials-source-index-assets/eam4-build-v1",
+    "--fc",
+    "/workspace/scratch/a5e4820daedd/fortran-env/bin/x86_64-conda-linux-gnu-gfortran"
+  ],
+  "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "started_utc": "2026-11-01T18:52:21.234578+00:00",
+  "thread_limits": {
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "source_files": {
+    "benchmarks/materials_reference/__init__.py": "d849db13e54a96270d4a0a1839d57a24c51d337d4fa18d3432a05cc90a8d505a",
+    "benchmarks/materials_reference/build_eam4.py": "9cd9c4e8726f5b3f6bc1b252718ff3546ef6f885b6f562f1963ea54a4dcae853",
+    "benchmarks/materials_reference/eam4.py": "87b46d4b5c3fe08016c7d081d9cded352d7a808cad9706fea8761ebf1a64978e",
+    "benchmarks/materials_reference/eam4_bridge.f90": "aae4cbcd5e44491736b00698be6afba2ddcc5773060b55599bead52d6b022e6c",
+    "benchmarks/materials_reference/eam4_static_protocol.json": "23d584b4d668b8562ae8d075ae9cef7abcb61653442c6603956883b69db136f9",
+    "benchmarks/materials_reference/verify_eam4.py": "a1bb2c3c89061e145ec4e4d40fd4b05a55a8b11837397e12e8b48d5804660711"
+  },
+  "scope": "one-CPU isolated static build; no dynamics or paper-match claim",
+  "returncode": 0,
+  "elapsed_seconds": 1.5321988340001553,
+  "child_cpu_seconds": 1.4237819999999999,
+  "maximum_rss_KiB": 81004
+}

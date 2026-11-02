@@ -1,0 +1,10 @@
+{
+  "completed_utc": "2026-11-01T20:58:22.959902+00:00",
+  "driver_sha256": "6eef4a67fd4a458d8f8f17a151b557b659fe45c57eb5b4781d65c45ad4e68f8f",
+  "exit_code": 1,
+  "log_sha256": "e8a625dc5382a6c37469fcd6ebdc2e499be1fd9d80319610687f38b1bd09fe67",
+  "owned_test_process_reaped": true,
+  "schema": "pyrpmd.current-head-full-suite-execution.v1",
+  "timed_out": false,
+  "wall_seconds": 568.288024849011
+}

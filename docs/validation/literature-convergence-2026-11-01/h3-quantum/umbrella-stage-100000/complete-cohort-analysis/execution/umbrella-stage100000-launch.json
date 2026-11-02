@@ -1,0 +1,72 @@
+{
+  "schema": "pyrpmd.h3.umbrella-stage100000-root-launch.v1",
+  "recorded_immediately_before_exec_utc": "2026-11-01T18:34:50.960597+00:00",
+  "timestamp_scope": "Recorded just before the exec handoff; coordinator events record subsequent worker admissions.",
+  "cwd": "/workspace/scratch/a5e4820daedd/PyRPMD",
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "benchmarks.h3.quantum_sampling_scheduler",
+    "--campaign",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/campaign-run",
+    "--library",
+    "/workspace/scratch/a5e4820daedd/literature-audit-assets/libbkmp2.so",
+    "--protocol",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/protocol.json",
+    "--prior-snapshot",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/raw-archive/stage-snapshot.json",
+    "--prior-snapshot-sha256",
+    "0ea2cd78af59dafb91ab4f0846786b6b63a63457ecc4434e8489ec1478b6d9a4",
+    "--decision",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/h3-quantum/umbrella-stage-30000/continuation-decision.json",
+    "--decision-sha256",
+    "c96255a6eea63023f4eefe9450daa8fc4d67399d55a3143769bd83aa41169c16",
+    "--stage",
+    "100000",
+    "--workers",
+    "2",
+    "--worker-control",
+    "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-control.json"
+  ],
+  "environment_overrides": {
+    "PYTHONPATH": "src:.",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "source_sha256": "1fa4d02c5a9ed5884e81fd0de1203cec47570d9a514a512d636524583e59ed98",
+  "launcher_sha256": "955de8875a5eed1915963801e538bcd148caa8cf95fd7265c8f38696930ac3b2",
+  "launch_plan_sha256": "e8479c402ac27af41bcc05cc4a693b5a6e439bd05f14ccb7075c26f719e6f663",
+  "independent_review_sha256": "464cd4baa050fd9d8b660e672c2cb6b1e7116f6461b886eff4174c3e1b41dbf6",
+  "verified_prior_stage_archive": {
+    "name": "pyrpmd-h3-quantum-umbrella-stage-30000-2026-11-01.tar.gz",
+    "bytes": 145968199,
+    "sha256": "24c1390e11791c9ed2092f98eeba30776bbbb5d46bb8f9a7801b09d62a027c07"
+  },
+  "initial_worker_control": {
+    "path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-worker-control.json",
+    "sha256": "ec6d3935ab657a76836dd4b92e3b258b7ac93e7485f964cb9e15a0894f58f03e",
+    "active_workers": 2
+  },
+  "complete_registered_seeds": [
+    211017,
+    211019,
+    211021,
+    211023,
+    211027,
+    211031,
+    211033,
+    211039
+  ],
+  "precision_trigger_only": true,
+  "legacy_driver_state": "Root-owned original 30000-sweep driver completed; no concurrent legacy driver or direct one_seed invocation is authorized or launched.",
+  "resource_budget": {
+    "umbrella_workers": 2,
+    "H3_extra_pair_workers": 2,
+    "water_workers": 4,
+    "CPU_ceiling": 8
+  },
+  "later_admission_change": "Only after the H3 extra-pair workers finish, root may atomically change active_workers to 4; no sampling parameter, RNG state, seed order, or acceptance criterion changes.",
+  "log_path": "/workspace/scratch/a5e4820daedd/literature-convergence-quantum/umbrella-stage100000.log"
+}

@@ -1,0 +1,101 @@
+{
+  "archive": {
+    "bytes": 324840270,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.tar.gz",
+    "sha256": "a1a7cd77362925d77bf6e6947c5bfc4c98d9bd518c14b6fda6fb0db5003c7b7a"
+  },
+  "created_utc": "2026-11-01T19:57:23.277652+00:00",
+  "file_count": 16,
+  "files": [
+    {
+      "bytes": 6195,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/INCREMENT-SCOPE.md",
+      "sha256": "ad31f14edb3e60229476290638bc3f4acadf97fb6c9ada2a0268e0010fc26849"
+    },
+    {
+      "bytes": 3882,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/README.md",
+      "sha256": "98f54294578e47eaf26b09f11d582a24dd655fe4e5764fd164c9937988f7228d"
+    },
+    {
+      "bytes": 3919,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/archive-provenance.json",
+      "sha256": "040c276b05504959662e7633e4417c9df3115126aec4883ff57e7953ec8c2b2e"
+    },
+    {
+      "bytes": 22035,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/external-prerequisites.json",
+      "sha256": "19cf708f37026edeb6db073d075cb563c36a82f1539ca117a86571983edfac41"
+    },
+    {
+      "bytes": 272842,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/input-file-identities.json",
+      "sha256": "5f466942c8d76d21c3d27000068991ceffe4ed1bc9acd9207a7ff7020adfc95e"
+    },
+    {
+      "bytes": 15147,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/parent-identities.json",
+      "sha256": "2981661b728344ae6eb46c649cfaaf0dea61624326638d115d3822320e009c45"
+    },
+    {
+      "bytes": 831523,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/raw-chunk-identities.json",
+      "sha256": "f2a0b66c864a1754295d3c119214be98e630e2197585198a15622ecb6927d891"
+    },
+    {
+      "bytes": 26904,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay/raw-replay.json",
+      "sha256": "e9e12ad7f79da5d1003ecbba227ffd2c3189712aa66311404086e7138e9a5fae"
+    },
+    {
+      "bytes": 1726,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/extracted-replay.log",
+      "sha256": "2493147149e3eead594a6d90e736663ab0da22ca1fd24058eebeec9f273dd892"
+    },
+    {
+      "bytes": 1155,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/filesystem-mode-observation.json",
+      "sha256": "de20092e67a927df4acf11bda83dc6f4b4cae9f0bb3f67ed60f84df9cf4485e2"
+    },
+    {
+      "bytes": 205393,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/member-inventory.json",
+      "sha256": "501d1c13d2c81ec844d4c0b4e545a2a87a193bc1a95819ea69ce0c45df013e37"
+    },
+    {
+      "bytes": 709,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package-execution.json",
+      "sha256": "28cb242b370cef33c59907eacc8fd8a4b58b3ca6033d3ed36cc7340cfe7d8fe3"
+    },
+    {
+      "bytes": 762,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package.log",
+      "sha256": "0c1b91de2bab6f04019af87183ec209e3f8307e64b12499306ce7843fe21c5b5"
+    },
+    {
+      "bytes": 19490,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/package_increment.py",
+      "sha256": "a05e56589694fb06cc6cc084ab5dc9b48a7a0d3064857429b12d990628aeb07a"
+    },
+    {
+      "bytes": 436110,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/raw-data-index.json",
+      "sha256": "61a0f2fed36826a5e1610b5560e4fc08601784666faa128c0331188d71405f2b"
+    },
+    {
+      "bytes": 3542,
+      "path": "docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-4/raw-archive/verification.json",
+      "sha256": "3b4bb6d4c74f5687262582a1a339f915507cc7d1ccc885a104ae8db78629f6ec"
+    }
+  ],
+  "member_inventory": {
+    "bytes": 205393,
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-h3-quantum-recrossing-stage-200-pairs-4-increment-2026-11-01.members.json",
+    "sha256": "501d1c13d2c81ec844d4c0b4e545a2a87a193bc1a95819ea69ce0c45df013e37"
+  },
+  "raw_arrays_in_this_publication_inventory": false,
+  "schema": "pyrpmd.h3.four-pair-raw-archive-publication-inventory.v1",
+  "scope": "Compact archive/replay source, logs, metadata and exact extraction verification; scientific NPZ payload and325MB archive outside Git.",
+  "total_bytes": 1851334,
+  "upload_attempted": false
+}

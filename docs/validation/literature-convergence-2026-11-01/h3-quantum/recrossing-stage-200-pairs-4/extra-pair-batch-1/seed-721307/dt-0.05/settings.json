@@ -1,0 +1,36 @@
+{
+  "schema": "pyrpmd.h3.quantum-surface-recrossing.v1",
+  "phase": "primary",
+  "seed": 721307,
+  "beads": 128,
+  "parents": 200,
+  "timestep_fs": 0.05,
+  "horizon_fs": 200,
+  "start_horizon_fs": 0,
+  "pair_batch": 1,
+  "momentum_pair_indices": [
+    2,
+    3
+  ],
+  "protocol_sha256": "c5e8500ff0b1c6020bef6fe0032b37de17e4b3048fa4a9c413012af0d6821024",
+  "parent_identity": {
+    "checkpoint_sha256": "d1cf4de76ade549ab74391e12eb4b42e3e06be44dab3cbd3037f470a044b8519",
+    "settings_sha256": "88c37c59cad156f1a395418ead315de50f25f4d32833ab83ccfa976529a24b71",
+    "report_sha256": "c2cebae072d51a03f0ce47b590775d8b3292373cfdac0de26142d16281c9a9e1",
+    "seed": 721307,
+    "BAR_log_TS_quantum_classical_ratio": -2.195497923928297
+  },
+  "source_sha256": {
+    "benchmarks/h3/quantum_surface_recrossing.py": "dc900e74fe8191cc8c88925a2413e55f76724a2835a8f447039d25a415c45f9e",
+    "benchmarks/h3/pes.py": "29cb52862ae8b1ed089ea409fe131ea327d3b979f00e6db80c9ed7e9f35da892",
+    "benchmarks/h3/classical_tst.py": "07c5b44c4a6af0d6c9e79b68bd0f0b286ac954095b96845b4c14e1dd8fb8c7be",
+    "src/pyrpmd/dynamics.py": "00c9967571196ea79fae06398116c6dda1d466d2952628b78fcc4c1ccba8dd02",
+    "src/pyrpmd/propagation.py": "3b661fced182f0944cdac61c82e82de11648cb74d49f03408d8657627a4a11aa",
+    "src/pyrpmd/cv.py": "aa7fa1d1b012a16c29dee396cc07aedeeb5efb786d034bcb64bb7126d4dede52",
+    "src/pyrpmd/constants.py": "00934d1e68c1d0774db759e668af327f0e057650d0d8e5afa53396be4300c6f3",
+    "src/pyrpmd/checkpoint.py": "3e8d30a0b27507b9462dae1b61954225e5b690bf6063decc2bd331cb491c9e9f",
+    "src/pyrpmd/io.py": "3efe562a3bceabccb1b082f2f38e30066682458fbdda6dc24f948a8ab9d104a1",
+    "loaded_native:_native.cpython-312-x86_64-linux-gnu.so": "42319e0f816bdf9f94fb9d5d0230b8b5c1d74e3b4975ff56295c609897e66220"
+  },
+  "chunk_parents": 8
+}

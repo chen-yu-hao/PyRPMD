@@ -1,0 +1,24 @@
+{
+  "CPU_affinity": [
+    8
+  ],
+  "CPU_seconds": 0.677453,
+  "PES_calls": 0,
+  "RNG_draws": 0,
+  "actual_data_reads": 0,
+  "command": [
+    "/workspace/scratch/a5e4820daedd/PyRPMD/.venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "--confcutdir=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay",
+    "/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/test_replay_saved.py",
+    "--junitxml=/workspace/scratch/a5e4820daedd/PyRPMD/docs/validation/literature-convergence-2026-11-01/review/hch4-reference-efficiency-replay/initial-synthetic-gate/pytest.xml"
+  ],
+  "created_utc": "2026-11-01T21:27:39.012959+00:00",
+  "returncode": 0,
+  "schema": "pyrpmd.hch4-independent-replay-synthetic-gate.v1",
+  "source_unchanged": true,
+  "threads": 1,
+  "wall_seconds": 0.770679442997789
+}

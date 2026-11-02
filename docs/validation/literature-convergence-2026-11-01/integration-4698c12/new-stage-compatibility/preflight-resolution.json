@@ -1,0 +1,13 @@
+{
+  "schema": "pyrpmd.new-stage-guard-resolution.v1",
+  "created_utc": "2026-11-01T18:38:35.252185+00:00",
+  "authorization": "Root explicitly confirmed its plot-only protocol-binding/precision-footer edit and exact freeze inventory; retain initial observation and bind current file without changing physical guards.",
+  "path": "benchmarks/h3/quantum_convergence_plot.py",
+  "current_sha256": "b2405ecfa25350b638facdfe6b90bf3641d1feb1c4cf34ba14cb59fc1c652563",
+  "freeze_inventory": {
+    "path": "/workspace/scratch/a5e4820daedd/pyrpmd-convergence-integration/docs/validation/literature-convergence-2026-11-01/h3-quantum/recrossing-stage-200-pairs-2/publication-inventory.json",
+    "sha256": "56efeabcf75fa4210f8265c68541d90b7d655d3125650e29ef921a86a16e86f8"
+  },
+  "initial_observation_sha256": "9dc44c469dd4ed6a479f0ddc180093e255f2ddd734c511c11e8181800af8fb7f",
+  "physical_guard_exceptions": []
+}

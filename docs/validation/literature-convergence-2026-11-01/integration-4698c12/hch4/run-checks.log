@@ -1,0 +1,45 @@
+{
+  "integration_checks_passed": true,
+  "git_head_at_start": "3ff0b674fc9b28e60da9261e08a08ca1ecf75335",
+  "git_head_at_end": "3ff0b674fc9b28e60da9261e08a08ca1ecf75335",
+  "native_sha256": "61dc8ec076a86176e3826415444e64428272441ae3ebe50779acc69bebd51f6f",
+  "native_probe_gates": {
+    "static_equations_and_channels": true,
+    "P1_short_NVE": true,
+    "P128_short_NVE": false,
+    "native_python_all_paths": true,
+    "CPU_budget": true
+  },
+  "workflow_passed": true,
+  "total_subprocess_CPU_seconds": 6.663895999999999,
+  "NVE_comparison_with_original": [
+    {
+      "beads": 1,
+      "dt_fs": 0.1,
+      "old_span_hartree_per_bead": 1.6778840150610819e-06,
+      "new_span_hartree_per_bead": 1.6778840150610819e-06,
+      "difference": 0.0
+    },
+    {
+      "beads": 1,
+      "dt_fs": 0.05,
+      "old_span_hartree_per_bead": 4.237716038080208e-07,
+      "new_span_hartree_per_bead": 4.237716038080208e-07,
+      "difference": 0.0
+    },
+    {
+      "beads": 128,
+      "dt_fs": 0.1,
+      "old_span_hartree_per_bead": 0.00018773813694206165,
+      "new_span_hartree_per_bead": 0.00018773813694206165,
+      "difference": 0.0
+    },
+    {
+      "beads": 128,
+      "dt_fs": 0.05,
+      "old_span_hartree_per_bead": 4.6039519112250904e-05,
+      "new_span_hartree_per_bead": 4.6039519112250904e-05,
+      "difference": 0.0
+    }
+  ]
+}
